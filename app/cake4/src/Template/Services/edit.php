@@ -35,7 +35,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fa fa-plus"></i> <?php echo __('Edit'); ?>
+        <i class="fas fa-edit"></i> <?php echo __('Edit'); ?>
     </li>
 </ol>
 

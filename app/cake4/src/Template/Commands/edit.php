@@ -22,20 +22,27 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-?>
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-terminal fa-fw "></i>
-            <?php use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
 
-            echo __('Commands'); ?>
-            <span>>
-                <?php echo __('Edit'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
+
+use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
+
+?>
+
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="CommandsIndex">
+            <i class="fa fa-terminal"></i> <?php echo __('Commands'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fas fa-edit"></i> <?php echo __('Edit'); ?>
+    </li>
+</ol>
 
 <div class="alert alert-danger alert-block" ng-show="hasWebSocketError">
     <a href="#" data-dismiss="alert" class="close">×</a>
@@ -45,56 +52,63 @@
     </h5>
     <?php echo __('Could not connect to SudoWebsocket Server'); ?>
 </div>
-<div class="jarviswidget" id="wid-id-0">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
-        <h2><?php echo __('Create new command'); ?></h2>
-        <div class="widget-toolbar" role="menu">
-            <button ng-click="showDefaultMacros()"
-                    class="btn btn-primary btn-xs"><i
-                        class="fa fa-usd"></i> <?php echo __('Default macros overview'); ?></button>
-            <?php if ($this->Acl->hasPermission('index', 'macros')): ?>
-                <button ng-click="showMacros()"
-                        class="btn btn-primary btn-xs"><?php echo __('$USERn$ overview'); ?></button>
-            <?php endif; ?>
-            <a class="btn btn-default" ui-sref="CommandsIndex">
-                <i class="fa fa-arrow-left"></i>
-                <?php echo __('Back to list'); ?>
-            </a>
-        </div>
-    </header>
-    <div>
-        <form ng-submit="submit();" class="form-horizontal"
-              ng-init="successMessage=
-            {objectName : '<?php echo __('Command'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
-            <div class="widget-body">
 
-                <div class="row">
-                    <div class="col-xs-12 col-md-offset-2 col-md-10" style="padding-right: 0; padding-left: 0">
-                        <div class="alert alert-block alert-warning">
-                            <a class="close" data-dismiss="alert" href="#">×</a>
-                            <h4 class="alert-heading">
-                                <i class="fa fa-exclamation-triangle"></i>
-                                <?php echo __('Security notice'); ?>
-                            </h4>
-                            <?php echo __('User defined macros inside of command_line could lead to unwanted code execution.'); ?>
-                            <br/>
-                            <?php echo __('It is recommended to only provide access for a certain group of users to edit commands and user defined macros.'); ?>
-                        </div>
-                    </div>
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Command'); ?>
+                    <span class="fw-300"><i><?php echo __('Edit command'); ?></i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <button ng-click="showDefaultMacros()"
+                            class="btn btn-xs btn-primary mr-1 shadow-0">
+                        <i class="fa fa-usd"></i>
+                        <?php echo __('Default macros overview'); ?>
+                    </button>
+                    <?php if ($this->Acl->hasPermission('index', 'macros')): ?>
+                        <button ng-click="showMacros()"
+                                class="btn btn-xs btn-primary mr-1 shadow-0"><?php echo __('$USERn$ overview'); ?></button>
+                    <?php endif; ?>
+
+                    <?php if ($this->Acl->hasPermission('index', 'commands')): ?>
+                        <a back-button fallback-state='CommandsIndex' class="btn btn-xs btn-default shadow-0">
+                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                        </a>
+                    <?php endif; ?>
                 </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <form ng-submit="submit();" ng-init="successMessage=
+            {objectName : '<?php echo __('command'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
-                <div class="row">
-                    <div class="form-group">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Command type'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-offset-2 col-md-12 col-lg-12 padding-left-0 padding-right-0">
+                                <div class="alert alert-block alert-warning">
+                                    <a class="close" data-dismiss="alert" href="#">×</a>
+                                    <h4 class="alert-heading">
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                        <?php echo __('Security notice'); ?>
+                                    </h4>
+                                    <?php echo __('User defined macros inside of command_line could lead to unwanted code execution.'); ?>
+                                    <br/>
+                                    <?php echo __('It is recommended to only provide access for a certain group of users to edit commands and user defined macros.'); ?>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label">
+                                <?php echo __('Command type'); ?>
+                            </label>
                             <select
-                                    class="form-control"
-                                    chosen="commandtypes"
-                                    ng-init="post.Command.command_type='1'"
-                                    ng-model="post.Command.command_type">
+                                class="form-control"
+                                chosen="commandtypes"
+                                ng-init="post.Command.command_type='1'"
+                                ng-model="post.Command.command_type">
                                 <?php
                                 $command_types = [
                                     CHECK_COMMAND        => __('Service check command'),
@@ -108,145 +122,147 @@
                                 ?>
                             </select>
                         </div>
-                    </div>
-                    <div class="form-group required" ng-class="{'has-error': errors.name}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Name'); ?>
-                        </label>
-                        <div class="col col-xs-10">
-                            <input class="form-control" type="text" ng-model="post.Command.name">
+
+                        <div class="form-group required" ng-class="{'has-error': errors.name}">
+                            <label class="control-label">
+                                <?php echo __('Name'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                ng-model="post.Command.name">
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
 
-                    </div>
-                    <div class="form-group required" ng-class="{'has-error': errors.command_line}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Command line'); ?>
-                        </label>
-                        <div class="col col-xs-10 required code-font">
-                            <textarea class="form-control" type="text" ng-model="post.Command.command_line"
+                        <div class="form-group required" ng-class="{'has-error': errors.command_line}">
+                            <label class="form-label required" for="commandLineTextArea">
+                                <?php echo __('Command line'); ?>
+                            </label>
+                            <textarea class="form-control code-font" type="text" ng-model="post.Command.command_line"
                                       cols="30" rows="6" id="commandLineTextArea">
-                            </textarea>
+                                </textarea>
                             <div ng-repeat="error in errors.command_line">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col col-md-2 hidden-mobile hidden-tablet"><!-- space for nice layout --></div>
-                    <div class="col col-md-10 col-xs-12 text-info padding-bottom-10">
-                        <i class="fa fa-info-circle"></i>
 
-                        <?php
-                        $link = __('user defined macro');
-                        if ($this->Acl->hasPermission('index', 'macros')):
-                            $link = sprintf('<a ui-sref="MacrosIndex">%s</a>', $link);
-                        endif;
-                        ?>
+                        <div class="col col-md-10 col-xs-12 text-info padding-bottom-10">
+                            <i class="fa fa-info-circle"></i>
 
-                        <?php echo __('A $-sign needs to be escaped manually (\$). Semicolons (;) needs to be defined as %s.', $link); ?>
-                        <br/>
-                        <?php echo __('Nagios supports up to 32 $ARGx$ macros ($ARG1$ through $ARG32$)'); ?>
-                    </div>
-                    <div class="form-group">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Description'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+                            <?php
+                            $link = __('user defined macro');
+                            if ($this->Acl->hasPermission('index', 'macros')):
+                                $link = sprintf('<a ui-sref="MacrosIndex">%s</a>', $link);
+                            endif;
+                            ?>
+
+                            <?php echo __('A $-sign needs to be escaped manually (\$). Semicolons (;) needs to be defined as %s.', $link); ?>
+                            <br/>
+                            <?php echo __('Nagios supports up to 32 $ARGx$ macros ($ARG1$ through $ARG32$)'); ?>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="form-label" for="descriptionTextArea">
+                                <?php echo __('Description'); ?>
+                            </label>
                             <textarea class="form-control" type="text" ng-model="post.Command.description"
-                                      cols="30" rows="6">
-                            </textarea>
+                                      cols="30" rows="6" id="descriptionTextArea">
+                                </textarea>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="widget-body">
-                <fieldset class=" form-inline required padding-10">
-                    <legend class="font-sm">
-                        <div>
-                            <label><?php echo __('Arguments'); ?>:</label>
-                        </div>
-                    </legend>
-                    <div id="command_args">
-                        <!-- empty because we create a new command! -->
-                    </div>
 
-                    <div ng-repeat="arg in args">
-                        <div class="col-md-12 padding-top-5">
-                            <div class="col-md-1 text-primary padding-top-10">
-                                {{arg.name}}
-                            </div>
-                            <div class="col-md-10">
-                                <label class="col col-md-1 control-label">
-                                    <?php echo __('Name'); ?>
-                                </label>
-                                <div class="col col-md-11">
+
+                        <!-- Arguments -->
+                        <legend class="font-sm">
+                            <h5><?php echo __('Arguments'); ?>:</h5>
+                        </legend>
+                        <div id="command_args">
+                            <!-- empty because we create a new command! -->
+                        </div>
+
+                        <div ng-repeat="arg in args" class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-1">
+                                    <div style="margin-top: 24px;">
+                                        {{arg.name}}
+                                    </div>
+                                </div>
+                                <div class="col-lg-10 form-group">
+                                    <label class="control-label" for="newArg">
+                                        <?php echo __('Name'); ?>
+                                    </label>
                                     <input class="form-control input-sm" type="text"
                                            placeholder="<?php echo __('Please enter a name'); ?>"
                                            name="data[Commandargument][{{arg.id}}][human_name]"
                                            ng-model="arg.human_name"
-                                           style="width: 100%;">
+                                           id="newArg"
+                                           style="width:100%;">
+                                </div>
+                                <div class="col-md-1 col-lg-1">
+                                    <a class="btn btn-default btn-sm txt-color-red deleteCommandArg margin-top-25"
+                                       href="javascript:void(0);"
+                                       ng-click="removeArg(arg)">
+                                        <i class="fa fa-trash fa-lg"></i>
+                                    </a>
                                 </div>
                             </div>
-                            <div class="col-md-1">
-                                <a class="btn btn-default btn-sm txt-color-red deleteCommandArg"
-                                   href="javascript:void(0);"
-                                   ng-click="removeArg(arg)">
-                                    <i class="fa fa-trash-o fa-lg"></i>
+                        </div>
+                        <div class="row ml-1">
+                            <div ng-show="args.length > 0">
+                                <span class="col col-lg-3 col-xs-12 txt-color-redLight">
+                                    <i class="fa fa-exclamation-circle"></i>
+                                    <?php echo __('empty arguments will be removed automatically'); ?>
+                                </span>
+                            </div>
+                            <div class="ml-auto mr-3">
+                                <a class="btn btn-success btn-xs " id="add_new_arg" href="javascript:void(0);"
+                                   ng-click="addArg()">
+                                    <i class="fa fa-plus"></i>
+                                    <?php echo __('Add argument'); ?>
                                 </a>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-xs-12 padding-top-10">
-                        <a class="btn btn-success btn-xs pull-right" id="add_new_arg" href="javascript:void(0);"
-                           ng-click="addArg()">
-                            <i class="fa fa-plus"></i>
-                            <?php echo __('Add argument'); ?>
-                        </a>
-                    </div>
-                    <div ng-show="args.length > 0">
-                        <span class="col col-md-10 col-xs-12 txt-color-redLight">
-                            <i class="fa fa-exclamation-circle"></i>
-                            <?php echo __('empty arguments will be removed automatically'); ?>
-                        </span>
-                    </div>
-                </fieldset>
-                <?php if ($this->Acl->hasPermission('terminal')): ?>
-                    <br/>
-                    <div id="console"></div>
-                <?php endif; ?>
-                <br/>
-            </div>
-            <div class="col-xs-12 margin-top-10">
-                <div class="well formactions ">
-                    <div class="pull-right">
-                        <button class="btn btn-primary" type="button" ng-click="checkForMisingArguments()">
-                            <?php echo __('Update command'); ?>
-                        </button>
-                        <a ui-sref="CommandsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
-                    </div>
+                        <div class="row margin-top-25">
+                            <?php if ($this->Acl->hasPermission('terminal', 'commands')): ?>
+                                <br/>
+                                <div id="console"></div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="card margin-top-10">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <button class="btn btn-primary"
+                                            type="submit"><?php echo __('Create command'); ?></button>
+                                    <a back-button fallback-state='CommandsIndex'
+                                       class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
+
 <?php if ($this->Acl->hasPermission('index', 'macros')): ?>
-    <div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="MacrosOverview">
-        <div class="modal-dialog modal-lg">
+    <div class="modal" tabindex="-1" role="dialog" id="MacrosOverview">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">
-                        &times;
+                    <h5 class="modal-title"><?php echo __('User defined macros'); ?></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title" id="myModalLabel"><?php echo __('User defined macros'); ?></h4>
                 </div>
-                <div class="modal-body padding-5">
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-12">
                             <div id="MacroContent">
-                                <table id="macrosTable" class="table table-bordered table-striped">
+                                <table id="macrosTable" class="table table-striped m-0 table-bordered">
                                     <thead>
                                     <tr>
                                         <th class="no-sort">
@@ -298,24 +314,23 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        <?php echo __('Close'); ?>
-                    </button>
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal"><?php echo __('Close'); ?></button>
                 </div>
             </div>
         </div>
     </div>
 <?php endif; ?>
 
-<div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="argumentMisMatchModal">
-    <div class="modal-dialog modal-lg">
+
+<div class="modal" tabindex="-1" role="dialog" id="defaultMacrosOverview" id="argumentMisMatchModal">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header bg-warning txt-color-white">
-                <button type="button" class="close" data-dismiss="modal">
-                    &times;
+            <div class="modal-header">
+                <h5 class="modal-title"><?php echo __('Mismatch in number of defined arguments detected'); ?></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title"
-                    id="myModalLabel"><?php echo __('Mismatch in number of defined arguments detected'); ?></h4>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -345,24 +360,25 @@
     </div>
 </div>
 
-<div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="defaultMacrosOverview">
-    <div class="modal-dialog modal-lg">
+
+<div class="modal" tabindex="-1" role="dialog" id="defaultMacrosOverview" id="argumentMisMatchModal">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">
-                    &times;
+                <h5 class="modal-title"><?php echo __('List of all available default macros'); ?></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel"><?php echo __('List of all available default macros'); ?></h4>
             </div>
-            <div class="modal-body padding-5">
+            <div class="modal-body">
                 <div class="row">
                     <div class="col-xs-12">
 
                         <?php foreach (DefaultMacros::getMacros() as $macroCategory): ?>
-                            <h3>
+                            <h4>
                                 <?php echo h($macroCategory['category']); ?>
-                            </h3>
-                            <table id="macrosTable" class="table table-bordered table-striped">
+                            </h4>
+                            <table id="macrosTable" class="table table-striped m-0 table-bordered padding-bottom-20">
                                 <thead>
                                 <tr>
                                     <th class="no-sort">
@@ -386,15 +402,14 @@
                                 <?php endforeach; ?>
                                 </tbody>
                             </table>
+                            <hr>
                         <?php endforeach; ?>
 
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <?php echo __('Close'); ?>
-                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo __('Close'); ?></button>
             </div>
         </div>
     </div>
