@@ -38,6 +38,16 @@
         <i class="fa fa-plus"></i> <?php echo __('Add'); ?>
     </li>
 </ol>
+
+<div class="alert alert-danger alert-block" ng-show="hasWebSocketError">
+    <a href="#" data-dismiss="alert" class="close">×</a>
+    <h5 class="alert-heading">
+        <i class="fa fa-warning"></i>
+        <?php echo __('Error'); ?>
+    </h5>
+    <?php echo __('Could not connect to SudoWebsocket Server'); ?>
+</div>
+
 <div class="row">
     <div class="col-xl-12">
         <div id="panel-1" class="panel">
@@ -60,7 +70,7 @@
             {objectName : '<?php echo __('command'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
                         <div class="row">
-                            <div class="col-xs-12 col-md-offset-2 col-md-10" style="padding-right: 0; padding-left: 0">
+                            <div class="col-xs-12 col-md-offset-2 col-md-12 col-lg-12 padding-left-0 padding-right-0">
                                 <div class="alert alert-block alert-warning">
                                     <a class="close" data-dismiss="alert" href="#">×</a>
                                     <h4 class="alert-heading">
@@ -150,56 +160,59 @@
 
 
                         <!-- Arguments -->
-                            <legend class="font-sm">
-                                <h5><?php echo __('Arguments'); ?>:</h5>
-                            </legend>
-                            <div id="command_args">
-                                <!-- empty because we create a new command! -->
-                            </div>
+                        <legend class="font-sm">
+                            <h5><?php echo __('Arguments'); ?>:</h5>
+                        </legend>
+                        <div id="command_args">
+                            <!-- empty because we create a new command! -->
+                        </div>
 
-                            <div ng-repeat="arg in args" class="col-lg-12">
-                                <div class="row">
-                                    <div class="col-lg-1">
-                                        <div style="margin-top: 24px;">
-                                            {{arg.name}}
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-10 form-group">
-                                        <label class="control-label" for="newArg">
-                                            <?php echo __('Name'); ?>
-                                        </label>
-                                        <input class="form-control input-sm" type="text"
-                                                placeholder="<?php echo __('Please enter a name'); ?>"
-                                                name="data[Commandargument][{{arg.id}}][human_name]"
-                                                ng-model="arg.human_name"
-                                                id="newArg"
-                                                style="width:100%;">
-                                    </div>
-                                    <div class="col-md-1 col-lg-1">
-                                        <a class="btn btn-default btn-sm txt-color-red deleteCommandArg margin-top-25"
-                                           href="javascript:void(0);"
-                                           ng-click="removeArg(arg)">
-                                            <i class="fa fa-trash fa-lg"></i>
-                                        </a>
+                        <div ng-repeat="arg in args" class="col-lg-12">
+                            <div class="row">
+                                <div class="col-lg-1">
+                                    <div style="margin-top: 24px;">
+                                        {{arg.name}}
                                     </div>
                                 </div>
+                                <div class="col-lg-10 form-group">
+                                    <label class="control-label" for="newArg">
+                                        <?php echo __('Name'); ?>
+                                    </label>
+                                    <input class="form-control input-sm" type="text"
+                                           placeholder="<?php echo __('Please enter a name'); ?>"
+                                           name="data[Commandargument][{{arg.id}}][human_name]"
+                                           ng-model="arg.human_name"
+                                           id="newArg"
+                                           style="width:100%;">
+                                </div>
+                                <div class="col-md-1 col-lg-1">
+                                    <a class="btn btn-default btn-sm txt-color-red deleteCommandArg margin-top-25"
+                                       href="javascript:void(0);"
+                                       ng-click="removeArg(arg)">
+                                        <i class="fa fa-trash fa-lg"></i>
+                                    </a>
+                                </div>
                             </div>
-                            <div class="padding-top-10 padding-bottom-20 float-right">
+                        </div>
+                        <div class="row ml-1">
+                            <div ng-show="args.length > 0">
+                                <span class="col col-lg-3 col-xs-12 txt-color-redLight">
+                                    <i class="fa fa-exclamation-circle"></i>
+                                    <?php echo __('empty arguments will be removed automatically'); ?>
+                                </span>
+                            </div>
+                            <div class="ml-auto mr-3">
                                 <a class="btn btn-success btn-xs " id="add_new_arg" href="javascript:void(0);"
                                    ng-click="addArg()">
                                     <i class="fa fa-plus"></i>
                                     <?php echo __('Add argument'); ?>
                                 </a>
                             </div>
-                            <div class="float-left" ng-show="args.length > 0">
-                                <span class="col col-md-10 col-xs-12 txt-color-redLight">
-                                    <i class="fa fa-exclamation-circle"></i>
-                                    <?php echo __('empty arguments will be removed automatically'); ?>
-                                </span>
-                            </div>
+                        </div>
 
 
-                        <div class="row">
+
+                        <div class="row margin-top-25">
                             <?php if ($this->Acl->hasPermission('terminal', 'commands')): ?>
                                 <br/>
                                 <div id="console"></div>
@@ -211,47 +224,6 @@
         </div>
     </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <?php

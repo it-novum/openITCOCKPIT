@@ -79,7 +79,7 @@ class AngularAssets implements AngularAssetsInterface {
         'vendor/node_modules/javascript-detect-element-resize/jquery.resize.js',*/
         'node_modules/angular-gridster/dist/angular-gridster.min.js',
         'legacy/js/lib/GraphDefaults.js',
-        /*'js/lib/jqconsole.min.js', */
+        'legacy/js/lib/jqconsole.min.js',
         'node_modules/jquery-blockui/jquery.blockUI.js',
         /*'js/lib/jquery-jvectormap-1.2.2.min.js',
         'js/lib/maps/jquery-jvectormap-world-mill-en.js',
@@ -89,8 +89,8 @@ class AngularAssets implements AngularAssetsInterface {
         'vendor/node_modules/@fullcalendar/timegrid/main.js',
         'vendor/node_modules/@fullcalendar/list/main.js',
         'js/vendor/Chart.min.js',
-        'js/vendor/chartjs-plugin-piechart-center-element.min.js',
-        'js/lib/highlight-within-textarea/jquery.highlight-within-textarea.js' */
+        'js/vendor/chartjs-plugin-piechart-center-element.min.js', */
+        'node_modules/highlight-within-textarea/jquery.highlight-within-textarea.js',
         'node_modules/jquery-sparkline/jquery.sparkline.min.js'
     ];
 
@@ -123,6 +123,7 @@ class AngularAssets implements AngularAssetsInterface {
         '/smartadmin4/dist/css/themes/cust-theme-10.css',
         '/node_modules/font-awesome/css/font-awesome.css',
         '/node_modules/@fortawesome/fontawesome-free/css/all.min.css',
+        '/css/console.css',
         '/css/openitcockpit-colors.css',
         '/css/openitcockpit-utils.css',
         '/css/openitcockpit.css',
@@ -139,7 +140,6 @@ class AngularAssets implements AngularAssetsInterface {
         'status',
         'lists',
         'ansi',
-        'console',
         'animate_new',
         'vendor/prism.css',
         'vendor/gridstack/gridstack.min.css',*/
