@@ -4,6 +4,8 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
         remember_me: 1
     };
 
+    $scope.disableLogin = false;
+
     $scope.loadCsrf = function(){
         $http.get("/users/login.json",
             {}
@@ -19,6 +21,7 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
     };
 
     $scope.submit = function(){
+        $scope.disableLogin = true;
 
         //Submit as classic form (not as json data) so that
         //CakePHPs FormAuthenticator is able to parse the POST data
@@ -38,6 +41,9 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
         };
 
         $http(req).then(function(){
+            //Login successfully
+            $scope.disableLogin = false;
+
             new Noty({
                 theme: 'metroui',
                 type: 'success',
@@ -46,14 +52,34 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
                 timeout: 3500
             }).show();
             window.location = '/';
-        }, function(){
+        }, function(result){
+            //Error
+
             $scope.loadCsrf();
+            $scope.disableLogin = false;
+
+            if(result.data.hasOwnProperty('errors')){
+                for(var key in result.data.errors){
+                    for(var index in result.data.errors[key]){
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'error',
+                            layout: 'topCenter',
+                            text: result.data.errors[key][index],
+                            timeout: 5500
+                        }).show();
+                    }
+                }
+
+                return;
+            }
+
             new Noty({
                 theme: 'metroui',
                 type: 'error',
                 layout: 'topCenter',
-                text: 'Invalid credentials',
-                timeout: 3500
+                text: 'Unknown error',
+                timeout: 5500
             }).show();
         });
     };
