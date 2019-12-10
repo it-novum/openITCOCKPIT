@@ -44,9 +44,9 @@ class StatisticsController extends AppController {
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
-            /** @var $HostsTable HostsTable */
+            /** @var HostsTable $HostsTable */
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-            /** @var $ServicesTable ServicesTable */
+            /** @var ServicesTable $ServicesTable */
             $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
             $StatisticsCollector = new StatisticsCollector($HostsTable, $ServicesTable);
@@ -55,7 +55,7 @@ class StatisticsController extends AppController {
             return;
         }
 
-        /** @var $SystemsettingsTable SystemsettingsTable */
+        /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
         $record = $SystemsettingsTable->getSystemsettingByKeyAsCake2('SYSTEM.ANONYMOUS_STATISTICS');
@@ -74,7 +74,7 @@ class StatisticsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $SystemsettingsTable SystemsettingsTable */
+        /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
         try {
