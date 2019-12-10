@@ -825,6 +825,7 @@ class HostsController extends AppController {
                 // @todo fix changelog
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                $requestData = $this->request->getData();
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
@@ -834,7 +835,7 @@ class HostsController extends AppController {
                     $hostEntity->get('container_id'),
                     $User->getId(),
                     $hostEntity->get('name'),
-                    array_merge($HostsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($HostsTable->resolveDataForChangelog($requestData), $requestData),
                     array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
                 );
                 if ($changelog_data) {
