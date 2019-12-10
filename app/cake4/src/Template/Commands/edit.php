@@ -82,7 +82,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
             <div class="panel-container show">
                 <div class="panel-content">
                     <form ng-submit="submit();" ng-init="successMessage=
-            {objectName : '<?php echo __('command'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+            {objectName : '<?php echo __('command'); ?>' , message: '<?php echo __('updated successfully'); ?>'}">
 
                         <div class="row">
                             <div class="col-xs-12 col-md-offset-2 col-md-12 col-lg-12 padding-left-0 padding-right-0">
@@ -234,7 +234,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                             <div class="card-body">
                                 <div class="float-right">
                                     <button class="btn btn-primary"
-                                            type="submit"><?php echo __('Create command'); ?></button>
+                                            type="submit"><?php echo __('Update command'); ?></button>
                                     <a back-button fallback-state='CommandsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
