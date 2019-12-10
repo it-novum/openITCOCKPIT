@@ -108,7 +108,6 @@
                                                             <select class="form-control systemsetting-input"
                                                                     ng-model="systemsetting.value">
                                                                 <option value="session"><?php echo __('PHP session'); ?></option>
-                                                                <option value="twofactor"><?php echo __('Two factor authentication (PHP session based)'); ?></option>
                                                                 <option value="ldap"><?php echo __('PHP LDAP'); ?></option>
                                                                 <option value="sso"><?php echo __('SSO'); ?></option>
                                                             </select>
