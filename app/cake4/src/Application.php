@@ -15,8 +15,10 @@
 
 namespace App;
 
+use App\Identifier\LdapIdentifier;
 use App\Lib\PluginManager;
 use App\Middleware\AppAuthenticationMiddleware;
+use App\Model\Table\SystemsettingsTable;
 use App\Policy\RequestPolicy;
 use Authentication\AuthenticationService;
 use Authentication\AuthenticationServiceInterface;
@@ -28,6 +30,7 @@ use Authorization\AuthorizationServiceProviderInterface;
 use Authorization\Middleware\AuthorizationMiddleware;
 use Authorization\Middleware\RequestAuthorizationMiddleware;
 use Authorization\Policy\MapResolver;
+use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Core\Exception\MissingPluginException;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
@@ -36,6 +39,7 @@ use Cake\Http\Middleware\BodyParserMiddleware;
 use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\Http\ServerRequest;
+use Cake\ORM\TableRegistry;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
 use Psr\Http\Message\ServerRequestInterface;
@@ -114,10 +118,27 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             IdentifierInterface::CREDENTIAL_USERNAME => 'email',
             IdentifierInterface::CREDENTIAL_PASSWORD => 'password'
         ];
-        // Load identifiers
+
+
+        if (Cache::read('isLdapAuth', 'permissions') === null) {
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            Cache::write('isLdapAuth', $SystemsettingsTable->isLdapAuth(), 'permissions');
+        }
+        $isLdapAuth = Cache::read('isLdapAuth', 'permissions');
+
+        // Load LDAP identifier
+        if ($isLdapAuth) {
+            $service->loadIdentifier('Authentication.Ldap', [
+                'className' => LdapIdentifier::class
+            ]);
+        }
+
+        // Load identifiers (Username / Password)
         $service->loadIdentifier('Authentication.Password', [
             'fields' => $fields
         ]);
+
         // Load the authenticators, you want session first
         $expireAt = new \DateTime();
         $expireAt->setTimestamp(time() + (3600 * 24 * 31)); // In one month

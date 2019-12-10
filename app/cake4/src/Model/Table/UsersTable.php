@@ -854,54 +854,17 @@ class UsersTable extends Table {
     }
 
     /**
-     * May deprecated functions after fully moving to cakephp 4
-     * @param $samaccountname
-     * @return array
+     * @param string $samaccountname
+     * @return array|EntityInterface|null
      */
-    public function findBySamaccountname($samaccountname) {
+    public function getUserBySamAccountName(string $samaccountname) {
         $query = $this->find();
-        $query->select([
-            'Users.id',
-            'Users.email',
-            'Users.password',
-            'Users.company',
-            'Users.samaccountname',
-            'Users.ldap_dn',
-            'Users.usergroup_id',
-            'Users.is_active',
-            'Users.firstname',
-            'Users.lastname',
-            'Users.position',
-            'Users.phone',
-            'Users.timezone',
-            'Users.dateformat',
-            'Users.showstatsinmenu',
-            'Users.dashboard_tab_rotation',
-            'Users.paginatorlength',
-            'Users.recursive_browser',
-            'Users.image',
-            'Users.onetimetoken',
-            'full_name' => $query->func()->concat([
-                'Users.firstname' => 'literal',
-                ' ',
-                'Users.lastname'  => 'literal'
-            ])
-        ])
-            ->disableHydration()
+        return $query
             ->where([
                 'Users.samaccountname' => $samaccountname,
                 'Users.is_active'      => 1
             ])
             ->first();
-
-        $result = $query->toArray();
-        if ($result === null) {
-            return [];
-        }
-
-        return [
-            'User' => $result[0]
-        ];
     }
 
     /**

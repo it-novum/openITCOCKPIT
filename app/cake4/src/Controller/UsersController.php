@@ -102,9 +102,12 @@ class UsersController extends AppController {
                 return;
             }
 
+            $this->RequestHandler->renderAs($this, 'json');
             $this->response = $this->response->withStatus(400);
+            $errors = $result->getErrors();
             $this->set('success', false);
-            $this->viewBuilder()->setOption('serialize', ['success']);
+            $this->set('errors', $errors);
+            $this->viewBuilder()->setOption('serialize', ['success', 'errors']);
         }
     }
 
