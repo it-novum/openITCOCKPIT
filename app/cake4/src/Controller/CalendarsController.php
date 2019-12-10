@@ -33,7 +33,6 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\Holidays;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CalendarFilter;
@@ -41,12 +40,9 @@ use itnovum\openITCOCKPIT\Filter\CalendarFilter;
 
 /**
  * Class CalendarsController
- * @property AppPaginatorComponent $Paginator
- * @property DbBackend $DbBackend
+ * @package App\Controller
  */
 class CalendarsController extends AppController {
-
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -54,7 +50,7 @@ class CalendarsController extends AppController {
             return;
         }
 
-        /** @var $CalendarsTable CalendarsTable */
+        /** @var CalendarsTable $CalendarsTable */
         $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
         $CalendarFilter = new CalendarFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $CalendarFilter->getPage());
@@ -105,7 +101,7 @@ class CalendarsController extends AppController {
                 ];
             }
 
-            /** @var $CalendarsTable CalendarsTable */
+            /** @var CalendarsTable $CalendarsTable */
             $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
 
             $Entity = $CalendarsTable->newEntity($data);
@@ -136,7 +132,7 @@ class CalendarsController extends AppController {
             return;
         }
 
-        /** @var $CalendarsTable CalendarsTable */
+        /** @var CalendarsTable $CalendarsTable */
         $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
 
         if (!$CalendarsTable->existsById($id)) {
@@ -196,7 +192,7 @@ class CalendarsController extends AppController {
             }
 
             $Entity = $CalendarsTable->get($id);
-            $calendar = $CalendarsTable->patchEntity($Entity, $data);
+            $Entity = $CalendarsTable->patchEntity($Entity, $data);
 
             $CalendarsTable->save($Entity);
             if ($Entity->hasErrors()) {
@@ -218,7 +214,7 @@ class CalendarsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $CalendarsTable CalendarsTable */
+        /** @var CalendarsTable $CalendarsTable */
         $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
 
         if (!$CalendarsTable->existsById($id)) {
@@ -232,7 +228,7 @@ class CalendarsController extends AppController {
             return;
         }
 
-        /** @var $TimeperiodsTable TimeperiodsTable */
+        /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         $query = $TimeperiodsTable->query();
         if ($CalendarsTable->delete($calendar)) {
@@ -242,7 +238,6 @@ class CalendarsController extends AppController {
                     ->set(['calendar_id' => 0])
                     ->where(['id' => $timeperiodId])
                     ->execute();
-
             }
 
             $this->set('success', true);
@@ -259,7 +254,7 @@ class CalendarsController extends AppController {
 
     /**
      * @param string $countryCode
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function loadHolidays($countryCode = 'de') {
         $holiday = new Holidays();
@@ -269,9 +264,8 @@ class CalendarsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['holidays']);
     }
 
-
     /**
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function loadCountryList() {
         $holiday = new Holidays();
@@ -281,13 +275,12 @@ class CalendarsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['countries']);
     }
 
-
     public function loadCalendarsByContainerId() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $CalendarsTable CalendarsTable */
+        /** @var CalendarsTable $CalendarsTable */
         $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
 
         $containerId = $this->request->getQuery('containerId');

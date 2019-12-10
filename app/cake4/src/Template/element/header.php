@@ -26,7 +26,6 @@
 ?>
 <!-- HEADER START -->
 <header id="header" class="page-header" role="banner">
-
     <div class="hidden-md-down dropdown-icon-menu position-relative">
         <a href="#" class="header-btn btn js-waves-off" data-action="toggle"
            data-class="nav-function-hidden" title="Hide Navigation">
@@ -102,7 +101,7 @@
                 <?php endif; ?>
             </div>
             <div>
-                <a href="/login/logout" data-original-title="<?php echo __('Sign out'); ?>"
+                <a href="/users/logout" data-original-title="<?php echo __('Sign out'); ?>"
                    data-placement="left"
                    rel="tooltip" data-container="body" class="header-icon">
                     <i class="fa fa-sign-out-alt"></i>

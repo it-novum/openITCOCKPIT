@@ -117,7 +117,9 @@ angular.module('openITCOCKPIT')
                 return;
             }
 
-            $http.post("/hosttemplates/loadElementsByContainerId/" + containerId + ".json?angular=true", {}).then(function(result){
+            $http.post("/hosttemplates/loadElementsByContainerId/" + containerId + ".json?angular=true", {
+                empty: true
+            }).then(function(result){
                 $scope.timeperiods = result.data.timeperiods;
                 $scope.checkperiods = result.data.checkperiods;
                 $scope.contacts = result.data.contacts;

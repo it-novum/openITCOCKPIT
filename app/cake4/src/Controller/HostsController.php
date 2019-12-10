@@ -231,7 +231,7 @@ class HostsController extends AppController {
                 ->where([
                     'Services.host_id' => $host['Host']['id']
                 ])
-            ->toList();
+                ->toList();
 
             $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
             $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatus);
@@ -489,22 +489,37 @@ class HostsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $hosttemplateId = $this->request->getData('Host.hosttemplate_id');
-            if ($hosttemplateId === null) {
-                throw new Exception('Host.hosttemplate_id needs to set.');
+            if (!$this->request->getData('Host.container_id') || !$this->request->getData('Host.hosttemplate_id')) {
+                $errors = [];
+                $this->response = $this->response->withStatus(400);
+                if (!$this->request->getData('Host.container_id')) {
+
+                    $errors['container_id'] = [
+                        'empty' => __('This field cannot be left empty')
+                    ];
+                }
+                if (!$this->request->getData('Host.hosttemplate_id')) {
+                    $errors['hosttemplate_id'] = [
+                        'empty' => __('This field cannot be left empty')
+                    ];
+                }
+                $this->set('error', $errors);
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
             }
+
 
             /** @var $HosttemplatesTable HosttemplatesTable */
             $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
             /** @var $HostsTable HostsTable */
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
+            $hosttemplateId = $this->request->getData('Host.hosttemplate_id');
             if (!$HosttemplatesTable->existsById($hosttemplateId)) {
                 throw new NotFoundException(__('Invalid host template'));
             }
 
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
-            $HostComparisonForSave = new HostComparisonForSave($this->request->data, $hosttemplate);
+            $HostComparisonForSave = new HostComparisonForSave($this->request->getData(), $hosttemplate);
             $hostData = $HostComparisonForSave->getDataForSaveForAllFields();
             $hostData['uuid'] = UUID::v4();
 
@@ -526,8 +541,9 @@ class HostsController extends AppController {
                 //No errors
 
                 $User = new User($this->getUser());
+                $requestData = $this->request->getData();
 
-                $extDataForChangelog = $HostsTable->resolveDataForChangelog($this->request->data);
+                $extDataForChangelog = $HostsTable->resolveDataForChangelog($requestData);
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -539,7 +555,7 @@ class HostsController extends AppController {
                     $host->get('container_id'),
                     $User->getId(),
                     $host->get('name'),
-                    array_merge($this->request->data, $extDataForChangelog)
+                    array_merge($requestData, $extDataForChangelog)
                 );
 
                 if ($changelog_data) {
@@ -654,17 +670,19 @@ class HostsController extends AppController {
                 $this->getWriteContainers(),
                 $this->hasRootPrivileges
             );
+            $requestData = $this->request->getData();
+
             if ($HostContainersPermissions->isPrimaryContainerChangeable() === false) {
                 //Overwrite post data. User is not permitted to set a new primary container id!
-                $this->request->data['Host']['container_id'] = $host['Host']['container_id'];
+                $requestData['Host']['container_id'] = $host['Host']['container_id'];
             }
 
             if ($HostContainersPermissions->allowSharing($this->MY_RIGHTS, $host['Host']['host_type']) === false) {
                 //Overwrite post data. User is not permitted to set new shared containers
-                $this->request->data['Host']['hosts_to_containers_sharing']['_ids'] = $host['Host']['hosts_to_containers_sharing']['_ids'];
+                $requestData['Host']['hosts_to_containers_sharing']['_ids'] = $host['Host']['hosts_to_containers_sharing']['_ids'];
             }
 
-            $HostComparisonForSave = new HostComparisonForSave($this->request->data, $hosttemplate);
+            $HostComparisonForSave = new HostComparisonForSave($requestData, $hosttemplate);
 
             $dataForSave = $HostComparisonForSave->getDataForSaveForAllFields();
             //Add required fields for validation
@@ -697,7 +715,7 @@ class HostsController extends AppController {
                     $hostEntity->get('container_id'),
                     $User->getId(),
                     $hostEntity->get('name'),
-                    array_merge($HostsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($HostsTable->resolveDataForChangelog($requestData), $requestData),
                     array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
                 );
                 if ($changelog_data) {
@@ -807,6 +825,7 @@ class HostsController extends AppController {
                 // @todo fix changelog
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                $requestData = $this->request->getData();
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
@@ -816,7 +835,7 @@ class HostsController extends AppController {
                     $hostEntity->get('container_id'),
                     $User->getId(),
                     $hostEntity->get('name'),
-                    array_merge($HostsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($HostsTable->resolveDataForChangelog($requestData), $requestData),
                     array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
                 );
                 if ($changelog_data) {
@@ -1106,20 +1125,37 @@ class HostsController extends AppController {
     }
 
     /**
-     * @deprecated
+     * @param null $id
      */
     public function deactivate($id = null) {
-        if (!$this->Host->exists($id)) {
-            throw new NotFoundException(__('Invalid host'));
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if (!$HostsTable->existsById($id)) {
+            throw new NotFoundException(__('Host not found'));
         }
 
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        $this->Host->id = $id;
-        if ($this->Host->saveField('disabled', 1)) {
-            $this->Service->updateAll(['Service.disabled' => 1], ['Service.host_id' => $id]);
+        $host = $HostsTable->getHostById($id);
+        $host->disabled = 1;
+
+        if ($HostsTable->save($host)) {
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $ServicesTable->updateAll([
+                'disabled' => 1
+            ], [
+                'host_id' => $id
+            ]);
+
             $this->set('success', true);
             $this->set('message', __('Host successfully disabled'));
             $this->viewBuilder()->setOption('serialize', ['success']);
@@ -1134,20 +1170,37 @@ class HostsController extends AppController {
     }
 
     /**
-     * @deprecated
+     * @param null $id
      */
     public function enable($id = null) {
-        if (!$this->Host->exists($id)) {
-            throw new NotFoundException(__('Invalid host'));
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if (!$HostsTable->existsById($id)) {
+            throw new NotFoundException(__('Host not found'));
         }
 
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        $this->Host->id = $id;
-        if ($this->Host->saveField('disabled', 0)) {
-            $this->Service->updateAll(['Service.disabled' => 0], ['Service.host_id' => $id]);
+        $host = $HostsTable->getHostById($id);
+        $host->disabled = 0;
+
+        if ($HostsTable->save($host)) {
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $ServicesTable->updateAll([
+                'disabled' => 0
+            ], [
+                'host_id' => $id
+            ]);
+
             $this->set('success', true);
             $this->set('message', __('Host successfully enabled'));
             $this->viewBuilder()->setOption('serialize', ['success']);
@@ -2730,13 +2783,17 @@ class HostsController extends AppController {
 
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $masterInstanceName = $Systemsettings->getMasterInstanceName();
 
         $satellites = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
-            $Satellite = $ModuleManager->loadModel('Satellite');
-            $satellites = $Satellite->find('list');
+            /** @var $SatellitesTable SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
             $satellites[0] = $masterInstanceName;
         }
 

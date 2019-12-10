@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('confirmDeactivate', function($http, $filter, $timeout){
+angular.module('openITCOCKPIT').directive('confirmDeactivate', function($http, $filter, $timeout, NotyService){
     return {
         restrict: 'E',
         templateUrl: '/angular/confirm_deactivate.html',
@@ -13,10 +13,14 @@ angular.module('openITCOCKPIT').directive('confirmDeactivate', function($http, $
 
             $scope.deactivate = function(){
                 $scope.isDeactivating = true;
-                $http.post($scope.deactivateUrl).then(
+                $http.post($scope.deactivateUrl, {
+                    empty: true
+                }).then(
                     function(result){
+                        NotyService.genericSuccess();
                         window.location.href = $scope.sucessUrl;
                     }, function errorCallback(result){
+                        NotyService.genericError();
                         console.error(result.data);
                     });
             };

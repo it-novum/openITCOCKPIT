@@ -32,9 +32,9 @@ use Cake\ORM\Locator\LocatorAwareTrait;
 
 /**
  * Class ProxyController
+ * @package App\Controller
  */
 class ProxyController extends AppController {
-    public $layout = 'blank';
 
     use LocatorAwareTrait;
 
@@ -46,7 +46,7 @@ class ProxyController extends AppController {
 
         $TableLocator = $this->getTableLocator();
 
-        /** @var $ProxiesTable ProxiesTable */
+        /** @var ProxiesTable $ProxiesTable */
         $ProxiesTable = $TableLocator->get('Proxies');
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {

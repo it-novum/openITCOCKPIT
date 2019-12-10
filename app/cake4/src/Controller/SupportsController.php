@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Table\RegistersTable;
 use Cake\ORM\TableRegistry;
 
 class SupportsController extends AppController {
@@ -36,6 +37,7 @@ class SupportsController extends AppController {
     }
 
     public function issue() {
+        /** @var RegistersTable $Registers */
         $Registers = TableRegistry::getTableLocator()->get('Registers');
         $License = $Registers->getLicense();
 

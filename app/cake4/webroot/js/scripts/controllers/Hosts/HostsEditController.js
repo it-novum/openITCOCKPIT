@@ -199,7 +199,9 @@ angular.module('openITCOCKPIT')
         $scope.loadElements = function(){
             var containerId = $scope.post.Host.container_id;
 
-            $http.post("/hosts/loadElementsByContainerId/" + containerId + ".json?angular=true", {}).then(function(result){
+            $http.post("/hosts/loadElementsByContainerId/" + containerId + ".json?angular=true", {
+                empty: true
+            }).then(function(result){
                 $scope.hosttemplates = result.data.hosttemplates;
                 $scope.timeperiods = result.data.timeperiods;
                 $scope.checkperiods = result.data.checkperiods;
@@ -230,7 +232,9 @@ angular.module('openITCOCKPIT')
         $scope.loadHosttemplate = function(){
             var hosttemplateId = $scope.post.Host.hosttemplate_id;
 
-            $http.post("/hosts/loadHosttemplate/" + hosttemplateId + ".json?angular=true", {}).then(function(result){
+            $http.post("/hosts/loadHosttemplate/" + hosttemplateId + ".json?angular=true", {
+                empty: true
+            }).then(function(result){
                 $scope.hosttemplate = result.data.hosttemplate;
                 setValuesFromHosttemplate();
             });
