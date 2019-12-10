@@ -198,12 +198,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cakephp/cakephp.git",
-                "reference": "10fced8882792bd9e6b7e6314e8b781fe6333fce"
+                "reference": "2f6431f9dc40a2cba5f36892b482e3e6b77d045a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cakephp/cakephp/zipball/10fced8882792bd9e6b7e6314e8b781fe6333fce",
-                "reference": "10fced8882792bd9e6b7e6314e8b781fe6333fce",
+                "url": "https://api.github.com/repos/cakephp/cakephp/zipball/2f6431f9dc40a2cba5f36892b482e3e6b77d045a",
+                "reference": "2f6431f9dc40a2cba5f36892b482e3e6b77d045a",
                 "shasum": ""
             },
             "require": {
@@ -285,11 +285,11 @@
                 "rapid-development",
                 "validation"
             ],
-            "time": "2019-12-06T07:16:03+00:00"
+            "time": "2019-12-09T07:36:02+00:00"
         },
         {
             "name": "cakephp/chronos",
-            "version": "2.x-dev",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cakephp/chronos.git",
@@ -2032,12 +2032,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cakephp/bake.git",
-                "reference": "91b6cb3ded8c4e53e8d90d21d351285ec6a71e10"
+                "reference": "75d3de90dba5508ef9a4222a8a1a38ab3f7bdb8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cakephp/bake/zipball/91b6cb3ded8c4e53e8d90d21d351285ec6a71e10",
-                "reference": "91b6cb3ded8c4e53e8d90d21d351285ec6a71e10",
+                "url": "https://api.github.com/repos/cakephp/bake/zipball/75d3de90dba5508ef9a4222a8a1a38ab3f7bdb8e",
+                "reference": "75d3de90dba5508ef9a4222a8a1a38ab3f7bdb8e",
                 "shasum": ""
             },
             "require": {
@@ -2072,7 +2072,7 @@
                 "bake",
                 "cakephp"
             ],
-            "time": "2019-12-06T03:05:10+00:00"
+            "time": "2019-12-08T20:15:13+00:00"
         },
         {
             "name": "cakephp/cakephp-codesniffer",
@@ -2126,17 +2126,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cakephp/debug_kit.git",
-                "reference": "3c3ec645bd65921833096c5c20ad0cefc1c7c76f"
+                "reference": "8809e11768a927daa3be06d6667edca45c288e16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cakephp/debug_kit/zipball/3c3ec645bd65921833096c5c20ad0cefc1c7c76f",
-                "reference": "3c3ec645bd65921833096c5c20ad0cefc1c7c76f",
+                "url": "https://api.github.com/repos/cakephp/debug_kit/zipball/8809e11768a927daa3be06d6667edca45c288e16",
+                "reference": "8809e11768a927daa3be06d6667edca45c288e16",
                 "shasum": ""
             },
             "require": {
                 "cakephp/cakephp": "4.x-dev as 4.0.0",
-                "cakephp/chronos": "2.x-dev as 2.0.0",
+                "cakephp/chronos": "^2.0",
                 "cakephp/plugin-installer": "^1.0",
                 "composer/composer": "^1.3",
                 "jdorn/sql-formatter": "^1.2",
@@ -2178,7 +2178,7 @@
                 "debug",
                 "kit"
             ],
-            "time": "2019-11-15T14:31:49+00:00"
+            "time": "2019-12-06T22:58:32+00:00"
         },
         {
             "name": "composer/composer",
@@ -2428,25 +2428,25 @@
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
-            "version": "0.1",
+            "version": "v0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dnoegel/php-xdg-base-dir.git",
-                "reference": "265b8593498b997dc2d31e75b89f053b5cc9621a"
+                "reference": "8f8a6e48c5ecb0f991c2fdcf5f154a47d85f9ffd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dnoegel/php-xdg-base-dir/zipball/265b8593498b997dc2d31e75b89f053b5cc9621a",
-                "reference": "265b8593498b997dc2d31e75b89f053b5cc9621a",
+                "url": "https://api.github.com/repos/dnoegel/php-xdg-base-dir/zipball/8f8a6e48c5ecb0f991c2fdcf5f154a47d85f9ffd",
+                "reference": "8f8a6e48c5ecb0f991c2fdcf5f154a47d85f9ffd",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "@stable"
+                "phpunit/phpunit": "~7.0|~6.0|~5.0|~4.8.35"
             },
-            "type": "project",
+            "type": "library",
             "autoload": {
                 "psr-4": {
                     "XdgBaseDir\\": "src/"
@@ -2457,7 +2457,7 @@
                 "MIT"
             ],
             "description": "implementation of xdg base directory specification for php",
-            "time": "2014-10-24T07:27:01+00:00"
+            "time": "2019-12-04T15:06:13+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -3639,20 +3639,20 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.9.11",
+            "version": "v0.9.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "75d9ac1c16db676de27ab554a4152b594be4748e"
+                "reference": "90da7f37568aee36b116a030c5f99c915267edd4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/75d9ac1c16db676de27ab554a4152b594be4748e",
-                "reference": "75d9ac1c16db676de27ab554a4152b594be4748e",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/90da7f37568aee36b116a030c5f99c915267edd4",
+                "reference": "90da7f37568aee36b116a030c5f99c915267edd4",
                 "shasum": ""
             },
             "require": {
-                "dnoegel/php-xdg-base-dir": "0.1",
+                "dnoegel/php-xdg-base-dir": "0.1.*",
                 "ext-json": "*",
                 "ext-tokenizer": "*",
                 "jakub-onderka/php-console-highlighter": "0.3.*|0.4.*",
@@ -3709,7 +3709,7 @@
                 "interactive",
                 "shell"
             ],
-            "time": "2019-11-27T22:44:29+00:00"
+            "time": "2019-12-06T14:19:43+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -4844,12 +4844,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/TwigView.git",
-                "reference": "5971456f1d7d036f8215ffb373863c029f2c3e2a"
+                "reference": "a70a58ec8749e64ac2ffb63dd8193d10578b47a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/TwigView/zipball/5971456f1d7d036f8215ffb373863c029f2c3e2a",
-                "reference": "5971456f1d7d036f8215ffb373863c029f2c3e2a",
+                "url": "https://api.github.com/repos/WyriHaximus/TwigView/zipball/a70a58ec8749e64ac2ffb63dd8193d10578b47a4",
+                "reference": "a70a58ec8749e64ac2ffb63dd8193d10578b47a4",
                 "shasum": ""
             },
             "require": {
@@ -4893,7 +4893,7 @@
                 "twig2",
                 "view"
             ],
-            "time": "2019-11-11T17:38:23+00:00"
+            "time": "2019-12-07T22:55:58+00:00"
         }
     ],
     "aliases": [],
