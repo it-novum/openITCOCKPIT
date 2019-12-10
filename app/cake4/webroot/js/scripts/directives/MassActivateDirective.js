@@ -23,7 +23,9 @@ angular.module('openITCOCKPIT').directive('massactivate', function($http, $filte
                 var issueCount = 0;
 
                 for(var id in $scope.objects){
-                    $http.post($scope.activateUrl + id + ".json").then(
+                    $http.post($scope.activateUrl + id + ".json", {
+                        empty: true
+                    }).then(
                         function(result){
                             i++;
                             $scope.percentage = Math.round(i / count * 100);
