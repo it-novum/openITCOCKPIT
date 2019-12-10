@@ -670,17 +670,19 @@ class HostsController extends AppController {
                 $this->getWriteContainers(),
                 $this->hasRootPrivileges
             );
+            $requestData = $this->request->getData();
+
             if ($HostContainersPermissions->isPrimaryContainerChangeable() === false) {
                 //Overwrite post data. User is not permitted to set a new primary container id!
-                $this->request->data['Host']['container_id'] = $host['Host']['container_id'];
+                $requestData['Host']['container_id'] = $host['Host']['container_id'];
             }
 
             if ($HostContainersPermissions->allowSharing($this->MY_RIGHTS, $host['Host']['host_type']) === false) {
                 //Overwrite post data. User is not permitted to set new shared containers
-                $this->request->data['Host']['hosts_to_containers_sharing']['_ids'] = $host['Host']['hosts_to_containers_sharing']['_ids'];
+                $requestData['Host']['hosts_to_containers_sharing']['_ids'] = $host['Host']['hosts_to_containers_sharing']['_ids'];
             }
 
-            $HostComparisonForSave = new HostComparisonForSave($this->request->data, $hosttemplate);
+            $HostComparisonForSave = new HostComparisonForSave($requestData, $hosttemplate);
 
             $dataForSave = $HostComparisonForSave->getDataForSaveForAllFields();
             //Add required fields for validation
@@ -713,7 +715,7 @@ class HostsController extends AppController {
                     $hostEntity->get('container_id'),
                     $User->getId(),
                     $hostEntity->get('name'),
-                    array_merge($HostsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($HostsTable->resolveDataForChangelog($requestData), $requestData),
                     array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
                 );
                 if ($changelog_data) {
