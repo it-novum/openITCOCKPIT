@@ -492,7 +492,7 @@ class HostsController extends AppController {
             if (!$this->request->getData('Host.container_id') || !$this->request->getData('Host.hosttemplate_id')) {
                 $errors = [];
                 $this->response = $this->response->withStatus(400);
-                if(!$this->request->getData('Host.container_id')){
+                if (!$this->request->getData('Host.container_id')) {
 
                     $errors['container_id'] = [
                         'empty' => __('This field cannot be left empty')
@@ -1128,17 +1128,34 @@ class HostsController extends AppController {
      * @deprecated
      */
     public function deactivate($id = null) {
-        if (!$this->Host->exists($id)) {
-            throw new NotFoundException(__('Invalid host'));
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if (!$HostsTable->existsById($id)) {
+            throw new NotFoundException(__('Host not found'));
         }
 
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        $this->Host->id = $id;
-        if ($this->Host->saveField('disabled', 1)) {
-            $this->Service->updateAll(['Service.disabled' => 1], ['Service.host_id' => $id]);
+        $host = $HostsTable->getHostById($id);
+        $host->disabled = 1;
+
+        if ($HostsTable->save($host)) {
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            $ServicesTable->updateAll([
+                'disabled' => 1
+            ], [
+                'host_id' => $id
+            ]);
+
             $this->set('success', true);
             $this->set('message', __('Host successfully disabled'));
             $this->viewBuilder()->setOption('serialize', ['success']);
