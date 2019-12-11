@@ -112,16 +112,23 @@ class SslIdentifier extends AbstractIdentifier implements IdentifierInterface {
             if (sizeof($names) >= 2) {
                 $firstname = $names[0];
                 $lastname = $names[1];
+                $ou = null;
 
-                if (isset($certificate['subject']['OU']) && is_array($certificate['subject']['OU'])) {
-                    $emailLike = '';
+                if (isset($certificate['subject']['OU'])) {
+                    if (!is_array($certificate['subject']['OU'])) {
+                        $certificate['subject']['OU'] = [
+                            $certificate['subject']['OU']
+                        ];
+                    }
+
                     foreach ($certificate['subject']['OU'] as $index => $item) {
                         if ($item !== 'People') {
-                            $emailLike = sprintf('@%s', $item);
+                            $ou = $item;
                         }
                     }
 
-                    if (!empty($emailLike)) {
+                    if (!empty($ou)) {
+                        $emailLike = sprintf('@%s', $item);
                         $user = $UsersTable->getUserForFhgLogin(
                             $firstname, // = Max AND
                             $lastname,  // = Mustermann AND
@@ -135,15 +142,17 @@ class SslIdentifier extends AbstractIdentifier implements IdentifierInterface {
                     }
                 }
 
-                // Try to find the user with first and last name only
-                $user = $UsersTable->getUserForFhgLoginInsecure(
-                    $firstname, // = Max AND
-                    $lastname  // = Mustermann
-                );
+                if ($ou === null) {
+                    // Try to find the user with first and last name only
+                    $user = $UsersTable->getUserForFhgLoginInsecure(
+                        $firstname, // = Max AND
+                        $lastname  // = Mustermann
+                    );
 
-                if ($user !== null) {
-                    //We found a user by first and last name
-                    return $user;
+                    if ($user !== null) {
+                        //We found a user by first and last name
+                        return $user;
+                    }
                 }
 
                 if (empty($user)) {
