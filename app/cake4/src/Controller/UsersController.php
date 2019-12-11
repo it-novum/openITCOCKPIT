@@ -43,6 +43,7 @@ use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -80,12 +81,19 @@ class UsersController extends AppController {
             $images['particles'] = 'none';
         }
 
+
+        $hasValidSslCertificate = false;
+        if(isset($_SERVER['SSL_VERIFIED']) && $_SERVER['SSL_VERIFIED'] === 'SUCCESS' && isset($_SERVER['SSL_CERT'])){
+            $hasValidSslCertificate = $this->getUser() !== null;
+        }
+
         $this->set('_csrfToken', $this->request->getParam('_csrfToken'));
         $this->set('images', $images);
         $this->set('disableAnimation', $disableAnimation);
+        $this->set('hasValidSslCertificate', $hasValidSslCertificate);
 
         if ($this->request->is('get')) {
-            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'images']);
+            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'images', 'hasValidSslCertificate']);
             return;
         }
 
@@ -105,6 +113,8 @@ class UsersController extends AppController {
             $this->RequestHandler->renderAs($this, 'json');
             $this->response = $this->response->withStatus(400);
             $errors = $result->getErrors();
+            $errors['Password'][] = __('Invalid username or password');
+
             $this->set('success', false);
             $this->set('errors', $errors);
             $this->viewBuilder()->setOption('serialize', ['success', 'errors']);
@@ -113,6 +123,7 @@ class UsersController extends AppController {
 
     public function logout() {
         $this->Authentication->logout();
+
         $this->redirect([
             'action' => 'login'
         ]);
@@ -405,12 +416,12 @@ class UsersController extends AppController {
         $Mailer = new Mailer();
         $Mailer->setFrom($systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'], $systemsettings['MONITORING']['MONITORING.FROM_NAME']);
         $Mailer->addTo($user->get('email'));
-        $Mailer->setSubject(__('Your ') . $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']. __(' got reset!'));
+        $Mailer->setSubject(__('Your ') . $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'] . __(' got reset!'));
         $Mailer->setEmailFormat('text');
         $Mailer->setAttachments([
             'logo.png' => [
-                'file' => $Logo->getSmallLogoDiskPath(),
-                'mimetype' => 'image/png',
+                'file'      => $Logo->getSmallLogoDiskPath(),
+                'mimetype'  => 'image/png',
                 'contentId' => '100'
             ]
         ]);

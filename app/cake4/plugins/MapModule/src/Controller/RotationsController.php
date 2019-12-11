@@ -23,13 +23,15 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+namespace MapModule\Controller;
+
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
 use itnovum\openITCOCKPIT\Filter\RotationFilter;
 
-class RotationsController extends MapModuleAppController {
+class RotationsController extends AppController {
     public $layout = 'angularjs';
     public $components = [
         'ListFilter.ListFilter',
@@ -132,7 +134,7 @@ class RotationsController extends MapModuleAppController {
 
 
         $this->set('all_rotations', $all_rotations);
-        $this->set('_serialize', ['all_rotations', 'paging']);
+        $this->viewBuilder()->setOption('serialize', ['all_rotations', 'paging']);
     }
 
     public function add() {
@@ -203,7 +205,7 @@ class RotationsController extends MapModuleAppController {
         $maps = Api::makeItJavaScriptAble($maps);
 
         $this->set('maps', $maps);
-        $this->set('_serialize', ['maps']);
+        $this->viewBuilder()->setOption('serialize', ['maps']);
     }
 
     public function loadContainers() {
@@ -222,7 +224,7 @@ class RotationsController extends MapModuleAppController {
 
 
         $this->set('containers', $containers);
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
     public function edit($id = null) {
@@ -238,7 +240,7 @@ class RotationsController extends MapModuleAppController {
 
         $rotation = $this->Rotation->findById($id);
 
-        $this->set('_serialize', ['rotation']);
+        $this->viewBuilder()->setOption('serialize', ['rotation']);
         $this->set(compact('rotation'));
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -288,13 +290,13 @@ class RotationsController extends MapModuleAppController {
 
         if ($this->Rotation->delete($id, true)) {
             $this->set('message', __('Map rotation deleted successfully'));
-            $this->set('_serialize', ['message']);
+            $this->viewBuilder()->setOption('serialize', ['message']);
             return;
         }
 
         $this->response->statusCode(400);
         $this->set('message', __('Could not delete map rotation'));
-        $this->set('_serialize', ['message']);
+        $this->viewBuilder()->setOption('serialize', ['message']);
 
     }
 }

@@ -1,10 +1,34 @@
 <?php
+// Copyright (C) <2015>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//	This program is free software: you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, version 3 of the License.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+// 2.
+//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	License agreement and license key will be shipped with the order
+//	confirmation.
 
 
 namespace App\Identifier;
 
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
+use Authentication\Identifier\AbstractIdentifier;
 use Authentication\Identifier\IdentifierInterface;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
@@ -14,14 +38,7 @@ use FreeDSx\Ldap\Operation\ResultCode;
 use FreeDSx\Ldap\Operations;
 use FreeDSx\Ldap\Search\Filters;
 
-class LdapIdentifier implements IdentifierInterface {
-
-    /**
-     * List of errors
-     *
-     * @var array
-     */
-    protected $_errors = [];
+class LdapIdentifier extends AbstractIdentifier implements IdentifierInterface {
 
     /**
      * Identifies an user or service by the passed credentials
@@ -44,15 +61,6 @@ class LdapIdentifier implements IdentifierInterface {
         }
 
         return $identity;
-    }
-
-    /**
-     * Gets a list of errors happened in the identification process
-     *
-     * @return array
-     */
-    public function getErrors(): array {
-        return $this->_errors;
     }
 
     /**
@@ -156,7 +164,7 @@ class LdapIdentifier implements IdentifierInterface {
                 } catch (BindException $e) {
                     Log::error($e);
                     if ($e->getCode() === ResultCode::INVALID_CREDENTIALS) {
-                        $this->_errors[] = __('Invalid username or password');
+                        //$this->_errors[] = __('Invalid username or password');
                         return false;
                     }
 

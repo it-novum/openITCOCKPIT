@@ -48,6 +48,7 @@
         "ext-gd": "*",
         "ext-gearman": "*",
         "ext-json": "*",
+        "ext-openssl": "*",
         "cakephp/acl": "4.x-dev",
         "cakephp/authentication": "2.x-dev",
         "cakephp/authorization": "2.x-dev",
@@ -77,7 +78,8 @@
         "psr-4": {
             "App\\": "src/",
             "itnovum\\openITCOCKPIT\\": "src/itnovum/openITCOCKPIT/",
-            "Statusengine\\": "src/Statusengine/"
+            "Statusengine\\": "src/Statusengine/",
+            "MapModule\\": "./plugins/MapModule/src/"
         },
         "files": [
             "src/3rd/imageSmoothArc.php"
@@ -86,7 +88,8 @@
     "autoload-dev": {
         "psr-4": {
             "App\\Test\\": "tests/",
-            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
+            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/",
+            "MapModule\\Test\\": "./plugins/MapModule/tests/"
         },
         "files": [
             "src/3rd/imageSmoothArc.php"

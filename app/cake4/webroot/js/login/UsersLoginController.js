@@ -5,12 +5,14 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
     };
 
     $scope.disableLogin = false;
+    $scope.hasValidSslCertificate = false;
 
     $scope.loadCsrf = function(){
         $http.get("/users/login.json",
             {}
         ).then(function(result){
             $scope._csrfToken = result.data._csrfToken;
+            $scope.hasValidSslCertificate = result.data.hasValidSslCertificate;
         }, function errorCallback(result){
             if(result.data.hasOwnProperty('_csrfToken')){
                 $scope._csrfToken = result.data._csrfToken;
@@ -60,14 +62,24 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
 
             if(result.data.hasOwnProperty('errors')){
                 for(var key in result.data.errors){
-                    for(var index in result.data.errors[key]){
+                    if(typeof result.data.errors[key] === "string"){
                         new Noty({
                             theme: 'metroui',
                             type: 'error',
                             layout: 'topCenter',
-                            text: result.data.errors[key][index],
+                            text: result.data.errors[key],
                             timeout: 5500
                         }).show();
+                    }else{
+                        for(var index in result.data.errors[key]){
+                            new Noty({
+                                theme: 'metroui',
+                                type: 'error',
+                                layout: 'topCenter',
+                                text: result.data.errors[key][index],
+                                timeout: 5500
+                            }).show();
+                        }
                     }
                 }
 

@@ -89,7 +89,7 @@
                                 </tr>
                                 <tr ng-repeat="systemsetting in value">
                                     <td>
-                                        {{systemsetting.exploded}}
+                                        {{systemsetting.alias}}
                                     </td>
                                     <td>
                                         <div class="form-group">

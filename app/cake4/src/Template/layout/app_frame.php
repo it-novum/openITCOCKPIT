@@ -52,9 +52,9 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
 } else {
     $core = new Folder(WWW_ROOT . 'js' . DS . 'scripts');
     $uncompressedAngular = str_replace(WWW_ROOT, '', $core->findRecursive('.*\.js'));
-    /*foreach (CakePlugin::loaded() as $pluginName) {
-        $plugin = new Folder(OLD_APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts');
-        $filenames = str_replace(OLD_APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS, '', $plugin->findRecursive('.*\.js'));
+    foreach (\Cake\Core\Plugin::loaded() as $pluginName) {
+        $plugin = new Folder(PLUGIN . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts');
+        $filenames = str_replace(PLUGIN . $pluginName . DS . 'webroot' . DS, '', $plugin->findRecursive('.*\.js'));
         if (!empty($filenames)) {
             $fullPath = [];
             foreach ($filenames as $filename) {
@@ -62,7 +62,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
             }
             $uncompressedAngular = array_merge($uncompressedAngular, $fullPath);
         }
-    }*/
+    }
     $appScripts = array_merge($appScripts, $uncompressedAngular);
 }
 

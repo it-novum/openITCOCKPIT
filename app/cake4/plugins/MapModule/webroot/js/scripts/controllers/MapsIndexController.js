@@ -1,14 +1,14 @@
 angular.module('openITCOCKPIT')
     .controller('MapsIndexController', ['$scope', '$http', 'SortService', 'MassChangeService', function($scope, $http, SortService, MassChangeService){
 
-        SortService.setSort('Map.name');
+        SortService.setSort('Maps.name');
         SortService.setDirection('asc');
         $scope.currentPage = 1;
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                map: {
+                maps: {
                     name: '',
                     title: '',
                 },
@@ -27,8 +27,8 @@ angular.module('openITCOCKPIT')
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[Map.name]': $scope.filter.map.name,
-                    'filter[Map.title]': $scope.filter.map.title
+                    'filter[Maps.name]': $scope.filter.maps.name,
+                    'filter[Maps.title]': $scope.filter.maps.title
                 }
             }).then(function(result){
                 $scope.maps = result.data.all_maps;
