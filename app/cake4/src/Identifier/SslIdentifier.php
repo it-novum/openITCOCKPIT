@@ -122,11 +122,16 @@ class SslIdentifier extends AbstractIdentifier implements IdentifierInterface {
                     }
 
                     if (!empty($emailLike)) {
-                        return $UsersTable->getUserForFhgLogin(
+                        $user = $UsersTable->getUserForFhgLogin(
                             $firstname, // = Max AND
                             $lastname,  // = Mustermann AND
                             $emailLike  // LIKE %@it-novum%
                         );
+
+                        if ($user !== null) {
+                            //We found a user by first and last name and email like
+                            return $user;
+                        }
                     }
                 }
 
@@ -136,22 +141,22 @@ class SslIdentifier extends AbstractIdentifier implements IdentifierInterface {
                     $lastname  // = Mustermann
                 );
 
-                if($user !== null){
+                if ($user !== null) {
                     //We found a user by first and last name
                     return $user;
                 }
 
                 if (empty($user)) {
                     //No user found, but user has a valid SSL cert - return a default user if defined.
-                    try{
+                    try {
                         /** @var SystemsettingsTable $SystemsettingsTable */
                         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
                         $entity = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.CERT.DEFAULT_USER_EMAIL');
-                        if($entity->get('value') !== ''){
+                        if ($entity->get('value') !== '') {
                             return $UsersTable->getUserByEmailForLogin($entity->get('value'));
                         }
-                    }catch (\Exception $e){
+                    } catch (\Exception $e) {
                         return null;
                     }
                 }
