@@ -35,14 +35,10 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
 
 /**
- * Class UsersController
- * @property AppPaginatorComponent $Paginator
- * @property AppAuthComponent $Auth
- * @property DbBackend $DbBackend
+ * Class UsercontainerrolesController
+ * @package App\Controller
  */
 class UsercontainerrolesController extends AppController {
-
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -53,9 +49,9 @@ class UsercontainerrolesController extends AppController {
         $UsercontainerrolesFilter = new UsercontainerrolesFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $UsercontainerrolesFilter->getPage());
 
-        /** @var $Usercontainerroles App\Model\Table\UsercontainerrolesTable */
-        $Usercontainerroles = TableRegistry::getTableLocator()->get('Usercontainerroles');
-        $all_usercontainerroles = $Usercontainerroles->getUsercontainerRolesIndex($UsercontainerrolesFilter, $PaginateOMat, $this->MY_RIGHTS);
+        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+        $all_usercontainerroles = $UsercontainerrolesTable->getUsercontainerRolesIndex($UsercontainerrolesFilter, $PaginateOMat, $this->MY_RIGHTS);
 
         foreach ($all_usercontainerroles as $index => $usercontainerrole) {
             $all_usercontainerroles[$index]['allow_edit'] = $this->hasRootPrivileges;
@@ -86,12 +82,12 @@ class UsercontainerrolesController extends AppController {
             return;
         }
 
-        /** @var $UsercontainerrolesTable  UsercontainerrolesTable */
+        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
         $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
 
         if ($this->request->is('post') || $this->request->is('put')) {
 
-            $data = $this->request->getData('Usercontainerrole');
+            $data = $this->request->getData('Usercontainerrole', []);
             if (!isset($data['ContainersUsercontainerrolesMemberships'])) {
                 $data['ContainersUsercontainerrolesMemberships'] = [];
             }
@@ -121,7 +117,7 @@ class UsercontainerrolesController extends AppController {
             return;
         }
 
-        /** @var $UsercontainerrolesTable App\Model\Table\UsercontainerrolesTable */
+        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
         $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
 
         if (!$UsercontainerrolesTable->existsById($id)) {
@@ -144,7 +140,7 @@ class UsercontainerrolesController extends AppController {
 
         if ($this->request->is('post') || $this->request->is('put')) {
 
-            $data = $this->request->getData('Usercontainerrole');
+            $data = $this->request->getData('Usercontainerrole', []);
             if (!isset($data['ContainersUsercontainerrolesMemberships'])) {
                 $data['ContainersUsercontainerrolesMemberships'] = [];
             }
@@ -174,7 +170,7 @@ class UsercontainerrolesController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $UsercontainerrolesTable App\Model\Table\UsercontainerrolesTable */
+        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
         $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
 
         if (!$UsercontainerrolesTable->existsById($id)) {
