@@ -5,6 +5,7 @@ namespace App\Identifier;
 
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
+use Authentication\Identifier\AbstractIdentifier;
 use Authentication\Identifier\IdentifierInterface;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
@@ -14,14 +15,7 @@ use FreeDSx\Ldap\Operation\ResultCode;
 use FreeDSx\Ldap\Operations;
 use FreeDSx\Ldap\Search\Filters;
 
-class LdapIdentifier implements IdentifierInterface {
-
-    /**
-     * List of errors
-     *
-     * @var array
-     */
-    protected $_errors = [];
+class LdapIdentifier extends AbstractIdentifier implements IdentifierInterface {
 
     /**
      * Identifies an user or service by the passed credentials
@@ -44,15 +38,6 @@ class LdapIdentifier implements IdentifierInterface {
         }
 
         return $identity;
-    }
-
-    /**
-     * Gets a list of errors happened in the identification process
-     *
-     * @return array
-     */
-    public function getErrors(): array {
-        return $this->_errors;
     }
 
     /**
@@ -156,7 +141,7 @@ class LdapIdentifier implements IdentifierInterface {
                 } catch (BindException $e) {
                     Log::error($e);
                     if ($e->getCode() === ResultCode::INVALID_CREDENTIALS) {
-                        $this->_errors[] = __('Invalid username or password');
+                        //$this->_errors[] = __('Invalid username or password');
                         return false;
                     }
 

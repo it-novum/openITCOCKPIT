@@ -868,6 +868,38 @@ class UsersTable extends Table {
     }
 
     /**
+     * @param string v
+     * @return array|EntityInterface|null
+     */
+    public function getUserByEmailForLogin(string $email) {
+        $query = $this->find();
+        return $query
+            ->where([
+                'Users.email'     => $email,
+                'Users.is_active' => 1
+            ])
+            ->first();
+    }
+
+    /**
+     * @param string $firstname
+     * @param string $lastname
+     * @param string $likeEmail
+     * @return array|EntityInterface|null
+     */
+    public function getUserForFhgLogin(string $firstname, string $lastname, string $likeEmail) {
+        $query = $this->find();
+        return $query
+            ->where([
+                'Users.firstname'  => $firstname,
+                'Users.lastname'   => $lastname,
+                'Users.is_active'  => 1,
+                'Users.email LIKE' => sprintf('%%%s%%', $likeEmail)
+            ])
+            ->first();
+    }
+
+    /**
      * May deprecated functions after fully moving to cakephp 4
      * @param $id
      * @return array|\Cake\Datasource\EntityInterface|null

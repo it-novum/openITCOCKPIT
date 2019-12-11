@@ -41,9 +41,10 @@
     </div>
 
     <h4 class="fw-300 c-white mB-40"><?= __('Login') ?></h4>
-    <form ng-submit="submit();">
-        <div class=" form-group
-    ">
+
+    <!-- Start login form for username and password (Session and LDAP) -->
+    <form ng-submit="submit();" ng-if="!hasValidSslCertificate">
+        <div class="form-group">
             <label class="text-normal c-white"><?= __('Username') ?></label>
             <input
                 type="text"
@@ -92,6 +93,30 @@
             </div>
         </div>
     </form>
+    <!-- End form login -->
+
+    <!-- Users with valid SSL certificates are always logged in -->
+    <div ng-if="hasValidSslCertificate">
+        <div class="alert alert-success" role="alert">
+            <?= __('Authorization through SSL certificate successfully.') ?>
+        </div>
+
+        <div class="form-group">
+            <div class="peers ai-c jc-sb fxw-nw">
+                <div class="peer">
+                </div>
+                <div class="peer">
+                    <a
+                        href="/"
+                        class="btn btn-primary">
+                        <?= __('Start') ?>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End certificates login -->
+
 
     <div class="float-right" style="padding-top: 100px;">
         <a href="https://openitcockpit.io/" target="_blank" class="btn btn-sm btn-light btn-icon">

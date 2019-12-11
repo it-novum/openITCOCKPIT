@@ -15,7 +15,9 @@
 
 namespace App;
 
+use App\Authenticator\SslAuthenticator;
 use App\Identifier\LdapIdentifier;
+use App\Identifier\SslIdentifier;
 use App\Lib\PluginManager;
 use App\Middleware\AppAuthenticationMiddleware;
 use App\Model\Table\SystemsettingsTable;
@@ -134,10 +136,24 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             ]);
         }
 
+        // Load SSL identifier
+        if (isset($_SERVER['SSL_VERIFIED'])) {
+            $service->loadIdentifier('Authentication.Ssl', [
+                'className' => SslIdentifier::class
+            ]);
+        }
+
         // Load identifiers (Username / Password)
         $service->loadIdentifier('Authentication.Password', [
             'fields' => $fields
         ]);
+
+        // Try to login the user through an SSL Certificate
+        if (isset($_SERVER['SSL_VERIFIED'])) {
+            $service->loadAuthenticator('Authentication.Ssl', [
+                'className' => SslAuthenticator::class
+            ]);
+        }
 
         // Load the authenticators, you want session first
         $expireAt = new \DateTime();
@@ -153,6 +169,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             'fields'   => $fields,
             'loginUrl' => '/users/login',
         ]);
+
         return $service;
     }
 
