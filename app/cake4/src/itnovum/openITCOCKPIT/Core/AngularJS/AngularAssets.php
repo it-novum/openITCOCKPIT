@@ -146,11 +146,11 @@ class AngularAssets implements AngularAssetsInterface {
         //'vendor/vis-4.21.0/dist/vis.css',
         //'my_vis.css',
         '/node_modules/noty/lib/noty.css',
-        /*'flippy.css',
-        'vendor/image-picker.css',*/
-        //  '/vendor/node_modules/angular-gridster/dist/angular-gridster.css',
-        /*'vendor/radio_buttons.css',
-        '/css/vendor/highlight-within-textarea/jquery.highlight-within-textarea.css'*/
+        '/node_modules/angular-flippy/dist/css/angular-flippy.min.css',
+        //'vendor/image-picker.css',
+        '/node_modules/angular-gridster/dist/angular-gridster.min.css',
+        //'vendor/radio_buttons.css',
+        '/node_modules/highlight-within-textarea/jquery.highlight-within-textarea.css'
     ];
 
     /**

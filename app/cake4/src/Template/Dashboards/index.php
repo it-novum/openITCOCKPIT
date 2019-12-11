@@ -4,6 +4,241 @@
 // This file is dual licensed
 //
 // 1.
+//	This program is free software: you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, version 3 of the License.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+// 2.
+//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	License agreement and license key will be shipped with the order
+//	confirmation.
+?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-tachometer-alt"></i> <?php echo __('Dashboard'); ?>
+    </li>
+</ol>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Dashboard'); ?>
+                </h2>
+                <div class="panel-toolbar">
+                    <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
+                        <li class="nav-item ui-sortable-handle" data-tab-id="{{tab.id}}" ng-repeat="tab in tabs"
+                            ng-class="{'active':activeTab === tab.id}">
+                            <a class="nav-link"
+                               href="javascript:void(0);"
+                               ng-if="activeTab !== tab.id"
+                               ng-class="{'active':activeTab === tab.id}"
+                               role="tab">
+                                <span class="text" ng-click="loadTabContent(tab.id)"
+                                      ng-class="{ 'text-primary': tab.shared === true}">
+                                    {{tab.name}}
+                                </span>
+                            </a>
+
+                            <a href="javascript:void(0);"
+                               class="dropdown-toggle nav-link"
+                               data-toggle="dropdown"
+                               aria-expanded="false"
+                               ng-if="activeTab === tab.id"
+                               ng-class="{ 'text-primary': tab.shared}">
+                            <span class="text"
+                                  ng-class="{ 'text-primary': tab.shared === true}">
+                                {{tab.name}}
+                            </span>
+                                <b class="caret"></b>
+                            </a>
+                        </li>
+                    </ul>
+
+
+                    <button class="btn btn-xs mr-1 shadow-0 btn-primary"
+                            title="<?php echo __('Setup tab rotation'); ?>"
+                            data-toggle="modal" data-target="#tabRotationModal">
+                        <i class="fa fa-spinner"></i>
+                    </button>
+                    <button class="btn btn-xs mr-1 shadow-0 btn-primary"
+                            title="<?php echo __('Lock for edit'); ?>"
+                            ng-click="lockOrUnlockDashboard()">
+                        <i class="fa fa-lock"
+                           ng-class="{ 'fa-lock': dashboardIsLocked, 'fa-unlock': !dashboardIsLocked }"></i>
+                    </button>
+
+
+                    <div class="btn-group btn-group-xs " ng-hide="dashboardIsLocked">
+                        <button class="btn btn-success dropdown-toggle waves-effect waves-themed" type="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <?php echo __('Add Widget'); ?>
+                        </button>
+                        <div class="dropdown-menu" x-placement="bottom-start"
+                             style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
+                            <a href="javascript:void(0);" ng-repeat="availableWidget in availableWidgets"
+                               ng-click="addWidgetToTab(availableWidget.type_id)" class="dropdown-item">
+                                <i class="fa {{availableWidget.icon}}"></i>&nbsp;
+                                {{availableWidget.title}}
+                            </a>
+
+                            <a href="javascript:void(0);"
+                               ng-click="restoreDefault()"
+                               class="dropdown-item">
+                                <i class="fa fa-recycle"></i>
+                                <?php echo __('Restore default'); ?>
+                            </a>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="refresh()"
+                            title="<?php echo __('Refresh'); ?>">
+                        <i class="fa fa-refresh"></i>
+                        <?php echo __('Refresh'); ?>
+                    </button>
+
+                    <button class="btn btn-xs btn-success mr-1 shadow-0"
+                            title="<?php echo __('Add tab'); ?>"
+                            data-toggle="modal" data-target="#addNewTabModal"
+                            ng-click="loadSharedTabs()">
+                        <i class="fa fa-plus"></i>
+                    </button>
+
+                    <button class="btn btn-xs btn-success shadow-0" ng-click="toggleFullscreenMode()"
+                            title="<?php echo __('Fullscreen mode'); ?>">
+                        <i class="fa fa-arrows-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <div gridster="gridsterOpts">
+                        <ul>
+                            <li gridster-item="widget" ng-repeat="widget in activeWidgets"
+                                style="display:flex; display: -webkit-flex; flex-direction: row; -webkit-flex-direction: row; -webkit-align-content: stretch; align-content: stretch;">
+                                <div class="card {{widget.color}}"
+                                     data-widget-colorbutton="true"
+                                     style="width:100%;" id="widget-{{widget.id}}">
+                                    <div role="heading" class="ui-sortable-handle card-header  pr-3 d-flex align-items-center flex-wrap" style="cursor: move;">
+                                        <div class="card-title">
+                                            <i class="fa {{widget.icon}}"></i>
+                                            {{widget.title}}
+                                        </div>
+                                        <a class="btn btn-sm btn-icon ml-auto waves-effect waves-themed"
+                                           title="<?php echo __('Edit title'); ?>"
+                                           ng-click="triggerRenameWidgetModal(widget.id)"
+                                           ng-hide="dashboardIsLocked">
+                                            <i class="fa fa-pencil-alt"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-icon  ml-1 waves-effect waves-themed"
+                                           title="<?php echo __('Remove widget'); ?>"
+                                           ng-click="removeWidgetFromTab(widget.id)"
+                                           ng-hide="dashboardIsLocked">
+                                            <i class="fa fa-times"></i>
+                                        </a>
+                                    </div>
+                                    <!-- Loading used AngularJs directives dynamically -->
+                                    <div role="content" id="widget-content-{{widget.id}}"
+                                         style="height:100%; overflow: auto;" class="card-body">
+                                        <ng-include
+                                            src="'/dashboards/dynamicDirective?directive='+widget.directive"></ng-include>
+                                    </div>
+                                </div>
+                                <div ng-if="$last" ng-init="$last?enableWatch():null"></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Rename widget modal -->
+<div id="renameWidgetModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-edit"></i>
+                    <?php echo __('Edit widget title'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="input-group" ng-class="{'has-error': ack.error}">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="icon-prepend fa fa-pencil-alt"></i></span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="<?php echo __('Edit widget title'); ?>"
+                                   ng-model="data.renameWidgetTitle">
+                        </div>
+                        <div ng-repeat="error in errors.name">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" ng-click="renameWidget()">
+                    <?php echo __('Save widget Title'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?php
+// Copyright (C) <2015>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, version 3 of the License.
@@ -187,7 +422,7 @@
                                         <a class="button-icon jarviswidget-delete-btn pointer"
                                            title="<?php echo __('Edit title'); ?>"
                                            ng-click="triggerRenameWidgetModal(widget.id)">
-                                            <i class="fa fa-pencil"></i>
+                                            <i class="fa fa-pencil-alt"></i>
                                         </a>
                                         <a class="button-icon jarviswidget-delete-btn pointer"
                                            title="<?php echo __('Remove widget'); ?>"
@@ -370,7 +605,7 @@
                                 <div role="content" id="widget-content-{{widget.id}}"
                                      style="height:100%; overflow: auto;">
                                     <ng-include
-                                            src="'/dashboards/dynamicDirective?directive='+widget.directive"></ng-include>
+                                        src="'/dashboards/dynamicDirective?directive='+widget.directive"></ng-include>
                                 </div>
                             </div>
                             <div ng-if="$last" ng-init="$last?enableWatch():null"></div>
@@ -434,11 +669,11 @@
                     </div>
                     <div class="col-xs-12">
                         <select
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="sharedTabs"
-                                ng-options="sharedTab.id as sharedTab.name for sharedTab in sharedTabs"
-                                ng-model="data.createTabFromSharedTabId">
+                            data-placeholder="<?php echo __('Please choose'); ?>"
+                            class="form-control"
+                            chosen="sharedTabs"
+                            ng-options="sharedTab.id as sharedTab.name for sharedTab in sharedTabs"
+                            ng-model="data.createTabFromSharedTabId">
                         </select>
                     </div>
                     <div class="col-xs-12 padding-top-10">
@@ -604,38 +839,33 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">
-                    <i class="fa fa-pencil-square-o"></i>
+                    <i class="fas fa-edit"></i>
                     <?php echo __('Edit widget title'); ?>
                 </h4>
             </div>
             <div class="modal-body">
-
                 <div class="row">
-                    <div class="col-xs-12 smart-form">
-                        <div class="form-group smart-form" ng-class="{'has-error': errors.name}">
-                            <label class="label hintmark_red"><?php echo __('New title of widget'); ?></label>
-                            <label class="input"> <b class="icon-prepend">
-                                    <i class="fa fa-tag"></i>
-                                </b>
+
+                    <div class="col-xs-12">
+                        <div class="form-group" ng-class="{'has-error': ack.error}">
+                            <label class="input"> <i class="icon-prepend fa fa-pencil"></i>
                                 <input type="text" class="input-sm"
                                        placeholder="<?php echo __('New title of widget'); ?>"
                                        ng-model="data.renameWidgetTitle">
                             </label>
-                            <div ng-repeat="error in errors.name">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
+                        </div>
+                        <div ng-repeat="error in errors.name">
+                            <div class="help-block text-danger">{{ error }}</div>
                         </div>
                     </div>
-                    <div class="col-xs-12 padding-top-10">
-                        <button type="button" class="btn btn-primary pull-right" ng-click="renameWidget()">
-                            <?php echo __('Save widget title'); ?>
-                        </button>
-                    </div>
                 </div>
-
+                <br/>
             </div>
 
             <div class="modal-footer">
+                <button type="button" class="btn btn-success" ng-click="renameWidget()">
+                    <?php echo __('Save widget Title'); ?>
+                </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>
                 </button>
@@ -643,6 +873,7 @@
         </div>
     </div>
 </div>
+
 
 
 

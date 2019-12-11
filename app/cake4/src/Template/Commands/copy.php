@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="CommandsIndex">
-            <i class="fa fa-user"></i> <?php echo __('Commands'); ?>
+            <i class="fa fa-terminal"></i> <?php echo __('Commands'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
