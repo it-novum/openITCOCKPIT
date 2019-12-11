@@ -24,14 +24,13 @@
 //	confirmation.
 
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-map-marker fa-fw "></i>
             <?php echo __('Map'); ?>
             <span>>
-			<div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+			<div class="third_level"> <?php echo __('Add') ?></div>
 			</span>
         </h1>
     </div>

@@ -38,11 +38,9 @@ use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
 
 /**
  * Class ConfigurationFilesController
- * @property ConfigurationFile $ConfigurationFile
+ * @package App\Controller
  */
 class ConfigurationFilesController extends AppController {
-
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -73,6 +71,9 @@ class ConfigurationFilesController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['configFileCategories']);
     }
 
+    /**
+     * @param null $configFile
+     */
     public function edit($configFile = null) {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
@@ -93,43 +94,74 @@ class ConfigurationFilesController extends AppController {
         throw new NotFoundException();
     }
 
+    /**
+     * @throws \Exception
+     */
     public function NagiosCfg() {
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\NagiosCfg', 'NagiosCfg');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function AfterExport() {
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\AfterExport', 'AfterExport');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function NagiosModuleConfig() {
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\NagiosModuleConfig', 'NagiosModuleConfig');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function phpNSTAMaster() {
         $this->layout = 'blank';
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster', 'phpNstaMaster');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function DbBackend() {
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\DbBackend', 'DbBackend');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function PerfdataBackend() {
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\PerfdataBackend', 'PerfdataBackend');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function GraphingDocker() {
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker', 'GraphingDocker');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function StatusengineCfg() {
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\StatusengineCfg', 'StatusengineCfg');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function GraphiteWeb() {
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\GraphiteWeb', 'GraphiteWeb');
     }
 
+    /**
+     * @param $configFile
+     * @throws \Exception
+     */
     public function restorDefault($configFile) {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -140,12 +172,12 @@ class ConfigurationFilesController extends AppController {
             throw new NotFoundException('Config file not found');
         }
 
-        /** @var $ConfigurationFilesTable ConfigurationFilesTable */
+        /** @var ConfigurationFilesTable $ConfigurationFilesTable */
         $ConfigurationFilesTable = TableRegistry::getTableLocator()->get('ConfigurationFiles');
-        /** @var $ConfigurationQueueTable ConfigurationQueueTable */
+        /** @var ConfigurationQueueTable $ConfigurationQueueTable */
         $ConfigurationQueueTable = TableRegistry::getTableLocator()->get('ConfigurationQueue');
 
-        /** @var  $ConfigurationObjectClassName ConfigInterface */
+        /** @var ConfigInterface $ConfigurationObjectClassName */
         $ConfigurationObjectClassName = new $className();
 
         $currentConfig = $ConfigurationFilesTable->getConfigValuesByConfigFile($ConfigurationObjectClassName->getDbKey());
@@ -185,13 +217,13 @@ class ConfigurationFilesController extends AppController {
     /**
      * @param $ConfigurationObjectClassName
      * @param $ShortClassName
-     * @throws Exception
+     * @throws \Exception
      */
     private function __sharedControllerAction($ConfigurationObjectClassName, $ShortClassName) {
         $ConfigurationObjectClassName = new $ConfigurationObjectClassName();
         $this->set($ShortClassName, $ConfigurationObjectClassName);
 
-        /** @var $ConfigurationFilesTable ConfigurationFilesTable */
+        /** @var ConfigurationFilesTable $ConfigurationFilesTable */
         $ConfigurationFilesTable = TableRegistry::getTableLocator()->get('ConfigurationFiles');
 
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
@@ -203,12 +235,12 @@ class ConfigurationFilesController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            /** @var $ConfigurationQueueTable ConfigurationQueueTable */
+            /** @var ConfigurationQueueTable $ConfigurationQueueTable */
             $ConfigurationQueueTable = TableRegistry::getTableLocator()->get('ConfigurationQueue');
 
-            if ($ConfigurationObjectClassName->validate($this->request->data)) {
+            if ($ConfigurationObjectClassName->validate($this->request->getData())) {
                 //Save new config to database
-                $configFileForDatabase = $ConfigurationObjectClassName->convertRequestForSaveAll($this->request->data);
+                $configFileForDatabase = $ConfigurationObjectClassName->convertRequestForSaveAll($this->request->getData());
 
                 $currentConfig = $ConfigurationFilesTable->getConfigValuesByConfigFile($ConfigurationObjectClassName->getDbKey());
 

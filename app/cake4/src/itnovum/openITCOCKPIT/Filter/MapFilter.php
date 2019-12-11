@@ -33,8 +33,8 @@ class MapFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'like' => [
-                'Map.name',
-                'Map.title'
+                'Maps.name',
+                'Maps.title'
             ]
         ];
 

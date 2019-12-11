@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+namespace MapModule\Controller;
+
 use App\Model\Table\HostgroupsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -51,7 +54,7 @@ use Symfony\Component\Finder\Finder;
  * @property Servicestatus $Servicestatus
  *
  */
-class MapeditorsController extends MapModuleAppController {
+class MapeditorsController extends AppController {
     public $layout = 'blank';
 
     public $uses = [
@@ -133,18 +136,18 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('map', $map);
         $this->set('ACL', $acl);
 
-        $this->set('_serialize', ['map', 'ACL']);
+        $this->viewBuilder()->setOption('serialize', ['map', 'ACL']);
     }
 
     public function mapitem() {
         if (!$this->isApiRequest()) {
             return;
         }
-        $objectId = (int)$this->request->query('objectId');
+        $objectId = (int)$this->request->getQuery('objectId');
         if ($objectId <= 0) {
             throw new RuntimeException('Invalid object id');
         }
-        $mapId = (int)$this->request->query('mapId');
+        $mapId = (int)$this->request->getQuery('mapId');
         if ($mapId <= 0) {
             throw new RuntimeException('Invalid map id');
         }
@@ -152,14 +155,14 @@ class MapeditorsController extends MapModuleAppController {
         $data = $this->_mapitem(
             $objectId,
             $mapId,
-            $this->request->query('type'),
-            $this->request->query('includeServiceOutput')
+            $this->request->getQuery('type'),
+            $this->request->getQuery('includeServiceOutput')
         );
 
-        $this->set('type', $this->request->query('type'));
+        $this->set('type', $this->request->getQuery('type'));
         $this->set('data', $data['data']);
         $this->set('allowView', $data['allowView']);
-        $this->set('_serialize', ['type', 'allowView', 'data']);
+        $this->viewBuilder()->setOption('serialize', ['type', 'allowView', 'data']);
     }
 
     public function mapitemMulti() {
@@ -171,7 +174,7 @@ class MapeditorsController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $items = $this->request->data('items');
+        $items = $this->request->getData('items');
 
         $mapitems = [];
         foreach ($items as $item) {
@@ -194,7 +197,7 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         $this->set('mapitems', $mapitems);
-        $this->set('_serialize', ['mapitems']);
+        $this->viewBuilder()->setOption('serialize', ['mapitems']);
 
     }
 
@@ -618,17 +621,17 @@ class MapeditorsController extends MapModuleAppController {
             return;
         }
         $properties = [];
-        $objectId = (int)$this->request->query('objectId');
+        $objectId = (int)$this->request->getQuery('objectId');
         if ($objectId <= 0) {
             throw new RuntimeException('Invalid object id');
         }
-        $mapId = (int)$this->request->query('mapId');
+        $mapId = (int)$this->request->getQuery('mapId');
         if ($mapId <= 0) {
             throw new RuntimeException('Invalid map id');
         }
 
 
-        switch ($this->request->query('type')) {
+        switch ($this->request->getQuery('type')) {
             case 'host':
                 $host = $this->Host->find('first', [
                     'recursive'  => -1,
@@ -1089,10 +1092,10 @@ class MapeditorsController extends MapModuleAppController {
                 break;
         }
 
-        $this->set('type', $this->request->query('type'));
+        $this->set('type', $this->request->getQuery('type'));
         $this->set('data', $properties);
         $this->set('allowView', $allowView);
-        $this->set('_serialize', ['type', 'allowView', 'data']);
+        $this->viewBuilder()->setOption('serialize', ['type', 'allowView', 'data']);
     }
 
     public function graph() {
@@ -1100,7 +1103,7 @@ class MapeditorsController extends MapModuleAppController {
             return;
         }
 
-        $serviceId = (int)$this->request->query('serviceId');
+        $serviceId = (int)$this->request->getQuery('serviceId');
         $service = $this->Service->find('first', [
             'recursive'  => -1,
             'fields'     => [
@@ -1134,7 +1137,7 @@ class MapeditorsController extends MapModuleAppController {
         if ($this->hasRootPrivileges === false) {
             if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
                 $this->set('allowView', false);
-                $this->set('_serialize', ['allowView']);
+                $this->viewBuilder()->setOption('serialize', ['allowView']);
             }
         }
 
@@ -1143,7 +1146,7 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('host', $Host->toArray());
         $this->set('service', $Service->toArray());
         $this->set('allowView', true);
-        $this->set('_serialize', ['allowView', 'host', 'service']);
+        $this->viewBuilder()->setOption('serialize', ['allowView', 'host', 'service']);
     }
 
     public function tacho() {
@@ -1171,14 +1174,14 @@ class MapeditorsController extends MapModuleAppController {
             return;
         }
 
-        $objectId = (int)$this->request->query('objectId');
-        $summaryStateItem = $this->request->query('summary') === 'true';
+        $objectId = (int)$this->request->getQuery('objectId');
+        $summaryStateItem = $this->request->getQuery('summary') === 'true';
         if ($objectId <= 0) {
             throw new RuntimeException('Invalid object id');
         }
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
 
-        switch ($this->request->query('type')) {
+        switch ($this->request->getQuery('type')) {
             case 'host':
                 $host = $this->Host->find('first', [
                     'recursive'  => -1,
@@ -1212,7 +1215,7 @@ class MapeditorsController extends MapModuleAppController {
                     );
                     $this->set('type', 'host');
                     $this->set('summary', $summary);
-                    $this->set('_serialize', ['host', 'summary']);
+                    $this->viewBuilder()->setOption('serialize', ['host', 'summary']);
                     return;
                 }
 
@@ -1265,7 +1268,7 @@ class MapeditorsController extends MapModuleAppController {
                     );
                     $this->set('type', 'service');
                     $this->set('summary', $summary);
-                    $this->set('_serialize', ['service', 'summary']);
+                    $this->viewBuilder()->setOption('serialize', ['service', 'summary']);
                     return;
 
                 }
@@ -1296,7 +1299,7 @@ class MapeditorsController extends MapModuleAppController {
                     );
                     $this->set('type', 'hostgroup');
                     $this->set('summary', $summary);
-                    $this->set('_serialize', ['hostgroup', 'summary']);
+                    $this->viewBuilder()->setOption('serialize', ['hostgroup', 'summary']);
                     return;
                 } catch (\Exception $e) {
                     throw new NotFoundException('Host group not found!');
@@ -1361,7 +1364,7 @@ class MapeditorsController extends MapModuleAppController {
                     );
                     $this->set('type', 'servicegroup');
                     $this->set('summary', $summary);
-                    $this->set('_serialize', ['servicegroup', 'summary']);
+                    $this->viewBuilder()->setOption('serialize', ['servicegroup', 'summary']);
                     return;
                 }
 
@@ -1663,7 +1666,7 @@ class MapeditorsController extends MapModuleAppController {
                     );
                     $this->set('type', 'map');
                     $this->set('summary', $summary);
-                    $this->set('_serialize', ['map', 'summary']);
+                    $this->viewBuilder()->setOption('serialize', ['map', 'summary']);
                     return;
                 }
                 throw new NotFoundException('Map not found!');
@@ -1725,7 +1728,7 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('maxUploadLimit', $FileUploadSize->toArray());
         $this->set('max_z_index', $MapForAngular->getMaxZIndex());
         $this->set('layers', $MapForAngular->getLayers());
-        $this->set('_serialize', ['map', 'maxUploadLimit', 'max_z_index', 'layers']);
+        $this->viewBuilder()->setOption('serialize', ['map', 'maxUploadLimit', 'max_z_index', 'layers']);
     }
 
     public
@@ -1756,7 +1759,7 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         $this->set('backgrounds', $backgrounds);
-        $this->set('_serialize', ['backgrounds']);
+        $this->viewBuilder()->setOption('serialize', ['backgrounds']);
     }
 
     public
@@ -1768,7 +1771,7 @@ class MapeditorsController extends MapModuleAppController {
         $iconsets = $this->MapUpload->getIconSets();
 
         $this->set('iconsets', $iconsets);
-        $this->set('_serialize', ['iconsets']);
+        $this->viewBuilder()->setOption('serialize', ['iconsets']);
     }
 
     public
@@ -1777,8 +1780,8 @@ class MapeditorsController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $selected = $this->request->query('selected');
-        $excluded = $this->request->query('excluded');
+        $selected = $this->request->getQuery('selected');
+        $excluded = $this->request->getQuery('excluded');
 
         $MapFilter = new MapFilter($this->request);
 
@@ -1790,7 +1793,7 @@ class MapeditorsController extends MapModuleAppController {
         );
 
         $this->set(compact(['maps']));
-        $this->set('_serialize', ['maps']);
+        $this->viewBuilder()->setOption('serialize', ['maps']);
     }
 
     public
@@ -1800,18 +1803,18 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         //Save new possition after drag and drop
-        if ($this->request->data('action') === 'dragstop') {
+        if ($this->request->getData('action') === 'dragstop') {
             $item = $this->Mapitem->find('first', [
                 'recursive'  => -1,
                 'conditions' => [
-                    'Mapitem.id' => $this->request->data('Mapitem.id')
+                    'Mapitem.id' => $this->request->getData('Mapitem.id')
                 ]
             ]);
 
-            $item['Mapitem']['x'] = (int)$this->request->data('Mapitem.x');
-            $item['Mapitem']['y'] = (int)$this->request->data('Mapitem.y');
-            if($this->request->data('Mapitem.show_label') !== null) {
-                $item['Mapitem']['show_label'] = (int)$this->request->data('Mapitem.show_label');
+            $item['Mapitem']['x'] = (int)$this->request->getData('Mapitem.x');
+            $item['Mapitem']['y'] = (int)$this->request->getData('Mapitem.y');
+            if($this->request->getData('Mapitem.show_label') !== null) {
+                $item['Mapitem']['show_label'] = (int)$this->request->getData('Mapitem.show_label');
             }
             if ($this->Mapitem->save($item)) {
                 $mapitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapitem($item['Mapitem']);
@@ -1820,7 +1823,7 @@ class MapeditorsController extends MapModuleAppController {
                     'Mapitem' => $mapitem->toArray()
                 ]);
 
-                $this->set('_serialize', ['Mapitem']);
+                $this->viewBuilder()->setOption('serialize', ['Mapitem']);
                 return;
             }
             $this->serializeErrorMessageFromModel('Mapitem');
@@ -1834,7 +1837,7 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         $item = $this->request->data;
-        $item['Mapitem']['show_label'] = (int)$this->request->data('Mapitem.show_label');
+        $item['Mapitem']['show_label'] = (int)$this->request->getData('Mapitem.show_label');
         if ($this->Mapitem->save($item)) {
             $mapItem = $item;
             $mapItem['Mapitem']['id'] = (int)$this->Mapitem->id;
@@ -1845,7 +1848,7 @@ class MapeditorsController extends MapModuleAppController {
             $this->set('Mapitem', [
                 'Mapitem' => $mapitem->toArray()
             ]);
-            $this->set('_serialize', ['Mapitem']);
+            $this->viewBuilder()->setOption('serialize', ['Mapitem']);
             return;
         }
         $this->serializeErrorMessageFromModel('Mapitem');
@@ -1857,7 +1860,7 @@ class MapeditorsController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $id = $this->request->data('Mapitem.id');
+        $id = $this->request->getData('Mapitem.id');
 
 
         if (!$this->Mapitem->exists($id)) {
@@ -1870,12 +1873,12 @@ class MapeditorsController extends MapModuleAppController {
 
         if ($this->Mapitem->delete($id)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public
@@ -1885,18 +1888,18 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         //Save new possition after drag and drop
-        if ($this->request->data('action') === 'dragstop') {
+        if ($this->request->getData('action') === 'dragstop') {
             $line = $this->Mapline->find('first', [
                 'recursive'  => -1,
                 'conditions' => [
-                    'Mapline.id' => $this->request->data('Mapline.id')
+                    'Mapline.id' => $this->request->getData('Mapline.id')
                 ]
             ]);
 
-            $line['Mapline']['startX'] = (int)$this->request->data('Mapline.startX');
-            $line['Mapline']['startY'] = (int)$this->request->data('Mapline.startY');
-            $line['Mapline']['endX'] = (int)$this->request->data('Mapline.endX');
-            $line['Mapline']['endY'] = (int)$this->request->data('Mapline.endY');
+            $line['Mapline']['startX'] = (int)$this->request->getData('Mapline.startX');
+            $line['Mapline']['startY'] = (int)$this->request->getData('Mapline.startY');
+            $line['Mapline']['endX'] = (int)$this->request->getData('Mapline.endX');
+            $line['Mapline']['endY'] = (int)$this->request->getData('Mapline.endY');
             if ($this->Mapline->save($line)) {
                 $Mapline = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapline($line['Mapline']);
 
@@ -1904,7 +1907,7 @@ class MapeditorsController extends MapModuleAppController {
                     'Mapline' => $Mapline->toArray()
                 ]);
 
-                $this->set('_serialize', ['Mapline']);
+                $this->viewBuilder()->setOption('serialize', ['Mapline']);
                 return;
             }
             $this->serializeErrorMessageFromModel('Mapline');
@@ -1917,14 +1920,14 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         $line = $this->request->data;
-        $line['Mapline']['show_label'] = (int)$this->request->data('Mapline.show_label');
+        $line['Mapline']['show_label'] = (int)$this->request->getData('Mapline.show_label');
         if ($this->Mapline->save($line)) {
             $line['Mapline']['id'] = (int)$this->Mapline->id;
             $Mapline = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapline($line['Mapline']);
             $this->set('Mapline', [
                 'Mapline' => $Mapline->toArray()
             ]);
-            $this->set('_serialize', ['Mapline']);
+            $this->viewBuilder()->setOption('serialize', ['Mapline']);
             return;
         }
         $this->serializeErrorMessageFromModel('Mapline');
@@ -1936,7 +1939,7 @@ class MapeditorsController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $id = $this->request->data('Mapline.id');
+        $id = $this->request->getData('Mapline.id');
 
 
         if (!$this->Mapline->exists($id)) {
@@ -1949,12 +1952,12 @@ class MapeditorsController extends MapModuleAppController {
 
         if ($this->Mapline->delete($id)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public
@@ -1964,16 +1967,16 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         //Save new possition after drag and drop
-        if ($this->request->data('action') === 'dragstop') {
+        if ($this->request->getData('action') === 'dragstop') {
             $gadget = $this->Mapgadget->find('first', [
                 'recursive'  => -1,
                 'conditions' => [
-                    'Mapgadget.id' => $this->request->data('Mapgadget.id')
+                    'Mapgadget.id' => $this->request->getData('Mapgadget.id')
                 ]
             ]);
 
-            $gadget['Mapgadget']['x'] = (int)$this->request->data('Mapgadget.x');
-            $gadget['Mapgadget']['y'] = (int)$this->request->data('Mapgadget.y');
+            $gadget['Mapgadget']['x'] = (int)$this->request->getData('Mapgadget.x');
+            $gadget['Mapgadget']['y'] = (int)$this->request->getData('Mapgadget.y');
 
             //NULL -> No metric selected. Cast to 0 and Gadget will use first existing metric in performance data string
             $gadget['Mapgadget']['metric'] = $gadget['Mapgadget']['metric'];
@@ -1984,7 +1987,7 @@ class MapeditorsController extends MapModuleAppController {
                     'Mapgadget' => $Mapgadget->toArray()
                 ]);
 
-                $this->set('_serialize', ['Mapgadget']);
+                $this->viewBuilder()->setOption('serialize', ['Mapgadget']);
                 return;
             }
             $this->serializeErrorMessageFromModel('Mapgadget');
@@ -1992,16 +1995,16 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         //Save new gadget size
-        if ($this->request->data('action') === 'resizestop') {
+        if ($this->request->getData('action') === 'resizestop') {
             $gadget = $this->Mapgadget->find('first', [
                 'recursive'  => -1,
                 'conditions' => [
-                    'Mapgadget.id' => $this->request->data('Mapgadget.id')
+                    'Mapgadget.id' => $this->request->getData('Mapgadget.id')
                 ]
             ]);
 
-            $gadget['Mapgadget']['size_x'] = (int)$this->request->data('Mapgadget.size_x');
-            $gadget['Mapgadget']['size_y'] = (int)$this->request->data('Mapgadget.size_y');
+            $gadget['Mapgadget']['size_x'] = (int)$this->request->getData('Mapgadget.size_x');
+            $gadget['Mapgadget']['size_y'] = (int)$this->request->getData('Mapgadget.size_y');
 
             //NULL -> No metric selected. Cast to 0 and Gadget will use first existing metric in performance data string
             $gadget['Mapgadget']['metric'] = $gadget['Mapgadget']['metric'];
@@ -2012,7 +2015,7 @@ class MapeditorsController extends MapModuleAppController {
                     'Mapgadget' => $Mapgadget->toArray()
                 ]);
 
-                $this->set('_serialize', ['Mapgadget']);
+                $this->viewBuilder()->setOption('serialize', ['Mapgadget']);
                 return;
             }
             $this->serializeErrorMessageFromModel('Mapgadget');
@@ -2027,9 +2030,9 @@ class MapeditorsController extends MapModuleAppController {
 
         $gadget = $this->request->data;
 
-        $gadget['Mapgadget']['show_label'] = (int)$this->request->data('Mapgadget.show_label');
-        $gadget['Mapgadget']['size_x'] = (int)$this->request->data('Mapgadget.size_x');
-        $gadget['Mapgadget']['size_y'] = (int)$this->request->data('Mapgadget.size_y');
+        $gadget['Mapgadget']['show_label'] = (int)$this->request->getData('Mapgadget.show_label');
+        $gadget['Mapgadget']['size_x'] = (int)$this->request->getData('Mapgadget.size_x');
+        $gadget['Mapgadget']['size_y'] = (int)$this->request->getData('Mapgadget.size_y');
 
         if ($this->Mapgadget->save($gadget)) {
             $gadget['Mapgadget']['id'] = (int)$this->Mapgadget->id;
@@ -2037,7 +2040,7 @@ class MapeditorsController extends MapModuleAppController {
             $this->set('Mapgadget', [
                 'Mapgadget' => $Mapgadget->toArray()
             ]);
-            $this->set('_serialize', ['Mapgadget']);
+            $this->viewBuilder()->setOption('serialize', ['Mapgadget']);
             return;
         }
         $this->serializeErrorMessageFromModel('Mapgadget');
@@ -2049,7 +2052,7 @@ class MapeditorsController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $id = $this->request->data('Mapgadget.id');
+        $id = $this->request->getData('Mapgadget.id');
 
 
         if (!$this->Mapgadget->exists($id)) {
@@ -2062,12 +2065,12 @@ class MapeditorsController extends MapModuleAppController {
 
         if ($this->Mapgadget->delete($id)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public
@@ -2099,11 +2102,11 @@ class MapeditorsController extends MapModuleAppController {
         if (!empty($servicestatus)) {
             $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
             $this->set('perfdata', $PerfdataParser->parse());
-            $this->set('_serialize', ['perfdata']);
+            $this->viewBuilder()->setOption('serialize', ['perfdata']);
             return;
         }
         $this->set('perfdata', []);
-        $this->set('_serialize', ['perfdata']);
+        $this->viewBuilder()->setOption('serialize', ['perfdata']);
     }
 
     public
@@ -2113,16 +2116,16 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         //Save new possition after drag and drop
-        if ($this->request->data('action') === 'dragstop') {
+        if ($this->request->getData('action') === 'dragstop') {
             $maptext = $this->Maptext->find('first', [
                 'recursive'  => -1,
                 'conditions' => [
-                    'Maptext.id' => $this->request->data('Maptext.id')
+                    'Maptext.id' => $this->request->getData('Maptext.id')
                 ]
             ]);
 
-            $maptext['Maptext']['x'] = (int)$this->request->data('Maptext.x');
-            $maptext['Maptext']['y'] = (int)$this->request->data('Maptext.y');
+            $maptext['Maptext']['x'] = (int)$this->request->getData('Maptext.x');
+            $maptext['Maptext']['y'] = (int)$this->request->getData('Maptext.y');
             $maptext['Maptext']['font_size'] = 11;
 
             if ($this->Maptext->save($maptext)) {
@@ -2132,7 +2135,7 @@ class MapeditorsController extends MapModuleAppController {
                     'Maptext' => $Maptext->toArray()
                 ]);
 
-                $this->set('_serialize', ['Maptext']);
+                $this->viewBuilder()->setOption('serialize', ['Maptext']);
                 return;
             }
             $this->serializeErrorMessageFromModel('Maptext');
@@ -2146,8 +2149,8 @@ class MapeditorsController extends MapModuleAppController {
 
         $text = $this->request->data;
 
-        $text['Maptext']['x'] = (int)$this->request->data('Maptext.x');
-        $text['Maptext']['y'] = (int)$this->request->data('Maptext.y');
+        $text['Maptext']['x'] = (int)$this->request->getData('Maptext.x');
+        $text['Maptext']['y'] = (int)$this->request->getData('Maptext.y');
         $maptext['Maptext']['font_size'] = 11;
         if ($this->Maptext->save($text)) {
             $text['Maptext']['id'] = (int)$this->Maptext->id;
@@ -2155,7 +2158,7 @@ class MapeditorsController extends MapModuleAppController {
             $this->set('Maptext', [
                 'Maptext' => $Maptext->toArray()
             ]);
-            $this->set('_serialize', ['Maptext']);
+            $this->viewBuilder()->setOption('serialize', ['Maptext']);
             return;
         }
         $this->serializeErrorMessageFromModel('Maptext');
@@ -2167,7 +2170,7 @@ class MapeditorsController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $id = $this->request->data('Maptext.id');
+        $id = $this->request->getData('Maptext.id');
 
 
         if (!$this->Maptext->exists($id)) {
@@ -2180,12 +2183,12 @@ class MapeditorsController extends MapModuleAppController {
 
         if ($this->Maptext->delete($id)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public
@@ -2195,16 +2198,16 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         //Save new possition after drag and drop
-        if ($this->request->data('action') === 'dragstop') {
+        if ($this->request->getData('action') === 'dragstop') {
             $mapicon = $this->Mapicon->find('first', [
                 'recursive'  => -1,
                 'conditions' => [
-                    'Mapicon.id' => $this->request->data('Mapicon.id')
+                    'Mapicon.id' => $this->request->getData('Mapicon.id')
                 ]
             ]);
 
-            $mapicon['Mapicon']['x'] = (int)$this->request->data('Mapicon.x');
-            $mapicon['Mapicon']['y'] = (int)$this->request->data('Mapicon.y');
+            $mapicon['Mapicon']['x'] = (int)$this->request->getData('Mapicon.x');
+            $mapicon['Mapicon']['y'] = (int)$this->request->getData('Mapicon.y');
 
             if ($this->Mapicon->save($mapicon)) {
                 $Mapicon = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapicon($mapicon['Mapicon']);
@@ -2213,7 +2216,7 @@ class MapeditorsController extends MapModuleAppController {
                     'Mapicon' => $Mapicon->toArray()
                 ]);
 
-                $this->set('_serialize', ['Mapicon']);
+                $this->viewBuilder()->setOption('serialize', ['Mapicon']);
                 return;
             }
             $this->serializeErrorMessageFromModel('Mapicon');
@@ -2227,15 +2230,15 @@ class MapeditorsController extends MapModuleAppController {
 
         $icon = $this->request->data;
 
-        $icon['Mapicon']['x'] = (int)$this->request->data('Mapicon.x');
-        $icon['Mapicon']['y'] = (int)$this->request->data('Mapicon.y');
+        $icon['Mapicon']['x'] = (int)$this->request->getData('Mapicon.x');
+        $icon['Mapicon']['y'] = (int)$this->request->getData('Mapicon.y');
         if ($this->Mapicon->save($icon)) {
             $icon['Mapicon']['id'] = (int)$this->Mapicon->id;
             $Mapicon = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapicon($icon['Mapicon']);
             $this->set('Mapicon', [
                 'Mapicon' => $Mapicon->toArray()
             ]);
-            $this->set('_serialize', ['Mapicon']);
+            $this->viewBuilder()->setOption('serialize', ['Mapicon']);
             return;
         }
         $this->serializeErrorMessageFromModel('Mapicon');
@@ -2247,7 +2250,7 @@ class MapeditorsController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $id = $this->request->data('Mapicon.id');
+        $id = $this->request->getData('Mapicon.id');
 
 
         if (!$this->Mapicon->exists($id)) {
@@ -2260,12 +2263,12 @@ class MapeditorsController extends MapModuleAppController {
 
         if ($this->Mapicon->delete($id)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public
@@ -2274,7 +2277,7 @@ class MapeditorsController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $id = $this->request->data('Map.id');
+        $id = $this->request->getData('Map.id');
 
         if (!$this->Map->exists($id)) {
             throw new NotFoundException();
@@ -2287,14 +2290,14 @@ class MapeditorsController extends MapModuleAppController {
             ]
         ]);
 
-        $map['Map']['background'] = $this->request->data('Map.background');
+        $map['Map']['background'] = $this->request->getData('Map.background');
 
         if ($this->Map->save($map)) {
             $this->set('Map', [
                 'Map' => $map
             ]);
 
-            $this->set('_serialize', ['Map']);
+            $this->viewBuilder()->setOption('serialize', ['Map']);
             return;
         }
         $this->serializeErrorMessageFromModel('Map');
@@ -2310,7 +2313,7 @@ class MapeditorsController extends MapModuleAppController {
         $icons = $this->MapUpload->getIcons();
 
         $this->set('icons', $icons);
-        $this->set('_serialize', ['icons']);
+        $this->viewBuilder()->setOption('serialize', ['icons']);
     }
 
     public
@@ -2320,16 +2323,16 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         //Save new possition after drag and drop
-        if ($this->request->data('action') === 'dragstop') {
+        if ($this->request->getData('action') === 'dragstop') {
             $mapsummaryitem = $this->Mapsummaryitem->find('first', [
                 'recursive'  => -1,
                 'conditions' => [
-                    'Mapsummaryitem.id' => $this->request->data('Mapsummaryitem.id')
+                    'Mapsummaryitem.id' => $this->request->getData('Mapsummaryitem.id')
                 ]
             ]);
 
-            $mapsummaryitem['Mapsummaryitem']['x'] = (int)$this->request->data('Mapsummaryitem.x');
-            $mapsummaryitem['Mapsummaryitem']['y'] = (int)$this->request->data('Mapsummaryitem.y');
+            $mapsummaryitem['Mapsummaryitem']['x'] = (int)$this->request->getData('Mapsummaryitem.x');
+            $mapsummaryitem['Mapsummaryitem']['y'] = (int)$this->request->getData('Mapsummaryitem.y');
             if ($this->Mapsummaryitem->save($mapsummaryitem)) {
                 $Mapsummaryitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapsummaryitem($mapsummaryitem['Mapsummaryitem']);
 
@@ -2337,7 +2340,7 @@ class MapeditorsController extends MapModuleAppController {
                     'Mapsummaryitem' => $Mapsummaryitem->toArray()
                 ]);
 
-                $this->set('_serialize', ['Mapsummaryitem']);
+                $this->viewBuilder()->setOption('serialize', ['Mapsummaryitem']);
                 return;
             }
             $this->serializeErrorMessageFromModel('Mapsummaryitem');
@@ -2345,16 +2348,16 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         //Save new Mapsummaryitem size
-        if ($this->request->data('action') === 'resizestop') {
+        if ($this->request->getData('action') === 'resizestop') {
             $mapsummaryitem = $this->Mapsummaryitem->find('first', [
                 'recursive'  => -1,
                 'conditions' => [
-                    'Mapsummaryitem.id' => $this->request->data('Mapsummaryitem.id')
+                    'Mapsummaryitem.id' => $this->request->getData('Mapsummaryitem.id')
                 ]
             ]);
 
-            $mapsummaryitem['Mapsummaryitem']['size_x'] = (int)$this->request->data('Mapsummaryitem.size_x');
-            $mapsummaryitem['Mapsummaryitem']['size_y'] = (int)$this->request->data('Mapsummaryitem.size_y');
+            $mapsummaryitem['Mapsummaryitem']['size_x'] = (int)$this->request->getData('Mapsummaryitem.size_x');
+            $mapsummaryitem['Mapsummaryitem']['size_y'] = (int)$this->request->getData('Mapsummaryitem.size_y');
 
             if ($this->Mapsummaryitem->save($mapsummaryitem)) {
                 $Mapsummaryitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapsummaryitem($mapsummaryitem['Mapsummaryitem']);
@@ -2363,7 +2366,7 @@ class MapeditorsController extends MapModuleAppController {
                     'Mapsummaryitem' => $Mapsummaryitem->toArray()
                 ]);
 
-                $this->set('_serialize', ['Mapsummaryitem']);
+                $this->viewBuilder()->setOption('serialize', ['Mapsummaryitem']);
                 return;
             }
             $this->serializeErrorMessageFromModel('Mapsummaryitem');
@@ -2378,9 +2381,9 @@ class MapeditorsController extends MapModuleAppController {
 
         $mapsummaryitem = $this->request->data;
 
-        $mapsummaryitem['Mapsummaryitem']['show_label'] = (int)$this->request->data('Mapsummaryitem.show_label');
-        $mapsummaryitem['Mapsummaryitem']['size_x'] = (int)$this->request->data('Mapsummaryitem.size_x');
-        $mapsummaryitem['Mapsummaryitem']['size_y'] = (int)$this->request->data('Mapsummaryitem.size_y');
+        $mapsummaryitem['Mapsummaryitem']['show_label'] = (int)$this->request->getData('Mapsummaryitem.show_label');
+        $mapsummaryitem['Mapsummaryitem']['size_x'] = (int)$this->request->getData('Mapsummaryitem.size_x');
+        $mapsummaryitem['Mapsummaryitem']['size_y'] = (int)$this->request->getData('Mapsummaryitem.size_y');
 
         if ($this->Mapsummaryitem->save($mapsummaryitem)) {
             $mapsummaryitem['Mapsummaryitem']['id'] = $this->Mapsummaryitem->id;
@@ -2388,7 +2391,7 @@ class MapeditorsController extends MapModuleAppController {
             $this->set('Mapsummaryitem', [
                 'Mapsummaryitem' => $Mapsummaryitem->toArray()
             ]);
-            $this->set('_serialize', ['Mapsummaryitem']);
+            $this->viewBuilder()->setOption('serialize', ['Mapsummaryitem']);
             return;
         }
         $this->serializeErrorMessageFromModel('Mapsummaryitem');
@@ -2400,7 +2403,7 @@ class MapeditorsController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $id = $this->request->data('Mapsummaryitem.id');
+        $id = $this->request->getData('Mapsummaryitem.id');
 
 
         if (!$this->Mapsummaryitem->exists($id)) {
@@ -2413,12 +2416,12 @@ class MapeditorsController extends MapModuleAppController {
 
         if ($this->Mapsummaryitem->delete($id)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public
@@ -2448,7 +2451,7 @@ class MapeditorsController extends MapModuleAppController {
 
         $this->set('map', $map);
 
-        $this->set('_serialize', ['map']);
+        $this->viewBuilder()->setOption('serialize', ['map']);
     }
 
     public
@@ -2470,7 +2473,7 @@ class MapeditorsController extends MapModuleAppController {
         $this->loadModel('Widget');
 
         if ($this->request->is('get')) {
-            $widgetId = (int)$this->request->query('widgetId');
+            $widgetId = (int)$this->request->getQuery('widgetId');
             if (!$this->Widget->exists($widgetId)) {
                 throw new RuntimeException('Invalid widget id');
             }
@@ -2518,13 +2521,13 @@ class MapeditorsController extends MapModuleAppController {
             }
 
             $this->set('config', $config);
-            $this->set('_serialize', ['config']);
+            $this->viewBuilder()->setOption('serialize', ['config']);
             return;
         }
 
 
         if ($this->request->is('post')) {
-            $mapId = (int)$this->request->data('map_id');
+            $mapId = (int)$this->request->getData('map_id');
             if ($mapId === 0) {
                 $mapId = null;
             }
@@ -2533,7 +2536,7 @@ class MapeditorsController extends MapModuleAppController {
                 'map_id' => $mapId
             ];
 
-            $widgetId = (int)$this->request->data('Widget.id');
+            $widgetId = (int)$this->request->getData('Widget.id');
 
             if (!$this->Widget->exists($widgetId)) {
                 throw new RuntimeException('Invalid widget id');
@@ -2548,7 +2551,7 @@ class MapeditorsController extends MapModuleAppController {
             $widget['Widget']['json_data'] = json_encode($config);
             if ($this->Widget->save($widget)) {
                 $this->set('config', $config);
-                $this->set('_serialize', ['config']);
+                $this->viewBuilder()->setOption('serialize', ['config']);
                 return;
             }
 

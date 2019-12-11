@@ -23,7 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
@@ -51,7 +50,7 @@
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <?php if ($this->Acl->hasPermission('add')): ?>
+                        <?php if ($this->Acl->hasPermission('add', 'maps', 'mapmodule')): ?>
                             <a ui-sref="MapsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
@@ -77,7 +76,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-sitemap"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by Map name'); ?>"
-                                                   ng-model="filter.map.name"
+                                                   ng-model="filter.maps.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -87,7 +86,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by Map title'); ?>"
-                                                   ng-model="filter.map.title"
+                                                   ng-model="filter.maps.title"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -110,12 +109,12 @@
                                 <th class="no-sort sorting_disabled width-15">
                                     <i class="fa fa-check-square-o fa-lg"></i>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Map.name')">
-                                    <i class="fa" ng-class="getSortClass('Map.name')"></i>
+                                <th class="no-sort" ng-click="orderBy('Maps.name')">
+                                    <i class="fa" ng-class="getSortClass('Maps.name')"></i>
                                     <?php echo __('Map name'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Map.title')">
-                                    <i class="fa" ng-class="getSortClass('Map.title')"></i>
+                                <th class="no-sort" ng-click="orderBy('Maps.title')">
+                                    <i class="fa" ng-class="getSortClass('Maps.title')"></i>
                                     <?php echo __('Map title'); ?>
                                 </th>
                                 <th class="no-sort text-center" style="width:60px;">
@@ -138,7 +137,7 @@
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <?php if ($this->Acl->hasPermission('edit')): ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'maps', 'mapmodule')): ?>
                                             <a ui-sref="MapeditorsEdit({id: map.Map.id})"
                                                ng-if="map.Map.allowEdit"
                                                class="btn btn-default">&nbsp;<i class="fa fa-cog "></i>&nbsp;</a>
@@ -152,7 +151,7 @@
                                         <a href="javascript:void(0);" data-toggle="dropdown"
                                            class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
                                         <ul class="dropdown-menu pull-right" id="menuHack-{{map.Map.id}}">
-                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'maps', 'mapmodule')): ?>
                                                 <li ng-if="map.Map.allowEdit">
                                                     <a ui-sref="MapeditorsEdit({id: map.Map.id})">
                                                         <i class="fa fa-cog"></i> <?php echo __('Edit in Map editor'); ?>
@@ -165,7 +164,7 @@
                                                 </li>
                                                 <li class="divider" ng-if="map.Map.allowEdit"></li>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('copy', 'maps')): ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'maps', 'mapmodule')): ?>
                                                 <li ng-if="map.Map.allowCopy">
                                                     <a ui-sref="MapsCopy({id: map.Map.id})">
                                                         <i class="fa fa-edit"></i> <?php echo __('Copy'); ?>
@@ -182,7 +181,7 @@
                                                     <i class="fa fa-expand"></i> <?php echo __('View in fullscreen'); ?>
                                                 </a>
                                             </li>
-                                            <?php if ($this->Acl->hasPermission('delete')): ?>
+                                            <?php if ($this->Acl->hasPermission('delete', 'maps', 'mapmodule')): ?>
                                                 <li class="divider" ng-if="map.Map.allowEdit"></li>
                                                 <li ng-if="map.Map.allowEdit">
                                                     <a class="txt-color-red"
