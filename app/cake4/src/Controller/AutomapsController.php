@@ -55,14 +55,9 @@ use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 
 /**
  * Class AutomapsController
- * @property DbBackend $DbBackend
- * @property AppPaginatorComponent $Paginator
- * @property AppAuthComponent $Auth
- *
+ * @package App\Controller
  */
 class AutomapsController extends AppController {
-
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -70,7 +65,7 @@ class AutomapsController extends AppController {
             return;
         }
 
-        /** @var $AutomapsTable AutomapsTable */
+        /** @var AutomapsTable $AutomapsTable */
         $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
 
         $AutomapsFilter = new AutomapsFilter($this->request);
@@ -114,7 +109,7 @@ class AutomapsController extends AppController {
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $automap = $AutomapsTable->newEmptyEntity();
-            $automap = $AutomapsTable->patchEntity($automap, $this->request->getData('Automap'));
+            $automap = $AutomapsTable->patchEntity($automap, $this->request->getData('Automap', []));
             $AutomapsTable->save($automap);
             if ($automap->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -138,7 +133,7 @@ class AutomapsController extends AppController {
             return;
         }
 
-        /** @var $AutomapsTable AutomapsTable */
+        /** @var AutomapsTable $AutomapsTable */
         $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
 
         if (!$AutomapsTable->existsById($id)) {
@@ -178,7 +173,7 @@ class AutomapsController extends AppController {
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update automap data
-            $automap = $AutomapsTable->patchEntity($automap, $this->request->getData('Automap'));
+            $automap = $AutomapsTable->patchEntity($automap, $this->request->getData('Automap', []));
             $automap->id = $id;
             $AutomapsTable->save($automap);
             if ($automap->hasErrors()) {
@@ -428,7 +423,7 @@ class AutomapsController extends AppController {
         $hostCount = 0;
         $serviceCount = 0;
 
-        $post = $this->request->getData('Automap');
+        $post = $this->request->getData('Automap', []);
         $post = Hash::merge($defaults, $post);
 
         if ($post['container_id'] > 0) {

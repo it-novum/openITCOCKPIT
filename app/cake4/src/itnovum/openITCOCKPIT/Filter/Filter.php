@@ -25,7 +25,6 @@
 namespace itnovum\openITCOCKPIT\Filter;
 
 use Cake\Http\ServerRequest;
-use NotImplementedException;
 
 abstract class Filter {
 
@@ -41,7 +40,7 @@ abstract class Filter {
     /**
      * @param $filters
      * @return array
-     * @throws NotImplementedException
+     * @throws \Cake\Http\Exception\NotImplementedException
      */
     public function getConditionsByFilters($filters) {
         $conditions = [];
@@ -151,7 +150,7 @@ abstract class Filter {
                             break;
 
                         default:
-                            throw new NotImplementedException('This filter type is not implemented yet');
+                            throw new \Cake\Http\Exception\NotImplementedException('This filter type is not implemented yet');
                     }
                 }
             }
