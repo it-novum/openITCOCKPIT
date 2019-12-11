@@ -10,6 +10,9 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.systemsettings = result.data.all_systemsettings;
+                setTimeout(function(){
+                    jQuery("[rel=tooltip]").tooltip()
+                }, 250);
             });
         };
 
@@ -51,14 +54,6 @@ angular.module('openITCOCKPIT')
                 }
             });
         };
-
-        $scope.$watch('systemsettings', function(){
-            if($scope.systemsettings.length != 0){
-                jQuery(function(){
-                    jQuery("[rel=tooltip]").tooltip();
-                });
-            }
-        });
 
         $scope.generateOptions();
         $scope.load();
