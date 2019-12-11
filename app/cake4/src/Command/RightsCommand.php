@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2017>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -25,47 +25,56 @@
 
 declare(strict_types=1);
 
-namespace App\Shell;
+namespace App\Command;
 
 use App\Model\Table\SystemsettingsTable;
+use Cake\Console\Arguments;
+use Cake\Console\Command;
+use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
-use Cake\Console\Shell;
 use Cake\ORM\TableRegistry;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
- * Rights shell command.
+ * Rights command.
  */
-class RightsShell extends Shell {
+class RightsCommand extends Command {
     /**
-     * Manage the available sub-commands along with their arguments and help
+     * Hook method for defining this command's option parser.
      *
-     * @see http://book.cakephp.org/3.0/en/console-and-shells.html#configuring-options-and-generating-help
+     * @see https://book.cakephp.org/3.0/en/console-and-shells/commands.html#defining-arguments-and-options
      *
-     * @return \Cake\Console\ConsoleOptionParser
+     * @param \Cake\Console\ConsoleOptionParser $parser The parser to be defined
+     * @return \Cake\Console\ConsoleOptionParser The built parser.
      */
-    public function getOptionParser(): ConsoleOptionParser {
-        $parser = parent::getOptionParser();
+    public function buildOptionParser(ConsoleOptionParser $parser): ConsoleOptionParser {
+        $parser = parent::buildOptionParser($parser);
 
         return $parser;
     }
 
     /**
-     * main() method.
+     * Implement this method with your command's logic.
      *
-     * @return bool|int|null Success or error code.
+     * @param \Cake\Console\Arguments $args The command arguments.
+     * @param \Cake\Console\ConsoleIo $io The console io
+     * @return null|void|int The exit code or null for success
      */
-    public function main() {
+    public function execute(Arguments $args, ConsoleIo $io) {
         $directories = [
             '/usr/share/openitcockpit/',
             '/usr/share/openitcockpit-modules/',
             '/usr/share/openITCOCKPIT-modules/',
         ];
-        $this->setRights($directories);
+        $this->setRights($io, $directories);
     }
 
-    private function setRights($dirs = []) {
+    /**
+     * @param ConsoleIo $io
+     * @param array $dirs
+     */
+    private function setRights(ConsoleIo $io, $dirs = []) {
         try {
             /** @var SystemsettingsTable $SystemsettingsTable */
             $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
@@ -76,19 +85,19 @@ class RightsShell extends Shell {
             $fs = new Filesystem();
             foreach ($dirs as $dir) {
                 if ($fs->exists($dir)) {
-                    $this->out(sprintf(
+                    $io->out(sprintf(
                         '<info>Set filesystem permissions for user %s to %s...    </info>',
                         $user,
                         $dir
                     ), 0);
                     $fs->chown($dir, $user, true);
                     $fs->chgrp($dir, $group, true);
-                    $this->out('<success>done!</success>');
+                    $io->out('<success>done!</success>');
                 }
 
             }
         } catch (IOExceptionInterface $e) {
-            $this->out('<error>An error occurred at ' . $e->getPath() . ' </error>');
+            $io->out('<error>An error occurred at ' . $e->getPath() . ' </error>');
         }
     }
 }
