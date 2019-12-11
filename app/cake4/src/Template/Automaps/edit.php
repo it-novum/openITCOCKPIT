@@ -141,7 +141,7 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                             <div class="help-block" ng-show="data.hostCount > 0">
-                                <?php echo __('%s hosts matching to regular expression.', '{{data.hostCount}}'); ?>
+                                <?php echo __('{0} hosts matching to regular expression.', '{{data.hostCount}}'); ?>
                             </div>
                         </div>
                     </div>
@@ -160,7 +160,7 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                             <div class="help-block" ng-show="data.serviceCount > 0">
-                                <?php echo __('%s services matching to regular expression.', '{{data.serviceCount}}'); ?>
+                                <?php echo __('{0} services matching to regular expression.', '{{data.serviceCount}}'); ?>
                             </div>
                         </div>
                     </div>
