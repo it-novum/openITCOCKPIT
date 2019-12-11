@@ -25,6 +25,7 @@
 
 namespace App\Identifier;
 
+use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
 use Authentication\Identifier\AbstractIdentifier;
 use Authentication\Identifier\IdentifierInterface;
@@ -111,22 +112,48 @@ class SslIdentifier extends AbstractIdentifier implements IdentifierInterface {
             if (sizeof($names) >= 2) {
                 $firstname = $names[0];
                 $lastname = $names[1];
-            }
 
-            if (isset($certificate['subject']['OU']) && is_array($certificate['subject']['OU'])) {
-                $emailLike = '';
-                foreach ($certificate['subject']['OU'] as $index => $item) {
-                    if ($item !== 'People') {
-                        $emailLike = sprintf('@%s', $item);
+                if (isset($certificate['subject']['OU']) && is_array($certificate['subject']['OU'])) {
+                    $emailLike = '';
+                    foreach ($certificate['subject']['OU'] as $index => $item) {
+                        if ($item !== 'People') {
+                            $emailLike = sprintf('@%s', $item);
+                        }
+                    }
+
+                    if (!empty($emailLike)) {
+                        return $UsersTable->getUserForFhgLogin(
+                            $firstname, // = Max AND
+                            $lastname,  // = Mustermann AND
+                            $emailLike  // LIKE %@it-novum%
+                        );
                     }
                 }
 
-                if (!empty($emailLike)) {
-                    return $UsersTable->getUserForFhgLogin(
-                        $firstname, // = Max AND
-                        $lastname,  // = Mustermann AND
-                        $emailLike  // LIKE %@it-novum%
-                    );
+                // Try to find the user with first and last name only
+                $user = $UsersTable->getUserForFhgLoginInsecure(
+                    $firstname, // = Max AND
+                    $lastname  // = Mustermann
+                );
+
+                if($user !== null){
+                    //We found a user by first and last name
+                    return $user;
+                }
+
+                if (empty($user)) {
+                    //No user found, but user has a valid SSL cert - return a default user if defined.
+                    try{
+                        /** @var SystemsettingsTable $SystemsettingsTable */
+                        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
+                        $entity = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.CERT.DEFAULT_USER_EMAIL');
+                        if($entity->get('value') !== ''){
+                            return $UsersTable->getUserByEmailForLogin($entity->get('value'));
+                        }
+                    }catch (\Exception $e){
+                        return null;
+                    }
                 }
             }
         }

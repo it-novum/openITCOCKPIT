@@ -900,6 +900,23 @@ class UsersTable extends Table {
     }
 
     /**
+     * @param string $firstname
+     * @param string $lastname
+     * @param string $likeEmail
+     * @return array|EntityInterface|null
+     */
+    public function getUserForFhgLoginInsecure(string $firstname, string $lastname) {
+        $query = $this->find();
+        return $query
+            ->where([
+                'Users.firstname'  => $firstname,
+                'Users.lastname'   => $lastname,
+                'Users.is_active'  => 1
+            ])
+            ->first();
+    }
+
+    /**
      * May deprecated functions after fully moving to cakephp 4
      * @param $id
      * @return array|\Cake\Datasource\EntityInterface|null
