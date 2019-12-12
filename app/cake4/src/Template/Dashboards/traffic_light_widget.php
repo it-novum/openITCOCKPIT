@@ -70,10 +70,8 @@
                 <div ng-repeat="error in errors.Service">
                     <div class="help-block text-danger">{{ error }}</div>
                 </div>
-                <div class="form-group" ng-class="{'has-error': errors.active_checks_enabled}">
-                    <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
-                         ng-class="{'has-error': errors.active_checks_enabled}">
-
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox custom-control-down margin-bottom-10">
                         <input type="checkbox"
                                class="custom-control-input"
                                ng-true-value="1"
