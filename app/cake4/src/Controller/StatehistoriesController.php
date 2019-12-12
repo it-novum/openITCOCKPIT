@@ -60,7 +60,8 @@ class StatehistoriesController extends AppController {
             return;
         }
 
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
 
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
@@ -123,7 +124,8 @@ class StatehistoriesController extends AppController {
             return;
         }
 
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
 
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
