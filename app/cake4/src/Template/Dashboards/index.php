@@ -94,7 +94,7 @@
                              style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
                             <a href="javascript:void(0);" ng-repeat="availableWidget in availableWidgets"
                                ng-click="addWidgetToTab(availableWidget.type_id)" class="dropdown-item">
-                                <i class="fa {{availableWidget.icon}}"></i>&nbsp;
+                                <i class="{{availableWidget.icon}}"></i>&nbsp;
                                 {{availableWidget.title}}
                             </a>
 
