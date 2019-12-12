@@ -26,14 +26,14 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
 ?>
 <div class="row no-padding">
-    <div class="col-xs-12 text-center">
+    <div class="col-xs-12 col-lg-12 text-center">
 
         <img ng-src="/angular/getPieChart/{{hoststatusCount[0]}}/{{hoststatusCount[1]}}/{{hoststatusCount[2]}}.png">
 
-        <div class="col-xs-12 text-center padding-bottom-10 font-xs">
+        <div class="row text-center padding-bottom-10 font-xs">
 
             <?php if ($this->Acl->hasPermission('index', 'Hosts', '')): ?>
-                <div class="col-xs-12 col-md-4 no-padding">
+                <div class="col-xs-12 col-md-4 col-lg-4 no-padding">
                     <a ng-href="/ng/#!/hosts/index<?php echo RFCRouter::queryString([
                         'filter'    => [
                             'Hoststatus.current_state' => ['0' => 1]
@@ -46,14 +46,14 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                     </a>
                 </div>
             <?php else: ?>
-                <div class="col-xs-12 col-md-4 no-padding">
+                <div class="col-xs-12 col-md-4 col-lg-4">
                     <i class="fa fa-square ok"></i>
                     {{hoststatusCount[0]}} ({{hoststatusCountPercentage[0]}} %)
                 </div>
             <?php endif; ?>
 
             <?php if ($this->Acl->hasPermission('index', 'Hosts', '')): ?>
-                <div class="col-xs-12 col-md-4 no-padding">
+                <div class="col-xs-12 col-md-4 col-lg-4 no-padding">
                     <a ng-href="/ng/#!/hosts/index<?php echo RFCRouter::queryString([
                         'filter'    => [
                             'Hoststatus.current_state' => ['1' => 1]
@@ -66,14 +66,14 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                     </a>
                 </div>
             <?php else: ?>
-                <div class="col-xs-12 col-md-4 no-padding">
+                <div class="col-xs-12 col-md-4 col-lg-4">
                     <i class="fa fa-square critical"></i>
                     {{hoststatusCount[1]}} ({{hoststatusCountPercentage[1]}} %)
                 </div>
             <?php endif; ?>
 
             <?php if ($this->Acl->hasPermission('index', 'Hosts', '')): ?>
-                <div class="col-xs-12 col-md-4 no-padding">
+                <div class="col-xs-12 col-md-4 col-lg-4 no-padding">
                     <a ng-href="/ng/#!/hosts/index<?php echo RFCRouter::queryString([
                         'filter'    => [
                             'Hoststatus.current_state' => ['2' => 1]
@@ -86,7 +86,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                     </a>
                 </div>
             <?php else: ?>
-                <div class="col-xs-12 col-md-4 no-padding">
+                <div class="col-xs-12 col-md-4 col-lg-4">
                     <i class="fa fa-square unknown"></i>
                     {{hoststatusCount[2]}} ({{hoststatusCountPercentage[2]}} %)
                 </div>
