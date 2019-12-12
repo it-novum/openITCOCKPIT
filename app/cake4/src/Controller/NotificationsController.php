@@ -56,7 +56,8 @@ class NotificationsController extends AppController {
             return;
         }
 
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
 
         $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
@@ -105,7 +106,8 @@ class NotificationsController extends AppController {
             return;
         }
 
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
 
         $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
@@ -174,7 +176,8 @@ class NotificationsController extends AppController {
             return;
         }
 
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
 
         $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
@@ -228,7 +231,8 @@ class NotificationsController extends AppController {
             return;
         }
 
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
 
         /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');

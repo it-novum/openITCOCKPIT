@@ -89,7 +89,8 @@ class StatusmapsController extends AppController {
             $this->set('satellites', $satellites);
         }
 
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
 
         $allHostIds = [];
         $hasBrowserRight = $this->hasPermission('browser', 'hosts');
