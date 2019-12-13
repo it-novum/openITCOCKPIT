@@ -59,7 +59,8 @@ class ServicechecksController extends AppController {
             return;
         }
 
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
 
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');

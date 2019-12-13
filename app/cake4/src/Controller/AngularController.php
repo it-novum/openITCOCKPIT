@@ -58,8 +58,7 @@ use RuntimeException;
 
 /**
  * Class AngularController
- * @property AppAuthComponent Auth
- * @property MenuComponent Menu
+ * @package App\Controller
  */
 class AngularController extends AppController {
 
@@ -107,8 +106,9 @@ class AngularController extends AppController {
             //Only ship HTML template
             return;
         }
-        session_write_close();
 
+        $session = $this->request->getSession();
+        $session->close();
 
         $user = $this->getUser();
         $userTimezone = $user->get('timezone');
@@ -175,7 +175,6 @@ class AngularController extends AppController {
             //Only ship HTML template
             return;
         }
-        session_write_close();
 
 
         $user = $this->getUser();
@@ -218,7 +217,8 @@ class AngularController extends AppController {
         if (!$this->isApiRequest()) {
             throw new RuntimeException('Only for API requests');
         }
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
 
         $recursive = false;
         if ($this->request->getQuery('recursive') === 'true') {
@@ -345,7 +345,8 @@ class AngularController extends AppController {
 
             Cache::write($cacheKey, $jsonMenu, 'permissions');
         }
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
 
         $menu = Cache::read($cacheKey, 'permissions');
 
@@ -365,7 +366,8 @@ class AngularController extends AppController {
             $systemsettingsArray = $SystemsettingsTable->findAsArray();
             Cache::write('systemsettings', $systemsettingsArray, 'permissions');
         }
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
 
         $systemsettings = Cache::read('systemsettings', 'permissions');
         $websocketConfig = $systemsettings['SUDO_SERVER'];
@@ -389,7 +391,8 @@ class AngularController extends AppController {
             $systemsettingsArray = $SystemsettingsTable->findAsArray();
             Cache::write('systemsettings', $systemsettingsArray, 'permissions');
         }
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
 
         $systemsettings = Cache::read('systemsettings', 'permissions');
         $websocketConfig = $systemsettings['SUDO_SERVER'];
@@ -500,7 +503,8 @@ class AngularController extends AppController {
     }
 
     public function system_health() {
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML template
             return;
@@ -653,7 +657,8 @@ class AngularController extends AppController {
      * @throws Exception
      */
     public function getPieChart($up = 0, $down = 0, $unreachable = 1, $unknown = null) {
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
         $PieChart = new PieChart();
 
         $chartData = [$up, $down, $unreachable];
@@ -679,7 +684,8 @@ class AngularController extends AppController {
      * @throws Exception
      */
     public function getHalfPieChart($up = 0, $down = 0, $unreachable = 1, $unknown = null) {
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
         $PieChart = new PieChart();
 
         $chartData = [$up, $down, $unreachable];
@@ -705,7 +711,8 @@ class AngularController extends AppController {
      */
 
     public function getHostAndServiceStateSummaryIcon($size = 100, $bitMaskHostState = 0, $bitMaskServiceState = 0) {
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
         $HostAndServiceSummaryIcon = new HostAndServiceSummaryIcon($size);
         $HostAndServiceSummaryIcon->createSummaryIcon($bitMaskHostState, $bitMaskServiceState);
         $image = $HostAndServiceSummaryIcon->getImage();
@@ -733,7 +740,8 @@ class AngularController extends AppController {
             $systemsettingsArray = $SystemsettingsTable->findAsArray();
             Cache::write('systemsettings', $systemsettingsArray, 'permissions');
         }
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
 
         $systemsettings = Cache::read('systemsettings', 'permissions');
         $ldapConfig = [
