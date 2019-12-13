@@ -151,9 +151,8 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.linkForCopy = function(){
-            var baseUrl = '/hosts/copy/';
-            return buildUrl(baseUrl);
-
+            var ids = Object.keys(MassChangeService.getSelected());
+            return ids.join(',');
         };
 
         $scope.linkForEditDetails = function(){
@@ -198,7 +197,7 @@ angular.module('openITCOCKPIT')
             if(QueryStringService.hasValue('BrowserContainerId')){
                 params['BrowserContainerId'] = QueryStringService.getValue('BrowserContainerId');
             }
-            
+
             return baseUrl + $httpParamSerializer(params);
         };
 

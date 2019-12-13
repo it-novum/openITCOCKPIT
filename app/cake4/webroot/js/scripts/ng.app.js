@@ -947,6 +947,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "HostsSharingController"
             })
 
+            .state('HostsCopy', {
+                url: '/hosts/copy/:ids',
+                templateUrl: "/hosts/copy.html",
+                controller: "HostsCopyController"
+            })
+
             .state('HostdependenciesIndex', {
                 url: '/hostdependencies/index',
                 templateUrl: "/hostdependencies/index.html",
