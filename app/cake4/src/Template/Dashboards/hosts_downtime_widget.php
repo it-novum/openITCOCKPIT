@@ -1,7 +1,7 @@
 <div class="padding-10" style="border: 1px solid #c3c3c3;">
 
     <div class="row">
-        <div class="col-xs-1">
+        <div class="col-lg-1">
             <a href="javascript:void(0);" ng-show="useScroll" ng-click="pauseScroll()"
                title="<?php echo __('Pause scrolling'); ?>"
                class="btn btn-default btn-xs btn-primary">
@@ -14,7 +14,7 @@
             </a>
         </div>
 
-        <div class="col-xs-3 height-45px">
+        <div class="col-lg-3 height-45px">
             <div class="form-group form-group-slider">
                 <label class="display-inline">
                     <?php echo __('Scroll interval:'); ?>
@@ -33,7 +33,7 @@
         <div class="col-lg-8">
             <div class="row">
                 <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-bottom-10">
+                    <div class="custom-control custom-checkbox custom-control-left margin-right-5">
                         <input type="checkbox"
                                class="custom-control-input"
                                ng-true-value="1"
@@ -45,8 +45,10 @@
                             <?php echo __('Is running'); ?>
                         </label>
                     </div>
+                </div>
 
-                    <div class="custom-control custom-checkbox custom-control-left margin-bottom-10">
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox custom-control-left margin-right-5">
                         <input type="checkbox"
                                class="custom-control-input"
                                ng-true-value="1"
@@ -58,8 +60,10 @@
                             <?php echo __('Was not cancelled'); ?>
                         </label>
                     </div>
+                </div>
 
-                    <div class="custom-control custom-checkbox custom-control-left margin-bottom-10">
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox custom-control-left margin-right-5">
                         <input type="checkbox"
                                class="custom-control-input"
                                ng-true-value="1"
@@ -71,8 +75,10 @@
                             <?php echo __('Was cancelled'); ?>
                         </label>
                     </div>
+                </div>
 
-                    <div class="custom-control custom-checkbox custom-control-left margin-bottom-10">
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox custom-control-left margin-right-5">
                         <input type="checkbox"
                                class="custom-control-input"
                                ng-true-value="1"
@@ -89,24 +95,26 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-12 col-md-6">
-            <div class="form-group smart-form">
-                <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
-                    <input type="text" class="input-sm"
-                           placeholder="<?php echo __('Filter by host name'); ?>"
-                           ng-model="filter.Host.name"
-                           ng-model-options="{debounce: 500}">
-                </label>
+        <div class="col-xs-12 col-lg-6">
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="icon-prepend fa fa-desktop"></i></span>
+                </div>
+                <input type="text" class="form-control"
+                       placeholder="<?php echo __('Filter by host name'); ?>"
+                       ng-model="filter.Host.name"
+                       ng-model-options="{debounce: 500}">
             </div>
         </div>
-        <div class="col-xs-12 col-md-6">
-            <div class="form-group smart-form">
-                <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                    <input type="text" class="input-sm"
-                           placeholder="<?php echo __('Filter by comment'); ?>"
-                           ng-model="filter.DowntimeHost.comment_data"
-                           ng-model-options="{debounce: 500}">
-                </label>
+        <div class="col-xs-12 col-lg-6">
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="icon-prepend fa fa-filter"></i></span>
+                </div>
+                <input type="text" class="form-control"
+                       placeholder="<?php echo __('Filter by comment'); ?>"
+                       ng-model="filter.DowntimeHost.comment_data"
+                       ng-model-options="{debounce: 500}">
             </div>
         </div>
     </div>
