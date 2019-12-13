@@ -4,12 +4,12 @@
         <div class="col-lg-1">
             <a href="javascript:void(0);" ng-show="useScroll" ng-click="pauseScroll()"
                title="<?php echo __('Pause scrolling'); ?>"
-               class="btn btn-default btn-xs btn-primary">
+               class="btn btn-xs btn-primary">
                 <i class="fa fa-pause"></i>
             </a>
             <a href="javascript:void(0);" ng-show="!useScroll"
                ng-click="startScroll()" title="<?php echo __('Start scrolling'); ?>"
-               class="btn btn-default btn-xs btn-primary">
+               class="btn btn-xs btn-primary">
                 <i class="fa fa-play"></i>
             </a>
         </div>
