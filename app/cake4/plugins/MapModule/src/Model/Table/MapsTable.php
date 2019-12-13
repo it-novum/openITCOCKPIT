@@ -6,8 +6,11 @@ namespace MapModule\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\ORM\Query;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
 
@@ -56,9 +59,11 @@ class MapsTable extends Table {
         $this->addBehavior('Timestamp');
 
         $this->belongsToMany('Containers', [
-            'className' => 'Containers',
-            'joinTable' => 'maps_to_containers',
-            'dependent' => true,
+            'className'        => 'Containers',
+            'foreignKey'       => 'map_id',
+            'targetForeignKey' => 'container_id',
+            'joinTable'        => 'maps_to_containers',
+            //'saveStrategy'     => 'replace'
         ]);
 
         $this->hasMany('Mapgadgets', [
@@ -76,10 +81,6 @@ class MapsTable extends Table {
         $this->hasMany('Maplines', [
             'foreignKey' => 'map_id',
             'className'  => 'MapModule.Maplines',
-        ]);
-        $this->hasMany('MapsToContainers', [
-            'foreignKey' => 'map_id',
-            'className'  => 'MapModule.MapsToContainers',
         ]);
         $this->hasMany('MapsToRotations', [
             'foreignKey' => 'map_id',
@@ -105,6 +106,13 @@ class MapsTable extends Table {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
+
+        $validator
+            ->requirePresence('containers', true, __('You have to choose at least one option.'))
+            ->allowEmptyString('containers', null, false)
+            ->multipleOptions('containers', [
+                'min' => 1
+            ], __('You have to choose at least one option.'));
 
         $validator
             ->scalar('name')
@@ -137,40 +145,66 @@ class MapsTable extends Table {
      * @return array
      */
     public function getMapsIndex(MapFilter $MapFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
-        //debug($MapFilter->getOrderForPaginator('Maps.name', 'asc'));
-        //die();
+        if(!is_array($MY_RIGHTS)){
+            $MY_RIGHTS = [$MY_RIGHTS];
+        }
         $query = $this->find('all')
             ->where($MapFilter->indexFilter())
             ->distinct('Maps.id')
-            ->contain(['Containers', 'MapsToContainers'])
-            ->innerJoinWith('Containers', function ($q) use ($MY_RIGHTS) {
+            ->contain(['Containers'])
+            ->innerJoinWith('Containers', function (Query $query) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
-                    return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+                    return $query->where(['Containers.id IN' => $MY_RIGHTS]);
                 }
-                return $q;
+                return $query;
             })
-            ->innerJoinWith('MapsToContainers', function ($q) use ($MY_RIGHTS) {
-                if (!empty($MY_RIGHTS)) {
-                    return $q->where(['MapsToContainers.map_id' => 'Maps.id']);
-                }
-                return $q;
-            })
-            ->enableAutoFields()
-            ->disableHydration()
             ->order($MapFilter->getOrderForPaginator('Maps.name', 'asc'));
-
 
         if ($PaginateOMat === null) {
             //Just execute query
-            $result = $this->formatResultAsCake2($query->toArray(), false);
+            $result = $query->toArray();
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
-                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
             }
         }
 
         return $result;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Maps.id' => $id]);
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getMapForEdit($id) {
+        $query = $this->find()
+            ->where([
+                'Maps.id' => $id
+            ])
+            ->contain([
+                'Containers'
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        $contact = $query;
+        $contact['containers'] = [
+            '_ids' => Hash::extract($query, 'containers.{n}.id')
+        ];
+
+        return [
+            'Map' => $contact
+        ];
     }
 }

@@ -1,14 +1,6 @@
 angular.module('openITCOCKPIT')
-    .controller('MapsEditController', function($scope, $http, $stateParams, $state, NotyService){
+    .controller('MapsEditController', function($scope, $http, $stateParams, $state, NotyService, RedirectService){
 
-        $scope.post = {
-            Map: {
-                name: '',
-                title: '',
-                refresh_interval: 90,
-                container_id: []
-            }
-        };
         $scope.id = $stateParams.id;
 
         $scope.deleteUrl = "/map_module/maps/delete/" + $scope.id + ".json?angular=true";
@@ -20,17 +12,8 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                $scope.map = result.data.map;
-                var selectedContainer = [];
-
-                for(var key in $scope.map.Container){
-                    selectedContainer.push(parseInt($scope.map.Container[key].id, 10));
-                }
-
-                $scope.post.Map.container_id = selectedContainer;
-                $scope.post.Map.name = $scope.map.Map.name;
-                $scope.post.Map.title = $scope.map.Map.title;
-                $scope.post.Map.refresh_interval = (parseInt($scope.map.Map.refresh_interval, 10) / 1000);
+                $scope.post = result.data.map;
+                $scope.post.Map.refresh_interval = (parseInt($scope.post.Map.refresh_interval, 10) / 1000);
                 $scope.init = false;
             }, function errorCallback(result){
                 if(result.status === 403){
@@ -58,8 +41,16 @@ angular.module('openITCOCKPIT')
             $http.post("/map_module/maps/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
-                NotyService.genericSuccess();
-                $state.go('MapsIndex');
+                var url = $state.href('MapsEdit', {id: $scope.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
+
+                RedirectService.redirectWithFallback('MapsIndex');
+
+                console.log('Data saved successfully');
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
