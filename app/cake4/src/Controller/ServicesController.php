@@ -1800,7 +1800,8 @@ class ServicesController extends AppController {
      * @throws MissingDbBackendException
      */
     public function timeline($id = null) {
-        session_write_close();
+        $session = $this->request->getSession();
+        $session->close();
 
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();

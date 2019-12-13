@@ -120,7 +120,6 @@ class ExportsController extends AppController {
             }
         }
 
-        //session_write_close();
 
         $exportRunning = true;
         $result = $this->Export->findByTask('export_started');
