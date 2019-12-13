@@ -4,7 +4,7 @@
         <div class="col-lg-1">
             <a href="javascript:void(0);" ng-show="useScroll" ng-click="pauseScroll()"
                title="<?php echo __('Pause scrolling'); ?>"
-               class="btn btn-default btn-xs btn-primary">
+               class="btn btn-xs btn-primary">
                 <i class="fa fa-pause"></i>
             </a>
             <a href="javascript:void(0);" ng-show="!useScroll"
@@ -14,7 +14,7 @@
             </a>
         </div>
 
-        <div class="col-lg-3 height-45px">
+        <div class="col-lg-3">
             <div class="form-group form-group-slider">
                 <label class="display-inline">
                     <?php echo __('Scroll interval:'); ?>
@@ -33,7 +33,7 @@
         <div class="col-lg-8">
             <div class="row">
                 <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-right-5">
+                    <div class="custom-control custom-checkbox custom-control-left margin-right-10">
                         <input type="checkbox"
                                class="custom-control-input"
                                ng-true-value="1"
@@ -48,7 +48,7 @@
                 </div>
 
                 <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-right-5">
+                    <div class="custom-control custom-checkbox custom-control-left margin-right-10">
                         <input type="checkbox"
                                class="custom-control-input"
                                ng-true-value="1"
@@ -63,7 +63,7 @@
                 </div>
 
                 <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-right-5">
+                    <div class="custom-control custom-checkbox custom-control-left margin-right-10">
                         <input type="checkbox"
                                class="custom-control-input"
                                ng-true-value="1"
@@ -78,7 +78,7 @@
                 </div>
 
                 <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-right-5">
+                    <div class="custom-control custom-checkbox custom-control-left margin-right-10">
                         <input type="checkbox"
                                class="custom-control-input"
                                ng-true-value="1"
@@ -119,10 +119,9 @@
         </div>
     </div>
 </div>
-<div class="mobile_table margin-top-10">
+<div class="margin-top-10">
 
-    <table id="hostdowntimes_list"
-           class="table table-striped table-hover table-bordered smart-form" style="">
+    <table id="hostdowntimes_list" class="table table-striped m-0 table-bordered">
         <thead>
         <tr>
             <th class="no-sort"><?php echo __('Running'); ?></th>
@@ -209,13 +208,12 @@
         <tr>
         </tbody>
     </table>
-    <scroll scroll="scroll" click-action="changepage" only-buttons="true" ng-if="scroll"></scroll>
-
-</div>
-<div class="row margin-top-10 margin-bottom-10">
-    <div class="row margin-top-10 margin-bottom-10" ng-show="downtimes.length == 0">
-        <div class="col-xs-12 text-center txt-color-red italic">
+    <div class="margin-top-10" ng-show="downtimes.length == 0">
+        <div class="text-center text-danger italic">
             <?php echo __('No entries match the selection'); ?>
         </div>
     </div>
+    <scroll scroll="scroll" click-action="changepage" only-buttons="true" ng-if="scroll"></scroll>
+
 </div>
+
