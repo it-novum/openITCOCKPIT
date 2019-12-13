@@ -634,7 +634,7 @@
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
-                                <a ng-href="{{ linkForCopy() }}" class="a-clean">
+                                <a ui-sref="HostsCopy({ids: linkForCopy()})" class="a-clean">
                                     <i class="fa fa-lg fa-files-o"></i>
                                     <?php echo __('Copy'); ?>
                                 </a>

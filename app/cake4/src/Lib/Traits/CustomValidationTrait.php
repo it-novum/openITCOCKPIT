@@ -145,8 +145,8 @@ trait CustomValidationTrait {
 
             $flapDetectionOptionsHosttemplate = [
                 'hosttemplate_flap_detection_on_up',
-                'hosttemplate_flap_detection_on_up',
-                'hosttemplate_flap_detection_on_up'
+                'hosttemplate_flap_detection_on_down',
+                'hosttemplate_flap_detection_on_unreachable'
             ];
 
             foreach ($flapDetectionOptionsHosttemplate as $flapDetectionOptionHosttemplate) {
