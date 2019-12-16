@@ -1293,22 +1293,22 @@ class HostsController extends AppController {
         $validationErrors = [];
         if ($this->request->is('post') || $this->request->is('put')) {
             $validationError = false;
-            $dataToSaveArray = [];
             //We want to save/validate the data and save it
             $postData = $this->request->getData('data');
 
             foreach ($postData as $index => $host2copyData) {
-                $newHostEntityData = [];
-                $changelog_data = [];
+                $action = 'copy';
+                $currentDataForChangelog = [];
+                $extDataForChangelog = [];
                 if (!$HostsTable->existsById($host2copyData['Source']['id'])) {
                     continue;
                 }
                 if (!isset($host2copyData['Host']['id'])) {
-                    $action = 'copy';
                     $hostgroupsIds = [];
                     $parenthostsIds = [];
                     $contactsIds = [];
                     $contactgroupsIds = [];
+                    $containerIds = [];
                     $hostcommandargumentvalues = [];
                     $customvariables = [];
 
@@ -1334,6 +1334,10 @@ class HostsController extends AppController {
                             'flap_detection_on_up',
                             'flap_detection_on_down',
                             'flap_detection_on_unreachable',
+                            'own_contacts',
+                            'own_contactgroups',
+                            'own_customvariables',
+                            'host_type',
                             'notes',
                             'priority',
                             'tags',
@@ -1343,22 +1347,23 @@ class HostsController extends AppController {
                     /** @var \App\Model\Entity\Hosttemplate $hosttemplate */
                     $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($sourceHost->get('hosttemplate_id'));
 
-                    $newHost = $HostsTable->newEmptyEntity();
-                    $newHost->setNew(true);
+                    $tmpHost = $HostsTable->newEmptyEntity();
+                    $tmpHost->setNew(true);
                     if (!empty($hostDefaultValues)) {
-                        $newHost->set($hostDefaultValues);
+                        $tmpHost->set($hostDefaultValues);
                     }
 
-                    $newHost->set('uuid', UUID::v4());
-                    $newHost->set('name', $host2copyData['Host']['name']);
-                    $newHost->set('description', $host2copyData['Host']['description']);
-                    $newHost->set('address', $host2copyData['Host']['address']);
-                    $newHost->set('host_url', $host2copyData['Host']['host_url']);
+                    $tmpHost->set('uuid', UUID::v4());
+                    $tmpHost->set('usage_flag', 0);
+                    $tmpHost->set('name', $host2copyData['Host']['name']);
+                    $tmpHost->set('description', $host2copyData['Host']['description']);
+                    $tmpHost->set('address', $host2copyData['Host']['address']);
+                    $tmpHost->set('host_url', $host2copyData['Host']['host_url']);
                     foreach ($sourceHost->get('hostgroups') as $hostgroup) {
                         $hostgroupsIds[] = $hostgroup->get('id');
-                        $newHost->set('hostgroups', Hash::remove(
-                            $sourceHost->get('hostgroups'), '{n}._joinData'
-                        ));
+                    }
+                    foreach ($sourceHost->get('hosts_to_containers_sharing') as $container) {
+                        $containerIds[] = $container->get('id');
                     }
                     foreach ($sourceHost->get('parenthosts') as $parenthost) {
                         $parenthostsIds[] = $parenthost->get('id');
@@ -1381,84 +1386,65 @@ class HostsController extends AppController {
                             'value' => $customvariable->get('value')
                         ];
                     }
-                    $newHost->set([
+
+                    $tmpHost->set([
+                        'hosts_to_containers_sharing' => [
+                            '_ids' => $containerIds
+                        ]
+                    ]);
+                    $tmpHost->set([
                         'hostgroups' => [
                             '_ids' => $hostgroupsIds
                         ]
                     ]);
-                    $newHost->set([
+
+                    $tmpHost->set([
                         'parenthosts' => [
                             '_ids' => $parenthostsIds
                         ]
                     ]);
-                    $newHost->set([
+                    $tmpHost->set([
                         'contacts' => [
                             '_ids' => $contactsIds
                         ]
                     ]);
-                    $newHost->set([
+                    $tmpHost->set([
                         'contactgroups' => [
                             '_ids' => $contactgroupsIds
                         ]
                     ]);
 
-                    $newHost->hostcommandargumentvalues = $hostcommandargumentvalues;
-                    $newHost->customvariables = $customvariables;
+                    $tmpHost->hostcommandargumentvalues = $hostcommandargumentvalues;
+                    $tmpHost->customvariables = $customvariables;
 
+                    $HostMergerForView = new HostMergerForView(['Host' => $tmpHost->toArray()], $hosttemplate);
+                    $mergedHost = $HostMergerForView->getDataForView();
+                    $extDataForChangelog = $HostsTable->resolveDataForChangelog($mergedHost);
+                    $extDataForChangelog = array_merge($mergedHost, $extDataForChangelog);
 
+                    $hostData = $tmpHost->toArray();
+                    $hostData['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
+                    $hostData['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
+                    $hostData['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
 
-                    //debug($hosttemplate);
-                    //debug($newHost->toArray());
-
-                    $newHost->set('hosttemplate_flap_detection_enabled', $sourceHost->get('flap_detection_enabled'));
-                    $newHost->set('hosttemplate_flap_detection_on_up', $sourceHost->get('flap_detection_on_up'));
-                    $newHost->set('hosttemplate_flap_detection_on_down', $sourceHost->get('flap_detection_on_down'));
-                    $newHost->set('hosttemplate_flap_detection_on_unreachable', $sourceHost->get('flap_detection_on_unreachable'));
-
-
+                    $newHost = $HostsTable->newEntity($hostData);
                 }
 
                 if (isset($host2copyData['Host']['id'])) {
                     $action = 'edit';
                     $newHost = $HostsTable->get($host2copyData['Host']['id']);
+                    $currentDataForChangelog = $newHost->toArray();
                     $newHost->set('hosttemplate_flap_detection_enabled', $newHost->get('flap_detection_enabled'));
                     $newHost->set('hosttemplate_flap_detection_on_up', $newHost->get('flap_detection_on_up'));
                     $newHost->set('hosttemplate_flap_detection_on_down', $newHost->get('flap_detection_on_down'));
                     $newHost->set('hosttemplate_flap_detection_on_unreachable', $newHost->get('flap_detection_on_unreachable'));
                     $newHost = $HostsTable->patchEntity($newHost, $host2copyData['Host']);
+                    $extDataForChangelog = $newHost->toArray();
                 }
 
-                $HostComparisonForSave = new HostComparisonForSave([
-                    'Host' => $newHost->toArray()
-                ], $hosttemplate);
-
-                $newHostEntityData = $HostComparisonForSave->getDataForSaveForAllFields();
-//                debug($newHostEntityData);
-
-                $HostMergerForView = new HostMergerForView(['Host' => $newHost->toArray()], $hosttemplate);
-                $mergedHost = $HostMergerForView->getDataForView();
-//debug($mergedHost);
-                $extDataForChangelog = $HostsTable->resolveDataForChangelog($mergedHost);
-//                debug($extDataForChangelog);
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'add',
-                    'hosts',
-                    123,
-                    //$newHost->get('id'),
-                    OBJECT_HOST,
-                    $newHost->get('container_id'),
-                    $User->getId(),
-                    $newHost->get('name'),
-                    array_merge($mergedHost, $extDataForChangelog)
-                );
-                debug($changelog_data);
-                return;
-                $HosttemplatesTable->save($newHost);
-
+                $HostsTable->save($newHost);
                 $postData[$index]['Error'] = [];
+
                 if ($newHost->hasErrors()) {
                     $hasErrors = true;
                     $postData[$index]['Error'] = $newHost->getErrors();
@@ -1476,43 +1462,23 @@ class HostsController extends AppController {
                     $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'hosts',
-                        $postData[$index]['Host']['id'],
+                        $newHost->get('id'),
+                        //$newHost->get('id'),
                         OBJECT_HOST,
-                        [$containerIds],
+                        $containerIds,
                         $User->getId(),
                         $newHost->get('name'),
-                        ['Host' => $newHostEntityData]
+                        $extDataForChangelog,
+                        $currentDataForChangelog
                     );
+
                     if ($changelog_data) {
                         /** @var Changelog $changelogEntry */
                         $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
                         $ChangelogsTable->save($changelogEntry);
                     }
                 }
-
-
-                /*
-
-                                debug($sourceHost->get('parenthosts'));
-                                debug($sourceHost->get('customvariables'));
-                                debug($sourceHost->get('contacts'));
-                                debug($sourceHost->get('contactgroups'));
-                */
-
-                /* $hostData['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
-            $hostData['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
-            $hostData['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
-            $hostData['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];*/
-
-
-                //               print_r($hostDataToSave);
-
-                //$host = $HostsTable->newEntity($sourceHost->toArray());
-                //$HostsTable->save($host);
-                continue;
-
             }
-
         }
         $this->set('back_url', $this->referer());
     }

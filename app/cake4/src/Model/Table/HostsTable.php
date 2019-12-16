@@ -2251,6 +2251,10 @@ class HostsTable extends Table {
                 'Hosts.id' => $id
             ])
             ->contain([
+                'HostsToContainersSharing'                =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select(['id']);
+                    },
                 'Contactgroups'             =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)->select(['id']);
@@ -2287,8 +2291,6 @@ class HostsTable extends Table {
      * @return array
      */
     public function getDataForChangelogCopy($host, $hosttemplate) {
-        debug($host);
-        debug($hosttemplate);
         $fieldsToCheck = [
             'check_interval',
             'retry_interval',
@@ -2315,18 +2317,17 @@ class HostsTable extends Table {
             }
         }
 
-        foreach($hosttemplate['Hosttemplate'] as $fieldName =>  $fieldValue){
-            if(!in_array($fieldName, $fieldsToCheck)){
+        foreach ($hosttemplate['Hosttemplate'] as $fieldName => $fieldValue) {
+            if (!in_array($fieldName, $fieldsToCheck)) {
                 continue;
             }
             $dataForChangelog['Host'][$fieldName] = $fieldValue;
-            if(isset($host[$fieldName]) && !empty($host[$fieldName])){
+            if (isset($host[$fieldName]) && !empty($host[$fieldName])) {
                 $dataForChangelog['Host'][$fieldName] = $host[$fieldName];
 
             }
             //$dataForChangelog['Host'][$fieldName] = (!empty($host[$fieldName]))?$host[$fieldName]:$hosttemplate[$fieldName];
         }
-debug($dataForChangelog);
         $dataForChangelog = [
             'Host'                     => Hash::merge($dataForChangelog['Host'], $hosttemplate['Hosttemplate']),
             'Contact'                  => (!empty($host['contacts'])) ? $host['contacts'] : $hosttemplate['contacts'],
