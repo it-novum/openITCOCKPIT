@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace MapModule\Model\Entity;
 
+use App\Model\Entity\Container;
 use Cake\ORM\Entity;
 
 /**
@@ -50,6 +51,18 @@ class Map extends Entity {
         'maps_to_rotations'  => true,
         'mapsummaryitems'    => true,
         'maptexts'           => true,
-        'container'          => true
+        'containers'         => true
     ];
+
+    /**
+     * @return array
+     */
+    public function getContainerIds() {
+        foreach ($this->containers as $container) {
+            /** @var Container $container */
+            $containerIds[] = $container->get('id');
+        }
+
+        return array_unique($containerIds);
+    }
 }

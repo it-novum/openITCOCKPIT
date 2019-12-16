@@ -58,8 +58,8 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.maps){
                 for(var key in $scope.maps){
-                    if($scope.maps[key].Map.allowEdit){
-                        var id = $scope.maps[key].Map.id;
+                    if($scope.maps[key].allowEdit){
+                        var id = $scope.maps[key].id;
                         $scope.massChange[id] = true;
                         $scope.selectedElements = MassChangeService.getCount();
                     }
@@ -72,8 +72,8 @@ angular.module('openITCOCKPIT')
             var selectedObjects = MassChangeService.getSelected();
             for(var key in $scope.maps){
                 for(var id in selectedObjects){
-                    if(id == $scope.maps[key].Map.id){
-                        objects[id] = $scope.maps[key].Map.name;
+                    if(id == $scope.maps[key].id){
+                        objects[id] = $scope.maps[key].name;
                     }
 
                 }
@@ -83,7 +83,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(map){
             var object = {};
-            object[map.Map.id] = map.Map.name + '/' + map.Map.title;
+            object[map.id] = map.name + '/' + map.title;
             return object;
         };
 

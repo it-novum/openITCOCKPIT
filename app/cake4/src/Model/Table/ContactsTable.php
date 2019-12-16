@@ -331,7 +331,7 @@ class ContactsTable extends Table {
         $query->contain(['Containers']);
         $query->where($ContactsFilter->indexFilter());
 
-        $query->innerJoinWith('Containers', function ($q) use ($MY_RIGHTS) {
+        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
             if (!empty($MY_RIGHTS)) {
                 return $q->where(['Containers.id IN' => $MY_RIGHTS]);
             }

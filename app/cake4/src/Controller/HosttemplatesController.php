@@ -453,7 +453,7 @@ class HosttemplatesController extends AppController {
                         'hosttemplates',
                         $postData[$index]['Hosttemplate']['id'],
                         OBJECT_HOSTTEMPLATE,
-                        [ROOT_CONTAINER],
+                        [$newHosttemplateEntity->get('container_id')],
                         $User->getId(),
                         $newHosttemplateEntity->get('name'),
                         ['Hosttemplate' => $newHosttemplateData]
