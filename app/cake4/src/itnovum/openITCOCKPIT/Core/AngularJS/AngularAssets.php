@@ -47,10 +47,7 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/angular-ui-router/release/angular-ui-router.min.js',
         'node_modules/jquery.cookie/jquery.cookie.js',
         'legacy/js/vendor/chosen.jquery.min.js',
-        // 'vendor/node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.js',
         'node_modules/bootstrap4-tagsinput/tagsinput.js',
-        //'vendor/node_modules/jquery-tageditor/jquery.tag-editor.js',
-        //'vendor/node_modules/jquery-tageditor/jquery.caret.min.js',
         'legacy/js/app/layoutfix.js',
         'legacy/js/lib/ColorGenerator.js',
         'legacy/js/lib/colr.js',
@@ -77,6 +74,7 @@ class AngularAssets implements AngularAssetsInterface {
         /*'smartadmin/js/notification/SmartNotification.js',
         'vendor/node_modules/rangyinputs/rangyinputs-jquery.js',
         'vendor/node_modules/javascript-detect-element-resize/jquery.resize.js',*/
+        //'node_modules/javascript-detect-element-resize/jquery.resize.js',
         'node_modules/angular-gridster/dist/angular-gridster.min.js',
         'legacy/js/lib/GraphDefaults.js',
         'legacy/js/lib/jqconsole.min.js',

@@ -37,7 +37,7 @@
         "node-waves": "^0.7.6",
         "bootstrap4c-chosen": "^1.1.1",
         "jquery-blockui": "^2.7.0",
-        "highlight-within-textarea": "^2.0.5"
+        "highlight-within-textarea": "^2.0.5",
     },
     "devDependencies": {},
     "scripts": {

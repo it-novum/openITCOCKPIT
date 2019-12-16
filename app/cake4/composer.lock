@@ -198,12 +198,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cakephp/cakephp.git",
-                "reference": "ccc0c3a2bb8f48c54578bfd336f87f0456dfb736"
+                "reference": "767b164747df789db8c0fbcf3bcf9eaf3be55b38"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cakephp/cakephp/zipball/ccc0c3a2bb8f48c54578bfd336f87f0456dfb736",
-                "reference": "ccc0c3a2bb8f48c54578bfd336f87f0456dfb736",
+                "url": "https://api.github.com/repos/cakephp/cakephp/zipball/767b164747df789db8c0fbcf3bcf9eaf3be55b38",
+                "reference": "767b164747df789db8c0fbcf3bcf9eaf3be55b38",
                 "shasum": ""
             },
             "require": {
@@ -285,7 +285,7 @@
                 "rapid-development",
                 "validation"
             ],
-            "time": "2019-12-11T08:21:13+00:00"
+            "time": "2019-12-16T01:57:50+00:00"
         },
         {
             "name": "cakephp/chronos",
@@ -348,23 +348,23 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cakephp/migrations.git",
-                "reference": "b010b0d8c4fc59b08cf8e0c56d04956c7d84ad48"
+                "reference": "a990a87f21ff8130935c9b2de58bb47d6d1b6a4d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cakephp/migrations/zipball/b010b0d8c4fc59b08cf8e0c56d04956c7d84ad48",
-                "reference": "b010b0d8c4fc59b08cf8e0c56d04956c7d84ad48",
+                "url": "https://api.github.com/repos/cakephp/migrations/zipball/a990a87f21ff8130935c9b2de58bb47d6d1b6a4d",
+                "reference": "a990a87f21ff8130935c9b2de58bb47d6d1b6a4d",
                 "shasum": ""
             },
             "require": {
-                "cakephp/cache": "4.x-dev",
-                "cakephp/orm": "4.x-dev",
+                "cakephp/cache": "^4.0",
+                "cakephp/orm": "^4.0",
                 "php": ">=7.2.0",
-                "robmorgan/phinx": "0.11.x-dev"
+                "robmorgan/phinx": "0.next-dev"
             },
             "require-dev": {
-                "cakephp/bake": "4.x-dev",
-                "cakephp/cakephp": "4.x-dev as 4.0.0",
+                "cakephp/bake": "^2.0",
+                "cakephp/cakephp": "^4.0",
                 "cakephp/cakephp-codesniffer": "dev-next",
                 "phpunit/phpunit": "^8.0"
             },
@@ -393,7 +393,7 @@
                 "cakephp",
                 "migrations"
             ],
-            "time": "2019-11-08T02:55:28+00:00"
+            "time": "2019-12-16T09:34:08+00:00"
         },
         {
             "name": "cakephp/plugin-installer",
@@ -1812,28 +1812,28 @@
         },
         {
             "name": "robmorgan/phinx",
-            "version": "0.11.x-dev",
+            "version": "dev-0.next",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cakephp/phinx.git",
-                "reference": "c123ffe30a634714822d4462c4d02b1ae24792f0"
+                "reference": "4ade4fa8edf1cde3bdcb00dae709b3d6b504416b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cakephp/phinx/zipball/c123ffe30a634714822d4462c4d02b1ae24792f0",
-                "reference": "c123ffe30a634714822d4462c4d02b1ae24792f0",
+                "url": "https://api.github.com/repos/cakephp/phinx/zipball/4ade4fa8edf1cde3bdcb00dae709b3d6b504416b",
+                "reference": "4ade4fa8edf1cde3bdcb00dae709b3d6b504416b",
                 "shasum": ""
             },
             "require": {
                 "cakephp/cakephp": "4.x-dev as 4.0.0",
                 "php": ">=7.2",
-                "symfony/config": "^2.8|^3.0|^4.0",
-                "symfony/console": "^2.8|^3.0|^4.0",
-                "symfony/yaml": "^2.8|^3.0|^4.0"
+                "symfony/config": "^3.4|^4.0|^5.0",
+                "symfony/console": "^3.4|^4.0|^5.0",
+                "symfony/yaml": "^3.4|^4.0|^5.0"
             },
             "require-dev": {
                 "cakephp/cakephp-codesniffer": "^3.0",
-                "phpunit/phpunit": ">=5.7,<7.0",
+                "phpunit/phpunit": ">=5.7,<8.0",
                 "sebastian/comparator": ">=1.2.3"
             },
             "bin": [
@@ -1851,16 +1851,16 @@
             ],
             "authors": [
                 {
-                    "name": "Woody Gilk",
-                    "email": "woody.gilk@gmail.com",
-                    "homepage": "http://shadowhand.me",
-                    "role": "Developer"
-                },
-                {
                     "name": "Rob Morgan",
                     "email": "robbym@gmail.com",
                     "homepage": "https://robmorgan.id.au",
                     "role": "Lead Developer"
+                },
+                {
+                    "name": "Woody Gilk",
+                    "email": "woody.gilk@gmail.com",
+                    "homepage": "https://shadowhand.me",
+                    "role": "Developer"
                 },
                 {
                     "name": "Richard Quadling",
@@ -1869,7 +1869,8 @@
                 },
                 {
                     "name": "CakePHP Community",
-                    "homepage": "https://github.com/cakephp/phinx/graphs/contributors"
+                    "homepage": "https://github.com/cakephp/phinx/graphs/contributors",
+                    "role": "Developer"
                 }
             ],
             "description": "Phinx makes it ridiculously easy to manage the database migrations for your PHP app.",
@@ -1881,36 +1882,36 @@
                 "migrations",
                 "phinx"
             ],
-            "time": "2019-07-06T02:41:39+00:00"
+            "time": "2019-12-16T09:50:32+00:00"
         },
         {
             "name": "symfony/config",
-            "version": "v4.4.1",
+            "version": "v5.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
-                "reference": "7aa5817f1b7a8ed377752b90fcc47dfb3c67b40c"
+                "reference": "c0773efcc2c940ffbc4c34a0dba2836f2cf6dc9c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/config/zipball/7aa5817f1b7a8ed377752b90fcc47dfb3c67b40c",
-                "reference": "7aa5817f1b7a8ed377752b90fcc47dfb3c67b40c",
+                "url": "https://api.github.com/repos/symfony/config/zipball/c0773efcc2c940ffbc4c34a0dba2836f2cf6dc9c",
+                "reference": "c0773efcc2c940ffbc4c34a0dba2836f2cf6dc9c",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1.3",
-                "symfony/filesystem": "^3.4|^4.0|^5.0",
+                "php": "^7.2.5",
+                "symfony/filesystem": "^4.4|^5.0",
                 "symfony/polyfill-ctype": "~1.8"
             },
             "conflict": {
-                "symfony/finder": "<3.4"
+                "symfony/finder": "<4.4"
             },
             "require-dev": {
-                "symfony/event-dispatcher": "^3.4|^4.0|^5.0",
-                "symfony/finder": "^3.4|^4.0|^5.0",
-                "symfony/messenger": "^4.1|^5.0",
+                "symfony/event-dispatcher": "^4.4|^5.0",
+                "symfony/finder": "^4.4|^5.0",
+                "symfony/messenger": "^4.4|^5.0",
                 "symfony/service-contracts": "^1.1|^2",
-                "symfony/yaml": "^3.4|^4.0|^5.0"
+                "symfony/yaml": "^4.4|^5.0"
             },
             "suggest": {
                 "symfony/yaml": "To use the yaml reference dumper"
@@ -1918,7 +1919,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.4-dev"
+                    "dev-master": "5.0-dev"
                 }
             },
             "autoload": {
@@ -1945,7 +1946,7 @@
             ],
             "description": "Symfony Config Component",
             "homepage": "https://symfony.com",
-            "time": "2019-12-01T10:50:45+00:00"
+            "time": "2019-12-01T10:51:15+00:00"
         },
         {
             "name": "symfony/console",
@@ -2618,27 +2619,27 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v4.4.1",
+            "version": "v5.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "76de473358fe802578a415d5bb43c296cf09d211"
+                "reference": "51b684480184fa767b97e28eaca67664e48dd3e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/76de473358fe802578a415d5bb43c296cf09d211",
-                "reference": "76de473358fe802578a415d5bb43c296cf09d211",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/51b684480184fa767b97e28eaca67664e48dd3e9",
+                "reference": "51b684480184fa767b97e28eaca67664e48dd3e9",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1.3",
+                "php": "^7.2.5",
                 "symfony/polyfill-ctype": "~1.8"
             },
             "conflict": {
-                "symfony/console": "<3.4"
+                "symfony/console": "<4.4"
             },
             "require-dev": {
-                "symfony/console": "^3.4|^4.0|^5.0"
+                "symfony/console": "^4.4|^5.0"
             },
             "suggest": {
                 "symfony/console": "For validating YAML files using the lint command"
@@ -2646,7 +2647,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.4-dev"
+                    "dev-master": "5.0-dev"
                 }
             },
             "autoload": {
@@ -2673,7 +2674,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2019-11-12T14:51:11+00:00"
+            "time": "2019-11-18T17:27:11+00:00"
         },
         {
             "name": "zendframework/zend-diactoros",
@@ -2964,12 +2965,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cakephp/cakephp-codesniffer.git",
-                "reference": "25838c1bcdd412fada0a39cc10f1974ebd7411fd"
+                "reference": "b0ffd917e51060eaa7221e8b9c8fc1f036e2a6eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cakephp/cakephp-codesniffer/zipball/25838c1bcdd412fada0a39cc10f1974ebd7411fd",
-                "reference": "25838c1bcdd412fada0a39cc10f1974ebd7411fd",
+                "url": "https://api.github.com/repos/cakephp/cakephp-codesniffer/zipball/b0ffd917e51060eaa7221e8b9c8fc1f036e2a6eb",
+                "reference": "b0ffd917e51060eaa7221e8b9c8fc1f036e2a6eb",
                 "shasum": ""
             },
             "require": {
@@ -3002,7 +3003,7 @@
                 "codesniffer",
                 "framework"
             ],
-            "time": "2019-11-19T23:49:37+00:00"
+            "time": "2019-12-16T06:49:05+00:00"
         },
         {
             "name": "cakephp/debug_kit",
@@ -3726,16 +3727,16 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.9.3",
+            "version": "1.9.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "007c053ae6f31bba39dfa19a7726f56e9763bbea"
+                "reference": "579bb7356d91f9456ccd505f24ca8b667966a0a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/007c053ae6f31bba39dfa19a7726f56e9763bbea",
-                "reference": "007c053ae6f31bba39dfa19a7726f56e9763bbea",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/579bb7356d91f9456ccd505f24ca8b667966a0a7",
+                "reference": "579bb7356d91f9456ccd505f24ca8b667966a0a7",
                 "shasum": ""
             },
             "require": {
@@ -3770,7 +3771,7 @@
                 "object",
                 "object graph"
             ],
-            "time": "2019-08-09T12:45:53+00:00"
+            "time": "2019-12-15T19:12:40+00:00"
         },
         {
             "name": "nikic/php-parser",
