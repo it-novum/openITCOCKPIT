@@ -72,7 +72,7 @@ class Changelog extends AppModel {
                 'Hosttemplate'        => '{n}.{(id|name)}',
             ],
             'hosttemplate'         => [
-                'Hosttemplate'                                   => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
+                'Hosttemplate'                                   => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled|flap_detection_on_).*}',
                 'CheckPeriod'                                    => '{(id|name)}',
                 'NotifyPeriod'                                   => '{(id|name)}',
                 'CheckCommand'                                   => '{(id|name)}',
@@ -107,7 +107,7 @@ class Changelog extends AppModel {
                 'Servicetemplate'      => '{n}.{(id|template_name)}',
             ],
             'host'                 => [
-                'Host'                           => '{(name|address|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
+                'Host'                           => '{(name|address|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled|flap_detection_on_).*}',
                 'Hosttemplate'                   => '{(id|name)}',
                 'CheckPeriod'                    => '{(id|name)}',
                 'NotifyPeriod'                   => '{(id|name)}',

@@ -33,6 +33,7 @@ use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
+use MapModule\Model\Entity\Map;
 use MapModule\Model\Table\MapsTable;
 
 /**
@@ -60,67 +61,31 @@ class MapsController extends AppController {
 
         $all_maps = $MapsTable->getMapsIndex($MapFilter, $PaginateOMat, $MY_RIGHTS);
 
-        /* OLD CODE
-
-        $query = [
-            'conditions' => $MapFilter->indexFilter(),
-            'fields'     => [
-                'Map.*',
-            ],
-            'joins'      => [
-                [
-                    'table'      => 'maps_to_containers',
-                    'type'       => 'INNER',
-                    'alias'      => 'MapsToContainers',
-                    'conditions' => 'MapsToContainers.map_id = Map.id',
-                ],
-            ],
-            'order'      => $MapFilter->getOrderForPaginator('Map.name', 'asc'),
-            'contain'    => [
-                'Container' => [
-                    'fields' => [
-                        'Container.id',
-                    ],
-                ],
-            ],
-            'group'      => 'Map.id',
-            'limit'      => $this->Paginator->settings['limit']
-        ];
-
-        if (!$this->hasRootPrivileges) {
-            $query['conditions']['MapsToContainers.container_id'] = $this->MY_RIGHTS;
-        }
-
-
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            unset($query['limit']);
-            $all_maps = $this->Map->find('all', $query);
-        } else {
-            $this->Paginator->settings = $query;
-            $this->Paginator->settings['page'] = $MapFilter->getPage();
-            $all_maps = $this->Paginator->paginate();
-        }
-        */
-
+        $maps = [];
         foreach ($all_maps as $key => $all_map) {
-            $all_maps[$key]['Map']['allowEdit'] = false;
-            $all_maps[$key]['Map']['allowCopy'] = false;
-            if ($this->hasRootPrivileges == true) {
-                $all_maps[$key]['Map']['allowEdit'] = true;
-                $all_maps[$key]['Map']['allowCopy'] = true;
+            /** @var Map $all_map */
+            $map = $all_map->toArray();
+            $map['allowEdit'] = false;
+            $map['allowCopy'] = false;
+            if ($this->hasRootPrivileges === true) {
+                $map['allowEdit'] = true;
+                $map['allowCopy'] = true;
+                $maps[] = $map;
                 continue;
             }
-            foreach ($all_map['Container'] as $cKey => $container) {
-                if ($this->MY_RIGHTS_LEVEL[$container['id']] == WRITE_RIGHT) {
-                    $all_maps[$key]['Map']['allowEdit'] = true;
-                    $all_maps[$key]['Map']['allowCopy'] = true;
+
+            foreach ($all_map->getContainerIds() as $containerId) {
+                if ($this->MY_RIGHTS_LEVEL[$containerId] == WRITE_RIGHT) {
+                    $map['allowEdit'] = true;
+                    $map['allowCopy'] = true;
                     continue;
                 }
             }
+
+            $maps[] = $map;
         }
-        $this->set('all_maps', $all_maps);
-        //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-        $this->viewBuilder()->setOption('serialize', ['all_maps', 'paging']);
+        $this->set('all_maps', $maps);
+        $this->viewBuilder()->setOption('serialize', ['all_maps']);
     }
 
 
@@ -132,7 +97,7 @@ class MapsController extends AppController {
 
         $data = $this->request->getData();
         if (($this->request->is('post') || $this->request->is('put')) && isset($data['Map'])) {
-            $data['Container'] = $data['Map']['container_id'];
+            //$data['Container'] = $data['Map']['container_id'];
 
             if (empty($data['Map']['refresh_interval'])) {
                 $data['Map']['refresh_interval'] = 90000;
@@ -148,7 +113,7 @@ class MapsController extends AppController {
             $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
 
             $map = $MapsTable->newEmptyEntity();
-            $map = $MapsTable->patchEntity($map, $data);
+            $map = $MapsTable->patchEntity($map, $data['Map']);
 
             /** old code: $this->Map->saveAll($data) */
             $MapsTable->save($map);
@@ -168,114 +133,108 @@ class MapsController extends AppController {
         }
     }
 
-    public function loadContainers() {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        if ($this->hasRootPrivileges === true) {
-            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges);
-        } else {
-            $containers = $ContainersTable->easyPath($this->getWriteContainers(), CT_TENANT, [], $this->hasRootPrivileges);
-        }
-        $containers = Api::makeItJavaScriptAble($containers);
-
-
-        $this->set('containers', $containers);
-        $this->viewBuilder()->setOption('serialize', ['containers']);
-    }
-
     public function edit($id = null) {
-        $this->layout = 'blank';
         if (!$this->isApiRequest() && $id === null) {
             //Only ship HTML template for angular
             return;
         }
 
-        if (!$this->Map->exists($id)) {
+        /** @var MapsTable $MapsTable */
+        $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+
+        if (!$MapsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid map'));
         }
 
-        $map = $this->Map->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Map.id' => $id
-            ],
-            'contain'    => [
-                'Container' => [
-                    'fields' => ['id', 'name'],
-                ]
-            ]
-        ]);
-
-        $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
-        if (!$this->allowedByContainerId($containerIdsToCheck)) {
+        $map = $MapsTable->getMapForEdit($id);
+        if (!$this->allowedByContainerId($map['Map']['containers']['_ids'])) {
             $this->render403();
             return;
         }
 
-        $this->viewBuilder()->setOption('serialize', ['map']);
-        $this->set(compact('map'));
+        if ($this->request->is('get')) {
+            $this->viewBuilder()->setOption('serialize', ['map']);
+            $this->set('map', $map);
+        }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Map']['id'] = $id;
-
-            $this->request->data['Container'] = $this->request->data['Map']['container_id'];
-
-            if (empty($this->request->data['Map']['refresh_interval'])) {
-                $this->request->data['Map']['refresh_interval'] = 90000;
+            $data = $this->request->getData('Map', []);
+            if (empty($data['refresh_interval'])) {
+                $data['refresh_interval'] = 90000;
             } else {
-                if ($this->request->data['Map']['refresh_interval'] < 5) {
-                    $this->request->data['Map']['refresh_interval'] = 5;
+                if ($data['refresh_interval'] < 5) {
+                    $data['refresh_interval'] = 5;
                 }
 
-                $this->request->data['Map']['refresh_interval'] = ((int)$this->request->data['Map']['refresh_interval'] * 1000);
+                $data['refresh_interval'] = ((int)$data['refresh_interval'] * 1000);
             }
 
-            if ($this->Map->saveAll($this->request->data)) {
-                $this->serializeId();
+            $map = $MapsTable->get($id);
+            $map->setAccess('id', false);
+            $map = $MapsTable->patchEntity($map, $data);
+
+            $MapsTable->save($map);
+            if ($map->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $map->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                if ($this->request->ext === 'json') {
-                    $this->serializeErrorMessage();
+                //No errors
+                if ($this->isJsonRequest()) {
+                    $this->serializeCake4Id($map); // REST API ID serialization
                     return;
                 }
             }
+            $this->set('map', $map);
+            $this->viewBuilder()->setOption('serialize', ['map']);
         }
     }
 
     public function delete($id = null) {
-        if (!$this->Map->exists($id)) {
-            throw new NotFoundException(__('Invalid Map'));
-        }
-
-        $map = $this->Map->findById($id);
-        $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
-        if (!$this->allowedByContainerId($containerIdsToCheck)) {
-            $this->render403();
-            return;
-        }
-
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        if ($this->Map->delete($id, true)) {
-            $this->set('message', __('Map deleted successfully'));
-            $this->viewBuilder()->setOption('serialize', ['message']);
+        /** @var MapsTable $MapsTable */
+        $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+
+        if (!$MapsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid Map'));
+        }
+
+        /** @var Map $map */
+        $map = $MapsTable->find()
+            ->contain(['Containers'])
+            ->where([
+                'Maps.id' => $id
+            ])
+            ->first();
+
+        if (!$this->allowedByContainerId($map->getContainerIds())) {
+            $this->render403();
             return;
         }
 
-        $this->response->statusCode(400);
-        $this->set('message', __('Could not delete Map'));
-        $this->viewBuilder()->setOption('serialize', ['message']);
+        if ($MapsTable->delete($map)) {
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
+        $this->response = $this->response->withStatus(500);
+        $this->set('success', false);
+        $this->viewBuilder()->setOption('serialize', ['success']);
+        return;
     }
 
 
+    /**
+     * @param null $id
+     * @deprecated
+     * @todo refactor with cake4
+     */
     public function copy($id = null) {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -348,5 +307,28 @@ class MapsController extends AppController {
 
         }
 
+    }
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges);
+        } else {
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), CT_TENANT, [], $this->hasRootPrivileges);
+        }
+        $containers = Api::makeItJavaScriptAble($containers);
+
+
+        $this->set('containers', $containers);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 }

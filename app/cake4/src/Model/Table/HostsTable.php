@@ -119,13 +119,13 @@ class HostsTable extends Table {
         $this->belongsTo('CheckPeriod', [
             'className'  => 'Timeperiods',
             'foreignKey' => 'check_period_id',
-            'joinType'   => 'INNER'
+            'joinType'   => 'LEFT OUTER'
         ]);
 
         $this->belongsTo('NotifyPeriod', [
             'className'  => 'Timeperiods',
             'foreignKey' => 'notify_period_id',
-            'joinType'   => 'INNER'
+            'joinType'   => 'LEFT OUTER'
         ]);
 
         $this->belongsTo('CheckCommand', [
@@ -2220,4 +2220,126 @@ class HostsTable extends Table {
         return false;
     }
 
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getHostsForCopy($ids = []) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.name',
+                'Hosts.description',
+                'Hosts.address',
+                'Hosts.host_url'
+            ])
+            ->where(['Hosts.id IN' => $ids])
+            ->order(['Hosts.id' => 'asc'])
+            ->disableHydration()
+            ->all();
+
+        return $this->formatResultAsCake2($query->toArray(), false);
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getHostDetailsForCopy($id) {
+        $query = $this->find()
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'Contactgroups'             =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select(['id']);
+                    },
+                'Contacts'                  =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select(['id']);
+                    },
+                'Hostgroups'                =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select(['id']);
+                    },
+                'Customvariables',
+                'Parenthosts'               =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select([
+                            'id',
+                            'name'
+                        ]);
+                    },
+                'Hostcommandargumentvalues' => [
+                    'Commandarguments'
+                ],
+                'CheckPeriod',
+                'NotifyPeriod'
+            ])
+            ->firstOrFail();
+        return $query;
+    }
+
+    /**
+     * @param array $host
+     * @param array $hosttemplate
+     * @return array
+     */
+    public function getDataForChangelogCopy($host, $hosttemplate) {
+        debug($host);
+        debug($hosttemplate);
+        $fieldsToCheck = [
+            'check_interval',
+            'retry_interval',
+            'max_check_attempts',
+            'notification_interval',
+            'notify_on_up',
+            'notify_on_down',
+            'notify_on_unreachable',
+            'flap_detection_notifications_enabled',
+            'flap_detection_on_up',
+            'flap_detection_on_down',
+            'flap_detection_on_unreachable',
+            'notes',
+            'priority',
+            'tags',
+            'active_checks_enabled'
+        ];
+        $hostcommandargumentvalue = [];
+        if (!empty($host['hostcommandargumentvalues'])) {
+            $hostcommandargumentvalue = $host['hostcommandargumentvalues'];
+        } else {
+            if (isset($host['command_id']) && ($host['command_id'] === $hosttemplate['Hosttemplate']['command_id'] || $host['command_id'] === null)) {
+                $hostcommandargumentvalue = $hosttemplate['Hosttemplatecommandargumentvalue'];
+            }
+        }
+
+        foreach($hosttemplate['Hosttemplate'] as $fieldName =>  $fieldValue){
+            if(!in_array($fieldName, $fieldsToCheck)){
+                continue;
+            }
+            $dataForChangelog['Host'][$fieldName] = $fieldValue;
+            if(isset($host[$fieldName]) && !empty($host[$fieldName])){
+                $dataForChangelog['Host'][$fieldName] = $host[$fieldName];
+
+            }
+            //$dataForChangelog['Host'][$fieldName] = (!empty($host[$fieldName]))?$host[$fieldName]:$hosttemplate[$fieldName];
+        }
+debug($dataForChangelog);
+        $dataForChangelog = [
+            'Host'                     => Hash::merge($dataForChangelog['Host'], $hosttemplate['Hosttemplate']),
+            'Contact'                  => (!empty($host['contacts'])) ? $host['contacts'] : $hosttemplate['contacts'],
+            'Contactgroup'             => (!empty($host['contactgroups'])) ? $host['contactgroups'] : $hosttemplate['contactgroups'],
+            'Customvariable'           => (!empty($host['customvariables'])) ? $host['customvariables'] : $hosttemplate['customvariables'],
+            'Hostcommandargumentvalue' => $hostcommandargumentvalue,
+            'Hosttemplate'             => $hosttemplate['Hosttemplate'],
+            'Hostgroup'                => (!empty($host['hostgroups'])) ? $host['hostgroups'] : $hosttemplate['hostgroups'],
+            'Parenthost'               => $host['parenthosts'],
+            'CheckPeriod'              => (empty($host['CheckPeriod'])) ? $hosttemplate['CheckPeriod'] : $host['CheckPeriod'],
+            'NotifyPeriod'             => (empty($host['NotifyPeriod'])) ? $hosttemplate['NotifyPeriod'] : $host['NotifyPeriod'],
+            'CheckCommand'             => (empty($host['CheckCommand'])) ? $hosttemplate['CheckCommand'] : $host['CheckCommand'],
+        ];
+        return $dataForChangelog;
+    }
 }

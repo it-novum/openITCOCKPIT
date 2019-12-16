@@ -108,6 +108,11 @@ class ContainersTable extends Table {
             'cascadeCallbacks' => true
         ])->setDependent(true);
 
+        $this->hasMany('MapsToContainers', [
+            'foreignKey' => 'container_id',
+            'cascadeCallbacks' => true
+        ]);
+
         //$this->belongsTo('ParentContainers', [
         //    'className' => 'Containers',
         //    'foreignKey' => 'parent_id'
@@ -168,9 +173,6 @@ class ContainersTable extends Table {
             'foreignKey' => 'container_id'
         ]);
         $this->hasMany('MapUploads', [
-            'foreignKey' => 'container_id'
-        ]);
-        $this->hasMany('MapsToContainers', [
             'foreignKey' => 'container_id'
         ]);
         $this->hasMany('Mkagents', [

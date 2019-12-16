@@ -44,22 +44,23 @@
         <h2><?php echo __('Edit map'); ?></h2>
         <div class="widget-toolbar" role="menu">
 
-            <?php if ($this->Acl->hasPermission('delete')): ?>
+            <?php if ($this->Acl->hasPermission('delete', 'Maps', 'map_module')): ?>
                 <button type="button" class="btn btn-danger btn-xs" ng-click="confirmDelete(map)">
                     <i class="fa fa-trash-o"></i>
                     <?php echo __('Delete'); ?>
                 </button>
             <?php endif; ?>
-            <a ui-sref="MapsIndex" class="btn btn-default btn-xs" iconcolor="white">
+            <a ui-sref="MapsIndex" class="btn btn-default btn-xs">
                 <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
             </a>
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <form ng-submit="submit();" class="form-horizontal">
+            <form ng-submit="submit();" class="form-horizontal" ng-init="successMessage=
+            {objectName : '<?php echo __('Map'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
                 <div class="row">
-                    <div class="form-group required" ng-class="{'has-error': errors.container_id}">
+                    <div class="form-group required" ng-class="{'has-error': errors.containers}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Container'); ?>
                         </label>
@@ -70,10 +71,10 @@
                                     class="form-control"
                                     chosen="containers"
                                     ng-options="container.key as container.value for container in containers"
-                                    ng-model="post.Map.container_id"
+                                    ng-model="post.Map.containers._ids"
                                     multiple>
                             </select>
-                            <div ng-repeat="error in errors.container_id">
+                            <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
@@ -114,15 +115,18 @@
                         </label>
                         <div class="col col-xs-10">
                             <input class="form-control" type="number" ng-model="post.Map.refresh_interval" min="5"
-                                   max="180" step="5">
+                                   max="180">
+                            <div class="help-block">
+                                <?= __('Automatic maps update interval in seconds'); ?>
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-xs-12 margin-top-10">
                         <div class="well formactions ">
                             <div class="pull-right">
-                                <input class="btn btn-primary" type="submit" value="Save">&nbsp;
-                                <a ui-sref="MapsIndex" class="btn btn-default">Cancel</a>
+                                <input class="btn btn-primary" type="submit" value="<?= __('Save'); ?>">&nbsp;
+                                <a ui-sref="MapsIndex" class="btn btn-default"><?= __('Cancel'); ?></a>
                             </div>
                         </div>
                     </div>
