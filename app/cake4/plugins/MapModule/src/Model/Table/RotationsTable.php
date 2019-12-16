@@ -3,38 +3,39 @@ declare(strict_types=1);
 
 namespace MapModule\Model\Table;
 
-use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
+use App\Model\Table\ContainersTable;
+use Cake\Datasource\EntityInterface;
+use Cake\ORM\Association\HasMany;
+use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use MapModule\Model\Entity\Rotation;
 
 /**
  * Rotations Model
  *
- * @property \MapModule\Model\Table\MapsToRotationsTable&\Cake\ORM\Association\HasMany $MapsToRotations
- * @property \MapModule\Model\Table\RotationsToContainersTable&\Cake\ORM\Association\HasMany $RotationsToContainers
+ * @property RotationsTable&HasMany $MapsToRotations
+ * @property ContainersTable&HasMany $RotationsToContainers
  *
- * @method \MapModule\Model\Entity\Rotation get($primaryKey, $options = [])
- * @method \MapModule\Model\Entity\Rotation newEntity($data = null, array $options = [])
- * @method \MapModule\Model\Entity\Rotation[] newEntities(array $data, array $options = [])
- * @method \MapModule\Model\Entity\Rotation|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \MapModule\Model\Entity\Rotation saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \MapModule\Model\Entity\Rotation patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \MapModule\Model\Entity\Rotation[] patchEntities($entities, array $data, array $options = [])
- * @method \MapModule\Model\Entity\Rotation findOrCreate($search, callable $callback = null, $options = [])
+ * @method Rotation get($primaryKey, $options = [])
+ * @method Rotation newEntity($data = null, array $options = [])
+ * @method Rotation[] newEntities(array $data, array $options = [])
+ * @method Rotation|false save(EntityInterface $entity, $options = [])
+ * @method Rotation saveOrFail(EntityInterface $entity, $options = [])
+ * @method Rotation patchEntity(EntityInterface $entity, array $data, array $options = [])
+ * @method Rotation[] patchEntities($entities, array $data, array $options = [])
+ * @method Rotation findOrCreate($search, callable $callback = null, $options = [])
  *
- * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ * @mixin TimestampBehavior
  */
-class RotationsTable extends Table
-{
+class RotationsTable extends Table {
     /**
      * Initialize method
      *
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config): void
-    {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('rotations');
@@ -45,22 +46,21 @@ class RotationsTable extends Table
 
         $this->hasMany('MapsToRotations', [
             'foreignKey' => 'rotation_id',
-            'className' => 'MapModule.MapsToRotations',
+            'className'  => 'MapModule.MapsToRotations',
         ]);
         $this->hasMany('RotationsToContainers', [
             'foreignKey' => 'rotation_id',
-            'className' => 'MapModule.RotationsToContainers',
+            'className'  => 'MapModule.RotationsToContainers',
         ]);
     }
 
     /**
      * Default validation rules.
      *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
+     * @param Validator $validator Validator instance.
+     * @return Validator
      */
-    public function validationDefault(Validator $validator): Validator
-    {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');

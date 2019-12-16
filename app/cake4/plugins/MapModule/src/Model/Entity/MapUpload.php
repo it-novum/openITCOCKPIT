@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace MapModule\Model\Entity;
 
+use Cake\I18n\FrozenTime;
 use Cake\ORM\Entity;
 
 /**
@@ -14,13 +15,12 @@ use Cake\ORM\Entity;
  * @property string $saved_name
  * @property int|null $user_id
  * @property int|null $container_id
- * @property \Cake\I18n\FrozenTime $created
+ * @property FrozenTime $created
  *
- * @property \MapModule\Model\Entity\User $user
- * @property \MapModule\Model\Entity\Container $container
+ * @property User $user
+ * @property Container $container
  */
-class MapUpload extends Entity
-{
+class MapUpload extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -31,13 +31,13 @@ class MapUpload extends Entity
      * @var array
      */
     protected $_accessible = [
-        'upload_type' => true,
-        'upload_name' => true,
-        'saved_name' => true,
-        'user_id' => true,
+        'upload_type'  => true,
+        'upload_name'  => true,
+        'saved_name'   => true,
+        'user_id'      => true,
         'container_id' => true,
-        'created' => true,
-        'user' => true,
-        'container' => true,
+        'created'      => true,
+        'user'         => true,
+        'container'    => true,
     ];
 }

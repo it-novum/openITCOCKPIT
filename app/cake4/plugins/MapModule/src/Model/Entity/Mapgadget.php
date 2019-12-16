@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace MapModule\Model\Entity;
 
+use Cake\I18n\FrozenTime;
 use Cake\ORM\Entity;
 
 /**
@@ -24,14 +25,13 @@ use Cake\ORM\Entity;
  * @property int $z_index
  * @property string|null $metric
  * @property string|null $output_type
- * @property \Cake\I18n\FrozenTime $created
- * @property \Cake\I18n\FrozenTime $modified
+ * @property FrozenTime $created
+ * @property FrozenTime $modified
  *
- * @property \MapModule\Model\Entity\Map $map
- * @property \MapModule\Model\Entity\Object $object
+ * @property Map $map
+ * @property Object $object
  */
-class Mapgadget extends Entity
-{
+class Mapgadget extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -42,24 +42,24 @@ class Mapgadget extends Entity
      * @var array
      */
     protected $_accessible = [
-        'map_id' => true,
-        'x' => true,
-        'y' => true,
-        'size_x' => true,
-        'size_y' => true,
-        'limit' => true,
-        'gadget' => true,
-        'type' => true,
-        'object_id' => true,
+        'map_id'                 => true,
+        'x'                      => true,
+        'y'                      => true,
+        'size_x'                 => true,
+        'size_y'                 => true,
+        'limit'                  => true,
+        'gadget'                 => true,
+        'type'                   => true,
+        'object_id'              => true,
         'transparent_background' => true,
-        'show_label' => true,
-        'font_size' => true,
-        'z_index' => true,
-        'metric' => true,
-        'output_type' => true,
-        'created' => true,
-        'modified' => true,
-        'map' => true,
-        'object' => true,
+        'show_label'             => true,
+        'font_size'              => true,
+        'z_index'                => true,
+        'metric'                 => true,
+        'output_type'            => true,
+        'created'                => true,
+        'modified'               => true,
+        'map'                    => true,
+        'object'                 => true,
     ];
 }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace MapModule\Model\Entity;
 
+use Cake\I18n\FrozenTime;
 use Cake\ORM\Entity;
 
 /**
@@ -14,13 +15,12 @@ use Cake\ORM\Entity;
  * @property int $y
  * @property string $icon
  * @property int $z_index
- * @property \Cake\I18n\FrozenTime $created
- * @property \Cake\I18n\FrozenTime $modified
+ * @property FrozenTime $created
+ * @property FrozenTime $modified
  *
- * @property \MapModule\Model\Entity\Map $map
+ * @property Map $map
  */
-class Mapicon extends Entity
-{
+class Mapicon extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -31,13 +31,13 @@ class Mapicon extends Entity
      * @var array
      */
     protected $_accessible = [
-        'map_id' => true,
-        'x' => true,
-        'y' => true,
-        'icon' => true,
-        'z_index' => true,
-        'created' => true,
+        'map_id'   => true,
+        'x'        => true,
+        'y'        => true,
+        'icon'     => true,
+        'z_index'  => true,
+        'created'  => true,
         'modified' => true,
-        'map' => true,
+        'map'      => true,
     ];
 }

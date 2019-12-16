@@ -3,38 +3,38 @@ declare(strict_types=1);
 
 namespace MapModule\Model\Table;
 
-use Cake\ORM\Query;
+use Cake\Datasource\EntityInterface;
+use Cake\ORM\Association\BelongsTo;
+use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use MapModule\Model\Entity\Mapline;
 
 /**
  * Maplines Model
  *
- * @property \MapModule\Model\Table\MapsTable&\Cake\ORM\Association\BelongsTo $Maps
- * @property \MapModule\Model\Table\ObjectsTable&\Cake\ORM\Association\BelongsTo $Objects
+ * @property MapsTable&BelongsTo $Maps
  *
- * @method \MapModule\Model\Entity\Mapline get($primaryKey, $options = [])
- * @method \MapModule\Model\Entity\Mapline newEntity($data = null, array $options = [])
- * @method \MapModule\Model\Entity\Mapline[] newEntities(array $data, array $options = [])
- * @method \MapModule\Model\Entity\Mapline|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \MapModule\Model\Entity\Mapline saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \MapModule\Model\Entity\Mapline patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \MapModule\Model\Entity\Mapline[] patchEntities($entities, array $data, array $options = [])
- * @method \MapModule\Model\Entity\Mapline findOrCreate($search, callable $callback = null, $options = [])
+ * @method Mapline get($primaryKey, $options = [])
+ * @method Mapline newEntity($data = null, array $options = [])
+ * @method Mapline[] newEntities(array $data, array $options = [])
+ * @method Mapline|false save(EntityInterface $entity, $options = [])
+ * @method Mapline saveOrFail(EntityInterface $entity, $options = [])
+ * @method Mapline patchEntity(EntityInterface $entity, array $data, array $options = [])
+ * @method Mapline[] patchEntities($entities, array $data, array $options = [])
+ * @method Mapline findOrCreate($search, callable $callback = null, $options = [])
  *
- * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ * @mixin TimestampBehavior
  */
-class MaplinesTable extends Table
-{
+class MaplinesTable extends Table {
     /**
      * Initialize method
      *
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config): void
-    {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('maplines');
@@ -45,23 +45,18 @@ class MaplinesTable extends Table
 
         $this->belongsTo('Maps', [
             'foreignKey' => 'map_id',
-            'joinType' => 'INNER',
-            'className' => 'MapModule.Maps',
-        ]);
-        $this->belongsTo('Objects', [
-            'foreignKey' => 'object_id',
-            'className' => 'MapModule.Objects',
+            'joinType'   => 'INNER',
+            'className'  => 'MapModule.Maps',
         ]);
     }
 
     /**
      * Default validation rules.
      *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
+     * @param Validator $validator Validator instance.
+     * @return Validator
      */
-    public function validationDefault(Validator $validator): Validator
-    {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -112,13 +107,11 @@ class MaplinesTable extends Table
      * Returns a rules checker object that will be used for validating
      * application integrity.
      *
-     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
-     * @return \Cake\ORM\RulesChecker
+     * @param RulesChecker $rules The rules object to be modified.
+     * @return RulesChecker
      */
-    public function buildRules(RulesChecker $rules): RulesChecker
-    {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->existsIn(['map_id'], 'Maps'));
-        $rules->add($rules->existsIn(['object_id'], 'Objects'));
 
         return $rules;
     }

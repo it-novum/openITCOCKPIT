@@ -229,8 +229,6 @@ class MapsController extends AppController {
 
     /**
      * @param null $id
-     * @deprecated
-     * @todo refactor with cake4
      */
     public function copy($id = null) {
         if (!$this->isAngularJsRequest()) {
@@ -333,7 +331,8 @@ class MapsController extends AppController {
 
                     $newMapEntity = $MapsTable->newEntity($newMapData);
                 }
-
+                //debug($newMapEntity);
+                //die();
                 $MapsTable->save($newMapEntity);
 
                 $postData[$index]['Error'] = [];

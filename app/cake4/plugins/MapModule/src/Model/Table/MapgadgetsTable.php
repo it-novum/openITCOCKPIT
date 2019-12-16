@@ -3,38 +3,38 @@ declare(strict_types=1);
 
 namespace MapModule\Model\Table;
 
-use Cake\ORM\Query;
+use Cake\Datasource\EntityInterface;
+use Cake\ORM\Association\BelongsTo;
+use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use MapModule\Model\Entity\Mapgadget;
 
 /**
  * Mapgadgets Model
  *
- * @property \MapModule\Model\Table\MapsTable&\Cake\ORM\Association\BelongsTo $Maps
- * @property \MapModule\Model\Table\ObjectsTable&\Cake\ORM\Association\BelongsTo $Objects
+ * @property MapsTable&BelongsTo $Maps
  *
- * @method \MapModule\Model\Entity\Mapgadget get($primaryKey, $options = [])
- * @method \MapModule\Model\Entity\Mapgadget newEntity($data = null, array $options = [])
- * @method \MapModule\Model\Entity\Mapgadget[] newEntities(array $data, array $options = [])
- * @method \MapModule\Model\Entity\Mapgadget|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \MapModule\Model\Entity\Mapgadget saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \MapModule\Model\Entity\Mapgadget patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \MapModule\Model\Entity\Mapgadget[] patchEntities($entities, array $data, array $options = [])
- * @method \MapModule\Model\Entity\Mapgadget findOrCreate($search, callable $callback = null, $options = [])
+ * @method Mapgadget get($primaryKey, $options = [])
+ * @method Mapgadget newEntity($data = null, array $options = [])
+ * @method Mapgadget[] newEntities(array $data, array $options = [])
+ * @method Mapgadget|false save(EntityInterface $entity, $options = [])
+ * @method Mapgadget saveOrFail(EntityInterface $entity, $options = [])
+ * @method Mapgadget patchEntity(EntityInterface $entity, array $data, array $options = [])
+ * @method Mapgadget[] patchEntities($entities, array $data, array $options = [])
+ * @method Mapgadget findOrCreate($search, callable $callback = null, $options = [])
  *
- * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ * @mixin TimestampBehavior
  */
-class MapgadgetsTable extends Table
-{
+class MapgadgetsTable extends Table {
     /**
      * Initialize method
      *
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config): void
-    {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('mapgadgets');
@@ -45,24 +45,18 @@ class MapgadgetsTable extends Table
 
         $this->belongsTo('Maps', [
             'foreignKey' => 'map_id',
-            'joinType' => 'INNER',
-            'className' => 'MapModule.Maps',
-        ]);
-        $this->belongsTo('Objects', [
-            'foreignKey' => 'object_id',
-            'joinType' => 'INNER',
-            'className' => 'MapModule.Objects',
+            'joinType'   => 'INNER',
+            'className'  => 'MapModule.Maps',
         ]);
     }
 
     /**
      * Default validation rules.
      *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
+     * @param Validator $validator Validator instance.
+     * @return Validator
      */
-    public function validationDefault(Validator $validator): Validator
-    {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -131,13 +125,11 @@ class MapgadgetsTable extends Table
      * Returns a rules checker object that will be used for validating
      * application integrity.
      *
-     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
-     * @return \Cake\ORM\RulesChecker
+     * @param RulesChecker $rules The rules object to be modified.
+     * @return RulesChecker
      */
-    public function buildRules(RulesChecker $rules): RulesChecker
-    {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->existsIn(['map_id'], 'Maps'));
-        $rules->add($rules->existsIn(['object_id'], 'Objects'));
 
         return $rules;
     }

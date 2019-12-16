@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace MapModule\Model\Entity;
 
+use Cake\I18n\FrozenTime;
 use Cake\ORM\Entity;
 
 /**
@@ -20,14 +21,13 @@ use Cake\ORM\Entity;
  * @property int|null $object_id
  * @property int $z_index
  * @property int $show_label
- * @property \Cake\I18n\FrozenTime $created
- * @property \Cake\I18n\FrozenTime $modified
+ * @property FrozenTime $created
+ * @property FrozenTime $modified
  *
- * @property \MapModule\Model\Entity\Map $map
- * @property \MapModule\Model\Entity\Object $object
+ * @property Map $map
+ * @property Object $object
  */
-class Mapline extends Entity
-{
+class Mapline extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -38,20 +38,20 @@ class Mapline extends Entity
      * @var array
      */
     protected $_accessible = [
-        'map_id' => true,
-        'startX' => true,
-        'startY' => true,
-        'endX' => true,
-        'endY' => true,
-        'limit' => true,
-        'iconset' => true,
-        'type' => true,
-        'object_id' => true,
-        'z_index' => true,
+        'map_id'     => true,
+        'startX'     => true,
+        'startY'     => true,
+        'endX'       => true,
+        'endY'       => true,
+        'limit'      => true,
+        'iconset'    => true,
+        'type'       => true,
+        'object_id'  => true,
+        'z_index'    => true,
         'show_label' => true,
-        'created' => true,
-        'modified' => true,
-        'map' => true,
-        'object' => true,
+        'created'    => true,
+        'modified'   => true,
+        'map'        => true,
+        'object'     => true,
     ];
 }
