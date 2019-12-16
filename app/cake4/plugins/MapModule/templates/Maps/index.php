@@ -126,20 +126,20 @@
                             <tr ng-repeat="map in maps">
                                 <td class="text-center" class="width-15">
                                     <input type="checkbox"
-                                           ng-model="massChange[map.Map.id]"
-                                           ng-show="map.Map.allowEdit">
+                                           ng-model="massChange[map.id]"
+                                           ng-show="map.allowEdit">
                                 </td>
                                 <td>
-                                    <a ui-sref="MapeditorsView({id: map.Map.id})">{{ map.Map.name }}</a>
+                                    <a ui-sref="MapeditorsView({id: map.id})">{{ map.name }}</a>
                                 </td>
                                 <td>
-                                    {{ map.Map.title }}
+                                    {{ map.title }}
                                 </td>
                                 <td>
                                     <div class="btn-group">
                                         <?php if ($this->Acl->hasPermission('edit', 'maps', 'mapmodule')): ?>
-                                            <a ui-sref="MapeditorsEdit({id: map.Map.id})"
-                                               ng-if="map.Map.allowEdit"
+                                            <a ui-sref="MapeditorsEdit({id: map.id})"
+                                               ng-if="map.allowEdit"
                                                class="btn btn-default">&nbsp;<i class="fa fa-cog "></i>&nbsp;</a>
                                         <?php else: ?>
                                             <a href="javascript:void(0);" class="btn btn-default">
@@ -150,40 +150,40 @@
                                         <?php endif; ?>
                                         <a href="javascript:void(0);" data-toggle="dropdown"
                                            class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-                                        <ul class="dropdown-menu pull-right" id="menuHack-{{map.Map.id}}">
+                                        <ul class="dropdown-menu pull-right" id="menuHack-{{map.id}}">
                                             <?php if ($this->Acl->hasPermission('edit', 'maps', 'mapmodule')): ?>
-                                                <li ng-if="map.Map.allowEdit">
-                                                    <a ui-sref="MapeditorsEdit({id: map.Map.id})">
+                                                <li ng-if="map.allowEdit">
+                                                    <a ui-sref="MapeditorsEdit({id: map.id})">
                                                         <i class="fa fa-cog"></i> <?php echo __('Edit in Map editor'); ?>
                                                     </a>
                                                 </li>
-                                                <li ng-if="map.Map.allowEdit">
-                                                    <a ui-sref="MapsEdit({id: map.Map.id})">
+                                                <li ng-if="map.allowEdit">
+                                                    <a ui-sref="MapsEdit({id: map.id})">
                                                         <i class="fa fa-edit"></i> <?php echo __('Edit'); ?>
                                                     </a>
                                                 </li>
-                                                <li class="divider" ng-if="map.Map.allowEdit"></li>
+                                                <li class="divider" ng-if="map.allowEdit"></li>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('copy', 'maps', 'mapmodule')): ?>
-                                                <li ng-if="map.Map.allowCopy">
-                                                    <a ui-sref="MapsCopy({id: map.Map.id})">
+                                                <li ng-if="map.allowCopy">
+                                                    <a ui-sref="MapsCopy({id: map.id})">
                                                         <i class="fa fa-edit"></i> <?php echo __('Copy'); ?>
                                                     </a>
                                                 </li>
-                                                <li class="divider" ng-if="map.Map.allowCopy"></li>
+                                                <li class="divider" ng-if="map.allowCopy"></li>
                                             <?php endif; ?>
                                             <li>
-                                                <a ui-sref="MapeditorsView({id: map.Map.id})">
+                                                <a ui-sref="MapeditorsView({id: map.id})">
                                                     <i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
                                             </li>
                                             <li>
-                                                <a ui-sref="MapeditorsView({id: map.Map.id, fullscreen: 'true'})">
+                                                <a ui-sref="MapeditorsView({id: map.id, fullscreen: 'true'})">
                                                     <i class="fa fa-expand"></i> <?php echo __('View in fullscreen'); ?>
                                                 </a>
                                             </li>
                                             <?php if ($this->Acl->hasPermission('delete', 'maps', 'mapmodule')): ?>
-                                                <li class="divider" ng-if="map.Map.allowEdit"></li>
-                                                <li ng-if="map.Map.allowEdit">
+                                                <li class="divider" ng-if="map.allowEdit"></li>
+                                                <li ng-if="map.allowEdit">
                                                     <a class="txt-color-red"
                                                        href="javascript:void(0);" class="txt-color-red"
                                                        ng-click="confirmDelete(getObjectForDelete(map))">
