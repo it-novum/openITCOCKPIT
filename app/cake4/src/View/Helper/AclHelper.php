@@ -42,18 +42,13 @@ class AclHelper extends Helper {
      */
     protected $_defaultConfig = [];
 
-    public function hasPermission($action = '', $controller = '', $plugin = '') {
-        //return false;
-        if ($action === null) {
-            $action = $this->params['index'];
-        }
-        if ($controller === null) {
-            $controller = $this->params['controller'];
-        }
-        if ($plugin === null) {
-            $plugin = Inflector::classify($this->params['plugin']);
-        }
-
+    /**
+     * @param string $action
+     * @param string $controller
+     * @param string $plugin
+     * @return bool
+     */
+    public function hasPermission(string $action, string $controller, string $plugin = '') {
         $controller = strtolower($controller);
         $action = strtolower($action);
         $plugin = strtolower($plugin);
