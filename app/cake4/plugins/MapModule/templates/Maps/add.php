@@ -124,7 +124,8 @@
                                 </label>
 
                                 <input class="btn btn-primary" type="submit" value="<?php echo __('Create map'); ?>">
-                                <a back-button fallback-state='MapsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                <a back-button fallback-state='MapsIndex'
+                                   class="btn btn-default"><?php echo __('Cancel'); ?></a>
                             </div>
                         </div>
                     </div>

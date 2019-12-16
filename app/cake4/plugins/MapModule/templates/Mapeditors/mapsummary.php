@@ -370,7 +370,8 @@
                                 <?php echo __('Summary state'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                <div class="text-center txt-color-white text-capitalize bg-{{ summaryState.CumulatedHumanState}}">
+                                <div
+                                    class="text-center txt-color-white text-capitalize bg-{{ summaryState.CumulatedHumanState}}">
                                     {{summaryState.CumulatedHumanState}}
                                 </div>
                             </div>
@@ -524,7 +525,8 @@
                                 <?php echo __('Summary state'); ?>
                             </div>
                             <div class="col-md-8 no-padding" ng-show="summaryState.ServiceSummary.total > 0">
-                                <div class="text-center txt-color-white text-capitalize bg-{{ summaryState.CumulatedHumanState}}">
+                                <div
+                                    class="text-center txt-color-white text-capitalize bg-{{ summaryState.CumulatedHumanState}}">
                                     {{summaryState.CumulatedHumanState}}
                                 </div>
                             </div>
@@ -647,7 +649,8 @@
                             </div>
                             <div class="col-md-8 no-padding"
                                  ng-show="summaryState.HostSummary.total > 0|| summaryState.ServiceSummary.total > 0">
-                                <div class="text-center txt-color-white text-capitalize bg-{{ summaryState.CumulatedHumanState}}">
+                                <div
+                                    class="text-center txt-color-white text-capitalize bg-{{ summaryState.CumulatedHumanState}}">
                                     {{summaryState.CumulatedHumanState}}
                                 </div>
                             </div>

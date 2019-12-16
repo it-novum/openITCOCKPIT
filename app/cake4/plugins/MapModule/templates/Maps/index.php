@@ -166,7 +166,7 @@
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('copy', 'maps', 'mapmodule')): ?>
                                                 <li ng-if="map.allowCopy">
-                                                    <a ui-sref="MapsCopy({id: map.id})">
+                                                    <a ui-sref="MapsCopy({ids: map.id})">
                                                         <i class="fa fa-edit"></i> <?php echo __('Copy'); ?>
                                                     </a>
                                                 </li>

@@ -49,7 +49,8 @@
                 <?php echo __('Back to list'); ?>
             </a>
             <?php if ($this->Acl->hasPermission('edit', 'mapeditors', 'mapmodule')): ?>
-                <a class="btn btn-xs btn-default" ng-click="leaveFullscreen();" ui-sref="MapeditorsEdit({id: map.Map.id})">
+                <a class="btn btn-xs btn-default" ng-click="leaveFullscreen();"
+                   ui-sref="MapeditorsEdit({id: map.Map.id})">
                     <i class="fa fa-edit"></i>
                     <?php echo __('Edit'); ?>
                 </a>
