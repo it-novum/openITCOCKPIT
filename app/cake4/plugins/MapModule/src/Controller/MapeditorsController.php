@@ -27,15 +27,26 @@ namespace MapModule\Controller;
 
 use App\Model\Table\HostgroupsTable;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
+use Exception;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\MapConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
 use itnovum\openITCOCKPIT\Maps\MapForAngular;
+use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapgadget;
+use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapicon;
+use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapitem;
+use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapline;
+use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapsummaryitem;
+use itnovum\openITCOCKPIT\Maps\ValueObjects\Maptext;
 use Statusengine\PerfdataParser;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 
 /**
@@ -189,7 +200,7 @@ class MapeditorsController extends AppController {
 
                     $mapitems[$item['uuid']] = $data;
 
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     throw $e;
                 }
             }
@@ -316,7 +327,7 @@ class MapeditorsController extends AppController {
                         $hostgroup
                     );
                     break;
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $allowView = false;
                 }
                 break;
@@ -1141,8 +1152,8 @@ class MapeditorsController extends AppController {
             }
         }
 
-        $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
-        $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
+        $Service = new Service($service);
+        $Host = new Host($service);
         $this->set('host', $Host->toArray());
         $this->set('service', $Service->toArray());
         $this->set('allowView', true);
@@ -1287,7 +1298,7 @@ class MapeditorsController extends AppController {
                     $hostgroup = $HostgroupsTable->getHostsByHostgroupForMaps($objectId, $MY_RIGHTS);
                     if ($this->hasRootPrivileges === false) {
                         if (!$this->allowedByContainerId(
-                            array_unique(\Cake\Utility\Hash::extract($hostgroup, 'hosts.{n}.hosts_to_containers_sharing.id'), false))) {
+                            array_unique(Hash::extract($hostgroup, 'hosts.{n}.hosts_to_containers_sharing.id'), false))) {
                             $this->render403();
                             return;
                         }
@@ -1301,7 +1312,7 @@ class MapeditorsController extends AppController {
                     $this->set('summary', $summary);
                     $this->viewBuilder()->setOption('serialize', ['hostgroup', 'summary']);
                     return;
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     throw new NotFoundException('Host group not found!');
                 }
                 break;
@@ -1749,7 +1760,7 @@ class MapeditorsController extends AppController {
         $finder->files()->in(OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds')->exclude('thumb');
 
         $backgrounds = [];
-        /** @var \Symfony\Component\Finder\SplFileInfo $file */
+        /** @var SplFileInfo $file */
         foreach ($finder as $file) {
             $backgrounds[] = [
                 'image'     => $file->getFilename(),
@@ -1813,11 +1824,11 @@ class MapeditorsController extends AppController {
 
             $item['Mapitem']['x'] = (int)$this->request->getData('Mapitem.x');
             $item['Mapitem']['y'] = (int)$this->request->getData('Mapitem.y');
-            if($this->request->getData('Mapitem.show_label') !== null) {
+            if ($this->request->getData('Mapitem.show_label') !== null) {
                 $item['Mapitem']['show_label'] = (int)$this->request->getData('Mapitem.show_label');
             }
             if ($this->Mapitem->save($item)) {
-                $mapitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapitem($item['Mapitem']);
+                $mapitem = new Mapitem($item['Mapitem']);
 
                 $this->set('Mapitem', [
                     'Mapitem' => $mapitem->toArray()
@@ -1842,7 +1853,7 @@ class MapeditorsController extends AppController {
             $mapItem = $item;
             $mapItem['Mapitem']['id'] = (int)$this->Mapitem->id;
 
-            $mapitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapitem($mapItem['Mapitem']);
+            $mapitem = new Mapitem($mapItem['Mapitem']);
 
 
             $this->set('Mapitem', [
@@ -1901,7 +1912,7 @@ class MapeditorsController extends AppController {
             $line['Mapline']['endX'] = (int)$this->request->getData('Mapline.endX');
             $line['Mapline']['endY'] = (int)$this->request->getData('Mapline.endY');
             if ($this->Mapline->save($line)) {
-                $Mapline = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapline($line['Mapline']);
+                $Mapline = new Mapline($line['Mapline']);
 
                 $this->set('Mapline', [
                     'Mapline' => $Mapline->toArray()
@@ -1923,7 +1934,7 @@ class MapeditorsController extends AppController {
         $line['Mapline']['show_label'] = (int)$this->request->getData('Mapline.show_label');
         if ($this->Mapline->save($line)) {
             $line['Mapline']['id'] = (int)$this->Mapline->id;
-            $Mapline = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapline($line['Mapline']);
+            $Mapline = new Mapline($line['Mapline']);
             $this->set('Mapline', [
                 'Mapline' => $Mapline->toArray()
             ]);
@@ -1981,7 +1992,7 @@ class MapeditorsController extends AppController {
             //NULL -> No metric selected. Cast to 0 and Gadget will use first existing metric in performance data string
             $gadget['Mapgadget']['metric'] = $gadget['Mapgadget']['metric'];
             if ($this->Mapgadget->save($gadget)) {
-                $Mapgadget = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapgadget($gadget['Mapgadget']);
+                $Mapgadget = new Mapgadget($gadget['Mapgadget']);
 
                 $this->set('Mapgadget', [
                     'Mapgadget' => $Mapgadget->toArray()
@@ -2009,7 +2020,7 @@ class MapeditorsController extends AppController {
             //NULL -> No metric selected. Cast to 0 and Gadget will use first existing metric in performance data string
             $gadget['Mapgadget']['metric'] = $gadget['Mapgadget']['metric'];
             if ($this->Mapgadget->save($gadget)) {
-                $Mapgadget = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapgadget($gadget['Mapgadget']);
+                $Mapgadget = new Mapgadget($gadget['Mapgadget']);
 
                 $this->set('Mapgadget', [
                     'Mapgadget' => $Mapgadget->toArray()
@@ -2036,7 +2047,7 @@ class MapeditorsController extends AppController {
 
         if ($this->Mapgadget->save($gadget)) {
             $gadget['Mapgadget']['id'] = (int)$this->Mapgadget->id;
-            $Mapgadget = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapgadget($gadget['Mapgadget']);
+            $Mapgadget = new Mapgadget($gadget['Mapgadget']);
             $this->set('Mapgadget', [
                 'Mapgadget' => $Mapgadget->toArray()
             ]);
@@ -2129,7 +2140,7 @@ class MapeditorsController extends AppController {
             $maptext['Maptext']['font_size'] = 11;
 
             if ($this->Maptext->save($maptext)) {
-                $Maptext = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Maptext($maptext['Maptext']);
+                $Maptext = new Maptext($maptext['Maptext']);
 
                 $this->set('Maptext', [
                     'Maptext' => $Maptext->toArray()
@@ -2154,7 +2165,7 @@ class MapeditorsController extends AppController {
         $maptext['Maptext']['font_size'] = 11;
         if ($this->Maptext->save($text)) {
             $text['Maptext']['id'] = (int)$this->Maptext->id;
-            $Maptext = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Maptext($text['Maptext']);
+            $Maptext = new Maptext($text['Maptext']);
             $this->set('Maptext', [
                 'Maptext' => $Maptext->toArray()
             ]);
@@ -2210,7 +2221,7 @@ class MapeditorsController extends AppController {
             $mapicon['Mapicon']['y'] = (int)$this->request->getData('Mapicon.y');
 
             if ($this->Mapicon->save($mapicon)) {
-                $Mapicon = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapicon($mapicon['Mapicon']);
+                $Mapicon = new Mapicon($mapicon['Mapicon']);
 
                 $this->set('Mapicon', [
                     'Mapicon' => $Mapicon->toArray()
@@ -2234,7 +2245,7 @@ class MapeditorsController extends AppController {
         $icon['Mapicon']['y'] = (int)$this->request->getData('Mapicon.y');
         if ($this->Mapicon->save($icon)) {
             $icon['Mapicon']['id'] = (int)$this->Mapicon->id;
-            $Mapicon = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapicon($icon['Mapicon']);
+            $Mapicon = new Mapicon($icon['Mapicon']);
             $this->set('Mapicon', [
                 'Mapicon' => $Mapicon->toArray()
             ]);
@@ -2334,7 +2345,7 @@ class MapeditorsController extends AppController {
             $mapsummaryitem['Mapsummaryitem']['x'] = (int)$this->request->getData('Mapsummaryitem.x');
             $mapsummaryitem['Mapsummaryitem']['y'] = (int)$this->request->getData('Mapsummaryitem.y');
             if ($this->Mapsummaryitem->save($mapsummaryitem)) {
-                $Mapsummaryitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapsummaryitem($mapsummaryitem['Mapsummaryitem']);
+                $Mapsummaryitem = new Mapsummaryitem($mapsummaryitem['Mapsummaryitem']);
 
                 $this->set('Mapsummaryitem', [
                     'Mapsummaryitem' => $Mapsummaryitem->toArray()
@@ -2360,7 +2371,7 @@ class MapeditorsController extends AppController {
             $mapsummaryitem['Mapsummaryitem']['size_y'] = (int)$this->request->getData('Mapsummaryitem.size_y');
 
             if ($this->Mapsummaryitem->save($mapsummaryitem)) {
-                $Mapsummaryitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapsummaryitem($mapsummaryitem['Mapsummaryitem']);
+                $Mapsummaryitem = new Mapsummaryitem($mapsummaryitem['Mapsummaryitem']);
 
                 $this->set('Mapsummaryitem', [
                     'Mapsummaryitem' => $Mapsummaryitem->toArray()
@@ -2387,7 +2398,7 @@ class MapeditorsController extends AppController {
 
         if ($this->Mapsummaryitem->save($mapsummaryitem)) {
             $mapsummaryitem['Mapsummaryitem']['id'] = $this->Mapsummaryitem->id;
-            $Mapsummaryitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapsummaryitem($mapsummaryitem['Mapsummaryitem']);
+            $Mapsummaryitem = new Mapsummaryitem($mapsummaryitem['Mapsummaryitem']);
             $this->set('Mapsummaryitem', [
                 'Mapsummaryitem' => $Mapsummaryitem->toArray()
             ]);

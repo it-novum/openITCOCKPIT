@@ -50,7 +50,7 @@ angular.module('openITCOCKPIT')
             document.getElementById('ribbon').style.display = 'none';
             document.getElementById('header').style.display = 'none';
             document.getElementById('main').style.marginLeft = '0px';
-            $('#content > .ng-scope > .row').css('display','none');
+            $('#content > .ng-scope > .row').css('display', 'none');
         };
 
         $scope.leaveFullscreen = function(){
@@ -58,7 +58,7 @@ angular.module('openITCOCKPIT')
             document.getElementById('ribbon').style.display = 'block';
             document.getElementById('header').style.display = 'block';
             document.getElementById('main').style.marginLeft = '220px';
-            $('#content > .ng-scope > .row').css('display','block');
+            $('#content > .ng-scope > .row').css('display', 'block');
         };
 
         //Disable interval if object gets removed from DOM.
@@ -71,7 +71,7 @@ angular.module('openITCOCKPIT')
         $scope.$watch('fullscreen', function(){
             if($scope.fullscreen){
                 $scope.enterFullscreen();
-            } else {
+            }else{
                 $scope.leaveFullscreen();
             }
         }, true);

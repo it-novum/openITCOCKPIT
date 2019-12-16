@@ -20,7 +20,7 @@ openITCOCKPIT.config(function($stateProvider){
         })
 
         .state('MapsCopy', {
-            url: '/map_module/maps/copy/:id',
+            url: '/map_module/maps/copy/:ids',
             templateUrl: "/map_module/maps/copy.html",
             controller: "MapsCopyController"
         })

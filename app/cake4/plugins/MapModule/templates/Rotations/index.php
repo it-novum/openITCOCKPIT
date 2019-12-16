@@ -135,7 +135,8 @@
                                        ui-sref="MapeditorsView({id: rotation.Rotation.first_id, rotation: rotation.Rotation.ids, interval: rotation.Rotation.interval})">
                                         {{ rotation.Rotation.name }}
                                     </a>
-                                    <a ui-sref="RotationsEdit({id: rotation.Rotation.id})" ng-if="!rotation.Rotation.ids.length && rotation.Rotation.allowEdit">
+                                    <a ui-sref="RotationsEdit({id: rotation.Rotation.id})"
+                                       ng-if="!rotation.Rotation.ids.length && rotation.Rotation.allowEdit">
                                         {{ rotation.Rotation.name }}
                                     </a>
                                 </td>

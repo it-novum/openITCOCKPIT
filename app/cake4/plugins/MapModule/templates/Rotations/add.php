@@ -57,13 +57,13 @@
                         </label>
                         <div class="col col-xs-10">
                             <select
-                                    id="RotationContainer"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="containers"
-                                    ng-options="container.key as container.value for container in containers"
-                                    ng-model="post.Rotation.container_id"
-                                    multiple>
+                                id="RotationContainer"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="containers"
+                                ng-options="container.key as container.value for container in containers"
+                                ng-model="post.Rotation.container_id"
+                                multiple>
                             </select>
                             <div ng-repeat="error in errors.container_id">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -77,9 +77,9 @@
                         </label>
                         <div class="col col-xs-10">
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="post.Rotation.name">
+                                class="form-control"
+                                type="text"
+                                ng-model="post.Rotation.name">
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -105,13 +105,13 @@
                         </label>
                         <div class="col col-xs-10">
                             <select
-                                    id="RotationMaps"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="maps"
-                                    ng-options="map.key as map.value for map in maps"
-                                    ng-model="post.Rotation.Map"
-                                    multiple>
+                                id="RotationMaps"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="maps"
+                                ng-options="map.key as map.value for map in maps"
+                                ng-model="post.Rotation.Map"
+                                multiple>
                             </select>
                             <div ng-repeat="error in errors.Map">
                                 <div class="help-block text-danger">{{ error }}</div>

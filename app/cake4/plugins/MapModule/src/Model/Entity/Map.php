@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace MapModule\Model\Entity;
 
 use App\Model\Entity\Container;
+use Cake\I18n\FrozenTime;
 use Cake\ORM\Entity;
 
 /**
@@ -14,17 +15,17 @@ use Cake\ORM\Entity;
  * @property string $title
  * @property string|null $background
  * @property int $refresh_interval
- * @property \Cake\I18n\FrozenTime $created
- * @property \Cake\I18n\FrozenTime $modified
+ * @property FrozenTime $created
+ * @property FrozenTime $modified
  *
- * @property \MapModule\Model\Entity\Mapgadget[] $mapgadgets
- * @property \MapModule\Model\Entity\Mapicon[] $mapicons
- * @property \MapModule\Model\Entity\Mapitem[] $mapitems
- * @property \MapModule\Model\Entity\Mapline[] $maplines
- * @property \MapModule\Model\Entity\MapsToContainer[] $maps_to_containers
- * @property \MapModule\Model\Entity\MapsToRotation[] $maps_to_rotations
- * @property \MapModule\Model\Entity\Mapsummaryitem[] $mapsummaryitems
- * @property \MapModule\Model\Entity\Maptext[] $maptexts
+ * @property Mapgadget[] $mapgadgets
+ * @property Mapicon[] $mapicons
+ * @property Mapitem[] $mapitems
+ * @property Mapline[] $maplines
+ * @property MapsToContainer[] $maps_to_containers
+ * @property MapsToRotation[] $maps_to_rotations
+ * @property Mapsummaryitem[] $mapsummaryitems
+ * @property Maptext[] $maptexts
  */
 class Map extends Entity {
     /**

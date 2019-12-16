@@ -296,13 +296,13 @@
                         <div class="col-xs-12">
                             <div class="form-group" ng-class="{'has-error': errors.object_id}">
                                 <select
-                                        id="AddEditItemObjectSelect"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="itemObjects"
-                                        callback="loadMoreItemObjects"
-                                        ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
-                                        ng-model="currentItem.object_id">
+                                    id="AddEditItemObjectSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="itemObjects"
+                                    callback="loadMoreItemObjects"
+                                    ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
+                                    ng-model="currentItem.object_id">
                                 </select>
                                 <div ng-repeat="error in errors.object_id">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -379,12 +379,12 @@
                         <div class="col-xs-12 col-md-6 col-lg-10">
                             <div class="form-group required" ng-class="{'has-error': errors.z_index}">
                                 <select
-                                        id="selectItemLayerSelect"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="layers"
-                                        ng-options="key as layerNo for (key , layerNo) in layers"
-                                        ng-model="currentItem.z_index">
+                                    id="selectItemLayerSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="layers"
+                                    ng-options="key as layerNo for (key , layerNo) in layers"
+                                    ng-model="currentItem.z_index">
                                 </select>
                                 <div ng-repeat="error in errors.z_index">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -573,13 +573,13 @@
                     <div class="col-xs-12" ng-show="currentItem.type !== 'stateless'">
                         <div class="form-group" ng-class="{'has-error': errors.object_id}">
                             <select
-                                    id="AddEditLineObjectSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="itemObjects"
-                                    callback="loadMoreItemObjects"
-                                    ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
-                                    ng-model="currentItem.object_id">
+                                id="AddEditLineObjectSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="itemObjects"
+                                callback="loadMoreItemObjects"
+                                ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
+                                ng-model="currentItem.object_id">
                             </select>
                             <div ng-repeat="error in errors.object_id">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -657,12 +657,12 @@
                     <div class="col-xs-12 col-md-6 col-lg-10">
                         <div class="form-group required" ng-class="{'has-error': errors.z_index}">
                             <select
-                                    id="selectItemLayerSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="layers"
-                                    ng-options="key as layerNo for (key , layerNo) in layers"
-                                    ng-model="currentItem.z_index">
+                                id="selectItemLayerSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="layers"
+                                ng-options="key as layerNo for (key , layerNo) in layers"
+                                ng-model="currentItem.z_index">
                             </select>
                             <div ng-repeat="error in errors.z_index">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -740,13 +740,13 @@
                     <div class="col-xs-12">
                         <div class="form-group" ng-class="{'has-error': errors.object_id}">
                             <select
-                                    id="AddEditGadgetObjectSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="itemObjects"
-                                    callback="loadMoreItemObjects"
-                                    ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
-                                    ng-model="currentItem.object_id">
+                                id="AddEditGadgetObjectSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="itemObjects"
+                                callback="loadMoreItemObjects"
+                                ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
+                                ng-model="currentItem.object_id">
                             </select>
                             <div ng-repeat="error in errors.object_id">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -796,12 +796,12 @@
                     <div class="col-xs-12">
                         <div class="form-group" ng-class="{'has-error': errors.metric}">
                             <select
-                                    id="AddEditGadgetObjectGaugeSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="metrics"
-                                    ng-options="key as value for (key , value) in metrics"
-                                    ng-model="currentItem.metric">
+                                id="AddEditGadgetObjectGaugeSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="metrics"
+                                ng-options="key as value for (key , value) in metrics"
+                                ng-model="currentItem.metric">
                             </select>
                             <div ng-repeat="error in errors.metric">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -819,11 +819,11 @@
                     <div class="col-xs-12">
                         <div class="form-group" ng-class="{'has-error': errors.output_type}">
                             <select
-                                    id="AddEditGadgetObjectGaugeSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen=""
-                                    ng-model="currentItem.output_type">
+                                id="AddEditGadgetObjectGaugeSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen=""
+                                ng-model="currentItem.output_type">
                                 <option value="service_output"><?php echo __('Service output'); ?></option>
                                 <option value="service_long_output"><?php echo __('Service long output'); ?></option>
                             </select>
@@ -931,12 +931,12 @@
                     <div class="col-xs-12 col-md-6 col-lg-10">
                         <div class="form-group required" ng-class="{'has-error': errors.z_index}">
                             <select
-                                    id="selectItemLayerSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="layers"
-                                    ng-options="key as layerNo for (key , layerNo) in layers"
-                                    ng-model="currentItem.z_index">
+                                id="selectItemLayerSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="layers"
+                                ng-options="key as layerNo for (key , layerNo) in layers"
+                                ng-model="currentItem.z_index">
                             </select>
                             <div ng-repeat="error in errors.z_index">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -1143,7 +1143,7 @@
                                         </a>
                                         <a href="javascript:void(0);" data-toggle="dropdown"
                                            class="btn btn-xs btn-default dropdown-toggle"><span
-                                                    class="caret"></span></a>
+                                                class="caret"></span></a>
                                         <ul class="dropdown-menu">
                                             <li>
                                                 <a href="javascript:void(0);" select-fsize="true"
@@ -1180,23 +1180,26 @@
                                            data-toggle="dropdown"></a>
                                         <ul class="dropdown-menu arrow-box-up-right pull-right color-select">
                                             <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Green Grass'); ?>"
-                                                                      data-placement="left" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-green"
-                                                                      select-color="true" color="#356E35"
-                                                                      class="bg-color-green"></span></li>
+                                                                <span
+                                                                    data-original-title="<?php echo __('Green Grass'); ?>"
+                                                                    data-placement="left" rel="tooltip"
+                                                                    data-widget-setstyle="jarviswidget-color-green"
+                                                                    select-color="true" color="#356E35"
+                                                                    class="bg-color-green"></span></li>
                                             <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Dark Green'); ?>"
-                                                                      data-placement="top" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-greenDark"
-                                                                      select-color="true" color="#496949"
-                                                                      class="bg-color-greenDark"></span></li>
+                                                                <span
+                                                                    data-original-title="<?php echo __('Dark Green'); ?>"
+                                                                    data-placement="top" rel="tooltip"
+                                                                    data-widget-setstyle="jarviswidget-color-greenDark"
+                                                                    select-color="true" color="#496949"
+                                                                    class="bg-color-greenDark"></span></li>
                                             <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Light Green'); ?>"
-                                                                      data-placement="top" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-greenLight"
-                                                                      select-color="true" color="#71843F"
-                                                                      class="bg-color-greenLight"></span></li>
+                                                                <span
+                                                                    data-original-title="<?php echo __('Light Green'); ?>"
+                                                                    data-placement="top" rel="tooltip"
+                                                                    data-widget-setstyle="jarviswidget-color-greenLight"
+                                                                    select-color="true" color="#71843F"
+                                                                    class="bg-color-greenLight"></span></li>
                                             <li style="display: inline-block; margin:0; float: none;">
                                                                 <span data-original-title="<?php echo __('Purple'); ?>"
                                                                       data-placement="top" rel="tooltip"
@@ -1216,17 +1219,19 @@
                                                                       select-color="true" color="#AC5287"
                                                                       class="bg-color-pink"></span></li>
                                             <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Fade Pink'); ?>"
-                                                                      data-placement="left" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-pinkDark"
-                                                                      select-color="true" color="#A8829F"
-                                                                      class="bg-color-pinkDark"></span></li>
+                                                                <span
+                                                                    data-original-title="<?php echo __('Fade Pink'); ?>"
+                                                                    data-placement="left" rel="tooltip"
+                                                                    data-widget-setstyle="jarviswidget-color-pinkDark"
+                                                                    select-color="true" color="#A8829F"
+                                                                    class="bg-color-pinkDark"></span></li>
                                             <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Light Blue'); ?>"
-                                                                      data-placement="top" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-blueLight"
-                                                                      select-color="true" color="#92A2A8"
-                                                                      class="bg-color-blueLight"></span></li>
+                                                                <span
+                                                                    data-original-title="<?php echo __('Light Blue'); ?>"
+                                                                    data-placement="top" rel="tooltip"
+                                                                    data-widget-setstyle="jarviswidget-color-blueLight"
+                                                                    select-color="true" color="#92A2A8"
+                                                                    class="bg-color-blueLight"></span></li>
                                             <li style="display: inline-block; margin:0; float: none;">
                                                                 <span data-original-title="<?php echo __('Teal'); ?>"
                                                                       data-placement="top" rel="tooltip"
@@ -1234,17 +1239,19 @@
                                                                       select-color="true" color="#568A89"
                                                                       class="bg-color-teal"></span></li>
                                             <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Ocean Blue'); ?>"
-                                                                      data-placement="top" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-blue"
-                                                                      select-color="true" color="#57889C"
-                                                                      class="bg-color-blue"></span></li>
+                                                                <span
+                                                                    data-original-title="<?php echo __('Ocean Blue'); ?>"
+                                                                    data-placement="top" rel="tooltip"
+                                                                    data-widget-setstyle="jarviswidget-color-blue"
+                                                                    select-color="true" color="#57889C"
+                                                                    class="bg-color-blue"></span></li>
                                             <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Night Sky'); ?>"
-                                                                      data-placement="top" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-blueDark"
-                                                                      select-color="true" color="#4C4F53"
-                                                                      class="bg-color-blueDark"></span></li>
+                                                                <span
+                                                                    data-original-title="<?php echo __('Night Sky'); ?>"
+                                                                    data-placement="top" rel="tooltip"
+                                                                    data-widget-setstyle="jarviswidget-color-blueDark"
+                                                                    select-color="true" color="#4C4F53"
+                                                                    class="bg-color-blueDark"></span></li>
                                             <li style="display: inline-block; margin:0; float: none;">
                                                                 <span data-original-title="<?php echo __('Night'); ?>"
                                                                       data-placement="right" rel="tooltip"
@@ -1252,11 +1259,12 @@
                                                                       select-color="true" color="#404040"
                                                                       class="bg-color-darken"></span></li>
                                             <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Day Light'); ?>"
-                                                                      data-placement="left" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-yellow"
-                                                                      select-color="true" color="#B09B5B"
-                                                                      class="bg-color-yellow"></span></li>
+                                                                <span
+                                                                    data-original-title="<?php echo __('Day Light'); ?>"
+                                                                    data-placement="left" rel="tooltip"
+                                                                    data-widget-setstyle="jarviswidget-color-yellow"
+                                                                    select-color="true" color="#B09B5B"
+                                                                    class="bg-color-yellow"></span></li>
                                             <li style="display: inline-block; margin:0; float: none;">
                                                                 <span data-original-title="<?php echo __('Orange'); ?>"
                                                                       data-placement="bottom" rel="tooltip"
@@ -1264,23 +1272,26 @@
                                                                       select-color="true" color="#C79121"
                                                                       class="bg-color-orange"></span></li>
                                             <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Dark Orange'); ?>"
-                                                                      data-placement="bottom" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-orangeDark"
-                                                                      select-color="true" color="#A57225"
-                                                                      class="bg-color-orangeDark"></span></li>
+                                                                <span
+                                                                    data-original-title="<?php echo __('Dark Orange'); ?>"
+                                                                    data-placement="bottom" rel="tooltip"
+                                                                    data-widget-setstyle="jarviswidget-color-orangeDark"
+                                                                    select-color="true" color="#A57225"
+                                                                    class="bg-color-orangeDark"></span></li>
                                             <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Red Rose'); ?>"
-                                                                      data-placement="bottom" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-red"
-                                                                      select-color="true" color="#A90329"
-                                                                      class="bg-color-red"></span></li>
+                                                                <span
+                                                                    data-original-title="<?php echo __('Red Rose'); ?>"
+                                                                    data-placement="bottom" rel="tooltip"
+                                                                    data-widget-setstyle="jarviswidget-color-red"
+                                                                    select-color="true" color="#A90329"
+                                                                    class="bg-color-red"></span></li>
                                             <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Light Red'); ?>"
-                                                                      data-placement="bottom" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-redLight"
-                                                                      select-color="true" color="#A65858"
-                                                                      class="bg-color-redLight"></span></li>
+                                                                <span
+                                                                    data-original-title="<?php echo __('Light Red'); ?>"
+                                                                    data-placement="bottom" rel="tooltip"
+                                                                    data-widget-setstyle="jarviswidget-color-redLight"
+                                                                    select-color="true" color="#A65858"
+                                                                    class="bg-color-redLight"></span></li>
                                             <li style="display: inline-block; margin:0; float: none;">
                                                                 <span data-original-title="<?php echo __('Purity'); ?>"
                                                                       data-placement="right" rel="tooltip"
@@ -1363,12 +1374,12 @@
                         <div class="col-xs-12 col-md-6 col-lg-10">
                             <div class="form-group required" ng-class="{'has-error': errors.z_index}">
                                 <select
-                                        id="selectItemLayerSelect"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="layers"
-                                        ng-options="key as layerNo for (key , layerNo) in layers"
-                                        ng-model="currentItem.z_index">
+                                    id="selectItemLayerSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="layers"
+                                    ng-options="key as layerNo for (key , layerNo) in layers"
+                                    ng-model="currentItem.z_index">
                                 </select>
                                 <div ng-repeat="error in errors.z_index">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -1493,12 +1504,12 @@
                         <div class="col-xs-12 col-md-6 col-lg-10">
                             <div class="form-group required" ng-class="{'has-error': errors.z_index}">
                                 <select
-                                        id="selectItemLayerSelect"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="layers"
-                                        ng-options="key as layerNo for (key , layerNo) in layers"
-                                        ng-model="currentItem.z_index">
+                                    id="selectItemLayerSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="layers"
+                                    ng-options="key as layerNo for (key , layerNo) in layers"
+                                    ng-model="currentItem.z_index">
                                 </select>
                                 <div ng-repeat="error in errors.z_index">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -1601,13 +1612,13 @@
                     <div class="col-xs-12">
                         <div class="form-group" ng-class="{'has-error': errors.object_id}">
                             <select
-                                    id="AddEditSummaryObjectSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="itemObjects"
-                                    callback="loadMoreItemObjects"
-                                    ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
-                                    ng-model="currentItem.object_id">
+                                id="AddEditSummaryObjectSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="itemObjects"
+                                callback="loadMoreItemObjects"
+                                ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
+                                ng-model="currentItem.object_id">
                             </select>
                             <div ng-repeat="error in errors.object_id">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -1678,12 +1689,12 @@
                     <div class="col-xs-12 col-md-6 col-lg-10">
                         <div class="form-group required" ng-class="{'has-error': errors.z_index}">
                             <select
-                                    id="selectItemLayerSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="layers"
-                                    ng-options="key as layerNo for (key , layerNo) in layers"
-                                    ng-model="currentItem.z_index">
+                                id="selectItemLayerSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="layers"
+                                ng-options="key as layerNo for (key , layerNo) in layers"
+                                ng-model="currentItem.z_index">
                             </select>
                             <div ng-repeat="error in errors.z_index">
                                 <div class="help-block text-danger">{{ error }}</div>

@@ -38,11 +38,11 @@
             <?php echo __('No element selected'); ?>
         </span>
             <div
-                    style="position: absolute;"
-                    class="no-padding"
-                    mapeditor-view=""
-                    map-id="map.map_id"
-                    ng-if="map.map_id"></div>
+                style="position: absolute;"
+                class="no-padding"
+                mapeditor-view=""
+                map-id="map.map_id"
+                ng-if="map.map_id"></div>
         </flippy-front>
         <flippy-back>
             <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="hideConfig()">
