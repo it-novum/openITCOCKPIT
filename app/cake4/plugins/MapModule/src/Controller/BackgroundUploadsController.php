@@ -25,8 +25,10 @@
 
 namespace MapModule\Controller;
 
+use itnovum\openITCOCKPIT\Core\UUID;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 
 /**
@@ -77,7 +79,7 @@ class BackgroundUploadsController extends AppController {
             }
 
             $uploadFilename = str_replace('.' . $fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
-            $saveFilename = \itnovum\openITCOCKPIT\Core\UUID::v4();
+            $saveFilename = UUID::v4();
             $fullFilePath = $backgroundFolder->path . DS . $saveFilename . '.' . $fileExtension;
             try {
                 if (!move_uploaded_file($_FILES['file']['tmp_name'], $fullFilePath)) {
@@ -331,14 +333,14 @@ class BackgroundUploadsController extends AppController {
                 $iconsetIcons = [];
                 $uploadedIconsetDirectoryName = null;
 
-                /** @var \Symfony\Component\Finder\SplFileInfo $folder */
+                /** @var SplFileInfo $folder */
                 foreach ($finder as $folder) {
                     //In the folder was a zip with the icons
                     $hasDirectory = true;
                     $uploadedIconsetDirectoryName = $folder->getFilename();
                     $iconsetName = preg_replace('/[^a-zA-Z0-9\.\_]+/', '', $uploadedIconsetDirectoryName);
 
-                    /** @var \Symfony\Component\Finder\SplFileInfo $image */
+                    /** @var SplFileInfo $image */
                     foreach ($finder->files()->in($unzipDirectory . DS . $uploadedIconsetDirectoryName) as $image) {
                         $iconsetIcons[$image->getFilename()] = [
                             'filename' => $image->getFilename(),
@@ -353,7 +355,7 @@ class BackgroundUploadsController extends AppController {
                 if ($hasDirectory === false) {
                     $iconsetName = preg_replace('/[^a-zA-Z0-9\.\_]+/', '', str_replace('.zip', '', $fileName));
                     //May be inside of the zip are only icons. (Not folder with icons)
-                    /** @var \Symfony\Component\Finder\SplFileInfo $image */
+                    /** @var SplFileInfo $image */
                     foreach ($finder->files()->in($unzipDirectory) as $image) {
                         $iconsetIcons[$image->getFilename()] = [
                             'filename' => $image->getFilename(),

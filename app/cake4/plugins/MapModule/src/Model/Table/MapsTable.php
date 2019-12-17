@@ -6,36 +6,40 @@ namespace MapModule\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Table\ContainersTable;
+use Cake\Datasource\EntityInterface;
+use Cake\ORM\Association\HasMany;
+use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
+use MapModule\Model\Entity\Map;
 
 /**
  * Maps Model
  *
- * @property \MapModule\Model\Table\MapgadgetsTable&\Cake\ORM\Association\HasMany $Mapgadgets
- * @property \MapModule\Model\Table\MapiconsTable&\Cake\ORM\Association\HasMany $Mapicons
- * @property \MapModule\Model\Table\MapitemsTable&\Cake\ORM\Association\HasMany $Mapitems
- * @property \MapModule\Model\Table\MaplinesTable&\Cake\ORM\Association\HasMany $Maplines
- * @property \MapModule\Model\Table\MapsToContainersTable&\Cake\ORM\Association\HasMany $MapsToContainers
- * @property \MapModule\Model\Table\MapsToRotationsTable&\Cake\ORM\Association\HasMany $MapsToRotations
- * @property \MapModule\Model\Table\MapsummaryitemsTable&\Cake\ORM\Association\HasMany $Mapsummaryitems
- * @property \MapModule\Model\Table\MaptextsTable&\Cake\ORM\Association\HasMany $Maptexts
+ * @property MapgadgetsTable&HasMany $Mapgadgets
+ * @property MapiconsTable&HasMany $Mapicons
+ * @property MapitemsTable&HasMany $Mapitems
+ * @property MaplinesTable&HasMany $Maplines
+ * @property ContainersTable&HasMany $MapsToContainers
+ * @property RotationsTable&HasMany $MapsToRotations
+ * @property MapsummaryitemsTable&HasMany $Mapsummaryitems
+ * @property MaptextsTable&HasMany $Maptexts
  *
- * @method \MapModule\Model\Entity\Map get($primaryKey, $options = [])
- * @method \MapModule\Model\Entity\Map newEntity($data = null, array $options = [])
- * @method \MapModule\Model\Entity\Map[] newEntities(array $data, array $options = [])
- * @method \MapModule\Model\Entity\Map|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \MapModule\Model\Entity\Map saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \MapModule\Model\Entity\Map patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \MapModule\Model\Entity\Map[] patchEntities($entities, array $data, array $options = [])
- * @method \MapModule\Model\Entity\Map findOrCreate($search, callable $callback = null, $options = [])
+ * @method Map get($primaryKey, $options = [])
+ * @method Map newEntity($data = null, array $options = [])
+ * @method Map[] newEntities(array $data, array $options = [])
+ * @method Map|false save(EntityInterface $entity, $options = [])
+ * @method Map saveOrFail(EntityInterface $entity, $options = [])
+ * @method Map patchEntity(EntityInterface $entity, array $data, array $options = [])
+ * @method Map[] patchEntities($entities, array $data, array $options = [])
+ * @method Map findOrCreate($search, callable $callback = null, $options = [])
  *
- * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ * @mixin TimestampBehavior
  */
 class MapsTable extends Table {
 
@@ -99,8 +103,8 @@ class MapsTable extends Table {
     /**
      * Default validation rules.
      *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
+     * @param Validator $validator Validator instance.
+     * @return Validator
      */
     public function validationDefault(Validator $validator): Validator {
         $validator
@@ -145,7 +149,7 @@ class MapsTable extends Table {
      * @return array
      */
     public function getMapsIndex(MapFilter $MapFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
-        if(!is_array($MY_RIGHTS)){
+        if (!is_array($MY_RIGHTS)) {
             $MY_RIGHTS = [$MY_RIGHTS];
         }
         $query = $this->find('all')
@@ -206,5 +210,38 @@ class MapsTable extends Table {
         return [
             'Map' => $contact
         ];
+    }
+
+    /**
+     * @param array $ids
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getMapsForCopy($ids = [], $MY_RIGHTS = []) {
+        if (!is_array($MY_RIGHTS)) {
+            $MY_RIGHTS = [$MY_RIGHTS];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Maps.id',
+                'Maps.name',
+                'Maps.title',
+                'Maps.refresh_interval'
+            ])
+            ->where(['Maps.id IN' => $ids])
+            ->order(['Maps.id' => 'asc'])
+            ->contain(['Containers'])
+            ->innerJoinWith('Containers', function (Query $query) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    return $query->where(['Containers.id IN' => $MY_RIGHTS]);
+                }
+                return $query;
+            })
+            ->group(['Maps.id'])
+            ->disableHydration()
+            ->all();
+
+        return $query->toArray();
     }
 }

@@ -2458,4 +2458,31 @@ class ServicesTable extends Table {
         }
         return $result;
     }
+
+    /**
+     * @param array $hostIds
+     * @return array
+     */
+    public function getServicesByHostIdForCopy($hostIds = []){
+        if (!is_array($hostIds)) {
+            $hostIds = [$hostIds];
+        }
+        if(empty($hostIds)){
+            return [];
+        }
+        $hostIds = array_unique($hostIds);
+
+        $query = $this->find()
+            ->select([
+                'Services.id'
+            ])->where([
+                'Services.host_id IN' => $hostIds
+            ])->disableHydration();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        return $result;
+    }
 }

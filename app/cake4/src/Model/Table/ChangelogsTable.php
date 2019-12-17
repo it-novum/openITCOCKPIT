@@ -327,7 +327,7 @@ class ChangelogsTable extends Table {
      * @param $field_key
      * @return array
      */
-    function getDiffAsArray($new_values, $old_values, $field_key) {
+    public function getDiffAsArray($new_values, $old_values, $field_key) {
         $new_values = ($new_values === null) ? [] : $new_values;
         $old_values = ($old_values === null || empty(Hash::filter($old_values, [$this, 'filterNullValues']))) ? [] : $old_values;
         // compare the value of 2 array

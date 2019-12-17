@@ -66,13 +66,13 @@
                         </label>
                         <div class="col col-xs-10">
                             <select
-                                    id="MapContainer"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="containers"
-                                    ng-options="container.key as container.value for container in containers"
-                                    ng-model="post.Map.containers._ids"
-                                    multiple>
+                                id="MapContainer"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="containers"
+                                ng-options="container.key as container.value for container in containers"
+                                ng-model="post.Map.containers._ids"
+                                multiple>
                             </select>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -86,9 +86,9 @@
                         </label>
                         <div class="col col-xs-10">
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="post.Map.name">
+                                class="form-control"
+                                type="text"
+                                ng-model="post.Map.name">
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -100,9 +100,9 @@
                             <?php echo __('Map Title'); ?>
                         </label>
                         <div class="col col-xs-10">
-                            <input  class="form-control"
-                                    type="text"
-                                    ng-model="post.Map.title">
+                            <input class="form-control"
+                                   type="text"
+                                   ng-model="post.Map.title">
                             <div ng-repeat="error in errors.title">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>

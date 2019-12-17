@@ -21,7 +21,7 @@ angular.module('openITCOCKPIT')
 
             $http.post("/map_module/mapeditors/mapitemMulti.json?angular=true", {
                     items: postData,
-		    disableGlobalLoader: true
+                    disableGlobalLoader: true
                 }
             ).then(function(result){
 

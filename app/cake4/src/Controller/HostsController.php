@@ -27,11 +27,22 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\Constants;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
+use App\Model\Entity\Contact;
+use App\Model\Entity\Contactgroup;
+use App\Model\Entity\Container;
+use App\Model\Entity\DeletedHost;
+use App\Model\Entity\DeletedService;
+use App\Model\Entity\Hostcommandargumentvalue;
+use App\Model\Entity\Hostgroup;
+use App\Model\Entity\Hosttemplatecommandargumentvalue;
+use App\Model\Entity\Service;
+use App\Model\Entity\Timeperiod;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
@@ -44,6 +55,7 @@ use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
+use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -54,6 +66,7 @@ use DistributeModule\Model\Table\SatellitesTable;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
+use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\HostConditions;
@@ -65,7 +78,9 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
+use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForView;
+use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForView;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\Permissions\HostContainersPermissions;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
@@ -91,6 +106,9 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
+use Nette\Schema\ValidationException;
+use Statusengine2Module\Model\Entity\DowntimeHost;
+use Statusengine2Module\Model\Entity\NotificationHost;
 
 
 /**
@@ -102,18 +120,16 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  * @property DeletedHost $DeletedHost
  * @property DeletedService $DeletedService
  * @property Container $Container
- * @property Parenthost $Parenthost
  * @property Hosttemplate $Hosttemplate
  * @property Hostgroup $Hostgroup
  * @property Timeperiod $Timeperiod
  * @property DowntimeHost $DowntimeHost
- * @property BbcodeComponent $Bbcode
+ * @property \BbcodeComponent $Bbcode
  * @property StatehistoryHost $StatehistoryHost
- * @property DateRange $DateRange
  * @property NotificationHost $NotificationHost
  * @property Service $Service
  *
- * @property AppPaginatorComponent $Paginator
+ * @property \AppPaginatorComponent $Paginator
  */
 class HostsController extends AppController {
 
@@ -124,9 +140,10 @@ class HostsController extends AppController {
      * @deprecated
      */
     public function index() {
+        /** @var User $User */
         $User = new User($this->getUser());
 
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        /** @var SystemsettingsTable $Systemsettings */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $masterInstanceName = $Systemsettings->getMasterInstanceName();
 
@@ -141,7 +158,7 @@ class HostsController extends AppController {
         }
 
         if (!$this->isApiRequest()) {
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            /** @var SystemsettingsTable $Systemsettings */
             $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
             $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
@@ -157,7 +174,6 @@ class HostsController extends AppController {
 
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
-        $User = new User($this->getUser());
         if ($HostControllerRequest->isRequestFromBrowser() === false) {
             $HostCondition->setIncludeDisabled(false);
             $HostCondition->setContainerIds($this->MY_RIGHTS);
@@ -233,7 +249,7 @@ class HostsController extends AppController {
                 ])
                 ->toList();
 
-            $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
+            $servicestatus = $ServicestatusTable->byUuids($serviceUuids, $ServicestatusFields);
             $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatus);
             $serviceStateSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, false);
 
@@ -354,6 +370,9 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['host', 'hoststatus']);
     }
 
+    /**
+     * @param $uuid
+     */
     public function byUuid($uuid) {
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
@@ -373,8 +392,11 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['host']);
     }
 
+    /**
+     * @throws MissingDbBackendException
+     */
     public function notMonitored() {
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        /** @var SystemsettingsTable $Systemsettings */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
@@ -480,7 +502,6 @@ class HostsController extends AppController {
 
     /**
      * @throws NotFoundException
-     * @throws Exception
      */
     public function add() {
         if (!$this->isApiRequest()) {
@@ -575,6 +596,9 @@ class HostsController extends AppController {
         }
     }
 
+    /**
+     * @param null $id
+     */
     public function edit($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -657,7 +681,7 @@ class HostsController extends AppController {
         if ($this->request->is('post')) {
             $hosttemplateId = $this->request->getData('Host.hosttemplate_id');
             if ($hosttemplateId === null) {
-                throw new Exception('Host.hosttemplate_id needs to set.');
+                throw new ValidationException('Hosttemplate id needs to set.');
             }
             if (!$HosttemplatesTable->existsById($hosttemplateId)) {
                 throw new NotFoundException(__('Invalid host template'));
@@ -1218,23 +1242,26 @@ class HostsController extends AppController {
      * @deprecated
      */
     public function delete($id = null) {
-        if (!$this->Host->exists($id)) {
-            throw new NotFoundException(__('Invalid host'));
-        }
-
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        $host = $this->Host->findById($id);
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck)) {
+        /** @var HostsTable $HostTable */
+        $HostTable = TableRegistry::getTableLocator()->get('Hosts');
+        if (!$HostTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $host = $HostTable->getHostById($id);
+
+        if (!$this->allowedByContainerId($host->getContainerIds())) {
             $this->render403();
             return;
         }
 
-        $modules = $this->Constants->defines['modules'];
+        /** @var Constants $Constants */
+        $Constants = new Constants();
+        $moduleConstants = $Constants->getModuleConstants();
 
         $usedBy = $this->Host->isUsedByModules($host, $modules);
         if (empty($usedBy['host']) && empty($usedBy['service'])) {
@@ -1253,7 +1280,7 @@ class HostsController extends AppController {
             }
         }
 
-        //both types must be host, otherwise the serviceUsedBy site with the host id will be displayed wich results in an error
+        //both types must be host, otherwise the serviceUsedBy site with the host id will be displayed which results in an error
         $usedBy = Hash::merge(
             $this->getUsedByForFrontend($usedBy['host'], 'host'),
             $this->getUsedByForFrontend($usedBy['service'], 'host')
@@ -1265,10 +1292,11 @@ class HostsController extends AppController {
         $this->set('message', __('Issue while deleting host'));
         $this->set('usedBy', $usedBy);
         $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
+
     }
 
     /**
-     * @deprecated
+     * @param null $id
      */
     public function copy($id = null) {
         if (!$this->isAngularJsRequest()) {
@@ -1293,22 +1321,22 @@ class HostsController extends AppController {
         $validationErrors = [];
         if ($this->request->is('post') || $this->request->is('put')) {
             $validationError = false;
-            $dataToSaveArray = [];
             //We want to save/validate the data and save it
             $postData = $this->request->getData('data');
 
             foreach ($postData as $index => $host2copyData) {
-                $newHostEntityData = [];
-                $changelog_data = [];
+                $action = 'copy';
+                $currentDataForChangelog = [];
+                $extDataForChangelog = [];
                 if (!$HostsTable->existsById($host2copyData['Source']['id'])) {
                     continue;
                 }
                 if (!isset($host2copyData['Host']['id'])) {
-                    $action = 'copy';
                     $hostgroupsIds = [];
                     $parenthostsIds = [];
                     $contactsIds = [];
                     $contactgroupsIds = [];
+                    $containerIds = [];
                     $hostcommandargumentvalues = [];
                     $customvariables = [];
 
@@ -1334,6 +1362,10 @@ class HostsController extends AppController {
                             'flap_detection_on_up',
                             'flap_detection_on_down',
                             'flap_detection_on_unreachable',
+                            'own_contacts',
+                            'own_contactgroups',
+                            'own_customvariables',
+                            'host_type',
                             'notes',
                             'priority',
                             'tags',
@@ -1343,22 +1375,23 @@ class HostsController extends AppController {
                     /** @var \App\Model\Entity\Hosttemplate $hosttemplate */
                     $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($sourceHost->get('hosttemplate_id'));
 
-                    $newHost = $HostsTable->newEmptyEntity();
-                    $newHost->setNew(true);
+                    $tmpHost = $HostsTable->newEmptyEntity();
+                    $tmpHost->setNew(true);
                     if (!empty($hostDefaultValues)) {
-                        $newHost->set($hostDefaultValues);
+                        $tmpHost->set($hostDefaultValues);
                     }
 
-                    $newHost->set('uuid', UUID::v4());
-                    $newHost->set('name', $host2copyData['Host']['name']);
-                    $newHost->set('description', $host2copyData['Host']['description']);
-                    $newHost->set('address', $host2copyData['Host']['address']);
-                    $newHost->set('host_url', $host2copyData['Host']['host_url']);
+                    $tmpHost->set('uuid', UUID::v4());
+                    $tmpHost->set('usage_flag', 0);  //This host is not used - because it does not exists yet
+                    $tmpHost->set('name', $host2copyData['Host']['name']);
+                    $tmpHost->set('description', $host2copyData['Host']['description']);
+                    $tmpHost->set('address', $host2copyData['Host']['address']);
+                    $tmpHost->set('host_url', $host2copyData['Host']['host_url']);
                     foreach ($sourceHost->get('hostgroups') as $hostgroup) {
                         $hostgroupsIds[] = $hostgroup->get('id');
-                        $newHost->set('hostgroups', Hash::remove(
-                            $sourceHost->get('hostgroups'), '{n}._joinData'
-                        ));
+                    }
+                    foreach ($sourceHost->get('hosts_to_containers_sharing') as $container) {
+                        $containerIds[] = $container->get('id');
                     }
                     foreach ($sourceHost->get('parenthosts') as $parenthost) {
                         $parenthostsIds[] = $parenthost->get('id');
@@ -1381,84 +1414,67 @@ class HostsController extends AppController {
                             'value' => $customvariable->get('value')
                         ];
                     }
-                    $newHost->set([
+
+                    $tmpHost->set([
+                        'hosts_to_containers_sharing' => [
+                            '_ids' => $containerIds
+                        ]
+                    ]);
+                    $tmpHost->set([
                         'hostgroups' => [
                             '_ids' => $hostgroupsIds
                         ]
                     ]);
-                    $newHost->set([
+
+                    $tmpHost->set([
                         'parenthosts' => [
                             '_ids' => $parenthostsIds
                         ]
                     ]);
-                    $newHost->set([
+                    $tmpHost->set([
                         'contacts' => [
                             '_ids' => $contactsIds
                         ]
                     ]);
-                    $newHost->set([
+                    $tmpHost->set([
                         'contactgroups' => [
                             '_ids' => $contactgroupsIds
                         ]
                     ]);
 
-                    $newHost->hostcommandargumentvalues = $hostcommandargumentvalues;
-                    $newHost->customvariables = $customvariables;
+                    $tmpHost->hostcommandargumentvalues = $hostcommandargumentvalues;
+                    $tmpHost->customvariables = $customvariables;
 
+                    $HostMergerForView = new HostMergerForView(['Host' => $tmpHost->toArray()], $hosttemplate);
+                    $mergedHost = $HostMergerForView->getDataForView();
+                    $extDataForChangelog = $HostsTable->resolveDataForChangelog($mergedHost);
+                    $extDataForChangelog = array_merge($mergedHost, $extDataForChangelog);
 
+                    $hostData = $tmpHost->toArray();
+                    $hostData['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
+                    $hostData['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
+                    $hostData['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
+                    $hostData['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
 
-                    //debug($hosttemplate);
-                    //debug($newHost->toArray());
-
-                    $newHost->set('hosttemplate_flap_detection_enabled', $sourceHost->get('flap_detection_enabled'));
-                    $newHost->set('hosttemplate_flap_detection_on_up', $sourceHost->get('flap_detection_on_up'));
-                    $newHost->set('hosttemplate_flap_detection_on_down', $sourceHost->get('flap_detection_on_down'));
-                    $newHost->set('hosttemplate_flap_detection_on_unreachable', $sourceHost->get('flap_detection_on_unreachable'));
-
+                    $newHost = $HostsTable->newEntity($hostData);
 
                 }
 
                 if (isset($host2copyData['Host']['id'])) {
                     $action = 'edit';
                     $newHost = $HostsTable->get($host2copyData['Host']['id']);
+                    $currentDataForChangelog = $newHost->toArray();
                     $newHost->set('hosttemplate_flap_detection_enabled', $newHost->get('flap_detection_enabled'));
                     $newHost->set('hosttemplate_flap_detection_on_up', $newHost->get('flap_detection_on_up'));
                     $newHost->set('hosttemplate_flap_detection_on_down', $newHost->get('flap_detection_on_down'));
                     $newHost->set('hosttemplate_flap_detection_on_unreachable', $newHost->get('flap_detection_on_unreachable'));
                     $newHost = $HostsTable->patchEntity($newHost, $host2copyData['Host']);
+                    $extDataForChangelog = $newHost->toArray();
                 }
 
-                $HostComparisonForSave = new HostComparisonForSave([
-                    'Host' => $newHost->toArray()
-                ], $hosttemplate);
-
-                $newHostEntityData = $HostComparisonForSave->getDataForSaveForAllFields();
-//                debug($newHostEntityData);
-
-                $HostMergerForView = new HostMergerForView(['Host' => $newHost->toArray()], $hosttemplate);
-                $mergedHost = $HostMergerForView->getDataForView();
-//debug($mergedHost);
-                $extDataForChangelog = $HostsTable->resolveDataForChangelog($mergedHost);
-//                debug($extDataForChangelog);
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'add',
-                    'hosts',
-                    123,
-                    //$newHost->get('id'),
-                    OBJECT_HOST,
-                    $newHost->get('container_id'),
-                    $User->getId(),
-                    $newHost->get('name'),
-                    array_merge($mergedHost, $extDataForChangelog)
-                );
-                debug($changelog_data);
-                return;
-                $HosttemplatesTable->save($newHost);
-
+                $HostsTable->save($newHost);
                 $postData[$index]['Error'] = [];
+
                 if ($newHost->hasErrors()) {
                     $hasErrors = true;
                     $postData[$index]['Error'] = $newHost->getErrors();
@@ -1468,51 +1484,133 @@ class HostsController extends AppController {
 
                     /** @var  ChangelogsTable $ChangelogsTable */
                     $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-                    $containerIds = [];
-                    foreach ($newHost->get('containers') as $container) {
-                        $containerIds[] = $container->get('id');
-                    }
 
                     $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'hosts',
-                        $postData[$index]['Host']['id'],
+                        $newHost->get('id'),
                         OBJECT_HOST,
-                        [$containerIds],
+                        $containerIds,
                         $User->getId(),
                         $newHost->get('name'),
-                        ['Host' => $newHostEntityData]
+                        $extDataForChangelog,
+                        $currentDataForChangelog
                     );
+
                     if ($changelog_data) {
                         /** @var Changelog $changelogEntry */
                         $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
                         $ChangelogsTable->save($changelogEntry);
                     }
+
+                    /**
+                     * @todo Copy all services from host
+                     */
+
+                    if ($action === 'copy') {
+                        $Cache = new KeyValueStore();
+                        $ServicetemplateCache = new KeyValueStore();
+                        $ServicetemplateEditCache = new KeyValueStore();
+                        $hostId = $newHost->get('id');
+                        $hostContactsAndContactgroups = $HostsTable->getContactsAndContactgroupsById($hostId);
+                        $hosttemplateContactsAndContactgroups = $HosttemplatesTable->getContactsAndContactgroupsById($newHost->get('hosttemplate_id'));
+
+                        /** @var ServicesTable $ServicesTable */
+                        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                        /** @var  Servicetemplates $ServicetemplatesTable */
+                        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+                        $servicesFromHost = $ServicesTable->getServicesByHostIdForCopy($sourceHost->get('id'));
+                        foreach ($servicesFromHost as $serviceData) {
+                            $sourceServiceId = $serviceData['id'];
+                            $sourceService = $ServicesTable->getServiceForEdit($sourceServiceId);
+                            if (!$ServicetemplateCache->has($sourceService['Service']['servicetemplate_id'])) {
+                                $sourceServiceServicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($sourceService['Service']['servicetemplate_id']);
+                                $ServicetemplateCache->set($sourceService['Service']['servicetemplate_id'], $sourceServiceServicetemplate);
+                            }
+                            $sourceServiceServicetemplate = $ServicetemplateCache->get($sourceService['Service']['servicetemplate_id']);
+
+                            $ServiceMergerForView = new ServiceMergerForView(
+                                $sourceService,
+                                $sourceServiceServicetemplate
+                            );
+
+                            $sourceService = $ServiceMergerForView->getDataForView();
+
+                            //This service is not used - because it does not exists yet
+                            $sourceService['Service']['usage_flag'] = 0;
+                            unset($sourceService['Service']['id'], $sourceService['Service']['uuid'], $sourceService['Service']['host_id']);
+
+
+                            foreach ($sourceService['Service']['servicecommandargumentvalues'] as $i => $servicecommandargumentvalues) {
+                                unset($sourceService['Service']['servicecommandargumentvalues'][$i]['id']);
+                                if (isset($sourceService['Service']['servicecommandargumentvalues'][$i]['service_id'])) {
+                                    unset($sourceService['Service']['servicecommandargumentvalues'][$i]['service_id']);
+                                }
+
+                                if (isset($sourceService['Service']['servicecommandargumentvalues'][$i]['servicetemplate_id'])) {
+                                    unset($sourceService['Service']['servicecommandargumentvalues'][$i]['servicetemplate_id']);
+                                }
+                            }
+
+                            if (!empty($serviceData['Service']['servicecommandargumentvalues'])) {
+                                $serviceData['Service']['servicecommandargumentvalues'] = $serviceData['Service']['servicecommandargumentvalues'];
+                            }
+                            $newServiceData = $sourceService;
+                            $newServiceData['Service']['host_id'] = $hostId;
+                            // Replace service template values with zero
+
+                            if (!$ServicetemplateEditCache->has($sourceService['Service']['servicetemplate_id'])) {
+                                $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($sourceService['Service']['servicetemplate_id']);
+                                $ServicetemplateEditCache->set($sourceService['Service']['servicetemplate_id'], $servicetemplate);
+                            }
+                            $servicetemplate = $ServicetemplateEditCache->get($sourceService['Service']['servicetemplate_id']);
+                            $serviceName = ($sourceService['Service']['name']) ? $sourceService['Service']['name'] : $servicetemplate['Servicetemplate']['name'];
+                            $ServiceComparisonForSave = new ServiceComparisonForSave(
+                                $newServiceData,
+                                $servicetemplate,
+                                $hostContactsAndContactgroups,
+                                $hosttemplateContactsAndContactgroups
+                            );
+                            $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
+                            //Add required fields for validation
+                            $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
+                            $serviceData['servicetemplate_flap_detection_on_ok'] = $servicetemplate['Servicetemplate']['flap_detection_on_ok'];
+                            $serviceData['servicetemplate_flap_detection_on_warning'] = $servicetemplate['Servicetemplate']['flap_detection_on_warning'];
+                            $serviceData['servicetemplate_flap_detection_on_critical'] = $servicetemplate['Servicetemplate']['flap_detection_on_critical'];
+                            $serviceData['servicetemplate_flap_detection_on_unknown'] = $servicetemplate['Servicetemplate']['flap_detection_on_unknown'];
+                            //Container permissions check for contacts, contact groups and time periods
+
+                            $serviceData['uuid'] = UUID::v4();
+                            $newServiceEntity = $ServicesTable->newEntity($serviceData);
+
+                            $ServicesTable->save($newServiceEntity);
+                            if (!$newServiceEntity->hasErrors()) {
+                                //No errors
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                                $extDataForChangelog = $ServicesTable->resolveDataForChangelog($sourceService);
+
+                                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                                    $action,
+                                    'services',
+                                    $newServiceEntity->get('id'),
+                                    OBJECT_SERVICE,
+                                    $newHost->get('container_id'),
+                                    $User->getId(),
+                                    $newHost->get('name') . '/' . $serviceName,
+                                    array_merge($sourceService, $extDataForChangelog)
+                                );
+                                if ($changelog_data) {
+                                    /** @var Changelog $changelogEntry */
+                                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                                    $ChangelogsTable->save($changelogEntry);
+                                }
+                            }
+                        }
+                    }
                 }
-
-
-                /*
-
-                                debug($sourceHost->get('parenthosts'));
-                                debug($sourceHost->get('customvariables'));
-                                debug($sourceHost->get('contacts'));
-                                debug($sourceHost->get('contactgroups'));
-                */
-
-                /* $hostData['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
-            $hostData['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
-            $hostData['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
-            $hostData['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];*/
-
-
-                //               print_r($hostDataToSave);
-
-                //$host = $HostsTable->newEntity($sourceHost->toArray());
-                //$HostsTable->save($host);
-                continue;
-
             }
-
         }
         $this->set('back_url', $this->referer());
     }
