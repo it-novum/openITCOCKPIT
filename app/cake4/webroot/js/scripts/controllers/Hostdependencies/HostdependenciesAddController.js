@@ -11,12 +11,12 @@ angular.module('openITCOCKPIT')
                 execution_fail_on_down: 1,
                 execution_fail_on_unreachable: 1,
                 execution_fail_on_pending: 1,
-                execution_none: 1,
+                execution_none: 0,
                 notification_fail_on_up: 1,
                 notification_fail_on_down: 1,
                 notification_fail_on_unreachable: 1,
                 notification_fail_on_pending: 1,
-                notification_none: 1,
+                notification_none: 0,
                 hosts: {
                     _ids: []
                 },
@@ -32,6 +32,18 @@ angular.module('openITCOCKPIT')
             }
         };
         $scope.containers = {};
+
+        $('#infoButtonNotificationOptions').popover({
+            boundary: 'window',
+            trigger: 'hover',
+            placement: 'left'
+        });
+
+        $('#infoButtonExecutionOptions').popover({
+            boundary: 'window',
+            trigger: 'hover',
+            placement: 'left'
+        });
 
         $scope.loadContainer = function(){
             var params = {
@@ -188,6 +200,78 @@ angular.module('openITCOCKPIT')
                 return;
             }
             $scope.processChosenHostgroups();
+        }, true);
+
+
+        $scope.$watchGroup([
+            'post.Hostdependency.execution_fail_on_up',
+            'post.Hostdependency.execution_fail_on_down',
+            'post.Hostdependency.execution_fail_on_unreachable',
+            'post.Hostdependency.execution_fail_on_pending'
+        ], function(){
+            if($scope.init){
+                return;
+            }
+            if($scope.post.Hostdependency.execution_none === 0){
+                return;
+            }
+            if($scope.post.Hostdependency.execution_fail_on_up |
+                $scope.post.Hostdependency.execution_fail_on_down |
+                $scope.post.Hostdependency.execution_fail_on_unreachable |
+                $scope.post.Hostdependency.execution_fail_on_pending
+            ){
+                $scope.post.Hostdependency.execution_none = 0;
+            }
+
+        }, true);
+
+        $scope.$watch('post.Hostdependency.execution_none', function(){
+            if($scope.init){
+                return;
+            }
+            if($scope.post.Hostdependency.execution_none === 0){
+                return;
+            }
+            $scope.post.Hostdependency.execution_fail_on_up = 0;
+            $scope.post.Hostdependency.execution_fail_on_down = 0;
+            $scope.post.Hostdependency.execution_fail_on_unreachable = 0;
+            $scope.post.Hostdependency.execution_fail_on_pending = 0;
+        }, true);
+
+
+        $scope.$watchGroup([
+            'post.Hostdependency.notification_fail_on_up',
+            'post.Hostdependency.notification_fail_on_down',
+            'post.Hostdependency.notification_fail_on_unreachable',
+            'post.Hostdependency.notification_fail_on_pending'
+        ], function(){
+            if($scope.init){
+                return;
+            }
+            if($scope.post.Hostdependency.notification_none === 0){
+                return;
+            }
+            if($scope.post.Hostdependency.notification_fail_on_up |
+                $scope.post.Hostdependency.notification_fail_on_down |
+                $scope.post.Hostdependency.notification_fail_on_unreachable |
+                $scope.post.Hostdependency.notification_fail_on_pending
+            ){
+                $scope.post.Hostdependency.notification_none = 0;
+            }
+
+        }, true);
+
+        $scope.$watch('post.Hostdependency.notification_none', function(){
+            if($scope.init){
+                return;
+            }
+            if($scope.post.Hostdependency.notification_none === 0){
+                return;
+            }
+            $scope.post.Hostdependency.notification_fail_on_up = 0;
+            $scope.post.Hostdependency.notification_fail_on_down = 0;
+            $scope.post.Hostdependency.notification_fail_on_unreachable = 0;
+            $scope.post.Hostdependency.notification_fail_on_pending = 0;
         }, true);
 
         //Fire on page load

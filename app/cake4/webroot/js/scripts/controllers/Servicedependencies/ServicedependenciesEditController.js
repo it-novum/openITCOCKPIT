@@ -12,13 +12,13 @@ angular.module('openITCOCKPIT')
                 execution_fail_on_critical: 1,
                 execution_fail_on_unknown: 1,
                 execution_fail_on_pending: 1,
-                execution_none: 1,
+                execution_none: 0,
                 notification_fail_on_ok: 1,
                 notification_fail_on_warning: 1,
                 notification_fail_on_critical: 1,
                 notification_fail_on_unknown: 1,
                 notification_fail_on_pending: 1,
-                notification_none: 1,
+                notification_none: 0,
                 services: {
                     _ids: []
                 },
@@ -35,6 +35,18 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.containers = {};
+
+        $('#infoButtonNotificationOptions').popover({
+            boundary: 'window',
+            trigger: 'hover',
+            placement: 'left'
+        });
+
+        $('#infoButtonExecutionOptions').popover({
+            boundary: 'window',
+            trigger: 'hover',
+            placement: 'left'
+        });
 
         $scope.load = function(){
             $http.get("/servicedependencies/edit/" + $scope.id + ".json", {
@@ -242,6 +254,83 @@ angular.module('openITCOCKPIT')
                 return;
             }
             $scope.processChosenServicegroups();
+        }, true);
+
+        $scope.$watchGroup([
+            'post.Servicedependency.execution_fail_on_ok',
+            'post.Servicedependency.execution_fail_on_warning',
+            'post.Servicedependency.execution_fail_on_critical',
+            'post.Servicedependency.execution_fail_on_unknown',
+            'post.Servicedependency.execution_fail_on_pending'
+        ], function(){
+            if($scope.init){
+                return;
+            }
+            if($scope.post.Servicedependency.execution_none === 0){
+                return;
+            }
+            if($scope.post.Servicedependency.execution_fail_on_ok |
+                $scope.post.Servicedependency.execution_fail_on_warning |
+                $scope.post.Servicedependency.execution_fail_on_critical |
+                $scope.post.Servicedependency.execution_fail_on_unknown |
+                $scope.post.Servicedependency.execution_fail_on_pending
+            ){
+                $scope.post.Servicedependency.execution_none = 0;
+            }
+
+        }, true);
+
+        $scope.$watch('post.Servicedependency.execution_none', function(){
+            if($scope.init){
+                return;
+            }
+            if($scope.post.Servicedependency.execution_none === 0){
+                return;
+            }
+            $scope.post.Servicedependency.execution_fail_on_ok = 0;
+            $scope.post.Servicedependency.execution_fail_on_warning = 0;
+            $scope.post.Servicedependency.execution_fail_on_critical = 0;
+            $scope.post.Servicedependency.execution_fail_on_unknown = 0;
+            $scope.post.Servicedependency.execution_fail_on_pending = 0;
+        }, true);
+
+
+        $scope.$watchGroup([
+            'post.Servicedependency.notification_fail_on_ok',
+            'post.Servicedependency.notification_fail_on_warning',
+            'post.Servicedependency.notification_fail_on_critical',
+            'post.Servicedependency.notification_fail_on_unknown',
+            'post.Servicedependency.notification_fail_on_pending'
+        ], function(){
+            if($scope.init){
+                return;
+            }
+            if($scope.post.Servicedependency.notification_none === 0){
+                return;
+            }
+            if($scope.post.Servicedependency.notification_fail_on_ok |
+                $scope.post.Servicedependency.notification_fail_on_warning |
+                $scope.post.Servicedependency.notification_fail_on_critical |
+                $scope.post.Servicedependency.notification_fail_on_unknown |
+                $scope.post.Servicedependency.notification_fail_on_pending
+            ){
+                $scope.post.Servicedependency.notification_none = 0;
+            }
+
+        }, true);
+
+        $scope.$watch('post.Servicedependency.notification_none', function(){
+            if($scope.init){
+                return;
+            }
+            if($scope.post.Servicedependency.notification_none === 0){
+                return;
+            }
+            $scope.post.Servicedependency.notification_fail_on_ok = 0;
+            $scope.post.Servicedependency.notification_fail_on_warning = 0;
+            $scope.post.Servicedependency.notification_fail_on_critical = 0;
+            $scope.post.Servicedependency.notification_fail_on_unknown = 0;
+            $scope.post.Servicedependency.notification_fail_on_pending = 0;
         }, true);
 
         //Fire on page load
