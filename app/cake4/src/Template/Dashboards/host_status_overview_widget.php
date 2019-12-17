@@ -23,7 +23,7 @@
 //  confirmation.
 ?>
 <div class="row">
-      <flippy vertical
+    <flippy vertical
             class="col-lg-12"
             flip="['custom:FLIP_EVENT_OUT']"
             flip-back="['custom:FLIP_EVENT_IN']"
@@ -31,13 +31,13 @@
             timing-function="ease-in-out">
 
         <flippy-front
-            class="bg-host-{{filter.Hoststatus.current_state}} bg-host-background-icon bg-host-front-{{filter.Hoststatus.current_state}} fixFlippy" style="border: 1px solid cyan;">
+            class="bg-host-{{filter.Hoststatus.current_state}} bg-host-background-icon bg-host-front-{{filter.Hoststatus.current_state}} fixFlippy">
             <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
                 <i class="fa fa-cog fa-sm"></i>
             </a>
-          <div class="padding-5" style="font-size:{{fontSize}}px;">
+            <div class="padding-5" style="font-size:{{fontSize}}px;">
                 <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
-                    <a ng-href="{{widgetHref}}" style="">
+                    <a ng-href="{{widgetHref}}">
                         <div class="row text-center">
                             <div class="col col-lg-12 txt-color-white">
                                 {{ statusCount | number }}
@@ -54,7 +54,7 @@
             </div>
         </flippy-front>
         <flippy-back class="fixFlippy">
-           <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="hideConfig()">
+            <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="hideConfig()">
                 <i class="fa fa-eye fa-sm"></i>
             </a>
             <div class="padding-top-10">
@@ -143,8 +143,6 @@
                             </div>
                         </div>
                     </div>
-
-
                 </div>
                 <div class="row">
                     <div class="col-lg-12">
