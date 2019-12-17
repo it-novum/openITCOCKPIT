@@ -108,7 +108,7 @@ class GearmanWorkerCommand extends Command {
         }
 
         $pidfd = fopen($pidfile, 'w+');
-        fwrite($pidfd, getmypid());
+        fwrite($pidfd, (string)getmypid());
         fclose($pidfd);
 
         declare(ticks=100);
