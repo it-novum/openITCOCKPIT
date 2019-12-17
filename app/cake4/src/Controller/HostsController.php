@@ -27,11 +27,22 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\Constants;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
+use App\Model\Entity\Contact;
+use App\Model\Entity\Contactgroup;
+use App\Model\Entity\Container;
+use App\Model\Entity\DeletedHost;
+use App\Model\Entity\DeletedService;
+use App\Model\Entity\Hostcommandargumentvalue;
+use App\Model\Entity\Hostgroup;
+use App\Model\Entity\Hosttemplatecommandargumentvalue;
+use App\Model\Entity\Service;
+use App\Model\Entity\Timeperiod;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
@@ -44,6 +55,7 @@ use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
+use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -94,6 +106,9 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
+use Nette\Schema\ValidationException;
+use Statusengine2Module\Model\Entity\DowntimeHost;
+use Statusengine2Module\Model\Entity\NotificationHost;
 
 
 /**
@@ -105,18 +120,16 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  * @property DeletedHost $DeletedHost
  * @property DeletedService $DeletedService
  * @property Container $Container
- * @property Parenthost $Parenthost
  * @property Hosttemplate $Hosttemplate
  * @property Hostgroup $Hostgroup
  * @property Timeperiod $Timeperiod
  * @property DowntimeHost $DowntimeHost
- * @property BbcodeComponent $Bbcode
+ * @property \BbcodeComponent $Bbcode
  * @property StatehistoryHost $StatehistoryHost
- * @property DateRange $DateRange
  * @property NotificationHost $NotificationHost
  * @property Service $Service
  *
- * @property AppPaginatorComponent $Paginator
+ * @property \AppPaginatorComponent $Paginator
  */
 class HostsController extends AppController {
 
@@ -127,9 +140,10 @@ class HostsController extends AppController {
      * @deprecated
      */
     public function index() {
+        /** @var User $User */
         $User = new User($this->getUser());
 
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        /** @var SystemsettingsTable $Systemsettings */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $masterInstanceName = $Systemsettings->getMasterInstanceName();
 
@@ -144,7 +158,7 @@ class HostsController extends AppController {
         }
 
         if (!$this->isApiRequest()) {
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            /** @var SystemsettingsTable $Systemsettings */
             $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
             $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
@@ -160,7 +174,6 @@ class HostsController extends AppController {
 
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
-        $User = new User($this->getUser());
         if ($HostControllerRequest->isRequestFromBrowser() === false) {
             $HostCondition->setIncludeDisabled(false);
             $HostCondition->setContainerIds($this->MY_RIGHTS);
@@ -236,7 +249,7 @@ class HostsController extends AppController {
                 ])
                 ->toList();
 
-            $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
+            $servicestatus = $ServicestatusTable->byUuids($serviceUuids, $ServicestatusFields);
             $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatus);
             $serviceStateSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, false);
 
@@ -357,6 +370,9 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['host', 'hoststatus']);
     }
 
+    /**
+     * @param $uuid
+     */
     public function byUuid($uuid) {
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
@@ -376,8 +392,11 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['host']);
     }
 
+    /**
+     * @throws MissingDbBackendException
+     */
     public function notMonitored() {
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        /** @var SystemsettingsTable $Systemsettings */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
@@ -483,7 +502,6 @@ class HostsController extends AppController {
 
     /**
      * @throws NotFoundException
-     * @throws Exception
      */
     public function add() {
         if (!$this->isApiRequest()) {
@@ -578,6 +596,9 @@ class HostsController extends AppController {
         }
     }
 
+    /**
+     * @param null $id
+     */
     public function edit($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -660,7 +681,7 @@ class HostsController extends AppController {
         if ($this->request->is('post')) {
             $hosttemplateId = $this->request->getData('Host.hosttemplate_id');
             if ($hosttemplateId === null) {
-                throw new Exception('Host.hosttemplate_id needs to set.');
+                throw new ValidationException('Hosttemplate id needs to set.');
             }
             if (!$HosttemplatesTable->existsById($hosttemplateId)) {
                 throw new NotFoundException(__('Invalid host template'));
@@ -1221,23 +1242,26 @@ class HostsController extends AppController {
      * @deprecated
      */
     public function delete($id = null) {
-        if (!$this->Host->exists($id)) {
-            throw new NotFoundException(__('Invalid host'));
-        }
-
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        $host = $this->Host->findById($id);
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck)) {
+        /** @var HostsTable $HostTable */
+        $HostTable = TableRegistry::getTableLocator()->get('Hosts');
+        if (!$HostTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $host = $HostTable->getHostById($id);
+
+        if (!$this->allowedByContainerId($host->getContainerIds())) {
             $this->render403();
             return;
         }
 
-        $modules = $this->Constants->defines['modules'];
+        /** @var Constants $Constants */
+        $Constants = new Constants();
+        $moduleConstants = $Constants->getModuleConstants();
 
         $usedBy = $this->Host->isUsedByModules($host, $modules);
         if (empty($usedBy['host']) && empty($usedBy['service'])) {
@@ -1256,7 +1280,7 @@ class HostsController extends AppController {
             }
         }
 
-        //both types must be host, otherwise the serviceUsedBy site with the host id will be displayed wich results in an error
+        //both types must be host, otherwise the serviceUsedBy site with the host id will be displayed which results in an error
         $usedBy = Hash::merge(
             $this->getUsedByForFrontend($usedBy['host'], 'host'),
             $this->getUsedByForFrontend($usedBy['service'], 'host')
@@ -1268,10 +1292,11 @@ class HostsController extends AppController {
         $this->set('message', __('Issue while deleting host'));
         $this->set('usedBy', $usedBy);
         $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
+
     }
 
     /**
-     * @deprecated
+     * @param null $id
      */
     public function copy($id = null) {
         if (!$this->isAngularJsRequest()) {

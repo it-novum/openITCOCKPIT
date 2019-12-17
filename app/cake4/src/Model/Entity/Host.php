@@ -382,4 +382,17 @@ class Host extends Entity {
         return $this->get('satellite_id') > 0;
     }
 
+    /**
+     * @param $moduleConstants
+     * @return array
+     */
+    public function isUsedByModules($moduleConstants) {
+        $usedBy = [];
+        foreach ($moduleConstants as $moduleName => $value) {
+            if ($this->get('usage_flag') & $value) {
+                $usedBy[$moduleName] = $value;
+            }
+        }
+        return $usedBy;
+    }
 }
