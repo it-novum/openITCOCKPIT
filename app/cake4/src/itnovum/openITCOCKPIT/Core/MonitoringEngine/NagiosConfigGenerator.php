@@ -2337,9 +2337,13 @@ class NagiosConfigGenerator {
                     $content .= $this->addContent('inherits_parent', 1, $servicedependency->get('inherits_parent'));
 
                     if (!empty($executionFailureCriteriaForCfgString)) {
+                        // If all states are selected you get an warning like this:
+                        //Warning: Ignoring lame service dependency (config file 'foo.cfg', line 83)
                         $content .= $this->addContent('execution_failure_criteria', 1, $executionFailureCriteriaForCfgString);
                     }
                     if (!empty($notificationFailureCriteriaForCfgString)) {
+                        // If all states are selected you get an warning like this:
+                        //Warning: Ignoring lame service dependency (config file 'foo.cfg', line 83)
                         $content .= $this->addContent('notification_failure_criteria', 1, $notificationFailureCriteriaForCfgString);
                     }
 
