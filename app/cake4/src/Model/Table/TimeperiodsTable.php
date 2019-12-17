@@ -554,7 +554,7 @@ class TimeperiodsTable extends Table {
         }
 
         //Check autoreports
-        if (in_array('AutoreportModule', Plugin::loaded())) {
+        if (Plugin::isLoaded('AutoreportModule')) {
             $this->loadModel('AutoreportModule.Autoreport');
             $autoreportCount = $this->Autoreport->find('count', [
                 'recursive'  => -1,

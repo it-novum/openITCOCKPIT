@@ -298,8 +298,8 @@ class Systemsetting extends Importer {
             [
                 'Systemsetting' => [
                     'key'     => 'FRONTEND.SHOW_EXPORT_RUNNING',
-                    'value'   => 'yes',
-                    'info'    => 'Show if an export is running in headarea',
+                    'value'   => 'no',
+                    'info'    => 'Show if an export is running in head area. Require restart of sudo_server to take effect. Warning could decrease database performance!',
                     'section' => 'FRONTEND'
                 ],
             ],

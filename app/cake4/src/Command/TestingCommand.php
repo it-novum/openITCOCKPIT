@@ -25,15 +25,26 @@
 
 namespace App\Command;
 
+use App\itnovum\openITCOCKPIT\Monitoring\Naemon\ExternalCommands;
+use App\Model\Entity\CalendarHoliday;
+use App\Model\Entity\Service;
+use App\Model\Table\CalendarsTable;
+use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
+use App\Model\Table\TimeperiodsTable;
 use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 
 /**
  * Testing command.
@@ -80,6 +91,50 @@ class TestingCommand extends Command {
          * Have fun :)
          */
 
+        /** @var CalendarsTable $CalendarsTable */
+        $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
+
+        try {
+            $calendar = $CalendarsTable->getCalendarById(1);
+            foreach ($calendar->get('calendar_holidays') as $holiday) {
+                /** @var CalendarHoliday $holiday */
+                $timestamp = strtotime(sprintf('%s 00:00', $holiday->get('date')));
+
+                $calendarDay = sprintf('%s 00:00-24:00; %s',
+                    strtolower(date('F j', $timestamp)),
+                    $holiday->get('name')
+                );
+                $content .= $this->addContent($calendarDay, 1);
+            }
+        }catch (RecordNotFoundException $e){
+            Log::error('NagiosConfigGenerator: Calendar not found');
+            Log::error($e->getMessage());
+        }
+
+        die();
+
+
+
+
+        //Merge Calendar records to timeperiod
+        if ($timeperiod['Timeperiod']['calendar_id'] > 0) {
+            $calendar = $this->Calendar->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Calendar.id' => $timeperiod['Timeperiod']['calendar_id']
+                ],
+                'contain'    => ['CalendarHoliday']
+            ]);
+            foreach ($calendar['CalendarHoliday'] as $holiday) {
+                $timestamp = strtotime(sprintf('%s 00:00', $holiday['date']));
+
+                $calendarDay = sprintf('%s 00:00-24:00; %s',
+                    strtolower(date('F j', $timestamp)),
+                    $holiday['name']
+                );
+                $content .= $this->addContent($calendarDay, 1);
+            }
+        }
 
     }
 }

@@ -162,7 +162,7 @@ class TenantsTable extends Table {
         $serviceIds = Hash::extract($ServiceTable->getServicesByHostIdForDelete($hostIds), '{n}.id');
 
         //check if the host is used somwhere
-        if (Plugin::loaded('EventcorrelationModule') && !empty($hostIds)) {
+        if (Plugin::isLoaded('EventcorrelationModule') && !empty($hostIds)) {
             /** @var EventcorrelationsTable $EventcorrelationTable */
             $EventcorrelationTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
             $query = $EventcorrelationTable->find()
