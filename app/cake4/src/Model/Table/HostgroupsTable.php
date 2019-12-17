@@ -42,7 +42,7 @@ class HostgroupsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('hostgroups');
@@ -76,7 +76,7 @@ class HostgroupsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -110,7 +110,7 @@ class HostgroupsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
         $rules->add($rules->existsIn(['container_id'], 'Containers'));
 
@@ -609,6 +609,7 @@ class HostgroupsTable extends Table {
                                     function (Query $q) {
                                         return $q->enableAutoFields(false)
                                             ->select([
+                                                'Hosttemplates.id',
                                                 'Hosttemplates.active_checks_enabled'
                                             ]);
                                     }
@@ -633,7 +634,6 @@ class HostgroupsTable extends Table {
             }
 
             foreach ($tmpResult['hosttemplates'] as $hosttemplate) {
-
                 $hostsFromHosttemplate = $HostsTable->find()
                     ->select([
                         'Hosts.id',
@@ -644,6 +644,16 @@ class HostgroupsTable extends Table {
                     ->where([
                         'Hosts.hosttemplate_id' => $hosttemplate['id'],
                         'Hosts.disabled'        => 0
+                    ])
+                    ->contain([
+                        'hosttemplates' =>
+                            function (Query $q) {
+                                return $q->enableAutoFields(false)
+                                    ->select([
+                                        'Hosttemplates.id',
+                                        'Hosttemplates.active_checks_enabled'
+                                    ]);
+                            }
                     ])
                     ->disableHydration()
                     ->all();
@@ -796,5 +806,55 @@ class HostgroupsTable extends Table {
         $result = $query->firstOrFail();
 
         return $result;
+    }
+
+    /**
+     * @param int $hostId
+     * @param int|array $hostgroupIds
+     * @return bool
+     */
+    public function isHostInHostgroup($hostId, $hostgroupIds) {
+        if (!is_array($hostgroupIds)) {
+            $hostgroupIds = [$hostgroupIds];
+        }
+        $hostgroupIds = array_unique($hostgroupIds);
+
+        /** @var HostsToHostgroupsTable $HostsToHostgroupsTable */
+        $HostsToHostgroupsTable = TableRegistry::getTableLocator()->get('HostsToHostgroups');
+
+        $count = $HostsToHostgroupsTable->find()
+            ->where([
+                'host_id'         => $hostId,
+                'hostgroup_id IN' => $hostgroupIds
+            ])
+            ->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        // Through hosttemplate maybe?
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        $host = $HostsTable->get($hostId, [
+            'contain' => [
+                'Hostgroups'
+            ]
+        ]);
+
+        if (empty($host->get('hostgroups'))) {
+            /** @var HosttemplatesToHostgroupsTable $HosttemplatesToHostgroupsTable */
+            $HosttemplatesToHostgroupsTable = TableRegistry::getTableLocator()->get('HosttemplatesToHostgroups');
+            $count = $HosttemplatesToHostgroupsTable->find()
+                ->where([
+                    'hosttemplate_id' => $host->get('hosttemplate_id'),
+                    'hostgroup_id IN' => $hostgroupIds
+                ])
+                ->count();
+
+            return $count > 0;
+        }
+
+        return false;
     }
 }

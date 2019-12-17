@@ -353,12 +353,18 @@ class HostdependenciesTable extends Table {
                             ->where([
                                 'Hosts.disabled' => 0
                             ])
-                            ->select(['uuid']);
+                            ->select([
+                                'id',
+                                'uuid'
+                            ]);
                     },
                 'hostgroups'  =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
-                            ->select(['uuid']);
+                            ->select([
+                                'id',
+                                'uuid'
+                            ]);
                     },
                 'Timeperiods' =>
                     function (Query $q) {

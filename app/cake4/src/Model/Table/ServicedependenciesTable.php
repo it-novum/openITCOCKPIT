@@ -379,12 +379,16 @@ class ServicedependenciesTable extends Table {
                             ->where([
                                 'Services.disabled' => 0
                             ])
-                            ->select(['uuid']);
+                            ->select([
+                                'id',
+                                'uuid'
+                            ]);
                     },
                 'servicegroups' =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->select([
+                                'id',
                                 'uuid'
                             ]);
                     },

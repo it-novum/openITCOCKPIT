@@ -467,6 +467,25 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param string $uuid
+     * @param bool $enableHydration
+     * @return array|Host
+     */
+    public function getHostWithServicesByUuid($uuid, $enableHydration = true) {
+        $query = $this->find()
+            ->where([
+                'Hosts.uuid' => $uuid
+            ])
+            ->contain([
+                'HostsToContainersSharing',
+                'Services'
+            ])
+            ->enableHydration($enableHydration)
+            ->firstOrFail();
+        return $query;
+    }
+
+    /**
      * @param int $id
      * @return array|Host|null
      */
