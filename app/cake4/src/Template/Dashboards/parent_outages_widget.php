@@ -31,15 +31,15 @@
 </div>
 
 <div class="row" ng-show="parentOutages.length > 0 || filter.Host.name">
-    <div class="col-xs-12 padding-0">
-        <div class="form-group smart-form">
-            <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                <input class="input-sm"
-                       placeholder="<?php echo __('Filter by host name'); ?>"
-                       ng-model="filter.Host.name"
-                       ng-model-options="{debounce: 500}"
-                       type="text">
-            </label>
+    <div class="col-xs-12 col-lg-12 margin-bottom-5">
+        <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+                <span class="input-group-text"><i class="icon-prepend fa fa-desktop"></i></span>
+            </div>
+            <input type="text" class="form-control"
+                   placeholder="<?php echo __('Filter by host name'); ?>"
+                   ng-model="filter.Host.name"
+                   ng-model-options="{debounce: 500}">
         </div>
     </div>
 </div>
