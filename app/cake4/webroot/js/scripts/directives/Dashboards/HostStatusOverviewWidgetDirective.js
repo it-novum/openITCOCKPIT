@@ -11,7 +11,10 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
 
             var $widget = $('#widget-' + $scope.widget.id);
 
-            $scope.frontWidgetHeight = parseInt(($widget.height() - 30), 10); //-30px header
+            console.log($widget.height());
+            $scope.frontWidgetHeight = parseInt(($widget.height() - 59), 10); //-30px header
+            console.log($scope.frontWidgetHeight);
+
             $scope.fontSize = $scope.frontWidgetHeight / 2;
 
             $widget.on('resize', function(event, items){
@@ -56,7 +59,9 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                 if($scope.init){
                     return;
                 }
-                $scope.frontWidgetHeight = parseInt(($widget.height() - 30), 10); //-30px header
+                console.log($widget.height());
+                $scope.frontWidgetHeight = parseInt(($widget.height() - 59), 10); //-30px header
+                console.log($scope.frontWidgetHeight);
                 $scope.fontSize = $scope.frontWidgetHeight / 2;
 
                 if($scope.hostsStatusOverviewTimeout){
