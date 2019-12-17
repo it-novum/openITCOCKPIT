@@ -29,8 +29,8 @@ use App\Model\Table\ContainersTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
 use MapModule\Model\Entity\Map;
@@ -115,7 +115,6 @@ class MapsController extends AppController {
             $map = $MapsTable->newEmptyEntity();
             $map = $MapsTable->patchEntity($map, $data['Map']);
 
-            /** old code: $this->Map->saveAll($data) */
             $MapsTable->save($map);
             if ($map->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -228,85 +227,130 @@ class MapsController extends AppController {
         return;
     }
 
-
     /**
      * @param null $id
-     * @deprecated
-     * @todo refactor with cake4
      */
     public function copy($id = null) {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
             return;
         }
+
+        /** @var MapsTable $MapsTable */
+        $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+
         if ($this->request->is('get')) {
-            $map = $this->Map->find('first', [
-                //'recursive' => -1,
-                'conditions' => [
-                    'Map.id' => $id
-                ],
-            ]);
-            if (empty($map)) {
-                throw new NotFoundException();
+            $MY_RIGHTS = [];
+            if (!$this->hasRootPrivileges) {
+                $MY_RIGHTS = $this->MY_RIGHTS;
             }
-            $this->set('map', $map);
-            $this->viewBuilder()->setOption('serialize', ['map']);
+
+            $maps = $MapsTable->getMapsForCopy(func_get_args(), $MY_RIGHTS);
+            $this->set('maps', $maps);
+            $this->viewBuilder()->setOption('serialize', ['maps']);
             return;
         }
 
+        $hasErrors = false;
 
-        if ($this->request->is('post') || $this->request->is('put')) {
+        if ($this->request->is('post')) {
+            $Cache = new KeyValueStore();
 
-            $map = $this->Map->find('first', [
-                //'recursive' => -1,
-                'conditions' => [
-                    'Map.id' => $id
-                ],
-            ]);
+            $postData = $this->request->getData('data');
 
-            if (empty($map)) {
-                throw new NotFoundException();
-            }
+            foreach ($postData as $index => $mapData) {
+                if (!isset($mapData['Map']['id'])) {
+                    //Create/clone map
+                    $sourceMapId = $mapData['Source']['id'];
+                    if (!$Cache->has($sourceMapId)) {
+                        $sourceMapEntity = $MapsTable->get($sourceMapId, [
+                            'contain' => [
+                                'Containers',
+                                'Mapgadgets',
+                                'Mapicons',
+                                'Mapitems',
+                                'Maplines',
+                                'Maptexts',
+                                'Mapsummaryitems'
+                            ]
+                        ]);
 
-            //Try to save new map
-            $newMap = [
-                'Map'       => $this->request->data('Map'),
-                'Container' => Hash::extract($map, 'Container.{n}.id')
-            ];
-            $newMap['Map']['background'] = $map['Map']['background'];
-            $newMap['Map']['refresh_interval'] = $newMap['Map']['refresh_interval'] * 1000; // in milliseconds
+                        $sourceMap = $sourceMapEntity->toArray();
+                        $sourceMap['containers'] = [
+                            '_ids' => $sourceMapEntity->getContainerIds()
+                        ];
+                        unset($sourceMapEntity);
 
-            $this->Map->create();
-            if ($this->Map->save($newMap)) {
-                $newMapId = $this->Map->id;
-                $newMap['Map']['id'] = $newMapId;
-                $modelsToIgnore = [
-                    'Map',
-                    'Container',
-                    'Rotation'
-                ];
-                //Add objects to new map
-                foreach ($map as $modelName => $records) {
-                    if (!in_array($modelName, $modelsToIgnore, true)) {
-                        foreach ($records as $record) {
-                            unset($record['id']);
-                            $record['map_id'] = $newMapId;
-                            $newMap[$modelName][] = $record;
-                        }
-
+                        $Cache->set($sourceMap['id'], $sourceMap);
                     }
+
+                    $sourceMap = $Cache->get($sourceMapId);
+
+                    $newMapData = [
+                        'name'             => $mapData['Map']['name'],
+                        'title'            => $mapData['Map']['title'],
+                        'refresh_interval' => $mapData['Map']['refresh_interval'] * 1000,
+                        'background'       => $sourceMap['background'],
+                        'containers'       => $sourceMap['containers'],
+                        'mapgadgets'       => $sourceMap['mapgadgets'],
+                        'mapicons'         => $sourceMap['mapicons'],
+                        'mapitems'         => $sourceMap['mapitems'],
+                        'maplines'         => $sourceMap['maplines'],
+                        'maptexts'         => $sourceMap['maptexts'],
+                        'mapsummaryitems'  => $sourceMap['mapsummaryitems']
+                    ];
+
+                    //$newMapEntity = $MapsTable->newEntity($newMapData);
                 }
-                if ($this->Map->saveAll($newMap)) {
-                    $this->set('success', true);
-                    $this->viewBuilder()->setOption('serialize', ['success']);
-                    return;
+
+                $action = 'copy';
+                if (isset($mapData['Map']['id'])) {
+                    //Update existing map
+                    //This happens, if a user copy multiple maps, and one run into an validation error
+                    //All maps without validation errors got already saved to the database
+                    $newMapEntity = $MapsTable->get($mapData['Map']['id'], [
+                        'contain' => [
+                            'Containers'
+                        ]
+                    ]);
+                    $mapData['Map']['containers']['_ids'] = $newMapEntity->getContainerIds();
+                    $newMapEntity = $MapsTable->patchEntity($newMapEntity, $mapData['Map']);
+                    $action = 'edit';
+                } else {
+                    $models = ['mapgadgets', 'mapicons', 'mapitems', 'maplines', 'maptexts', 'mapsummaryitems'];
+                    $keysToDelete = ['id', 'map_id', '_joinData'];
+                    foreach ($models as $modelName) {
+                        foreach ($newMapData[$modelName] as $newMapDataIndex => $record) {
+                            foreach ($record as $recordIndex => $value) {
+                                if (in_array($recordIndex, $keysToDelete, true)) {
+                                    unset($newMapData[$modelName][$newMapDataIndex][$recordIndex]);
+                                }
+                            }
+                        }
+                    }
+
+                    $newMapEntity = $MapsTable->newEntity($newMapData);
+                }
+                //debug($newMapEntity);
+                //die();
+                $MapsTable->save($newMapEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newMapEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newMapEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Map']['id'] = $newMapEntity->get('id');
                 }
             }
-
-            $this->serializeErrorMessageFromModel('Map');
-
         }
 
+        if ($hasErrors) {
+            $this->response = $this->response->withStatus(400);
+        }
+        $this->set('result', $postData);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
     /****************************
@@ -318,7 +362,7 @@ class MapsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         if ($this->hasRootPrivileges === true) {
             $containers = $ContainersTable->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges);

@@ -189,7 +189,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
 
                 var gaugeData = [];
                 for(var timestamp in performance_data.data){
-                    var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset*1000));
+                    var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
                     gaugeData.push([frontEndTimestamp, performance_data.data[timestamp]]);
                 }
 
@@ -230,7 +230,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                         return value;
                     };
                     return fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
-                }
+                };
 
                 options.points = {
                     show: false,

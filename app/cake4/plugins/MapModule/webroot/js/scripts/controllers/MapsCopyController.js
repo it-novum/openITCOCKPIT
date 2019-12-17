@@ -1,33 +1,36 @@
 angular.module('openITCOCKPIT')
-    .controller('MapsCopyController', function($scope, $http, $stateParams, $state, NotyService){
+    .controller('MapsCopyController', function($scope, $http, $stateParams, $state, NotyService, RedirectService){
 
-        $scope.post = {
-            Map: {
-                name: '',
-                title: '',
-                refresh_interval: 90,
-                container_id: []
-            }
-        };
-        $scope.id = $stateParams.id;
+        var ids = $stateParams.ids.split(',');
 
-        $scope.sucessUrl = '/map_module/maps/index';
+        if(ids.length === 0 || ids[0] === ''){
+            //No ids to copy given - redirect
+            RedirectService.redirectWithFallback('MapsIndex');
+            return;
+        }
 
         $scope.load = function(){
-            $http.get("/map_module/maps/copy/" + $scope.id + ".json", {
+            $http.get("/map_module/maps/copy/" + ids.join('/') + ".json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
-                $scope.post = {
-                    Map: {
-                        name: result.data.map.Map.name,
-                        title: result.data.map.Map.title,
-                        refresh_interval: (parseInt(result.data.map.Map.refresh_interval, 10) / 1000)
-                    }
-                };
-
-                $scope.init = false;
+                $scope.sourceMaps = [];
+                for(var key in result.data.maps){
+                    $scope.sourceMaps.push({
+                        Source: {
+                            id: result.data.maps[key].id,
+                            name: result.data.maps[key].name,
+                            title: result.data.maps[key].title,
+                            refresh_interval: result.data.maps[key].refresh_interval / 1000
+                        },
+                        Map: {
+                            name: result.data.maps[key].name,
+                            title: result.data.maps[key].title,
+                            refresh_interval: result.data.maps[key].refresh_interval / 1000
+                        }
+                    });
+                }
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
@@ -39,19 +42,21 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.submit = function(){
-            $http.post("/map_module/maps/copy/" + $scope.id + ".json?angular=true",
-                $scope.post
+        $scope.copy = function(){
+            $http.post("/map_module/maps/copy/.json?angular=true",
+                {
+                    data: $scope.sourceMaps
+                }
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('MapsIndex');
+                RedirectService.redirectWithFallback('MapsIndex');
             }, function errorCallback(result){
+                //Print errors
                 NotyService.genericError();
-                if(result.data.hasOwnProperty('error')){
-                    $scope.errors = result.data.error;
-                }
+                $scope.sourceMaps = result.data.result;
             });
         };
 
+        //Fire on page load
         $scope.load();
     });

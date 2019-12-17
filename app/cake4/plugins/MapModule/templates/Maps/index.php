@@ -166,7 +166,7 @@
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('copy', 'maps', 'mapmodule')): ?>
                                                 <li ng-if="map.allowCopy">
-                                                    <a ui-sref="MapsCopy({id: map.id})">
+                                                    <a ui-sref="MapsCopy({ids: map.id})">
                                                         <i class="fa fa-edit"></i> <?php echo __('Copy'); ?>
                                                     </a>
                                                 </li>
@@ -218,6 +218,12 @@
                                     <i class="fa fa-lg fa-square-o"></i>
                                     <?php echo __('Undo selection'); ?>
                                 </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <a ui-sref="MapsCopy({ids: linkForCopy()})" class="a-clean">
+                                    <i class="fa fa-lg fa-files-o"></i>
+                                    <?php echo __('Copy'); ?>
+                                </a>
                             </div>
                             <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
