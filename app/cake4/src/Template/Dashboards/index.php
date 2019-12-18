@@ -135,18 +135,58 @@
                                 <div class="card {{widget.color}}"
                                      data-widget-colorbutton="true"
                                      style="width:100%;" id="widget-{{widget.id}}">
-                                    <div role="heading" class="ui-sortable-handle card-header  pr-3 d-flex align-items-center flex-wrap" style="cursor: move;">
-                                        <div class="card-title">
+                                    <div role="heading"
+                                         class="ui-sortable-handle card-header d-flex"
+                                         style="cursor: move;">
+                                        <div class="card-title mr-auto">
                                             <i class="fa {{widget.icon}}"></i>
                                             {{widget.title}}
                                         </div>
-                                        <a class="btn btn-sm btn-icon ml-auto waves-effect waves-themed"
+                                        <a class="btn btn-sm btn-icon waves-effect waves-themed pr-2"
                                            title="<?php echo __('Edit title'); ?>"
                                            ng-click="triggerRenameWidgetModal(widget.id)"
                                            ng-hide="dashboardIsLocked">
                                             <i class="fa fa-pencil-alt"></i>
                                         </a>
-                                        <a class="btn btn-sm btn-icon  ml-1 waves-effect waves-themed"
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-icon waves-effect waves-themed pr-2"
+                                                    ng-hide="dashboardIsLocked" data-toggle="dropdown" >
+                                                <i class="fas fa-palette"></i>
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-animated d-flex flex-wrap" style="min-width: 9.5rem; width: 9.5rem; padding: 0.5rem" >
+                                                <a href="#" class="btn d-inline-block bg-primary-700 bg-success-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed" data-panel-setstyle="bg-primary-700 bg-success-gradient" style="margin:1px;">
+                                                </a>
+                                                <a href="#" class="btn d-inline-block bg-primary-500 bg-info-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed" data-panel-setstyle="bg-primary-500 bg-info-gradient" style="margin:1px;">
+                                                </a>
+                                                <a href="#" class="btn d-inline-block bg-primary-600 bg-primary-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed" data-panel-setstyle="bg-primary-600 bg-primary-gradient" style="margin:1px;">
+                                                </a>
+                                                <a href="#" class="btn d-inline-block bg-info-600 bg-primray-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed" data-panel-setstyle="bg-info-600 bg-primray-gradient" style="margin:1px;">
+                                                </a>
+                                                <a href="#" class="btn d-inline-block bg-info-600 bg-info-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed" data-panel-setstyle="bg-info-600 bg-info-gradient" style="margin:1px;">
+                                                </a>
+                                                <a href="#" class="btn d-inline-block bg-info-700 bg-success-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed" data-panel-setstyle="bg-info-700 bg-success-gradient" style="margin:1px;">
+                                                </a>
+                                                <a href="#" class="btn d-inline-block bg-success-900 bg-info-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed" data-panel-setstyle="bg-success-900 bg-info-gradient" style="margin:1px;">
+
+                                                </a>
+                                                <a href="#" class="btn d-inline-block bg-success-700 bg-primary-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed" data-panel-setstyle="bg-success-700 bg-primary-gradient" style="margin:1px;">
+
+                                                </a>
+                                                <a href="#" class="btn d-inline-block bg-success-600 bg-success-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed" data-panel-setstyle="bg-success-600 bg-success-gradient" style="margin:1px;">
+
+                                                </a>
+                                                <a href="#" class="btn d-inline-block bg-danger-900 bg-info-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed" data-panel-setstyle="bg-danger-900 bg-info-gradient" style="margin:1px;">
+
+                                                </a>
+                                                <a href="#" class="btn d-inline-block bg-fusion-400 bg-fusion-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed" data-panel-setstyle="bg-fusion-400 bg-fusion-gradient" style="margin:1px;">
+
+                                                </a>
+                                                <a href="#" class="btn d-inline-block bg-faded width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed" data-panel-setstyle="bg-faded" style="margin:1px;">
+
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <a class="btn btn-sm btn-icon  waves-effect waves-themed pr-2"
                                            title="<?php echo __('Remove widget'); ?>"
                                            ng-click="removeWidgetFromTab(widget.id)"
                                            ng-hide="dashboardIsLocked">
@@ -211,6 +251,20 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
