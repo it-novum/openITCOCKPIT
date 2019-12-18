@@ -27,154 +27,236 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Export;
+use App\Model\Table\ExportsTable;
+use App\Model\Table\SystemsettingsTable;
+use Cake\Core\Configure;
+use Cake\Core\Plugin;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
+use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 class ExportsController extends AppController {
-    public $layout = 'Admin.default';
-
-    public $components = [
-        'ListFilter.ListFilter',
-        'RequestHandler',
-        'AdditionalLinks',
-        'GearmanClient',
-    ];
-    public $helpers = [
-        'ListFilter.ListFilter',
-    ];
 
     public function index() {
-        Configure::load('gearman');
-        $this->Config = Configure::read('gearman');
+        if (!$this->isApiRequest()) {
+            //Only ship html template
+            return;
+        }
 
-        $this->GearmanClient->client->setTimeout(5000);
-        $gearmanReachable = @$this->GearmanClient->client->ping(true);
+        /** @var ExportsTable $ExportsTable */
+        $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
-        $exportRunning = true;
-        $result = $this->Export->findByTask('export_started');
-        if (empty($result)) {
-            $exportRunning = false;
-        } else {
-            if ($result['Export']['finished'] == 1) {
-                $exportRunning = false;
+        $useSingleInstanceSync = false;
+        $satellites = [];
+        if (Plugin::isLoaded('DistributeModule')) {
+            $result = $SystemsettingsTable->getSystemsettingByKey('MONITORING.SINGLE_INSTANCE_SYNC');
+            $useSingleInstanceSync = $result->get('value') === '1';
+
+            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+            $satellites = $SatellitesTable->getSatellitesForExportIndex($this->MY_RIGHTS);
+        }
+
+        $GearmanClient = new Gearman();
+        $gearmanReachable = $GearmanClient->ping();
+        $exportRunning = false;
+
+        $task = $ExportsTable->find()
+            ->where([
+                'task' => 'export_started'
+            ])
+            ->first();
+
+        if (!empty($task)) {
+            $exportRunning = $task->get('finished') == 0;
+        }
+
+        $tasks = [];
+        if ($exportRunning) {
+            $User = new User($this->getUser());
+            $UserTime = $User->getUserTime();
+
+            foreach ($ExportsTable->getCurrentExportState() as $taskEntity) {
+                /** @var Export $taskEntity */
+                $task = $taskEntity->toArray();
+                $task['created'] = $UserTime->customFormat('H:i:s', $taskEntity->get('created')->getTimestamp());
+                $task['modified'] = $UserTime->customFormat('H:i:s', $taskEntity->get('modified')->getTimestamp());
+                $tasks[] = $task;
             }
         }
 
-        $this->loadModel('Systemsetting');
-
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $monitoringSystemsettings = $Systemsettings->findAsArraySection('MONITORING');
-
         $this->set('gearmanReachable', $gearmanReachable);
-        $this->set('monitoringSystemsettings', $monitoringSystemsettings);
         $this->set('exportRunning', $exportRunning);
-        $this->set('MY_RIGHTS', $this->MY_RIGHTS);
-        $this->Frontend->setJson('exportRunning', $exportRunning);
-        $this->Frontend->setJson('uuidRegEx', UUID::JSregex());
+        $this->set('tasks', $tasks);
+        $this->set('useSingleInstanceSync', $useSingleInstanceSync);
+        $this->set('satellites', $satellites);
+        $this->viewBuilder()->setOption('serialize', [
+            'gearmanReachable',
+            'exportRunning',
+            'tasks',
+            'useSingleInstanceSync',
+            'satellites'
+        ]);
     }
 
     public function broadcast() {
-        $this->allowOnlyAjaxRequests();
-        $_exportRecords = $this->Export->find('all');
-
-        $exportRecords = [];
-
-        $exportFinished = [
-            'finished'     => false,
-            'successfully' => false,
-        ];
-
-        foreach ($_exportRecords as $exportRecord) {
-            $exportRecords[$exportRecord['Export']['id']] = [
-                'task'         => $exportRecord['Export']['task'],
-                'text'         => h($exportRecord['Export']['text']),
-                'finished'     => $exportRecord['Export']['finished'],
-                'successfully' => $exportRecord['Export']['successfully'],
-            ];
-
-            if ($exportRecord['Export']['task'] == 'export_finished' && $exportRecord['Export']['finished'] == 1) {
-                $exportFinished = [
-                    'finished'     => true,
-                    'successfully' => (bool)$exportRecord['Export']['successfully'],
-                ];
-            }
-        }
-
-        $this->set(compact(['exportRecords', 'exportFinished']));
-        $this->viewBuilder()->setOption('serialize', ['exportRecords', 'exportFinished']);
-    }
-
-    public function launchExport($createBackup = 1) {
-
-        if (!$this->request->is('ajax')) {
+        if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        if ($this->request->getQuery('instances')) {
-            $instancesToExport = $this->request->getQuery('instances');
-            if (is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
-                $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
-                $SatelliteModel->disableAllInstanceConfigSyncs();
-                $SatelliteModel->saveInstancesForConfigSync($instancesToExport);
+        /** @var ExportsTable $ExportsTable */
+        $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
+
+        $tasks = [];
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
+        $exportFinished = false;
+        $exportSuccessfully = false;
+        foreach ($ExportsTable->getCurrentExportState() as $taskEntity) {
+            /** @var Export $taskEntity */
+            $task = $taskEntity->toArray();
+            $task['created'] = $UserTime->customFormat('H:i:s', $taskEntity->get('created')->getTimestamp());
+            $task['modified'] = $UserTime->customFormat('H:i:s', $taskEntity->get('modified')->getTimestamp());
+            $tasks[] = $task;
+
+            if ($task['task'] == 'export_finished' && $task['finished'] === 1) {
+                $exportFinished = true;
+                $exportSuccessfully = (bool)$task['successfully'];
+            }
+        }
+
+        $this->set('successMessage', __('Refresh of monitoring configuration successfully!'));
+        $this->set('tasks', $tasks);
+        $this->set('exportFinished', $exportFinished);
+        $this->set('exportSuccessfully', $exportSuccessfully);
+        $this->viewBuilder()->setOption('serialize', [
+            'tasks',
+            'exportFinished',
+            'exportSuccessfully',
+            'successMessage'
+        ]);
+    }
+
+    public function launchExport() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var ExportsTable $ExportsTable */
+        $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
+
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+            foreach ($this->request->getData('satellites', []) as $satellite) {
+                try {
+                    $entity = $SatellitesTable->get($satellite['id']);
+                    $entity->set('sync_instance', (int)$satellite['sync_instance']);
+                    $SatellitesTable->save($entity);
+                } catch (\Exception $e) {
+                    continue;
+                }
             }
         }
 
 
-        $exportRunning = true;
-        $result = $this->Export->findByTask('export_started');
-        if (empty($result)) {
-            $exportRunning = false;
-        } else {
-            if ($result['Export']['finished'] == 1) {
-                $exportRunning = false;
-            }
+        $exportRunning = false;
+        $task = $ExportsTable->find()
+            ->where([
+                'task' => 'export_started'
+            ])
+            ->first();
+
+        if (!empty($task)) {
+            $exportRunning = $task->get('finished') == 0;
         }
 
-        $exportStarted = false;
-        if ($exportRunning === false) {
-            //Remove old records from DB that javascript is not confused
-
-            $this->Export->deleteAll(true);
-
-            Configure::load('gearman');
-            $this->Config = Configure::read('gearman');
-            $this->GearmanClient->client->doBackground("oitc_gearman", serialize(['task' => 'export_start_export', 'backup' => (int)$createBackup]));
-            $exportStarted = true;
+        if ($exportRunning === true) {
+            throw new \RuntimeException('Export already running!');
         }
 
-        $export = [
-            'exportRunning' => $exportRunning,
-            'exportStarted' => $exportStarted,
-        ];
-        $this->set('export', $export);
-        $this->viewBuilder()->setOption('serialize', ['export']);
+        //Remove old records from DB
+        $ExportsTable->deleteAll([]);
+
+        $GearmanClient = new Gearman();
+
+        if (!$GearmanClient->ping()) {
+            throw new \Exception('Could not connect to Gearman Job Server');
+        }
+
+        $createBackup = (int)$this->request->getData('create_backup', 1);
+        $GearmanClient->sendBackground('export_start_export', ['backup' => (int)$createBackup]);
+
+        $this->set('success', true);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function saveInstanceConfigSyncSelection() {
-        if (!$this->request->is('ajax')) {
+        if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        if (is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
-            $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
-            $SatelliteModel->disableAllInstanceConfigSyncs();
-            if ($this->request->getQuery('instances')) {
-                $instancesToExport = $this->request->getQuery('instances');
-                $SatelliteModel->saveInstancesForConfigSync($instancesToExport);
+        if (!Plugin::isLoaded('DistributeModule')) {
+            $this->set('success', false);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
+        /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+        $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+        foreach ($this->request->getData('satellites', []) as $satellite) {
+            try {
+                $entity = $SatellitesTable->get($satellite['id']);
+                $entity->set('sync_instance', (int)$satellite['sync_instance']);
+                $SatellitesTable->save($entity);
+            } catch (\Exception $e) {
+                continue;
             }
         }
-        $result = true;
-        $this->viewBuilder()->setOption('serialize', ['result']);
+
+        $this->set('success', true);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function verifyConfig() {
-        //$this->allowOnlyAjaxRequests();
-        Configure::load('gearman');
-        $this->Config = Configure::read('gearman');
-        $result = $this->GearmanClient->client->doNormal("oitc_gearman", serialize(['task' => 'export_verify_config']));
-        $result = unserialize($result);
-        $this->set('result', $result);
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $GearmanClient = new Gearman();
+
+        if (!$GearmanClient->ping()) {
+            throw new \Exception('Could not connect to Gearman Job Server');
+        }
+
+        $result = $GearmanClient->send('export_verify_config');
+        $output = [];
+        if (isset($result['output'])) {
+            $output = $result['output'];
+        }
+
+        $this->set('result', $output);
         $this->viewBuilder()->setOption('serialize', ['result']);
     }
 }

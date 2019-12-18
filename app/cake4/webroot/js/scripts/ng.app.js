@@ -124,6 +124,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "Error404Controller"
             })
 
+            .state('ExportsIndex', {
+                url: '/exports/index',
+                templateUrl: "/exports/index.html",
+                controller: "ExportsIndexController"
+            })
+
             .state('AdministratorsDebug', {
                 url: '/Administrators/debug',
                 templateUrl: "/Administrators/debug.html",

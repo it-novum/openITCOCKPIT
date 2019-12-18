@@ -72,4 +72,13 @@ class ExportsTable extends Table {
 
         return $validator;
     }
+
+    /**
+     * @return \Cake\Datasource\ResultSetInterface
+     */
+    public function getCurrentExportState() {
+        return $this->find()
+            ->order(['id' => 'asc'])
+            ->all();
+    }
 }
