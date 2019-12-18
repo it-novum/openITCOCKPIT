@@ -52,6 +52,7 @@ use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
+use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
@@ -1991,20 +1992,19 @@ class NagiosConfigGenerator {
 
     /**
      * @param $timeperiods
-     * @param $satelite
+     * @param EntityInterface $satelite
      * @throws \Exception
-     * @deprecated
      */
-    public function exportSatTimeperiods($timeperiods, $satelite) {
-        if (!is_dir($this->conf['satellite_path'] . $satelite['Satellite']['id'] . DS . $this->conf['timeperiods'])) {
-            mkdir($this->conf['satellite_path'] . $satelite['Satellite']['id'] . DS . $this->conf['timeperiods']);
+    public function exportSatTimeperiods($timeperiods, EntityInterface $satelite) {
+        if (!is_dir($this->conf['satellite_path'] . $satelite->get('id') . DS . $this->conf['timeperiods'])) {
+            mkdir($this->conf['satellite_path'] . $satelite->get('id') . DS . $this->conf['timeperiods']);
         }
 
         /** @var CalendarsTable $CalendarsTable */
         $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
 
         if ($this->conf['minified']) {
-            $file = new File($this->conf['satellite_path'] . $satelite['Satellite']['id'] . DS . $this->conf['timeperiods'] . 'timeperiods_minified' . $this->conf['suffix']);
+            $file = new File($this->conf['satellite_path'] . $satelite->get('id') . DS . $this->conf['timeperiods'] . 'timeperiods_minified' . $this->conf['suffix']);
             if (!$file->exists()) {
                 $file->create();
             }
@@ -2020,7 +2020,7 @@ class NagiosConfigGenerator {
 
         foreach ($timeperiods as $timeperiod) {
             if (!$this->conf['minified']) {
-                $file = new File($this->conf['satellite_path'] . $satelite['Satellite']['id'] . DS . $this->conf['timeperiods'] . $timeperiod['Timeperiod']['uuid'] . $this->conf['suffix']);
+                $file = new File($this->conf['satellite_path'] . $satelite->get('id') . DS . $this->conf['timeperiods'] . $timeperiod['Timeperiod']['uuid'] . $this->conf['suffix']);
                 $content = $this->fileHeader();
                 if (!$file->exists()) {
                     $file->create();
@@ -2037,10 +2037,10 @@ class NagiosConfigGenerator {
             }
             $timeRanges = [];
             foreach ($timeperiod['Timeperiod']['timeperiod_timeranges'] as $timeRange) {
-                if (empty($satelite['Satellite']['timezone']) || ($timeRange['start'] == '00:00' && $timeRange['end'] == '24:00')) {
+                if (empty($satelite->get('timezone')) || ($timeRange['start'] == '00:00' && $timeRange['end'] == '24:00')) {
                     $timeRanges[$weekdays[$timeRange['day']]][] = $timeRange['start'] . '-' . $timeRange['end'];
                 } else {
-                    $remoteTimeZone = new \DateTimeZone($satelite['Satellite']['timezone']);
+                    $remoteTimeZone = new \DateTimeZone($satelite->get('timezone'));
                     $start = new \DateTime($weekdays[$timeRange['day']] . ' ' . $timeRange['start']);
                     $start = $start->setTimezone($remoteTimeZone);
                     $end = new \DateTime($weekdays[$timeRange['day']] . ' ' . (($timeRange['end'] == '24:00') ? '23:59' : $timeRange['end']));
@@ -2445,7 +2445,7 @@ class NagiosConfigGenerator {
         $hostgroups = $HostgroupsTable->getHostgroupsForExport();
 
         foreach ($this->Satellites as $satellite) {
-            $satelliteId = $satellite['Satellite']['id'];
+            $satelliteId = $satellite->get('id');
 
             if (!is_dir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hostgroups'])) {
                 mkdir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hostgroups']);

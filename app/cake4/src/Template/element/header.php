@@ -57,18 +57,18 @@
         <div class="btn-header pull-right">
                 <span>
                     <?php if ($exportRunningHeaderInfo === false): ?>
-                        <a href="/exports/index" sudo-server-connect=""
+                        <a ui-sref="ExportsIndex" sudo-server-connect=""
                            data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
                            data-placement="left" rel="tooltip" data-container="body">
                             <i class="fa fa-retweet"></i>
                         </a>
                     <?php else: ?>
-                        <a href="/exports/index" export-status=""
+                        <a ui-sref="ExportsIndex" export-status=""
                            data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
                            data-placement="left" rel="tooltip" data-container="body">
-                            <i class="fa fa-retweet" ng-hide="exportRunning"></i>
-                            <i class="fa fa-refresh fa-spin txt-color-red" ng-show="exportRunning"></i>
-                        </a>
+                        <i class="fa fa-retweet" ng-hide="exportRunning"></i>
+                        <i class="fa fa-refresh fa-spin txt-color-red" ng-show="exportRunning"></i>
+                    </a>
                     <?php endif; ?>
                 </span>
         </div>
