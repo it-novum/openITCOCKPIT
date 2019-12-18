@@ -292,6 +292,156 @@
     </div>
 </div>
 
+<!-- Add new Tab modal -->
+<div id="addNewTabModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-plus"></i>
+                    <?php echo __('Create new tab'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <div class="form-group padding-bottom-10">
+                            <label class="control-label">
+                                <?php echo __('Tab name'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                g-model="data.newTabName">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-success float-right" ng-click="addNewTab()">
+                    <?php echo __('Create new tab'); ?>
+                </button>
+                <hr/>
+                <div class="row">
+                    <h5 class="modal-title">
+                        <i class="fa fa-plus"></i>
+                        <?php echo __('Create from shared tab'); ?>
+                    </h5>
+                </div>
+                <div class="row">
+                    <div class="form-group required">
+                        <label class="control-label">
+                            <?php echo __('Select shared tab'); ?>
+                        </label>
+                        <div class="input-group" style="width: 100%;">
+                            <select
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="sharedTabs"
+                                ng-options="sharedTab.id as sharedTab.name for sharedTab in sharedTabs"
+                                ng-model="data.createTabFromSharedTabId">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 padding-top-10">
+                        <button type="button" class="btn btn-primary pull-right" ng-click="addFromSharedTab()">
+                            <?php echo __('Create from shared tab'); ?>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div id="addNewTabModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-plus"></i>
+                    <?php echo __('Create new tab'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-xs-12 smart-form">
+                        <div class="form-group smart-form" ng-class="{'has-error': errors.name}">
+                            <label class="label hintmark_red"><?php echo __('Tab name'); ?></label>
+                            <label class="input"> <b class="icon-prepend">
+                                    <i class="fa fa-tag"></i>
+                                </b>
+                                <input type="text" class="input-sm"
+                                       placeholder="<?php echo __('Tab name'); ?>"
+                                       ng-model="data.newTabName">
+                            </label>
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 padding-top-10">
+                        <button type="button" class="btn btn-primary pull-right" ng-click="addNewTab()">
+                            <?php echo __('Create new tab'); ?>
+                        </button>
+                    </div>
+                </div>
+
+                <hr/>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h4 class="modal-title">
+                            <?php echo __('Create from shared tab'); ?>
+                        </h4>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php echo __('Select shared tab'); ?>
+                    </div>
+                    <div class="col-xs-12">
+                        <select
+                            data-placeholder="<?php echo __('Please choose'); ?>"
+                            class="form-control"
+                            chosen="sharedTabs"
+                            ng-options="sharedTab.id as sharedTab.name for sharedTab in sharedTabs"
+                            ng-model="data.createTabFromSharedTabId">
+                        </select>
+                    </div>
+                    <div class="col-xs-12 padding-top-10">
+                        <button type="button" class="btn btn-primary pull-right" ng-click="addFromSharedTab()">
+                            <?php echo __('Create from shared tab'); ?>
+                        </button>
+                    </div>
+                </div>
+
+                <br/>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 

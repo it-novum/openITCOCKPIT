@@ -22,6 +22,8 @@ Thumbs.db
 #######################
 # PHPUnit
 .phpunit.result.cache
+# PHP Composer
+composer.lock
 # vim
 *~
 *.swp

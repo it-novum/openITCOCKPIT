@@ -168,7 +168,7 @@
                     </div>
                 </div>
 
-                <div id="exportInfo" ng-show="exportRunning || showLog">
+                <div id="exportInfo" ng-show="exportRunning || showLog" class="padding-top-15">
                     <div class="col-xs-12">
                         <div>
                             <h4><?= __('Tasks'); ?></h4>
