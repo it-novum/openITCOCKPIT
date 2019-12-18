@@ -192,7 +192,7 @@
                 <?php endif; ?>
                 <a href="javascript:void(0);" data-toggle="dropdown"
                    class="btn btn-default dropdown-toggle"><span
-                            class="caret"></span></a>
+                        class="caret"></span></a>
                 <ul class="dropdown-menu pull-right" id="menuHack-{{service.Service.uuid}}">
                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                         <li ng-if="service.Service.allow_edit">
@@ -203,12 +203,19 @@
                     <?php endif; ?>
                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                         <li ng-if="service.Service.allow_edit">
-                            <?php echo $this->AdditionalLinks->renderAsListItems(
-                                $additionalLinksList,
-                                '{{service.Service.id}}',
-                                [],
-                                true
-                            ); ?>
+                            <?php
+                            /**
+                             * @todo AdditionalLinks
+                             */
+
+                            /*
+                            echo $this->AdditionalLinks->renderAsListItems(
+                            $additionalLinksList,
+                            '{{service.Service.id}}',
+                            [],
+                            true
+                            );*/
+                            ?>
                         </li>
                     <?php endif; ?>
                 </ul>

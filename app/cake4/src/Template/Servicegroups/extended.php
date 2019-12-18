@@ -49,11 +49,11 @@
 <div class="row padding-bottom-10" ng-if="servicegroups.length > 0">
     <div class="col col-xs-11">
         <select
-                class="form-control"
-                chosen="servicegroups"
-                callback="loadServicegroupsCallback"
-                ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
-                ng-model="post.Servicegroup.id">
+            class="form-control"
+            chosen="servicegroups"
+            callback="loadServicegroupsCallback"
+            ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
+            ng-model="post.Servicegroup.id">
         </select>
     </div>
     <div class="col col-xs-1">
@@ -159,7 +159,8 @@
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                             <li>
                                 <a ui-sref="ServicegroupsIndex"><i class="fa fa-minus-square"></i>
-                                    <span class="hidden-mobile hidden-tablet"><?php echo __('Default overview'); ?></span></a>
+                                    <span
+                                        class="hidden-mobile hidden-tablet"><?php echo __('Default overview'); ?></span></a>
                             </li>
                         </ul>
                         <div class="widget-toolbar cursor-default hidden-xs hidden-sm hidden-md" ng-if="servicegroup">
@@ -316,15 +317,19 @@
                             </td>
 
                             <td>
-                                <span ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
-                                <span ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
+                                <span
+                                    ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
+                                <span
+                                    ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
                                             <?php echo __('n/a'); ?>
                                         </span>
                             </td>
 
                             <td>
-                                <span ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
-                                <span ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
+                                <span
+                                    ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
+                                <span
+                                    ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
                                             <?php echo __('n/a'); ?>
                                         </span>
                             </td>
@@ -347,7 +352,7 @@
                                     <?php endif; ?>
                                     <a href="javascript:void(0);" data-toggle="dropdown"
                                        class="btn btn-default dropdown-toggle"><span
-                                                class="caret"></span></a>
+                                            class="caret"></span></a>
                                     <ul class="dropdown-menu pull-right"
                                         id="menuHack-{{servicegroup.Servicegroup.uuid}}-{{service.Service.uuid}}">
                                         <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
@@ -375,12 +380,18 @@
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                             <li ng-if="service.Service.allow_edit">
-                                                <?php echo $this->AdditionalLinks->renderAsListItems(
+                                                <?php
+                                                /**
+                                                 * @todo AdditionalLinks
+                                                 */
+
+                                                /*
+                                                echo $this->AdditionalLinks->renderAsListItems(
                                                     $additionalLinksList,
                                                     '{{service.Service.id}}',
                                                     [],
                                                     true
-                                                ); ?>
+                                                ); */ ?>
                                             </li>
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
