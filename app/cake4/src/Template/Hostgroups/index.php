@@ -48,7 +48,7 @@
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <?php if ($this->Acl->hasPermission('add')): ?>
+                        <?php if ($this->Acl->hasPermission('add', 'hostgroups')): ?>
                             <a ui-sref="HostgroupsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
@@ -64,7 +64,7 @@
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-sitemap"></i> </span>
                     <h2 class="hidden-mobile"><?php echo __('Host groups overview'); ?></h2>
-                    <?php if ($this->Acl->hasPermission('extended')): ?>
+                    <?php if ($this->Acl->hasPermission('extended', 'hostgroups')): ?>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                             <li>
                                 <a ui-sref="HostgroupsExtended"><i class="fa fa-plus-square"></i>
