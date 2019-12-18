@@ -141,3 +141,21 @@ $color-danger:						#CC0000;
     padding: 0px;
 }
 
+
+
+
+/* greenDark theme */
+.jarviswidget-color-greenDark > card-header {
+    background: #496949;
+    color: #FFF;
+}
+.jarviswidget-color-greenDark > card-header > .card-title,
+.jarviswidget-color-greenDark .nav-tabs li:not(.active) a {
+    color: #fff !important;
+}
+.jarviswidget-color-greenDark .nav-tabs li a:hover {
+    color: #333 !important;
+}
+.jarviswidget-color-greenDark > header {
+    border-color: #638167 !important;
+}

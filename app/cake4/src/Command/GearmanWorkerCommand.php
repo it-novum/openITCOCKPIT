@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\itnovum\openITCOCKPIT\Database\Backup;
 use App\Model\Table\ExportsTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Console\Arguments;
@@ -35,8 +36,11 @@ use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
+use Cake\Filesystem\Folder;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigDefaults;
+use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigGenerator;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -121,6 +125,14 @@ class GearmanWorkerCommand extends Command {
             if (!$pid) {
                 //I am a child process
                 $this->parentProcess = false;
+
+                // Avoid "MySQL server has gone away"
+                /** @var SystemsettingsTable $SystemsettingsTable */
+                $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+                $connection = $SystemsettingsTable->getConnection();
+                $connection->disconnect();
+                $connection->connect();
+
                 $this->loop();
             }
             $this->childPids[] = $pid;
@@ -162,8 +174,8 @@ class GearmanWorkerCommand extends Command {
 
     /**
      * @param \GearmanJob $job
-     *
      * @return string
+     * @throws \Exception
      */
     public function runJob($job) {
         $this->jobIdelCounter = 0;
@@ -180,9 +192,12 @@ class GearmanWorkerCommand extends Command {
         $return = [];
 
         // Avoid "MySQL server has gone away"
-        //$connection = $SystemsettingsTable->getConnection();
-        //$connection->disconnect();
-        //$connection->connect();
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
+        $connection = $SystemsettingsTable->getConnection();
+        $connection->disconnect();
+        $connection->connect();
 
 
         switch ($payload['task']) {
@@ -508,96 +523,123 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'export_delete_old_configuration':
-                $this->NagiosExport->init();
-                $this->NagiosExport->deleteAllConfigfiles();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->deleteAllConfigfiles();
                 $return = ['task' => $payload['task']];
                 break;
 
             case 'export_create_default_config':
-                $this->NagiosExport->init();
-                $this->DefaultNagiosConfig->execute();
+                $NagiosConfigDefaults = new NagiosConfigDefaults();
+                $NagiosConfigDefaults->execute();
                 $return = ['task' => $payload['task']];
                 break;
+
             case 'export_hosttemplates':
-                $this->NagiosExport->init();
-                $this->NagiosExport->exportHosttemplates();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->exportHosttemplates();
                 $return = ['task' => $payload['task']];
                 break;
+
             case 'export_hosts':
-                $this->NagiosExport->init();
-                $this->NagiosExport->exportHosts();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->exportHosts();
                 $return = ['task' => $payload['task']];
                 break;
+
             case 'export_commands':
-                $this->NagiosExport->init();
-                $this->NagiosExport->exportCommands();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->exportCommands();
                 $return = ['task' => $payload['task']];
                 break;
+
             case 'export_contacts':
-                $this->NagiosExport->init();
-                $this->NagiosExport->exportContacts();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->exportContacts();
                 $return = ['task' => $payload['task']];
                 break;
+
             case 'export_contactgroups':
-                $this->NagiosExport->init();
-                $this->NagiosExport->exportContactgroups();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->exportContactgroups();
                 $return = ['task' => $payload['task']];
                 break;
+
             case 'export_timeperiods':
-                $this->NagiosExport->init();
-                $this->NagiosExport->exportTimeperiods();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->exportTimeperiods();
                 $return = ['task' => $payload['task']];
                 break;
+
             case 'export_hostgroups':
-                $this->NagiosExport->init();
-                $this->NagiosExport->exportHostgroups();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->exportHostgroups();
                 $return = ['task' => $payload['task']];
                 break;
+
             case 'export_hostescalations':
-                $this->NagiosExport->init();
-                $this->NagiosExport->exportHostescalations();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->exportHostescalations();
                 $return = ['task' => $payload['task']];
                 break;
+
             case 'export_servicetemplates':
-                $this->NagiosExport->init();
-                $this->NagiosExport->exportServicetemplates();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->exportServicetemplates();
                 $return = ['task' => $payload['task']];
                 break;
             case 'export_services':
-                $this->NagiosExport->init();
-                $this->NagiosExport->exportServices();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->exportServices();
                 $return = ['task' => $payload['task']];
                 break;
+
             case 'export_serviceescalations':
-                $this->NagiosExport->init();
-                $this->NagiosExport->exportServiceescalations();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->exportServiceescalations();
                 $return = ['task' => $payload['task']];
                 break;
             case 'export_servicegroups':
-                $this->NagiosExport->init();
-                $this->NagiosExport->exportServicegroups();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->exportServicegroups();
                 $return = ['task' => $payload['task']];
                 break;
+
             case 'export_hostdependencies':
-                $this->NagiosExport->init();
-                $this->NagiosExport->exportHostdependencies();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->exportHostdependencies();
                 $return = ['task' => $payload['task']];
                 break;
+
             case 'export_servicedependencies':
-                $this->NagiosExport->init();
-                $this->NagiosExport->exportServicedependencies();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->exportServicedependencies();
                 $return = ['task' => $payload['task']];
                 break;
+
             case 'export_userdefinedmacros':
-                $this->NagiosExport->init();
-                $this->NagiosExport->exportMacros();
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                $NagiosConfigGenerator->exportMacros();
                 $return = ['task' => $payload['task']];
                 break;
 
             case 'export_verify_config':
-                $this->NagiosExport->init();
-                $command = $this->NagiosExport->returnVerifyCommand();
-                exec($command, $output, $returncode);
+                Configure::load('nagios');
+
+                /** @var SystemsettingsTable $SystemsettingsTable */
+                $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+                $systemsettings = $SystemsettingsTable->findAsArray();
+
+                $naemonBin = Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin');
+                $naemonCfg = Configure::read('nagios.nagios_cfg');
+
+                $cmd = sprintf(
+                    'sudo -u %s %s -v %s',
+                    escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                    $naemonBin,
+                    $naemonCfg
+                );
+
+                exec($cmd, $output, $returncode);
                 $return = [
                     'output'     => $output,
                     'returncode' => $returncode,
@@ -605,32 +647,69 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'export_sync_sat_config':
-                //This task is part of a plugin, so we need to load it dynamicly
-                $this->NagiosExport->init();
-                $_task = new TaskCollection($this);
-                $AfterExportTask = $_task->load('AfterExport');
-                $AfterExportTask->beQuiet();
-                $AfterExportTask->init();
-                $this->Export->updateAll([
-                    'Export.finished'     => 1,
-                    'Export.successfully' => $AfterExportTask->copy($payload['Satellite']) ? 1 : 0,
-                ], [
-                    'Export.task' => 'export_sync_sat_config_' . $payload['Satellite']['Satellite']['id'],
-                ]);
+
+                //@todo implement me
+
+                //This task is part of a plugin, so we need to load it v
+                $NagiosConfigGenerator = new NagiosConfigGenerator();
+                //$_task = new TaskCollection($this);
+                //$AfterExportTask = $_task->load('AfterExport');
+                //$AfterExportTask->beQuiet();
+                //$AfterExportTask->init();
+
+                /** @var ExportsTable $ExportsTable */
+                $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
+                $entity = $ExportsTable->find()
+                    ->where([
+                        'task' => 'export_sync_sat_config_' . $payload['Satellite']['id']
+                    ])
+                    ->first();
+                if (!empty($entity)) {
+                    $entity->set('finished', 1);
+                    //$entity->set('successfully', AfterExportTask->copy($payload['Satellite']) ? 1 : 0);
+                    $entity->set('successfully', 0);
+                    $ExportsTable->save($entity);
+                }
+                unset($entity);
                 $return = ['task' => $payload['task']];
                 break;
 
             case 'idoit_sync':
-                $this->Synchronisation->runImport($payload['isCron'], $payload['authUser']);
+                //@todo implement me
+                //$this->Synchronisation->runImport($payload['isCron'], $payload['authUser']);
                 break;
 
             case 'make_sql_backup':
-                $return = $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget') . '/' . $payload['filename']);
+                $filename = Configure::read('nagios.export.backupTarget') . '/' . $payload['filename'];
+                if (file_exists($filename)) {
+                    $return = [
+                        'output'     => [
+                            'File already exists!'
+                        ],
+                        'returncode' => 1,
+                    ];
+                    break;
+                }
+
+                $MysqlBackup = new Backup();
+                $return = $MysqlBackup->createMysqlDump($filename);
                 exec('touch /opt/openitc/nagios/backup/finishBackup.txt');
                 break;
 
             case 'restore_sql_backup':
-                $return = $this->NagiosExport->restoreSQLBackup($payload['path']);
+                $filename = $payload['path'];
+                if (!file_exists($filename)) {
+                    $return = [
+                        'output'     => [
+                            'File does not exists!'
+                        ],
+                        'returncode' => 1,
+                    ];
+                    break;
+                }
+
+                $MysqlBackup = new Backup();
+                $return = $MysqlBackup->restoreMysqlDump($filename);
                 exec('touch /opt/openitc/nagios/backup/finishRestore.txt');
                 break;
 
@@ -762,31 +841,27 @@ class GearmanWorkerCommand extends Command {
      * @param int $createBackup
      */
     public function launchExport($createBackup = 1) {
-        //We do the export in on of our workers, to avoid max_execution_time errors
-        $this->NagiosExport->init();
-        $successfully = true;
-        $this->Export->deleteAll(true);
-        $this->Export->create();
-        $data = [
-            'Export' => [
-                'task' => 'export_started',
-                'text' => __('Started refresh of monitoring configuration'),
-            ],
-        ];
-        $result = $this->Export->save($data);
+        $NagiosConfigGenerator = new NagiosConfigGenerator();
+        $successfully = 1;
+        /** @var ExportsTable $ExportsTable */
+        $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
+        $ExportsTable->deleteAll([]);
+
+        $ExportsTable->save($ExportsTable->newEntity([
+            'task' => 'export_started',
+            'text' => __('Started refresh of monitoring configuration'),
+        ]));
+
 
         if ($createBackup == 1) {
-            $this->Export->create();
-            $data = [
-                'Export' => [
-                    'task' => 'export_create_backup',
-                    'text' => __('Create Backup of old configuration'),
-                ],
-            ];
-            $result = $this->Export->save($data);
+            $entity = $ExportsTable->newEntity([
+                'task' => 'export_create_backup',
+                'text' => __('Create Backup of current configuration')
+            ]);
+            $ExportsTable->save($entity);
 
-            App::uses('Folder', 'Utility');
-            $folder1 = new Folder(Configure::read('nagios.export.backupSource'));
+
+            $backupSrc = new Folder(Configure::read('nagios.export.backupSource'));
 
             $backupTarget = Configure::read('nagios.export.backupTarget') . '/' . date('d-m-Y_H-i-s');
 
@@ -797,48 +872,50 @@ class GearmanWorkerCommand extends Command {
             if (!is_dir($backupTarget)) {
                 mkdir($backupTarget);
             }
-            $folder1->copy($backupTarget);
+            $backupSrc->copy($backupTarget);
 
             $filename = "export_oitc_bkp_" . date("Y-m-d_His") . ".sql";
-            $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget') . '/' . $filename);
+            $MysqlBackup = new Backup();
+            $MysqlBackup->createMysqlDump(
+                Configure::read('nagios.export.backupTarget') . '/' . $filename
+            );
 
-            $this->Export->saveField('finished', 1);
-            $this->Export->saveField('successfully', 1);
+            $entity->set('finished', 1);
+            $entity->set('successfully', 1);
+            $ExportsTable->save($entity);
+            unset($entity);
         }
 
-        $gearmanClient = new GearmanClient();
-        $gearmanClient->addServer($this->Config['address'], $this->Config['port']);
+        $gearmanConfig = Configure::read('gearman');
+        $gearmanClient = new \GearmanClient();
+        $gearmanClient->addServer($gearmanConfig['address'], $gearmanConfig['port']);
         //This callback gets called, for any finished export task (like hosttemplates, services etc...)
         $gearmanClient->setCompleteCallback([$this, 'exportCallback']);
 
         //Delete old configuration
-        //Delete old configuration
-        $this->Export->create();
-        $data = [
-            'Export' => [
-                'task' => 'export_delete_old_configuration',
-                'text' => __('Delete old configuration'),
-            ],
-        ];
-        $response = $this->Export->save($data);
+        $entity = $ExportsTable->newEntity([
+            'task' => 'export_delete_old_configuration',
+            'text' => __('Delete old configuration')
+        ]);
+        $ExportsTable->save($entity);
         $gearmanClient->doNormal("oitc_gearman", serialize(['task' => 'export_delete_old_configuration']));
-        $this->Export->saveField('finished', 1);
-        $this->Export->saveField('successfully', 1);
+        $entity->set('finished', 1);
+        $entity->set('successfully', 1);
+        $ExportsTable->save($entity);
+        unset($entity);
 
-        $this->Export->create();
-        $data = [
-            'Export' => [
-                'task' => 'before_export_external_tasks',
-                'text' => __('Execute pre export tasks'),
-            ],
-        ];
-        $response = $this->Export->save($data);
-        $this->NagiosExport->beforeExportExternalTasks();
-        $this->Export->id = $response['Export']['id'];
-        $this->Export->saveField('finished', 1);
-        $this->Export->saveField('successfully', 1);
+        $entity = $ExportsTable->newEntity([
+            'task' => 'before_export_external_tasks',
+            'text' => __('Execute pre export tasks')
+        ]);
+        $ExportsTable->save($entity);
+        $NagiosConfigGenerator->beforeExportExternalTasks();
+        $entity->set('finished', 1);
+        $entity->set('successfully', 1);
+        $ExportsTable->save($entity);
+        unset($entity);
 
-        //Define all tasks, we can do parallel
+        //Define all tasks, we can do in parallel
         $tasks = [
             'export_create_default_config' => [
                 'text' => __('Create default configuration'),
@@ -892,128 +969,184 @@ class GearmanWorkerCommand extends Command {
 
         foreach ($tasks as $taskName => $task) {
             if (isset($task['options'])) {
-                //Task with secial options
+                //Task with special options
                 $gearmanClient->addTask("oitc_gearman", serialize(['task' => $taskName, 'options' => $task['options']]));
             } else {
                 //Normal task
                 $gearmanClient->addTask("oitc_gearman", serialize(['task' => $taskName]));
             }
-            $this->Export->create();
-            $data = [
-                'Export' => [
-                    'task' => $taskName,
-                    'text' => $task['text'],
-                ],
-            ];
-            $this->Export->save($data);
+            $entity = $ExportsTable->newEntity([
+                'task' => $taskName,
+                'text' => $task['text']
+            ]);
+            $ExportsTable->save($entity);
+            unset($entity);
         }
-        $gearmanClient->runTasks();
+
+        //Run all tasks
+        $gearmanClient->runTasks(); //Blocks until all tasks are done
 
         //runTasks() may be block for a long time
-        //Reset MySQL Connection to avoid MySQL hase gone away
-        $this->Systemsetting->getDatasource()->reconnect();
+        // Avoid "MySQL server has gone away"
+        //$connection = $SystemsettingsTable->getConnection();
+        //$connection->disconnect();
+        //$connection->connect();
 
         //Export done
-        $this->Export->create();
-        $data = [
-            'Export' => [
-                'task' => 'after_export_external_tasks',
-                'text' => __('Execute post export tasks'),
-            ],
-        ];
-        $response = $this->Export->save($data);
-        $this->NagiosExport->afterExportExternalTasks();
-        $this->Export->saveField('finished', 1);
-        $this->Export->saveField('successfully', 1);
+        $entity = $ExportsTable->newEntity([
+            'task' => 'after_export_external_tasks',
+            'text' => __('Execute post export tasks')
+        ]);
+        $ExportsTable->save($entity);
+        $NagiosConfigGenerator->afterExportExternalTasks();
+        $entity->set('finished', 1);
+        $entity->set('successfully', 1);
+        $ExportsTable->save($entity);
+        unset($entity);
 
         //Verify new configuration
-        $this->Export->create();
-        $data = [
-            'Export' => [
-                'task' => 'export_verify_new_configuration',
-                'text' => __('Verifying new configuration'),
-            ],
-        ];
-        $this->Export->save($data);
-        $command = $this->NagiosExport->returnVerifyCommand();
+        $verifyEntity = $ExportsTable->newEntity([
+            'task' => 'export_verify_new_configuration',
+            'text' => __('Verifying new configuration')
+        ]);
+        $ExportsTable->save($verifyEntity);
+        Configure::load('nagios');
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $SystemsettingsTable->findAsArray();
+
+        $naemonBin = Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin');
+        $naemonCfg = Configure::read('nagios.nagios_cfg');
+        $cmd = sprintf(
+            'sudo -u %s %s -v %s',
+            escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+            $naemonBin,
+            $naemonCfg
+        );
         $output = null;
-        exec($command, $output, $returncode);
-        $this->Export->saveField('finished', 1);
+        exec($cmd, $output, $returncode);
+        $verifyEntity->set('finished', 1);
         if ($returncode === 0) {
             //New configuration is valid :-)
-            //Reloading monitoring system
-            $this->Export->saveField('successfully', 1);
-            $this->Export->create();
-            $data = [
-                'Export' => [
-                    'task' => 'export_reload_monitoring',
-                    'text' => __('Reloading monitoring engine'),
-                ],
-            ];
-            $this->Export->save($data);
-            $command = $this->NagiosExport->returnReloadCommand();
-            $output = null;
-            exec($command, $output, $returncode);
-            $this->Export->saveField('finished', 1);
-            if ($returncode == 0) {
-                $this->Export->saveField('finished', 1);
-                $this->Export->saveField('successfully', 1);
 
+            $verifyEntity->set('successfully', 1);
+            $ExportsTable->save($verifyEntity);
+
+            //Reloading the monitoring system
+
+            //Check if Naemon/Nagios is running.
+            //If Nagios is running, we reload the config, if not we need to restart
+            $entity = $ExportsTable->newEntity([
+                'task' => 'is_monitoring_engine_running',
+                'text' => __('Check if monitoring engine is running')
+            ]);
+            $ExportsTable->save($entity);
+            exec($systemsettings['MONITORING']['MONITORING.STATUS'], $statusOutput, $statusRc);
+            $entity->set('finished', 1);
+            $entity->set('successfully', 1);
+            $ExportsTable->save($entity);
+            unset($entity);
+
+            $isMonitoringRunning = false;
+            if ($statusRc === 0) {
+                //Nagios/Naemon is running (reload)
+                $entity = $ExportsTable->newEntity([
+                    'task' => 'export_reload_monitoring',
+                    'text' => __('Reloading monitoring engine')
+                ]);
+                $ExportsTable->save($entity);
+                exec($systemsettings['MONITORING']['MONITORING.RELOAD'], $reloadOutput, $reloadRc);
+                $entity->set('finished', 1);
+                $entity->set('successfully', 0);
+                if ($reloadRc === 0) {
+                    $entity->set('successfully', 1);
+                    $isMonitoringRunning = true;
+                }
+                $ExportsTable->save($entity);
+                unset($entity);
+            } else {
+                //Nagios/Naemon is stopped (restart)
+                $entity = $ExportsTable->newEntity([
+                    'task' => 'export_restart_monitoring',
+                    'text' => __('Restarting monitoring engine')
+                ]);
+                $ExportsTable->save($entity);
+                exec($systemsettings['MONITORING']['MONITORING.RESTART'], $restartOutput, $restartRc);
+                $entity->set('finished', 1);
+                $entity->set('successfully', 0);
+                if ($restartRc === 0) {
+                    $entity->set('successfully', 1);
+                    $isMonitoringRunning = true;
+                }
+                $ExportsTable->save($entity);
+                unset($entity);
+            }
+
+
+            if ($isMonitoringRunning) {
                 //Run After Export command
-                $this->Export->create();
-                $data = [
-                    'Export' => [
-                        'task' => 'export_after_export_command',
-                        'text' => __('Execute after export command'),
-                    ],
-                ];
-                $result = $this->Export->save($data);
-                $command = $this->NagiosExport->returnAfterExportCommand();
+                $entity = $ExportsTable->newEntity([
+                    'task' => 'export_after_export_command',
+                    'text' => __('Execute after export command')
+                ]);
                 $output = null;
-                exec($command, $output, $returncode);
-                //The exec() may be block for a while
-                //Reset MySQL Connection to avoid MySQL hase gone away
-                $this->Systemsetting->getDatasource()->reconnect();
-                $this->Export->id = $result['Export']['id'];
-                $this->Export->saveField('finished', 1);
+                exec($systemsettings['MONITORING']['MONITORING.AFTER_EXPORT'], $output, $returncode);
+
+                // Avoid "MySQL server has gone away"
+                $connection = $SystemsettingsTable->getConnection();
+                $connection->disconnect();
+                $connection->connect();
+
+                $entity->set('finished', 1);
+                $entity->set('successfully', 0);
                 if ($returncode == 0) {
-                    $this->Export->saveField('successfully', 1);
+                    $entity->set('successfully', 1);
                     $this->distributedMonitoringAfterExportCommand();
                 } else {
-                    $successfully = false;
-                    $this->Export->saveField('successfully', 0);
+                    $successfully = 0;
                 }
+
+                $ExportsTable->save($entity);
+                unset($entity);
+
             } else {
-                $successfully = false;
-                $this->Export->saveField('successfully', 0);
+                $successfully = 0;
             }
         } else {
             //Error with new configuration :-(
-            $successfully = false;
-            $this->Export->saveField('successfully', 0);
+            $successfully = 0;
+            $verifyEntity->set('successfully', 0);
+            $ExportsTable->save($verifyEntity);
         }
 
-        //Export done
-        $this->Export->create();
-        $data = [
-            'Export' => [
-                'task'         => 'export_finished',
-                'text'         => __('Refresh finished'),
-                'finished'     => 1,
-                'successfully' => $successfully,
-            ],
-        ];
-        $this->Export->save($data);
-        $exportStarted = $this->Export->findByTask('export_started');
-        $exportStarted['Export']['finished'] = 1;
-        $exportStarted['Export']['successfully'] = $successfully;
-        $this->Export->save($exportStarted);
+        //Export, reload/restart and after export done
+        $entity = $ExportsTable->newEntity([
+            'task'         => 'export_finished',
+            'text'         => __('Refresh of configuration finished'),
+            'finished'     => 1,
+            'successfully' => $successfully
+        ]);
+        $ExportsTable->save($entity);
+        unset($entity);
+
+        //Mark export as finished
+        $entity = $ExportsTable->find()
+            ->where([
+                'task' => 'export_started'
+            ])
+            ->first();
+
+        if ($entity) {
+            $entity->set('finished', 1);
+            $entity->set('successfully', $successfully);
+            $ExportsTable->save($entity);
+        }
 
         if ($successfully) {
-            if (is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
-                $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
-                //Unmark all SAT-Systems
-                $SatelliteModel->disableAllInstanceConfigSyncs();
+            if (Plugin::isLoaded('DistributeModule')) {
+                /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+                $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+                $SatellitesTable->disableAllInstanceConfigSyncs();
             }
         }
 
@@ -1025,6 +1158,11 @@ class GearmanWorkerCommand extends Command {
      */
     public function exportCallback($task) {
         $result = unserialize($task->data());
+        if (!isset($result['task'])) {
+            Log::error('Export result has no "task" key ' . serialize($result));
+            return;
+        }
+
         if ($result['task'] !== 'export_sync_sat_config') {
             /** @var ExportsTable $ExportsTable */
             $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
@@ -1086,8 +1224,8 @@ class GearmanWorkerCommand extends Command {
                     /** @var \DistributeModule\Model\Entity\Satellite $satellite */
 
                     $entity = $ExportsTable->newEntity([
-                        'task' => 'export_sync_sat_config_' . $satellite['Satellite']['id'],
-                        'text' => __('Copy new monitoring configuration for Satellite [' . $satellite['Satellite']['id'] . '] ' . $satellite['Satellite']['name'])
+                        'task' => 'export_sync_sat_config_' . $satellite->get('id'),
+                        'text' => __('Copy new monitoring configuration for Satellite [' . $satellite->get('id') . '] ' . $satellite->get('name'))
                     ]);
                     $ExportsTable->save($entity);
 
@@ -1099,9 +1237,9 @@ class GearmanWorkerCommand extends Command {
                 $gearmanClient->runTasks();
             }
             // Avoid "MySQL server has gone away"
-            //$connection = $SystemsettingsTable->getConnection();
-            //$connection->disconnect();
-            //$connection->connect();
+            $connection = $SystemsettingsTable->getConnection();
+            $connection->disconnect();
+            $connection->connect();
 
         }
     }

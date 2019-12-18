@@ -63,51 +63,51 @@
     </div>
 
     <div class="ml-auto d-flex">
-            <div class="header-icon">
+        <div class="header-icon">
                 <span id="global_ajax_loader">
                     <div class="spinner-border spinner-border-sm" role="status">
                         <span class="sr-only">Loading...</span>
                     </div>
                 </span>
-            </div>
-            <div class="header-icon">
-                <version-check></version-check>
-            </div>
-            <div class="header-icon">
-                <?php if ($showstatsinmenu): ?>
-                    <menustats></menustats>
-                <?php endif; ?>
-            </div>
-            <div class="header-icon">
-                <system-health></system-health>
-            </div>
-            <div class="header-icon">
-                <server-time></server-time>
-            </div>
-            <div>
-                <?php if ($exportRunningHeaderInfo === false): ?>
-                    <a href="/exports/index" sudo-server-connect=""
-                       data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
-                       data-placement="left" rel="tooltip" data-container="body" class="header-icon">
-                        <i class="fa fa-retweet"></i>
-                    </a>
-                <?php else: ?>
-                    <a href="/exports/index" export-status=""
-                       data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
-                       data-placement="left" rel="tooltip" data-container="body" class="header-icon">
-                        <i class="fa fa-retweet" ng-hide="exportRunning"></i>
-                        <i class="fa fa-refresh fa-spin txt-color-red" ng-show="exportRunning"></i>
-                    </a>
-                <?php endif; ?>
-            </div>
-            <div>
-                <a href="/users/logout" data-original-title="<?php echo __('Sign out'); ?>"
-                   data-placement="left"
-                   rel="tooltip" data-container="body" class="header-icon">
-                    <i class="fa fa-sign-out-alt"></i>
+        </div>
+        <div class="header-icon">
+            <version-check></version-check>
+        </div>
+        <div class="header-icon">
+            <?php if ($showstatsinmenu): ?>
+                <menustats></menustats>
+            <?php endif; ?>
+        </div>
+        <div class="header-icon">
+            <system-health></system-health>
+        </div>
+        <div class="header-icon">
+            <server-time></server-time>
+        </div>
+        <div>
+            <?php if ($exportRunningHeaderInfo === false): ?>
+                <a ui-sref="ExportsIndex" sudo-server-connect=""
+                   data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
+                   data-placement="left" rel="tooltip" data-container="body" class="header-icon">
+                    <i class="fa fa-retweet"></i>
                 </a>
-            </div>
-            <push-notifications></push-notifications>
+            <?php else: ?>
+                <a ui-sref="ExportsIndex" export-status=""
+                   data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
+                   data-placement="left" rel="tooltip" data-container="body" class="header-icon">
+                    <i class="fa fa-retweet" ng-hide="exportRunning"></i>
+                    <i class="fa fa-refresh fa-spin txt-color-red" ng-show="exportRunning"></i>
+                </a>
+            <?php endif; ?>
+        </div>
+        <div>
+            <a href="/users/logout" data-original-title="<?php echo __('Sign out'); ?>"
+               data-placement="left"
+               rel="tooltip" data-container="body" class="header-icon">
+                <i class="fa fa-sign-out-alt"></i>
+            </a>
+        </div>
+        <push-notifications></push-notifications>
     </div>
 
 </header>

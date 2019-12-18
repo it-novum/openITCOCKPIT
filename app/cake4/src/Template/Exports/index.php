@@ -27,135 +27,189 @@
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-6">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-retweet fa-fw "></i>
-            <?php echo __('Administration') ?>
+            <?= __('Monitoring') ?>
             <span>>
-                <?php echo __('refresh monitoring configuration'); ?>
+                <?= __('Apply configuration'); ?>
             </span>
         </h1>
     </div>
 </div>
-<?php if (!$gearmanReachable): ?>
-    <div id="error_msg">
-        <div class="alert alert-danger alert-block">
-            <a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i
-                        class="fa fa-warning"></i> <?php echo __('Error'); ?>
-            </h5><?php echo __('Could not connect to Gearman Job Server'); ?>
-        </div>
-    </div>
-<?php endif; ?>
-<section id="widget-grid" class="">
-    <div class="row">
-        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                <header>
-                    <div class="widget-toolbar" role="menu">
-                        <?php echo $this->AdditionalLinks->renderAsLinks($additionalLinksTop); ?>
-                    </div>
-                    <div class="jarviswidget-ctrls" role="menu">
-                    </div>
-                    <span class="widget-icon"> <i class="fa fa-retweet"></i> </span>
-                    <h2><?php echo __('Refresh monitoring configuration'); ?> </h2>
-                </header>
 
-                <div>
-                    <div class="jarviswidget-editbox">
-                    </div>
-                    <div class="widget-body">
-                        <div class="form-group ">
-                            <label class="col col-md-3 control-label text-left" for="CreateBackup"><i
-                                        class="fa fa-hdd-o"></i> <?php echo __('Create backup of current configuration?'); ?>
-                            </label>
-                            <div class="col col-md-9">
-                                <div class="">
-                                    <span class="onoffswitch">
-                                            <input type="hidden" value="0" id="CreateBackup_"
-                                                   name="data[Export][create_backup]">
-                                                <input type="checkbox" id="CreateBackup" showlabel="1" value="1"
-                                                       checked="checked"
-                                                       class="onoffswitch-checkbox notification_control"
-                                                       name="data[Export][create_backup]">
-                                                <label class="onoffswitch-label" for="CreateBackup">
-                                                    <span class="onoffswitch-inner"
-                                                          data-swchon-text="<?php echo __('Yes'); ?>"
-                                                          data-swchoff-text="<?php echo __('No'); ?>"></span>
-                                                    <span class="onoffswitch-switch"></span>
-                                                </label>
-                                        </span>
-                                </div>
-                            </div>
-                        </div>
+<div class="jarviswidget jarviswidget-color-blueDark">
+    <header>
+        <span class="widget-icon"> <i class="fa fa-retweet"></i> </span>
+        <h2><?= __('Refresh monitoring configuration'); ?> </h2>
+    </header>
 
-
-                        <?php echo $this->AdditionalLinks->renderElements($additionalElementsForm); ?>
-
-                        <div class="row">
-                            <?php $style = 'display:none;'; ?>
-                            <?php if ($exportRunning == true): ?>
-                                <?php $style = ''; ?>
-                            <?php endif; ?>
-                            <div id="exportRunning" class="col-xs-12 padding-top-20" style="<?php echo $style; ?>">
-                                <div class="alert alert-info alert-block">
-                                    <h4 class="alert-heading"><i
-                                                class="fa fa-info-circle"></i> <?php echo __('Refresh in progress'); ?>
-                                    </h4>
-                                    <?php echo __('You need to wait before the currently running refresh of the monitoring configuration is finished.'); ?>
-                                </div>
-                            </div>
-                            <div id="exportSuccessfully" class="col-xs-12 padding-top-20" style="display:none;">
-                                <div class="alert alert-success alert-block">
-                                    <h4 class="alert-heading"><i class="fa fa-check"></i> <?php echo __('Success'); ?>
-                                    </h4>
-                                    <?php echo __('Refresh of monitoring configuration successfully done.'); ?>
-                                </div>
-                            </div>
-                            <div id="exportError" class="col-xs-12 padding-top-20" style="display:none;">
-                                <div class="alert alert-danger alert-block">
-                                    <h4 class="alert-heading"><i class="fa fa-times"></i> <?php echo __('Error'); ?>
-                                    </h4>
-                                    <?php echo __('Error while refreshing your monitoring configuration'); ?>
-                                </div>
-                            </div>
-                            <div id="verifyError" class="col-xs-12 padding-top-20" style="display:none;">
-                                <div class="alert alert-danger alert-block">
-                                    <h4 class="alert-heading"><i
-                                                class="fa fa-times"></i> <?php echo __('Error - new configuration is not valid'); ?>
-                                    </h4>
-                                    &nbsp;
-                                    <div class="well" id="verifyOutput"></div>
-                                </div>
-                            </div>
-                            <div id="exportInfo" style="display:none;">
-                                <div class="col-xs-12">
-                                    <div>
-                                        <h4><?php echo __('Additional information'); ?>:</h4>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12">
-                                    <div class="well" id="exportLog"></div>
-                                </div>
-                            </div>
-
-
-                            <?php if ($exportRunning === false): ?>
-                                <div class="col-xs-12 padding-top-20">
-                                    <div class="well formactions ">
-                                        <div class="pull-right">
-                                            <?php if ($gearmanReachable): ?>
-                                                <a href="javascript:void(0);" id="launchExport"
-                                                   class="btn btn-success"><?php echo __('Refresh configuration'); ?></a>
-                                            <?php else: ?>
-                                                <a href="javascript:void(0);"
-                                                   class="btn btn-danger"><?php echo __('Connection error'); ?></a>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-
+    <div>
+        <div class="widget-body" ng-if="!gearmanReachable">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="alert alert-danger alert-block">
+                        <h5 class="alert-heading">
+                            <i class="fa fa-warning"></i> <?= __('Critical error!'); ?>
+                        </h5>
+                        <?= __('Could not connect to Gearman Job Server'); ?>
                     </div>
                 </div>
             </div>
-        </article>
+        </div>
+
+        <div class="widget-body" ng-if="gearmanReachable">
+
+
+            <div class="form-group">
+                <div class="col-xs-12 smart-form">
+                    <label class="checkbox no-required">
+                        <input type="checkbox" name="checkbox"
+                               id="createBackupCheckbox"
+                               ng-true-value="1"
+                               ng-false-value="0"
+                               ng-model="post.create_backup">
+                        <i class="checkbox-primary"></i>
+                        <?= __('Create backup of current configuration'); ?>
+                    </label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
+                    <div class="jarviswidget padding-top-15" ng-show="useSingleInstanceSync">
+                        <header>
+                                <span class="widget-icon">
+                                    <i class="fa fa-cloud"></i>
+                                </span>
+                            <h2><?= __('Select instances which the new configuration should get pushed.'); ?></h2>
+                        </header>
+                        <div>
+                            <div class="widget-body">
+
+                                <table id="host_list"
+                                       class="table table-striped table-hover table-bordered smart-form"
+                                       style="">
+                                    <thead>
+                                    <tr>
+                                        <th class="no-sort width-15">
+                                            <i class="fa fa-check-square-o fa-lg"></i>
+                                        </th>
+
+                                        <th class="no-sort">
+                                            <?= __('Instances name'); ?>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="satellite in satellites">
+                                        <td>
+                                            <label class="checkbox no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-disabled="exportRunning"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       ng-model="satellite.sync_instance">
+                                                <i class="checkbox-primary"></i>
+                                            </label>
+                                        </td>
+                                        <td>
+                                            {{ satellite.name }}
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="row margin-top-10 margin-bottom-10">
+                                    <div class="col-xs-12 col-md-2 text-muted text-center">
+                                        <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                                    </div>
+                                    <div class="col-xs-12 col-md-2">
+                                        <span ng-click="selectAll()" class="pointer">
+                                            <i class="fa fa-lg fa-check-square-o"></i>
+                                            <?php echo __('Select all'); ?>
+                                        </span>
+                                    </div>
+                                    <div class="col-xs-12 col-md-2">
+                                        <span ng-click="undoSelection()" class="pointer">
+                                            <i class="fa fa-lg fa-square-o"></i>
+                                            <?php echo __('Undo selection'); ?>
+                                        </span>
+                                    </div>
+                                    <div class="col-xs-12 col-md-2">
+                                        <button class="btn btn-xs btn-default"
+                                                ng-click="saveInstanceConfigSyncSelection();">
+                                            <?= __('Save selection'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+
+                <div id="exportError" class="col-xs-12 padding-top-20" ng-show="!exportSuccessfully">
+                    <div class="alert alert-danger alert-block">
+                        <h4 class="alert-heading"><i class="fa fa-times"></i> <?= __('Error'); ?></h4>
+                        <?= __('Error while refreshing monitoring configuration.'); ?>
+                    </div>
+                </div>
+
+                <div id="verifyError" class="col-xs-12 padding-top-20" ng-show="verificationErrors.length > 0">
+                    <div class="alert alert-danger alert-block">
+                        <h4 class="alert-heading"><i
+                                class="fa fa-times"></i> <?= __('New configuration is invalid'); ?>
+                        </h4>
+                        &nbsp;
+                        <div class="well txt-color-blueDark" id="verifyOutput">
+                            {{verificationErrors}}
+                        </div>
+                    </div>
+                </div>
+
+                <div id="exportInfo" ng-show="exportRunning || showLog">
+                    <div class="col-xs-12">
+                        <div>
+                            <h4><?= __('Tasks'); ?></h4>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="well" id="exportLog">
+                            <div ng-repeat="task in tasks">
+                                <i class="fa fa-spin fa-refresh" ng-show="task.finished === 0"></i>
+                                <i class="fa fa-check text-success"
+                                   ng-show="task.finished === 1 && task.successfully === 1"></i>
+                                <i class="fa fa-times text-danger"
+                                   ng-show="task.finished === 1 && task.successfully === 0"></i>
+                                <span class="code-font txt-color-grayDark">[{{task.modified}}]</span>
+                                <span>{{task.text}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                    <div class="well formactions ">
+                        <div class="pull-right">
+
+                            <label class="text-info padding-right-10" ng-show="exportRunning">
+                                <i class="fa fa-info-circle"></i>
+                                <?= _('Refresh in progress '); ?>
+                            </label>
+
+                            <button class="btn btn-success" type="button"
+                                    ng-disabled="exportRunning" ng-click="launchExport();">
+                                <i class="fa fa-rocket" ng-show="!exportRunning"></i>
+                                <i class="fa fa-spin fa-spinner" ng-show="exportRunning"></i>
+                                <?= __('Launch refresh'); ?>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
-</section>
+</div>
