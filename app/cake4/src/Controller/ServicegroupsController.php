@@ -697,7 +697,7 @@ class ServicegroupsController extends AppController {
         $servicegroup = $ServicegroupsTable->getServicegroupById($id);
 
         $User = new User($this->getUser());
-        $UserTime = UserTime::fromUser($User);
+        $UserTime = new UserTime($User->getTimezone(), $User->getDateformat());
 
         $serviceIds = $ServicegroupsTable->getServiceIdsByServicegroupId($id);
 
@@ -759,7 +759,11 @@ class ServicegroupsController extends AppController {
 
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields
-            ->currentState();
+            ->currentState()
+            ->lastHardStateChange()
+            ->lastStateChange()
+            ->lastCheck()
+            ->nextCheck();
         $hoststatusCache = $HoststatusTable->byUuid(
             array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields

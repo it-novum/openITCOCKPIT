@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use Cake\Http\ServerRequest;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 
 class ServiceControllerRequest {
@@ -39,7 +40,7 @@ class ServiceControllerRequest {
      */
     private $ServiceFilter;
 
-    public function __construct(\CakeRequest $request, ServiceFilter $ServiceFilter) {
+    public function __construct(ServerRequest $request, ServiceFilter $ServiceFilter) {
         $this->request = $request;
         $this->ServiceFilter = $ServiceFilter;
     }

@@ -47,18 +47,19 @@
 <div class="row padding-bottom-10">
     <div class="col col-xs-11">
         <select
-                class="form-control"
-                chosen="hostgroups"
-                ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
-                callback="loadHostgroupsCallback"
-                ng-model="post.Hostgroup.id">
+            class="form-control"
+            chosen="hostgroups"
+            ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+            callback="loadHostgroupsCallback"
+            ng-model="post.Hostgroup.id">
         </select>
     </div>
     <div class="col col-xs-1">
         <div class="btn-group">
-            <?php if ($this->Acl->hasPermission('edit')): ?>
+            <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
                 <a ui-sref="HostgroupsEdit({id:post.Hostgroup.id})"
-                   class="btn btn-default btn-md" ng-show="hostgroup.Hostgroup.allowEdit">&nbsp;<i class="fa fa-md fa-cog"></i>
+                   class="btn btn-default btn-md" ng-show="hostgroup.Hostgroup.allowEdit">&nbsp;<i
+                        class="fa fa-md fa-cog"></i>
                 </a>
             <?php else: ?>
                 <a href="javascript:void(0);" class="btn btn-default btn-md">&nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -69,7 +70,7 @@
                 <span class="caret"></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-right" ng-if="hostgroup.Hosts.length > 0">
-                <?php if ($this->Acl->hasPermission('edit')): ?>
+                <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
                     <li ng-show="hostgroup.Hostgroup.allowEdit">
                         <a ui-sref="HostgroupsEdit({id:post.Hostgroup.id})">
                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
@@ -136,7 +137,7 @@
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <?php if ($this->Acl->hasPermission('add')): ?>
+                        <?php if ($this->Acl->hasPermission('add', 'hostgroups')): ?>
                             <a ui-sref="HostgroupsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
@@ -148,11 +149,12 @@
                         {{(hostgroup.Hostgroup.container.name) && hostgroup.Hostgroup.container.name ||
                         '<?php echo __('Host Groups (0)'); ?>'}}
                     </h2>
-                    <?php if ($this->Acl->hasPermission('extended')): ?>
+                    <?php if ($this->Acl->hasPermission('extended', 'hostgroups')): ?>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                             <li>
                                 <a ui-sref="HostgroupsIndex"><i class="fa fa-minus-square"></i>
-                                    <span class="hidden-mobile hidden-tablet"><?php echo __('Default overview'); ?></span></a>
+                                    <span
+                                        class="hidden-mobile hidden-tablet"><?php echo __('Default overview'); ?></span></a>
                             </li>
                         </ul>
                         <div class="widget-toolbar cursor-default hidden-xs hidden-sm hidden-md" ng-if="hostgroup">
@@ -284,14 +286,18 @@
                             </td>
 
                             <td>
-                                <span ng-if="host.Hoststatus.activeChecksEnabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.lastCheck }}</span>
-                                <span ng-if="host.Hoststatus.activeChecksEnabled === false || host.Host.is_satellite_host === true">
+                                <span
+                                    ng-if="host.Hoststatus.activeChecksEnabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.lastCheck }}</span>
+                                <span
+                                    ng-if="host.Hoststatus.activeChecksEnabled === false || host.Host.is_satellite_host === true">
                                     <?php echo __('n/a'); ?>
                                 </span>
                             </td>
                             <td>
-                                <span ng-if="host.Hoststatus.activeChecksEnabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.nextCheck }}</span>
-                                <span ng-if="host.Hoststatus.activeChecksEnabled === false || host.Host.is_satellite_host === true">
+                                <span
+                                    ng-if="host.Hoststatus.activeChecksEnabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.nextCheck }}</span>
+                                <span
+                                    ng-if="host.Hoststatus.activeChecksEnabled === false || host.Host.is_satellite_host === true">
                                                 <?php echo __('n/a'); ?>
                                             </span>
                             </td>
@@ -354,7 +360,7 @@
                                     <?php endif; ?>
                                     <a href="javascript:void(0);" data-toggle="dropdown"
                                        class="btn btn-default dropdown-toggle"><span
-                                                class="caret"></span></a>
+                                            class="caret"></span></a>
                                     <ul class="dropdown-menu pull-right"
                                         id="menuHack-{{hostgroup.Hostgroup.uuid}}-{{host.Host.uuid}}">
                                         <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
@@ -382,12 +388,18 @@
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                             <li ng-if="service.Service.allow_edit">
-                                                <?php echo $this->AdditionalLinks->renderAsListItems(
+                                                <?php
+                                                /**
+                                                 * @todo AdditionalLinks
+                                                 */
+
+                                                /*
+                                                    echo $this->AdditionalLinks->renderAsListItems(
                                                     $additionalLinksList,
                                                     '{{host.Host.id}}',
                                                     [],
                                                     true
-                                                ); ?>
+                                                );*/ ?>
                                             </li>
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
@@ -406,11 +418,11 @@
                         <tr ng-show="showServices[host.Host.id]" ng-repeat-end="">
                             <td colspan="12">
                                 <host-service-list
-                                        host-id="host.Host.id"
-                                        show-services="showServices"
-                                        timezone="timezone"
-                                        host="host"
-                                        ng-if="timezone">
+                                    host-id="host.Host.id"
+                                    show-services="showServices"
+                                    timezone="timezone"
+                                    host="host"
+                                    ng-if="timezone">
                                 </host-service-list>
                             </td>
                         </tr>
