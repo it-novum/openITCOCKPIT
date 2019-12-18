@@ -165,10 +165,10 @@ class HostgroupsController extends AppController {
 
             /** @var $HostgroupsTable HostgroupsTable */
             $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-            $this->request->data['Hostgroup']['uuid'] = UUID::v4();
-            $this->request->data['Hostgroup']['container']['containertype_id'] = CT_HOSTGROUP;
             $hostgroup = $HostgroupsTable->newEmptyEntity();
             $hostgroup = $HostgroupsTable->patchEntity($hostgroup, $this->request->getData('Hostgroup'));
+            $hostgroup->set('uuid', UUID::v4());
+            $hostgroup->get('container')->set('containertype_id', CT_HOSTGROUP);
 
             $HostgroupsTable->save($hostgroup);
             if ($hostgroup->hasErrors()) {
@@ -179,7 +179,8 @@ class HostgroupsController extends AppController {
             } else {
                 //No errors
 
-                $extDataForChangelog = $HostgroupsTable->resolveDataForChangelog($this->request->data);
+                $requestData = $this->request->getData();
+                $extDataForChangelog = $HostgroupsTable->resolveDataForChangelog($requestData);
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -191,7 +192,7 @@ class HostgroupsController extends AppController {
                     $hostgroup->get('container')->get('parent_id'),
                     $User->getId(),
                     $hostgroup->get('container')->get('name'),
-                    array_merge($this->request->data, $extDataForChangelog)
+                    array_merge($requestData, $extDataForChangelog)
                 );
                 if ($changelog_data) {
                     /** @var Changelog $changelogEntry */
@@ -261,6 +262,7 @@ class HostgroupsController extends AppController {
             } else {
                 //No errors
 
+                $requestData = $this->request->getData();
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -272,7 +274,7 @@ class HostgroupsController extends AppController {
                     $hostgroupEntity->get('container')->get('parent_id'),
                     $User->getId(),
                     $hostgroupEntity->get('container')->get('name'),
-                    array_merge($HostgroupsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($HostgroupsTable->resolveDataForChangelog($requestData), $requestData),
                     array_merge($HostgroupsTable->resolveDataForChangelog($hostgroupForChangelog), $hostgroupForChangelog)
                 );
                 if ($changelog_data) {
