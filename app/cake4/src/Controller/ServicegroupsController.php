@@ -51,6 +51,7 @@ use itnovum\openITCOCKPIT\Core\ServicegroupConditions;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
@@ -156,10 +157,11 @@ class ServicegroupsController extends AppController {
 
             /** @var $ServicegroupsTable ServicegroupsTable */
             $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
-            $this->request->data['Servicegroup']['uuid'] = UUID::v4();
-            $this->request->data['Servicegroup']['container']['containertype_id'] = CT_SERVICEGROUP;
+
             $servicegroup = $ServicegroupsTable->newEmptyEntity();
             $servicegroup = $ServicegroupsTable->patchEntity($servicegroup, $this->request->getData('Servicegroup'));
+            $servicegroup->set('uuid', UUID::v4());
+            $servicegroup->get('container')->set('containertype_id', CT_SERVICEGROUP);
 
             $ServicegroupsTable->save($servicegroup);
             if ($servicegroup->hasErrors()) {
@@ -170,7 +172,8 @@ class ServicegroupsController extends AppController {
             } else {
                 //No errors
 
-                $extDataForChangelog = $ServicegroupsTable->resolveDataForChangelog($this->request->data);
+                $requestData = $this->request->getData();
+                $extDataForChangelog = $ServicegroupsTable->resolveDataForChangelog($requestData);
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -182,7 +185,7 @@ class ServicegroupsController extends AppController {
                     $servicegroup->get('container')->get('parent_id'),
                     $User->getId(),
                     $servicegroup->get('container')->get('name'),
-                    array_merge($this->request->data, $extDataForChangelog)
+                    array_merge($requestData, $extDataForChangelog)
                 );
 
                 if ($changelog_data) {
@@ -253,6 +256,7 @@ class ServicegroupsController extends AppController {
             } else {
                 //No errors
 
+                $requestData = $this->request->getData();
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -264,7 +268,7 @@ class ServicegroupsController extends AppController {
                     $servicegroupEntity->get('container')->get('parent_id'),
                     $User->getId(),
                     $servicegroupEntity->get('container')->get('name'),
-                    array_merge($ServicegroupsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($ServicegroupsTable->resolveDataForChangelog($requestData), $requestData),
                     array_merge($ServicegroupsTable->resolveDataForChangelog($servicegroupForChangelog), $servicegroupForChangelog)
                 );
                 if ($changelog_data) {
