@@ -33,7 +33,9 @@ use App\Model\Table\SystemsettingsTable;
 use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -84,8 +86,8 @@ class ExportsController extends AppController {
             foreach ($ExportsTable->getCurrentExportState() as $taskEntity) {
                 /** @var Export $taskEntity */
                 $task = $taskEntity->toArray();
-                $task['created'] = $UserTime->customFormat('H:i:s', $taskEntity->get('created'));
-                $task['modified'] = $UserTime->customFormat('H:i:s', $taskEntity->get('modified'));
+                $task['created'] = $UserTime->customFormat('H:i:s', $taskEntity->get('created')->getTimestamp());
+                $task['modified'] = $UserTime->customFormat('H:i:s', $taskEntity->get('modified')->getTimestamp());
                 $tasks[] = $task;
             }
         }
@@ -121,8 +123,8 @@ class ExportsController extends AppController {
         foreach ($ExportsTable->getCurrentExportState() as $taskEntity) {
             /** @var Export $taskEntity */
             $task = $taskEntity->toArray();
-            $task['created'] = $UserTime->customFormat('H:i:s', $taskEntity->get('created'));
-            $task['modified'] = $UserTime->customFormat('H:i:s', $taskEntity->get('modified'));
+            $task['created'] = $UserTime->customFormat('H:i:s', $taskEntity->get('created')->getTimestamp());
+            $task['modified'] = $UserTime->customFormat('H:i:s', $taskEntity->get('modified')->getTimestamp());
             $tasks[] = $task;
 
             if ($task['task'] == 'export_finished' && $task['finished'] === 1) {
