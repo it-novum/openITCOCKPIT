@@ -281,3 +281,43 @@ https://www.color-hex.com/color/727b84
 .bg-widget-black-gradient {
     background-image: linear-gradient(-250deg, #000, #4c4c4c);
 }
+
+/* ANTHRACITE THEME */
+.widget-anthracite > .card-header{
+    background-image: linear-gradient(-250deg, #383e42, #73777a);
+    color:#fff !important;
+}
+
+.widget-anthracite > .card-header > a,
+.widget-anthracite > .card-header > div > button{
+    color:#fff !important;
+}
+
+.widget-anthracite > .card-header > a:hover,
+.widget-anthracite > .card-header > div > button:hover{
+    color:#c3c3c3 !important;
+}
+
+.bg-widget-anthracite-gradient {
+    background-image: linear-gradient(-250deg, #383e42, #73777a);
+}
+
+/* COLORBOMB THEME */
+.widget-colorbomb > .card-header{
+    background-image: linear-gradient(9deg,  #833ab4, #fd1d1d, #fcb045);
+    color:#fff !important;
+}
+
+.widget-colorbomb > .card-header > a,
+.widget-colorbomb > .card-header > div > button{
+    color:#fff !important;
+}
+
+.widget-colorbomb > .card-header > a:hover,
+.widget-colorbomb > .card-header > div > button:hover{
+    color:#c3c3c3 !important;
+}
+
+.bg-widget-colorbomb-gradient {
+    background-image: linear-gradient(9deg, #833ab4, #fd1d1d, #fcb045);
+}

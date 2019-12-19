@@ -197,6 +197,18 @@
                                                    ng-click="widget.color='widget-black'"
                                                    style="margin:1px;">
                                                 </a>
+                                                <a href="#"
+                                                   class="btn d-inline-block bg-widget-anthracite-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
+                                                   data-panel-setstyle="bg-widget-anthracite-gradient"
+                                                   ng-click="widget.color='widget-anthracite'"
+                                                   style="margin:1px;">
+                                                </a>
+                                                <a href="#"
+                                                   class="btn d-inline-block bg-widget-colorbomb-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
+                                                   data-panel-setstyle="bg-widget-colorbomb-gradient"
+                                                   ng-click="widget.color='widget-colorbomb'"
+                                                   style="margin:1px;">
+                                                </a>
                                             </div>
                                         </div>
                                         <a class="btn btn-sm btn-icon  waves-effect waves-themed"
