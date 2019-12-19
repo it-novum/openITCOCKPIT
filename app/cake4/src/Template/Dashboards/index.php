@@ -156,73 +156,46 @@
                                             <div class="dropdown-menu dropdown-menu-animated d-flex flex-wrap"
                                                  style="min-width: 9.5rem; width: 9.5rem; padding: 0.5rem">
                                                 <a href="#"
-                                                   class="btn d-inline-block jarviswidget-color-greenDark bg-success-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
-                                                   data-widget-setstyle="jarviswidget-color-greenDark"
-                                                   data-toggle="tooltip"
-                                                   data-placement="top"
-                                                   data-original-title="<?php echo __('Dark Green'); ?>"
-                                                   ng-click="widget.color='jarviswidget-color-greenDark'"
+                                                   class="btn d-inline-block bg-primary-600 bg-widget-statusGreen-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
+                                                   data-panel-setstyle="bg-primary-600 bg-widget-statusGreen-gradient"
+                                                   ng-click="widget.color='widget-statusGreen'"
                                                    style="margin:1px;">
                                                 </a>
                                                 <a href="#"
-                                                   class="btn d-inline-block bg-primary-500 bg-info-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
-                                                   data-panel-setstyle="bg-primary-500 bg-info-gradient"
+                                                   class="btn d-inline-block bg-widget-statusYellow-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
+                                                   data-panel-setstyle="bg-widget-statusYellow-gradient"
+                                                   ng-click="widget.color='widget-statusYellow'"
                                                    style="margin:1px;">
                                                 </a>
                                                 <a href="#"
-                                                   class="btn d-inline-block bg-primary-600 bg-primary-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
-                                                   data-panel-setstyle="bg-primary-600 bg-primary-gradient"
+                                                   class="btn d-inline-block bg-widget-statusRed-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
+                                                   data-panel-setstyle="bg-widget-statusRed-gradient"
+                                                   ng-click="widget.color='widget-statusRed'"
                                                    style="margin:1px;">
                                                 </a>
                                                 <a href="#"
-                                                   class="btn d-inline-block bg-info-600 bg-primray-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
-                                                   data-panel-setstyle="bg-info-600 bg-primray-gradient"
+                                                   class="btn d-inline-block bg-widget-statusGrey-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
+                                                   data-panel-setstyle="bg-widget-statusGrey-gradient"
+                                                   ng-click="widget.color='widget-statusGrey'"
                                                    style="margin:1px;">
                                                 </a>
                                                 <a href="#"
-                                                   class="btn d-inline-block bg-info-600 bg-info-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
-                                                   data-panel-setstyle="bg-info-600 bg-info-gradient"
+                                                   class="btn d-inline-block bg-widget-default width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
+                                                   data-panel-setstyle="bg-widget-default"
+                                                   ng-click="widget.color='widget-default'"
                                                    style="margin:1px;">
                                                 </a>
                                                 <a href="#"
-                                                   class="btn d-inline-block bg-info-700 bg-success-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
-                                                   data-panel-setstyle="bg-info-700 bg-success-gradient"
+                                                   class="btn d-inline-block bg-widget-white width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
+                                                   data-panel-setstyle="bg-widget-white"
+                                                   ng-click="widget.color='widget-white'"
                                                    style="margin:1px;">
                                                 </a>
                                                 <a href="#"
-                                                   class="btn d-inline-block bg-success-900 bg-info-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
-                                                   data-panel-setstyle="bg-success-900 bg-info-gradient"
+                                                   class="btn d-inline-block bg-widget-black-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
+                                                   data-panel-setstyle="bg-widget-black-gradient"
+                                                   ng-click="widget.color='widget-black'"
                                                    style="margin:1px;">
-
-                                                </a>
-                                                <a href="#"
-                                                   class="btn d-inline-block bg-success-700 bg-primary-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
-                                                   data-panel-setstyle="bg-success-700 bg-primary-gradient"
-                                                   style="margin:1px;">
-
-                                                </a>
-                                                <a href="#"
-                                                   class="btn d-inline-block bg-success-600 bg-success-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
-                                                   data-panel-setstyle="bg-success-600 bg-success-gradient"
-                                                   style="margin:1px;">
-
-                                                </a>
-                                                <a href="#"
-                                                   class="btn d-inline-block bg-danger-900 bg-info-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
-                                                   data-panel-setstyle="bg-danger-900 bg-info-gradient"
-                                                   style="margin:1px;">
-
-                                                </a>
-                                                <a href="#"
-                                                   class="btn d-inline-block bg-fusion-400 bg-fusion-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
-                                                   data-panel-setstyle="bg-fusion-400 bg-fusion-gradient"
-                                                   style="margin:1px;">
-
-                                                </a>
-                                                <a href="#"
-                                                   class="btn d-inline-block bg-faded width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
-                                                   data-panel-setstyle="bg-faded" style="margin:1px;">
-
                                                 </a>
                                             </div>
                                         </div>

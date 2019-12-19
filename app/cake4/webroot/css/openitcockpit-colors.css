@@ -6,6 +6,7 @@ $color-success:						#00C851;
 $color-info:						#33b5e5;
 $color-warning:						#ffbb33;
 $color-danger:						#CC0000;
+SECONDARY:                          #727b84
  */
 
 .ok, .up {
@@ -143,19 +144,140 @@ $color-danger:						#CC0000;
 
 
 
+/* dashboard widget themes */
 
-/* greenDark theme */
-.jarviswidget-color-greenDark > card-header {
-    background: #496949;
-    color: #FFF;
+/* STATUS RED GRADIENT THEME
+https://www.color-hex.com/color/cc0000
+*/
+.widget-statusRed > .card-header{
+    background-image: linear-gradient(-250deg, #CC0000, #db4c4c);
+    color:#fff !important;
 }
-.jarviswidget-color-greenDark > card-header > .card-title,
-.jarviswidget-color-greenDark .nav-tabs li:not(.active) a {
-    color: #fff !important;
+
+.widget-statusRed > .card-header > a,
+.widget-statusRed > .card-header > div > button{
+    color:#fff !important;
 }
-.jarviswidget-color-greenDark .nav-tabs li a:hover {
-    color: #333 !important;
+
+.widget-statusRed > .card-header > a:hover,
+.widget-statusRed > .card-header > div > button:hover{
+    color:#c3c3c3 !important;
 }
-.jarviswidget-color-greenDark > header {
-    border-color: #638167 !important;
+
+.bg-widget-statusRed-gradient {
+    background-image: linear-gradient(-250deg, #CC0000, #db4c4c);
+}
+
+/* STATUS GREEN GRADIENT THEME
+https://www.color-hex.com/color/00c851
+*/
+.widget-statusGreen > .card-header{
+    background-image: linear-gradient(-250deg, #00C851, #4cd885);
+    color:#fff !important;
+}
+
+.widget-statusGreen > .card-header > a,
+.widget-statusGreen > .card-header > div > button{
+    color:#fff !important;
+}
+
+.widget-statusGreen > .card-header > a:hover,
+.widget-statusGreen > .card-header > div > button:hover{
+    color:#c3c3c3 !important;
+}
+
+.bg-widget-statusGreen-gradient {
+    background-image: linear-gradient(-250deg, #00C851, #4cd885);
+}
+
+/* STATUS YELLOW GRADIENT THEME
+https://www.color-hex.com/color/ffbb33
+*/
+.widget-statusYellow > .card-header{
+    background-image: linear-gradient(-250deg, #ffbb33, #ffcf70);
+    color:#fff !important;
+}
+
+.widget-statusYellow > .card-header > a,
+.widget-statusYellow > .card-header > div > button{
+    color:#fff !important;
+}
+
+.widget-statusYellow > .card-header > a:hover,
+.widget-statusYellow > .card-header > div > button:hover{
+    color:#c3c3c3 !important;
+}
+
+.bg-widget-statusYellow-gradient {
+    background-image: linear-gradient(-250deg, #ffbb33, #ffcf70);
+}
+
+/* STATUS GREY GRADIENT THEME
+https://www.color-hex.com/color/727b84
+*/
+.widget-statusGrey > .card-header{
+    background-image: linear-gradient(-250deg, #727b84, #9ca2a8);
+    color:#fff !important;
+}
+
+.widget-statusGrey > .card-header > a,
+.widget-statusGrey > .card-header > div > button{
+    color:#fff !important;
+}
+
+.widget-statusGrey > .card-header > a:hover,
+.widget-statusGrey > .card-header > div > button:hover{
+    color:#c3c3c3 !important;
+}
+
+.bg-widget-statusGrey-gradient {
+    background-image: linear-gradient(-250deg, #727b84, #9ca2a8);
+}
+
+/* DEFAULT THEME */
+.widget-default > .card-header{
+    background: #f7f9fa;
+}
+
+.widget-default > .card-header > a:hover,
+.widget-default > .card-header > div > button:hover{
+    color:#c3c3c3 !important;
+}
+
+.bg-widget-default {
+    background: #f7f9fa;
+}
+
+/* WHITE THEME */
+.widget-white > .card-header{
+    background: #fff;
+}
+
+.widget-white > .card-header > a:hover,
+.widget-white > .card-header > div > button:hover{
+    color:#c3c3c3 !important;
+}
+
+.bg-widget-white {
+    background: #fff;
+}
+
+/* BLACK THEME */
+.widget-black > .card-header{
+    background-image: linear-gradient(-250deg, #000, #4c4c4c);
+    color:#fff !important;
+}
+
+.widget-black > .card-header > a,
+.widget-black > .card-header > div > button{
+    color:#fff !important;
+}
+
+.widget-black > .card-header > a:hover,
+.widget-black > .card-header > div > button:hover{
+    color:#c3c3c3 !important;
+}
+
+.bg-widget-black-gradient {
+    background-image: linear-gradient(-250deg, #000, #4c4c4c);
 }
