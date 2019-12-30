@@ -370,7 +370,7 @@
                             <?php echo __('Set tab rotation interval'); ?>
                         </label>
                         <div class="slidecontainer">
-                            <input type="range" step="10" min="0" max="900" class="slider"
+                            <input type="range" step="10" min="0" max="900" class="slider" style="width: 100%"
                                    ng-model="data.viewTabRotateInterval" ng-mouseup="saveTabRotateInterval()">
                             <div>
                                 <div class="help-block text-muted">{{ intervalText }}</div>

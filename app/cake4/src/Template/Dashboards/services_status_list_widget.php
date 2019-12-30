@@ -24,7 +24,7 @@
                 </label>
 
                 <div class="slidecontainer">
-                    <input type="range" step="5000" min="5000" max="300000" class="slider"
+                    <input type="range" step="5000" min="5000" max="300000" class="slider" style="width: 100%"
                            ng-model="scroll_interval" ng-model-options="{debounce: 500}">
                 </div>
             </div>
