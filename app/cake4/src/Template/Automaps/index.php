@@ -31,11 +31,11 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="AutomapsIndex">
-            <i class="fa fa-map-marker"></i> <?php echo __('Auto Maps'); ?>
+            <i class="fa fa-magic"></i> <?php echo __('Auto Maps'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fa fa-magic"></i> <?php echo __('Overview'); ?>
+        <i class="fa fa-list"></i> <?php echo __('Overview'); ?>
     </li>
 </ol>
 <massdelete></massdelete>

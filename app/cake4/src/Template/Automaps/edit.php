@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="AutomapsIndex">
-            <i class="fa fa-map-marker"></i> <?php echo __('Auto Maps'); ?>
+            <i class="fa fa-magic"></i> <?php echo __('Auto Maps'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -46,11 +46,11 @@
             <div class="panel-hdr">
                 <h2>
                     <?php echo __('Auto Maps'); ?>
-                    <span class="fw-300"><i><?php echo __('Edit auto map:'); ?></i></span>
+                    <span class="fw-300"><i><?php echo __('Edit auto map: '); ?></i></span>
                     {{post.Automap.name}}
                 </h2>
                 <div class="panel-toolbar">
-                    <?php if ($this->Acl->hasPermission('index', 'automap')): ?>
+                    <?php if ($this->Acl->hasPermission('index', 'automaps')): ?>
                         <a back-button fallback-state='AutomapsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
                         </a>
