@@ -46,9 +46,9 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Auto Maps'); ?>
-                    <span class="fw-300"><i><?php echo __('View auto map: '); ?></i></span>
-                    {{ automap.name }}
+                    <?php echo __('View auto map: '); ?>
+                    <span class="fw-300"><i>{{ automap.name }}</i></span>
+
                 </h2>
                 <div class="panel-toolbar">
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">

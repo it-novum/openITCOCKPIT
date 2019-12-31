@@ -45,9 +45,9 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Auto Maps'); ?>
-                    <span class="fw-300"><i><?php echo __('Edit auto map: '); ?></i></span>
-                    {{post.Automap.name}}
+                    <?php echo __('Edit auto map: '); ?>
+                    <span class="fw-300"><i>{{post.Automap.name}}</i></span>
+
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'automaps')): ?>
