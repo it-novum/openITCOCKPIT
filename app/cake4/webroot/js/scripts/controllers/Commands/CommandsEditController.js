@@ -154,40 +154,57 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.createJQConsole = function(){
-            if(SudoService.hasError()){
-                $scope.hasWebSocketError = true;
-                $('#console').block({
-                    fadeIn: 1000,
-                    message: '<i class="fa fa-minus-circle fa-5x"></i>',
-                    theme: false
-                });
-                $('.blockElement').css({
-                    'background-color': '',
-                    'border': 'none',
-                    'color': '#FFFFFF'
-                });
-            }
-
             $scope.jqConsole = $('#console').jqconsole('', 'nagios$ ');
-            $http.get('/commands/getConsoleWelcome/.json', {
+
+            $http.get('/commands/terminal.json', {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
-                $scope.jqConsole.Write(result.data.welcomeMessage);
-            });
-
-            SudoService.onResponse(function(response){
-                if(typeof response.data !== 'undefined'){
-                    var payload = JSON.parse(response.data);
-                    $scope.jqConsole.Write(payload.payload, 'jqconsole-output');
+                if(result.data.gearmanReachable !== true){
+                    $('#console').block({
+                        fadeIn: 1000,
+                        message: '<i class="fa fa-minus-circle fa-5x"></i>',
+                        theme: false
+                    });
+                    $('.blockElement').css({
+                        'background-color': '',
+                        'border': 'none',
+                        'color': '#FFFFFF'
+                    });
+                    $scope.hasWebSocketError = true;
+                }else{
+                    $http.get('/commands/getConsoleWelcome/.json', {
+                        params: {
+                            'angular': true
+                        }
+                    }).then(function(result){
+                        $scope.jqConsole.Write(result.data.welcomeMessage);
+                    });
                 }
             });
 
             var newLineInPromt = function(){
                 $scope.jqConsole.Prompt(true, function(input){
-                    SudoService.send(SudoService.toJson('execute_nagios_command', input));
-                    newLineInPromt();
+
+                    $http.post("/commands/terminal.json?angular=true",
+                        {
+                            command: input
+                        }
+                    ).then(function(result){
+                        for(var index in result.data.result.stdout){
+                            $scope.jqConsole.Write(result.data.result.stdout[index], 'jqconsole-output');
+                        }
+
+                        for(var errIndex in result.data.result.stderr){
+                            $scope.jqConsole.Write(result.data.result.stderr[errIndex], 'jqconsole-output-error');
+                        }
+
+                        $scope.jqConsole.Write("\n", 'jqconsole-output');
+                        newLineInPromt();
+                    }, function errorCallback(result){
+                        NotyService.genericError();
+                    });
                 });
             };
             newLineInPromt();

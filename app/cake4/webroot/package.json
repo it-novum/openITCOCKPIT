@@ -38,7 +38,9 @@
         "bootstrap4c-chosen": "^1.1.1",
         "jquery-blockui": "^2.7.0",
         "highlight-within-textarea": "^2.0.5",
-        "bootstrap-slider": "^10.6.2"
+        "bootstrap-slider": "^10.6.2",
+        "underscore": "^1.9.1"
+
     },
     "devDependencies": {},
     "scripts": {

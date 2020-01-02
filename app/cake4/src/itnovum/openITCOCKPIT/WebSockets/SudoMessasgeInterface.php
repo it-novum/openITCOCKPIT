@@ -95,6 +95,13 @@ class SudoMessasgeInterface implements MessageComponentInterface {
     }
 
     /**
+     * Gets called every 0.01 sec
+     */
+    public function eventLoop() {
+
+    }
+
+    /**
      * @param ConnectionInterface $connection
      */
     public function onOpen(ConnectionInterface $connection) {

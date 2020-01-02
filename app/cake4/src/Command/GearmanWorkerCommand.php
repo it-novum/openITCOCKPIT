@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\itnovum\openITCOCKPIT\Database\Backup;
+use App\itnovum\openITCOCKPIT\Monitoring\Naemon\ExternalCommands;
 use App\Model\Table\ExportsTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Console\Arguments;
@@ -72,6 +73,11 @@ class GearmanWorkerCommand extends Command {
     private $jobIdelCounter = 0;
 
     /**
+     * @var ExternalCommands
+     */
+    private $ExternalCommands;
+
+    /**
      * Hook method for defining this command's option parser.
      *
      * @see https://book.cakephp.org/3.0/en/console-and-shells/commands.html#defining-arguments-and-options
@@ -98,6 +104,10 @@ class GearmanWorkerCommand extends Command {
         $systemsettings = $SystemsettingsTable->findAsArray();
 
         Configure::load('gearman');
+
+        Configure::load('NagiosModule.config');
+        $naemonExternalCommandsFile = Configure::read('NagiosModule.PREFIX') . Configure::read('NagiosModule.NAGIOS_CMD');
+        $this->ExternalCommands = new ExternalCommands($naemonExternalCommandsFile);
 
         $this->daemonizing($io);
     }
@@ -489,32 +499,32 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'createHostDowntime':
-                $this->Externalcommand->setHostDowntime($payload);
+                $this->ExternalCommands->setHostDowntime($payload);
                 break;
 
             case 'createHostgroupDowntime':
-                $this->Externalcommand->setHostgroupDowntime($payload);
+                $this->ExternalCommands->setHostgroupDowntime($payload);
                 break;
 
             case 'createServiceDowntime':
-                $this->Externalcommand->setServiceDowntime($payload);
+                $this->ExternalCommands->setServiceDowntime($payload);
                 break;
 
             case 'createContainerDowntime':
-                $this->Externalcommand->setContainerDowntime($payload);
+                $this->ExternalCommands->setContainerDowntime($payload);
                 break;
 
             case 'deleteHostDowntime':
-                $this->Externalcommand->deleteHostDowntime($payload['internal_downtime_id']);
+                $this->ExternalCommands->deleteHostDowntime($payload['internal_downtime_id']);
                 break;
 
             case 'deleteServiceDowntime':
-                $this->Externalcommand->deleteServiceDowntime($payload['internal_downtime_id']);
+                $this->ExternalCommands->deleteServiceDowntime($payload['internal_downtime_id']);
                 break;
 
             //Called by NagiosModule/CmdController/submit
             case 'cmd_external_command':
-                $this->Externalcommand->runCmdCommand($payload);
+                $this->ExternalCommands->runCmdCommand($payload);
                 break;
 
             case 'export_start_export':
@@ -832,13 +842,114 @@ class GearmanWorkerCommand extends Command {
                 $return = true;
                 */
                 break;
+
+            case 'RunNagiosPlugin':
+                if (!isset($payload['command'])) {
+                    $return = '';
+                    break;
+                }
+
+                $return = $this->execNagiosPlugin($payload['command']);
+
+                break;
         }
 
         return serialize($return);
     }
 
+    public function execNagiosPlugin($command) {
+        Configure::load('nagios');
+        $config = Configure::read('nagios');
+
+        $folder = new Folder($config['basepath'] . $config['libexec']);
+        $plugins = $folder->find();
+        $plugins[] = 'ls';
+        $plugins[] = 'ls -la';
+        if (strpos($command, ';') || strpos($command, '&&') || strpos($command, '$') || strpos($command, '|') || strpos($command, '`')) {
+            return [
+                'stdout' => [],
+                'stderr' => [
+                    'Error: This command contain illegal characters, to run this command is only allowed from real CLI!'
+                ]
+            ];
+        }
+        if (strpos($command, './') === 0) {
+            //Parse ./ away
+            $_command = explode('./', $command, 2);
+            //remove spaces to get raw command name
+            $_command = explode(' ', $_command[1], 2);
+            if (!isset($_command[0]) || !in_array($_command[0], $plugins)) {
+                return [
+                    'stdout' => [],
+                    'stderr' => [
+                        'ERROR: Forbidden command!'
+                    ]
+                ];
+            }
+        } else {
+            $_command = explode(' ', $command, 2);
+            if (!isset($_command[0]) || !in_array($_command[0], $plugins)) {
+                return [
+                    'stdout' => [],
+                    'stderr' => [
+                        'ERROR: Forbidden command!'
+                    ]
+                ];
+            }
+        }
+
+        $options = [
+            'cwd' => $config['basepath'] . $config['libexec'],
+            'env' => [
+                'LANG'     => 'C',
+                'LANGUAGE' => 'en_US.UTF-8',
+                'LC_ALL'   => 'C',
+                'PATH'     => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+                'no_proxy' => 'localhost,127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16',
+            ],
+        ];
+
+        $descriptorspec = [
+            0 => ["pipe", "r"],  // STDIN pipe where the child process is reading
+            1 => ["pipe", "w"],  // STDOUT pipe where the child process is writing to
+            2 => ["pipe", "w"],  // STDERR child process stderr output pipe
+        ];
+
+        $command = escapeshellcmd("su " . $config['user'] . " -c '" . $command . "'");
+
+        $process = proc_open($command, $descriptorspec, $pipes, $options['cwd'], $options['env']);
+
+        $stdout = [];
+        $stderr = [];
+        do {
+            $line = fgets($pipes[1], 1024);
+            if ($line !== false) {
+                $stdout[] = $line;
+            }
+
+            $error = fgets($pipes[2], 1024);
+            if ($error !== false) {
+                $stderr[] = $error;
+            }
+
+            $status = proc_get_status($process);
+        } while ($status['running'] === true || $line !== false || $error !== false);
+
+        fclose($pipes[0]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        // close all pips before proc_close gets called to avoid deadlocks
+        proc_close($process);
+
+        return [
+            'stdout' => $stdout,
+            'stderr' => $stderr
+        ];
+    }
+
     /**
      * @param int $createBackup
+     * @throws \Exception
      */
     public function launchExport($createBackup = 1) {
         $NagiosConfigGenerator = new NagiosConfigGenerator();
