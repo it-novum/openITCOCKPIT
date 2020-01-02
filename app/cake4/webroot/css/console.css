@@ -44,3 +44,7 @@
 .jqconsole-output {
     color: black;
 }
+/* The text color of the error output. */
+.jqconsole-output-error {
+    color: red;
+}
