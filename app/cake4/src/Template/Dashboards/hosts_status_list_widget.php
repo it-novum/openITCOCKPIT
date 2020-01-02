@@ -32,109 +32,95 @@
 
         <div class="col-lg-8">
             <div class="row">
-                <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               ng-true-value="1"
-                               ng-false-value="0"
-                               id="up"
-                               ng-model="filter.Hoststatus.current_state.up"
-                               ng-model-options="{debounce: 500}">
-                        <label class="custom-control-label custom-control-label-up" for="up">
-                            <?php echo __('Up'); ?>
-                        </label>
-                    </div>
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="up"
+                           ng-model="filter.Hoststatus.current_state.up"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label custom-control-label-up" for="up">
+                        <?php echo __('Up'); ?>
+                    </label>
                 </div>
 
-                <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               ng-true-value="1"
-                               ng-false-value="0"
-                               id="isDown"
-                               ng-model="filter.Hoststatus.current_state.down"
-                               ng-model-options="{debounce: 500}">
-                        <label class="custom-control-label custom-control-label-down" for="isDown">
-                            <?php echo __('Down'); ?>
-                        </label>
-                    </div>
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="isDown"
+                           ng-model="filter.Hoststatus.current_state.down"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label custom-control-label-down" for="isDown">
+                        <?php echo __('Down'); ?>
+                    </label>
                 </div>
 
-                <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               ng-true-value="1"
-                               ng-false-value="0"
-                               id="unreachable"
-                               ng-model="filter.Hoststatus.current_state.unreachable"
-                               ng-model-options="{debounce: 500}">
-                        <label class="custom-control-label custom-control-label-unreachable" for="unreachable">
-                            <?php echo __('Unreachable'); ?>
-                        </label>
-                    </div>
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="unreachable"
+                           ng-model="filter.Hoststatus.current_state.unreachable"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label custom-control-label-unreachable" for="unreachable">
+                        <?php echo __('Unreachable'); ?>
+                    </label>
                 </div>
 
-                <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               ng-true-value="1"
-                               ng-false-value="0"
-                               id="isAck"
-                               ng-model="filter.Hoststatus.acknowledged"
-                               ng-model-options="{debounce: 500}">
-                        <label class="custom-control-label" for="isAck">
-                            <?php echo __('Acknowledged'); ?>
-                        </label>
-                    </div>
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="isAck"
+                           ng-model="filter.Hoststatus.acknowledged"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label" for="isAck">
+                        <?php echo __('Acknowledged'); ?>
+                    </label>
                 </div>
 
-                <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               ng-true-value="1"
-                               ng-false-value="0"
-                               id="isDown"
-                               ng-model="filter.Hoststatus.not_acknowledged"
-                               ng-model-options="{debounce: 500}">
-                        <label class="custom-control-label" for="isDown">
-                            <?php echo __('Not Acknowledged'); ?>
-                        </label>
-                    </div>
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="isDown"
+                           ng-model="filter.Hoststatus.not_acknowledged"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label" for="isDown">
+                        <?php echo __('Not Acknowledged'); ?>
+                    </label>
                 </div>
 
-                <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               ng-true-value="1"
-                               ng-false-value="0"
-                               id="inDowntime"
-                               ng-model="filter.Hoststatus.in_downtime"
-                               ng-model-options="{debounce: 500}">
-                        <label class="custom-control-label" for="inDowntime">
-                            <?php echo __('In Downtime'); ?>
-                        </label>
-                    </div>
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="inDowntime"
+                           ng-model="filter.Hoststatus.in_downtime"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label" for="inDowntime">
+                        <?php echo __('In Downtime'); ?>
+                    </label>
                 </div>
 
-                <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               ng-true-value="1"
-                               ng-false-value="0"
-                               id="isDown"
-                               ng-model="filter.Hoststatus.not_in_downtime"
-                               ng-model-options="{debounce: 500}">
-                        <label class="custom-control-label" for="isDown">
-                            <?php echo __('Not in Downtime'); ?>
-                        </label>
-                    </div>
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="isDown"
+                           ng-model="filter.Hoststatus.not_in_downtime"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label" for="isDown">
+                        <?php echo __('Not in Downtime'); ?>
+                    </label>
                 </div>
             </div>
         </div>
