@@ -1252,7 +1252,9 @@ class HostsController extends AppController {
             throw new NotFoundException(__('Invalid host'));
         }
 
+        /** @var \App\Model\Entity\Host $host */
         $host = $HostTable->getHostById($id);
+        $hostForChangelog = $host;
 
         if (!$this->allowedByContainerId($host->getContainerIds())) {
             $this->render403();
@@ -1263,15 +1265,35 @@ class HostsController extends AppController {
         $Constants = new Constants();
         $moduleConstants = $Constants->getModuleConstants();
 
-        $usedBy = $this->Host->isUsedByModules($host, $modules);
+        $usedBy = $host->isUsedByModules($moduleConstants);
         if (empty($usedBy['host']) && empty($usedBy['service'])) {
             //Not used by any module
-            if ($this->Host->__delete($host, $this->Auth->user('id'))) {
 
+            if ($HostTable->delete($host)) {
+
+                $User = new User($this->getUser());
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    'delete',
+                    'hosts',
+                    $id,
+                    OBJECT_HOST,
+                    $hostForChangelog->get('container_id'),
+                    $User->getId(),
+                    $hostForChangelog->get('name'),
+                    []
+                );
+                if ($changelog_data) {
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
                 /** @var $DocumentationsTable DocumentationsTable */
                 $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
 
-                $DocumentationsTable->deleteDocumentationByUuid($host['Host']['uuid']);
+                $DocumentationsTable->deleteDocumentationByUuid($hostForChangelog->get('uuid'));
 
                 $this->set('success', true);
                 $this->set('message', __('Host successfully deleted'));
