@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\itnovum\openITCOCKPIT\Database\Backup;
+use App\itnovum\openITCOCKPIT\Monitoring\Naemon\ExternalCommands;
 use App\Model\Table\ExportsTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Console\Arguments;
@@ -72,6 +73,11 @@ class GearmanWorkerCommand extends Command {
     private $jobIdelCounter = 0;
 
     /**
+     * @var ExternalCommands
+     */
+    private $ExternalCommands;
+
+    /**
      * Hook method for defining this command's option parser.
      *
      * @see https://book.cakephp.org/3.0/en/console-and-shells/commands.html#defining-arguments-and-options
@@ -98,6 +104,10 @@ class GearmanWorkerCommand extends Command {
         $systemsettings = $SystemsettingsTable->findAsArray();
 
         Configure::load('gearman');
+
+        Configure::load('NagiosModule.config');
+        $naemonExternalCommandsFile = Configure::read('NagiosModule.PREFIX') . Configure::read('NagiosModule.NAGIOS_CMD');
+        $this->ExternalCommands = new ExternalCommands($naemonExternalCommandsFile);
 
         $this->daemonizing($io);
     }
@@ -489,32 +499,32 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'createHostDowntime':
-                $this->Externalcommand->setHostDowntime($payload);
+                $this->ExternalCommands->setHostDowntime($payload);
                 break;
 
             case 'createHostgroupDowntime':
-                $this->Externalcommand->setHostgroupDowntime($payload);
+                $this->ExternalCommands->setHostgroupDowntime($payload);
                 break;
 
             case 'createServiceDowntime':
-                $this->Externalcommand->setServiceDowntime($payload);
+                $this->ExternalCommands->setServiceDowntime($payload);
                 break;
 
             case 'createContainerDowntime':
-                $this->Externalcommand->setContainerDowntime($payload);
+                $this->ExternalCommands->setContainerDowntime($payload);
                 break;
 
             case 'deleteHostDowntime':
-                $this->Externalcommand->deleteHostDowntime($payload['internal_downtime_id']);
+                $this->ExternalCommands->deleteHostDowntime($payload['internal_downtime_id']);
                 break;
 
             case 'deleteServiceDowntime':
-                $this->Externalcommand->deleteServiceDowntime($payload['internal_downtime_id']);
+                $this->ExternalCommands->deleteServiceDowntime($payload['internal_downtime_id']);
                 break;
 
             //Called by NagiosModule/CmdController/submit
             case 'cmd_external_command':
-                $this->Externalcommand->runCmdCommand($payload);
+                $this->ExternalCommands->runCmdCommand($payload);
                 break;
 
             case 'export_start_export':
