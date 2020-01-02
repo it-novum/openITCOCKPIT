@@ -50,6 +50,7 @@
         "ext-json": "*",
         "ext-openssl": "*",
         "ext-pcntl": "*",
+        "ext-posix": "*",
         "cakephp/acl": "4.x-dev",
         "cakephp/authentication": "2.x-dev",
         "cakephp/authorization": "2.x-dev",
