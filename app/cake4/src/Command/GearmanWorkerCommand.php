@@ -839,6 +839,7 @@ class GearmanWorkerCommand extends Command {
 
     /**
      * @param int $createBackup
+     * @throws \Exception
      */
     public function launchExport($createBackup = 1) {
         $NagiosConfigGenerator = new NagiosConfigGenerator();
