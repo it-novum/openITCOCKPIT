@@ -181,10 +181,10 @@
                                         </a>
                                         <div class="dropdown">
                                             <button class="btn btn-sm btn-icon waves-effect waves-themed"
-                                                    ng-hide="dashboardIsLocked" data-toggle="dropdown">
+                                                    ng-hide="dashboardIsLocked" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i class="fas fa-palette"></i>
                                             </button>
-                                            <div class="dropdown-menu dropdown-menu-animated d-flex flex-wrap"
+                                            <div class="dropdown-menu dropdown-menu-animated dropdown-menu-right d-flex flex-wrap"
                                                  style="min-width: 9.5rem; width: 9.5rem; padding: 0.5rem">
                                                 <a href="#"
                                                    class="btn d-inline-block bg-primary-600 bg-widget-statusGreen-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
