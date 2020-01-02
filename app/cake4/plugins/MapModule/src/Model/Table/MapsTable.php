@@ -6,7 +6,10 @@ namespace MapModule\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Host;
+use App\Model\Entity\Service;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\ServicesTable;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Behavior\TimestampBehavior;
@@ -14,9 +17,19 @@ use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
+use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
 use MapModule\Model\Entity\Map;
+use Statusengine\PerfdataParser;
+use Statusengine2Module\Model\Table\HoststatusTable;
+use Statusengine2Module\Model\Table\ServicestatusTable;
 
 /**
  * Maps Model
@@ -46,6 +59,23 @@ class MapsTable extends Table {
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
     use CustomValidationTrait;
+
+    private $hostIcons = [
+        0 => 'up.png',
+        1 => 'down.png',
+        2 => 'unreachable.png'
+    ];
+    private $serviceIcons = [
+        0 => 'up.png',
+        1 => 'warning.png',
+        2 => 'critical.png',
+        3 => 'unknown.png'
+    ];
+    private $ackIcon = 'ack.png';
+    private $downtimeIcon = 'downtime.png';
+    private $ackAndDowntimeIcon = 'downtime_ack.png';
+
+    private $errorIcon = 'error.png';
 
     /**
      * Initialize method
@@ -243,5 +273,203 @@ class MapsTable extends Table {
             ->all();
 
         return $query->toArray();
+    }
+
+    /**
+     * @param ServicesTable $Service
+     * @param HoststatusTable $Hoststatus
+     * @param ServicestatusTable $Servicestatus
+     * @param array $host
+     * @return array
+     */
+    public function getHostInformation(ServicesTable $Service, HoststatusTable $Hoststatus, ServicestatusTable $Servicestatus, $host) {
+        $HoststatusFields = new HoststatusFields(new DbBackend());
+        $HoststatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
+        $hoststatus = $Hoststatus->byUuid($host['uuid'], $HoststatusFields);
+        $HostView = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
+
+        if (empty($hoststatus) || $host['disabled']) {
+            $HoststatusView = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
+            return [
+                'icon'           => $this->errorIcon,
+                'icon_property'  => $this->errorIcon,
+                'isAcknowledged' => false,
+                'isInDowntime'   => false,
+                'color'          => 'text-primary',
+                'background'     => 'bg-color-blueLight',
+                'Host'           => $HostView->toArray(),
+                'Hoststatus'     => $HoststatusView->toArray(),
+            ];
+        }
+
+        $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus']);
+        $icon = $this->hostIcons[$hoststatus->currentState()];
+        $color = $hoststatus->HostStatusColor();
+        $background = $hoststatus->HostStatusBackgroundColor();
+
+        $iconProperty = $icon;
+        if ($hoststatus->isAcknowledged()) {
+            $iconProperty = $this->ackIcon;
+        }
+
+        if ($hoststatus->isInDowntime()) {
+            $iconProperty = $this->downtimeIcon;
+        }
+
+        if ($hoststatus->isAcknowledged() && $hoststatus->isInDowntime()) {
+            $iconProperty = $this->ackAndDowntimeIcon;
+        }
+
+        if ($hoststatus->currentState() > 0) {
+            return [
+                'icon'           => $icon,
+                'icon_property'  => $this->errorIcon,
+                'isAcknowledged' => $hoststatus->isAcknowledged(),
+                'isInDowntime'   => $hoststatus->isInDowntime(),
+                'color'          => $color,
+                'background'     => $background,
+                'Host'           => $HostView->toArray(),
+                'Hoststatus'     => $hoststatus->toArray(),
+            ];
+        }
+
+        //Check services for cumulated state (only if host is up)
+        $services = $Service->find('list', [
+            'recursive'  => -1,
+            'fields'     => [
+                'Services.uuid'
+            ],
+            'conditions' => [
+                'Services.host_id'  => $host['id'],
+                'Services.disabled' => 0
+            ]
+        ]);
+
+        $ServicestatusFieds = new ServicestatusFields(new DbBackend());
+        $ServicestatusFieds->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
+        $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
+        $ServicestatusConditions->servicesWarningCriticalAndUnknown();
+        $servicestatus = $Servicestatus->byUuid($services, $ServicestatusFieds, $ServicestatusConditions);
+
+        if (!empty($servicestatus)) {
+            $worstServiceState = array_values(
+                Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc')
+            );
+
+            $servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($worstServiceState[0]['Servicestatus']);
+            $serviceIcon = $this->serviceIcons[$servicestatus->currentState()];
+
+            $serviceIconProperty = $serviceIcon;
+            if ($servicestatus->isAcknowledged()) {
+                $serviceIconProperty = $this->ackIcon;
+            }
+
+            if ($servicestatus->isInDowntime()) {
+                $serviceIconProperty = $this->downtimeIcon;
+            }
+
+            if ($servicestatus->isAcknowledged() && $servicestatus->isInDowntime()) {
+                $serviceIconProperty = $this->ackAndDowntimeIcon;
+            }
+
+            return [
+                'icon'           => $serviceIcon,
+                'icon_property'  => $serviceIconProperty,
+                'isAcknowledged' => $servicestatus->isAcknowledged(),
+                'isInDowntime'   => $servicestatus->isInDowntime(),
+                'color'          => $servicestatus->ServiceStatusColor(),
+                'background'     => $servicestatus->ServiceStatusBackgroundColor(),
+                'Host'           => $HostView->toArray(),
+                'Hoststatus'     => $hoststatus->toArray(),
+            ];
+        }
+
+        return [
+            'icon'           => $icon,
+            'icon_property'  => $iconProperty,
+            'isAcknowledged' => $hoststatus->isAcknowledged(),
+            'isInDowntime'   => $hoststatus->isInDowntime(),
+            'color'          => $color,
+            'background'     => $background,
+            'Host'           => $HostView->toArray(),
+            'Hoststatus'     => $hoststatus->toArray()
+        ];
+    }
+
+    /**
+     * @param ServicestatusTable $Servicestatus
+     * @param array $service
+     * @param bool $includeServiceOutput
+     * @return array
+     */
+    public function getServiceInformation(ServicestatusTable $Servicestatus, $service, $includeServiceOutput = false) {
+        $ServicestatusFields = new ServicestatusFields(new DbBackend());
+        $ServicestatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged()->perfdata()->isFlapping();
+        if ($includeServiceOutput === true) {
+            $ServicestatusFields->output()->longOutput();
+        }
+        $servicestatus = $Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
+        $HostView = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
+        $ServiceView = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
+        if (empty($servicestatus) || $service['Service']['disabled']) {
+            $ServicestatusView = new \itnovum\openITCOCKPIT\Core\Servicestatus([]);
+            $tmpServicestatus = $ServicestatusView->toArray();
+            if ($includeServiceOutput === true) {
+                $tmpServicestatus['output'] = null;
+                $tmpServicestatus['longOutputHtml'] = null;
+            }
+
+            return [
+                'icon'           => $this->errorIcon,
+                'icon_property'  => $this->errorIcon,
+                'isAcknowledged' => false,
+                'isInDowntime'   => false,
+                'color'          => 'text-primary',
+                'background'     => 'bg-color-blueLight',
+                'Host'           => $HostView->toArray(),
+                'Service'        => $ServiceView->toArray(),
+                'Servicestatus'  => $tmpServicestatus,
+                'Perfdata'       => []
+            ];
+        }
+
+        $servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus']);
+
+        $icon = $this->serviceIcons[$servicestatus->currentState()];
+
+        $iconProperty = $icon;
+        if ($servicestatus->isAcknowledged()) {
+            $iconProperty = $this->ackIcon;
+        }
+
+        if ($servicestatus->isInDowntime()) {
+            $iconProperty = $this->downtimeIcon;
+        }
+
+        if ($servicestatus->isAcknowledged() && $servicestatus->isInDowntime()) {
+            $iconProperty = $this->ackAndDowntimeIcon;
+        }
+
+        $perfdata = new PerfdataParser($servicestatus->getPerfdata());
+
+        $tmpServicestatus = $servicestatus->toArray();
+        if ($includeServiceOutput === true) {
+            $Parser = new BBCodeParser();
+            $tmpServicestatus['output'] = h($servicestatus->getOutput());
+            $tmpServicestatus['longOutputHtml'] = $Parser->nagiosNl2br($Parser->asHtml($servicestatus->getLongOutput(), true));
+        }
+
+        return [
+            'icon'           => $icon,
+            'icon_property'  => $iconProperty,
+            'isAcknowledged' => $servicestatus->isAcknowledged(),
+            'isInDowntime'   => $servicestatus->isInDowntime(),
+            'color'          => $servicestatus->ServiceStatusColor(),
+            'background'     => $servicestatus->ServiceStatusBackgroundColor(),
+            'Host'           => $HostView->toArray(),
+            'Service'        => $ServiceView->toArray(),
+            'Perfdata'       => $perfdata->parse(),
+            'Servicestatus'  => $tmpServicestatus
+        ];
     }
 }

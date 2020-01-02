@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 1920 1200" version="1.1" xmlns="http://www.w3.org/2000/svg"  xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <g id="Services" transform="matrix(1,0,0,1,0,454)">
+        <g id="Ok" transform="matrix(1,0,0,1,-66,104)">
+            <g id="Ok1" serif:id="Ok" transform="matrix(0.890544,0,0,1.10553,-101.8,-40.9534)">
+                <rect x="235" y="127" width="228" height="181" style="fill:rgb(0,200,56);"/>
+            </g>
+            <g transform="matrix(1,0,0,1,15,-39)">
+                <text x="96.808px" y="57.335px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Service: Ok</text>
+                <text x="96.808px" y="75.924px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Filename: ok.png</text>
+                <text x="96.808px" y="113.102px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Hex: #00C838</text>
+                <text x="96.808px" y="131.691px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">RGB: R0 G200 B56</text>
+            </g>
+        </g>
+        <g id="Critical" transform="matrix(1,0,0,1,190,104)">
+            <g id="Critical1" serif:id="Critical" transform="matrix(0.890544,0,0,1.10553,-101.8,-40.9534)">
+                <rect x="235" y="127" width="228" height="181" style="fill:rgb(233,34,35);stroke:rgb(233,34,35);stroke-width:1px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,15,-39)">
+                <text x="96.808px" y="57.335px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Service: Critical</text>
+                <text x="96.808px" y="75.924px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Filename: critical.png</text>
+                <text x="96.808px" y="113.102px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Hex: #E92223</text>
+                <text x="96.808px" y="131.691px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">RGB: R233 G34 B35</text>
+            </g>
+        </g>
+        <g id="Warning" transform="matrix(1,0,0,1,447,104)">
+            <g id="Warning1" serif:id="Warning" transform="matrix(0.890544,0,0,1.10553,-101.8,-40.9534)">
+                <rect x="235" y="127" width="228" height="181" style="fill:rgb(255,217,56);stroke:rgb(255,217,56);stroke-width:1px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,15,-39)">
+                <text x="96.808px" y="57.335px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Service: W<tspan x="183.151px 193.162px " y="57.335px 57.335px ">ar</tspan>ning</text>
+                <text x="96.808px" y="75.924px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Filename: warning.png</text>
+                <text x="96.808px" y="113.102px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Hex: #FFD938</text>
+                <text x="96.808px" y="131.691px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">RGB: R255 G217 B56</text>
+            </g>
+        </g>
+        <g id="Unknown" transform="matrix(1,0,0,1,696,104)">
+            <g id="Unknown1" serif:id="Unknown" transform="matrix(0.890544,0,0,1.10553,-101.8,-40.9534)">
+                <rect x="235" y="127" width="228" height="181" style="fill:rgb(128,128,128);stroke:rgb(128,128,128);stroke-width:1px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,15,-39)">
+                <text x="96.808px" y="57.335px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Service: Unknown</text>
+                <text x="96.808px" y="75.924px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Filename: unknown.png</text>
+                <text x="96.808px" y="113.102px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Hex: #808080</text>
+                <text x="96.808px" y="131.691px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">RGB: R128 G128 B128</text>
+            </g>
+        </g>
+        <g id="Acknowledged" transform="matrix(1,0,0,1,696,427)">
+            <g id="Ack" transform="matrix(0.890544,0,0,1.10553,-101.8,-40.9534)">
+                <rect x="235" y="127" width="228" height="181" style="fill:rgb(161,40,255);stroke:rgb(161,40,255);stroke-width:1px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,15,-39)">
+                <text x="96.808px" y="57.335px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Service : <tspan x="170.838px 182.844px " y="57.335px 57.335px ">Ac</tspan>knowledged</text>
+                <text x="96.808px" y="75.924px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Filename: sack.png</text>
+                <text x="96.808px" y="113.102px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Hex: #A128FF</text>
+                <text x="96.808px" y="131.691px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">RGB: R161 G40 B255</text>
+            </g>
+        </g>
+        <g id="Downtime" transform="matrix(1,0,0,1,960,427)">
+            <g id="Downtime1" serif:id="Downtime" transform="matrix(0.890544,0,0,1.10553,-101.8,-40.9534)">
+                <rect x="235" y="127" width="228" height="181" style="fill:rgb(86,138,137);stroke:rgb(86,138,137);stroke-width:1px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,15,-39)">
+                <text x="96.808px" y="57.335px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Service: In downtime</text>
+                <text x="96.808px" y="75.924px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Filename: sdowntime.png</text>
+                <text x="96.808px" y="113.102px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Hex: #568A89</text>
+                <text x="96.808px" y="131.691px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">RGB: R86 G138 B137</text>
+            </g>
+        </g>
+        <g id="Ack---Downtime" serif:id="Ack + Downtime" transform="matrix(1,0,0,1,1209,426)">
+            <g id="Ack---Downtime1" serif:id="Ack + Downtime" transform="matrix(0.890544,0,0,1.10553,-101.8,-40.9534)">
+                <rect x="235" y="127" width="228" height="181" style="fill:rgb(110,54,113);stroke:rgb(110,54,113);stroke-width:1px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,15,-39)">
+                <text x="96.808px" y="57.335px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Service: <tspan x="165.837px 177.843px " y="57.335px 57.335px ">Ac</tspan>knowledged and in Downtime</text>
+                <text x="96.808px" y="75.924px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Filename: sdowntime_ack.png</text>
+                <text x="96.808px" y="113.102px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Hex: #6E3671</text>
+                <text x="96.808px" y="131.691px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">RGB: R1<tspan x="167.489px 177.5px " y="131.691px 131.691px ">10</tspan> G54 B1<tspan x="252.216px 262.226px " y="131.691px 131.691px ">13</tspan></text>
+            </g>
+        </g>
+        <g id="Ack---Downtime2" serif:id="Ack + Downtime" transform="matrix(1,0,0,1,1540,425)">
+            <g id="Ack---Downtime3" serif:id="Ack + Downtime" transform="matrix(0.890544,0,0,1.10553,-101.8,-40.9534)">
+                <rect x="235" y="127" width="228" height="181" style="fill:rgb(0,62,249);stroke:rgb(0,62,249);stroke-width:1px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,15,-39)">
+                <text x="96.808px" y="57.335px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Service: Error</text>
+                <text x="96.808px" y="75.924px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Filename: error<tspan x="217.85px 222.851px " y="75.924px 75.924px ">.p</tspan>ng</text>
+                <text x="96.808px" y="113.102px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Hex: #003EF9</text>
+                <text x="96.808px" y="131.691px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">RGB: R0 G62 B249</text>
+            </g>
+        </g>
+    </g>
+    <g id="Hosts" transform="matrix(1,0,0,1,0,80)">
+        <g id="Up" transform="matrix(1,0,0,1,-66,79)">
+            <g id="Up1" serif:id="Up" transform="matrix(0.890544,0,0,1.10553,-101.8,-40.9534)">
+                <rect x="235" y="127" width="228" height="181" style="fill:rgb(0,200,56);"/>
+            </g>
+            <g transform="matrix(1,0,0,1,15,-39)">
+                <text x="96.808px" y="57.335px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Host: Up</text>
+                <text x="96.808px" y="75.924px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Filename: up.png</text>
+                <text x="96.808px" y="113.102px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Hex: #00C838</text>
+                <text x="96.808px" y="131.691px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">RGB: R0 G200 B56</text>
+            </g>
+        </g>
+        <g id="Down" transform="matrix(1,0,0,1,190,79)">
+            <g id="Down1" serif:id="Down" transform="matrix(0.890544,0,0,1.10553,-101.8,-40.9534)">
+                <rect x="235" y="127" width="228" height="181" style="fill:rgb(233,34,35);stroke:rgb(233,34,35);stroke-width:1px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,15,-39)">
+                <text x="96.808px" y="57.335px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Host: Down</text>
+                <text x="96.808px" y="75.924px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Filename: down.png</text>
+                <text x="96.808px" y="113.102px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Hex: #E92223</text>
+                <text x="96.808px" y="131.691px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">RGB: R233 G34 B35</text>
+            </g>
+        </g>
+        <g id="Unreachable" transform="matrix(1,0,0,1,447,79)">
+            <g id="Unrachable" transform="matrix(0.890544,0,0,1.10553,-101.8,-40.9534)">
+                <rect x="235" y="127" width="228" height="181" style="fill:rgb(128,128,128);stroke:rgb(128,128,128);stroke-width:1px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,15,-39)">
+                <text x="96.808px" y="57.335px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Host: Unreachable</text>
+                <text x="96.808px" y="75.924px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Filename: unreachable.png</text>
+                <text x="96.808px" y="113.102px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Hex: #808080</text>
+                <text x="96.808px" y="131.691px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">RGB: R128 G128 B128</text>
+            </g>
+        </g>
+        <g id="Acknowledged1" serif:id="Acknowledged" transform="matrix(1,0,0,1,696,78)">
+            <g id="Ack1" serif:id="Ack" transform="matrix(0.890544,0,0,1.10553,-101.8,-40.9534)">
+                <rect x="235" y="127" width="228" height="181" style="fill:rgb(161,40,255);stroke:rgb(161,40,255);stroke-width:1px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,15,-39)">
+                <text x="96.808px" y="57.335px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Host: <tspan x="142.827px 154.833px " y="57.335px 57.335px ">Ac</tspan>knowledged</text>
+                <text x="96.808px" y="75.924px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Filename: ack.png</text>
+                <text x="96.808px" y="113.102px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Hex: #A128FF</text>
+                <text x="96.808px" y="131.691px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">RGB: R161 G40 B255</text>
+            </g>
+        </g>
+        <g id="Downtime2" serif:id="Downtime" transform="matrix(1,0,0,1,960,80)">
+            <g id="Downtime3" serif:id="Downtime" transform="matrix(0.890544,0,0,1.10553,-101.8,-40.9534)">
+                <rect x="235" y="127" width="228" height="181" style="fill:rgb(86,138,137);stroke:rgb(86,138,137);stroke-width:1px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,15,-39)">
+                <text x="96.808px" y="57.335px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Host: In downtime</text>
+                <text x="96.808px" y="75.924px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Filename: downtime.png</text>
+                <text x="96.808px" y="113.102px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Hex: #568A89</text>
+                <text x="96.808px" y="131.691px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">RGB: R86 G138 B137</text>
+            </g>
+        </g>
+        <g id="Ack---Downtime4" serif:id="Ack + Downtime" transform="matrix(1,0,0,1,1209,79)">
+            <g id="Ack---Downtime5" serif:id="Ack + Downtime" transform="matrix(0.890544,0,0,1.10553,-101.8,-40.9534)">
+                <rect x="235" y="127" width="228" height="181" style="fill:rgb(110,54,113);stroke:rgb(110,54,113);stroke-width:1px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,15,-39)">
+                <text x="96.808px" y="57.335px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Host: <tspan x="142.827px 154.833px " y="57.335px 57.335px ">Ac</tspan>knowledged and in Downtime</text>
+                <text x="96.808px" y="75.924px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Filename: downtime_ack.png</text>
+                <text x="96.808px" y="113.102px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Hex: #6E3671</text>
+                <text x="96.808px" y="131.691px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">RGB: R1<tspan x="167.489px 177.5px " y="131.691px 131.691px ">10</tspan> G54 B1<tspan x="252.216px 262.226px " y="131.691px 131.691px ">13</tspan></text>
+            </g>
+        </g>
+        <g id="Ack---Downtime6" serif:id="Ack + Downtime" transform="matrix(1,0,0,1,1540,78)">
+            <g id="Ack---Downtime7" serif:id="Ack + Downtime" transform="matrix(0.890544,0,0,1.10553,-101.8,-40.9534)">
+                <rect x="235" y="127" width="228" height="181" style="fill:rgb(0,62,249);stroke:rgb(0,62,249);stroke-width:1px;"/>
+            </g>
+            <g transform="matrix(1,0,0,1,15,-39)">
+                <text x="96.808px" y="57.335px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Host: Error</text>
+                <text x="96.808px" y="75.924px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Filename: error<tspan x="217.85px 222.851px " y="75.924px 75.924px ">.p</tspan>ng</text>
+                <text x="96.808px" y="113.102px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">Hex: #003EF9</text>
+                <text x="96.808px" y="131.691px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;">RGB: R0 G62 B249</text>
+            </g>
+        </g>
+    </g>
+    <g transform="matrix(1,0,0,1,706,-281)">
+        <text x="784.84px" y="332.856px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:30px;">Maps status colors guidelines</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-14,18)">
+        <text x="28.109px" y="110.37px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:30px;">Hosts:</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-14,427)">
+        <text x="28.109px" y="110.37px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:30px;">Services:</text>
+    </g>
+    <g id="Logo" transform="matrix(0.624389,0,0,0.624389,1045.04,-136.576)">
+        <path d="M162.496,289.639C162.496,286.632 162.922,283.951 163.774,281.596C164.625,279.242 165.777,277.263 167.231,275.658C168.684,274.055 170.375,272.828 172.304,271.974C174.232,271.123 176.275,270.697 178.43,270.697C180.584,270.697 182.626,271.124 184.555,271.974C186.484,272.828 188.175,274.055 189.629,275.658C191.082,277.262 192.233,279.241 193.086,281.596C193.938,283.951 194.364,286.632 194.364,289.639C194.364,292.596 193.937,295.239 193.086,297.568C192.233,299.9 191.082,301.867 189.629,303.468C188.175,305.072 186.483,306.301 184.555,307.152C182.626,308.002 180.584,308.428 178.43,308.428C176.275,308.428 174.232,308.001 172.304,307.152C170.374,306.301 168.684,305.072 167.231,303.468C165.777,301.866 164.625,299.9 163.774,297.568C162.922,295.238 162.496,292.596 162.496,289.639ZM164.901,289.639C164.901,292.145 165.251,294.411 165.954,296.442C166.654,298.471 167.606,300.224 168.809,301.703C170.012,303.182 171.44,304.322 173.093,305.124C174.747,305.926 176.525,306.324 178.43,306.324C180.333,306.324 182.113,305.926 183.766,305.124C185.42,304.322 186.848,303.183 188.05,301.703C189.253,300.224 190.204,298.472 190.906,296.442C191.607,294.412 191.958,292.145 191.958,289.639C191.958,287.184 191.607,284.915 190.906,282.836C190.204,280.757 189.253,278.978 188.05,277.5C186.848,276.022 185.42,274.869 183.766,274.043C182.113,273.215 180.333,272.803 178.43,272.803C176.525,272.803 174.747,273.215 173.093,274.043C171.44,274.869 170.012,276.022 168.809,277.5C167.606,278.978 166.654,280.757 165.954,282.836C165.251,284.915 164.901,287.184 164.901,289.639Z" style="fill-rule:nonzero;"/>
+        <path d="M204.136,310.684L204.136,324.215L201.881,324.215L201.881,271.6L203.835,271.6L204.136,276.26L204.285,276.26C206.09,274.807 208.056,273.517 210.186,272.389C212.315,271.261 214.507,270.698 216.762,270.698C221.622,270.698 225.242,272.365 227.623,275.696C230.002,279.03 231.192,283.475 231.192,289.038C231.192,292.096 230.766,294.825 229.916,297.231C229.062,299.636 227.91,301.665 226.457,303.317C225.004,304.973 223.313,306.237 221.385,307.113C219.454,307.989 217.412,308.428 215.259,308.428C213.504,308.428 211.7,308.04 209.847,307.264C207.993,306.487 206.089,305.373 204.135,303.92L204.135,310.684L204.136,310.684ZM204.136,301.362C206.34,303.169 208.407,304.446 210.336,305.197C212.265,305.947 213.956,306.323 215.41,306.323C217.364,306.323 219.155,305.899 220.784,305.046C222.411,304.195 223.828,303.005 225.03,301.478C226.233,299.948 227.159,298.122 227.811,295.991C228.461,293.86 228.789,291.544 228.789,289.038C228.789,286.734 228.575,284.593 228.15,282.611C227.723,280.632 227.022,278.918 226.045,277.463C225.068,276.011 223.803,274.87 222.249,274.044C220.695,273.216 218.817,272.804 216.612,272.804C214.707,272.804 212.741,273.343 210.713,274.419C208.683,275.497 206.49,277.064 204.136,279.116L204.136,301.362Z" style="fill-rule:nonzero;"/>
+        <path d="M237.057,289.639C237.057,286.734 237.495,284.102 238.372,281.747C239.248,279.392 240.401,277.4 241.83,275.77C243.258,274.143 244.898,272.89 246.753,272.013C248.606,271.137 250.535,270.697 252.54,270.697C256.699,270.697 259.992,272.114 262.424,274.944C264.854,277.776 266.07,281.872 266.07,287.233C266.07,287.634 266.07,288.023 266.07,288.398C266.07,288.773 266.019,289.187 265.92,289.638L239.463,289.638C239.463,292.043 239.801,294.26 240.478,296.289C241.154,298.318 242.106,300.084 243.334,301.589C244.561,303.091 246.04,304.256 247.769,305.084C249.498,305.911 251.439,306.322 253.593,306.322C255.648,306.322 257.476,306.023 259.08,305.421C260.684,304.82 262.162,304.019 263.516,303.018L264.567,304.972C263.214,305.826 261.699,306.612 260.021,307.339C258.34,308.065 256.149,308.427 253.444,308.427C251.189,308.427 249.071,308 247.092,307.151C245.112,306.3 243.371,305.058 241.867,303.431C240.364,301.801 239.186,299.835 238.336,297.53C237.482,295.227 237.057,292.596 237.057,289.639ZM263.814,287.685C263.814,282.674 262.786,278.941 260.733,276.485C258.677,274.031 255.947,272.803 252.54,272.803C250.936,272.803 249.383,273.155 247.88,273.856C246.377,274.557 245.035,275.546 243.859,276.824C242.681,278.102 241.705,279.655 240.928,281.484C240.151,283.313 239.661,285.381 239.462,287.685L263.814,287.685Z" style="fill-rule:nonzero;"/>
+        <path d="M273.887,271.6L275.841,271.6L276.142,277.313L276.291,277.313C278.195,275.409 280.125,273.83 282.079,272.577C284.033,271.326 286.263,270.698 288.768,270.698C292.475,270.698 295.206,271.801 296.96,274.005C298.714,276.211 299.591,279.669 299.591,284.377L299.591,307.527L297.336,307.527L297.336,284.678C297.336,280.669 296.66,277.688 295.307,275.734C293.954,273.78 291.724,272.803 288.618,272.803C286.363,272.803 284.296,273.403 282.417,274.606C280.538,275.81 278.445,277.613 276.142,280.018L276.142,307.527L273.887,307.527L273.887,271.6Z" style="fill-rule:nonzero;"/>
+        <path d="M336.037,268.36C338.483,267.832 340.929,267.407 343.375,267.085C341.457,278.783 341.457,290.483 343.375,302.183C340.929,301.86 338.483,301.435 336.037,300.908C332.896,290.059 332.896,279.209 336.037,268.36Z" style="fill-rule:nonzero;"/>
+        <path d="M357.596,273.312C354.388,273.258 351.18,273.3 347.972,273.436C348.098,271.144 348.263,268.853 348.466,266.561C356.886,265.943 365.305,266.541 373.725,268.36C374.323,270.423 374.806,272.487 375.176,274.55C371.968,274.152 368.76,273.847 365.552,273.638C366.38,283.218 366.126,292.798 364.789,302.377C362.326,302.658 359.864,302.833 357.401,302.903C357.741,293.041 357.807,283.177 357.596,273.312Z" style="fill-rule:nonzero;"/>
+        <path d="M404.092,283.512C404.092,279.452 404.718,275.832 405.971,272.649C407.223,269.467 408.915,266.774 411.046,264.57C413.175,262.364 415.655,260.685 418.488,259.532C421.318,258.381 424.311,257.804 427.468,257.804C430.527,257.804 433.295,258.443 435.776,259.719C438.256,260.998 440.323,262.49 441.978,264.193L435.888,271.034C434.635,269.882 433.369,268.98 432.092,268.327C430.815,267.678 429.323,267.35 427.619,267.35C425.915,267.35 424.323,267.714 422.846,268.441C421.369,269.168 420.075,270.208 418.975,271.56C417.871,272.913 417.008,274.566 416.382,276.52C415.754,278.476 415.443,280.68 415.443,283.136C415.443,288.198 416.519,292.119 418.673,294.9C420.828,297.682 423.711,299.073 427.319,299.073C429.323,299.073 431.078,298.672 432.58,297.87C434.085,297.069 435.436,296.016 436.641,294.713L442.729,301.402C440.674,303.808 438.332,305.611 435.701,306.815C433.07,308.018 430.225,308.618 427.169,308.618C424.012,308.618 421.029,308.079 418.225,307.004C415.416,305.926 412.962,304.335 410.857,302.23C408.753,300.126 407.099,297.508 405.897,294.375C404.693,291.243 404.092,287.62 404.092,283.512Z" style="fill-rule:nonzero;"/>
+        <path d="M467.31,308.617C464.004,308.617 460.985,308.03 458.254,306.852C455.52,305.674 453.178,303.984 451.224,301.776C449.27,299.573 447.753,296.891 446.677,293.734C445.599,290.577 445.06,286.995 445.06,282.985C445.06,278.976 445.599,275.406 446.677,272.273C447.753,269.141 449.27,266.51 451.224,264.379C453.178,262.25 455.52,260.621 458.254,259.493C460.984,258.365 464.004,257.803 467.31,257.803C470.619,257.803 473.636,258.365 476.369,259.493C479.102,260.621 481.443,262.263 483.397,264.417C485.351,266.572 486.866,269.216 487.946,272.348C489.022,275.48 489.561,279.027 489.561,282.985C489.561,286.995 489.022,290.577 487.946,293.734C486.866,296.891 485.351,299.573 483.397,301.776C481.443,303.984 479.101,305.674 476.369,306.852C473.637,308.03 470.618,308.617 467.31,308.617ZM467.31,299.072C470.668,299.072 473.325,297.632 475.279,294.75C477.233,291.869 478.211,287.946 478.211,282.985C478.211,278.074 477.233,274.24 475.279,271.483C473.325,268.729 470.669,267.349 467.31,267.349C463.953,267.349 461.297,268.729 459.341,271.483C457.387,274.24 456.412,278.074 456.412,282.985C456.412,287.946 457.387,291.869 459.341,294.75C461.297,297.632 463.952,299.072 467.31,299.072Z" style="fill-rule:nonzero;"/>
+        <path d="M493.469,283.512C493.469,279.452 494.095,275.832 495.35,272.649C496.601,269.467 498.292,266.774 500.422,264.57C502.553,262.364 505.033,260.685 507.865,259.532C510.696,258.381 513.69,257.804 516.847,257.804C519.904,257.804 522.674,258.443 525.155,259.719C527.634,260.998 529.701,262.49 531.355,264.193L525.267,271.034C524.012,269.882 522.747,268.98 521.471,268.327C520.192,267.678 518.701,267.35 516.997,267.35C515.294,267.35 513.702,267.714 512.223,268.441C510.745,269.168 509.454,270.208 508.354,271.56C507.25,272.913 506.385,274.566 505.759,276.52C505.132,278.476 504.821,280.68 504.821,283.136C504.821,288.198 505.896,292.119 508.052,294.9C510.204,297.682 513.089,299.073 516.696,299.073C518.702,299.073 520.456,298.672 521.959,297.87C523.462,297.069 524.814,296.016 526.018,294.713L532.109,301.402C530.052,303.808 527.71,305.611 525.079,306.815C522.447,308.018 519.604,308.618 516.547,308.618C513.39,308.618 510.408,308.079 507.603,307.004C504.795,305.926 502.341,304.335 500.236,302.23C498.132,300.126 496.477,297.508 495.275,294.375C494.07,291.243 493.469,287.62 493.469,283.512Z" style="fill-rule:nonzero;"/>
+        <path d="M536.541,258.705L547.59,258.705L547.59,278.775L547.892,278.775L562.476,258.705L574.653,258.705L559.844,278.249L577.359,307.716L565.256,307.716L553.305,287.044L547.59,294.561L547.59,307.716L536.541,307.716L536.541,258.705Z" style="fill-rule:nonzero;"/>
+        <path d="M581.191,258.705L599.083,258.705C601.738,258.705 604.231,258.969 606.562,259.494C608.892,260.02 610.921,260.898 612.651,262.126C614.379,263.355 615.746,264.981 616.749,267.011C617.75,269.04 618.251,271.535 618.251,274.49C618.251,277.347 617.737,279.828 616.71,281.932C615.682,284.037 614.293,285.765 612.537,287.12C610.784,288.473 608.754,289.474 606.45,290.126C604.143,290.777 601.688,291.104 599.083,291.104L592.242,291.104L592.242,307.716L581.191,307.716L581.191,258.705ZM598.406,282.309C604.419,282.309 607.426,279.704 607.426,274.491C607.426,271.935 606.662,270.133 605.135,269.08C603.605,268.027 601.362,267.501 598.406,267.501L592.242,267.501L592.242,282.31L598.406,282.31L598.406,282.309Z" style="fill-rule:nonzero;"/>
+        <rect x="623.737" y="258.705" width="11.049" height="49.011" style="fill-rule:nonzero;"/>
+        <path d="M654.406,268.026L640.95,268.026L640.95,258.705L678.988,258.705L678.988,268.026L665.532,268.026L665.532,307.715L654.406,307.715L654.406,268.026Z" style="fill-rule:nonzero;"/>
+        <path d="M320.581,312.453L302.239,333.496L312.784,342.822L331.224,321.664C327.22,319.193 323.629,316.081 320.581,312.453Z" style="fill:rgb(40,140,234);fill-rule:nonzero;"/>
+        <path d="M391.168,271.376C384.174,251.073 362.068,240.29 341.767,247.274C321.472,254.264 310.684,276.384 317.669,296.679C324.662,316.982 346.781,327.77 367.075,320.783C387.368,313.786 398.148,291.675 391.168,271.376ZM363.992,311.549C348.755,316.788 332.149,308.692 326.907,293.464C321.652,278.228 329.757,261.616 344.998,256.38C360.22,251.133 376.817,259.23 382.062,274.466C387.315,289.692 379.207,306.304 363.992,311.549Z" style="fill:rgb(40,140,234);fill-rule:nonzero;"/>
+    </g>
+    <g id="openitcockpit.io" transform="matrix(0.0492455,0,0,0.0492455,1142.42,-3.0876)">
+        <g transform="matrix(1,0,0,1,3137.85,1814.57)">
+            <text x="0px" y="0px" style="font-family:'PTSans-Narrow', 'PT Sans Narrow', sans-serif;font-stretch:condensed;font-size:663.912px;fill:rgb(40,140,234);">openi</text>
+        </g>
+        <g transform="matrix(1,0,0,1,4421.18,1814.57)">
+            <text x="0px" y="0px" style="font-family:'PTSans-Narrow', 'PT Sans Narrow', sans-serif;font-stretch:condensed;font-size:663.912px;fill:rgb(40,140,234);">t</text>
+        </g>
+        <g transform="matrix(1,0,0,1,4600.52,1814.57)">
+            <text x="0px" y="0px" style="font-family:'PTSans-Narrow', 'PT Sans Narrow', sans-serif;font-stretch:condensed;font-size:663.912px;fill:rgb(40,140,234);">c</text>
+        </g>
+        <g transform="matrix(1,0,0,1,4824.68,1814.57)">
+            <text x="0px" y="0px" style="font-family:'PTSans-Narrow', 'PT Sans Narrow', sans-serif;font-stretch:condensed;font-size:663.912px;fill:rgb(40,140,234);">ockpit.io</text>
+        </g>
+    </g>
+</svg>

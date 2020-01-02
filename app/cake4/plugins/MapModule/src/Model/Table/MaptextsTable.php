@@ -97,4 +97,12 @@ class MaptextsTable extends Table {
 
         return $rules;
     }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Maptexts.id' => $id]);
+    }
 }

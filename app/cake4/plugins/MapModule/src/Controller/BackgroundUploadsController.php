@@ -25,7 +25,16 @@
 
 namespace MapModule\Controller;
 
+use Authentication\IdentityInterface;
+use Cake\Core\Exception\Exception;
+use Cake\Filesystem\Folder;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use MapModule\Model\Table\MapsTable;
+use MapModule\Model\Table\MapUploadsTable;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
@@ -38,12 +47,12 @@ use Symfony\Component\Finder\SplFileInfo;
  */
 class BackgroundUploadsController extends AppController {
 
-    public $layout = 'Admin.default';
     public $uses = [
-        'MapModule.MapUpload',
         'MapModule.Mapicon',
     ];
 
+    public $TYPE_BACKGROUND = 1;
+    public $TYPE_ICON_SET = 2;
 
     public function upload() {
         if (empty($_FILES)) {
@@ -56,10 +65,12 @@ class BackgroundUploadsController extends AppController {
             return;
         }
 
-        $response = $this->MapUpload->getUploadResponse($_FILES['file']['error']);
-        if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
-            $backgroundImgDirectory = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
+        /** @var MapUploadsTable $MapsTable */
+        $MapUploadsTable = TableRegistry::getTableLocator()->get('MapModule.MapUploads');
 
+        $response = $MapUploadsTable->getUploadResponse($_FILES['file']['error']);
+        if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
+            $backgroundImgDirectory = APP . '../' . 'plugins' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
             //check if upload folder exist
             if (!is_dir($backgroundImgDirectory)) {
                 mkdir($backgroundImgDirectory);
@@ -68,7 +79,7 @@ class BackgroundUploadsController extends AppController {
             $backgroundFolder = new Folder($backgroundImgDirectory);
             $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
 
-            if (!$this->MapUpload->isFileExtensionSupported($fileExtension)) {
+            if (!$MapUploadsTable->isFileExtensionSupported($fileExtension)) {
                 $response = [
                     'success' => false,
                     'message' => __('File extension ".%s" not supported!', $fileExtension)
@@ -91,14 +102,16 @@ class BackgroundUploadsController extends AppController {
                     'uuidFilename'  => $saveFilename,
                     'fileExtension' => $fileExtension
                 ];
-                $this->MapUpload->createThumbnailsFromBackgrounds($imageConfig, $backgroundFolder);
-                $this->MapUpload->save([
-                    'upload_type'  => MapUpload::TYPE_BACKGROUND,
+                $MapUploadsTable->createThumbnailsFromBackgrounds($imageConfig, $backgroundFolder);
+                $mapUpload = $MapUploadsTable->newEmptyEntity();
+                $mapUpload = $MapUploadsTable->patchEntity($mapUpload, [
+                    'upload_type'  => $this->TYPE_BACKGROUND,
                     'upload_name'  => $uploadFilename . '.' . $fileExtension,
                     'saved_name'   => $saveFilename . '.' . $fileExtension,
-                    'user_id'      => $this->Auth->user('id'),
+                    'user_id'      => $User = new User($this->getUser()),
                     'container_id' => '1',
                 ]);
+                $MapUploadsTable->save($mapUpload);
 
                 $response = [
                     'success'  => true,
@@ -114,9 +127,9 @@ class BackgroundUploadsController extends AppController {
         }
 
 
-        $this->response->statusCode(200);
+        $this->response->withStatus(200);
         if (!$response['success']) {
-            $this->response->statusCode(500);
+            $this->response->withStatus(500);
         }
         $this->set('response', $response);
         $this->viewBuilder()->setOption('serialize', ['response']);
@@ -129,19 +142,27 @@ class BackgroundUploadsController extends AppController {
 
         $filename = $this->request->getData('filename');
 
-        $background = $this->MapUpload->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'MapUpload.saved_name'   => $filename,
-                'MapUpload.container_id' => $this->MY_RIGHTS,
-            ],
-        ]);
-        if (empty($background)) {
+        /** @var MapsTable $MapsTable */
+        $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+        /** @var MapUploadsTable $MapsTable */
+        $MapUploadsTable = TableRegistry::getTableLocator()->get('MapModule.MapUploads');
+
+        $background = $MapUploadsTable->getByFilename($filename, $this->MY_RIGHTS);
+        $backgroundEntity = $MapUploadsTable->get($background['id']);
+
+        if (empty($backgroundEntity)) {
             throw new NotFoundException();
         }
 
-        if ($this->MapUpload->delete($background['MapUpload']['id'])) {
-            $backgroundImgDirectory = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
+        $MapsTable->updateAll([
+            'background' => null
+        ], [
+            'background' => $background['saved_name']
+        ]);
+
+        $MapUploadsTable->delete($backgroundEntity);
+        if (!$backgroundEntity->hasErrors()) {
+            $backgroundImgDirectory = APP . '../' . 'plugins' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
 
             if (file_exists($backgroundImgDirectory . DS . $filename)) {
                 unlink($backgroundImgDirectory . DS . $filename);
@@ -160,7 +181,7 @@ class BackgroundUploadsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response->withStatus(500);
         $response = [
             'success' => false,
             'message' => __('Error while deleting background.')
@@ -456,5 +477,12 @@ class BackgroundUploadsController extends AppController {
         }
         $this->set('response', $response);
         $this->viewBuilder()->setOption('serialize', ['response']);
+    }
+
+    /**
+     * @return IdentityInterface|null
+     */
+    public function getUser() {
+        return $this->Authentication->getIdentity();
     }
 }
