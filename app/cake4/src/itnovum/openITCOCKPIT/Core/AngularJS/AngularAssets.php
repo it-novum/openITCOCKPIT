@@ -63,7 +63,6 @@ class AngularAssets implements AngularAssetsInterface {
         'legacy/js/lib/parseuri.js',
         'legacy/js/vendor/vis-4.21.0/dist/vis.js',
         'legacy/js/vendor/UUID.js-4.0.3/dist/uuid.core.js',
-        'legacy/js/vendor/lodash/vendor/underscore/underscore.js',
         'legacy/js/vendor/noty/noty.min.js',
         'legacy/js/vendor/gauge.min.js',
         'legacy/js/lib/jquery.svg.min.js',
@@ -89,6 +88,7 @@ class AngularAssets implements AngularAssetsInterface {
          //'legacyjs/vendor/chartjs-plugin-piechart-outlabels.min.js'
         'legacy/js/lib/highlight-within-textarea/jquery.highlight-within-textarea.js',
 
+        'node_modules/underscore/underscore-min.js',
         'node_modules/jquery-sparkline/jquery.sparkline.min.js'
 
 

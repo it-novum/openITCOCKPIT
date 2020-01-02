@@ -212,7 +212,7 @@
                         </span>
                     </div>
                 </fieldset>
-                <?php if ($this->Acl->hasPermission('terminal')): ?>
+                <?php if ($this->Acl->hasPermission('terminal', 'commands')): ?>
                     <br/>
                     <div id="console"></div>
                 <?php endif; ?>

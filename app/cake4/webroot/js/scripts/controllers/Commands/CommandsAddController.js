@@ -42,7 +42,7 @@ angular.module('openITCOCKPIT')
             var args = [];
             for(var i in $scope.args){
                 if($scope.args[i].id !== arg.id){
-                    args.push($scope.args[i])
+                    args.push($scope.args[i]);
                 }
             }
 
