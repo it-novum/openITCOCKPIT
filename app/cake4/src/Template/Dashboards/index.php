@@ -36,7 +36,7 @@
 
 <div class="row">
     <div class="col-xl-12">
-        <div id="panel-1" class="panel">
+        <div id="widget-container" class="panel">
             <div class="panel-hdr">
                 <h2>
                     <?php echo __('Dashboard'); ?>
@@ -68,6 +68,37 @@
                             </span>
                                 <b class="caret"></b>
                             </a>
+                            <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}">
+                                <li>
+                                    <a href="javascript:void(0);" class="dropdown-item"
+                                       ng-click="triggerRenameTabModal(tab.name)">
+                                        <i class="fa fa-pencil-square-o"></i>
+                                        <?php echo __('Rename'); ?>
+                                    </a>
+                                </li>
+                                <li ng-hide="tab.shared">
+                                    <a href="javascript:void(0);" class="dropdown-item"
+                                       ng-click="startSharing(tab.id)">
+                                        <i class="fa fa-code-fork"></i>
+                                        <?php echo __('Start sharing'); ?>
+                                    </a>
+                                </li>
+                                <li ng-show="tab.shared">
+                                    <a href="javascript:void(0);" class="dropdown-item"
+                                       ng-click="stopSharing(tab.id)">
+                                        <i class="fa fa-code-fork"></i>
+                                        <?php echo __('Stop sharing'); ?>
+                                    </a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a href="javascript:void(0);" class="dropdown-item txt-color-red"
+                                       ng-click="deleteTab(tab.id)">
+                                        <i class="fa fa-trash"></i>
+                                        <?php echo __('Delete'); ?>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
 
@@ -85,7 +116,7 @@
                     </button>
 
 
-                    <div class="btn-group btn-group-xs " ng-hide="dashboardIsLocked">
+                    <div class="btn-group btn-group-xs margin-right-5" ng-hide="dashboardIsLocked">
                         <button class="btn btn-success dropdown-toggle waves-effect waves-themed" type="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <?php echo __('Add Widget'); ?>
@@ -122,7 +153,7 @@
 
                     <button class="btn btn-xs btn-success shadow-0" ng-click="toggleFullscreenMode()"
                             title="<?php echo __('Fullscreen mode'); ?>">
-                        <i class="fa fa-arrows-alt"></i>
+                        <i class="fa fa-expand-arrows-alt"></i>
                     </button>
                 </div>
             </div>
@@ -397,48 +428,39 @@
 
 
 
-
-
-
 <!-- Rename tab modal -->
 <div id="renameTabModal" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
-                    <i class="fa fa-pencil-square-o"></i>
+                <h5 class="modal-title">
+                    <i class="fa fa-edit"></i>
                     <?php echo __('Rename tab'); ?>
-                </h4>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
             </div>
             <div class="modal-body">
-
                 <div class="row">
-                    <div class="col-xs-12 smart-form">
-                        <div class="form-group smart-form" ng-class="{'has-error': errors.name}">
-                            <label class="label hintmark_red"><?php echo __('Tab name'); ?></label>
-                            <label class="input"> <b class="icon-prepend">
-                                    <i class="fa fa-tag"></i>
-                                </b>
-                                <input type="text" class="input-sm"
-                                       placeholder="<?php echo __('New tab name'); ?>"
-                                       ng-model="data.renameTabName">
-                            </label>
-                            <div ng-repeat="error in errors.name">
-                                <div class="help-block text-danger">{{ error }}</div>
+                    <div class="col-lg-12">
+                        <div class="input-group" ng-class="{'has-error': ack.error}">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="icon-prepend fa fa-pencil-alt"></i></span>
                             </div>
+                            <input type="text" class="form-control" placeholder="<?php echo __('New tab name'); ?>"
+                                   ng-model="data.renameTabName">
+                        </div>
+                        <div ng-repeat="error in errors.name">
+                            <div class="help-block text-danger">{{ error }}</div>
                         </div>
                     </div>
-                    <div class="col-xs-12 padding-top-10">
-                        <button type="button" class="btn btn-primary pull-right" ng-click="renameTab()">
-                            <?php echo __('Rename tab'); ?>
-                        </button>
-                    </div>
                 </div>
-
             </div>
-
             <div class="modal-footer">
+                <button type="button" class="btn btn-success" ng-click="renameTab()">
+                    <?php echo __('Rename tab'); ?>
+                </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>
                 </button>
@@ -446,6 +468,8 @@
         </div>
     </div>
 </div>
+
+
 
 
 <!-- Update available modal -->

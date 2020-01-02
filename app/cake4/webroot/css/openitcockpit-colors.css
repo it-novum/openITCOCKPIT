@@ -117,8 +117,67 @@ SECONDARY:                          #727b84
     background: #ffbb33;
 }
 
+/* TEXT COLOR */
+
+.txt-color-blue {
+    color: #57889c !important;
+}
+.txt-color-blueLight {
+    color: #92a2a8 !important;
+}
+.txt-color-blueDark {
+    color: #4c4f53 !important;
+}
+.txt-color-green {
+    color: #356e35 !important;
+}
+.txt-color-greenLight {
+    color: #71843f !important;
+}
+.txt-color-greenDark {
+    color: #496949 !important;
+}
+.txt-color-red {
+    color: #a90329 !important;
+}
+.txt-color-yellow {
+    color: #b09b5b !important;
+}
+.txt-color-orange {
+    color: #b19a6b !important;
+}
+.txt-color-orangeDark {
+    color: #a57225 !important;
+}
+.txt-color-pink {
+    color: #ac5287 !important;
+}
+.txt-color-pinkDark {
+    color: #a8829f !important;
+}
+.txt-color-purple {
+    color: #6e587a !important;
+}
+.txt-color-darken {
+    color: #404040 !important;
+}
+.txt-color-lighten {
+    color: #d5e7ec !important;
+}
 .txt-color-white {
-    color: #fff !important
+    color: #ffffff !important;
+}
+.txt-color-grayDark {
+    color: #525252 !important;
+}
+.txt-color-magenta {
+    color: #6e3671 !important;
+}
+.txt-color-teal {
+    color: #568a89 !important;
+}
+.txt-color-redLight {
+    color: #a65858 !important;
 }
 
 .input-group-addon-no-focus-label-success {
@@ -141,7 +200,6 @@ SECONDARY:                          #727b84
     height: 20px;
     padding: 0px;
 }
-
 
 
 /* dashboard widget themes */
