@@ -32,64 +32,56 @@
 
         <div class="col-lg-8">
             <div class="row">
-                <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               ng-true-value="1"
-                               ng-false-value="0"
-                               id="isRunning"
-                               ng-model="filter.isRunning"
-                               ng-model-options="{debounce: 500}">
-                        <label class="custom-control-label" for="isRunning">
-                            <?php echo __('Is running'); ?>
-                        </label>
-                    </div>
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="isRunning"
+                           ng-model="filter.isRunning"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label" for="isRunning">
+                        <?php echo __('Is running'); ?>
+                    </label>
                 </div>
 
-                <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               ng-true-value="1"
-                               ng-false-value="0"
-                               id="notCancelled"
-                               ng-model="filter.DowntimeHost.was_not_cancelled"
-                               ng-model-options="{debounce: 500}">
-                        <label class="custom-control-label" for="notCancelled">
-                            <?php echo __('Was not cancelled'); ?>
-                        </label>
-                    </div>
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="notCancelled"
+                           ng-model="filter.DowntimeHost.was_not_cancelled"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label" for="notCancelled">
+                        <?php echo __('Was not cancelled'); ?>
+                    </label>
                 </div>
 
-                <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               ng-true-value="1"
-                               ng-false-value="0"
-                               id="cancelled"
-                               ng-model="filter.DowntimeHost.was_cancelled"
-                               ng-model-options="{debounce: 500}">
-                        <label class="custom-control-label" for="cancelled">
-                            <?php echo __('Was cancelled'); ?>
-                        </label>
-                    </div>
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="cancelled"
+                           ng-model="filter.DowntimeHost.was_cancelled"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label" for="cancelled">
+                        <?php echo __('Was cancelled'); ?>
+                    </label>
                 </div>
 
-                <div class="form-group">
-                    <div class="custom-control custom-checkbox custom-control-left margin-right-10">
-                        <input type="checkbox"
-                               class="custom-control-input"
-                               ng-true-value="1"
-                               ng-false-value="0"
-                               id="cancelled"
-                               ng-model="filter.hideExpired"
-                               ng-model-options="{debounce: 500}">
-                        <label class="custom-control-label" for="cancelled">
-                            <?php echo __('Hide expired'); ?>
-                        </label>
-                    </div>
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="cancelled"
+                           ng-model="filter.hideExpired"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label" for="cancelled">
+                        <?php echo __('Hide expired'); ?>
+                    </label>
                 </div>
             </div>
 
