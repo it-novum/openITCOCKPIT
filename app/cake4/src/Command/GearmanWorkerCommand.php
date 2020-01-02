@@ -878,7 +878,7 @@ class GearmanWorkerCommand extends Command {
             $_command = explode('./', $command, 2);
             //remove spaces to get raw command name
             $_command = explode(' ', $_command[1], 2);
-            if (!isset($_command[0]) || !in_array($_command[0], $plugins)) {
+            if (!isset($_command[0]) || !in_array($_command[0], $plugins, true)) {
                 return [
                     'stdout' => [],
                     'stderr' => [
@@ -888,7 +888,7 @@ class GearmanWorkerCommand extends Command {
             }
         } else {
             $_command = explode(' ', $command, 2);
-            if (!isset($_command[0]) || !in_array($_command[0], $plugins)) {
+            if (!isset($_command[0]) || !in_array($_command[0], $plugins, true)) {
                 return [
                     'stdout' => [],
                     'stderr' => [
