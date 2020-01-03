@@ -222,6 +222,10 @@
                                                         data-panel-setstyle="bg-widget-colorbomb-gradient"
                                                         ng-click="widget.color='widget-colorbomb'"
                                                         style="margin:1px;"></button>
+                                                <button type="button" class="btn d-inline-block bg-widget-colorbomb2-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                        data-panel-setstyle="bg-widget-colorbomb2-gradient"
+                                                        ng-click="widget.color='widget-colorbomb2'"
+                                                        style="margin:1px;"></button>
                                             </div>
                                         </div>
                                         <a class="btn btn-sm btn-icon  waves-effect waves-themed"
