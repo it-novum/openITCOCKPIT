@@ -173,18 +173,64 @@
                                             <i class="fa {{widget.icon}}"></i>
                                             {{widget.title}}
                                         </div>
-                                        <a class="btn btn-sm btn-icon waves-effect waves-themed "
+                                        <a class="btn btn-sm btn-icon waves-effect waves-themed"
                                            title="<?php echo __('Edit title'); ?>"
                                            ng-click="triggerRenameWidgetModal(widget.id)"
                                            ng-hide="dashboardIsLocked">
                                             <i class="fa fa-pencil-alt"></i>
                                         </a>
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-icon waves-effect waves-themed"
+                                        <div class="">
+                                            <button type="button" ng-hide="dashboardIsLocked" class="btn btn-sm btn-icon waves-effect waves-themed" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="fas fa-palette"></i>
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-right flex-wrap" style="width: 10.2rem; padding: 0.5rem">
+                                                <button type="button" class="btn d-inline-block bg-widget-statusGreen-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                        data-panel-setstyle="bg-widget-statusGreen-gradient"
+                                                        ng-click="widget.color='widget-statusGreen'"
+                                                        style="margin:1px;"></button>
+                                                <button type="button" class="btn d-inline-block bg-widget-statusYellow-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                        data-panel-setstyle="bg-widget-statusYellow-gradient"
+                                                        ng-click="widget.color='widget-statusYellow'"
+                                                        style="margin:1px;"></button>
+                                                <button type="button" class="btn d-inline-block bg-widget-statusRed-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                        data-panel-setstyle="bg-widget-statusRed-gradient"
+                                                        ng-click="widget.color='widget-statusRed'"
+                                                        style="margin:1px;"></button>
+                                                <button type="button" class="btn d-inline-block bg-widget-statusGrey-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                        data-panel-setstyle="bg-widget-statusGrey-gradient"
+                                                        ng-click="widget.color='widget-statusGrey'"
+                                                        style="margin:1px;"></button>
+                                                <button type="button" class="btn d-inline-block bg-widget-default width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                        data-panel-setstyle="bg-widget-default"
+                                                        ng-click="widget.color='widget-default'"
+                                                        style="margin:1px;"></button>
+                                                <button type="button" class="btn d-inline-block bg-widget-white width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                        data-panel-setstyle="bg-widget-white"
+                                                        ng-click="widget.color='widget-white'"
+                                                        style="margin:1px;"></button>
+                                                <button type="button" class="btn d-inline-block bg-widget-black-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                        data-panel-setstyle="bg-widget-black-gradient"
+                                                        ng-click="widget.color='widget-black'"
+                                                        style="margin:1px;"></button>
+                                                <button type="button" class="btn d-inline-block bg-widget-anthracite-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                        data-panel-setstyle="bg-widget-anthracite-gradient"
+                                                        ng-click="widget.color='widget-anthracite'"
+                                                        style="margin:1px;"></button>
+                                                <button type="button" class="btn d-inline-block bg-widget-colorbomb-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                        data-panel-setstyle="bg-widget-colorbomb-gradient"
+                                                        ng-click="widget.color='widget-colorbomb'"
+                                                        style="margin:1px;"></button>
+                                            </div>
+                                        </div>
+
+
+                                        <!--
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-icon waves-effect waves-themed dropdown-toggle"
                                                     ng-hide="dashboardIsLocked" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i class="fas fa-palette"></i>
                                             </button>
-                                            <div class="dropdown-menu dropdown-menu-animated dropdown-menu-right d-flex flex-wrap"
+                                            <div class="dropdown-menu dropdown-menu-right d-flex flex-wrap"
                                                  style="min-width: 9.5rem; width: 9.5rem; padding: 0.5rem">
                                                 <a href="#"
                                                    class="btn d-inline-block bg-primary-600 bg-widget-statusGreen-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed"
@@ -242,6 +288,7 @@
                                                 </a>
                                             </div>
                                         </div>
+                                         -->
                                         <a class="btn btn-sm btn-icon  waves-effect waves-themed"
                                            title="<?php echo __('Remove widget'); ?>"
                                            ng-click="removeWidgetFromTab(widget.id)"

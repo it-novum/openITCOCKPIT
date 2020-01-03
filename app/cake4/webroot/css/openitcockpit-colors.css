@@ -1,12 +1,12 @@
 /*
 STD COLORS
 
-$color-primary:						#4285F4;
-$color-success:						#00C851;
-$color-info:						#33b5e5;
-$color-warning:						#ffbb33;
-$color-danger:						#CC0000;
-SECONDARY:                          #727b84
+$color-primary:                     #4285F4;
+$color-success:                     #00C851;
+$color-info:                        #33b5e5;
+$color-warning:                     #ffbb33;
+$color-danger:                      #CC0000;
+SECONDARY:                          #727b84;
  */
 
 .ok, .up {
@@ -122,60 +122,79 @@ SECONDARY:                          #727b84
 .txt-color-blue {
     color: #57889c !important;
 }
+
 .txt-color-blueLight {
     color: #92a2a8 !important;
 }
+
 .txt-color-blueDark {
     color: #4c4f53 !important;
 }
+
 .txt-color-green {
     color: #356e35 !important;
 }
+
 .txt-color-greenLight {
     color: #71843f !important;
 }
+
 .txt-color-greenDark {
     color: #496949 !important;
 }
+
 .txt-color-red {
     color: #a90329 !important;
 }
+
 .txt-color-yellow {
     color: #b09b5b !important;
 }
+
 .txt-color-orange {
     color: #b19a6b !important;
 }
+
 .txt-color-orangeDark {
     color: #a57225 !important;
 }
+
 .txt-color-pink {
     color: #ac5287 !important;
 }
+
 .txt-color-pinkDark {
     color: #a8829f !important;
 }
+
 .txt-color-purple {
     color: #6e587a !important;
 }
+
 .txt-color-darken {
     color: #404040 !important;
 }
+
 .txt-color-lighten {
     color: #d5e7ec !important;
 }
+
 .txt-color-white {
     color: #ffffff !important;
 }
+
 .txt-color-grayDark {
     color: #525252 !important;
 }
+
 .txt-color-magenta {
     color: #6e3671 !important;
 }
+
 .txt-color-teal {
     color: #568a89 !important;
 }
+
 .txt-color-redLight {
     color: #a65858 !important;
 }
@@ -207,19 +226,19 @@ SECONDARY:                          #727b84
 /* STATUS RED GRADIENT THEME
 https://www.color-hex.com/color/cc0000
 */
-.widget-statusRed > .card-header{
+.widget-statusRed > .card-header {
     background-image: linear-gradient(-250deg, #CC0000, #db4c4c);
-    color:#fff !important;
+    color: #fff !important;
 }
 
 .widget-statusRed > .card-header > a,
-.widget-statusRed > .card-header > div > button{
-    color:#fff !important;
+.widget-statusRed > .card-header > div > button {
+    color: #fff !important;
 }
 
 .widget-statusRed > .card-header > a:hover,
-.widget-statusRed > .card-header > div > button:hover{
-    color:#c3c3c3 !important;
+.widget-statusRed > .card-header > div > button:hover {
+    color: #c3c3c3 !important;
 }
 
 .bg-widget-statusRed-gradient {
@@ -229,19 +248,19 @@ https://www.color-hex.com/color/cc0000
 /* STATUS GREEN GRADIENT THEME
 https://www.color-hex.com/color/00c851
 */
-.widget-statusGreen > .card-header{
+.widget-statusGreen > .card-header {
     background-image: linear-gradient(-250deg, #00C851, #4cd885);
-    color:#fff !important;
+    color: #fff !important;
 }
 
 .widget-statusGreen > .card-header > a,
-.widget-statusGreen > .card-header > div > button{
-    color:#fff !important;
+.widget-statusGreen > .card-header > div > button {
+    color: #fff !important;
 }
 
 .widget-statusGreen > .card-header > a:hover,
-.widget-statusGreen > .card-header > div > button:hover{
-    color:#c3c3c3 !important;
+.widget-statusGreen > .card-header > div > button:hover {
+    color: #c3c3c3 !important;
 }
 
 .bg-widget-statusGreen-gradient {
@@ -251,19 +270,19 @@ https://www.color-hex.com/color/00c851
 /* STATUS YELLOW GRADIENT THEME
 https://www.color-hex.com/color/ffbb33
 */
-.widget-statusYellow > .card-header{
+.widget-statusYellow > .card-header {
     background-image: linear-gradient(-250deg, #ffbb33, #ffcf70);
-    color:#fff !important;
+    color: #fff !important;
 }
 
 .widget-statusYellow > .card-header > a,
-.widget-statusYellow > .card-header > div > button{
-    color:#fff !important;
+.widget-statusYellow > .card-header > div > button {
+    color: #fff !important;
 }
 
 .widget-statusYellow > .card-header > a:hover,
-.widget-statusYellow > .card-header > div > button:hover{
-    color:#c3c3c3 !important;
+.widget-statusYellow > .card-header > div > button:hover {
+    color: #c3c3c3 !important;
 }
 
 .bg-widget-statusYellow-gradient {
@@ -273,19 +292,19 @@ https://www.color-hex.com/color/ffbb33
 /* STATUS GREY GRADIENT THEME
 https://www.color-hex.com/color/727b84
 */
-.widget-statusGrey > .card-header{
+.widget-statusGrey > .card-header {
     background-image: linear-gradient(-250deg, #727b84, #9ca2a8);
-    color:#fff !important;
+    color: #fff !important;
 }
 
 .widget-statusGrey > .card-header > a,
-.widget-statusGrey > .card-header > div > button{
-    color:#fff !important;
+.widget-statusGrey > .card-header > div > button {
+    color: #fff !important;
 }
 
 .widget-statusGrey > .card-header > a:hover,
-.widget-statusGrey > .card-header > div > button:hover{
-    color:#c3c3c3 !important;
+.widget-statusGrey > .card-header > div > button:hover {
+    color: #c3c3c3 !important;
 }
 
 .bg-widget-statusGrey-gradient {
@@ -293,13 +312,13 @@ https://www.color-hex.com/color/727b84
 }
 
 /* DEFAULT THEME */
-.widget-default > .card-header{
+.widget-default > .card-header {
     background: #f7f9fa;
 }
 
 .widget-default > .card-header > a:hover,
-.widget-default > .card-header > div > button:hover{
-    color:#c3c3c3 !important;
+.widget-default > .card-header > div > button:hover {
+    color: #c3c3c3 !important;
 }
 
 .bg-widget-default {
@@ -307,13 +326,13 @@ https://www.color-hex.com/color/727b84
 }
 
 /* WHITE THEME */
-.widget-white > .card-header{
+.widget-white > .card-header {
     background: #fff;
 }
 
 .widget-white > .card-header > a:hover,
-.widget-white > .card-header > div > button:hover{
-    color:#c3c3c3 !important;
+.widget-white > .card-header > div > button:hover {
+    color: #c3c3c3 !important;
 }
 
 .bg-widget-white {
@@ -321,19 +340,19 @@ https://www.color-hex.com/color/727b84
 }
 
 /* BLACK THEME */
-.widget-black > .card-header{
+.widget-black > .card-header {
     background-image: linear-gradient(-250deg, #000, #4c4c4c);
-    color:#fff !important;
+    color: #fff !important;
 }
 
 .widget-black > .card-header > a,
-.widget-black > .card-header > div > button{
-    color:#fff !important;
+.widget-black > .card-header > div > button {
+    color: #fff !important;
 }
 
 .widget-black > .card-header > a:hover,
-.widget-black > .card-header > div > button:hover{
-    color:#c3c3c3 !important;
+.widget-black > .card-header > div > button:hover {
+    color: #c3c3c3 !important;
 }
 
 .bg-widget-black-gradient {
@@ -341,19 +360,19 @@ https://www.color-hex.com/color/727b84
 }
 
 /* ANTHRACITE THEME */
-.widget-anthracite > .card-header{
+.widget-anthracite > .card-header {
     background-image: linear-gradient(-250deg, #383e42, #73777a);
-    color:#fff !important;
+    color: #fff !important;
 }
 
 .widget-anthracite > .card-header > a,
-.widget-anthracite > .card-header > div > button{
-    color:#fff !important;
+.widget-anthracite > .card-header > div > button {
+    color: #fff !important;
 }
 
 .widget-anthracite > .card-header > a:hover,
-.widget-anthracite > .card-header > div > button:hover{
-    color:#c3c3c3 !important;
+.widget-anthracite > .card-header > div > button:hover {
+    color: #c3c3c3 !important;
 }
 
 .bg-widget-anthracite-gradient {
@@ -361,19 +380,19 @@ https://www.color-hex.com/color/727b84
 }
 
 /* COLORBOMB THEME */
-.widget-colorbomb > .card-header{
-    background-image: linear-gradient(9deg,  #833ab4, #fd1d1d, #fcb045);
-    color:#fff !important;
+.widget-colorbomb > .card-header {
+    background-image: linear-gradient(9deg, #833ab4, #fd1d1d, #fcb045);
+    color: #fff !important;
 }
 
 .widget-colorbomb > .card-header > a,
-.widget-colorbomb > .card-header > div > button{
-    color:#fff !important;
+.widget-colorbomb > .card-header > div > button {
+    color: #fff !important;
 }
 
 .widget-colorbomb > .card-header > a:hover,
-.widget-colorbomb > .card-header > div > button:hover{
-    color:#c3c3c3 !important;
+.widget-colorbomb > .card-header > div > button:hover {
+    color: #c3c3c3 !important;
 }
 
 .bg-widget-colorbomb-gradient {
