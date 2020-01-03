@@ -59,43 +59,6 @@ class CronjobsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['cronjobs']);
     }
 
-    public function getPlugins() {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        /** @var CronjobsTable $CronjobsTable */
-        $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
-        $include = $this->request->getQuery('include');
-        $plugins = array_values($CronjobsTable->fetchPlugins());
-        if ($include !== '') {
-            $plugins[] = $include;
-        }
-
-        $this->set(compact('plugins'));
-        $this->viewBuilder()->setOption('serialize', ['plugins']);
-    }
-
-    public function getTasks() {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        /** @var CronjobsTable $CronjobsTable */
-        $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
-        $include = $this->request->getQuery('include');
-        $pluginName = 'Core';
-        if ($this->request->getQuery('pluginName') != null || $this->request->getQuery('pluginName') != '') {
-            $pluginName = $this->request->getQuery('pluginName');
-        }
-
-        $coreTasks = $CronjobsTable->fetchTasks($pluginName);
-        if ($include !== '') {
-            $coreTasks[] = $include;
-        }
-
-        $this->set(compact('coreTasks'));
-        $this->viewBuilder()->setOption('serialize', ['coreTasks']);
-    }
-
     public function add() {
         if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -163,5 +126,47 @@ class CronjobsController extends AppController {
         }
         $this->set('cronjob', $cronjob);
         $this->viewBuilder()->setOption('serialize', ['cronjob']);
+    }
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
+    public function getPlugins() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        /** @var CronjobsTable $CronjobsTable */
+        $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
+        $include = $this->request->getQuery('include');
+        $plugins = array_values($CronjobsTable->fetchPlugins());
+        if ($include !== '') {
+            $plugins[] = $include;
+        }
+
+        $this->set(compact('plugins'));
+        $this->viewBuilder()->setOption('serialize', ['plugins']);
+    }
+
+    public function getTasks() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        /** @var CronjobsTable $CronjobsTable */
+        $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
+        $include = $this->request->getQuery('include');
+        $pluginName = 'Core';
+
+        if ($this->request->getQuery('pluginName') != null || $this->request->getQuery('pluginName') != '') {
+            $pluginName = $this->request->getQuery('pluginName');
+        }
+
+        $coreTasks = $CronjobsTable->fetchTasks($pluginName);
+        if ($include !== '') {
+            $coreTasks[] = $include;
+        }
+
+        $this->set(compact('coreTasks'));
+        $this->viewBuilder()->setOption('serialize', ['coreTasks']);
     }
 }
