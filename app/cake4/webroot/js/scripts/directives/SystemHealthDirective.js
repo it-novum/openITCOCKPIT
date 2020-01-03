@@ -6,11 +6,11 @@ angular.module('openITCOCKPIT').directive('systemHealth', function($http, $inter
         controller: function($scope){
 
             $scope.systemHealthDefault = {
-                state: "unknown",
-                update: "n/a"
+                state: 'unknown',
+                update: 'n/a'
             };
 
-            $scope.class = 'text-primary';
+            $scope.class = 'not-monitored';
 
             $scope.systemHealth = $scope.systemHealthDefault;
 
@@ -42,7 +42,7 @@ angular.module('openITCOCKPIT').directive('systemHealth', function($http, $inter
                         return 'down';
 
                     default:
-                        return 'text-primary';
+                        return 'not-monitored';
                 }
             };
 

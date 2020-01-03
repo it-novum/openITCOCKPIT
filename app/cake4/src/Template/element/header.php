@@ -78,7 +78,7 @@
                 <menustats></menustats>
             <?php endif; ?>
         </div>
-        <div class="header-icon">
+        <div>
             <system-health></system-health>
         </div>
         <div class="header-icon">
