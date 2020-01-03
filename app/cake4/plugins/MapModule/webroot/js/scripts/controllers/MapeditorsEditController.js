@@ -1318,7 +1318,7 @@ angular.module('openITCOCKPIT')
             $http.get("/map_module/mapeditors/loadMapsByString.json", {
                 params: {
                     'angular': true,
-                    'filter[Map.name]': searchString,
+                    'filter[Maps.name]': searchString,
                     'selected[]': selected,
                     'excluded[]': $scope.id
                 }

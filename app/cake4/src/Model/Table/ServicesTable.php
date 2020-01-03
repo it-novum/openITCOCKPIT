@@ -924,6 +924,38 @@ class ServicesTable extends Table {
 
     /**
      * @param $id
+     * @param bool $enableHydration
+     * @return \Cake\Datasource\ResultSetInterface
+     */
+    public function getActiveServicesByHostId($id, $enableHydration = true){
+        $query = $this->find()
+            ->where([
+                'Services.host_id' => $id,
+                'Services.disabled' => 0
+            ])
+            ->enableHydration($enableHydration)
+            ->all();
+        return $query;
+    }
+
+    /**
+     * @param array $ids
+     * @param bool $enableHydration
+     * @return \Cake\Datasource\ResultSetInterface
+     */
+    public function getActiveServicesByHostIds(array $ids, $enableHydration = true){
+        $query = $this->find()
+            ->where([
+                'Services.host_id IN' => $ids,
+                'Services.disabled' => 0
+            ])
+            ->enableHydration($enableHydration)
+            ->all();
+        return $query;
+    }
+
+    /**
+     * @param $id
      * @return array|Service|null
      */
     public function getServiceByIdForPermissionsCheck($id) {
