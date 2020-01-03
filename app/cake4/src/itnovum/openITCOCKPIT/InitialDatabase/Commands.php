@@ -798,7 +798,7 @@ of processes.  Search filters can be applied to limit the processes to check.',
                     'Command'         =>
                         [
                             'name'         => 'host-notify-by-pushover',
-                            'command_line' => '/usr/share/openitcockpit/app/Console/cake pushover_notification --type Host --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --state "$HOSTSTATEID$" --output "$HOSTOUTPUT$"  --pushover-api-token "$_CONTACTPUSHOVERAPP$" --pushover-user-token "$_CONTACTPUSHOVERUSER$" --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$" --proxy 1',
+                            'command_line' => '/usr/share/openitcockpit/app/Console/cake pushover_notification --type Host --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --state "$HOSTSTATEID$" --output "$HOSTOUTPUT$"  --pushover-api-token "$_CONTACTPUSHOVERAPP$" --pushover-user-token "$_CONTACTPUSHOVERUSER$" --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$" --proxy',
                             'command_type' => '3',
                             'human_args'   => null,
                             'uuid'         => '93f28eb9-9cce-4373-9a39-c6fef86419eb',
@@ -812,7 +812,7 @@ of processes.  Search filters can be applied to limit the processes to check.',
                     'Command'         =>
                         [
                             'name'         => 'service-notify-by-pushover',
-                            'command_line' => '/usr/share/openitcockpit/app/Console/cake pushover_notification --type Service --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --serviceuuid "$SERVICEDESC$" --state "$SERVICESTATEID$" --output "$SERVICEOUTPUT$"  --pushover-api-token "$_CONTACTPUSHOVERAPP$" --pushover-user-token "$_CONTACTPUSHOVERUSER$" --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$" --proxy 1',
+                            'command_line' => '/usr/share/openitcockpit/app/Console/cake pushover_notification --type Service --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --serviceuuid "$SERVICEDESC$" --state "$SERVICESTATEID$" --output "$SERVICEOUTPUT$"  --pushover-api-token "$_CONTACTPUSHOVERAPP$" --pushover-user-token "$_CONTACTPUSHOVERUSER$" --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$" --proxy',
                             'command_type' => '3',
                             'human_args'   => null,
                             'uuid'         => '52c9c3e2-4a00-40a4-8e75-db4649eba846',
