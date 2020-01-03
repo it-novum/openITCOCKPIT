@@ -883,41 +883,64 @@ class HostsController extends AppController {
      * @deprecated
      */
     public function edit_details($host_id = null) {
-        $this->set('MY_RIGHTS', $this->MY_RIGHTS);
-        $this->set('back_url', $this->referer());
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
 
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $ContactsTable ContactsTable */
-        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-        /** @var $ContactgroupsTable ContactgroupsTable */
-        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        $User = new User($this->getUser());
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-        $containerIds = $this->MY_RIGHTS;
-        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
+        if ($this->request->is('get')) {
+            $hosts = $HostsTable->getHostsForCopy(func_get_args());
 
-        //get sharing containers
-        $sharingContainers = $this->getSharingContainers(null, false);
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            /** @var $ContactsTable ContactsTable */
+            $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+            /** @var $ContactgroupsTable ContactgroupsTable */
+            $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+
+            $containerIds = $this->MY_RIGHTS;
+            $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
+            $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
+
+            //get sharing containers
+            $sharingContainers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+
+            $this->set('hosts', $hosts);
+            $this->set('contacts', Api::makeItJavaScriptAble($contacts));
+            $this->set('contactgroups', Api::makeItJavaScriptAble($contactgroups));
+
+            $this->set('sharingContainers', Api::makeItJavaScriptAble($sharingContainers));
+            $this->viewBuilder()->setOption('serialize', [
+                    'hosts',
+                    'contacts',
+                    'contactgroups',
+                    'sharingContainers'
+                ]
+            );
+            return;
+        }
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->request->is('post') || $this->request->is('put')) {
+            debug(func_get_args());
             foreach (func_get_args() as $host_id) {
-                $this->Host->unbindModel([
-                        'hasMany'             => ['Hostcommandargumentvalue', 'HostescalationHostMembership', 'HostdependencyHostMembership', 'Service', 'Customvariable'],
-                        'hasAndBelongsToMany' => ['Parenthost', 'Hostgroup'],
-                        'belongsTo'           => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
-                    ]
-                );
                 $data = ['Host' => []];
-                $host = $this->Host->findById($host_id);
+                $host = $HostsTable->getHostById($host_id);
                 if (!empty($host)) {
                     //Fill up required fields
-                    $data['Host']['id'] = $host['Host']['id'];
-                    $data['Host']['container_id'] = $host['Host']['container_id'];
-                    $data['Host']['name'] = $host['Host']['name'];
-                    $data['Host']['hosttemplate_id'] = $host['Host']['hosttemplate_id'];
-                    $data['Host']['address'] = $host['Host']['address'];
-
+                    $data['Host']['id'] = $host_id;
+                    $data['Host']['container_id'] = $host->get('container_id');
+                    $data['Host']['name'] = $host->get('name');
+                    $data['Host']['hosttemplate_id'] = $host->get('hosttemplate_id');
+                    $data['Host']['address'] = $host->get('address');
+                    debug($host->get('container'));
+                    return;
                     $hostSharingPermissions = new HostSharingPermissions(
                         $host['Host']['container_id'],
                         $this->hasRootPrivileges,
