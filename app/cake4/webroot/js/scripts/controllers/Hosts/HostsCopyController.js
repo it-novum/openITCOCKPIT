@@ -45,7 +45,7 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 NotyService.genericSuccess();
-                //RedirectService.redirectWithFallback('HostsIndex');
+                RedirectService.redirectWithFallback('HostsIndex');
             }, function errorCallback(result){
                 //Print errors
                 NotyService.genericError();

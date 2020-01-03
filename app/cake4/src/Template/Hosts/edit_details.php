@@ -34,165 +34,307 @@
         </h1>
     </div>
 </div>
-
-
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Edit host details'); ?></h2>
+        <h2 class="hidden-mobile hidden-tablet">
+            <?php echo __('Edit host detail'); ?>
+        </h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
-            <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
+            <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
+                <a class="btn btn-default" ui-sref="HostsIndex">
+                    <i class="fa fa-arrow-left"></i>
+                    <?php echo __('Back to list'); ?>
+                </a>
+            <?php endif; ?>
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Host', [
-                'class' => 'form-horizontal clear',
-            ]); ?>
-            <div class="row">
-                <div class="col-xs-12 col-md-9 col-lg-7">
-                    <div class="padding-left-10">
-                        <div class="editHostDetailFormInput">
-                            <?php
-                            echo $this->Form->input('edit_sharing', [
-                                    'type'      => 'checkbox',
-                                    'checked'   => false,
-                                    'label'     => [
-                                        'class' => 'text-primary',
-                                        'text'  => __('Edit Sharing')
-                                    ],
-                                    'wrapInput' => false,
-                                    'class'     => 'parent_checkbox'
-                                ]
-                            );
-                            ?>
-                            <div class="scope">
-                                <?php
-
-                                if ($this->Acl->hasPermission('sharing')) {
-                                    echo $this->Form->input('Host.shared_container', [
-                                            'options'   => $this->Html->chosenPlaceholder($sharingContainers),
-                                            'multiple'  => true,
-                                            //'selected'  => $sharedContainers,
-                                            'class'     => 'chosen',
-                                            'style'     => 'width: 100%',
-                                            'label'     => __('Shared containers'),
-                                            'wrapInput' => 'col col-xs-8',
-                                            'disabled'  => true
-                                        ]
-                                    );
-                                }
-
-                                echo $this->Form->input('keep_sharing', [
-                                        'type'     => 'checkbox',
-                                        'checked'  => false,
-                                        'label'    => __('Keep existing'),
-                                        'disabled' => true
-                                    ]
-                                );
-                                ?>
-                            </div>
-                        </div>
-                        <hr/>
-                        <div class="editHostDetailFormInput">
-                            <?php echo $this->Form->input('edit_description', [
-                                    'type'      => 'checkbox',
-                                    'checked'   => false,
-                                    'label'     => [
-                                        'class' => 'text-primary',
-                                        'text'  => __('Edit description')
-                                    ],
-                                    'wrapInput' => false,
-                                    'class'     => 'parent_checkbox'
-                                ]
-                            );
-                            ?>
-                            <div class="scope">
-                                <?php echo $this->Form->input('Host.description', ['type' => 'text', 'label' => __('Description'), 'disabled' => true]); ?>
-                            </div>
-                        </div>
-                        <hr/>
-
-                        <div class="editHostDetailFormInput">
-                            <?php echo $this->Form->input('edit_contacts', ['type' => 'checkbox', 'checked' => false, 'label' => ['class' => 'text-primary', 'text' => __('Edit contacts')], 'wrapInput' => false, 'class' => 'parent_checkbox']); ?>
-                            <div class="scope">
-                                <?php echo $this->Form->input(
-                                    'Host.Contact', [
-                                    'options'   => $contacts,
-                                    'multiple'  => true,
-                                    'class'     => 'chosen',
-                                    'style'     => 'width:100%;',
-                                    'label'     => __('Contacts'),
-                                    'wrapInput' => 'col col-xs-8',
-                                    'disabled'  => true,
-                                ]); ?>
-                                <?php echo $this->Form->input('keep_contacts', ['type' => 'checkbox', 'checked' => false, 'label' => __('Keep existing'), 'disabled' => true]); ?>
-                            </div>
-                        </div>
-                        <hr/>
-
-                        <div class="editHostDetailFormInput">
-                            <?php echo $this->Form->input('edit_contactgroups', ['type' => 'checkbox', 'checked' => false, 'label' => ['class' => 'text-primary', 'text' => __('Edit contact groups')], 'wrapInput' => false, 'class' => 'parent_checkbox']); ?>
-                            <div class="scope">
-                                <?php echo $this->Form->input(
-                                    'Host.Contactgroup', [
-                                    'options'   => $contactgroups,
-                                    'multiple'  => true,
-                                    'class'     => 'chosen',
-                                    'style'     => 'width:100%;',
-                                    'label'     => __('Contactgroups'),
-                                    'wrapInput' => 'col col-xs-8',
-                                    'disabled'  => true,
-                                ]); ?>
-                                <?php echo $this->Form->input('keep_contactgroups', ['type' => 'checkbox', 'checked' => false, 'label' => __('Keep existing'), 'disabled' => true]); ?>
-                            </div>
-                        </div>
-                        <hr/>
-
-                        <div class="editHostDetailFormInput">
-                            <?php echo $this->Form->input('edit_url', ['type' => 'checkbox', 'checked' => false, 'label' => ['class' => 'text-primary', 'text' => __('Edit host URL')], 'wrapInput' => false, 'class' => 'parent_checkbox']); ?>
-                            <div class="scope">
-                                <?php echo $this->Form->input('Host.host_url', ['type' => 'text', 'label' => __('Host URL'), 'disabled' => true]); ?>
-                            </div>
-                        </div>
-                        <hr/>
-
-                        <div class="editHostDetailFormInput">
-                            <?php echo $this->Form->input('edit_tags', ['type' => 'checkbox', 'checked' => false, 'label' => ['class' => 'text-primary', 'text' => __('Edit tags')], 'wrapInput' => false, 'class' => 'parent_checkbox']); ?>
-                            <div class="scope">
-                                <?php echo $this->Form->input('Host.tags', ['type' => 'text', 'label' => __('Tags'), 'disabled' => true]); ?>
-                                <?php echo $this->Form->input('keep_tags', ['type' => 'checkbox', 'checked' => false, 'label' => __('Keep existing'), 'disabled' => true]); ?>
-                            </div>
-                        </div>
-                        <hr/>
-
-                        <div class="editHostDetailFormInput">
-                            <?php echo $this->Form->input('edit_priority', ['type' => 'checkbox', 'checked' => false, 'label' => ['class' => 'text-primary', 'text' => __('Edit priority')], 'wrapInput' => false, 'class' => 'parent_checkbox']); ?>
-                            <div class="scope">
-                                <div class="form-group">
-                                    <label class="col col-md-2 control-label"
-                                           for="HostPriority"><?php echo __('Priority'); ?> </label>
-                                    <div class="col col-xs-10 col-md-10 col-lg-10 smart-form">
-                                        <div class="rating pull-left">
-                                            <?php // The smallest priority is 1 at the moment
-                                            for ($i = 5; $i > 0; $i--): ?>
-                                                <input type="radio" id="Hoststars-rating-<?php echo $i; ?>"
-                                                       value="<?php echo $i; ?>" name="data[Host][priority]"
-                                                       disabled="disabled">
-                                                <label for="Hoststars-rating-<?php echo $i; ?>"><i
-                                                            class="fa fa-fire"></i></label>
-                                            <?php endfor; ?>
+            <form class="form-horizontal">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
+                        <div class="jarviswidget">
+                            <header>
+                                <span class="widget-icon">
+                                    <i class="fa fa-magic"></i>
+                                </span>
+                                <h2><?php echo __('Basic configuration'); ?></h2>
+                            </header>
+                            <div>
+                                <div class="widget-body">
+                                    <div class="row">
+                                        <div>
+                                            <div class="form-group">
+                                                <label class="col-xs-12 col-lg-2 control-label">
+                                                    <button class="btn btn-xs btn-primary"
+                                                            title="<?php echo __('Unlock for edit'); ?>">
+                                                        <i class="fa fa-lock fa-lock"
+                                                           ng-class="{ 'fa-lock': !dashboardIsLocked, 'fa-unlock': dashboardIsLocked }"></i>
+                                                    </button>
+                                                    <?php echo __('Shared containers'); ?>
+                                                </label>
+                                                <div class="col-xs-12 col-lg-10">
+                                                    <select
+                                                        id="SharedContainers"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="sharingContainers"
+                                                        disabled="disabled"
+                                                        ng-options="container.key as container.value for container in sharingContainers"
+                                                        ng-model="post.Host.hosts_to_containers_sharing._ids">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-xs-12 col-lg-2 control-label">
+                                                <button class="btn btn-xs btn-primary"
+                                                        title="<?php echo __('Unlock for edit'); ?>">
+                                                    <i class="fa fa-lock fa-lock"
+                                                       ng-class="{ 'fa-lock': !dashboardIsLocked, 'fa-unlock': dashboardIsLocked }"></i>
+                                                </button>
+                                                <?php echo __('Description'); ?>
+                                            </label>
+                                            <div class="col-xs-12 col-lg-10">
+                                                <input
+                                                    class="form-control"
+                                                    type="text"
+                                                    ng-model="post.Host.description">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-xs-12 col-lg-2 control-label">
+                                                <button class="btn btn-xs btn-primary"
+                                                        title="<?php echo __('Unlock for edit'); ?>">
+                                                    <i class="fa fa-lock fa-lock"
+                                                       ng-class="{ 'fa-lock': !dashboardIsLocked, 'fa-unlock': dashboardIsLocked }"></i>
+                                                </button>
+                                                <?php echo __('Tags'); ?>
+                                            </label>
+                                            <div class="col-xs-12 col-lg-10">
+                                                <input
+                                                    class="form-control tagsinput"
+                                                    type="text"
+                                                    ng-model="post.Host.tags">
+                                                <div class="help-block">
+                                                    <?php echo __('Press return to separate tags'); ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-xs-12 col-lg-2 control-label">
+                                                <button class="btn btn-xs btn-primary"
+                                                        title="<?php echo __('Unlock for edit'); ?>">
+                                                    <i class="fa fa-lock fa-lock"
+                                                       ng-class="{ 'fa-lock': !dashboardIsLocked, 'fa-unlock': dashboardIsLocked }"></i>
+                                                </button>
+                                                <?php echo __('Priority'); ?>
+                                            </label>
+                                            <div class="col-xs-12 col-lg-10">
+                                                <priority-directive priority="post.Host.priority"
+                                                                    callback="setPriority"></priority-directive>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div> <!-- close col -->
-            </div> <!-- close row-->
-            <br/>
-            <?php echo $this->Form->formActions(); ?>
-        </div> <!-- close widget body -->
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
+                        <div class="jarviswidget">
+                            <header>
+                                <span class="widget-icon">
+                                    <i class="fa fa-terminal"></i>
+                                </span>
+                                <h2><?php echo __('Check configuration'); ?></h2>
+                            </header>
+                            <div>
+                                <div class="widget-body">
+                                    <div class="form-group">
+                                        <label class="col-xs-12 col-lg-2 control-label">
+                                            <?php echo __('Check interval'); ?>
+                                        </label>
+                                        <interval-input-directive
+                                            interval="post.Host.check_interval"></interval-input-directive>
+                                        <div class="col-xs-12 col-lg-offset-2">
+                                            <div ng-repeat="error in errors.check_interval">
+                                                <div class="help-block text-danger">{{ error }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-xs-12 col-lg-2 control-label">
+                                            <?php echo __('Retry interval'); ?>
+                                        </label>
+                                        <interval-input-directive
+                                            interval="post.Host.retry_interval"></interval-input-directive>
+                                        <div class="col-xs-12 col-lg-offset-2">
+                                            <div ng-repeat="error in errors.retry_interval">
+                                                <div class="help-block text-danger">{{ error }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-xs-12 col-lg-2 control-label">
+                                            <?php echo __('Max. number of check attempts'); ?>
+                                        </label>
+                                        <div class="col-xs-12 col-lg-7">
+                                            <div class="btn-group">
+                                                <?php for ($i = 1; $i <= 10; $i++): ?>
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-default"
+                                                        ng-click="post.Host.max_check_attempts = <?php echo h($i) ?>"
+                                                        ng-class="{'active': post.Host.max_check_attempts == <?php echo h($i); ?>}">
+                                                        <?php echo h($i); ?>
+                                                    </button>
+                                                <?php endfor; ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-lg-3">
+                                            <input
+                                                class="form-control"
+                                                type="number"
+                                                min="0"
+                                                ng-model="post.Host.max_check_attempts">
+                                        </div>
+                                        <div class="col-xs-12 col-lg-offset-2 col-lg-12">
+                                            <div class="help-block">
+                                                <?php echo __('Number of failed attempts before the host will switch into hard state.'); ?>
+                                            </div>
+                                            <div class="help-block">
+                                                <?php echo __('Worst case time delay until notification command gets executed after state hits a non ok state: '); ?>
+                                                <human-time-directive
+                                                    seconds="(post.Host.check_interval + (post.Host.max_check_attempts -1) * post.Host.retry_interval)"></human-time-directive>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
+                        <div class="jarviswidget">
+                            <header>
+                                <span class="widget-icon">
+                                    <i class="fa fa-envelope-open-o"></i>
+                                </span>
+                                <h2><?php echo __('Notification configuration'); ?></h2>
+                            </header>
+                            <div>
+                                <div class="widget-body">
+                                    <div class="form-group">
+                                        <label class="col-xs-12 col-lg-2 control-label">
+                                            <?php echo __('Notification interval'); ?>
+                                        </label>
+                                        <interval-input-directive
+                                            interval="post.Host.notification_interval"></interval-input-directive>
+                                        <div class="col-xs-12 col-lg-offset-2">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-xs-12 col-lg-2 control-label">
+                                            <?php echo __('Contacts'); ?>
+                                        </label>
+                                        <div class="col-xs-12 col-lg-10">
+                                            <select
+                                                id="ContactsPeriodSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="contacts"
+                                                multiple
+                                                ng-options="contact.key as contact.value for contact in contacts"
+                                                ng-model="post.Host.contacts._ids">
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-xs-12 col-lg-2 control-label">
+                                            <?php echo __('Contact groups'); ?>
+                                        </label>
+                                        <div class="col-xs-12 col-lg-10">
+                                            <select
+                                                id="ContactgroupsSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="contactgroups"
+                                                multiple
+                                                ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
+                                                ng-model="post.Host.contactgroups._ids">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
+                        <div class="jarviswidget">
+                            <header>
+                                <span class="widget-icon">
+                                    <i class="fa fa-wrench"></i>
+                                </span>
+                                <h2><?php echo __('Misc. configuration'); ?></h2>
+                            </header>
+                            <div>
+                                <div class="widget-body">
+                                    <div class="form-group">
+                                        <label class="col-xs-12 col-lg-2 control-label">
+                                            <?php echo __('Host URL'); ?>
+                                        </label>
+                                        <div class="col-xs-12 col-lg-10">
+                                            <input
+                                                class="form-control"
+                                                placeholder="https://issues.example.org?host=$HOSTNAME$"
+                                                type="text"
+                                                ng-model="post.Host.host_url">
+                                            <div ng-repeat="error in errors.host_url">
+                                                <div class="help-block text-danger">{{ error }}</div>
+                                            </div>
+                                            <div class="help-block">
+                                                <?php echo __('The macros $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$ and $HOSTADDRESS$ will be replaced'); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group" ng-class="{'has-error': errors.notes}">
+                                        <label class="col-xs-12 col-lg-2 control-label">
+                                            <?php echo __('Notes'); ?>
+                                        </label>
+                                        <div class="col-xs-12 col-lg-10">
+                                            <input
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="post.Host.notes">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                        <div class="well formactions ">
+                            <div class="pull-right">
+                                <input class="btn btn-primary" type="submit"
+                                       value="<?php echo __('Update details'); ?>">
+                                <a back-button fallback-state='HostsIndex'
+                                   class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-</div> <!-- end jarviswidget -->
+</div>

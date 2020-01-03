@@ -102,8 +102,8 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.linkForEditDetails = function(){
-            var baseUrl = '/hosts/edit_details/';
-            return buildUrl(baseUrl);
+            var ids = Object.keys(MassChangeService.getSelected());
+            return ids.join(',');
         };
 
         var buildUrl = function(baseUrl){
