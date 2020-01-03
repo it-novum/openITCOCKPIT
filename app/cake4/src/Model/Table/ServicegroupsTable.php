@@ -40,7 +40,7 @@ class ServicegroupsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('servicegroups');
@@ -75,7 +75,7 @@ class ServicegroupsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -109,7 +109,7 @@ class ServicegroupsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
         $rules->add($rules->existsIn(['container_id'], 'Containers'));
 
@@ -612,5 +612,55 @@ class ServicegroupsTable extends Table {
         ));
 
         return $serviceIds;
+    }
+
+    /**
+     * @param int $serviceId
+     * @param int|array $servicegroupIds
+     * @return bool
+     */
+    public function isServiceInServicegroup($serviceId, $servicegroupIds) {
+        if (!is_array($servicegroupIds)) {
+            $servicegroupIds = [$servicegroupIds];
+        }
+        $servicegroupIds = array_unique($servicegroupIds);
+
+        /** @var ServicesToServicegroupsTable $ServicesToServicegroupsTable */
+        $ServicesToServicegroupsTable = TableRegistry::getTableLocator()->get('ServicesToServicegroups');
+
+        $count = $ServicesToServicegroupsTable->find()
+            ->where([
+                'service_id'         => $serviceId,
+                'servicegroup_id IN' => $servicegroupIds
+            ])
+            ->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        // Through servicetemplate maybe?
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $service = $ServicesTable->get($serviceId, [
+            'contain' => [
+                'Servicegroups'
+            ]
+        ]);
+
+        if (empty($service->get('servicegroups'))) {
+            /** @var ServicetemplatesToServicegroupsTable $ServicetemplatesToServicegroupsTable */
+            $ServicetemplatesToServicegroupsTable = TableRegistry::getTableLocator()->get('ServicetemplatesToServicegroups');
+            $count = $ServicetemplatesToServicegroupsTable->find()
+                ->where([
+                    'servicetemplate_id' => $service->get('servicetemplate_id'),
+                    'servicegroup_id IN' => $servicegroupIds
+                ])
+                ->count();
+
+            return $count > 0;
+        }
+
+        return false;
     }
 }

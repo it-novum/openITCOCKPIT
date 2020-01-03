@@ -59,11 +59,11 @@
                             </label>
                             <div class="col col-xs-12 col-lg-10">
                                 <select
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="containers"
-                                        ng-options="container.key as container.value for container in containers"
-                                        ng-model="post.Hostdependency.container_id">
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="post.Hostdependency.container_id">
                                 </select>
                                 <div class="info-block-helptext">
                                     <?php echo __('Host dependencies are an advanced feature that allow you to 
@@ -82,7 +82,7 @@
                                         <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
                                     </label>
                                     <label class="label label-light label-xs no-border"
-                                          ng-class="{'has-error': errors.hosts}">
+                                           ng-class="{'has-error': errors.hosts}">
                                         <?php echo __('Hosts'); ?>
                                     </label>
                                 </div>
@@ -188,11 +188,11 @@
                             </label>
                             <div class="col col-xs-12 col-lg-10">
                                 <select
-                                        data-placeholder="<?php echo __('Please choose a timeperiod'); ?>"
-                                        class="form-control"
-                                        chosen="timeperiods"
-                                        ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
-                                        ng-model="post.Hostdependency.timeperiod_id">
+                                    data-placeholder="<?php echo __('Please choose a timeperiod'); ?>"
+                                    class="form-control"
+                                    chosen="timeperiods"
+                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                    ng-model="post.Hostdependency.timeperiod_id">
                                 </select>
                             </div>
                         </div>
@@ -306,7 +306,7 @@
                                     <div class="margin-bottom-0">
                                         <label for="execution_none"
                                                class="col col-md-7 control-label padding-top-0">
-                                            <span class="label label-primary notify-label-small">
+                                            <span class="label label-primary label-none notify-label-small">
                                                 <?php echo __('Execution none'); ?>
                                             </span>
                                         </label>
@@ -320,6 +320,12 @@
                                                 <i class="checkbox-primary"></i>
                                             </label>
                                         </div>
+                                        <i class="fa fa-lg fa-info-circle text-info padding-top-7 helpText"
+                                           id="infoButtonExecutionOptions" role="tooltip" data-toggle="tooltip"
+                                           data-html="true" title="<?php echo __('\'Execution none\' option'); ?>"
+                                           data-content="<div>
+                                           <?php echo __('Another options will be deselected automatically!'); ?>
+                                           </div>"></i>
                                     </div>
                                 </li>
                             </ul>
@@ -417,7 +423,7 @@
                                     <div class="margin-bottom-0">
                                         <label for="notification_none"
                                                class="col col-md-7 control-label padding-top-0">
-                                            <span class="label label-primary notify-label-small">
+                                            <span class="label label-primary label-none notify-label-small">
                                                 <?php echo __('Notification none'); ?>
                                             </span>
                                         </label>
@@ -431,6 +437,12 @@
                                                 <i class="checkbox-primary"></i>
                                             </label>
                                         </div>
+                                        <i class="fa fa-lg fa-info-circle text-info padding-top-7 helpText"
+                                           id="infoButtonNotificationOptions" role="tooltip" data-toggle="tooltip"
+                                           data-html="true" title="<?php echo __('\'Notification none\' option'); ?>"
+                                           data-content="<div>
+                                           <?php echo __('Another options will be deselected automatically!'); ?>
+                                           </div>"></i>
                                     </div>
                                 </li>
                             </ul>

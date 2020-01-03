@@ -1015,6 +1015,33 @@ class ServicesTable extends Table {
     }
 
     /**
+     * @param string $uuid
+     * @return array|\Cake\Datasource\EntityInterface
+     * @throws RecordNotFoundException
+     */
+    public function getServiceByUuidForExternalCommand($uuid) {
+        return $this->find()
+            ->select([
+                'Services.id',
+                'Services.uuid',
+            ])
+            ->where([
+                'Services.uuid' => $uuid
+            ])
+            ->contain([
+                'Hosts' => function (Query $query) {
+                    $query->select([
+                        'Hosts.id',
+                        'Hosts.uuid',
+                        'Hosts.satellite_id'
+                    ]);
+                    return $query;
+                }
+            ])
+            ->firstOrFail();
+    }
+
+    /**
      * @param $id
      * @return array|Service|null
      */
@@ -2390,7 +2417,7 @@ class ServicesTable extends Table {
             $query->andWhere(
                 $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name) LIKE :servicename')
             );
-            $query->bind(':servicename',  sprintf('%%%s%%', $conditions['Service']['name']));
+            $query->bind(':servicename', sprintf('%%%s%%', $conditions['Service']['name']));
         }
 
 
@@ -2440,7 +2467,35 @@ class ServicesTable extends Table {
      * @param array $hostIds
      * @return array
      */
-    public function getServicesByHostIdForDelete($hostIds = []){
+    public function getServicesByHostIdForDelete($hostIds = []) {
+        if (!is_array($hostIds)) {
+            $hostIds = [$hostIds];
+        }
+        if (empty($hostIds)) {
+            return [];
+        }
+        $hostIds = array_unique($hostIds);
+
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.name'
+            ])->where([
+                'Services.host_id IN' => $hostIds
+            ])->disableHydration();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        return $result;
+    }
+
+    /**
+     * @param array $hostIds
+     * @return array
+     */
+    public function getServicesByHostIdForCopy($hostIds = []){
         if (!is_array($hostIds)) {
             $hostIds = [$hostIds];
         }
@@ -2451,8 +2506,7 @@ class ServicesTable extends Table {
 
         $query = $this->find()
             ->select([
-                'Services.id',
-                'Services.name'
+                'Services.id'
             ])->where([
                 'Services.host_id IN' => $hostIds
             ])->disableHydration();

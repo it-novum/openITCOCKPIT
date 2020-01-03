@@ -142,24 +142,24 @@ class CronjobsTable extends Table {
     public function fetchTasks($pluginName) {
         $return = [];
         if ($pluginName == 'Core') {
-            if (is_dir(APP . 'Shell/Task')) {
-                $result = scandir(APP . 'Shell/Task/');
+            if (is_dir(APP . 'Command')) {
+                $result = scandir(APP . 'Command/');
                 if (!empty($result) && is_array($result)) {
                     foreach ($result as $file) {
-                        if ($file != '.' && $file != '..' && $file != 'empty') {
-                            $taskName = str_replace('Task.php', '', $file);
+                        if ($file != '.' && $file != '..' && $file != 'empty' && $file != '.empty') {
+                            $taskName = str_replace('Command.php', '', $file);
                             $return[$taskName] = $taskName;
                         }
                     }
                 }
             }
         } else {
-            if (is_dir(APP . 'plugins/' . $pluginName . '/src/Shell/Task')) {
-                $result = scandir(OLD_APP . 'Plugin/' . $pluginName . '/src/Shell/Task/');
+            if (is_dir(APP . '../plugins/' . $pluginName . '/src/Command/')) {
+                $result = scandir(APP . '../plugins/' . $pluginName . '/src/Command/');
                 if (!empty($result) && is_array($result)) {
                     foreach ($result as $file) {
-                        if ($file != '.' && $file != '..' && $file != 'empty') {
-                            $taskName = str_replace('Task.php', '', $file);
+                        if ($file != '.' && $file != '..' && $file != 'empty' && $file != '.empty') {
+                            $taskName = str_replace('Command.php', '', $file);
                             $return[$taskName] = $taskName;
                         }
                     }

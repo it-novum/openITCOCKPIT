@@ -23,29 +23,47 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class DefaultNagiosConfigTask extends AppShell {
-    public function execute() {
+namespace itnovum\openITCOCKPIT\Core\MonitoringEngine;
+
+use Cake\Core\Configure;
+use Cake\Filesystem\File;
+
+/**
+ * Class NagiosConfigDefaults
+ * @package itnovum\openITCOCKPIT\Core\MonitoringEngine
+ */
+class NagiosConfigDefaults {
+
+    /**
+     * @var array
+     */
+    private $conf = [];
+
+    private $defaultFiles = [
+        '8147201e91c4dcf7c016ba2ddeac3fd7e72edacc' => 'defaultHost',
+        '689bfdd01af8a21c4a4706c5117849c2fc2c3f38' => 'defaultService',
+        '59132ffe6197bee769d97779a14140cfb890fd7b' => 'default24x7',
+        'b6f6cd2bf046d23cc2a49fd2e7fb82251d8fdb75' => 'defaultHostcheck',
+        '69077998d62c4da5de0af5212a1c1df3c2a6e5fb' => 'defaultNone',
+        '12f498cb0b48930be9bdfd598de58974f3f062d5' => 'defaultContact',
+        '358db775dc4b1ecbc4e02a3d448d2f119f515269' => 'defaultNotificationCommand',
+        '474d000935152d9c5a49ff5f2f998c5ce925b1ca' => 'service_perfdata_file_processing_command',
+        '46c47b8b8836cfdb948dbb8c34bebb647b8ec0c8' => 'service_perfdata_command',
+        '2106cf0bf26a82af262c4078e6d9f94eded84d2a' => 'check_fresh',
+        '89fdde0b28373dc4f361cfb810b35342cc2c3232' => 'defaultContactgroup',
+    ];
+
+    public function __construct() {
         Configure::load('nagios');
+
         $this->conf = [
             'path'     => Configure::read('nagios.basepath') . Configure::read('nagios.etc') . Configure::read('nagios.export.config'),
             'suffix'   => Configure::read('nagios.export.suffix'),
             'defaults' => 'defaults/',
         ];
+    }
 
-        $this->defaultFiles = [
-            '8147201e91c4dcf7c016ba2ddeac3fd7e72edacc' => 'defaultHost',
-            '689bfdd01af8a21c4a4706c5117849c2fc2c3f38' => 'defaultService',
-            '59132ffe6197bee769d97779a14140cfb890fd7b' => 'default24x7',
-            'b6f6cd2bf046d23cc2a49fd2e7fb82251d8fdb75' => 'defaultHostcheck',
-            '69077998d62c4da5de0af5212a1c1df3c2a6e5fb' => 'defaultNone',
-            '12f498cb0b48930be9bdfd598de58974f3f062d5' => 'defaultContact',
-            '358db775dc4b1ecbc4e02a3d448d2f119f515269' => 'defaultNotificationCommand',
-            '474d000935152d9c5a49ff5f2f998c5ce925b1ca' => 'service_perfdata_file_processing_command',
-            '46c47b8b8836cfdb948dbb8c34bebb647b8ec0c8' => 'service_perfdata_command',
-            '2106cf0bf26a82af262c4078e6d9f94eded84d2a' => 'check_fresh',
-            '89fdde0b28373dc4f361cfb810b35342cc2c3232' => 'defaultContactgroup',
-        ];
-
+    public function execute() {
         if (!is_dir($this->conf['path'] . $this->conf['defaults'])) {
             mkdir($this->conf['path'] . $this->conf['defaults']);
         }

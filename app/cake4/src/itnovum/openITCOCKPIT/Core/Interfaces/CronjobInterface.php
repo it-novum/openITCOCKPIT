@@ -24,12 +24,17 @@
 
 namespace itnovum\openITCOCKPIT\Core\Interfaces;
 
+use Cake\Console\Arguments;
+use Cake\Console\ConsoleIo;
+
 interface CronjobInterface {
 
     /**
-     * @param bool $quiet
-     * @return mixed
+     * Implement this method with your cronjobs logic.
+     *
+     * @param \Cake\Console\Arguments $args The command arguments.
+     * @param \Cake\Console\ConsoleIo $io The console io
+     * @return null|void|int The exit code or null for success
      */
-    public function execute($quiet = false);
-
+    public function execute(Arguments $args, ConsoleIo $io);
 }

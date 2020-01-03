@@ -22,6 +22,16 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+namespace itnovum\openITCOCKPIT\Core\MonitoringEngine;
+
+use App\Model\Entity\CalendarHoliday;
+use App\Model\Entity\Host;
+use App\Model\Entity\Hostdependency;
+use App\Model\Entity\Hostgroup;
+use App\Model\Entity\Service;
+use App\Model\Entity\Servicegroup;
+use App\Model\Table\CalendarsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
@@ -38,81 +48,40 @@ use App\Model\Table\ServiceescalationsTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Core\Configure;
+use Cake\Core\Plugin;
+use Cake\Datasource\EntityInterface;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\UUID;
 
-/**
- * Class NagiosExportTask
- * @property Hosttemplate $Hosttemplate
- * @property Timeperiod $Timeperiod
- * @property Contact $Contact
- * @property Contactgroup $Contactgroup
- * @property Container $Container
- * @property Customvariable $Customvariable
- * @property Hosttemplatecommandargumentvalue $Hosttemplatecommandargumentvalue
- * @property Servicetemplatecommandargumentvalue $Servicetemplatecommandargumentvalue
- * @property Hostcommandargumentvalue $Hostcommandargumentvalue
- * @property Servicecommandargumentvalue $Servicecommandargumentvalue
- * @property Hostgroup $Hostgroup
- * @property Hostescalation $Hostescalation
- * @property Host $Host
- * @property Servicetemplate $Servicetemplate
- * @property Service $Service
- * @property Systemsetting $Systemsetting
- * @property Serviceescalation $Serviceescalation
- * @property Servicegroup $Servicegroup
- * @property Hostdependency $Hostdependency
- * @property Servicedependency $Servicedependency
- * @property DeletedService $DeletedService
- * @property DeletedHost $DeletedHost
- * @property Serviceeventcommandargumentvalue $Serviceeventcommandargumentvalue
- * @property Servicetemplateeventcommandargumentvalue $Servicetemplateeventcommandargumentvalue
- * @property Satellite $Satellite
- */
-class NagiosExportTask extends AppShell {
-    /**
-     * This code gets executed by the sudo_server!
-     * @var array
-     */
-    public $uses = [
-        'Hosttemplate',
-        'Timeperiod',
-        'Contact',
-        'Contactgroup',
-        'Container',
-        'Customvariable',
-        'Hosttemplatecommandargumentvalue',
-        'Servicetemplatecommandargumentvalue',
-        'Hostcommandargumentvalue',
-        'Servicecommandargumentvalue',
-        'Hostgroup',
-        'Hostescalation',
-        'Host',
-        'Servicetemplate',
-        'Service',
-        'Systemsetting',
-        'Serviceescalation',
-        'Servicegroup',
-        'Hostdependency',
-        'Servicedependency',
-        'DeletedService',
-        'DeletedHost',
-        'Serviceeventcommandargumentvalue',
-        'Servicetemplateeventcommandargumentvalue',
-        'Calendar'
-    ];
+class NagiosConfigGenerator {
+
+    private $conf = [];
+
+    private $_systemsettings = [];
+
+    private $FRESHNESS_THRESHOLD_ADDITION = 0;
 
     /**
-     * NagiosExportTask constructor.
+     * Is DistributeModule loaded
+     * @var bool
      */
-    public function __construct() {
-        parent::__construct();
-        //Loading components
-        $this->init();
-    }
+    private $dm = false;
+
+    private $dmConfig = [];
+
+    /**
+     * @var \DistributeModule\Model\Entity\Satellite[]
+     */
+    private $Satellites;
 
     /**
      * @var KeyValueStore
@@ -130,36 +99,26 @@ class NagiosExportTask extends AppShell {
     private $HosttemplateHostgroupsCache;
 
     /**
-     * SudoServer normally runs 24/7 so we need to refresh
-     * class variables for each export, may be some thing changed in
-     * Systemsettings, Satelliteconfig, or in on of the config files
+     * NagiosExportTask constructor.
      */
-    public function init() {
-        App::uses('Component', 'Controller');
-        App::uses('ConstantsComponent', 'Controller/Component');
-        $this->Constants = new ConstantsComponent();
-
+    public function __construct() {
         Configure::load('nagios');
-        Configure::load('rrd');
         $this->conf = Configure::read('nagios.export');
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $this->_systemsettings = $Systemsettings->findAsArray();
+
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $SystemsettingsTable->findAsArray();
         $this->FRESHNESS_THRESHOLD_ADDITION = (int)$this->_systemsettings['MONITORING']['MONITORING.FRESHNESS_THRESHOLD_ADDITION'];
 
-        //Loading external tasks
-        $this->__loadExternTasks();
+        //Loading external tasks of plugins and 3rd party modules
+        $this->loadExternTasks();
 
         //Loading distributed Monitoring support, if plugin is loaded
-        $this->dm = false;
-        $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
-            return strpos($value, 'Module') !== false;
-        });
+        $this->dm = Plugin::isLoaded('DistributeModule');
 
-
-        /** @var $TimeperiodsTable TimeperiodsTable */
+        /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        /** @var $CommandsTable CommandsTable */
+        /** @var CommandsTable $CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
 
         $this->TimeperiodUuidsCache = new KeyValueStore();
@@ -170,13 +129,21 @@ class NagiosExportTask extends AppShell {
 
         $this->HosttemplateHostgroupsCache = new KeyValueStore();
 
-        if (in_array('DistributeModule', $modulePlugins)) {
-            $this->dm = true;
+        if ($this->dm === true) {
             $this->dmConfig = [];
 
             //Loading external Model
-            $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
-            $this->Satellites = $this->Satellite->find('all');
+            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+            $query = $SatellitesTable->find()
+                ->where([
+                    'Satellites.sync_instance' => 1
+                ])
+                ->all();
+
+            $satellites = $query->toArray();
+
+            $this->Satellites = $satellites;
 
             //Create default config folder for sat systems
             if (!is_dir($this->conf['satellite_path'])) {
@@ -189,12 +156,12 @@ class NagiosExportTask extends AppShell {
             }
 
             foreach ($this->Satellites as $satellite) {
-                if (!is_dir($this->conf['satellite_path'] . $satellite['Satellite']['id'])) {
-                    mkdir($this->conf['satellite_path'] . $satellite['Satellite']['id']);
+                if (!is_dir($this->conf['satellite_path'] . $satellite->get('id'))) {
+                    mkdir($this->conf['satellite_path'] . $satellite->get('id'));
                 }
 
-                if (!is_dir($this->conf['satellite_path'] . $satellite['Satellite']['id'] . DS . $this->conf['config'])) {
-                    mkdir($this->conf['satellite_path'] . $satellite['Satellite']['id'] . DS . $this->conf['config']);
+                if (!is_dir($this->conf['satellite_path'] . $satellite->get('id') . DS . $this->conf['config'])) {
+                    mkdir($this->conf['satellite_path'] . $satellite->get('id') . DS . $this->conf['config']);
                 }
             }
 
@@ -205,7 +172,7 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportCommands($uuid = null) {
-        /** @var $CommandsTable CommandsTable */
+        /** @var CommandsTable $CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
 
         if ($uuid !== null) {
@@ -261,7 +228,7 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportContacts($uuid = null) {
-        /** @var $ContactsTable ContactsTable */
+        /** @var ContactsTable $ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
         $contacts = $ContactsTable->getContactsForExport();
 
@@ -308,7 +275,7 @@ class NagiosExportTask extends AppShell {
             }
 
             if ($contact->hasCustomvariables()) {
-                $content .= $this->nl();
+                $content .= PHP_EOL;
                 $content .= $this->addContent(';Custom  variables:', 1);
                 foreach ($contact->getCustomvariablesForCfg() as $varName => $varValue) {
                     $content .= $this->addContent($varName, 1, $varValue);
@@ -337,7 +304,7 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportContactgroups($uuid = null) {
-        /** @var $ContactgroupsTable ContactgroupsTable */
+        /** @var ContactgroupsTable $ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
         $contactgroups = $ContactgroupsTable->getContactgroupsForExport($uuid);
 
@@ -391,7 +358,7 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportHosttemplates($uuid = null) {
-        /** @var $HosttemplatesTable HosttemplatesTable */
+        /** @var HosttemplatesTable $HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
         $hosttemplates = $HosttemplatesTable->getHosttemplatesForExport($uuid);
 
@@ -429,7 +396,7 @@ class NagiosExportTask extends AppShell {
                 $hosttemplate->get('description')
             ));
 
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Check settings:', 1);
 
             if ($hosttemplate->hasHosttemplatecommandargumentvalues()) {
@@ -448,7 +415,7 @@ class NagiosExportTask extends AppShell {
             $content .= $this->addContent('passive_checks_enabled', 1, 1);
 
 
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Notification settings:', 1);
             $content .= $this->addContent('notifications_enabled', 1, 1);
 
@@ -466,7 +433,7 @@ class NagiosExportTask extends AppShell {
 
             $content .= $this->addContent('notification_options', 1, $hosttemplate->getHostNotificationOptionsForCfg());
 
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Flap detection settings:', 1);
             $content .= $this->addContent('flap_detection_enabled', 1, $hosttemplate->get('flap_detection_enabled'));
             if ($hosttemplate->get('flap_detection_enabled') === 1) {
@@ -475,7 +442,7 @@ class NagiosExportTask extends AppShell {
                 }
             }
 
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Everything else:', 1);
             $content .= $this->addContent('process_perf_data', 1, $hosttemplate->get('process_performance_data'));
 
@@ -484,7 +451,7 @@ class NagiosExportTask extends AppShell {
 
 
             if ($hosttemplate->hasCustomvariables()) {
-                $content .= $this->nl();
+                $content .= PHP_EOL;
                 $content .= $this->addContent(';Custom  variables:', 1);
                 foreach ($hosttemplate->getCustomvariablesForCfg() as $varName => $varValue) {
                     $content .= $this->addContent($varName, 1, $this->escapeLastBackslash($varValue));
@@ -542,7 +509,7 @@ class NagiosExportTask extends AppShell {
             $content = $this->fileHeader();
         }
 
-        /** @var $HosttemplatesTable HosttemplatesTable */
+        /** @var HosttemplatesTable $HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
         $HosttemplatesCache = new KeyValueStore();
@@ -581,7 +548,7 @@ class NagiosExportTask extends AppShell {
                 $content .= $this->addContent('parents', 1, $host->getParentHostsForCfg());
             }
 
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Check settings:', 1);
             $commandarguments = null;
             if ($host->isSatelliteHost() === false) {
@@ -689,7 +656,7 @@ class NagiosExportTask extends AppShell {
                 $content .= $this->addContent('passive_checks_enabled', 1, $host->get('passive_checks_enabled'));
 
 
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Notification settings:', 1);
 
             if ($host->get('notifications_enabled') !== null && $host->get('notifications_enabled') !== '')
@@ -714,7 +681,7 @@ class NagiosExportTask extends AppShell {
                 $content .= $this->addContent('notification_options', 1, $host->getNotificationOptionsForCfg($hosttemplate));
             }
 
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Flap detection settings:', 1);
 
             if ($host->get('flap_detection_enabled') === 1 || $host->get('flap_detection_enabled') === 0)
@@ -724,7 +691,7 @@ class NagiosExportTask extends AppShell {
                 $content .= $this->addContent('flap_detection_options', 1, $host->getFlapdetectionOptionsForCfg($hosttemplate));
             }
 
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Everything else:', 1);
 
             if ($host->get('process_performance_data') === 1 || $host->get('process_performance_data') === 0)
@@ -748,18 +715,18 @@ class NagiosExportTask extends AppShell {
 
             if (!empty($host->get('hostgroups'))) {
                 //Use host groups of the host
-                $content .= $this->nl();
+                $content .= PHP_EOL;
                 $content .= $this->addContent(';Hostgroup memberships:', 1);
                 $content .= $this->addContent('hostgroups', 1, $host->getHostgroupsForCfg());
             } else if (empty($host->get('hostgroups')) && strlen($hosttemplateHostgroupsForCfg) > 0) {
                 //Use host groups of host template configuration
-                $content .= $this->nl();
+                $content .= PHP_EOL;
                 $content .= $this->addContent(';Hostgroup memberships:', 1);
                 $content .= $this->addContent('hostgroups', 1, $hosttemplateHostgroupsForCfg);
             }
 
             if ($host->hasCustomvariables()) {
-                $content .= $this->nl();
+                $content .= PHP_EOL;
                 $content .= $this->addContent(';Custom  variables:', 1);
                 foreach ($host->getCustomvariablesForCfg() as $varName => $varValue) {
                     $content .= $this->addContent($varName, 1, $varValue);
@@ -833,7 +800,7 @@ class NagiosExportTask extends AppShell {
             $content .= $this->addContent('parents', 1, implode(',', $parenthosts));
         }
 
-        $content .= $this->nl();
+        $content .= PHP_EOL;
         $content .= $this->addContent(';Check settings:', 1);
 
         if (!empty($host->get('hostcommandargumentvalues'))) {
@@ -886,7 +853,7 @@ class NagiosExportTask extends AppShell {
         if ($host->get('passive_checks_enabled') !== null && $host->get('passive_checks_enabled') !== '')
             $content .= $this->addContent('passive_checks_enabled', 1, $host->get('passive_checks_enabled'));
 
-        $content .= $this->nl();
+        $content .= PHP_EOL;
         $content .= $this->addContent(';Notification settings:', 1);
 
         if ($host->get('notifications_enabled') !== null && $host->get('notifications_enabled') !== '')
@@ -911,7 +878,7 @@ class NagiosExportTask extends AppShell {
             $content .= $this->addContent('notification_options', 1, $host->getNotificationOptionsForCfg($hosttemplate));
         }
 
-        $content .= $this->nl();
+        $content .= PHP_EOL;
         $content .= $this->addContent(';Flap detection settings:', 1);
 
         if ($host->get('flap_detection_enabled') === 1 || $host->get('flap_detection_enabled') === 0)
@@ -921,7 +888,7 @@ class NagiosExportTask extends AppShell {
             $content .= $this->addContent('flap_detection_options', 1, $host->getFlapdetectionOptionsForCfg($hosttemplate));
         }
 
-        $content .= $this->nl();
+        $content .= PHP_EOL;
         $content .= $this->addContent(';Everything else:', 1);
 
         if ($host->get('process_performance_data') === 1 || $host->get('process_performance_data') === 0)
@@ -936,7 +903,7 @@ class NagiosExportTask extends AppShell {
             $hostgroups = [];
             $result = $HosttemplatesTable->getHostgroupsByHosttemplateId($host->get('hosttemplate_id'));
             if (!empty($result['hostgroups'])) {
-                $hostgroups = \Cake\Utility\Hash::extract($result['hostgroups'], '{n}.uuid');
+                $hostgroups = Hash::extract($result['hostgroups'], '{n}.uuid');
             }
 
             $this->HosttemplateHostgroupsCache->set($host->get('hosttemplate_id'), implode(',', $hostgroups));
@@ -945,18 +912,18 @@ class NagiosExportTask extends AppShell {
 
         if (!empty($host->get('hostgroups'))) {
             //Use host groups of the host
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Hostgroup memberships:', 1);
             $content .= $this->addContent('hostgroups', 1, $host->getHostgroupsForCfg());
         } else if (empty($host->get('hostgroups')) && strlen($hosttemplateHostgroupsForCfg) > 0) {
             //Use host groups of host template configuration
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Hostgroup memberships:', 1);
             $content .= $this->addContent('hostgroups', 1, $hosttemplateHostgroupsForCfg);
         }
 
         if ($host->hasCustomvariables()) {
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Custom  variables:', 1);
             foreach ($host->getCustomvariablesForCfg() as $varName => $varValue) {
                 $content .= $this->addContent($varName, 1, $varValue);
@@ -976,7 +943,7 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportServicetemplates($uuid = null) {
-        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        /** @var ServicetemplatesTable $ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
         $servicetemplates = $ServicetemplatesTable->getServicetemplatesForExport($uuid);
 
@@ -1012,7 +979,7 @@ class NagiosExportTask extends AppShell {
             ));
             $content .= $this->addContent('service_description', 1, $servicetemplate->get('uuid'));
 
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Check settings:', 1);
 
             if ($servicetemplate->hasServicetemplatecommandargumentvalues()) {
@@ -1039,7 +1006,7 @@ class NagiosExportTask extends AppShell {
             }
 
 
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Notification settings:', 1);
             $content .= $this->addContent('notifications_enabled', 1, 1);
 
@@ -1056,7 +1023,7 @@ class NagiosExportTask extends AppShell {
 
             $content .= $this->addContent('notification_options', 1, $servicetemplate->getServiceNotificationOptionsForCfg());
 
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Flap detection settings:', 1);
             $content .= $this->addContent('flap_detection_enabled', 1, $servicetemplate->get('flap_detection_enabled'));
             if ($servicetemplate->get('flap_detection_enabled') === 1) {
@@ -1065,7 +1032,7 @@ class NagiosExportTask extends AppShell {
                 }
             }
 
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Everything else:', 1);
             $content .= $this->addContent('process_perf_data', 1, $servicetemplate->get('process_performance_data'));
 
@@ -1076,7 +1043,7 @@ class NagiosExportTask extends AppShell {
 
 
             if ($servicetemplate->hasEventhandler()) {
-                $content .= $this->nl();
+                $content .= PHP_EOL;
                 $content .= $this->addContent(';Event handler:', 1);
 
                 if ($servicetemplate->hasServicetemplateeventcommandargumentvalues()) {
@@ -1088,7 +1055,7 @@ class NagiosExportTask extends AppShell {
 
 
             if ($servicetemplate->hasCustomvariables()) {
-                $content .= $this->nl();
+                $content .= PHP_EOL;
                 $content .= $this->addContent(';Custom  variables:', 1);
                 foreach ($servicetemplate->getCustomvariablesForCfg() as $varName => $varValue) {
                     $content .= $this->addContent($varName, 1, $this->escapeLastBackslash($varValue));
@@ -1124,24 +1091,24 @@ class NagiosExportTask extends AppShell {
             $content = $this->fileHeader();
         }
 
-        /** @var $HostsTable HostsTable */
+        /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        /** @var $ServicesTable ServicesTable */
+        /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-        /** @var $CommandsTable CommandsTable */
+        /** @var CommandsTable $CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
-        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        /** @var ServicetemplatesTable $ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
         $ServicetemplatesCache = new KeyValueStore();
 
         $hosts = $HostsTable->getHostsForServiceExport();
         foreach ($hosts as $host) {
-            /** @var $host \App\Model\Entity\Host */
+            /** @var Host $host */
 
             $services = $ServicesTable->getServicesForExportByHostId($host->get('id'));
             foreach ($services as $service) {
-                /** @var $service \App\Model\Entity\Service */
+                /** @var Service $service */
 
                 if (!$this->conf['minified']) {
                     $file = new File($this->conf['path'] . $this->conf['services'] . $service->get('uuid') . $this->conf['suffix']);
@@ -1177,7 +1144,7 @@ class NagiosExportTask extends AppShell {
 
                 $content .= $this->addContent('service_description', 1, $service->get('uuid'));
 
-                $content .= $this->nl();
+                $content .= PHP_EOL;
                 $content .= $this->addContent(';Check settings:', 1);
 
                 if ($host->isSatelliteHost() === true) {
@@ -1214,7 +1181,7 @@ class NagiosExportTask extends AppShell {
                     }
 
                     if ($servicetemplate->hasEventhandler() || $service->hasEventhandler()) {
-                        $content .= $this->nl();
+                        $content .= PHP_EOL;
                         $content .= $this->addContent(';Event handler:', 1);
 
                         if (!empty($service->get('serviceeventcommandargumentvalues'))) {
@@ -1303,7 +1270,7 @@ class NagiosExportTask extends AppShell {
 
                 }
 
-                $content .= $this->nl();
+                $content .= PHP_EOL;
                 $content .= $this->addContent(';Notification settings:', 1);
 
                 if ($service->get('notifications_enabled') !== null && $service->get('notifications_enabled') !== '') {
@@ -1332,7 +1299,7 @@ class NagiosExportTask extends AppShell {
                     $content .= $this->addContent('notification_options', 1, $service->getNotificationOptionsForCfg($servicetemplate));
                 }
 
-                $content .= $this->nl();
+                $content .= PHP_EOL;
                 $content .= $this->addContent(';Flap detection settings:', 1);
                 if ($service->get('flap_detection_enabled') === 1 || $service->get('flap_detection_enabled') === 0) {
                     $content .= $this->addContent('flap_detection_enabled', 1, $service->get('flap_detection_enabled'));
@@ -1342,7 +1309,7 @@ class NagiosExportTask extends AppShell {
                     $content .= $this->addContent('flap_detection_options', 1, $service->getFlapdetectionOptionsForCfg($servicetemplate));
                 }
 
-                $content .= $this->nl();
+                $content .= PHP_EOL;
                 $content .= $this->addContent(';Everything else:', 1);
                 if ($service->get('process_performance_data') === 1 || $service->get('process_performance_data') === 0)
                     $content .= $this->addContent('process_perf_data', 1, $service->get('process_performance_data'));
@@ -1356,18 +1323,18 @@ class NagiosExportTask extends AppShell {
 
                 if (!empty($service->get('servicegroups'))) {
                     //Use service groups of the service
-                    $content .= $this->nl();
+                    $content .= PHP_EOL;
                     $content .= $this->addContent(';Servicegroup memberships:', 1);
                     $content .= $this->addContent('servicegroups', 1, $service->getServicegroupsForCfg());
                 } else if (empty($service->get('servicegroups')) && !empty($servicetemplate->get('servicegroups'))) {
                     //Use service groups of service template configuration
-                    $content .= $this->nl();
+                    $content .= PHP_EOL;
                     $content .= $this->addContent(';Servicegroup memberships:', 1);
                     $content .= $this->addContent('servicegroups', 1, $servicetemplate->getServicegroupsForCfg());
                 }
 
                 if ($service->hasCustomvariables()) {
-                    $content .= $this->nl();
+                    $content .= PHP_EOL;
                     $content .= $this->addContent(';Custom  variables:', 1);
                     foreach ($service->getCustomvariablesForCfg() as $varName => $varValue) {
                         $content .= $this->addContent($varName, 1, $varValue);
@@ -1406,7 +1373,7 @@ class NagiosExportTask extends AppShell {
      * @param \App\Model\Entity\Servicetemplate $servicetemplate
      */
     public function exportSatService(\App\Model\Entity\Service $service, \App\Model\Entity\Host $host, \App\Model\Entity\Servicetemplate $servicetemplate) {
-        /** @var $CommandsTable CommandsTable */
+        /** @var CommandsTable $CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
 
 
@@ -1445,7 +1412,7 @@ class NagiosExportTask extends AppShell {
 
         $content .= $this->addContent('service_description', 1, $service->get('uuid'));
 
-        $content .= $this->nl();
+        $content .= PHP_EOL;
         $content .= $this->addContent(';Check settings:', 1);
 
         if (!empty($service->get('servicecommandargumentvalues'))) {
@@ -1475,7 +1442,7 @@ class NagiosExportTask extends AppShell {
         }
 
         if ($servicetemplate->hasEventhandler() || $service->hasEventhandler()) {
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Event handler:', 1);
 
             if (!empty($service->get('serviceeventcommandargumentvalues'))) {
@@ -1530,15 +1497,14 @@ class NagiosExportTask extends AppShell {
         if ($service->get('freshness_checks_enabled') > 0) {
             $content .= $this->addContent('check_freshness', 1, 1);
 
-            $freshnessThreshold = (int)$service->get('freshness_threshold');
-            $freshnessThreshold = (int)$service->get('freshness_threshold');
+            $freshnessThreshold = $service->get('freshness_threshold');
             if ($freshnessThreshold === null || $freshnessThreshold === '' || $freshnessThreshold === 0) {
                 $freshnessThreshold = (int)$servicetemplate->get('freshness_threshold');
             }
             $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $this->FRESHNESS_THRESHOLD_ADDITION);
         }
 
-        $content .= $this->nl();
+        $content .= PHP_EOL;
         $content .= $this->addContent(';Notification settings:', 1);
         if ($service->get('notifications_enabled') !== null && $service->get('notifications_enabled') !== '') {
             $content .= $this->addContent('notifications_enabled', 1, $service->get('notifications_enabled'));
@@ -1566,7 +1532,7 @@ class NagiosExportTask extends AppShell {
             $content .= $this->addContent('notification_options', 1, $service->getNotificationOptionsForCfg($servicetemplate));
         }
 
-        $content .= $this->nl();
+        $content .= PHP_EOL;
         $content .= $this->addContent(';Flap detection settings:', 1);
         if ($service->get('flap_detection_enabled') === 1 || $service->get('flap_detection_enabled') === 0) {
             $content .= $this->addContent('flap_detection_enabled', 1, $service->get('flap_detection_enabled'));
@@ -1576,7 +1542,7 @@ class NagiosExportTask extends AppShell {
             $content .= $this->addContent('flap_detection_options', 1, $service->getFlapdetectionOptionsForCfg($servicetemplate));
         }
 
-        $content .= $this->nl();
+        $content .= PHP_EOL;
         $content .= $this->addContent(';Everything else:', 1);
         if ($service->get('process_performance_data') === 1 || $service->get('process_performance_data') === 0)
             $content .= $this->addContent('process_perf_data', 1, $service->get('process_performance_data'));
@@ -1590,18 +1556,18 @@ class NagiosExportTask extends AppShell {
 
         if (!empty($service->get('servicegroups'))) {
             //Use service groups of the service
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Servicegroup memberships:', 1);
             $content .= $this->addContent('servicegroups', 1, $service->getServicegroupsForCfg());
         } else if (empty($service->get('servicegroups')) && !empty($servicetemplate->get('servicegroups'))) {
             //Use service groups of service template configuration
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Servicegroup memberships:', 1);
             $content .= $this->addContent('servicegroups', 1, $servicetemplate->getServicegroupsForCfg());
         }
 
         if ($service->hasCustomvariables()) {
-            $content .= $this->nl();
+            $content .= PHP_EOL;
             $content .= $this->addContent(';Custom  variables:', 1);
             foreach ($service->getCustomvariablesForCfg() as $varName => $varValue) {
                 $content .= $this->addContent($varName, 1, $varValue);
@@ -1625,7 +1591,7 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uid
      */
     public function exportHostgroups() {
-        /** @var $HostgroupsTable HostgroupsTable */
+        /** @var HostgroupsTable $HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
         $hostgroups = $HostgroupsTable->getHostgroupsForExport();
 
@@ -1642,7 +1608,7 @@ class NagiosExportTask extends AppShell {
         }
 
         foreach ($hostgroups as $hostgroup) {
-            /** @var $hostgroup \App\Model\Entity\Hostgroup */
+            /** @var \App\Model\Entity\Hostgroup $hostgroup */
             if (!$this->conf['minified']) {
                 $file = new File($this->conf['path'] . $this->conf['hostgroups'] . $hostgroup->get('uuid') . $this->conf['suffix']);
                 $content = $this->fileHeader();
@@ -1672,7 +1638,7 @@ class NagiosExportTask extends AppShell {
     }
 
     public function exportServicegroups() {
-        /** @var $ServicegroupsTable ServicegroupsTable */
+        /** @var ServicegroupsTable $ServicegroupsTable */
         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
         $servicegroups = $ServicegroupsTable->getServicegroupsForExport();
 
@@ -1681,7 +1647,7 @@ class NagiosExportTask extends AppShell {
         }
 
         foreach ($servicegroups as $servicegroup) {
-            /** @var $servicegroup \App\Model\Entity\Servicegroup */
+            /** @var \App\Model\Entity\Servicegroup $servicegroup */
             $file = new File($this->conf['path'] . $this->conf['servicegroups'] . $servicegroup->get('uuid') . $this->conf['suffix']);
             $content = $this->fileHeader();
             if (!$file->exists()) {
@@ -1707,12 +1673,12 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportHostescalations($uuid = null) {
-        /* @var $HostescalationsTable HostescalationsTable */
-        /* @var $hostescalation \App\Model\Entity\Hostescalation */
-        /* @var $contact \App\Model\Entity\Contact */
-        /* @var $hostgroup \App\Model\Entity\Hostgroup */
-        /* @var $host \App\Model\Entity\Host */
-        /* @var $contactgroup \App\Model\Entity\Contactgroup */
+        /* @var HostescalationsTable $HostescalationsTable */
+        /* @var \App\Model\Entity\Hostescalation $hostescalation */
+        /* @var \App\Model\Entity\Contact $contact */
+        /* @var \App\Model\Entity\Hostgroup $hostgroup */
+        /* @var \App\Model\Entity\Host $host */
+        /* @var \App\Model\Entity\Contactgroup $contactgroup */
         $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
         $hostescalations = $HostescalationsTable->getHostescalationsForExport($uuid);
 
@@ -1809,12 +1775,12 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportServiceescalations($uuid = null) {
-        /* @var $ServiceescalationsTable ServiceescalationsTable */
-        /* @var $serviceescalation \App\Model\Entity\Serviceescalation */
-        /* @var $contact \App\Model\Entity\Contact */
-        /* @var $servicegroup \App\Model\Entity\Servicegroup */
-        /* @var $service \App\Model\Entity\Service */
-        /* @var $contactgroup \App\Model\Entity\Contactgroup */
+        /* @var ServiceescalationsTable $ServiceescalationsTable */
+        /* @var \App\Model\Entity\Serviceescalation $serviceescalation */
+        /* @var \App\Model\Entity\Contact $contact */
+        /* @var \App\Model\Entity\Servicegroup $servicegroup */
+        /* @var \App\Model\Entity\Service $service */
+        /* @var \App\Model\Entity\Contactgroup $contactgroup */
         $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
         $serviceescalations = $ServiceescalationsTable->getServiceescalationsForExport($uuid);
 
@@ -1876,6 +1842,13 @@ class NagiosExportTask extends AppShell {
 
             if (!empty($servicesForCfg)) {
                 foreach ($servicesForCfg as $hostUuid => $serviceUuids) {
+                    if (sizeof($serviceUuids) === 1) {
+                        if (strpos($serviceUuids[0], '!') === 0 && empty($servicegroupsForCfg)) {
+                            //Only one service in escalation and this service should be ignored from the escalation - this makes no sense!
+                            continue;
+                        }
+                    }
+
                     $content .= $this->addContent('define serviceescalation{', 0);
                     $content .= $this->addContent('host_name', 1, $hostUuid);
                     $content .= $this->addContent('service_description', 1, implode(',', $serviceUuids));
@@ -1914,11 +1887,13 @@ class NagiosExportTask extends AppShell {
 
     /**
      * @param null $uuid
-     * @throws Exception
+     * @throws \Exception
      */
     public function exportTimeperiods($uuid = null) {
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var CalendarsTable $CalendarsTable */
+        $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
         if ($uuid !== null) {
             $timeperiods[] = $TimeperiodsTable->getTimeperiodWithTimerangesByUuid($uuid);
         } else {
@@ -1937,7 +1912,7 @@ class NagiosExportTask extends AppShell {
             $content = $this->fileHeader();
         }
 
-        $date = new DateTime();
+        $date = new \DateTime();
         $weekdays = [];
         for ($i = 1; $i <= 7; $i++) {
             $weekdays[$date->format('N')] = strtolower($date->format('l'));
@@ -1974,21 +1949,24 @@ class NagiosExportTask extends AppShell {
 
             //Merge Calendar records to timeperiod
             if ($timeperiod['Timeperiod']['calendar_id'] > 0) {
-                $calendar = $this->Calendar->find('first', [
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'Calendar.id' => $timeperiod['Timeperiod']['calendar_id']
-                    ],
-                    'contain'    => ['CalendarHoliday']
-                ]);
-                foreach ($calendar['CalendarHoliday'] as $holiday) {
-                    $timestamp = strtotime(sprintf('%s 00:00', $holiday['date']));
+                try {
+                    $calendar = $CalendarsTable->getCalendarById($timeperiod['Timeperiod']['calendar_id']);
+                    foreach ($calendar->get('calendar_holidays') as $holiday) {
+                        /** @var CalendarHoliday $holiday */
+                        $timestamp = strtotime(sprintf('%s 00:00', $holiday->get('date')));
 
-                    $calendarDay = sprintf('%s 00:00-24:00; %s',
-                        strtolower(date('F j', $timestamp)),
-                        $holiday['name']
-                    );
-                    $content .= $this->addContent($calendarDay, 1);
+                        $calendarDay = sprintf('%s 00:00-24:00; %s',
+                            strtolower(date('F j', $timestamp)),
+                            $holiday->get('name')
+                        );
+                        $content .= $this->addContent($calendarDay, 1);
+                    }
+                } catch (RecordNotFoundException $e) {
+                    Log::error(sprintf(
+                        'NagiosConfigGenerator: Calendar with id "%s" not found',
+                        $timeperiod['Timeperiod']['calendar_id']
+                    ));
+                    Log::error($e->getMessage());
                 }
             }
 
@@ -2014,22 +1992,26 @@ class NagiosExportTask extends AppShell {
 
     /**
      * @param $timeperiods
-     * @param $satelite
+     * @param EntityInterface $satelite
+     * @throws \Exception
      */
-    public function exportSatTimeperiods($timeperiods, $satelite) {
-        if (!is_dir($this->conf['satellite_path'] . $satelite['Satellite']['id'] . DS . $this->conf['timeperiods'])) {
-            mkdir($this->conf['satellite_path'] . $satelite['Satellite']['id'] . DS . $this->conf['timeperiods']);
+    public function exportSatTimeperiods($timeperiods, EntityInterface $satelite) {
+        if (!is_dir($this->conf['satellite_path'] . $satelite->get('id') . DS . $this->conf['timeperiods'])) {
+            mkdir($this->conf['satellite_path'] . $satelite->get('id') . DS . $this->conf['timeperiods']);
         }
 
+        /** @var CalendarsTable $CalendarsTable */
+        $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
+
         if ($this->conf['minified']) {
-            $file = new File($this->conf['satellite_path'] . $satelite['Satellite']['id'] . DS . $this->conf['timeperiods'] . 'timeperiods_minified' . $this->conf['suffix']);
+            $file = new File($this->conf['satellite_path'] . $satelite->get('id') . DS . $this->conf['timeperiods'] . 'timeperiods_minified' . $this->conf['suffix']);
             if (!$file->exists()) {
                 $file->create();
             }
             $content = $this->fileHeader();
         }
 
-        $date = new DateTime();
+        $date = new \DateTime();
         $weekdays = [];
         for ($i = 1; $i <= 7; $i++) {
             $weekdays[$date->format('N')] = strtolower($date->format('l'));
@@ -2038,7 +2020,7 @@ class NagiosExportTask extends AppShell {
 
         foreach ($timeperiods as $timeperiod) {
             if (!$this->conf['minified']) {
-                $file = new File($this->conf['satellite_path'] . $satelite['Satellite']['id'] . DS . $this->conf['timeperiods'] . $timeperiod['Timeperiod']['uuid'] . $this->conf['suffix']);
+                $file = new File($this->conf['satellite_path'] . $satelite->get('id') . DS . $this->conf['timeperiods'] . $timeperiod['Timeperiod']['uuid'] . $this->conf['suffix']);
                 $content = $this->fileHeader();
                 if (!$file->exists()) {
                     $file->create();
@@ -2055,16 +2037,16 @@ class NagiosExportTask extends AppShell {
             }
             $timeRanges = [];
             foreach ($timeperiod['Timeperiod']['timeperiod_timeranges'] as $timeRange) {
-                if (empty($satelite['Satellite']['timezone']) || ($timeRange['start'] == '00:00' && $timeRange['end'] == '24:00')) {
+                if (empty($satelite->get('timezone')) || ($timeRange['start'] == '00:00' && $timeRange['end'] == '24:00')) {
                     $timeRanges[$weekdays[$timeRange['day']]][] = $timeRange['start'] . '-' . $timeRange['end'];
                 } else {
-                    $remoteTimeZone = new DateTimeZone($satelite['Satellite']['timezone']);
-                    $start = new DateTime($weekdays[$timeRange['day']] . ' ' . $timeRange['start']);
+                    $remoteTimeZone = new \DateTimeZone($satelite->get('timezone'));
+                    $start = new \DateTime($weekdays[$timeRange['day']] . ' ' . $timeRange['start']);
                     $start = $start->setTimezone($remoteTimeZone);
-                    $end = new DateTime($weekdays[$timeRange['day']] . ' ' . (($timeRange['end'] == '24:00') ? '23:59' : $timeRange['end']));
+                    $end = new \DateTime($weekdays[$timeRange['day']] . ' ' . (($timeRange['end'] == '24:00') ? '23:59' : $timeRange['end']));
                     $end = $end->setTimezone($remoteTimeZone);
                     if ($timeRange['end'] == '24:00') {
-                        $end = $end->add(new DateInterval('PT1M'));
+                        $end = $end->add(new \DateInterval('PT1M'));
                     }
                     if ($start->format('l') == $end->format('l')) {
                         $timeRanges[strtolower($start->format('l'))][] = $start->format('H:i') . '-' . $end->format('H:i');
@@ -2083,21 +2065,24 @@ class NagiosExportTask extends AppShell {
 
             //Merge Calendar records to timeperiod
             if ($timeperiod['Timeperiod']['calendar_id'] > 0) {
-                $calendar = $this->Calendar->find('first', [
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'Calendar.id' => $timeperiod['Timeperiod']['calendar_id']
-                    ],
-                    'contain'    => ['CalendarHoliday']
-                ]);
-                foreach ($calendar['CalendarHoliday'] as $holiday) {
-                    $timestamp = strtotime(sprintf('%s 00:00', $holiday['date']));
+                try {
+                    $calendar = $CalendarsTable->getCalendarById($timeperiod['Timeperiod']['calendar_id']);
+                    foreach ($calendar->get('calendar_holidays') as $holiday) {
+                        /** @var CalendarHoliday $holiday */
+                        $timestamp = strtotime(sprintf('%s 00:00', $holiday->get('date')));
 
-                    $calendarDay = sprintf('%s 00:00-24:00; %s',
-                        strtolower(date('F j', $timestamp)),
-                        $holiday['name']
-                    );
-                    $content .= $this->addContent($calendarDay, 1);
+                        $calendarDay = sprintf('%s 00:00-24:00; %s',
+                            strtolower(date('F j', $timestamp)),
+                            $holiday->get('name')
+                        );
+                        $content .= $this->addContent($calendarDay, 1);
+                    }
+                } catch (RecordNotFoundException $e) {
+                    Log::error(sprintf(
+                        'NagiosConfigGenerator: Calendar with id "%s" not found',
+                        $timeperiod['Timeperiod']['calendar_id']
+                    ));
+                    Log::error($e->getMessage());
                 }
             }
 
@@ -2119,8 +2104,11 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportHostdependencies($uuid = null) {
-        /** @var $HostdependenciesTable HostdependenciesTable */
+        /** @var HostdependenciesTable $HostdependenciesTable */
         $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+        /** @var HostgroupsTable $HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
         $hostdependencies = $HostdependenciesTable->getHostdependenciesForExport($uuid);
 
         if (!is_dir($this->conf['path'] . $this->conf['hostdependencies'])) {
@@ -2128,6 +2116,7 @@ class NagiosExportTask extends AppShell {
         }
 
         foreach ($hostdependencies as $hostdependency) {
+            /** @var Hostdependency $hostdependency */
             $file = new File($this->conf['path'] . $this->conf['hostdependencies'] . $hostdependency->get('uuid') . $this->conf['suffix']);
             $content = $this->fileHeader();
             if (!$file->exists()) {
@@ -2147,31 +2136,63 @@ class NagiosExportTask extends AppShell {
                 }
                 continue;
             }
-            foreach ($hosts as $host) {
-                if ($host->get('_joinData')->get('dependent') === 0) {
-                    $hostsForCfg[] = $host->get('uuid');
-                } else {
-                    $dependentHostsForCfg[] = $host->get('uuid');
+
+            $hostgroupsForCfg = [];
+            $dependentHostgroupsForCfg = [];
+
+            $hostgroupIds = [];
+            $dependentHostgroupIds = [];
+
+            if (!is_null($hostdependency->get('hostgroups'))) {
+                $hostgroups = $hostdependency->get('hostgroups');
+                foreach ($hostgroups as $hostgroup) {
+                    /** @var Hostgroup $hostgroup */
+                    if ($hostgroup->get('_joinData')->get('dependent') === 0) {
+                        $hostgroupsForCfg[] = $hostgroup->get('uuid');
+                        $hostgroupIds[] = $hostgroup->get('id');
+
+                    } else {
+                        $dependentHostgroupsForCfg[] = $hostgroup->get('uuid');
+                        $dependentHostgroupIds[] = $hostgroup->get('id');
+                    }
                 }
             }
+
+            foreach ($hosts as $host) {
+                /** @var Host $host */
+                if ($host->get('_joinData')->get('dependent') === 0) {
+                    if (empty($dependentHostgroupIds)) {
+                        $hostsForCfg[] = $host->get('uuid');
+                    } else if (!empty($dependentHostgroupIds) && !$HostgroupsTable->isHostInHostgroup($host->get('id'), $dependentHostgroupIds)) {
+                        $hostsForCfg[] = $host->get('uuid');
+                    }
+
+                } else {
+                    if (empty($hostgroupIds)) {
+                        $dependentHostsForCfg[] = $host->get('uuid');
+                    } else if (!empty($hostgroupIds) && !$HostgroupsTable->isHostInHostgroup($host->get('id'), $hostgroupIds)) {
+                        $dependentHostsForCfg[] = $host->get('uuid');
+                    }
+                }
+            }
+
+            if (empty($hostsForCfg) || empty($dependentHostsForCfg)) {
+                //This host dependency is broken, there are no hosts in it!
+                $HostdependenciesTable->delete($hostdependency);
+                $file->close();
+                if ($file->exists()) {
+                    $file->delete();
+                }
+                continue;
+            }
+
             if (!empty($hostsForCfg) && !empty($dependentHostsForCfg)) {
                 $content .= $this->addContent('define hostdependency{', 0);
 
                 $content .= $this->addContent('host_name', 1, implode(',', $hostsForCfg));
                 $content .= $this->addContent('dependent_host_name', 1, implode(',', $dependentHostsForCfg));
             }
-            $hostgroupsForCfg = [];
-            $dependentHostgroupsForCfg = [];
-            if (!is_null($hostdependency->get('hostgroups'))) {
-                $hostgroups = $hostdependency->get('hostgroups');
-                foreach ($hostgroups as $hostgroup) {
-                    if ($hostgroup->get('_joinData')->get('dependent') === 0) {
-                        $hostgroupsForCfg[] = $hostgroup->get('uuid');
-                    } else {
-                        $dependentHostgroupsForCfg[] = $hostgroup->get('uuid');
-                    }
-                }
-            }
+
             if (!empty($hostgroupsForCfg)) {
                 $content .= $this->addContent('hostgroup_name', 1, implode(',', $hostgroupsForCfg));
             }
@@ -2204,10 +2225,12 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportServicedependencies($uuid = null) {
-        /** @var $ServicedependenciesTable ServicedependenciesTable */
+        /** @var ServicedependenciesTable $ServicedependenciesTable */
         $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
-        /** @var  $servicedependency \App\Model\Entity\Servicedependency */
+        /** @var \App\Model\Entity\Servicedependency $servicedependency */
         $servicedependencies = $ServicedependenciesTable->getServicedependenciesForExport($uuid);
+        /** @var  ServicegroupsTable $ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
         if (!is_dir($this->conf['path'] . $this->conf['servicedependencies'])) {
             mkdir($this->conf['path'] . $this->conf['servicedependencies']);
@@ -2221,21 +2244,56 @@ class NagiosExportTask extends AppShell {
             }
             $masterServicesForCfg = [];
             $dependentServicesForCfg = [];
+
+            $servicegroupIds = [];
+            $dependentServicegroupIds = [];
+
             $services = $servicedependency->get('services', [
                 'contain' => 'Hosts'
             ]);
 
+            $servicegroupsForCfg = [];
+            $dependentServicegroupsForCfg = [];
+            if (!is_null($servicedependency->get('servicegroups'))) {
+                $servicegroups = $servicedependency->get('servicegroups');
+                foreach ($servicegroups as $servicegroup) {
+                    /** @var Servicegroup $servicegroup */
+                    if ($servicegroup->get('_joinData')->get('dependent') === 0) {
+                        $servicegroupsForCfg[] = $servicegroup->get('uuid');
+                        $servicegroupIds[] = $servicegroup->get('id');
+                    } else {
+                        $dependentServicegroupsForCfg[] = $servicegroup->get('uuid');
+                        $dependentServicegroupIds[] = $servicegroup->get('id');
+                    }
+                }
+            }
+
             foreach ($services as $service) {
+                /** @var Service $service */
                 if ($service->get('_joinData')->get('dependent') === 0) {
-                    $masterServicesForCfg[] = [
-                        'hostUuid'    => $service->get('host')->get('uuid'),
-                        'serviceUuid' => $service->get('uuid')
-                    ];
+                    if (empty($dependentServicegroupIds)) {
+                        $masterServicesForCfg[] = [
+                            'hostUuid'    => $service->get('host')->get('uuid'),
+                            'serviceUuid' => $service->get('uuid')
+                        ];
+                    }else if (!empty($dependentServicegroupIds) && !$ServicegroupsTable->isServiceInServicegroup($service->get('id'), $dependentServicegroupIds)) {
+                        $masterServicesForCfg[] = [
+                            'hostUuid'    => $service->get('host')->get('uuid'),
+                            'serviceUuid' => $service->get('uuid')
+                        ];
+                    }
                 } else {
-                    $dependentServicesForCfg[] = [
-                        'hostUuid'    => $service->get('host')->get('uuid'),
-                        'serviceUuid' => $service->get('uuid')
-                    ];
+                    if (empty($servicegroupIds)) {
+                        $dependentServicesForCfg[] = [
+                            'hostUuid'    => $service->get('host')->get('uuid'),
+                            'serviceUuid' => $service->get('uuid')
+                        ];
+                    }else if (!empty($servicegroupIds) && !$ServicegroupsTable->isServiceInServicegroup($service->get('id'), $servicegroupIds)) {
+                        $dependentServicesForCfg[] = [
+                            'hostUuid'    => $service->get('host')->get('uuid'),
+                            'serviceUuid' => $service->get('uuid')
+                        ];
+                    }
                 }
             }
 
@@ -2250,18 +2308,6 @@ class NagiosExportTask extends AppShell {
                 continue;
             }
 
-            $servicegroupsForCfg = [];
-            $dependentServicegroupsForCfg = [];
-            if (!is_null($servicedependency->get('servicegroups'))) {
-                $servicegroups = $servicedependency->get('servicegroups');
-                foreach ($servicegroups as $servicegroup) {
-                    if ($servicegroup->get('_joinData')->get('dependent') === 0) {
-                        $servicegroupsForCfg[] = $servicegroup->get('uuid');
-                    } else {
-                        $dependentServicegroupsForCfg[] = $servicegroup->get('uuid');
-                    }
-                }
-            }
             $serviceDependencyTimeperiod = null;
             $dependencyTimeperiod = $servicedependency->get('timeperiod');
             if (!is_null($dependencyTimeperiod)) {
@@ -2291,9 +2337,13 @@ class NagiosExportTask extends AppShell {
                     $content .= $this->addContent('inherits_parent', 1, $servicedependency->get('inherits_parent'));
 
                     if (!empty($executionFailureCriteriaForCfgString)) {
+                        // If all states are selected you get an warning like this:
+                        //Warning: Ignoring lame service dependency (config file 'foo.cfg', line 83)
                         $content .= $this->addContent('execution_failure_criteria', 1, $executionFailureCriteriaForCfgString);
                     }
                     if (!empty($notificationFailureCriteriaForCfgString)) {
+                        // If all states are selected you get an warning like this:
+                        //Warning: Ignoring lame service dependency (config file 'foo.cfg', line 83)
                         $content .= $this->addContent('notification_failure_criteria', 1, $notificationFailureCriteriaForCfgString);
                     }
 
@@ -2302,7 +2352,7 @@ class NagiosExportTask extends AppShell {
                     }
 
                     $content .= $this->addContent('}', 0);
-                    $content .= $this->nl();
+                    $content .= PHP_EOL;
                 }
             }
             $file->write($content);
@@ -2332,9 +2382,11 @@ class NagiosExportTask extends AppShell {
 
     /**
      * This function load export tasks from external modules
+     * @todo implement me
      */
-    protected function __loadExternTasks() {
+    private function loadExternTasks() {
         $this->externalTasks = [];
+        return;
         $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
             return strpos($value, 'Module') !== false;
         });
@@ -2345,7 +2397,11 @@ class NagiosExportTask extends AppShell {
         }
     }
 
+    /**
+     * @todo implement me
+     */
     public function exportExternalTasks() {
+        return;
         foreach ($this->externalTasks as $pluginName => $taskName) {
             $_task = new TaskCollection($this);
             $extTask = $_task->load($pluginName . '.' . $taskName);
@@ -2353,7 +2409,11 @@ class NagiosExportTask extends AppShell {
         }
     }
 
+    /**
+     * @todo implement me
+     */
     public function beforeExportExternalTasks() {
+        return;
         $this->createMissingOitcAgentActiveChecks();
 
         foreach ($this->externalTasks as $pluginName => $taskName) {
@@ -2363,9 +2423,13 @@ class NagiosExportTask extends AppShell {
         }
     }
 
+    /**
+     * @todo implement me
+     */
     public function afterExportExternalTasks() {
-        //Restart oitc CMD to wipe old cached information
-        $this->createOitcAgentJsonConfig();
+        return
+            //Restart oitc CMD to wipe old cached information
+            $this->createOitcAgentJsonConfig();
         exec('service oitc_cmd restart');
 
         foreach ($this->externalTasks as $pluginName => $taskName) {
@@ -2376,12 +2440,12 @@ class NagiosExportTask extends AppShell {
     }
 
     public function exportSatHostgroups() {
-        /** @var $HostgroupsTable HostgroupsTable */
+        /** @var HostgroupsTable $HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
         $hostgroups = $HostgroupsTable->getHostgroupsForExport();
 
         foreach ($this->Satellites as $satellite) {
-            $satelliteId = $satellite['Satellite']['id'];
+            $satelliteId = $satellite->get('id');
 
             if (!is_dir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hostgroups'])) {
                 mkdir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hostgroups']);
@@ -2396,7 +2460,7 @@ class NagiosExportTask extends AppShell {
             }
 
             foreach ($hostgroups as $hostgroup) {
-                /** @var $hostgroup \App\Model\Entity\Hostgroup */
+                /** @var \App\Model\Entity\Hostgroup $hostgroup */
                 if (!$this->conf['minified']) {
                     $file = new File($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hostgroups'] . $hostgroup->get('uuid') . $this->conf['suffix']);
 
@@ -2456,98 +2520,21 @@ class NagiosExportTask extends AppShell {
         }
     }
 
-
-    /**
-     * @param array $hostescalation
-     *
-     * @return string
-     * @deprecated Move to Entity
-     */
-    public function serviceEscalationString($hostescalation = []) {
-        $fields = ['escalate_on_recovery' => 'r', 'escalate_on_warning' => 'w', 'escalate_on_unknown' => 'u', 'escalate_on_critical' => 'c'];
-
-        return $this->_implode($hostescalation, $fields);
-    }
-
-    /**
-     * @param array $servicedependeny
-     *
-     * @return string
-     * @deprecated Move to Entity
-     */
-    public function serviceDependencyExecutionString($servicedependeny = []) {
-        $fields = ['execution_fail_on_ok' => 'o', 'execution_fail_on_warning' => 'w', 'execution_fail_on_unknown' => 'u', 'execution_fail_on_critical' => 'c', 'execution_fail_on_pending' => 'p', 'execution_none' => 'n'];
-
-        return $this->_implode($servicedependeny, $fields);
-    }
-
-    /**
-     * @param array $servicedependeny
-     *
-     * @return string
-     * @deprecated Move to Entity
-     */
-    public function serviceDependencyNotificationString($servicedependeny = []) {
-        $fields = ['notification_fail_on_ok' => 'o', 'notification_fail_on_warning' => 'w', 'notification_fail_on_unknown' => 'u', 'notification_fail_on_critical' => 'c', 'notification_fail_on_pending' => 'p', 'notification_none' => 'n'];
-
-        return $this->_implode($servicedependeny, $fields);
-    }
-
-    /**
-     * @param $object
-     * @param $fields
-     *
-     * @return string
-     * @deprecated
-     */
-    private function _implode($object, $fields) {
-        $nagios = [];
-        foreach ($fields as $field => $nagios_value) {
-            if (isset($object[$field]) && $object[$field] == 1) {
-                $nagios[] = $nagios_value;
-            }
-        }
-
-        return implode(',', $nagios);
-    }
-
-    public function verify() {
-        $this->out("<info>" . __d('oitc_console', 'verifying configuration files, please standby...') . "</info>");
-        exec('sudo -u ' . $this->_systemsettings['MONITORING']['MONITORING.USER'] . ' ' . Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin') . ' ' . Configure::read('nagios.verify') . ' ' . Configure::read('nagios.nagios_cfg'), $out);
-        foreach ($out as $line) {
-            echo $line . PHP_EOL;
-        }
-    }
-
     /**
      * @return string
-     */
-    public function returnVerifyCommand() {
-        return 'sudo -u ' . $this->_systemsettings['MONITORING']['MONITORING.USER'] . ' ' . Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin') . ' ' . Configure::read('nagios.verify') . ' ' . Configure::read('nagios.nagios_cfg');
-    }
-
-    /**
-     * @return mixed
      */
     public function returnReloadCommand() {
         return $this->_systemsettings['MONITORING']['MONITORING.RELOAD'];
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function returnAfterExportCommand() {
         return $this->_systemsettings['MONITORING']['MONITORING.AFTER_EXPORT'];
     }
 
-    /**
-     * @deprecated
-     */
-    public function restart() {
-    }
-
     public function deleteHostPerfdata() {
-        App::uses('Folder', 'Utility');
         $basePath = Configure::read('rrd.path');
 
         /** @var $DeletedHostsTable DeletedHostsTable */
@@ -2614,8 +2601,8 @@ class NagiosExportTask extends AppShell {
 ;#########################################################################
 
 ;Weblinks:
-;http://nagios.sourceforge.net/docs/nagioscore/4/en/objectdefinitions.html
-;http://nagios.sourceforge.net/docs/nagioscore/4/en/objecttricks.html
+; https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/4/en/objectdefinitions.html
+; https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/4/en/objecttricks.html
 \n";
         if (is_resource($file)) {
             fwrite($file, $header);
@@ -2638,9 +2625,9 @@ class NagiosExportTask extends AppShell {
 #                        Created: " . date('d.m.Y H:i') . "                      #
 #########################################################################
 #
-#Weblink:
-# http://nagios.sourceforge.net/docs/nagioscore/4/en/configmain.html#resource_file
-# http://nagios.sourceforge.net/docs/nagioscore/4/en/macrolist.html#user
+#Weblinks:
+# https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/4/en/configmain.html#resource_file
+# https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/4/en/macrolist.html#user
 ";
         if (is_resource($file)) {
             fwrite($file, $header);
@@ -2650,21 +2637,21 @@ class NagiosExportTask extends AppShell {
     }
 
     /**
-     * @param             $string
+     * @param string $str
      * @param int $deep
      * @param null|string $value
      * @param bool $newline
      *
      * @return string
      */
-    public function addContent($string, $deep = 1, $value = null, $newline = true) {
+    public function addContent($str, $deep = 1, $value = null, $newline = true) {
         $c = "";
         $i = 0;
         while ($i < $deep) {
             $c .= '    ';
             $i++;
         }
-        $c .= $string;
+        $c .= $str;
 
         if ($value !== null) {
             while ((strlen($c) < 40)) {
@@ -2683,52 +2670,6 @@ class NagiosExportTask extends AppShell {
         return $c;
     }
 
-    /**
-     * @param $pathForBackup
-     *
-     * @return array
-     */
-    public function makeSQLBackup($pathForBackup) {
-        $connection = ConnectionManager::sourceList();
-        $connectionList = ConnectionManager::enumConnectionObjects();
-        $usedConnectionDetails = $connectionList[$connection[0]];
-        $dbc_dbname = $usedConnectionDetails["database"];
-        $output = [];
-        $returncode = 0;
-        exec("mysqldump --defaults-extra-file=/etc/mysql/debian.cnf --databases $dbc_dbname --flush-privileges --single-transaction --triggers --routines --events --hex-blob --ignore-table=$dbc_dbname.nagios_acknowledgements --ignore-table=$dbc_dbname.nagios_commands --ignore-table=$dbc_dbname.nagios_commenthistory --ignore-table=$dbc_dbname.nagios_configfiles --ignore-table=$dbc_dbname.nagios_configfilevariables --ignore-table=$dbc_dbname.nagios_conninfo --ignore-table=$dbc_dbname.nagios_contact_addresses --ignore-table=$dbc_dbname.nagios_contact_notificationcommands --ignore-table=$dbc_dbname.nagios_contactgroup_members --ignore-table=$dbc_dbname.nagios_contactgroups --ignore-table=$dbc_dbname.nagios_contactnotificationmethods --ignore-table=$dbc_dbname.nagios_contactnotifications --ignore-table=$dbc_dbname.nagios_contacts --ignore-table=$dbc_dbname.nagios_contactstatus --ignore-table=$dbc_dbname.nagios_customvariables --ignore-table=$dbc_dbname.nagios_customvariablestatus --ignore-table=$dbc_dbname.nagios_dbversion --ignore-table=$dbc_dbname.nagios_downtimehistory --ignore-table=$dbc_dbname.nagios_eventhandlers --ignore-table=$dbc_dbname.nagios_externalcommands --ignore-table=$dbc_dbname.nagios_flappinghistory --ignore-table=$dbc_dbname.nagios_host_contactgroups --ignore-table=$dbc_dbname.nagios_host_contacts --ignore-table=$dbc_dbname.nagios_host_parenthosts --ignore-table=$dbc_dbname.nagios_hostchecks --ignore-table=$dbc_dbname.nagios_hostdependencies --ignore-table=$dbc_dbname.nagios_hostescalation_contactgroups --ignore-table=$dbc_dbname.nagios_hostescalation_contacts --ignore-table=$dbc_dbname.nagios_hostescalations --ignore-table=$dbc_dbname.nagios_hostgroup_members --ignore-table=$dbc_dbname.nagios_hostgroups --ignore-table=$dbc_dbname.nagios_hosts --ignore-table=$dbc_dbname.nagios_hoststatus --ignore-table=$dbc_dbname.nagios_instances --ignore-table=$dbc_dbname.nagios_logentries --ignore-table=$dbc_dbname.nagios_notifications --ignore-table=$dbc_dbname.nagios_processevents --ignore-table=$dbc_dbname.nagios_programstatus --ignore-table=$dbc_dbname.nagios_runtimevariables --ignore-table=$dbc_dbname.nagios_scheduleddowntime --ignore-table=$dbc_dbname.nagios_service_contactgroups --ignore-table=$dbc_dbname.nagios_service_contacts --ignore-table=$dbc_dbname.nagios_service_parentservices --ignore-table=$dbc_dbname.nagios_servicechecks --ignore-table=$dbc_dbname.nagios_servicedependencies --ignore-table=$dbc_dbname.nagios_serviceescalation_contactgroups --ignore-table=$dbc_dbname.nagios_serviceescalation_contacts --ignore-table=$dbc_dbname.nagios_serviceescalations --ignore-table=$dbc_dbname.nagios_servicegroup_members --ignore-table=$dbc_dbname.nagios_servicegroups --ignore-table=$dbc_dbname.nagios_services --ignore-table=$dbc_dbname.nagios_servicestatus --ignore-table=$dbc_dbname.nagios_statehistory --ignore-table=$dbc_dbname.nagios_systemcommands --ignore-table=$dbc_dbname.nagios_timedeventqueue --ignore-table=$dbc_dbname.nagios_timedevents --ignore-table=$dbc_dbname.nagios_timeperiod_timeranges --ignore-table=$dbc_dbname.nagios_timeperiods > " . $pathForBackup, $output, $returncode);
-        $return = [
-            'output'     => $output,
-            'returncode' => $returncode,
-        ];
-
-        return $return;
-    }
-
-    /**
-     * @param $dumpFile
-     *
-     * @return array
-     */
-    public function restoreSQLBackup($dumpFile) {
-        $connection = ConnectionManager::sourceList();
-        $connectionList = ConnectionManager::enumConnectionObjects();
-        $usedConnectionDetails = $connectionList[$connection[0]];
-        $dbc_dbname = $usedConnectionDetails["database"];
-        $host = $usedConnectionDetails["host"];
-        $pwd = $usedConnectionDetails["password"];
-        $user = $usedConnectionDetails["login"];
-        $output = [];
-        $returncode = 0;
-        exec("mysql --host=$host --user=$user --password=$pwd -v $dbc_dbname < $dumpFile", $output, $returncode);
-        exec("mysql --host=$host --user=$user --password=$pwd -e 'truncate openitcockpit.exports'");
-        $return = [
-            'output'     => $output,
-            'returncode' => $returncode,
-        ];
-
-        return $return;
-    }
-
     public function escapeLastBackslash($str = '') {
         if (mb_substr($str, -1) === '\\') {
             $str = sprintf('%s\\', $str); //Add a \ to the end of the string - because last char is a \
@@ -2737,13 +2678,13 @@ class NagiosExportTask extends AppShell {
     }
 
     private function createMissingOitcAgentActiveChecks() {
-        /** @var $HostsTable HostsTable */
+        /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        /** @var ServicetemplatesTable $ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
-        /** @var $HosttemplatesTable HosttemplatesTable */
+        /** @var HosttemplatesTable $HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
-        /** @var $ServicesTable ServicesTable */
+        /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
         try {
             $servicetemplate = $ServicetemplatesTable->getServicetemplateByName('OITC_AGENT_ACTIVE', OITC_AGENT_SERVICE);
@@ -2754,7 +2695,7 @@ class NagiosExportTask extends AppShell {
                 if (!$HostsTable->hasHostServiceFromServicetemplateId($hostId, $servicetemplateId)) {
                     //Create active oITC Agent check
                     $serviceData = [
-                        'uuid'               => \itnovum\openITCOCKPIT\Core\UUID::v4(),
+                        'uuid'               => UUID::v4(),
                         'host_id'            => $hostId,
                         'servicetemplate_id' => $servicetemplateId,
                         'service_type'       => OITC_AGENT_SERVICE,
@@ -2774,9 +2715,9 @@ class NagiosExportTask extends AppShell {
     }
 
     private function createOitcAgentJsonConfig() {
-        /** @var $HostsTable HostsTable */
+        /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        /** @var $ServicesTable ServicesTable */
+        /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         $hosts = $HostsTable->getHostsThatUseOitcAgentForExport();

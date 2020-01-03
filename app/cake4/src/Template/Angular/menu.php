@@ -52,31 +52,39 @@
         </a>
     </li>
 
+    <li ng-repeat="headline in menu" >
+        <!-- Category Headline -->
+        <a href="javascript:void(0);">
+            <span class="menu-item-parent">{{headline.alias}}</span>
+            <b class="collapse-sign">
+                <em class="fa fa-minus-square-o" ng-if="headline.name == 'overview'"></em>
+                <em class="fa fa-plus-square-o" ng-if="headline.name != 'overview'"></em>
+            </b>
+        </a>
 
-    <li ng-repeat="headline in menu" style="color:red;">
-        {{headline.alias}}
+        <ul ng-style="{'display': headline.name == 'overview' ? 'block': 'none'}">
+            <!-- Category items -->
+            <li ng-repeat="item in headline.items">
 
-        <ul class="open" style="color:white;display: block;">
-            <li class="open" ng-repeat="item in headline.items" style="color:white;">
-                <a ng-if="!item.items" ui-sref="{{item.state}}">
+                <!-- Just a link -->
+                <a ng-if="!item.items"
+                   ui-sref="{{item.state}}">
                     <i class="{{item.icon}}"></i>
                     <span class="menu-item-parent">
                         {{item.name}}
                     </span>
                 </a>
 
-                <ul ng-if="item.items.length > 0" style="color:white;display: block;">
-
-                    <li class="open">
-                        <a  href="#" style="color:cyan!important;">
-                            <i class="{{item.icon}}"></i>
-                            <span class="menu-item-parent">
-                                {{item.alias}}
-                            </span>
-                        </a>
-                    </li>
-
-                    <li class="open" ng-repeat="subItem in item.items" style="color:white;">
+                <!-- 3rd layer menu -->
+                <a href="javascript:void(0);" ng-if="item.items.length > 0">
+                    <i class="{{item.icon}}"></i>
+                    {{item.alias}}
+                    <b class="collapse-sign">
+                        <em class="fa fa-plus-square-o"></em>
+                    </b>
+                </a>
+                <ul ng-if="item.items.length > 0">
+                    <li ng-repeat="subItem in item.items">
                         <a ui-sref="{{subItem.state}}">
                             <i class="{{subItem.icon}}"></i>
                             <span class="menu-item-parent">
@@ -84,15 +92,10 @@
                             </span>
                         </a>
                     </li>
-
                 </ul>
-
             </li>
-
         </ul>
-
     </li>
-
 
 </ul>
 

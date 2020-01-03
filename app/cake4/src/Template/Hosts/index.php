@@ -90,28 +90,28 @@
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <li class="active">
                             <a ui-sref="HostsIndex"><i
-                                        class="fa fa-stethoscope"></i> <span
-                                        class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span> </a>
+                                    class="fa fa-stethoscope"></i> <span
+                                    class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span> </a>
                         </li>
                         <?php if ($this->Acl->hasPermission('notMonitored', 'hosts')): ?>
                             <li class="">
                                 <a ui-sref="HostsNotMonitored"><i
-                                            class="fa fa-user-md"></i> <span
-                                            class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
+                                        class="fa fa-user-md"></i> <span
+                                        class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('disabled', 'hosts')): ?>
                             <li>
                                 <a ui-sref="HostsDisabled"><i
-                                            class="fa fa-power-off"></i> <span
-                                            class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
+                                        class="fa fa-power-off"></i> <span
+                                        class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('index', 'DeletedHosts')): ?>
                             <li>
                                 <a ui-sref="DeletedHostsIndex"><i
-                                            class="fa fa-trash-o"></i> <span
-                                            class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
+                                        class="fa fa-trash-o"></i> <span
+                                        class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                     </ul>
@@ -274,13 +274,13 @@
                                             <legend><?php echo __('Instance'); ?></legend>
                                             <div class="form-group smart-form">
                                                 <select
-                                                        id="Instance"
-                                                        data-placeholder="<?php echo __('Filter by instance'); ?>"
-                                                        class="form-control"
-                                                        chosen="{}"
-                                                        multiple
-                                                        ng-model="filter.Host.satellite_id"
-                                                        ng-model-options="{debounce: 500}">
+                                                    id="Instance"
+                                                    data-placeholder="<?php echo __('Filter by instance'); ?>"
+                                                    class="form-control"
+                                                    chosen="{}"
+                                                    multiple
+                                                    ng-model="filter.Host.satellite_id"
+                                                    ng-model-options="{debounce: 500}">
                                                     <?php
                                                     foreach ($satellites as $satelliteId => $satelliteName):
                                                         printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
@@ -517,7 +517,7 @@
                                             <?php endif; ?>
                                             <a href="javascript:void(0);" data-toggle="dropdown"
                                                class="btn btn-default dropdown-toggle"><span
-                                                        class="caret"></span></a>
+                                                    class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right" id="menuHack-{{host.Host.uuid}}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_edit">
@@ -582,12 +582,12 @@
                                                         /**
                                                          * @todo AdditionalLinks
                                                          */
-                                                            /*echo $this->AdditionalLinks->renderAsListItems(
-                                                            $additionalLinksList,
-                                                            '{{host.Host.id}}',
-                                                            [],
-                                                            true
-                                                        );*/ ?>
+                                                        /*echo $this->AdditionalLinks->renderAsListItems(
+                                                        $additionalLinksList,
+                                                        '{{host.Host.id}}',
+                                                        [],
+                                                        true
+                                                    );*/ ?>
                                                     </li>
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
@@ -650,11 +650,12 @@
                                     <a href="javascript:void(0);" class="btn btn-default"><?php echo __('More'); ?></a>
                                     <a href="javascript:void(0);" data-toggle="dropdown"
                                        class="btn btn-default dropdown-toggle"><span
-                                                class="caret"></span></a>
+                                            class="caret"></span></a>
                                     <ul class="dropdown-menu">
                                         <?php if ($this->Acl->hasPermission('edit_details', 'Hosts', '')): ?>
                                             <li>
-                                                <a ng-href="{{ linkForEditDetails() }}" class="a-clean">
+                                                <a ui-sref="HostsEditDetails({ids: linkForEditDetails()})"
+                                                   class="a-clean">
                                                     <i class="fa fa-cog"></i> <?php echo __('Edit details'); ?>
                                                 </a>
                                             </li>

@@ -32,12 +32,14 @@ use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\HostsTable;
+use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -283,19 +285,30 @@ class CommandsController extends AppController {
         return;
     }
 
-    public function getConsoleWelcome() {
-        $welcomeMessage = "This is a terminal connected to your " . $this->systemname . " " .
-            "Server, this is very powerful to test and debug plugins.\n" .
-            "User: \033[31mnagios\033[0m\nPWD: \033[35m/opt/openitc/nagios/libexec/\033[0m\n\n";
-
-        $this->set('welcomeMessage', $welcomeMessage);
-        $this->viewBuilder()->setOption('serialize', ['welcomeMessage']);
-
-    }
-
-    //ALC permission
     public function terminal() {
-        return null;
+        if(!$this->isApiRequest()){
+            return;
+        }
+
+        $GearmanClient = new Gearman();
+        $gearmanReachable = $GearmanClient->ping();
+
+        if($this->request->is('get')){
+            $this->set('gearmanReachable', $gearmanReachable);
+            $this->viewBuilder()->setOption('serialize', ['gearmanReachable']);
+        }
+
+        if($this->request->is('post')){
+            $command = $this->request->getData('command', '');
+            if($command !== null){
+                $result = $GearmanClient->send('RunNagiosPlugin', [
+                    'command' => $command
+                ]);
+            }
+
+            $this->set('result', $result);
+            $this->viewBuilder()->setOption('serialize', ['result']);
+        }
     }
 
     /**
@@ -335,7 +348,7 @@ class CommandsController extends AppController {
 
 
         //Check if the command is used by host or service templates
-        /** @var #HosttemplatesTable $HosttemplatesTable */
+        /** @var HosttemplatesTable $HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
         $objects['Hosttemplates'] = $HosttemplatesTable->getHosttemplatesByCommandId($id, $MY_RIGHTS, false);
 
@@ -466,5 +479,14 @@ class CommandsController extends AppController {
         }
         $this->set('result', $postData);
         $this->viewBuilder()->setOption('serialize', ['result']);
+    }
+
+    public function getConsoleWelcome() {
+        $welcomeMessage = "This is a terminal connected to your " . $this->getSystemname() . " " .
+            "Server. It is very powerful to test and debug check plugins.\n" .
+            "User: \033[31mnagios\033[0m\nPWD: \033[35m/opt/openitc/nagios/libexec/\033[0m\nChange directory: \e[31mdisabled\e[0m\n\n\n";
+
+        $this->set('welcomeMessage', $welcomeMessage);
+        $this->viewBuilder()->setOption('serialize', ['welcomeMessage']);
     }
 }

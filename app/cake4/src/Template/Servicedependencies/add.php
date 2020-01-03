@@ -321,7 +321,7 @@
                                     <div class="margin-bottom-0">
                                         <label for="execution_none"
                                                class="col col-md-7 control-label padding-top-0">
-                                            <span class="label label-primary notify-label-small">
+                                            <span class="label label-primary label-none notify-label-small">
                                                 <?php echo __('Execution none'); ?>
                                             </span>
                                         </label>
@@ -335,6 +335,12 @@
                                                 <i class="checkbox-primary"></i>
                                             </label>
                                         </div>
+                                        <i class="fa fa-lg fa-info-circle text-info padding-top-7 helpText"
+                                           id="infoButtonExecutionOptions" role="tooltip" data-toggle="tooltip"
+                                           data-html="true" title="<?php echo __('\'Execution none\' option'); ?>"
+                                           data-content="<div>
+                                           <?php echo __('Another options will be deselected automatically!'); ?>
+                                           </div>"></i>
                                     </div>
                                 </li>
                             </ul>
@@ -452,7 +458,7 @@
                                     <div class="margin-bottom-0">
                                         <label for="notification_none"
                                                class="col col-md-7 control-label padding-top-0">
-                                            <span class="label label-primary notify-label-small">
+                                            <span class="label label-primary label-none notify-label-small">
                                                 <?php echo __('Notification none'); ?>
                                             </span>
                                         </label>
@@ -466,6 +472,12 @@
                                                 <i class="checkbox-primary"></i>
                                             </label>
                                         </div>
+                                        <i class="fa fa-lg fa-info-circle text-info padding-top-7 helpText"
+                                           id="infoButtonNotificationOptions" role="tooltip" data-toggle="tooltip"
+                                           data-html="true" title="<?php echo __('\'Notification none\' option'); ?>"
+                                           data-content="<div>
+                                           <?php echo __('Another options will be deselected automatically!'); ?>
+                                           </div>"></i>
                                     </div>
                                 </li>
                             </ul>

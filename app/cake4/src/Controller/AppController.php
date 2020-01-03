@@ -30,6 +30,7 @@ namespace App\Controller;
 use Acl\Model\Table\AcosTable;
 use Acl\Model\Table\ArosTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
 use Authentication\Controller\Component\AuthenticationComponent;
 use Authentication\IdentityInterface;
@@ -81,6 +82,11 @@ class AppController extends Controller {
      * @var PerfdataBackend
      */
     protected $PerfdataBackend;
+
+    /**
+     * @var string|null
+     */
+    private $SYSTEMNAME = null;
 
     /**
      * Initialization hook method.
@@ -510,6 +516,20 @@ class AppController extends Controller {
         ];
 
         return $userPermissions;
+    }
+
+    /**
+     * @return string|null
+     */
+    protected function getSystemname() {
+        if ($this->SYSTEMNAME === null) {
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $entity = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SYSTEMNAME');
+            $this->SYSTEMNAME = $entity->get('value');
+        }
+
+        return $this->SYSTEMNAME;
     }
 
     /**

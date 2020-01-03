@@ -13,7 +13,8 @@
         "jquery-sparkline": "^2.4.0",
         "noty": "^3.1.4",
         "particles.js": "^2.0.0",
-        "particlesjs": "^2.2.3"
+        "particlesjs": "^2.2.3",
+        "underscore": "^1.9.1"
     },
     "devDependencies": {},
     "scripts": {

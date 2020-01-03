@@ -2718,7 +2718,7 @@ fc-left .dropdown {
     padding-top: 0px !important;
 }
 
-.userrole-permission-std{
+.userrole-permission-std {
     border-left: 5px solid #57889c;
     border-bottom: 1px solid #eee;
     border-radius: 2px;
@@ -2738,14 +2738,14 @@ fc-left .dropdown {
     position: relative;
     display: inline-block;
     vertical-align: middle;
-    cursor: default!important;
+    cursor: default !important;
 }
 
 .label-group-width-auto .label-small {
     color: #ffffff;
     text-align: center;
     padding: 1px 4px;
-    width:30px;
+    width: 30px;
     font-size: 10px;
     font-weight: bold;
     display: inline-block;
@@ -2760,6 +2760,7 @@ fc-left .dropdown {
     -o-user-select: none;
     user-select: none;
 }
+
 /* BugFix Style Issue events are not visible*/
 .fc-time-grid .fc-event, .fc-time-grid .fc-bgevent {
     position: relative;
@@ -2774,13 +2775,35 @@ fc-left .dropdown {
 }
 
 .highlight-blue {
-    background-color: rgba(0,192,239, 0.2);
+    background-color: rgba(0, 192, 239, 0.2);
 }
 
 .highlight-green {
-    background-color: rgba(68,157,68, 0.2);
+    background-color: rgba(68, 157, 68, 0.2);
 }
 
 .highlight-purple {
-    background-color: rgba(155,102,160, 0.2);
+    background-color: rgba(155, 102, 160, 0.2);
+}
+
+.label-none {
+    background-image: linear-gradient(135deg, transparent 85%, red 20%);
+}
+
+.label-none:before {
+    font-family: "FontAwesome";
+    content: "\f05e";
+    color: #ffffff;
+    position: absolute;
+    right: 17px;
+    bottom: -1px;
+}
+
+.helpText {
+    cursor: help;
+}
+
+.not-edit-area {
+    -webkit-filter: opacity(.5);
+    filter: opacity(.5);
 }

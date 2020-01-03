@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Graphite;
 
 
+use Cake\Core\Configure;
+
 class GraphiteConfig {
 
     /**
@@ -60,8 +62,8 @@ class GraphiteConfig {
 
     public function __construct() {
 
-        \Configure::load('graphite');
-        $configFromFile = \Configure::read('graphite');
+        Configure::load('graphite');
+        $configFromFile = Configure::read('graphite');
 
         $this->host = $configFromFile['graphite_web_host'];
         $this->port = $configFromFile['graphite_web_port'];
