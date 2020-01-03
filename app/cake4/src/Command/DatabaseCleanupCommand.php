@@ -15,11 +15,12 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
 /**
  * DatabaseCleanup command.
  */
-class DatabaseCleanupCommand extends Command {
+class DatabaseCleanupCommand extends Command implements CronjobInterface {
 
     /**
      * @var array
