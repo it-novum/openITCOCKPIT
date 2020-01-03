@@ -48,3 +48,7 @@ nbproject/*
 #######################
 webroot/package-lock.json
 webroot/node_modules
+
+# openITCOCKPIT files #
+#######################
+src/Lib/openITCOCKPIT_AvailableVersion.php
