@@ -26,6 +26,7 @@ namespace itnovum\openITCOCKPIT\Core\MonitoringEngine;
 
 
 use App\Model\Table\HostgroupsTable;
+use Cake\Core\Plugin;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 
@@ -60,36 +61,33 @@ class NagiosCmd {
      */
     private function toCmd($externalCommandStr, $satelliteId = 0) {
         if ($satelliteId > 0) {
-            $ModuleManager = new ModuleManager('DistributeModule');
-            if (!$ModuleManager->moduleExists()) {
-                return false;
-            }
-            $Satellite = $ModuleManager->loadModel('Satellite');
+            if (Plugin::isLoaded('DistributeModule')) {
+                /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+                $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-            $result = $Satellite->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Satellite.id' => $satelliteId
-                ],
-                'fields'     => [
-                    'Satellite.id',
-                    'Satellite.name'
-                ]
-            ]);
+                $result = $SatellitesTable->find()
+                    ->where([
+                        'Satellites.id' => $satelliteId
+                    ])
+                    ->first();
 
-            if (isset($result['Satellite']['name'])) {
-                $file = fopen('/opt/openitc/nagios/var/rw/' . md5($result['Satellite']['name']) . '_nagios.cmd', 'a+');
+                if (empty($result)) {
+                    return false;
+                }
+
+                $file = fopen('/opt/openitc/nagios/var/rw/' . md5($result->get('name')) . '_nagios.cmd', 'a+');
                 fwrite($file, $this->getCommandPrefix() . $externalCommandStr . PHP_EOL);
                 fclose($file);
+                unset($result);
+                return true;
             }
-            unset($result);
-            return true;
+            return false;
         }
 
         //Host or service from master system or command for master nagios.cmd
         if (file_exists($this->path)) {
             //Do NOT create nagios.cmd as text file
-            $fd = fopen($this->path, 'w+');
+            $fd = fopen($this->path, 'a+');
             fwrite($fd, $this->getCommandPrefix() . $externalCommandStr . PHP_EOL);
             fclose($fd);
             return true;
