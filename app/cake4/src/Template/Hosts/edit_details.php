@@ -67,23 +67,44 @@
                                         <div>
                                             <div class="form-group">
                                                 <label class="col-xs-12 col-lg-2 control-label">
-                                                    <button class="btn btn-xs btn-primary"
+                                                    <button class="btn btn-xs  width-25"
+                                                            ng-class="{ 'btn-primary': !editSharedContainers, 'btn-success': editSharedContainers }"
+                                                            ng-click="editSharedContainers = !editSharedContainers"
                                                             title="<?php echo __('Unlock for edit'); ?>">
                                                         <i class="fa fa-lock fa-lock"
-                                                           ng-class="{ 'fa-lock': !dashboardIsLocked, 'fa-unlock': dashboardIsLocked }"></i>
+                                                           ng-class="{ 'fa-lock': !editSharedContainers, 'fa-unlock': editSharedContainers }"></i>
                                                     </button>
                                                     <?php echo __('Shared containers'); ?>
                                                 </label>
-                                                <div class="col-xs-12 col-lg-10">
+                                                <div class="col-xs-12 col-lg-10"
+                                                     ng-class="{ 'not-edit-area': !editSharedContainers}">
                                                     <select
                                                         id="SharedContainers"
                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                         class="form-control"
+                                                        multiple
                                                         chosen="sharingContainers"
-                                                        disabled="disabled"
+                                                        ng-disabled="!editSharedContainers"
                                                         ng-options="container.key as container.value for container in sharingContainers"
                                                         ng-model="post.Host.hosts_to_containers_sharing._ids">
                                                     </select>
+                                                    <div class="help-block">
+                                                        <div class="form-group">
+                                                            <div class="col-xs-12 col-lg-10 smart-form">
+                                                                <label
+                                                                    class="checkbox small-checkbox-label display-inline margin-right-5 padding-top-0">
+                                                                    <input type="checkbox" name="checkbox"
+                                                                           id="keepExistingSharedContainers"
+                                                                           ng-true-value="1"
+                                                                           ng-false-value="0"
+                                                                           ng-disabled="!editSharedContainers"
+                                                                           ng-model="post.Host.active_checks_enabled">
+                                                                    <i class="checkbox-primary disabled"></i>
+                                                                    <?php echo __('Keep existing'); ?>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -155,6 +176,11 @@
                                 <div class="widget-body">
                                     <div class="form-group">
                                         <label class="col-xs-12 col-lg-2 control-label">
+                                            <button class="btn btn-xs btn-primary"
+                                                    title="<?php echo __('Unlock for edit'); ?>">
+                                                <i class="fa fa-lock fa-lock"
+                                                   ng-class="{ 'fa-lock': !dashboardIsLocked, 'fa-unlock': dashboardIsLocked }"></i>
+                                            </button>
                                             <?php echo __('Check interval'); ?>
                                         </label>
                                         <interval-input-directive
@@ -167,6 +193,11 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="col-xs-12 col-lg-2 control-label">
+                                            <button class="btn btn-xs btn-primary"
+                                                    title="<?php echo __('Unlock for edit'); ?>">
+                                                <i class="fa fa-lock fa-lock"
+                                                   ng-class="{ 'fa-lock': !dashboardIsLocked, 'fa-unlock': dashboardIsLocked }"></i>
+                                            </button>
                                             <?php echo __('Retry interval'); ?>
                                         </label>
                                         <interval-input-directive
@@ -180,6 +211,11 @@
 
                                     <div class="form-group">
                                         <label class="col-xs-12 col-lg-2 control-label">
+                                            <button class="btn btn-xs btn-primary"
+                                                    title="<?php echo __('Unlock for edit'); ?>">
+                                                <i class="fa fa-lock fa-lock"
+                                                   ng-class="{ 'fa-lock': !dashboardIsLocked, 'fa-unlock': dashboardIsLocked }"></i>
+                                            </button>
                                             <?php echo __('Max. number of check attempts'); ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-7">
@@ -213,7 +249,6 @@
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -232,6 +267,11 @@
                                 <div class="widget-body">
                                     <div class="form-group">
                                         <label class="col-xs-12 col-lg-2 control-label">
+                                            <button class="btn btn-xs btn-primary"
+                                                    title="<?php echo __('Unlock for edit'); ?>">
+                                                <i class="fa fa-lock fa-lock"
+                                                   ng-class="{ 'fa-lock': !dashboardIsLocked, 'fa-unlock': dashboardIsLocked }"></i>
+                                            </button>
                                             <?php echo __('Notification interval'); ?>
                                         </label>
                                         <interval-input-directive
@@ -242,6 +282,11 @@
 
                                     <div class="form-group">
                                         <label class="col-xs-12 col-lg-2 control-label">
+                                            <button class="btn btn-xs btn-primary"
+                                                    title="<?php echo __('Unlock for edit'); ?>">
+                                                <i class="fa fa-lock fa-lock"
+                                                   ng-class="{ 'fa-lock': !dashboardIsLocked, 'fa-unlock': dashboardIsLocked }"></i>
+                                            </button>
                                             <?php echo __('Contacts'); ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-10">
@@ -259,6 +304,11 @@
 
                                     <div class="form-group">
                                         <label class="col-xs-12 col-lg-2 control-label">
+                                            <button class="btn btn-xs btn-primary"
+                                                    title="<?php echo __('Unlock for edit'); ?>">
+                                                <i class="fa fa-lock fa-lock"
+                                                   ng-class="{ 'fa-lock': !dashboardIsLocked, 'fa-unlock': dashboardIsLocked }"></i>
+                                            </button>
                                             <?php echo __('Contact groups'); ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-10">
@@ -291,6 +341,11 @@
                                 <div class="widget-body">
                                     <div class="form-group">
                                         <label class="col-xs-12 col-lg-2 control-label">
+                                            <button class="btn btn-xs btn-primary"
+                                                    title="<?php echo __('Unlock for edit'); ?>">
+                                                <i class="fa fa-lock fa-lock"
+                                                   ng-class="{ 'fa-lock': !dashboardIsLocked, 'fa-unlock': dashboardIsLocked }"></i>
+                                            </button>
                                             <?php echo __('Host URL'); ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-10">
@@ -310,6 +365,11 @@
 
                                     <div class="form-group" ng-class="{'has-error': errors.notes}">
                                         <label class="col-xs-12 col-lg-2 control-label">
+                                            <button class="btn btn-xs btn-primary"
+                                                    title="<?php echo __('Unlock for edit'); ?>">
+                                                <i class="fa fa-lock fa-lock"
+                                                   ng-class="{ 'fa-lock': !dashboardIsLocked, 'fa-unlock': dashboardIsLocked }"></i>
+                                            </button>
                                             <?php echo __('Notes'); ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-10">
