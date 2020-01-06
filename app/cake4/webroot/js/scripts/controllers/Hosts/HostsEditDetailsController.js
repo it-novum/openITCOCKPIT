@@ -111,7 +111,9 @@ angular.module('openITCOCKPIT')
         });
         $scope.$watch('editPriority', function(){
             if($scope.editPriority === false){
-                $scope.post.Host.priority = null;
+                $scope.post.Host.priority = 0;
+            }else{
+                $scope.post.Host.priority = 1;
             }
         });
         $scope.$watch('editCheckInterval', function(){
