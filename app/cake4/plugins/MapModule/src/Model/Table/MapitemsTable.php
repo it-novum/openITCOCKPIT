@@ -9,6 +9,7 @@ use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use MapModule\Model\Entity\Mapitem;
 
 /**
@@ -111,5 +112,91 @@ class MapitemsTable extends Table {
         $rules->add($rules->existsIn(['map_id'], 'Maps'));
 
         return $rules;
+    }
+
+    /**
+     * @param $objectId
+     * @param $mapId
+     * @return array
+     */
+    public function getMapitemsForMaps($objectId, $mapId) {
+        $query = $this->find()
+            ->select(['Mapitems.object_id'])
+            ->where([
+                'Mapitems.object_id' => $objectId,
+                'Mapitems.map_id'    => $mapId,
+                'Mapitems.type'      => 'map',
+            ]);
+
+        return $query->first()->toArray();
+    }
+
+    public function allVisibleMapItems($mapId, $MY_RIGHTS = []) {
+        if (!is_array($MY_RIGHTS)) {
+            $MY_RIGHTS = [$MY_RIGHTS];
+        }
+
+        $query = $this->find()
+            ->join([
+                [
+                    'table'      => 'maps',
+                    'type'       => 'INNER',
+                    'alias'      => 'Maps',
+                    'conditions' => 'Maps.id = Mapitems.map_id',
+                ],
+                [
+                    'table'      => 'maps_to_containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'MapsToContainers',
+                    'conditions' => 'MapsToContainers.map_id = Maps.id',
+                ],
+            ])
+            ->select([
+                'Mapitems.map_id',
+                'Mapitems.object_id',
+            ])
+            ->where([
+                'Mapitems.type'       => 'map',
+                'Mapitems.map_id != ' => $mapId
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->where(['MapsToContainers.container_id IN' => $MY_RIGHTS]);
+        }
+
+        $result = $query->first();
+        if(empty($result)) {
+           return [];
+        }
+        return $result->toArray();
+        /*
+         * $query = [
+                            'recursive'  => -1,
+                            'joins'      => [
+                                [
+                                    'table'      => 'maps_to_containers',
+                                    'type'       => 'INNER',
+                                    'alias'      => 'MapsToContainers',
+                                    'conditions' => 'MapsToContainers.map_id = Map.id',
+                                ],
+                            ],
+                            'contain'    => [
+                                'Map'
+                            ],
+                            'conditions' => [
+                                'Mapitem.type' => 'map',
+                                'NOT'          => [
+                                    'Mapitem.map_id' => $map['Map']['id']
+                                ]
+                            ],
+                            'fields'     => [
+                                'Mapitem.map_id',
+                                'Mapitem.object_id'
+                            ]
+                        ];
+                        if (!$this->hasRootPrivileges) {
+                            $query['conditions']['MapsToContainers.container_id'] = $this->MY_RIGHTS;
+                        }
+                        $allVisibleItems = $this->Mapitem->find('all', $query);
+         */
     }
 }

@@ -57,24 +57,24 @@ class Map {
      * @param array $map
      */
     public function __construct($map) {
-        if (isset($map['Map']['id'])) {
-            $this->id = (int)$map['Map']['id'];
+        if (isset($map['id'])) {
+            $this->id = (int)$map['id'];
         }
 
-        if (isset($map['Map']['name'])) {
-            $this->name = $map['Map']['name'];
+        if (isset($map['name'])) {
+            $this->name = $map['name'];
         }
 
-        if (isset($map['Map']['title'])) {
-            $this->title = $map['Map']['title'];
+        if (isset($map['title'])) {
+            $this->title = $map['title'];
         }
 
-        if (isset($map['Map']['background'])) {
-            $this->background = $map['Map']['background'];
+        if (isset($map['background'])) {
+            $this->background = $map['background'];
         }
 
-        if (isset($map['Map']['refresh_interval'])) {
-            $this->refresh_interval = (int)$map['Map']['refresh_interval'];
+        if (isset($map['refresh_interval'])) {
+            $this->refresh_interval = (int)$map['refresh_interval'];
         }
     }
 
