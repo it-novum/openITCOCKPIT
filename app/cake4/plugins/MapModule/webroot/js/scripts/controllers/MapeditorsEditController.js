@@ -4,6 +4,7 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.id = $stateParams.id;
         $scope.backgrounds = [];
+        $scope.lastBackgroundImageToDeletePreventForSave = null;
 
         $scope.addNewObject = false;
         $scope.action = null;
@@ -59,6 +60,11 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.changeBackground = function(background){
+            if(background !== undefined && $scope.lastBackgroundImageToDeletePreventForSave === background.image){
+                $scope.lastBackgroundImageToDeletePreventForSave = null;
+                $scope.map.Map.background = null;
+                return;
+            }
             $http.post("/map_module/mapeditors/saveBackground.json?angular=true",
                 {
                     'Map': {
@@ -270,6 +276,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.deleteBackground = function(background){
+            $scope.lastBackgroundImageToDeletePreventForSave = background.image;
             $http.post("/map_module/BackgroundUploads/delete.json?angular=true",
                 {
                     'filename': background.image
@@ -1311,7 +1318,7 @@ angular.module('openITCOCKPIT')
             $http.get("/map_module/mapeditors/loadMapsByString.json", {
                 params: {
                     'angular': true,
-                    'filter[Map.name]': searchString,
+                    'filter[Maps.name]': searchString,
                     'selected[]': selected,
                     'excluded[]': $scope.id
                 }

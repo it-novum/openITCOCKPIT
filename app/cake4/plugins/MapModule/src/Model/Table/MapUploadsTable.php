@@ -5,13 +5,17 @@ namespace MapModule\Model\Table;
 
 use App\Model\Table\ContainersTable;
 use App\Model\Table\UsersTable;
+use Cake\Core\Exception\Exception;
 use Cake\Datasource\EntityInterface;
+use Cake\Filesystem\Folder;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Behavior\TimestampBehavior;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use MapModule\Model\Entity\MapUpload;
+use Symfony\Component\Finder\Finder;
 
 /**
  * MapUploads Model
@@ -31,6 +35,9 @@ use MapModule\Model\Entity\MapUpload;
  * @mixin TimestampBehavior
  */
 class MapUploadsTable extends Table {
+
+    public $supportedFileExtensions = ['jpg', 'gif', 'png', 'jpeg'];
+
     /**
      * Initialize method
      *
@@ -98,5 +105,266 @@ class MapUploadsTable extends Table {
         $rules->add($rules->existsIn(['container_id'], 'Containers'));
 
         return $rules;
+    }
+
+    /**
+     * @param $filename
+     * @param array $MY_RIGHTS
+     * @return array|EntityInterface|null
+     */
+    public function getByFilename($filename, $MY_RIGHTS = []) {
+        if (!is_array($MY_RIGHTS)) {
+            $MY_RIGHTS = [$MY_RIGHTS];
+        }
+
+        $query = $this->find()
+            ->where([
+                'MapUploads.saved_name' => $filename,
+            ])
+            ->contain([
+                'Containers'
+            ])
+            ->innerJoinWith('Containers', function (Query $query) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    return $query->where(['Containers.id IN' => $MY_RIGHTS]);
+                }
+                return $query;
+            })
+            ->disableHydration()
+            ->first();
+        return $query;
+    }
+
+    /**
+     * @return array
+     */
+    public function getIconsNames() {
+        return [
+            'ack.png',
+            'critical.png',
+            'down.png',
+            'downtime_ack.png',
+            'downtime.png',
+            'error.png',
+            'ok.png',
+            'sack.png',
+            'sdowntime_ack.png',
+            'sdowntime.png',
+            'unknown.png',
+            'unreachable.png',
+            'up.png',
+            'warning.png'
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getIcons() {
+        $basePath = APP . '../' . 'plugins' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
+        if (!is_dir($basePath)) {
+            return [];
+        }
+
+        $finder = new Finder();
+        $finder->files()->in($basePath);
+        $icons = [];
+
+        /** @var \Symfony\Component\Finder\SplFileInfo $file */
+        foreach ($finder as $file) {
+            if (in_array($file->getExtension(), $this->supportedFileExtensions, true)) {
+                $icons[] = $file->getFilename();
+            }
+        }
+        return $icons;
+    }
+
+    /**
+     * @param $error
+     * @return array
+     */
+    public function getUploadResponse($error) {
+        switch ($error) {
+            case UPLOAD_ERR_OK:
+                $response = [
+                    'success' => true,
+                    'message' => __('File uploaded successfully')
+                ];
+                break;
+
+            case UPLOAD_ERR_INI_SIZE:
+                $response = [
+                    'success' => false,
+                    'message' => __('The uploaded file exceeds the upload_max_filesize directive in php.ini')
+                ];
+                break;
+
+            case UPLOAD_ERR_FORM_SIZE:
+                $response = [
+                    'success' => false,
+                    'message' => __('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form')
+                ];
+                break;
+
+            case UPLOAD_ERR_PARTIAL:
+                $response = [
+                    'success' => false,
+                    'message' => __('The uploaded file was only partially uploaded')
+                ];
+                break;
+
+            case UPLOAD_ERR_NO_FILE:
+                $response = [
+                    'success' => false,
+                    'message' => __('No file was uploaded')
+                ];
+                break;
+
+            case UPLOAD_ERR_NO_TMP_DIR:
+                $response = [
+                    'success' => false,
+                    'message' => __('Missing a temporary folder.')
+                ];
+                break;
+
+            case UPLOAD_ERR_CANT_WRITE:
+                $response = [
+                    'success' => false,
+                    'message' => __('Failed to write file to disk.')
+                ];
+                break;
+
+            case UPLOAD_ERR_EXTENSION:
+                $response = [
+                    'success' => false,
+                    'message' => __('A PHP extension stopped the file upload.')
+                ];
+                break;
+        }
+        return $response;
+    }
+
+    /**
+     * @param $fileExtension
+     * @return bool
+     */
+    public function isFileExtensionSupported($fileExtension) {
+        return in_array(strtolower(trim($fileExtension)), $this->supportedFileExtensions, true);
+    }
+
+    /**
+     * @param $imageConfig
+     * @param Folder $Folder
+     * @throws Exception
+     */
+    public function createThumbnailsFromBackgrounds($imageConfig, Folder $Folder) {
+
+        $file = $imageConfig['fullPath'];
+
+        //check if thumb folder exist
+        if (!is_dir($Folder->path . DS . 'thumb')) {
+            mkdir($Folder->path . DS . 'thumb');
+        }
+
+        $imgsize = getimagesize($file);
+        $width = $imgsize[0];
+        $height = $imgsize[1];
+        $imgtype = $imgsize[2];
+        $aspectRatio = $width / $height;
+
+        $thumbnailWidth = 150;
+        $thumbnailHeight = 150;
+
+
+        switch ($imgtype) {
+            /**
+             * 1 => GIF
+             * 2 => JPG
+             * 3 => PNG
+             * 4 => SWF
+             * 5 => PSD
+             * 6 => BMP
+             * 7 => TIFF(intel byte order)
+             * 8 => TIFF(motorola byte order)
+             * 9 => JPC
+             * 10 => JP2
+             * 11 => JPX
+             * 12 => JB2
+             * 13 => SWC
+             * 14 => IFF
+             * 15 => WBMP
+             * 16 => XBM
+             */
+            case 1:
+                $srcImg = imagecreatefromgif($file);
+                break;
+            case 2:
+                $srcImg = imagecreatefromjpeg($file);
+                break;
+            case 3:
+                $srcImg = imagecreatefrompng($file);
+                break;
+            default:
+                throw new Exception('Filetype not supported!');
+                break;
+        }
+
+        //calculate the new height or width and keep the aspect ration
+        if ($aspectRatio == 1) {
+            //source image X = Y
+            $newWidth = $thumbnailWidth;
+            $newHeight = $thumbnailHeight;
+        } else if ($aspectRatio > 1) {
+            //source image X > Y
+            $newWidth = $thumbnailWidth;
+            $newHeight = ($thumbnailHeight / $aspectRatio);
+        } else {
+            //source image X < Y
+            $newWidth = ($thumbnailWidth * $aspectRatio);
+            $newHeight = $thumbnailHeight;
+        }
+
+        $destImg = imagecreatetruecolor(intval($newWidth), intval($newHeight));
+        $transparent = imagecolorallocatealpha($destImg, 0, 0, 0, 127);
+        imagefill($destImg, 0, 0, $transparent);
+        imageCopyResized($destImg, $srcImg, 0, 0, 0, 0, intval($newWidth), intval($newHeight), $width, $height);
+        imagealphablending($destImg, false);
+        imagesavealpha($destImg, true);
+
+
+        //Save image to disk
+        switch ($imgtype) {
+            /**
+             * 1 => GIF
+             * 2 => JPG
+             * 3 => PNG
+             * 4 => SWF
+             * 5 => PSD
+             * 6 => BMP
+             * 7 => TIFF(intel byte order)
+             * 8 => TIFF(motorola byte order)
+             * 9 => JPC
+             * 10 => JP2
+             * 11 => JPX
+             * 12 => JB2
+             * 13 => SWC
+             * 14 => IFF
+             * 15 => WBMP
+             * 16 => XBM
+             */
+            case 1:
+                imagegif($destImg, $Folder->path . DS . 'thumb' . DS . 'thumb_' . $imageConfig['uuidFilename'] . '.' . $imageConfig['fileExtension']);
+                break;
+            case 2:
+                imagejpeg($destImg, $Folder->path . DS . 'thumb' . DS . 'thumb_' . $imageConfig['uuidFilename'] . '.' . $imageConfig['fileExtension']);
+                break;
+            case 3:
+                imagepng($destImg, $Folder->path . DS . 'thumb' . DS . 'thumb_' . $imageConfig['uuidFilename'] . '.' . $imageConfig['fileExtension']);
+                break;
+            default:
+                throw new Exception('Filetype not supported!');
+                break;
+        }
+        imagedestroy($destImg);
     }
 }

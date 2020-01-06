@@ -9,7 +9,6 @@ angular.module('openITCOCKPIT')
         }
 
         $scope.init = true;
-        $scope.id = $stateParams.id;
 
         $scope.post = {
             Host: {
@@ -17,18 +16,40 @@ angular.module('openITCOCKPIT')
                     _ids: []
                 },
                 description: '',
+                host_url: null,
+                tags: null,
+
+                check_interval: null,
+                retry_interval: null,
+                max_check_attempts: null,
+                notification_interval: null,
+                notes: null,
+                priority: null,
                 contacts: {
                     _ids: []
                 },
                 contactgroups: {
                     _ids: []
-                },
-                host_url: '',
-                tags: '',
-                priority: null
-            }
+                }
+            },
+            keepSharedContainers: false,
+            keepContacts: false,
+            keepContactgroups: false
         };
-        $scope.editSharing = 0;
+
+        $scope.editSharedContainers = false;
+        $scope.editDescription = false;
+        $scope.editTags = false;
+        $scope.editPriority = false;
+        $scope.editCheckInterval = false;
+        $scope.editRetryInterval = false;
+        $scope.editMaxNumberOfCheckAttempts = false;
+        $scope.editNotificationInterval = false;
+        $scope.editContacts = false;
+        $scope.editContactgroups = false;
+        $scope.editHostUrl = false;
+        $scope.editNotes = false;
+
 
         $scope.load = function(){
 
@@ -67,4 +88,74 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load();
+        jQuery(function(){
+            $('.tagsinput').tagsinput();
+        });
+
+        $scope.$watch('editSharedContainers', function(){
+            if($scope.editSharedContainers === false){
+                $scope.post.Host.hosts_to_containers_sharing._ids = [];
+                $scope.post.keepSharedContainers = false;
+            }
+        });
+        $scope.$watch('editDescription', function(){
+            if($scope.editDescription === false){
+                $scope.post.Host.description = null;
+            }
+        });
+        $scope.$watch('editTags', function(){
+            if($scope.editTags === false){
+                $scope.post.Host.tags = null;
+                $('.tagsinput').tagsinput('removeAll');
+            }
+        });
+        $scope.$watch('editPriority', function(){
+            if($scope.editPriority === false){
+                $scope.post.Host.priority = 0;
+            }else{
+                $scope.post.Host.priority = 1;
+            }
+        });
+        $scope.$watch('editCheckInterval', function(){
+            if($scope.editCheckInterval === false){
+                $scope.post.Host.check_interval = null;
+            }
+        });
+        $scope.$watch('editRetryInterval', function(){
+            if($scope.editRetryInterval === false){
+                $scope.post.Host.retry_interval = null;
+            }
+        });
+        $scope.$watch('editMaxNumberOfCheckAttempts', function(){
+            if($scope.editMaxNumberOfCheckAttempts === false){
+                $scope.post.Host.max_check_attempts = null;
+            }
+        });
+        $scope.$watch('editNotificationInterval', function(){
+            if($scope.editNotificationInterval === false){
+                $scope.post.Host.notification_interval = null;
+            }
+        });
+        $scope.$watch('editContacts', function(){
+            if($scope.editContacts === false){
+                $scope.post.Host.contacts._ids = [];
+                $scope.post.keepContacts = false;
+            }
+        });
+        $scope.$watch('editContactgroups', function(){
+            if($scope.editContactgroups === false){
+                $scope.post.Host.contactgroups._ids = [];
+                $scope.post.keepContactgroups = false;
+            }
+        });
+        $scope.$watch('editHostUrl', function(){
+            if($scope.editHostUrl === false){
+                $scope.post.Host.host_url = null;
+            }
+        });
+        $scope.$watch('editNotes', function(){
+            if($scope.editNotes === false){
+                $scope.post.Host.notes = null;
+            }
+        });
     });

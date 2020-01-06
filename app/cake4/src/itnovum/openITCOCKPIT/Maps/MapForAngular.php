@@ -70,56 +70,56 @@ class MapForAngular {
         ];
         unset($tmpMap);
 
-        if (isset($this->map['Mapitem'])) {
-            foreach ($this->map['Mapitem'] as $mapitem) {
+        if (isset($this->map['mapitems'])) {
+            foreach ($this->map['mapitems'] as $mapitem) {
                 $item = new Mapitem($mapitem);
                 $this->layers[$item->getZIndex()] = sprintf('Layer %s', $item->getZIndex());
-                $map['Mapitem'][] = $item->toArray();
+                $map['Mapitems'][] = $item->toArray();
             }
         }
 
-        if (isset($this->map['Mapline'])) {
-            foreach ($this->map['Mapline'] as $mapline) {
+        if (isset($this->map['maplines'])) {
+            foreach ($this->map['maplines'] as $mapline) {
                 $line = new Mapline($mapline);
                 $this->layers[$line->getZIndex()] = sprintf('Layer %s', $line->getZIndex());
-                $map['Mapline'][] = $line->toArray();
+                $map['Maplines'][] = $line->toArray();
             }
         }
 
-        if (isset($this->map['Mapgadget'])) {
-            foreach ($this->map['Mapgadget'] as $mapgadget) {
+        if (isset($this->map['mapgadgets'])) {
+            foreach ($this->map['mapgadgets'] as $mapgadget) {
                 $gadget = new Mapgadget($mapgadget);
                 $this->layers[$gadget->getZIndex()] = sprintf('Layer %s', $gadget->getZIndex());
-                $map['Mapgadget'][] = $gadget->toArray();
+                $map['Mapgadgets'][] = $gadget->toArray();
             }
         }
 
-        if (isset($this->map['Mapicon'])) {
-            foreach ($this->map['Mapicon'] as $mapicon) {
+        if (isset($this->map['mapicons'])) {
+            foreach ($this->map['mapicons'] as $mapicon) {
                 $icon = new Mapicon($mapicon);
                 $this->layers[$icon->getZIndex()] = sprintf('Layer %s', $icon->getZIndex());
-                $map['Mapicon'][] = $icon->toArray();
+                $map['Mapicons'][] = $icon->toArray();
             }
         }
 
-        if (isset($this->map['Maptext'])) {
-            foreach ($this->map['Maptext'] as $maptext) {
+        if (isset($this->map['maptexts'])) {
+            foreach ($this->map['maptexts'] as $maptext) {
                 $text = new Maptext($maptext);
                 $this->layers[$text->getZIndex()] = sprintf('Layer %s', $text->getZIndex());
-                $map['Maptext'][] = $text->toArray();
+                $map['Maptexts'][] = $text->toArray();
             }
         }
 
-        if (isset($this->map['Mapsummaryitem'])) {
-            foreach ($this->map['Mapsummaryitem'] as $mapsummaryitem) {
+        if (isset($this->map['mapsummaryitems'])) {
+            foreach ($this->map['mapsummaryitems'] as $mapsummaryitem) {
                 $summaryitem = new Mapsummaryitem($mapsummaryitem);
                 $this->layers[$summaryitem->getZIndex()] = sprintf('Layer %s', $summaryitem->getZIndex());
-                $map['Mapsummaryitem'][] = $summaryitem->toArray();
+                $map['Mapsummaryitems'][] = $summaryitem->toArray();
             }
         }
 
-        if (isset($this->map['Container'])) {
-            $map['Container'] = $this->map['Container'];
+        if (isset($this->map['Containers'])) {
+            $map['Containers'] = $this->map['Containers'];
         }
 
         if (empty($this->layers)) {

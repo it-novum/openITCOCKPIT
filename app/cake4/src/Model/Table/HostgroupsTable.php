@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Hostgroup;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -674,10 +675,9 @@ class HostgroupsTable extends Table {
     }
 
     /**
-     * @param int $id
+     * @param $id
      * @param array $MY_RIGHTS
-     * @return array
-     * @throws RecordNotFoundException
+     * @return array|Hostgroup
      */
     public function getHostsByHostgroupForMaps($id, $MY_RIGHTS = []) {
         $where = [

@@ -25,7 +25,7 @@
 <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}" ng-if="map.Map.background"/>
 
 
-<div ng-repeat="item in map.Mapitem"
+<div ng-repeat="item in map.Mapitems"
      style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}};"
      ng-mouseenter="showSummaryStateDelayed(item, false)"
      ng-mouseleave="cancelTimer()">
@@ -34,12 +34,12 @@
     </a>
 </div>
 
-<div ng-repeat="textItem in map.Maptext"
+<div ng-repeat="textItem in map.Maptexts"
      style="position:absolute; top: {{textItem.y}}px; left: {{textItem.x}}px;  z-index: {{textItem.z_index}};">
     <map-text item="textItem"></map-text>
 </div>
 
-<div ng-repeat="lineItem in map.Mapline"
+<div ng-repeat="lineItem in map.Maplines"
      style="position: absolute; top: {{lineItem.startY}}px; left: {{lineItem.startX}}px;">
     <a ng-show="lineItem.type != 'stateless'"
        ng-href="{{ getHref(lineItem) }}"
@@ -52,12 +52,12 @@
     </a>
 </div>
 
-<div ng-repeat="iconItem in map.Mapicon"
+<div ng-repeat="iconItem in map.Mapicons"
      style="position:absolute; top: {{iconItem.y}}px; left: {{iconItem.x}}px;  z-index: {{iconItem.z_index}};">
     <map-icon item="iconItem"></map-icon>
 </div>
 
-<div ng-repeat="gadgetItem in map.Mapgadget"
+<div ng-repeat="gadgetItem in map.Mapgadgets"
      style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}};">
     <a ng-href="{{ getHref(gadgetItem) }}">
         <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"
@@ -99,7 +99,7 @@
     </a>
 </div>
 
-<div ng-repeat="item in map.Mapsummaryitem"
+<div ng-repeat="item in map.Mapsummaryitems"
      style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}};"
      ng-mouseenter="showSummaryStateDelayed(item, true)"
      ng-mouseleave="cancelTimer()">

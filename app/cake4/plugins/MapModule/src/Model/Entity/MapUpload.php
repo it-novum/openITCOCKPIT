@@ -38,6 +38,5 @@ class MapUpload extends Entity {
         'container_id' => true,
         'created'      => true,
         'user'         => true,
-        'container'    => true,
     ];
 }
