@@ -371,31 +371,31 @@
     }
 
     .UP {
-        color: #356e35 !important;
+        color: #449D44 !important;
     }
 
     .DOWN {
-        color: #a90329 !important;
+        color: #C9302C !important;
     }
 
     .UNREACHABLE {
-        color: #525252 !important;
+        color: #92A2A8 !important;
     }
 
     .OK {
-        color: #356e35 !important;
+        color: #449D44 !important;
     }
 
     .WARNING {
-        color: #b09b5b !important;
+        color: #DF8F1D !important;
     }
 
     .CRITICAL {
-        color: #a90329 !important;
+        color: #C9302C !important;
     }
 
     .UNKNOWN {
-        color: #525252 !important;
+        color: #92A2A8 !important;
     }
 
     .txt-color-green {
@@ -430,5 +430,14 @@
         table.social div[class="column"] {
             width: auto !important
         }
+    }
+
+    .notification_type {
+        color: white;
+        font-size: x-large;
+        line-height: 1;
+        letter-spacing: 10px;
+        font-weight: bold;
+        text-shadow: 1px 1px 1px #A09D9D, 0 0 0 #000, 1px 1px 1px #def;
     }
 </style>
