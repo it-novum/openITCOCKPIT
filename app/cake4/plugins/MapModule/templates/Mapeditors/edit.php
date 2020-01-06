@@ -96,19 +96,19 @@
             <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}" ng-if="map.Map.background"/>
 
 
-            <div ng-repeat="item in map.Mapitem" class="draggable" ng-dblclick="editItem(item)"
+            <div ng-repeat="item in map.Mapitems" class="draggable" ng-dblclick="editItem(item)"
                  style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}}; cursor: move;"
                  data-id="{{item.id}}" data-type="item" ng-show="item.display">
                 <map-item item="item" refresh-interval="0"></map-item>
             </div>
 
-            <div ng-repeat="textItem in map.Maptext" class="draggable"
+            <div ng-repeat="textItem in map.Maptexts" class="draggable"
                  style="position:absolute; top: {{textItem.y}}px; left: {{textItem.x}}px;  z-index: {{textItem.z_index}}; cursor: move;"
                  data-id="{{textItem.id}}" data-type="text" ng-dblclick="editText(textItem)" ng-show="textItem.display">
                 <map-text item="textItem"></map-text>
             </div>
 
-            <div ng-repeat="lineItem in map.Mapline" ng-dblclick="editLine(lineItem)"
+            <div ng-repeat="lineItem in map.Maplines" ng-dblclick="editLine(lineItem)"
                  style="position: absolute; top: {{lineItem.startY}}px; left: {{lineItem.startX}}px; cursor: move;"
                  data-id="{{lineItem.id}}" data-type="line"
                  data-oldstartx="{{lineItem.startX}}" data-oldstarty="{{lineItem.startY}}"
@@ -117,14 +117,14 @@
                 <map-line item="lineItem" refresh-interval="0"></map-line>
             </div>
 
-            <div ng-repeat="iconItem in map.Mapicon"
+            <div ng-repeat="iconItem in map.Mapicons"
                  style="position:absolute; top: {{iconItem.y}}px; left: {{iconItem.x}}px;  z-index: {{iconItem.z_index}}; cursor: move;"
                  class="draggable"
                  data-id="{{iconItem.id}}" data-type="icon" ng-dblclick="editIcon(iconItem)" ng-show="iconItem.display">
                 <map-icon item="iconItem"></map-icon>
             </div>
 
-            <div ng-repeat="gadgetItem in map.Mapgadget" class="draggable resizable"
+            <div ng-repeat="gadgetItem in map.Mapgadgets" class="draggable resizable"
                  style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;"
                  data-id="{{gadgetItem.id}}" data-type="gadget" ng-dblclick="editGadget(gadgetItem)"
                  ng-show="gadgetItem.display" ng-if="gadgetItem.gadget !== 'ServiceOutput'">
@@ -147,7 +147,7 @@
                                   ng-if="gadgetItem.gadget === 'Temperature'" refresh-interval="0"></temperature-item>
             </div>
 
-            <div ng-repeat="gadgetItem in map.Mapgadget" class="draggable resizable-no-aspect-ratio"
+            <div ng-repeat="gadgetItem in map.Mapgadgets" class="draggable resizable-no-aspect-ratio"
                  style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;"
                  data-id="{{gadgetItem.id}}" data-type="gadget" ng-dblclick="editGadget(gadgetItem)"
                  ng-show="gadgetItem.display" ng-if="gadgetItem.gadget === 'ServiceOutput'">
@@ -157,7 +157,7 @@
                                      refresh-interval="0"></service-output-item>
             </div>
 
-            <div ng-repeat="summaryItem in map.Mapsummaryitem"
+            <div ng-repeat="summaryItem in map.Mapsummaryitems"
                  style="position:absolute; top: {{summaryItem.y}}px; left: {{summaryItem.x}}px;  z-index: {{summaryItem.z_index}};"
                  class="draggable resizable"
                  data-id="{{summaryItem.id}}" data-type="summaryItem" ng-dblclick="editSummaryItem(summaryItem)"

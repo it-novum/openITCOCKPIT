@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Servicegroup;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -418,6 +419,61 @@ class ServicegroupsTable extends Table {
                 'Containers'
             ]
         ]);
+    }
+
+    /**
+     * @param $id
+     * @param array $MY_RIGHTS
+     * @return array|Servicegroup
+     */
+    public function getServicegroupsByServicegroupForMaps($id, $MY_RIGHTS = []) {
+        $where = [
+            'Servicegroups.id' => $id
+        ];
+        if (!empty($MY_RIGHTS)) {
+            $where['Containers.parent_id IN'] = $MY_RIGHTS;
+        }
+
+        $servicegroup = $this->find()
+            ->select([
+                'Servicegroups.id',
+                'Servicegroups.description',
+                'Containers.name',
+            ])
+            ->contain([
+                'Containers',
+                'Services' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'Services.id',
+                            'Services.uuid',
+                            'Services.name'
+                        ])
+                        ->contain([
+                            'Hosts' => function (Query $q) {
+                                return $q->enableAutoFields(false)
+                                    ->select([
+                                        'Hosts.id',
+                                        'Hosts.uuid'
+                                    ])
+                                    ->contain(['HostsToContainersSharing'])
+                                    ->where(['Hosts.disabled' => 0]);
+                            },
+                            'Servicetemplates' => function (Query $q) {
+                                return $q->enableAutoFields(false)
+                                    ->select([
+                                        'Servicetemplates.name'
+                                    ]);
+                            },
+                        ])
+                        ->where(['Services.disabled' => 0]);
+                }
+            ])
+            ->where($where)
+            ->disableHydration()
+            ->firstOrFail();
+
+        return $servicegroup;
     }
 
     /**

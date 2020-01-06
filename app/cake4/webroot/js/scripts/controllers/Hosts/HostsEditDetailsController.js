@@ -28,7 +28,19 @@ angular.module('openITCOCKPIT')
                 priority: null
             }
         };
-        $scope.editSharing = 0;
+        $scope.editSharedContainers = false;
+        $scope.editDescription = false;
+        $scope.editTags = false;
+        $scope.editPriority = false;
+        $scope.editCheckInterval = false;
+        $scope.editRetryInterval = false;
+        $scope.editMaxNumberOfCheckAttempts = false;
+        $scope.editNotificationInterval = false;
+        $scope.editContacts = false;
+        $scope.editContactgroups = false;
+        $scope.editHostUrl = false;
+        $scope.editNotes = false;
+
 
         $scope.load = function(){
 

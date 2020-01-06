@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use Cake\Core\Configure;
+
 class AfterExport extends ConfigGenerator implements ConfigInterface {
 
     protected $templateDir = 'config';
@@ -121,8 +123,8 @@ class AfterExport extends ConfigGenerator implements ConfigInterface {
         }
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
 
-        \Configure::load('after_export');
-        $configFromFile = \Configure::read('after_export');
+        Configure::load('after_export');
+        $configFromFile = Configure::read('after_export');
 
         foreach ($config['string'] as $field => $value) {
             if (isset($configFromFile['SSH'][$field])) {

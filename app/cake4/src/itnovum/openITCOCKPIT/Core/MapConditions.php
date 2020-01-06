@@ -62,10 +62,15 @@ class MapConditions {
      */
     public function getConditionsForFind() {
         $conditions = $this->conditions;
-        if (!empty($this->containerIds)) {
-            $conditions['MapsToContainers.container_id'] = $this->containerIds;
+        $containerIds = $this->containerIds;
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
         }
 
+        if (!empty($containerIds)) {
+            $conditions['MapsToContainers.container_id IN'] = $containerIds;
+        }
         return $conditions;
     }
 
