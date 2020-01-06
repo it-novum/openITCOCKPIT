@@ -53,12 +53,12 @@ use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapline;
 use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapsummaryitem;
 use itnovum\openITCOCKPIT\Maps\ValueObjects\Maptext;
 use MapModule\Model\Table\MapitemsTable;
+use MapModule\Model\Table\MaplinesTable;
 use MapModule\Model\Table\MapsTable;
+use MapModule\Model\Table\MapsummaryitemsTable;
 use MapModule\Model\Table\MaptextsTable;
 use MapModule\Model\Table\MapUploadsTable;
 use Statusengine\PerfdataParser;
-use Statusengine2Module\Model\Table\HoststatusTable;
-use Statusengine2Module\Model\Table\ServicestatusTable;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -201,7 +201,6 @@ class MapeditorsController extends AppController {
         $mapitems = [];
         foreach ($items as $item) {
             if (isset($item['mapId']) && isset($item['objectId']) && isset($item['type']) && isset($item['uuid'])) {
-
                 try {
                     $data = $this->_mapitem(
                         $item['objectId'],
@@ -210,14 +209,12 @@ class MapeditorsController extends AppController {
                     );
 
                     $mapitems[$item['uuid']] = $data;
-
                 } catch (Exception $e) {
                     throw $e;
                 }
             }
 
         }
-
         $this->set('mapitems', $mapitems);
         $this->viewBuilder()->setOption('serialize', ['mapitems']);
     }
@@ -228,6 +225,7 @@ class MapeditorsController extends AppController {
      * @param $type
      * @param string $includeServiceOutput
      * @return array
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
     private function _mapitem($objectId, $mapId, $type, $includeServiceOutput = 'true') {
         if ($objectId <= 0) {
@@ -331,7 +329,7 @@ class MapeditorsController extends AppController {
                         $servicegroup
                     );
                     break;
-                } catch (RecordNotFoundException $exception){
+                } catch (RecordNotFoundException $exception) {
                     $allowView = false;
                 }
                 break;
@@ -349,14 +347,17 @@ class MapeditorsController extends AppController {
                     $MapitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapitems');
 
                     //fetch all dependent map items after permissions check
-                    $mapItemToResolve = $MapitemsTable->getMapitemsForMaps($map['id'], $mapId);
+                    $mapItemToResolve = $MapitemsTable->getMapitemsForMaps($map[0]['id'], $mapId);
 
                     if (!empty($mapItemToResolve)) {
-                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($map['id'], $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
-                        debug($allVisibleItems);
-                        die();
+                        /** @var HostgroupsTable $HostgroupsTable */
+                        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+                        /** @var ServicegroupsTable $ServicegroupsTable */
+                        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
-                        $mapItemIdToResolve = $mapItemToResolve['Mapitem']['object_id'];
+                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($map[0]['id'], $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
+
+                        $mapItemIdToResolve = $mapItemToResolve['object_id'];
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
                             '{n}.Mapitem.object_id',
@@ -369,47 +370,27 @@ class MapeditorsController extends AppController {
                         }
                         $dependentMapsIds[] = $mapItemIdToResolve;
                         // resolve all Elements (host and/or services of dependent map)
-                        $allDependentMapElements = $this->Map->getAllDependentMapsElements(
-                            $this->Map,
+                        $allDependentMapElements = $MapsTable->getAllDependentMapsElements(
                             $dependentMapsIds,
-                            $this->Hostgroup,
-                            $this->Servicegroup
+                            $HostgroupsTable,
+                            $ServicegroupsTable,
+                            $this->hasRootPrivileges ? [] : $this->MY_RIGHTS
                         );
 
                         $hosts = [];
                         $services = [];
                         if (!empty($allDependentMapElements['hostIds'])) {
-                            $hosts = $this->Host->find('all', [
-                                'recursive'  => -1,
-                                'contain'    => [
-                                    'Container',
-                                    'Service' => [
-                                        'conditions' => [
-                                            'Service.disabled' => 0
-                                        ],
-                                        'fields'     => [
-                                            'Service.id',
-                                            'Service.uuid'
-                                        ]
-                                    ]
-                                ],
-                                'conditions' => [
-                                    'Host.id'       => $allDependentMapElements['hostIds'],
-                                    'Host.disabled' => 0
-                                ],
-                                'fields'     => [
-                                    'Host.uuid'
-                                ]
-                            ]);
+                            $hosts = $HostsTable->getHostsWithServicesByIdsForMapeditor($allDependentMapElements['hostIds']);
+
                             if (!empty($hosts)) {
                                 if ($this->hasRootPrivileges === false) {
-                                    if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.Container.{n}.HostsToContainer.container_id'), false)) {
+                                    if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.hosts_to_containers_sharing.{n}.id'), false)) {
                                         $allowView = false;
                                         break;
                                     }
                                 }
                                 foreach ($hosts as $host) {
-                                    foreach ($host['Service'] as $serviceData) {
+                                    foreach ($host['services'] as $serviceData) {
                                         $services[$serviceData['id']] = [
                                             'Service' => $serviceData
                                         ];
@@ -418,43 +399,25 @@ class MapeditorsController extends AppController {
                             }
                         }
                         if (!empty($allDependentMapElements['serviceIds'])) {
-                            $dependentServices = $this->Service->find('all', [
-                                'recursive'  => -1,
-                                'contain'    => [
-                                    'Host' => [
-                                        'Container',
-                                        'fields' => [
-                                            'Host.id',
-                                            'Host.uuid'
-                                        ]
-                                    ]
-                                ],
-                                'conditions' => [
-                                    'Service.id'       => $allDependentMapElements['serviceIds'],
-                                    'Service.disabled' => 0
-                                ],
-                                'fields'     => [
-                                    'Service.id',
-                                    'Service.uuid'
-                                ]
-                            ]);
+                            $dependentServices = $ServicesTable->getServicesByIdsForMapeditor($allDependentMapElements['serviceIds']);
+
                             if (!empty($dependentServices)) {
                                 if ($this->hasRootPrivileges === false) {
-                                    if (!$this->allowedByContainerId(Hash::extract($dependentServices, '{n}.Host.Container.{n}.HostsToContainer.container_id'), false)) {
+                                    if (!$this->allowedByContainerId(Hash::extract($dependentServices, '{n}.HostsToContainers.container_id'), false)) {
                                         $allowView = false;
                                         break;
                                     }
                                 }
                                 foreach ($dependentServices as $service) {
-                                    $hosts[$service['Host']['id']] = ['Host' => $service['Host']];
-                                    $services[$service['Service']['id']] = $service;
+                                    $hosts[$service['Hosts']['id']] = ['Host' => $service['Hosts']];
+                                    $services[$service['id']] = $service;
                                 }
                             }
                         }
                         $allowView = true;
-                        $properties = $this->Map->getMapInformation(
-                            $this->Hoststatus,
-                            $this->Servicestatus,
+                        $properties = $MapsTable->getMapInformation(
+                            $HoststatusTable,
+                            $ServicestatusTable,
                             $map,
                             $hosts,
                             $services
@@ -493,7 +456,6 @@ class MapeditorsController extends AppController {
         }
 
         return $allRelatedMapIdsOfParent;
-
     }
 
     public function mapline() {
@@ -535,44 +497,31 @@ class MapeditorsController extends AppController {
             throw new RuntimeException('Invalid map id');
         }
 
+        /** @var MapsTable $MapsTable */
+        $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
         switch ($this->request->getQuery('type')) {
             case 'host':
-                $host = $this->Host->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container',
-                        'Service' => [
-                            'fields'     => [
-                                'Service.uuid'
-                            ],
-                            'conditions' => [
-                                'Service.disabled' => 0
-                            ]
-                        ]
-                    ],
-                    'fields'     => [
-                        'Host.id',
-                        'Host.name',
-                        'Host.uuid',
-                        'Host.disabled'
-                    ],
-                    'conditions' => [
-                        'Host.id' => $objectId
-                    ]
-                ]);
-                if (!empty($host)) {
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+                $host = $HostsTable->getHostsWithServicesByIdsForMapeditor($objectId);
+
+                if (!empty($host) && isset($host[0])) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'), false)) {
+                        if (!$this->allowedByContainerId(Hash::extract($host[0], 'hosts_to_containers_sharing.id'), false)) {
                             $allowView = false;
                             break;
                         }
                     }
                     $allowView = true;
-                    $properties = $this->Map->getHostInformationForSummaryIcon(
-                        $this->Hoststatus,
-                        $this->Servicestatus,
-                        $host
+                    $properties = $MapsTable->getHostInformationForSummaryIcon(
+                        $HoststatusTable,
+                        $ServicestatusTable,
+                        $host[0]->toArray()
                     );
                     break;
                 }
@@ -580,45 +529,22 @@ class MapeditorsController extends AppController {
                 break;
 
             case 'service':
-                $service = $this->Service->find('first', [
-                    'recursive'  => -1,
-                    'fields'     => [
-                        'Service.id',
-                        'Service.name',
-                        'Service.uuid',
-                        'Service.disabled'
-                    ],
-                    'contain'    => [
-                        'Host'            => [
-                            'fields' => [
-                                'Host.id',
-                                'Host.uuid',
-                                'Host.name'
-                            ],
-                            'Container',
-                        ],
-                        'Servicetemplate' => [
-                            'fields' => [
-                                'Servicetemplate.name'
-                            ]
-                        ]
-                    ],
-                    'conditions' => [
-                        'Service.id' => $objectId
-                    ],
-                ]);
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+                $service = $ServicesTable->getServiceById($objectId);
 
                 if (!empty($service)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
+                        if (!$this->allowedByContainerId(Hash::extract($service, 'host.hosts_to_containers_sharing.{n}.id'), false)) {
                             $allowView = false;
                             break;
                         }
                     }
                     $allowView = true;
-                    $properties = $this->Map->getServiceInformationForSummaryIcon(
-                        $this->Hoststatus,
-                        $this->Servicestatus,
+                    $properties = $MapsTable->getServiceInformationForSummaryIcon(
+                        $HoststatusTable,
+                        $ServicestatusTable,
                         $service
                     );
                     break;
@@ -627,45 +553,14 @@ class MapeditorsController extends AppController {
                 break;
 
             case 'hostgroup':
-                $hostgroup = $this->Hostgroup->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container' => [
-                            'fields' => [
-                                'Container.name'
-                            ]
-                        ],
-                        'Host'      => [
-                            'Container',
-                            'fields'     => [
-                                'Host.id',
-                                'Host.uuid'
-                            ],
-                            'conditions' => [
-                                'Host.disabled' => 0
-                            ],
-                            'Service'    => [
-                                'fields'     => [
-                                    'Service.id',
-                                    'Service.uuid'
-                                ],
-                                'conditions' => [
-                                    'Service.disabled' => 0
-                                ],
-                            ]
-                        ]
-                    ],
-                    'fields'     => [
-                        'Hostgroup.id',
-                        'Hostgroup.description'
-                    ],
-                    'conditions' => [
-                        'Hostgroup.id' => $objectId
-                    ]
-                ]);
-                if (!empty($hostgroup)) {
+                /** @var HostgroupsTable $HostgroupsTable */
+                $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+                $hostgroup = $HostgroupsTable->getHostgroupByIdForMapeditor($objectId);
+
+                if (!empty($hostgroup) && isset($hostgroup[0])) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'), false)) {
+                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'hosts.{n}.container.id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -1859,16 +1754,18 @@ class MapeditorsController extends AppController {
 
         $id = $this->request->getData('Mapitem.id');
 
-
-        if (!$this->Mapitem->exists($id)) {
-            throw new NotFoundException();
-        }
+        /** @var MapitemsTable $MapitemsTable */
+        $MapitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapitems');
 
         if (!is_numeric($id)) {
             throw new InvalidArgumentException('Mapitem.id needs to be numeric');
         }
 
-        if ($this->Mapitem->delete($id)) {
+        if (!$MapitemsTable->existsById($id)) {
+            throw new NotFoundException();
+        }
+
+        if ($MapitemsTable->delete($MapitemsTable->get($id))) {
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
             return;
@@ -1883,21 +1780,23 @@ class MapeditorsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
+        /** @var MaplinesTable $MaplinesTable */
+        $MaplinesTable = TableRegistry::getTableLocator()->get('MapModule.Maplines');
+
         //Save new possition after drag and drop
         if ($this->request->getData('action') === 'dragstop') {
-            $line = $this->Mapline->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Mapline.id' => $this->request->getData('Mapline.id')
-                ]
-            ]);
+            $lineEntity = $MaplinesTable->get($this->request->getData('Mapline.id'));
+            //debug($line);die();
 
-            $line['Mapline']['startX'] = (int)$this->request->getData('Mapline.startX');
-            $line['Mapline']['startY'] = (int)$this->request->getData('Mapline.startY');
-            $line['Mapline']['endX'] = (int)$this->request->getData('Mapline.endX');
-            $line['Mapline']['endY'] = (int)$this->request->getData('Mapline.endY');
-            if ($this->Mapline->save($line)) {
-                $Mapline = new Mapline($line['Mapline']);
+            $line = [];
+            $line['startX'] = (int)$this->request->getData('Mapline.startX');
+            $line['startY'] = (int)$this->request->getData('Mapline.startY');
+            $line['endX'] = (int)$this->request->getData('Mapline.endX');
+            $line['endY'] = (int)$this->request->getData('Mapline.endY');
+            $lineEntity = $MaplinesTable->patchEntity($lineEntity, $line);
+            $MaplinesTable->save($lineEntity);
+            if (!$lineEntity->hasErrors()) {
+                $Mapline = new Mapline($lineEntity->toArray());
 
                 $this->set('Mapline', [
                     'Mapline' => $Mapline->toArray()
@@ -1906,27 +1805,31 @@ class MapeditorsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['Mapline']);
                 return;
             }
-            $this->serializeErrorMessageFromModel('Mapline');
+            $this->serializeCake4Id($lineEntity);
             return;
         }
 
         //Create new item or update existing one
-        if (!isset($this->request->data['Mapline']['id'])) {
-            $this->Mapline->create();
+        if (empty($this->request->getData('Mapline.id'))) {
+            //$this->Mapline->create();
+            $lineEntity = $MaplinesTable->newEmptyEntity();
+        } else {
+            $lineEntity = $MaplinesTable->get($this->request->getData('Mapline.id'));
         }
+        $data = $this->request->getData();
+        $data['Mapline']['show_label'] = (int)$data['Mapline']['show_label'];
+        $lineEntity = $MaplinesTable->patchEntity($lineEntity, $data['Mapline']);
 
-        $line = $this->request->data;
-        $line['Mapline']['show_label'] = (int)$this->request->getData('Mapline.show_label');
-        if ($this->Mapline->save($line)) {
-            $line['Mapline']['id'] = (int)$this->Mapline->id;
-            $Mapline = new Mapline($line['Mapline']);
+        $MaplinesTable->save($lineEntity);
+        if (!$lineEntity->hasErrors()) {
+            $Mapline = new Mapline($lineEntity->toArray());
             $this->set('Mapline', [
                 'Mapline' => $Mapline->toArray()
             ]);
             $this->viewBuilder()->setOption('serialize', ['Mapline']);
             return;
         }
-        $this->serializeErrorMessageFromModel('Mapline');
+        $this->serializeCake4Id($lineEntity);
     }
 
     public function deleteLine() {
@@ -1934,18 +1837,19 @@ class MapeditorsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
+        /** @var MaplinesTable $MaplinesTable */
+        $MaplinesTable = TableRegistry::getTableLocator()->get('MapModule.Maplines');
+
         $id = $this->request->getData('Mapline.id');
-
-
-        if (!$this->Mapline->exists($id)) {
-            throw new NotFoundException();
-        }
 
         if (!is_numeric($id)) {
             throw new InvalidArgumentException('Mapline.id needs to be numeric');
         }
+        if (!$MaplinesTable->existsById($id)) {
+            throw new NotFoundException();
+        }
 
-        if ($this->Mapline->delete($id)) {
+        if ($MaplinesTable->delete($MaplinesTable->get($id))) {
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
             return;
@@ -2323,19 +2227,19 @@ class MapeditorsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
+        /** @var MapsummaryitemsTable $MapsummaryitemsTable */
+        $MapsummaryitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapsummaryitems');
+
         //Save new possition after drag and drop
         if ($this->request->getData('action') === 'dragstop') {
-            $mapsummaryitem = $this->Mapsummaryitem->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Mapsummaryitem.id' => $this->request->getData('Mapsummaryitem.id')
-                ]
-            ]);
+            $mapsummaryitemEntity = $MapsummaryitemsTable->get($this->request->getData('Mapsummaryitem.id'));
 
             $mapsummaryitem['Mapsummaryitem']['x'] = (int)$this->request->getData('Mapsummaryitem.x');
             $mapsummaryitem['Mapsummaryitem']['y'] = (int)$this->request->getData('Mapsummaryitem.y');
-            if ($this->Mapsummaryitem->save($mapsummaryitem)) {
-                $Mapsummaryitem = new Mapsummaryitem($mapsummaryitem['Mapsummaryitem']);
+            $mapsummaryitemEntity = $MapsummaryitemsTable->patchEntity($mapsummaryitemEntity, $mapsummaryitem['Mapsummaryitem']);
+            $MapsummaryitemsTable->save($mapsummaryitemEntity);
+            if (!$mapsummaryitemEntity->hasErrors()) {
+                $Mapsummaryitem = new Mapsummaryitem($mapsummaryitemEntity->toArray());
 
                 $this->set('Mapsummaryitem', [
                     'Mapsummaryitem' => $Mapsummaryitem->toArray()
@@ -2344,24 +2248,20 @@ class MapeditorsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['Mapsummaryitem']);
                 return;
             }
-            $this->serializeErrorMessageFromModel('Mapsummaryitem');
+            $this->serializeCake4Id($mapsummaryitemEntity);
             return;
         }
 
         //Save new Mapsummaryitem size
         if ($this->request->getData('action') === 'resizestop') {
-            $mapsummaryitem = $this->Mapsummaryitem->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Mapsummaryitem.id' => $this->request->getData('Mapsummaryitem.id')
-                ]
-            ]);
+            $mapsummaryitemEntity = $MapsummaryitemsTable->get($this->request->getData('Mapsummaryitem.id'));
 
             $mapsummaryitem['Mapsummaryitem']['size_x'] = (int)$this->request->getData('Mapsummaryitem.size_x');
             $mapsummaryitem['Mapsummaryitem']['size_y'] = (int)$this->request->getData('Mapsummaryitem.size_y');
-
-            if ($this->Mapsummaryitem->save($mapsummaryitem)) {
-                $Mapsummaryitem = new Mapsummaryitem($mapsummaryitem['Mapsummaryitem']);
+            $mapsummaryitemEntity = $MapsummaryitemsTable->patchEntity($mapsummaryitemEntity, $mapsummaryitem['Mapsummaryitem']);
+            $MapsummaryitemsTable->save($mapsummaryitemEntity);
+            if (!$mapsummaryitemEntity->hasErrors()) {
+                $Mapsummaryitem = new Mapsummaryitem($mapsummaryitemEntity->toArray());
 
                 $this->set('Mapsummaryitem', [
                     'Mapsummaryitem' => $Mapsummaryitem->toArray()
@@ -2370,32 +2270,33 @@ class MapeditorsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['Mapsummaryitem']);
                 return;
             }
-            $this->serializeErrorMessageFromModel('Mapsummaryitem');
+            $this->serializeCake4Id($mapsummaryitemEntity);
             return;
         }
 
-
         //Create new Mapsummaryitem or update existing one
-        if (!isset($this->request->data['Mapsummaryitem']['id'])) {
-            $this->Mapsummaryitem->create();
+        if (empty($this->request->getData('Mapsummaryitem.id'))) {
+            $mapsummaryitemEntity = $MapsummaryitemsTable->newEmptyEntity();
+        } else {
+            $mapsummaryitemEntity = $MapsummaryitemsTable->get($this->request->getData('Mapsummaryitem.id'));
         }
 
-        $mapsummaryitem = $this->request->data;
-
+        $mapsummaryitem = $this->request->getData();
         $mapsummaryitem['Mapsummaryitem']['show_label'] = (int)$this->request->getData('Mapsummaryitem.show_label');
         $mapsummaryitem['Mapsummaryitem']['size_x'] = (int)$this->request->getData('Mapsummaryitem.size_x');
         $mapsummaryitem['Mapsummaryitem']['size_y'] = (int)$this->request->getData('Mapsummaryitem.size_y');
+        $mapsummaryitemEntity = $MapsummaryitemsTable->patchEntity($mapsummaryitemEntity, $mapsummaryitem['Mapsummaryitem']);
+        $MapsummaryitemsTable->save($mapsummaryitemEntity);
 
-        if ($this->Mapsummaryitem->save($mapsummaryitem)) {
-            $mapsummaryitem['Mapsummaryitem']['id'] = $this->Mapsummaryitem->id;
-            $Mapsummaryitem = new Mapsummaryitem($mapsummaryitem['Mapsummaryitem']);
+        if (!$mapsummaryitemEntity->hasErrors()) {
+            $Mapsummaryitem = new Mapsummaryitem($mapsummaryitemEntity->toArray());
             $this->set('Mapsummaryitem', [
                 'Mapsummaryitem' => $Mapsummaryitem->toArray()
             ]);
             $this->viewBuilder()->setOption('serialize', ['Mapsummaryitem']);
             return;
         }
-        $this->serializeErrorMessageFromModel('Mapsummaryitem');
+        $this->serializeCake4Id($mapsummaryitemEntity);
     }
 
     public function deleteSummaryitem() {
@@ -2405,16 +2306,17 @@ class MapeditorsController extends AppController {
 
         $id = $this->request->getData('Mapsummaryitem.id');
 
-
-        if (!$this->Mapsummaryitem->exists($id)) {
-            throw new NotFoundException();
-        }
+        /** @var MapsummaryitemsTable $MapsummaryitemsTable */
+        $MapsummaryitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapsummaryitems');
 
         if (!is_numeric($id)) {
             throw new InvalidArgumentException('Mapsummaryitem.id needs to be numeric');
         }
+        if (!$MapsummaryitemsTable->existsById($id)) {
+            throw new NotFoundException();
+        }
 
-        if ($this->Mapsummaryitem->delete($id)) {
+        if ($MapsummaryitemsTable->delete($MapsummaryitemsTable->get($id))) {
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
             return;

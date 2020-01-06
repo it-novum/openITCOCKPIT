@@ -8,7 +8,6 @@ use App\Model\Entity\Service;
 use App\Model\Entity\Servicedependency;
 use App\Model\Entity\Serviceescalation;
 use Cake\Database\Expression\Comparison;
-use Cake\Database\Expression\QueryExpression;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -16,7 +15,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
@@ -915,7 +913,6 @@ class ServicesTable extends Table {
                     'HostsToContainersSharing'
                 ],
                 'Servicetemplates'
-
             ])
             ->enableHydration($enableHydration)
             ->first();
@@ -927,10 +924,10 @@ class ServicesTable extends Table {
      * @param bool $enableHydration
      * @return \Cake\Datasource\ResultSetInterface
      */
-    public function getActiveServicesByHostId($id, $enableHydration = true){
+    public function getActiveServicesByHostId($id, $enableHydration = true) {
         $query = $this->find()
             ->where([
-                'Services.host_id' => $id,
+                'Services.host_id'  => $id,
                 'Services.disabled' => 0
             ])
             ->enableHydration($enableHydration)
@@ -943,11 +940,11 @@ class ServicesTable extends Table {
      * @param bool $enableHydration
      * @return \Cake\Datasource\ResultSetInterface
      */
-    public function getActiveServicesByHostIds(array $ids, $enableHydration = true){
+    public function getActiveServicesByHostIds(array $ids, $enableHydration = true) {
         $query = $this->find()
             ->where([
                 'Services.host_id IN' => $ids,
-                'Services.disabled' => 0
+                'Services.disabled'   => 0
             ])
             ->enableHydration($enableHydration)
             ->all();
@@ -2495,11 +2492,11 @@ class ServicesTable extends Table {
      * @param array $hostIds
      * @return array
      */
-    public function getServicesByHostIdForCopy($hostIds = []){
+    public function getServicesByHostIdForCopy($hostIds = []) {
         if (!is_array($hostIds)) {
             $hostIds = [$hostIds];
         }
-        if(empty($hostIds)){
+        if (empty($hostIds)) {
             return [];
         }
         $hostIds = array_unique($hostIds);
@@ -2510,6 +2507,70 @@ class ServicesTable extends Table {
             ])->where([
                 'Services.host_id IN' => $hostIds
             ])->disableHydration();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        return $result;
+    }
+
+    public function getServicesByIdsForMapeditor($ids, $enableHydration = false) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->join([
+                [
+                    'table'      => 'hosts',
+                    'alias'      => 'Hosts',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'Hosts.id = Services.host_id',
+                    ],
+                ],
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Hosts.id',
+                    ],
+                ]
+            ])
+            ->select([
+                'Services.id',
+                'Services.uuid',
+                'Hosts.id',
+                'Hosts.uuid',
+                'HostsToContainers.container_id'
+            ])->where([
+                'Services.id IN'    => $ids,
+                'Services.disabled' => 0
+            ])->enableHydration($enableHydration);
+
+        /*
+         * $dependentServices = $this->Service->find('all', [
+                                'recursive'  => -1,
+                                'contain'    => [
+                                    'Host' => [
+                                        'Container',
+                                        'fields' => [
+                                            'Host.id',
+                                            'Host.uuid'
+                                        ]
+                                    ]
+                                ],
+                                'conditions' => [
+                                    'Service.id'       => $allDependentMapElements['serviceIds'],
+                                    'Service.disabled' => 0
+                                ],
+                                'fields'     => [
+                                    'Service.id',
+                                    'Service.uuid'
+                                ]
+                            ]);
+         */
 
         $result = $query->toArray();
         if (empty($result)) {

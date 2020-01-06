@@ -114,4 +114,12 @@ class MapsummaryitemsTable extends Table {
 
         return $rules;
     }
+
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Mapitems.id' => $id]);
+    }
 }

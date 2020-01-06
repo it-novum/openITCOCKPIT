@@ -486,6 +486,37 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param string $uuid
+     * @param bool $enableHydration
+     * @return array|Host
+     */
+    public function getHostsWithServicesByIdsForMapeditor($ids, $enableHydration = true) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->where([
+                'Hosts.id IN'    => $ids,
+                'Hosts.disabled' => 0,
+            ])
+            ->contain([
+                'HostsToContainersSharing',
+                'Services' => function (Query $q) {
+                    return $q->where([
+                        'Services.disabled' => 0
+                    ]);
+                }
+            ])
+            ->enableHydration($enableHydration);
+
+        $result = $query->all();
+        if (empty($result)) {
+            return [];
+        }
+        return $result->toArray();
+    }
+
+    /**
      * @param int $id
      * @return array|Host|null
      */
@@ -2270,7 +2301,7 @@ class HostsTable extends Table {
                 'Hosts.id' => $id
             ])
             ->contain([
-                'HostsToContainersSharing'                =>
+                'HostsToContainersSharing'  =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)->select(['id']);
                     },
