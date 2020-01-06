@@ -58,7 +58,7 @@ echo $this->element('emails/style');
                             <?php endif; ?>
                         </td>
                         <td align="right">
-                            <h6><?= __('openITCOCKPIT Notification') ?></h6>
+                            <h6><?= __('{0} notification', $systemname) ?></h6>
                         </td>
                     </tr>
                     <tr>

@@ -216,7 +216,12 @@ class NagiosNotificationCommand extends Command {
         if ($this->replyTo !== null) {
             $Mailer->setReplyTo($this->replyTo);
         }
-        $Mailer->addTo($this->contactmail);
+
+        $toName = null;
+        if ($args->getOption('contactalias') !== '') {
+            $toName = $args->getOption('contactalias');
+        }
+        $Mailer->addTo($this->contactmail, $toName);
         $Mailer->setSubject($this->getHostSubject($Host, $HoststatusIcon));
         $Mailer->setEmailFormat($this->format);
 
