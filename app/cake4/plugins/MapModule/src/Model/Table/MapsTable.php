@@ -244,6 +244,32 @@ class MapsTable extends Table {
     }
 
     /**
+     * @param $realMapId
+     * @param $mapItemMapId
+     * @return array
+     */
+    public function getMapsForMapsummaryitems($realMapId, $mapItemMapId) {
+        $query = $this->find()
+            ->contain(['Containers'])
+            ->join([
+                'table'      => 'mapsummaryitems',
+                'type'       => 'INNER',
+                'alias'      => 'Mapsummaryitems',
+                'conditions' => 'Mapsummaryitems.object_id = Maps.id',
+            ])
+            ->where([
+                'Maps.id'                => $realMapId,
+                'Mapsummaryitems.map_id' => $mapItemMapId,
+            ]);
+
+        $result = $query->first();
+        if (empty($result)) {
+            return [];
+        }
+        return $query->toArray();
+    }
+
+    /**
      * @param int $id
      * @return array
      */
@@ -1165,6 +1191,141 @@ class MapsTable extends Table {
             'BitMaskServiceState' => $bitMaskServiceState,
             'Host'                => $HostView->toArray(),
             'Service'             => $ServiceView->toArray(),
+        ];
+    }
+
+    /**
+     * @param HoststatusTableInterface $HoststatusTable
+     * @param ServicestatusTableInterface $ServicestatusTable
+     * @param array $hostgroup
+     * @return array
+     */
+    public function getHostgroupInformationForSummaryIcon(HoststatusTableInterface $HoststatusTable, ServicestatusTableInterface $ServicestatusTable, array $hostgroup) {
+        $hostgroupLight = [
+            'id'          => (int)$hostgroup['id'],
+            'name'        => $hostgroup['container']['name'],
+            'description' => $hostgroup['description']
+        ];
+        $bitMaskHostState = 0;
+        $bitMaskServiceState = 0;
+        $HoststatusFields = new HoststatusFields(new DbBackend());
+        $HoststatusFields->currentState();
+        $ServicestatusFields = new ServicestatusFields(new DbBackend());
+        $ServicestatusFields->currentState();
+        $hostUuids = Hash::extract($hostgroup['hosts'], '{n}.uuid');
+        $serviceUuids = Hash::extract($hostgroup['hosts'], '{n}.Service.{n}.uuid');
+
+        $hoststatus = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
+        $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
+
+        if (empty($hoststatus) && empty($servicestatus)) {
+            return [
+                'BitMaskHostState'    => $bitMaskHostState,
+                'BitMaskServiceState' => $bitMaskServiceState,
+                'Hostgroup'           => $hostgroupLight
+            ];
+        }
+        foreach ($hoststatus as $statusDetails) {
+            $bitMaskHostState |= 1 << $statusDetails['Hoststatus']['current_state'];
+        }
+        foreach ($servicestatus as $statusDetails) {
+            $bitMaskServiceState |= 1 << $statusDetails['Servicestatus']['current_state'];
+        }
+        return [
+            'BitMaskHostState'    => $bitMaskHostState,
+            'BitMaskServiceState' => $bitMaskServiceState,
+            'Hostgroup'           => $hostgroupLight
+        ];
+    }
+
+    /**
+     * @param HoststatusTableInterface $HoststatusTable
+     * @param ServicestatusTableInterface $ServicestatusTable
+     * @param array $servicegroup
+     * @return array
+     */
+    public function getServicegroupInformationForSummaryIcon(HoststatusTableInterface $HoststatusTable, ServicestatusTableInterface $ServicestatusTable, array $servicegroup) {
+        $servicegroupLight = [
+            'id'          => (int)$servicegroup['id'],
+            'name'        => $servicegroup['container']['name'],
+            'description' => $servicegroup['description']
+        ];
+        $bitMaskHostState = 0;
+        $bitMaskServiceState = 0;
+        $HoststatusFields = new HoststatusFields(new DbBackend());
+        $HoststatusFields->currentState();
+        $ServicestatusFields = new ServicestatusFields(new DbBackend());
+        $ServicestatusFields->currentState();
+        $hostUuids = Hash::extract($servicegroup['services'], '{n}.host.uuid');
+        $serviceUuids = Hash::extract($servicegroup['services'], '{n}.uuid');
+        $hoststatus = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
+        $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
+
+        if (empty($hoststatus) && empty($servicestatus)) {
+            return [
+                'BitMaskHostState'    => $bitMaskHostState,
+                'BitMaskServiceState' => $bitMaskServiceState,
+                'Servicegroup'        => $servicegroupLight
+            ];
+        }
+        foreach ($hoststatus as $statusDetails) {
+            $bitMaskHostState |= 1 << $statusDetails['Hoststatus']['current_state'];
+        }
+        foreach ($servicestatus as $statusDetails) {
+            $bitMaskServiceState |= 1 << $statusDetails['Servicestatus']['current_state'];
+        }
+        return [
+            'BitMaskHostState'    => $bitMaskHostState,
+            'BitMaskServiceState' => $bitMaskServiceState,
+            'Servicegroup'        => $servicegroupLight
+        ];
+    }
+
+    /**
+     * @param HoststatusTableInterface $HoststatusTable
+     * @param ServicestatusTableInterface $ServicestatusTable
+     * @param array $map
+     * @param array $hosts
+     * @param array $services
+     * @return array
+     */
+    public function getMapInformationForSummaryIcon(HoststatusTableInterface $HoststatusTable, ServicestatusTableInterface $ServicestatusTable, array $map, array $hosts, array $services) {
+        $bitMaskHostState = 0;
+        $bitMaskServiceState = 0;
+
+        if (empty($hosts) && empty($services)) {
+            return [
+                'BitMaskHostState'    => $bitMaskHostState,
+                'BitMaskServiceState' => $bitMaskServiceState,
+                'Map'                 => $map
+            ];
+        }
+        $HoststatusFields = new HoststatusFields(new DbBackend());
+        $HoststatusFields->currentState();
+        $ServicestatusFields = new ServicestatusFields(new DbBackend());
+        $ServicestatusFields->currentState();
+        $hostsUuids = Hash::extract($hosts, '{n}.uuid');
+        $servicesUuids = Hash::extract($services, '{n}.Service.uuid');
+        $hoststatus = $HoststatusTable->byUuid($hostsUuids, $HoststatusFields);
+        $servicestatus = $ServicestatusTable->byUuid($servicesUuids, $ServicestatusFields);
+
+        if (empty($hoststatus) && empty($servicestatus)) {
+            return [
+                'BitMaskHostState'    => $bitMaskHostState,
+                'BitMaskServiceState' => $bitMaskServiceState,
+                'Map'                 => $map
+            ];
+        }
+        foreach ($hoststatus as $statusDetails) {
+            $bitMaskHostState |= 1 << $statusDetails['Hoststatus']['current_state'];
+        }
+        foreach ($servicestatus as $statusDetails) {
+            $bitMaskServiceState |= 1 << $statusDetails['Servicestatus']['current_state'];
+        }
+        return [
+            'BitMaskHostState'    => $bitMaskHostState,
+            'BitMaskServiceState' => $bitMaskServiceState,
+            'Map'                 => $map
         ];
     }
 }

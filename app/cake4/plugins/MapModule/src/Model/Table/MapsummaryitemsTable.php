@@ -122,4 +122,65 @@ class MapsummaryitemsTable extends Table {
     public function existsById($id) {
         return $this->exists(['Mapitems.id' => $id]);
     }
+
+    /**
+     * @param $objectId
+     * @param $mapId
+     * @return array
+     */
+    public function getMapsummaryitemsForMaps($objectId, $mapId) {
+        $query = $this->find()
+            ->select(['Mapsummaryitems.object_id'])
+            ->where([
+                'Mapsummaryitems.object_id' => $objectId,
+                'Mapsummaryitems.map_id'    => $mapId,
+                'Mapsummaryitems.type'      => 'map',
+            ]);
+
+        return $query->first()->toArray();
+    }
+
+    /**
+     * @param $mapId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function allVisibleMapsummaryitems($mapId, $MY_RIGHTS = []) {
+        if (!is_array($MY_RIGHTS)) {
+            $MY_RIGHTS = [$MY_RIGHTS];
+        }
+
+        $query = $this->find()
+            ->join([
+                [
+                    'table'      => 'maps',
+                    'type'       => 'INNER',
+                    'alias'      => 'Maps',
+                    'conditions' => 'Maps.id = Mapsummaryitems.map_id',
+                ],
+                [
+                    'table'      => 'maps_to_containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'MapsToContainers',
+                    'conditions' => 'MapsToContainers.map_id = Maps.id',
+                ],
+            ])
+            ->select([
+                'Mapsummaryitems.map_id',
+                'Mapsummaryitems.object_id',
+            ])
+            ->where([
+                'Mapsummaryitems.type'       => 'map',
+                'Mapsummaryitems.map_id != ' => $mapId
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->where(['MapsToContainers.container_id IN' => $MY_RIGHTS]);
+        }
+
+        $result = $query->all();
+        if (empty($result)) {
+            return [];
+        }
+        return $result->toArray();
+    }
 }

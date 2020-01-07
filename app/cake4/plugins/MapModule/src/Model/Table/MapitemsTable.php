@@ -130,10 +130,14 @@ class MapitemsTable extends Table {
         $query = $this->find()
             ->select(['Mapitems.object_id'])
             ->where([
-                'Mapitems.object_id' => $objectId,
                 'Mapitems.map_id'    => $mapId,
                 'Mapitems.type'      => 'map',
             ]);
+        if($objectId !== null){
+            $query->where([
+                'Mapitems.object_id' => $objectId,
+            ]);
+        }
 
         return $query->first()->toArray();
     }
@@ -175,7 +179,7 @@ class MapitemsTable extends Table {
             $query->where(['MapsToContainers.container_id IN' => $MY_RIGHTS]);
         }
 
-        $result = $query->first();
+        $result = $query->all();
         if (empty($result)) {
             return [];
         }
