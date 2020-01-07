@@ -2393,4 +2393,79 @@ class HostsTable extends Table {
         ];
         return $dataForChangelog;
     }
+
+    /**
+     * @param $hoststatus
+     * @param bool $extended show details ('acknowledged', 'in downtime', ...)
+     * @return array
+     */
+    public function getHostStateSummary($hoststatus, $extended = true) {
+        $hostStateSummary = [
+            'state' => [
+                0 => 0,
+                1 => 0,
+                2 => 0
+            ],
+            'total' => 0
+        ];
+        if ($extended === true) {
+            $hostStateSummary = [
+                'state'        => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0
+                ],
+                'acknowledged' => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0
+                ],
+                'in_downtime'  => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0
+                ],
+                'not_handled'  => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0
+                ],
+                'passive'      => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0
+                ],
+                'total'        => 0
+            ];
+        }
+        if (empty($hoststatus)) {
+            return $hostStateSummary;
+        }
+        foreach ($hoststatus as $host) {
+            //Check for randome exit codes like 255...
+            if ($host['Hoststatus']['current_state'] > 2) {
+                $host['Hoststatus']['current_state'] = 2;
+            }
+
+            $hostStateSummary['state'][$host['Hoststatus']['current_state']]++;
+            if ($extended === true) {
+                if ($host['Hoststatus']['current_state'] > 0) {
+                    if ($host['Hoststatus']['problem_has_been_acknowledged'] > 0) {
+                        $hostStateSummary['acknowledged'][$host['Hoststatus']['current_state']]++;
+                    } else {
+                        $hostStateSummary['not_handled'][$host['Hoststatus']['current_state']]++;
+                    }
+                }
+
+                if ($host['Hoststatus']['scheduled_downtime_depth'] > 0) {
+                    $hostStateSummary['in_downtime'][$host['Hoststatus']['current_state']]++;
+                }
+                if ($host['Hoststatus']['active_checks_enabled'] == 0) {
+                    $hostStateSummary['passive'][$host['Hoststatus']['current_state']]++;
+                }
+            }
+            $hostStateSummary['total']++;
+        }
+        return $hostStateSummary;
+    }
 }

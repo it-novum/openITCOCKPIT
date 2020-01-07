@@ -120,7 +120,7 @@ class MapsummaryitemsTable extends Table {
      * @return bool
      */
     public function existsById($id) {
-        return $this->exists(['Mapitems.id' => $id]);
+        return $this->exists(['Mapsummaryitems.id' => $id]);
     }
 
     /**
@@ -137,7 +137,11 @@ class MapsummaryitemsTable extends Table {
                 'Mapsummaryitems.type'      => 'map',
             ]);
 
-        return $query->first()->toArray();
+        $result = $query->first();
+        if (empty($result)) {
+            return [];
+        }
+        return $query->toArray();
     }
 
     /**
