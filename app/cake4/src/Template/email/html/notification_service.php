@@ -104,7 +104,7 @@ echo $this->element('emails/style');
                                        class="<?= strtoupper($HoststatusIcon->getTextColor()) ?>">
                                         <?php echo h($Host->getHostname()); ?>
                                     </a>
-                                    <?= __(' is {0}', $HoststatusIcon->getHumanState()); ?>
+                                    <?= __(' is {0}', $ServicestatusIcon->getHumanState()); ?>
                                 </span>
                             </h5>
                             <hr noshade width="560" size="3" align="left">

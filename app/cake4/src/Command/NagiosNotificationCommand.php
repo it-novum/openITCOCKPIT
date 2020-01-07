@@ -601,9 +601,8 @@ class NagiosNotificationCommand extends Command {
                     $attachments[$fileName] = [
                         'data'      => $NodeJsChartRenderClient->getAreaChartAsPngStream($graphDataChunk),
                         'mimetype'  => 'image/png',
-                        'contentId' => $id
+                        'contentId' => 'cid' . $id //Needs to be a string because of CakePHP
                     ];
-                    $contentIDs[] = $id;
                     $id++;
                 }
             }
@@ -704,14 +703,13 @@ class NagiosNotificationCommand extends Command {
         }
         $this->hostname = $args->getOption('hostname');
 
-        if ($this->type === 'host') {
-            if ($args->getOption('hoststate') === '') {
-                throw new \itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions(
-                    'Option --hoststate is missing'
-                );
-            }
-            $this->hostState = $args->getOption('hoststate');
+        if ($args->getOption('hoststate') === '') {
+            throw new \itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions(
+                'Option --hoststate is missing'
+            );
         }
+        $this->hostState = $args->getOption('hoststate');
+
 
         if ($this->type === 'service') {
             if ($args->getOption('servicedesc') === '') {
