@@ -2292,6 +2292,82 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param array $ids
+     * @return array
+     */
+    public function getHostsForEditDetails($ids = []) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.hosttemplate_id',
+                'Hosts.container_id',
+                'Hosts.description',
+                'Hosts.host_url',
+                'Hosts.tags',
+                'Hosts.check_interval',
+                'Hosts.retry_interval',
+                'Hosts.max_check_attempts',
+                'Hosts.notification_interval',
+                'Hosts.notes',
+                'Hosts.priority'
+            ])
+            ->contain([
+                'HostsToContainersSharing' => [
+                    'fields' => [
+                        'HostsToContainers.host_id',
+                        'HostsToContainers.container_id'
+                    ]
+                ],
+                'Contacts'                 => [
+                    'fields' => [
+                        'ContactsToHosts.host_id',
+                        'Contacts.id'
+                    ]
+                ],
+                'Contactgroups'            => [
+                    'fields' => [
+                        'ContactgroupsToHosts.host_id',
+                        'Contactgroups.id'
+                    ]
+                ],
+                'Hosttemplates'            => [
+                    'fields' => [
+                        'Hosttemplates.id',
+                        'Hosttemplates.description',
+                        'Hosttemplates.host_url',
+                        'Hosttemplates.tags',
+                        'Hosttemplates.check_interval',
+                        'Hosttemplates.retry_interval',
+                        'Hosttemplates.max_check_attempts',
+                        'Hosttemplates.notification_interval',
+                        'Hosttemplates.notes',
+                        'Hosttemplates.priority'
+                    ],
+                    'Contacts'                 => [
+                        'fields' => [
+                            'ContactsToHosttemplates.hosttemplate_id',
+                            'Contacts.id'
+                        ]
+                    ],
+                    'Contactgroups'            => [
+                        'fields' => [
+                            'ContactgroupsToHosttemplates.hosttemplate_id',
+                            'Contactgroups.id'
+                        ]
+                    ],
+                ]
+            ])
+            ->where(['Hosts.id IN' => $ids])
+            ->order(['Hosts.id' => 'asc'])
+            ->disableHydration()
+            ->all();
+
+        debug($query->toArray());
+
+        return $this->formatResultAsCake2($query->toArray(), false);
+    }
+
+    /**
      * @param int $id
      * @return array
      */
