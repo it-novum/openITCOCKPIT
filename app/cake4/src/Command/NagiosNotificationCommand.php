@@ -35,6 +35,7 @@ use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Log\Log;
 use Cake\Mailer\Mailer;
@@ -44,6 +45,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\NodeJS\ChartRenderClient;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
@@ -260,6 +262,7 @@ class NagiosNotificationCommand extends Command {
      * @param Host $Host
      * @param Service $Service
      * @param Arguments $args
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
     private function sendServiceNotification(Host $Host, Service $Service, Arguments $args) {
         $Logo = new Logo();
@@ -296,6 +299,59 @@ class NagiosNotificationCommand extends Command {
                 'contentId' => '100'
             ];
             $Mailer->setAttachments($attachments);
+
+            $evcTree = null;
+            if ($Service->getServiceType() === EVK_SERVICE) {
+                if (Plugin::isLoaded('EventcorrelationModule')) {
+                    $DbBackend = new DbBackend();
+                    $ServicestatusTable = $DbBackend->getServicestatusTable();
+
+                    $ServicestatusFields = new ServicestatusFields($DbBackend);
+                    $ServicestatusFields
+                        ->currentState()
+                        ->isHardstate();
+
+                    /** @var \EventcorrelationModule\Model\Table\EventcorrelationSettingsTable $EventcorrelationSettingsTable */
+                    $EventcorrelationSettingsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.EventcorrelationSettings');
+                    $currentEventcorrelationSettings = $EventcorrelationSettingsTable->getCurrentEventcorrelationSettings();
+                    $defaultEventcorrelationSettings = $EventcorrelationSettingsTable->getDefaultEventcorrelationSettings();
+
+                    $considerStateType = ($defaultEventcorrelationSettings['EVC_CONSIDER_STATETYPE']['value'] & $currentEventcorrelationSettings->get('configuration_option'));
+
+
+                    try {
+                        /** @var \EventcorrelationModule\Model\Table\EventcorrelationsTable $EventcorrelationsTable */
+                        $EventcorrelationsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
+                        $evcTree = $EventcorrelationsTable->getEvcTreeData($Service->getHostId(), []);
+                        $serviceUuids = array_unique(Hash::extract($evcTree, '{n}.{*}.{n}.service.uuid'));
+                        $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
+
+                    } catch (RecordNotFoundException $e) {
+                        $evcTree = [];
+                    }
+
+                    foreach ($evcTree as $layerNumber => $layer) {
+                        foreach ($layer as $parentId => $childNodes) {
+                            foreach ($childNodes as $childIndex => $childNode) {
+                                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus([]);
+                                if (!empty($servicestatus[$childNode['service']['uuid']])) {
+                                    $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
+                                        $servicestatus[$childNode['service']['uuid']]['Servicestatus']
+                                    );
+                                }
+
+                                if ($considerStateType && !$Servicestatus->isHardState()) {
+                                    $Servicestatus->setCurrentState($Servicestatus->getLastHardState());
+                                }
+
+                                $evcTree[$layerNumber][$parentId][$childIndex]['service']['servicestatus'] = $Servicestatus->toArray();
+                            }
+                        }
+                    }
+                }
+            }
+
+
         }
         $Mailer->viewBuilder()
             ->setTemplate($this->layout . '_' . $this->type)
@@ -309,7 +365,8 @@ class NagiosNotificationCommand extends Command {
             ->setVar('args', $args)
             ->setVar('systemAddress', $this->systemAddress)
             ->setVar('ticketsystemUrl', $this->ticketsystemUrl)
-            ->setVar('charts', $charts);
+            ->setVar('charts', $charts)
+            ->setVar('evcTree', $evcTree);
 
         $Mailer->deliver();
     }

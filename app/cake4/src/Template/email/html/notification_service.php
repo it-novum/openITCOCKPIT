@@ -36,6 +36,8 @@
  * @var string $systemAddress
  * @var string $ticketsystemUrl
  * @var array $charts
+ *
+ * @var null|array $evcTree
  */
 
 echo $this->element('emails/style');
@@ -171,6 +173,19 @@ echo $this->element('emails/style');
                             <?php endif; ?>
 
                             <?php if ($noAttachments === false): ?>
+
+                                <?php
+                                if (\Cake\Core\Plugin::isLoaded('EventcorrelationModule') && $Service->getServiceType() === EVK_SERVICE):
+                                    $EvcTableRenderer = new \EventcorrelationModule\EvcTableRenderer(
+                                        $evcTree,
+                                        $Service->getUuid(),
+                                        !$noEmoji
+                                    );
+                                    echo $EvcTableRenderer->getEvcDataAsTable();
+                                    echo '<br>';
+                                endif; ?>
+
+
                                 <table class="social" width="100%">
                                     <?php foreach ($charts as $filename => $chart): ?>
                                         <tr>
