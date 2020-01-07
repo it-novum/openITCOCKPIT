@@ -65,7 +65,8 @@
         "freedsx/ldap": "^0.5.0",
         "guzzlehttp/guzzle": "^6.5",
         "jdorn/sql-formatter": "^1.2",
-        "mobiledetect/mobiledetectlib": "2.*"
+        "mobiledetect/mobiledetectlib": "2.*",
+        "spatie/emoji": "^2.1"
     },
     "require-dev": {
         "cakephp/bake": "^2.0",

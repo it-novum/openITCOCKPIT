@@ -367,6 +367,60 @@ class HostgroupsTable extends Table {
     }
 
     /**
+     * @param int $id
+     * @return array
+     */
+    public function getHostgroupByIdForMapeditor($id) {
+        $query = $this->find()
+            ->contain([
+                'Containers' => function (Query $q) {
+                    return $q->select([
+                        'Containers.id',
+                        'Containers.name'
+                    ]);
+                },
+                'Hosts' => function (Query $q) {
+                    return $q->contain([
+                        'Containers' => function (Query $q) {
+                            return $q->select([
+                                'Containers.id',
+                                'Containers.name'
+                            ]);
+                        },
+                        'Services' => function (Query $q) {
+                            return $q->where([
+                                'Services.disabled' => 0
+                            ])
+                                ->select([
+                                    'Services.id',
+                                    'Services.uuid',
+                                    'Services.host_id'
+                                ]);
+                        }
+                    ])->select([
+                        'Hosts.id',
+                        'Hosts.uuid'
+                    ])->where([
+                        'Hosts.disabled' => 0
+                    ]);
+                }
+            ])
+            ->where([
+                'Hostgroups.id' => $id
+            ])
+            ->select([
+                'Hostgroups.id',
+                'Hostgroups.description'
+            ]);
+
+        $result = $query->all();
+        if (empty($result)) {
+            return [];
+        }
+        return $result->toArray();
+    }
+
+    /**
      * @param HostgroupConditions $HostgroupConditions
      * @param array|int $selected
      * @return array|null

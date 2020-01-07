@@ -371,31 +371,31 @@
     }
 
     .UP {
-        color: #356e35 !important;
+        color: #449D44 !important;
     }
 
     .DOWN {
-        color: #a90329 !important;
+        color: #C9302C !important;
     }
 
     .UNREACHABLE {
-        color: #525252 !important;
+        color: #92A2A8 !important;
     }
 
     .OK {
-        color: #356e35 !important;
+        color: #449D44 !important;
     }
 
     .WARNING {
-        color: #b09b5b !important;
+        color: #DF8F1D !important;
     }
 
     .CRITICAL {
-        color: #a90329 !important;
+        color: #C9302C !important;
     }
 
     .UNKNOWN {
-        color: #525252 !important;
+        color: #92A2A8 !important;
     }
 
     .txt-color-green {
@@ -431,4 +431,150 @@
             width: auto !important
         }
     }
+
+    .notification_type {
+        color: white;
+        font-size: x-large;
+        line-height: 1;
+        letter-spacing: 10px;
+        font-weight: bold;
+        text-shadow: 1px 1px 1px #A09D9D, 0 0 0 #000, 1px 1px 1px #def;
+    }
+
+    /* EVC Summary View*/
+    .criticalEvcSummary {
+        color: white !important;
+        -webkit-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        -moz-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        padding: 2px;
+        background: linear-gradient(to right, #4c4f53 15px, #d9534f 2%); /* W3C */
+
+    }
+
+    .criticalEvcSummary:after {
+        font-family: FontAwesome;
+        /*content: "\f071";*/
+        color: white;
+    }
+
+    .okEvcSummary {
+        -webkit-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        -moz-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        padding: 5px;
+        color: white;
+        background: linear-gradient(to right, #4c4f53 15px, #5cb85c 2%); /* W3C */
+    }
+
+    .unknownEvcSummary {
+        -webkit-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        -moz-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        padding: 2px;
+        color: white;
+        background: linear-gradient(to right, #4c4f53 15px, #888888 2%); /* W3C */
+    }
+
+    .warningEvcSummary {
+        -webkit-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        -moz-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        padding: 2px;
+        color: white;
+        background: linear-gradient(to right, #4c4f53 15px, #f0ad4e 2%); /* W3C */
+    }
+
+    .disabledEvcSummary {
+        background: repeating-linear-gradient(
+            -45deg,
+            #ffffff,
+            #ffffff 10px,
+            #eaf0f2 10px,
+            #eaf0f2 20px
+        );
+    }
+
+    .disabledEvcSummary:after {
+        content: "\f1e6";
+        font-family: FontAwesome;
+        color: #ff0000;
+        font-size: 11px;
+    }
+
+    .gatter {
+        display: block;
+        white-space: nowrap;
+        font-family: Verdana;
+        -moz-transform: rotate(-90deg);
+        -moz-transform-origin: center center;
+        -webkit-transform: rotate(-90deg);
+        -webkit-transform-origin: center center;
+        -ms-transform: rotate(-90deg);
+        -ms-transform-origin: center center;
+        width: 15px;
+        bottom: 1px;
+        position: absolute;
+        font-size: 14px;
+        text-shadow: 1px 1px #7d7d7d;
+        font-family: 'Courier New', Arial;
+    }
+
+    #evcSummary {
+        border-spacing: 5px;
+        border-collapse: separate;
+    }
+
+    #evcSummary td {
+        position: relative;
+    }
+
+    #evcSummary td div {
+        position: absolute;
+        left: 0;
+    }
+
+    #evcSummary span {
+        padding: 5px 10px 5px 20px;
+        display: inline-block;
+        font-size: 13px;
+        font-family: 'Courier New', Arial;
+    }
+
+    .disabledEvcSummary span {
+        padding: 15px 1px 15px 20px;
+        display: inline-block;
+        font-size: 13px;
+        font-family: 'Courier New', Arial;
+    }
+
+    .borderOkEvcSummary {
+        border-right: 5px solid #5cb85c;
+    }
+
+    .borderWarningEvcSummary {
+        border-right: 5px solid #f0ad4e;
+    }
+
+    .borderCriticalEvcSummary {
+        border-right: 5px solid #d9534f;
+    }
+
+    .borderUnknownEvcSummary {
+        border-right: 5px solid #888888;
+    }
+
+    .borderDisabledEvcSummary {
+        border-right: 5px solid #dee3e5;
+    }
+
+    .borderNotMonitoredEvcSummary {
+        border-right: 5px solid #428bca;
+    }
+
+    .virtualLayerService {
+        font-weight: bold;
+        padding: 10px 1px 10px 15px !important;
+    }
+
 </style>

@@ -550,10 +550,10 @@ angular.module('openITCOCKPIT')
                 $scope.errors = {};
                 //Update possition in current scope json data
                 if($scope.currentItem.hasOwnProperty('id')){
-                    for(var i in $scope.map.Mapitem){
-                        if($scope.map.Mapitem[i].id == $scope.currentItem.id){
-                            $scope.map.Mapitem[i].x = $scope.currentItem.x;
-                            $scope.map.Mapitem[i].y = $scope.currentItem.y;
+                    for(var i in $scope.map.Mapitems){
+                        if($scope.map.Mapitems[i].id == $scope.currentItem.id){
+                            $scope.map.Mapitems[i].x = $scope.currentItem.x;
+                            $scope.map.Mapitems[i].y = $scope.currentItem.y;
 
                             //We are done here
                             break;
@@ -561,11 +561,10 @@ angular.module('openITCOCKPIT')
                     }
                 }else{
                     //New created item
-                    if(typeof $scope.map.Mapitem === "undefined"){
-                        $scope.map.Mapitem = [];
+                    if(typeof $scope.map.Mapitems === "undefined"){
+                        $scope.map.Mapitems = [];
                     }
-
-                    $scope.map.Mapitem.push(result.data.Mapitem.Mapitem);
+                    $scope.map.Mapitems.push(result.data.Mapitem.Mapitem);
                     setTimeout(makeDraggable, 250);
                 }
 
@@ -588,9 +587,9 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 //Remove item from current scope
-                for(var i in $scope.map.Mapitem){
-                    if($scope.map.Mapitem[i].id == $scope.currentItem.id){
-                        $scope.map.Mapitem.splice(i, 1);
+                for(var i in $scope.map.Mapitems){
+                    if($scope.map.Mapitems[i].id == $scope.currentItem.id){
+                        $scope.map.Mapitems.splice(i, 1);
 
                         //We are done here
                         break;
@@ -645,12 +644,12 @@ angular.module('openITCOCKPIT')
                 $scope.errors = {};
                 //Update possition in current scope json data
                 if($scope.currentItem.hasOwnProperty('id')){
-                    for(var i in $scope.map.Mapline){
-                        if($scope.map.Mapline[i].id == $scope.currentItem.id){
-                            $scope.map.Mapline[i].startY = $scope.currentItem.startY;
-                            $scope.map.Mapline[i].endX = $scope.currentItem.endX;
-                            $scope.map.Mapline[i].endY = $scope.currentItem.endY;
-                            $scope.map.Mapline[i].startX = $scope.currentItem.startX; //Change this last because of $watch in directive
+                    for(var i in $scope.map.Maplines){
+                        if($scope.map.Maplines[i].id == $scope.currentItem.id){
+                            $scope.map.Maplines[i].startY = $scope.currentItem.startY;
+                            $scope.map.Maplines[i].endX = $scope.currentItem.endX;
+                            $scope.map.Maplines[i].endY = $scope.currentItem.endY;
+                            $scope.map.Maplines[i].startX = $scope.currentItem.startX; //Change this last because of $watch in directive
 
                             //We are done here
                             break;
@@ -658,11 +657,11 @@ angular.module('openITCOCKPIT')
                     }
                 }else{
                     //New created item
-                    if(typeof $scope.map.Mapline === "undefined"){
-                        $scope.map.Mapline = [];
+                    if(typeof $scope.map.Maplines === "undefined"){
+                        $scope.map.Maplines = [];
                     }
 
-                    $scope.map.Mapline.push(result.data.Mapline.Mapline);
+                    $scope.map.Maplines.push(result.data.Mapline.Mapline);
                     setTimeout(makeDraggable, 250);
                 }
 
@@ -685,9 +684,9 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 //Remove item from current scope
-                for(var i in $scope.map.Mapline){
-                    if($scope.map.Mapline[i].id == $scope.currentItem.id){
-                        $scope.map.Mapline.splice(i, 1);
+                for(var i in $scope.map.Maplines){
+                    if($scope.map.Maplines[i].id == $scope.currentItem.id){
+                        $scope.map.Maplines.splice(i, 1);
 
                         //We are done here
                         break;
@@ -767,10 +766,10 @@ angular.module('openITCOCKPIT')
                 $scope.errors = {};
                 //Update possition in current scope json data
                 if($scope.currentItem.hasOwnProperty('id')){
-                    for(var i in $scope.map.Mapgadget){
-                        if($scope.map.Mapgadget[i].id == $scope.currentItem.id){
-                            $scope.map.Mapgadget[i].x = $scope.currentItem.x;
-                            $scope.map.Mapgadget[i].y = $scope.currentItem.y;
+                    for(var i in $scope.map.Mapgadgets){
+                        if($scope.map.Mapgadgets[i].id == $scope.currentItem.id){
+                            $scope.map.Mapgadgets[i].x = $scope.currentItem.x;
+                            $scope.map.Mapgadgets[i].y = $scope.currentItem.y;
 
                             //We are done here
                             break;
@@ -778,11 +777,11 @@ angular.module('openITCOCKPIT')
                     }
                 }else{
                     //New created item
-                    if(typeof $scope.map.Mapgadget === "undefined"){
-                        $scope.map.Mapgadget = [];
+                    if(typeof $scope.map.Mapgadgets === "undefined"){
+                        $scope.map.Mapgadgets = [];
                     }
 
-                    $scope.map.Mapgadget.push(result.data.Mapgadget.Mapgadget);
+                    $scope.map.Mapgadgets.push(result.data.Mapgadget.Mapgadget);
                     setTimeout(makeDraggable, 250);
                 }
 
@@ -805,9 +804,9 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 //Remove item from current scope
-                for(var i in $scope.map.Mapgadget){
-                    if($scope.map.Mapgadget[i].id == $scope.currentItem.id){
-                        $scope.map.Mapgadget.splice(i, 1);
+                for(var i in $scope.map.Mapgadgets){
+                    if($scope.map.Mapgadgets[i].id == $scope.currentItem.id){
+                        $scope.map.Mapgadgets.splice(i, 1);
 
                         //We are done here
                         break;
@@ -864,12 +863,12 @@ angular.module('openITCOCKPIT')
                 $scope.errors = {};
                 //Update possition in current scope json data
                 if($scope.currentItem.hasOwnProperty('id')){
-                    for(var i in $scope.map.Maptext){
-                        if($scope.map.Maptext[i].id == $scope.currentItem.id){
-                            $scope.map.Maptext[i].x = $scope.currentItem.x;
-                            $scope.map.Maptext[i].y = $scope.currentItem.y;
+                    for(var i in $scope.map.Maptexts){
+                        if($scope.map.Maptexts[i].id == $scope.currentItem.id){
+                            $scope.map.Maptexts[i].x = $scope.currentItem.x;
+                            $scope.map.Maptexts[i].y = $scope.currentItem.y;
                             if(action === 'add_or_edit'){
-                                $scope.map.Maptext[i].text = $scope.currentItem.text;
+                                $scope.map.Maptexts[i].text = $scope.currentItem.text;
                             }
 
                             //We are done here
@@ -878,11 +877,11 @@ angular.module('openITCOCKPIT')
                     }
                 }else{
                     //New created item
-                    if(typeof $scope.map.Maptext === "undefined"){
-                        $scope.map.Maptext = [];
+                    if(typeof $scope.map.Maptexts === "undefined"){
+                        $scope.map.Maptexts = [];
                     }
 
-                    $scope.map.Maptext.push(result.data.Maptext.Maptext);
+                    $scope.map.Maptexts.push(result.data.Maptext.Maptext);
                     setTimeout(makeDraggable, 250);
                 }
 
@@ -905,9 +904,9 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 //Remove item from current scope
-                for(var i in $scope.map.Maptext){
-                    if($scope.map.Maptext[i].id == $scope.currentItem.id){
-                        $scope.map.Maptext.splice(i, 1);
+                for(var i in $scope.map.Maptexts){
+                    if($scope.map.Maptexts[i].id == $scope.currentItem.id){
+                        $scope.map.Maptexts.splice(i, 1);
                         $('#docuText').val('');
 
                         //We are done here
@@ -958,10 +957,10 @@ angular.module('openITCOCKPIT')
                 $scope.errors = {};
                 //Update possition in current scope json data
                 if($scope.currentItem.hasOwnProperty('id')){
-                    for(var i in $scope.map.Mapicon){
-                        if($scope.map.Mapicon[i].id == $scope.currentItem.id){
-                            $scope.map.Mapicon[i].x = $scope.currentItem.x;
-                            $scope.map.Mapicon[i].y = $scope.currentItem.y;
+                    for(var i in $scope.map.Mapicons){
+                        if($scope.map.Mapicons[i].id == $scope.currentItem.id){
+                            $scope.map.Mapicons[i].x = $scope.currentItem.x;
+                            $scope.map.Mapicons[i].y = $scope.currentItem.y;
 
                             //We are done here
                             break;
@@ -969,11 +968,11 @@ angular.module('openITCOCKPIT')
                     }
                 }else{
                     //New created item
-                    if(typeof $scope.map.Mapicon === "undefined"){
-                        $scope.map.Mapicon = [];
+                    if(typeof $scope.map.Mapicons === "undefined"){
+                        $scope.map.Mapicons = [];
                     }
 
-                    $scope.map.Mapicon.push(result.data.Mapicon.Mapicon);
+                    $scope.map.Mapicons.push(result.data.Mapicon.Mapicon);
                     setTimeout(makeDraggable, 250);
                 }
 
@@ -996,9 +995,9 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 //Remove item from current scope
-                for(var i in $scope.map.Mapicon){
-                    if($scope.map.Mapicon[i].id == $scope.currentItem.id){
-                        $scope.map.Mapicon.splice(i, 1);
+                for(var i in $scope.map.Mapicons){
+                    if($scope.map.Mapicons[i].id == $scope.currentItem.id){
+                        $scope.map.Mapicons.splice(i, 1);
 
                         //We are done here
                         break;
@@ -1086,10 +1085,10 @@ angular.module('openITCOCKPIT')
                 $scope.errors = {};
                 //Update possition in current scope json data
                 if($scope.currentItem.hasOwnProperty('id')){
-                    for(var i in $scope.map.Mapsummaryitem){
-                        if($scope.map.Mapsummaryitem[i].id == $scope.currentItem.id){
-                            $scope.map.Mapsummaryitem[i].x = $scope.currentItem.x;
-                            $scope.map.Mapsummaryitem[i].y = $scope.currentItem.y;
+                    for(var i in $scope.map.Mapsummaryitems){
+                        if($scope.map.Mapsummaryitems[i].id == $scope.currentItem.id){
+                            $scope.map.Mapsummaryitems[i].x = $scope.currentItem.x;
+                            $scope.map.Mapsummaryitems[i].y = $scope.currentItem.y;
 
                             //We are done here
                             break;
@@ -1097,11 +1096,11 @@ angular.module('openITCOCKPIT')
                     }
                 }else{
                     //New created item
-                    if(typeof $scope.map.Mapsummaryitem === "undefined"){
-                        $scope.map.Mapsummaryitem = [];
+                    if(typeof $scope.map.Mapsummaryitems === "undefined"){
+                        $scope.map.Mapsummaryitems = [];
                     }
 
-                    $scope.map.Mapsummaryitem.push(result.data.Mapsummaryitem.Mapsummaryitem);
+                    $scope.map.Mapsummaryitems.push(result.data.Mapsummaryitem.Mapsummaryitem);
                     setTimeout(makeDraggable, 250);
                 }
 
@@ -1124,9 +1123,9 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 //Remove item from current scope
-                for(var i in $scope.map.Mapsummaryitem){
-                    if($scope.map.Mapsummaryitem[i].id == $scope.currentItem.id){
-                        $scope.map.Mapsummaryitem.splice(i, 1);
+                for(var i in $scope.map.Mapsummaryitems){
+                    if($scope.map.Mapsummaryitems[i].id == $scope.currentItem.id){
+                        $scope.map.Mapsummaryitems.splice(i, 1);
 
                         //We are done here
                         break;
@@ -1506,11 +1505,11 @@ angular.module('openITCOCKPIT')
                     switch(type){
                         case 'gadget':
                             console.log('HIER');
-                            for(var key in $scope.map.Mapgadget){
-                                if($scope.map.Mapgadget[key].id === id){
-                                    $scope.map.Mapgadget[key].size_y = newHeight;
+                            for(var key in $scope.map.Mapgadgets){
+                                if($scope.map.Mapgadgets[key].id === id){
+                                    $scope.map.Mapgadgets[key].size_y = newHeight;
                                     //Set Y value first because $scope.$watch is listening to X value!
-                                    $scope.map.Mapgadget[key].size_x = newWidth;
+                                    $scope.map.Mapgadgets[key].size_x = newWidth;
                                 }
                             }
 
@@ -1523,11 +1522,11 @@ angular.module('openITCOCKPIT')
                             break;
 
                         case 'summaryItem':
-                            for(var key in $scope.map.Mapsummaryitem){
-                                if($scope.map.Mapsummaryitem[key].id === id){
-                                    $scope.map.Mapsummaryitem[key].size_y = newHeight;
+                            for(var key in $scope.map.Mapsummaryitems){
+                                if($scope.map.Mapsummaryitems[key].id === id){
+                                    $scope.map.Mapsummaryitems[key].size_y = newHeight;
                                     //Set Y value first because $scope.$watch is listening to X value!
-                                    $scope.map.Mapsummaryitem[key].size_x = newWidth;
+                                    $scope.map.Mapsummaryitems[key].size_x = newWidth;
                                 }
                             }
 
@@ -1559,11 +1558,11 @@ angular.module('openITCOCKPIT')
 
                     switch(type){
                         case 'gadget':
-                            for(var key in $scope.map.Mapgadget){
-                                if($scope.map.Mapgadget[key].id === id){
-                                    $scope.map.Mapgadget[key].size_y = newHeight;
+                            for(var key in $scope.map.Mapgadgets){
+                                if($scope.map.Mapgadgets[key].id === id){
+                                    $scope.map.Mapgadgets[key].size_y = newHeight;
                                     //Set Y value first because $scope.$watch is listening to X value!
-                                    $scope.map.Mapgadget[key].size_x = newWidth;
+                                    $scope.map.Mapgadgets[key].size_x = newWidth;
                                 }
                             }
 

@@ -423,6 +423,61 @@ class ServicegroupsTable extends Table {
 
     /**
      * @param $id
+     * @return array
+     */
+    public function getServicegroupByIdForMapeditor($id) {
+        $query = $this->find()
+            ->contain([
+                'Containers' => function (Query $q) {
+                    return $q->select([
+                        'Containers.id',
+                        'Containers.name'
+                    ]);
+                },
+                'Services'   => function (Query $q) {
+                    return $q->contain([
+                        'Servicetemplates' => function (Query $q) {
+                            return $q->select([
+                                'Servicetemplates.id',
+                                'Servicetemplates.name'
+                            ]);
+                        },
+                        'Hosts'            => function (Query $q) {
+                            return $q->contain([
+                                'HostsToContainersSharing'
+                            ])->select([
+                                'Hosts.id',
+                                'Hosts.uuid'
+                            ])->where([
+                                'Hosts.disabled' => 0
+                            ]);
+                        }
+                    ])->select([
+                        'Services.id',
+                        'Services.uuid',
+                        'Services.name'
+                    ])->where([
+                        'Services.disabled' => 0
+                    ]);
+                }
+            ])
+            ->where([
+                'Servicegroups.id' => $id
+            ])
+            ->select([
+                'Servicegroups.id',
+                'Servicegroups.description'
+            ]);
+
+        $result = $query->all();
+        if (empty($result)) {
+            return [];
+        }
+        return $result->toArray();
+    }
+
+    /**
+     * @param $id
      * @param array $MY_RIGHTS
      * @return array|Servicegroup
      */
@@ -450,7 +505,7 @@ class ServicegroupsTable extends Table {
                             'Services.name'
                         ])
                         ->contain([
-                            'Hosts' => function (Query $q) {
+                            'Hosts'            => function (Query $q) {
                                 return $q->enableAutoFields(false)
                                     ->select([
                                         'Hosts.id',

@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core\Views;
 
 
+use Spatie\Emoji\Emoji;
+
 class ServicestatusIcon {
 
     /**
@@ -90,6 +92,17 @@ class ServicestatusIcon {
             3 => __('Unknown')
         ];
 
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getState(){
+        if ($this->state === null) {
+            return null; //Not found in Monitoring
+        }
+
+        return $this->state;
     }
 
     /**
@@ -174,12 +187,38 @@ class ServicestatusIcon {
         );
     }
 
+    /**
+     * @return string
+     */
+    public function getEmoji() {
+        $state = $this->state;
+        if ($state === null) {
+            return Emoji::blueCircle(); //Not found in monitoring
+        }
+
+        $state = (int)$state;
+        if ($state === 0) {
+            return Emoji::whiteHeavyCheckMark(); // Ok
+        }
+
+        if ($state === 1) {
+            return Emoji::warning(); // Warning
+        }
+
+        if ($state === 2) {
+            return Emoji::policeCarLight(); // Critical
+        }
+
+        return Emoji::exclamationQuestionMark(); // Unknown
+    }
+
     public function asArray() {
         return [
             'state'       => $this->state,
             'human_state' => $this->getHumanState(),
             'html_icon'   => $this->getHtmlIcon(),
-            'icon'        => $this->getIcon()
+            'icon'        => $this->getIcon(),
+            'emoji'       => $this->getEmoji()
         ];
     }
 
