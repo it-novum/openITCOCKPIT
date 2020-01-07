@@ -51,4 +51,5 @@ webroot/node_modules
 
 # openITCOCKPIT files #
 #######################
+config/graphite.php
 src/Lib/openITCOCKPIT_AvailableVersion.php

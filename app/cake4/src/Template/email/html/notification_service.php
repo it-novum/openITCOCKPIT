@@ -30,10 +30,14 @@
  * @var bool $noEmoji
  * @var \itnovum\openITCOCKPIT\Core\Views\Host $Host
  * @var \itnovum\openITCOCKPIT\Core\Views\HoststatusIcon $HoststatusIcon
+ * @var \itnovum\openITCOCKPIT\Core\Views\Service $Service
+ * @var \itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon $ServicestatusIcon
  * @var \Cake\Console\Arguments $args
  * @var string $systemAddress
  * @var string $ticketsystemUrl
+ * @var array $charts
  *
+ * @var null|array $evcTree
  */
 
 echo $this->element('emails/style');
@@ -87,46 +91,57 @@ echo $this->element('emails/style');
                         <td>
                             <h5>
                                 <?php if ($noEmoji === false): ?>
-                                    <?= $HoststatusIcon->getEmoji() ?>
+                                    <?= $ServicestatusIcon->getEmoji() ?>
                                     &nbsp;
                                 <?php endif; ?>
                                 <span>
+                                    <a href="<?php printf('https://%s/#!/services/browser/%s', $systemAddress, $Service->getUuid()); ?>"
+                                       style="text-decoration:none"
+                                       class="<?= strtoupper($ServicestatusIcon->getTextColor()) ?>">
+                                            <?php echo h($Service->getServicename()); ?>
+                                    </a>
+                                    <?= __('on') ?>
                                     <a href="<?php printf('https://%s/#!/hosts/browser/%s', $systemAddress, $Host->getUuid()); ?>"
                                        style="text-decoration:none"
                                        class="<?= strtoupper($HoststatusIcon->getTextColor()) ?>">
-                                            <?php echo h($Host->getHostname()); ?>
+                                        <?php echo h($Host->getHostname()); ?>
                                     </a>
-                                    <?= __(' is {0}', $HoststatusIcon->getHumanState()); ?>
+                                    <?= __(' is {0}', $ServicestatusIcon->getHumanState()); ?>
                                 </span>
                             </h5>
                             <hr noshade width="560" size="3" align="left">
                             <br>
                             <table width="100%">
-                                <?php
-                                if ($args->getOption('notificationtype') === 'ACKNOWLEDGEMENT'): ?>
+                                <?php if ($args->getOption('notificationtype') === 'ACKNOWLEDGEMENT'): ?>
                                     <tr>
                                         <td colspan="2">
                                             <i class="fa fa-user fa-stack-2x"></i>
                                             <strong>
-                                                <?= __('The current status was acknowledged by {0} with the comment: ', h($args->getOption('hostackauthor'))); ?>
-                                                <?php if (!empty($ticketsystemUrl) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $args->getOption('hostackcomment'), $ticketDetails)): ?>
+                                                <?= __('The current status was acknowledged by {0} with the comment: ', h($args->getOption('serviceackauthor'))); ?>
+                                                <?php if (!empty($ticketsystemUrl) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $args->getOption('serviceackcomment'), $ticketDetails)): ?>
                                                     <a
                                                         href="<?= $ticketsystemUrl . $ticketDetails[3] ?>"
                                                         target="_blank">
                                                         <?= h($ticketDetails[1] . ' ' . $ticketDetails[2]) ?>
                                                     </a>
                                                 <?php else: ?>
-                                                    "<?= h($args->getOption('hostackcomment')); ?>"
+                                                    "<?= h($args->getOption('serviceackcomment')); ?>"
                                                 <?php endif; ?>
                                             </strong>
                                         </td>
                                     </tr>
-                                <?php
-                                endif;
-                                ?>
+                                <?php endif; ?>
                                 <tr>
                                     <td><strong><?php echo __('Time'); ?>:</strong></td>
                                     <td><?php echo date('H:i:s T'); ?></td>
+                                </tr>
+                                <tr>
+                                    <td><strong><?php echo __('Service name'); ?>:</strong></td>
+                                    <td><?= h($Service->getServicename()) ?></td>
+                                </tr>
+                                <tr>
+                                    <td><strong><?php echo __('Service description'); ?>:</strong></td>
+                                    <td><?= h($Host->getDescription()) ?></td>
                                 </tr>
                                 <tr>
                                     <td><strong><?php echo __('Host name'); ?>:</strong></td>
@@ -142,34 +157,63 @@ echo $this->element('emails/style');
                                 </tr>
                                 <tr>
                                     <td><strong><?php echo __('State'); ?>:</strong></td>
-                                    <td class=<?= strtoupper($HoststatusIcon->getTextColor()) ?>>
-                                        <?= h($HoststatusIcon->getHumanState()); ?>
+                                    <td class=<?= strtoupper($ServicestatusIcon->getTextColor()) ?>>
+                                        <?= h($ServicestatusIcon->getHumanState()); ?>
                                     </td>
                                 </tr>
                             </table>
                             <br/>
                             <strong><?php echo __('Output'); ?>:</strong>
-                            <p class="lead"> <?= h($args->getOption('hostoutput')); ?> </p>
+                            <p class="lead"> <?= h($args->getOption('serviceoutput')); ?> </p>
                             <br/>
-                            <?php if ($args->getOption('hostlongoutput') !== ''): ?>
-                                <strong><?php echo __('Host long output'); ?>:</strong>
-                                <p class="lead"> <?php echo str_replace(['\n', '\r\n', '\r'], "<br/>", h($args->getOption('hostlongoutput'))); ?> </p>
+                            <?php if ($args->getOption('servicelongoutput') !== ''): ?>
+                                <strong><?php echo __('Service long output'); ?>:</strong>
+                                <p class="lead"> <?php echo str_replace(['\n', '\r\n', '\r'], "<br/>", h($args->getOption('servicelongoutput'))); ?> </p>
                                 <br/>
                             <?php endif; ?>
 
+                            <?php if ($noAttachments === false): ?>
+
+                                <?php
+                                if (\Cake\Core\Plugin::isLoaded('EventcorrelationModule') && $Service->getServiceType() === EVK_SERVICE):
+                                    $EvcTableRenderer = new \EventcorrelationModule\EvcTableRenderer(
+                                        $evcTree,
+                                        $Service->getUuid(),
+                                        !$noEmoji
+                                    );
+                                    echo $EvcTableRenderer->getEvcDataAsTable();
+                                    echo '<br>';
+                                endif; ?>
+
+
+                                <table class="social" width="100%">
+                                    <?php foreach ($charts as $filename => $chart): ?>
+                                        <tr>
+                                            <td>
+                                                <img src="cid:<?= h($chart['contentId']) ?>" alt='<?= h($filename); ?>'
+                                                     width="560"
+                                                     height="180" style="background:#fff;background-color:#fff;"/>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </table>
+                            <?php endif; ?>
+
                             <br/>
-                            <?php if ($HoststatusIcon->getState() !== 0): ?>
+                            <?php if ($ServicestatusIcon->getState() !== 0): ?>
                                 <!--
                                 --- BEGIN ACK INFORMATION ---
                                 ACK_HOSTNAME: <?= h($Host->getHostname()); ?>
                                 <?= PHP_EOL; ?>
                                 ACK_HOSTUUID: <?= $Host->getUuid(); ?>
                                 <?= PHP_EOL; ?>
-                                ACK_SERVICEDESC:
-                                ACK_SERVICEUUID:
-                                ACK_STATE: <?= h($args->getOption('hoststate')); ?>
+                                ACK_SERVICEDESC: <?= h($Service->getServicename()); ?>
                                 <?= PHP_EOL; ?>
-                                ACK_NOTIFICATIONTYPE: HOST
+                                ACK_SERVICEUUID: <?= $Service->getUuid(); ?>
+                                <?= PHP_EOL; ?>
+                                ACK_STATE: <?= h($args->getOption('servicestate')); ?>
+                                <?= PHP_EOL; ?>
+                                ACK_NOTIFICATIONTYPE: SERVICE
                                 --- END ACK INFORMATION ---
                                 -->
                             <?php endif; ?>
@@ -226,25 +270,29 @@ TICKET_HOSTNAME: <?= h($Host->getHostname()); ?>
 <?= PHP_EOL; ?>
 TICKET_HOSTUUID: <?= $Host->getUuid(); ?>
 <?= PHP_EOL; ?>
-TICKET_SERVICEDESC:
-TICKET_SERVICEUUID:
-TICKET_STATE: <?= h($args->getOption('hoststate')); ?>
+TICKET_SERVICEDESC: <?= h($Service->getServicename()); ?>
 <?= PHP_EOL; ?>
-TICKET_NOTIFICATIONTYPE: HOST
-TICKET_COMMAND_NUMBER: 33
+TICKET_SERVICEUUID: <?= $Service->getUuid(); ?>
+<?= PHP_EOL; ?>
+TICKET_STATE: <?= h($args->getOption('servicestate')); ?>
+<?= PHP_EOL; ?>
+TICKET_NOTIFICATIONTYPE: SERVICE
+TICKET_COMMAND_NUMBER: 34
 --- END TICKET SYSTEM INFORMATION ---
 
-<?php if ($HoststatusIcon->getState() !== 0): ?>
+<?php if ($ServicestatusIcon->getState() !== 0): ?>
 --- BEGIN ACK2 INFORMATION ---
 ACK_HOSTNAME: <?= h($Host->getHostname()); ?>
 <?= PHP_EOL; ?>
 ACK_HOSTUUID: <?= $Host->getUuid(); ?>
 <?= PHP_EOL; ?>
-ACK_SERVICEDESC:
-ACK_SERVICEUUID:
-ACK_STATE: <?= h($args->getOption('hoststate')); ?>
+ACK_SERVICEDESC: <?= h($Service->getServicename()); ?>
 <?= PHP_EOL; ?>
-ACK_NOTIFICATIONTYPE: HOST
+ACK_SERVICEUUID: <?= $Service->getUuid(); ?>
+<?= PHP_EOL; ?>
+ACK_STATE: <?= h($args->getOption('servicestate')); ?>
+<?= PHP_EOL; ?>
+ACK_NOTIFICATIONTYPE: SERVICE
 --- END ACK2 INFORMATION ---
 <?php endif; ?>
 -->
