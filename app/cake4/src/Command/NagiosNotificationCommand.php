@@ -39,10 +39,17 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Log\Log;
 use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
+use GuzzleHttp\Exception\GuzzleException;
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\NodeJS\ChartRenderClient;
+use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
+use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
 use Spatie\Emoji\Emoji;
 use function GuzzleHttp\default_ca_bundle;
 
@@ -198,6 +205,7 @@ class NagiosNotificationCommand extends Command {
 
         if ($this->type === 'service') {
             $Service = $this->getService($this->servicedesc);
+            $this->sendServiceNotification($Host, $Service, $args);
         }
 
 
@@ -249,6 +257,64 @@ class NagiosNotificationCommand extends Command {
     }
 
     /**
+     * @param Host $Host
+     * @param Service $Service
+     * @param Arguments $args
+     */
+    private function sendServiceNotification(Host $Host, Service $Service, Arguments $args) {
+        $Logo = new Logo();
+        $HoststatusIcon = $this->getHoststatusIcon();
+        $ServicestatusIcon = $this->getServicestatusIcon();
+
+        $Mailer = new Mailer();
+        $Mailer->setFrom($this->senderAddress, $this->senderName);
+        if ($this->replyTo !== null) {
+            $Mailer->setReplyTo($this->replyTo);
+        }
+
+        $toName = null;
+        if ($args->getOption('contactalias') !== '') {
+            $toName = $args->getOption('contactalias');
+        }
+        $Mailer->addTo($this->contactmail, $toName);
+        $Mailer->setSubject($this->getServiceSubject(
+            $Host,
+            $Service,
+            $ServicestatusIcon
+        ));
+        $Mailer->setEmailFormat($this->format);
+
+        $charts = [];
+        if ($this->noAttachments === false && $this->format !== 'text') {
+            $charts = $this->getServiceCharts($Host, $Service);
+
+            //Add Logo to attachments
+            $attachments = $charts;
+            $attachments['logo.png'] = [
+                'file'      => $Logo->getSmallLogoDiskPath(),
+                'mimetype'  => 'image/png',
+                'contentId' => '100'
+            ];
+            $Mailer->setAttachments($attachments);
+        }
+        $Mailer->viewBuilder()
+            ->setTemplate($this->layout . '_' . $this->type)
+            ->setVar('systemname', $this->systemname)
+            ->setVar('noAttachments', $this->noAttachments)
+            ->setVar('noEmoji', $this->noEmoji)
+            ->setVar('Host', $Host)
+            ->setVar('HoststatusIcon', $HoststatusIcon)
+            ->setVar('Service', $Service)
+            ->setVar('ServicestatusIcon', $ServicestatusIcon)
+            ->setVar('args', $args)
+            ->setVar('systemAddress', $this->systemAddress)
+            ->setVar('ticketsystemUrl', $this->ticketsystemUrl)
+            ->setVar('charts', $charts);
+
+        $Mailer->deliver();
+    }
+
+    /**
      * @return HoststatusIcon
      */
     private function getHoststatusIcon() {
@@ -265,6 +331,29 @@ class NagiosNotificationCommand extends Command {
         }
 
         return new HoststatusIcon($stateId);
+    }
+
+
+    /**
+     * @return ServicestatusIcon
+     */
+    private function getServicestatusIcon() {
+        switch ($this->serviceState) {
+            case 'OK':
+                $stateId = 0;
+                break;
+            case 'WARNING':
+                $stateId = 1;
+                break;
+            case 'CRITICAL':
+                $stateId = 2;
+                break;
+            default:
+                $stateId = 3;
+                break;
+        }
+
+        return new ServicestatusIcon($stateId);
     }
 
     /**
@@ -360,6 +449,170 @@ class NagiosNotificationCommand extends Command {
             $title = $HoststatusIcon->getEmoji() . ' ' . $title;
         }
         return $title;
+    }
+
+    /**
+     * @param Host $Host
+     * @param Service $Service
+     * @param ServicestatusIcon $ServicestatusIcon
+     * @return string
+     */
+    private function getServiceSubject(Host $Host, Service $Service, ServicestatusIcon $ServicestatusIcon) {
+        if ($this->isAcknowledgement()) {
+            $title = sprintf(
+                'Acknowledgement for %s/%s (%s)',
+                $Host->getHostname(),
+                $Service->getServicename(),
+                $ServicestatusIcon->getHumanState()
+            );
+
+            if ($this->noEmoji === false) {
+                $title = Emoji::speechBalloon() . ' ' . $title;
+            }
+            return $title;
+        }
+
+        if ($this->isDowntimeStart()) {
+            $title = sprintf(
+                'Service %s/%s has entered a period of scheduled downtime',
+                $Host->getHostname(),
+                $Service->getServicename()
+            );
+
+            if ($this->noEmoji === false) {
+                $title = Emoji::zzz() . ' ' . $title;
+            }
+            return $title;
+        }
+
+        if ($this->isDowntimeEnd()) {
+            $title = sprintf(
+                'Service %s/%s has exited from a period of scheduled downtime',
+                $Host->getHostname(),
+                $Service->getServicename()
+            );
+
+            if ($this->noEmoji === false) {
+                $title = Emoji::eightSpokedAsterisk() . ' ' . $title;
+            }
+            return $title;
+        }
+
+        if ($this->isDowntimeCancelled()) {
+            $title = sprintf(
+                'Scheduled downtime has been cancelled for %s/%s',
+                $Host->getHostname(),
+                $Service->getServicename()
+            );
+
+            if ($this->noEmoji === false) {
+                $title = Emoji::wastebasket() . ' ' . $title;
+            }
+            return $title;
+        }
+
+        if ($this->isFlappingStart()) {
+            $title = sprintf(
+                'Service %s/%s appears to have started flapping',
+                $Host->getHostname(),
+                $Service->getServicename()
+            );
+
+            return $title;
+        }
+
+        if ($this->isFlappingStop()) {
+            $title = sprintf(
+                'Service %s/%s appears to have stopped flapping',
+                $Host->getHostname(),
+                $Service->getServicename()
+            );
+
+            return $title;
+        }
+
+        if ($this->isFlappingDisabled()) {
+            $title = sprintf(
+                'Flap detection has been disabled for %s/%s',
+                $Host->getHostname(),
+                $Service->getServicename()
+            );
+
+            return $title;
+        }
+
+        //Default notification
+        $title = sprintf(
+            '%s: %s on %s is %s!',
+            $this->notificationtype,
+            $Service->getServicename(),
+            $Host->getHostname(),
+            $ServicestatusIcon->getHumanState()
+        );
+
+        if ($this->noEmoji === false) {
+            $title = $ServicestatusIcon->getEmoji() . ' ' . $title;
+        }
+        return $title;
+    }
+
+    /**
+     * @param Host $Host
+     * @param Service $Service
+     * @return array
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     */
+    private function getServiceCharts(Host $Host, Service $Service) {
+        $DbBackend = new DbBackend();
+        $PerfdataBackend = new PerfdataBackend();
+        $PerfdataLoader = new PerfdataLoader($DbBackend, $PerfdataBackend);
+
+        $attachments = [];
+
+        try {
+            $graphStart = (time() - (4 * 3600));
+            $graphData = $PerfdataLoader->getPerfdataByUuid(
+                $Host->getUuid(),
+                $Service->getUuid(),
+                $graphStart,
+                time(),
+                false,
+                'avg'
+            );
+
+            if (!empty($graphData)) {
+                //Render graph data to png image blobs for pdf
+                $NodeJsChartRenderClient = new ChartRenderClient();
+                $NodeJsChartRenderClient->setGraphStartTimestamp($graphStart);
+                $NodeJsChartRenderClient->setGraphEndTimestamp(time());
+                $NodeJsChartRenderClient->setHeight(180);
+                $NodeJsChartRenderClient->setWidth(560);
+                $NodeJsChartRenderClient->setTitle(
+                    sprintf(
+                        '%s - %s',
+                        $Host->getHostname(),
+                        $Service->getServicename()
+                    ));
+
+                // Render two gauges per chart
+                $id = 200;
+                foreach (array_chunk($graphData, 2) as $graphDataChunk) {
+                    $fileName = sprintf('Chart_%s.png', $id);
+                    $attachments[$fileName] = [
+                        'data'      => $NodeJsChartRenderClient->getAreaChartAsPngStream($graphDataChunk),
+                        'mimetype'  => 'image/png',
+                        'contentId' => $id
+                    ];
+                    $contentIDs[] = $id;
+                    $id++;
+                }
+            }
+        } catch (GuzzleException $e) {
+            Log::error('Notification: Error while fetching service chart data');
+            Log::error($e->getMessage());
+        }
+
+        return $attachments;
     }
 
     private function isAcknowledgement() {
@@ -473,7 +726,7 @@ class NagiosNotificationCommand extends Command {
                     'Option --servicestate is missing'
                 );
             }
-            $this->servicestate = $args->getOption('servicestate');
+            $this->serviceState = $args->getOption('servicestate');
         }
 
         if ($args->getOption('contactmail') === '') {

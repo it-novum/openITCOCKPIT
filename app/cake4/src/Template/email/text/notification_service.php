@@ -36,14 +36,18 @@
  * @var bool $noEmoji
  * @var \itnovum\openITCOCKPIT\Core\Views\Host $Host
  * @var \itnovum\openITCOCKPIT\Core\Views\HoststatusIcon $HoststatusIcon
+ * @var \itnovum\openITCOCKPIT\Core\Views\Service $Service
+ * @var \itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon $ServicestatusIcon
  * @var \Cake\Console\Arguments $args
  * @var string $systemAddress
  * @var string $ticketsystemUrl
- *
+ * @var array $charts
  */
 
 ?>
-Host <?= $Host->getHostname(); ?> is <?= $HoststatusIcon->getHumanState() ?>!
+Service <?= $Service->getServicename() ?> on Host <?= $Host->getHostname() ?> is <?= $ServicestatusIcon->getHumanState() ?>!
+
+Service description: <?= $Service->getDescription() ?>
 
 Time: <?php echo date('H:i:s T'); ?>
 
@@ -51,13 +55,13 @@ Host description: <?= $Host->getDescription(); ?>
 
 Host address: <?= $Host->getAddress(); ?>
 
-State: <?= $HoststatusIcon->getHumanState(); ?>
+State: <?= $ServicestatusIcon->getHumanState(); ?>
 
 
-Output: <?= $args->getOption('hostoutput'); ?>
+Output: <?= $args->getOption('serviceoutput'); ?>
 
-<?php if (!empty($args->getOption('hostlongoutput'))): ?>
-Long host output: <?php echo str_replace(['\n', '\r\n', '\r'], "\n", $args->getOption('hostlongoutput')); ?>
+<?php if (!empty($args->getOption('servicelongoutput'))): ?>
+Long service output: <?php echo str_replace(['\n', '\r\n', '\r'], "\n", $args->getOption('servicelongoutput')); ?>
 <?php endif; ?>
 
 
@@ -66,25 +70,29 @@ TICKET_HOSTNAME: <?= $Host->getHostname(); ?>
 <?= PHP_EOL ?>
 TICKET_HOSTUUID: <?= $Host->getUuid(); ?>
 <?= PHP_EOL ?>
-TICKET_SERVICEDESC:
-TICKET_SERVICEUUID:
-TICKET_STATE: <?= $HoststatusIcon->getHumanState(); ?>
+TICKET_SERVICEDESC: <?= $Service->getServicename(); ?>
 <?= PHP_EOL ?>
-TICKET_NOTIFICATIONTYPE: HOST
-TICKET_COMMAND_NUMBER: 33
+TICKET_SERVICEUUID: <?= $Service->getUuid(); ?>
+<?= PHP_EOL ?>
+TICKET_STATE: <?= $ServicestatusIcon->getHumanState(); ?>
+<?= PHP_EOL ?>
+TICKET_NOTIFICATIONTYPE: SERVICE
+TICKET_COMMAND_NUMBER: 34
 --- END TICKET SYSTEM INFORMATION ---
 
-<?php if ($HoststatusIcon->getState() !== 0): ?>
+<?php if ($ServicestatusIcon->getState() !== 0): ?>
 --- BEGIN ACK2 INFORMATION ---
 ACK_HOSTNAME: <?= $Host->getHostname(); ?>
 <?= PHP_EOL ?>
 ACK_HOSTUUID: <?= $Host->getUuid(); ?>
 <?= PHP_EOL ?>
-ACK_SERVICEDESC:
-ACK_SERVICEUUID:
-ACK_STATE: <?= $HoststatusIcon->getHumanState(); ?>
+ACK_SERVICEDESC: <?= $Service->getServicename(); ?>
 <?= PHP_EOL ?>
-ACK_NOTIFICATIONTYPE: HOST
+ACK_SERVICEUUID: <?= $Service->getUuid(); ?>
+<?= PHP_EOL ?>
+ACK_STATE: <?= $ServicestatusIcon->getHumanState(); ?>
+<?= PHP_EOL ?>
+ACK_NOTIFICATIONTYPE: SERVICE
 --- END ACK2 INFORMATION ---
 <?php endif; ?>
 <?php //@formatter:on ?>
