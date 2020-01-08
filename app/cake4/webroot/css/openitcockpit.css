@@ -154,3 +154,117 @@ div.custom-control-right .custom-control-label::after {
 .dashboardColorPickerBorder {
     border: 1px solid #f5f5f5;
 }
+
+
+/* Fullcalendar CSS */
+
+#calendar-buttons {
+    position: relative !important;
+    margin-left: 15px !important;
+    top: 0 !important;
+}
+
+.fc-grid .fc-day-number {
+    float: left;
+}
+
+.calendar-button {
+    float: right;
+}
+
+.fc-event .fc-event-title {
+    padding: 0.5em;
+    border: none;
+}
+
+.fc-day-grid-event .fc-content {
+    /* deactivate force events to be one-line tall */
+    white-space: normal !important;
+    overflow: visible !important;
+}
+
+.fc-icon-left-single-arrow::after {
+    font-size: 100% !important;
+}
+
+.fc-icon-right-single-arrow::after {
+    font-size: 100% !important;
+}
+
+.fc-state-default:hover {
+    background: #E5E5E5 none;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.defaultHoliday {
+    background: #356E35 !important;
+}
+
+/* BugFix Style Issue events are not visible*/
+.fc-time-grid .fc-event, .fc-time-grid .fc-bgevent {
+    position: relative;
+    z-index: 1;
+}
+
+/* fullcalendar 'more+' container style settings */
+.fc-more-popover {
+    overflow-y: scroll;
+    max-height: 20%;
+    max-width: 14%;
+}
+
+
+.fc-day-number {
+    float: left !important;
+}
+
+.fc-holidays-button {
+    background-color: #5cb85c !important;
+    border-color: #449D44 !important;
+    color: #ffffff;
+}
+
+.fc-holidays-button:hover,
+.fc-holidays-button:active,
+.fc-holidays-button:focus {
+    color: #ffffff;
+}
+
+.fc-deleteallholidays-button {
+    background-color: #6E3671 !important;
+    border-color: #582b5b !important;
+}
+
+.fc-deletemonthevents-button,
+.fc-deleteallevents-button {
+    background-color: #d9534f !important;
+    border-color: #a94442 !important;
+}
+
+.caret-with-margin-left-5 {
+    margin-left: 5px !important;
+}
+
+#countryList.dropdown-menu > li > a {
+    padding: 0px 5px;
+}
+
+.fc-left .dropdown .dropdown-menu {
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -webkit-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+}
+
+.fc-left .dropdown:hover .dropdown-menu {
+    visibility: visible;
+    opacity: 1;
+}
+
+fc-left .dropdown {
+    display: inline-block;
+}

@@ -120,7 +120,7 @@ angular.module('openITCOCKPIT')
                             .attr({
                                 title: 'add',
                                 type: 'button',
-                                class: 'btn btn-xs btn-success calendar-button'
+                                class: 'btn btn-success btn-xs btn-icon'
                             })
                             .click(function(){
                                     $('#addEventModal').modal('show');
@@ -141,11 +141,11 @@ angular.module('openITCOCKPIT')
                     var elements = $('[data-date="' + date('Y-m-d', info.event.start) + '"]');
 
                     var $editButton = $('<button>')
-                        .html('<i class="fa fa-pencil"></i>')
+                        .html('<i class="fas fa-pencil-alt"></i>')
                         .attr({
                             title: 'edit',
                             type: 'button',
-                            class: 'btn btn-xs btn-primary btn-edit calendar-button margin-right-5'
+                            class: 'btn btn-primary btn-xs btn-icon margin-right-5'
                         })
                         .click(function(){
                                 var event = $scope.getEvents(date('Y-m-d', info.event.start));
@@ -159,11 +159,11 @@ angular.module('openITCOCKPIT')
                         );
 
                     var $deleteButton = $('<button>')
-                        .html('<i class="fa fa-trash-o"></i>')
+                        .html('<i class="fa fa-trash"></i>')
                         .attr({
                             title: 'delete',
                             type: 'button',
-                            class: 'btn btn-xs btn-danger calendar-button'
+                            class: 'btn btn-danger btn-xs btn-icon'
                         })
                         .click(function(){
                                 $scope.deleteEvent(date('Y-m-d', info.event.start));
@@ -171,8 +171,8 @@ angular.module('openITCOCKPIT')
                             }
                         );
 
-                    $(elements[1]).css('text-align', 'right').append($deleteButton);
                     $(elements[1]).append($editButton);
+                    $(elements[1]).css('text-align', 'right').append($deleteButton);
                 },
 
                 eventDrop: function(info){

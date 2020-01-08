@@ -80,13 +80,14 @@ class AngularAssets implements AngularAssetsInterface {
         'legacy/js/lib/jqconsole.min.js',
         'node_modules/jquery-blockui/jquery.blockUI.js',
         /*'js/lib/jquery-jvectormap-1.2.2.min.js',
-        'js/lib/maps/jquery-jvectormap-world-mill-en.js',
-        'vendor/node_modules/@fullcalendar/core/main.js',
-        'vendor/node_modules/@fullcalendar/interaction/main.js',
-        'vendor/node_modules/@fullcalendar/daygrid/main.js',
-        'vendor/node_modules/@fullcalendar/timegrid/main.js',
-        'vendor/node_modules/@fullcalendar/list/main.js',
-        'js/vendor/Chart.min.js',
+        'js/lib/maps/jquery-jvectormap-world-mill-en.js', */
+        'node_modules/@fullcalendar/core/main.js',
+        'node_modules/@fullcalendar/interaction/main.js',
+        'node_modules/@fullcalendar/daygrid/main.js',
+        'node_modules/@fullcalendar/timegrid/main.js',
+        'node_modules/@fullcalendar/list/main.js',
+        'node_modules/@fullcalendar/bootstrap/main.js',
+        /*'js/vendor/Chart.min.js',
         'js/vendor/chartjs-plugin-piechart-center-element.min.js', */
         'node_modules/highlight-within-textarea/jquery.highlight-within-textarea.js',
         'node_modules/jquery-sparkline/jquery.sparkline.min.js'
@@ -125,10 +126,11 @@ class AngularAssets implements AngularAssetsInterface {
         '/css/openitcockpit-colors.css',
         '/css/openitcockpit-utils.css',
         '/css/openitcockpit.css',
-        /*'/vendor/node_modules/@fullcalendar/core/main.css',
-        '/vendor/node_modules/@fullcalendar/daygrid/main.css',
-        '/vendor/node_modules/@fullcalendar/timegrid/main.css',
-        '/vendor/node_modules/@fullcalendar/list/main.css',*/
+        '/node_modules/@fullcalendar/core/main.css',
+        '/node_modules/@fullcalendar/daygrid/main.css',
+        '/node_modules/@fullcalendar/timegrid/main.css',
+        '/node_modules/@fullcalendar/list/main.css',
+        '/node_modules/@fullcalendar/bootstrap/main.css',
         //'/smartadmin/css/your_style.css',                             //check if we need this anymore
         //'/smartadmin/css/animate.css',
 
