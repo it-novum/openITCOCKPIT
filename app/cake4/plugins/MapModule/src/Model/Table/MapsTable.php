@@ -878,55 +878,7 @@ class MapsTable extends Table {
                 'Maps.id IN' => $dependentMapsIds
             ])
             ->all()->toArray();
-        /*
-        $allDependentMapElements = $this->find('all', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Mapitem'        => [
-                    'conditions' => [
-                        'NOT' => [
-                            'Mapitem.type' => 'map'
-                        ]
-                    ],
-                    'fields'     => [
-                        'Mapitem.type',
-                        'Mapitem.object_id'
-                    ]
-                ],
-                'Mapline'        => [
-                    'conditions' => [
-                        'NOT' => [
-                            'Mapline.type' => 'stateless'
-                        ]
-                    ],
-                    'fields'     => [
-                        'Mapline.type',
-                        'Mapline.object_id'
-                    ]
-                ],
-                'Mapgadget'      => [
-                    'fields' => [
-                        'Mapgadget.type',
-                        'Mapgadget.object_id'
-                    ]
-                ],
-                'Mapsummaryitem' => [
-                    'conditions' => [
-                        'NOT' => [
-                            'Mapsummaryitem.type' => 'map'
-                        ]
-                    ],
-                    'fields'     => [
-                        'Mapsummaryitem.type',
-                        'Mapsummaryitem.object_id'
-                    ]
-                ]
-            ],
-            'conditions' => [
-                'Map.id' => $dependentMapsIds
-            ]
-        ]);
-        */
+
         $mapElementsByCategory = [
             'host'         => [],
             'hostgroup'    => [],
@@ -1797,5 +1749,168 @@ class MapsTable extends Table {
             'CumulatedHumanState'    => $CumulatedServiceStatus->toArray()['humanState'],
             'ServiceIdsGroupByState' => $serviceIdsGroupByState
         ];
+    }
+
+    /**
+     * @param HostsTable $HostsTable
+     * @param HoststatusTableInterface $HoststatusTable
+     * @param ServicesTable $ServicesTable
+     * @param ServicestatusTableInterface $ServicestatusTable
+     * @param array $map
+     * @param array $hosts
+     * @param array $services
+     * @param UserTime $UserTime
+     * @param bool $summaryStateItem
+     * @return array
+     */
+    public function getMapSummary(HostsTable $HostsTable, HoststatusTableInterface $HoststatusTable, ServicesTable $ServicesTable, ServicestatusTableInterface $ServicestatusTable, array $map, array $hosts, array $services, UserTime $UserTime, bool $summaryStateItem) {
+        $cumulatedHostState = null;
+        $cumulatedServiceState = null;
+        $notOkHosts = [];
+        $notOkServices = [];
+        $hostIdsGroupByState = [
+            0 => [],
+            1 => [],
+            2 => []
+        ];
+
+        $serviceIdsGroupByState = [
+            0 => [],
+            1 => [],
+            2 => [],
+            3 => []
+        ];
+        $counterForNotOkHostAndService = 0;
+        $limitForNotOkHostAndService = 20;
+
+        $HoststatusFields = new HoststatusFields(new DbBackend());
+        $HoststatusFields
+            ->currentState()
+            ->lastCheck()
+            ->isHardstate()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged()
+            ->output();
+
+        $hostUuids = Hash::extract($hosts, '{n}.uuid');
+
+        $hoststatusByUuids = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
+        $hostStateSummary = $HostsTable->getHostStateSummary($hoststatusByUuids, false);
+
+        $ServicestatusFieds = new ServicestatusFields(new DbBackend());
+        $ServicestatusFieds
+            ->currentState()
+            ->lastCheck()
+            ->isHardstate()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged()
+            ->output();
+        $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
+
+        $servicesUuids = Hash::extract($services, '{n}.Service.uuid');
+
+        $servicestatusResults = $ServicestatusTable->byUuid($servicesUuids, $ServicestatusFieds, $ServicestatusConditions);
+        $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatusResults);
+        $serviceStateSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, false);
+
+        if (!empty($hoststatusByUuids)) {
+            $worstHostState = array_values(
+                $hoststatusByUuids = Hash::sort($hoststatusByUuids, '{s}.Hoststatus.current_state', 'desc')
+            );
+            $cumulatedHostState = (int)$worstHostState[0]['Hoststatus']['current_state'];
+            $hosts = Hash::combine($hosts, '{n}.uuid', '{n}');
+            foreach ($hoststatusByUuids as $hostUuid => $hoststatusByUuid) {
+                $hostStatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusByUuid['Hoststatus'], $UserTime);
+                $currentHostState = $hostStatus->currentState();
+
+                $hostIdsGroupByState[$currentHostState][] = $hosts[$hostUuid]['id'];
+                $host = new \itnovum\openITCOCKPIT\Core\Views\Host($hosts[$hostUuid]);
+                if ($counterForNotOkHostAndService <= $limitForNotOkHostAndService && $currentHostState > 0) {
+                    $notOkHosts[] = [
+                        'Hoststatus' => $hostStatus->toArray(),
+                        'Host'       => $host->toArray()
+                    ];
+                    $counterForNotOkHostAndService++;
+                }
+            }
+        }
+
+        if (!empty($servicestatusResults)) {
+            $worstServiceState = array_values(
+                $servicestatusResults = Hash::sort($servicestatusResults, '{s}.Servicestatus.current_state', 'desc')
+            );
+            $cumulatedServiceState = (int)$worstServiceState[0]['Servicestatus']['current_state'];
+            $services = Hash::combine($services, '{n}.Service.uuid', '{n}');
+            foreach ($servicestatusResults as $serviceUuid => $servicestatusByUuid) {
+                $serviceStatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatusByUuid['Servicestatus'], $UserTime);
+                $currentServiceState = $serviceStatus->currentState();
+                $serviceIdsGroupByState[$currentServiceState][] = $services[$serviceUuid]['Service']['id'];
+
+                $service = new \itnovum\openITCOCKPIT\Core\Views\Service($services[$serviceUuid]);
+                if ($counterForNotOkHostAndService <= $limitForNotOkHostAndService && $currentServiceState > 0) {
+                    $notOkServices[] = [
+                        'Servicestatus' => $serviceStatus->toArray(),
+                        'Service'       => $service->toArray()
+                    ];
+                    $counterForNotOkHostAndService++;
+                }
+            }
+        }
+
+        $CumulatedHostStatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([
+            'current_state' => $cumulatedHostState
+        ]);
+
+        $CumulatedHumanState = $CumulatedHostStatus->toArray()['humanState'];
+        if (($cumulatedHostState === 0 || is_null($cumulatedHostState)) && !is_null($cumulatedServiceState)) {
+            $CumulatedServiceStatus = new \itnovum\openITCOCKPIT\Core\Servicestatus([
+                'current_state' => $cumulatedServiceState
+            ]);
+            $CumulatedHumanState = $CumulatedServiceStatus->toArray()['humanState'];
+        }
+
+        $map = [
+            'id'        => $map['id'],
+            'name'      => $map['name'],
+            'title'     => $map['title'],
+            'object_id' => ($summaryStateItem) ? $map['Mapsummaryitems']['object_id'] : $map['Mapitems']['object_id']
+        ];
+
+        return [
+            'Map'                    => $map,
+            'HostSummary'            => $hostStateSummary,
+            'ServiceSummary'         => $serviceStateSummary,
+            'CumulatedHumanState'    => $CumulatedHumanState,
+            'NotOkHosts'             => $notOkHosts,
+            'NotOkServices'          => $notOkServices,
+            'HostIdsGroupByState'    => $hostIdsGroupByState,
+            'ServiceIdsGroupByState' => $serviceIdsGroupByState
+        ];
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getMapForMapwidget($id) {
+        $query = $this->find()
+            ->contain([
+                'Mapitems',
+                'Maplines',
+                'Mapgadgets',
+                'Mapicons',
+                'Maptexts',
+                'Mapsummaryitems',
+                'Containers'
+            ])
+            ->where([
+                'Maps.id' => $id
+            ]);
+
+        $result = $query->first();
+        if (empty($result)) {
+            return [];
+        }
+        return $query->toArray();
     }
 }

@@ -94,4 +94,12 @@ class MapiconsTable extends Table {
 
         return $rules;
     }
+
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Mapicons.id' => $id]);
+    }
 }

@@ -68,24 +68,24 @@
                                             <div class="form-group">
                                                 <label class="col-xs-12 col-lg-2 control-label">
                                                     <button class="btn btn-xs width-25"
-                                                            ng-class="{ 'btn-primary': !editSharedContainers, 'btn-success': editSharedContainers }"
-                                                            ng-click="editSharedContainers = !editSharedContainers"
-                                                            name="editSharedContainers"
+                                                            ng-class="{ 'btn-primary': !post.editSharedContainers, 'btn-success': post.editSharedContainers }"
+                                                            ng-click="post.editSharedContainers = !post.editSharedContainers"
+                                                            name="post.editSharedContainers"
                                                             title="<?php echo __('Unlock for edit'); ?>">
                                                         <i class="fa fa-lock fa-lock"
-                                                           ng-class="{ 'fa-lock': !editSharedContainers, 'fa-unlock': editSharedContainers }"></i>
+                                                           ng-class="{ 'fa-lock': !post.editSharedContainers, 'fa-unlock': post.editSharedContainers }"></i>
                                                     </button>
                                                     <?php echo __('Shared containers'); ?>
                                                 </label>
                                                 <div class="col-xs-12 col-lg-10"
-                                                     ng-class="{ 'not-edit-area': !editSharedContainers}">
+                                                     ng-class="{ 'not-edit-area': !post.editSharedContainers}">
                                                     <select
                                                         id="SharedContainers"
                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                         class="form-control"
                                                         multiple
                                                         chosen="sharingContainers"
-                                                        ng-disabled="!editSharedContainers"
+                                                        ng-disabled="!post.editSharedContainers"
                                                         ng-options="container.key as container.value for container in sharingContainers"
                                                         ng-model="post.Host.hosts_to_containers_sharing._ids">
                                                     </select>
@@ -459,10 +459,12 @@
                     <div class="col-xs-12 margin-top-10 margin-bottom-10">
                         <div class="well formactions ">
                             <div class="pull-right">
-                                <input class="btn btn-primary" type="submit"
-                                       value="<?php echo __('Update details'); ?>">
-                                <a back-button fallback-state='HostsIndex'
-                                   class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                <button class="btn btn-primary" ng-click="editDetails()">
+                                    <?php echo __('Save details'); ?>
+                                </button>
+                                <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
+                                    <a ui-sref="HostsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
