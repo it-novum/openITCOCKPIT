@@ -486,6 +486,37 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param string $uuid
+     * @param bool $enableHydration
+     * @return array|Host
+     */
+    public function getHostsWithServicesByIdsForMapeditor($ids, $enableHydration = true) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->where([
+                'Hosts.id IN'    => $ids,
+                'Hosts.disabled' => 0,
+            ])
+            ->contain([
+                'HostsToContainersSharing',
+                'Services' => function (Query $q) {
+                    return $q->where([
+                        'Services.disabled' => 0
+                    ]);
+                }
+            ])
+            ->enableHydration($enableHydration);
+
+        $result = $query->all();
+        if (empty($result)) {
+            return [];
+        }
+        return $result->toArray();
+    }
+
+    /**
      * @param int $id
      * @return array|Host|null
      */
@@ -2261,6 +2292,82 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param array $ids
+     * @return array
+     */
+    public function getHostsForEditDetails($ids = []) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.hosttemplate_id',
+                'Hosts.container_id',
+                'Hosts.description',
+                'Hosts.host_url',
+                'Hosts.tags',
+                'Hosts.check_interval',
+                'Hosts.retry_interval',
+                'Hosts.max_check_attempts',
+                'Hosts.notification_interval',
+                'Hosts.notes',
+                'Hosts.priority'
+            ])
+            ->contain([
+                'HostsToContainersSharing' => [
+                    'fields' => [
+                        'HostsToContainers.host_id',
+                        'HostsToContainers.container_id'
+                    ]
+                ],
+                'Contacts'                 => [
+                    'fields' => [
+                        'ContactsToHosts.host_id',
+                        'Contacts.id'
+                    ]
+                ],
+                'Contactgroups'            => [
+                    'fields' => [
+                        'ContactgroupsToHosts.host_id',
+                        'Contactgroups.id'
+                    ]
+                ],
+                'Hosttemplates'            => [
+                    'fields' => [
+                        'Hosttemplates.id',
+                        'Hosttemplates.description',
+                        'Hosttemplates.host_url',
+                        'Hosttemplates.tags',
+                        'Hosttemplates.check_interval',
+                        'Hosttemplates.retry_interval',
+                        'Hosttemplates.max_check_attempts',
+                        'Hosttemplates.notification_interval',
+                        'Hosttemplates.notes',
+                        'Hosttemplates.priority'
+                    ],
+                    'Contacts'                 => [
+                        'fields' => [
+                            'ContactsToHosttemplates.hosttemplate_id',
+                            'Contacts.id'
+                        ]
+                    ],
+                    'Contactgroups'            => [
+                        'fields' => [
+                            'ContactgroupsToHosttemplates.hosttemplate_id',
+                            'Contactgroups.id'
+                        ]
+                    ],
+                ]
+            ])
+            ->where(['Hosts.id IN' => $ids])
+            ->order(['Hosts.id' => 'asc'])
+            ->disableHydration()
+            ->all();
+
+        debug($query->toArray());
+
+        return $this->formatResultAsCake2($query->toArray(), false);
+    }
+
+    /**
      * @param int $id
      * @return array
      */
@@ -2270,7 +2377,7 @@ class HostsTable extends Table {
                 'Hosts.id' => $id
             ])
             ->contain([
-                'HostsToContainersSharing'                =>
+                'HostsToContainersSharing'  =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)->select(['id']);
                     },
@@ -2361,5 +2468,80 @@ class HostsTable extends Table {
             'CheckCommand'             => (empty($host['CheckCommand'])) ? $hosttemplate['CheckCommand'] : $host['CheckCommand'],
         ];
         return $dataForChangelog;
+    }
+
+    /**
+     * @param $hoststatus
+     * @param bool $extended show details ('acknowledged', 'in downtime', ...)
+     * @return array
+     */
+    public function getHostStateSummary($hoststatus, $extended = true) {
+        $hostStateSummary = [
+            'state' => [
+                0 => 0,
+                1 => 0,
+                2 => 0
+            ],
+            'total' => 0
+        ];
+        if ($extended === true) {
+            $hostStateSummary = [
+                'state'        => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0
+                ],
+                'acknowledged' => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0
+                ],
+                'in_downtime'  => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0
+                ],
+                'not_handled'  => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0
+                ],
+                'passive'      => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0
+                ],
+                'total'        => 0
+            ];
+        }
+        if (empty($hoststatus)) {
+            return $hostStateSummary;
+        }
+        foreach ($hoststatus as $host) {
+            //Check for randome exit codes like 255...
+            if ($host['Hoststatus']['current_state'] > 2) {
+                $host['Hoststatus']['current_state'] = 2;
+            }
+
+            $hostStateSummary['state'][$host['Hoststatus']['current_state']]++;
+            if ($extended === true) {
+                if ($host['Hoststatus']['current_state'] > 0) {
+                    if ($host['Hoststatus']['problem_has_been_acknowledged'] > 0) {
+                        $hostStateSummary['acknowledged'][$host['Hoststatus']['current_state']]++;
+                    } else {
+                        $hostStateSummary['not_handled'][$host['Hoststatus']['current_state']]++;
+                    }
+                }
+
+                if ($host['Hoststatus']['scheduled_downtime_depth'] > 0) {
+                    $hostStateSummary['in_downtime'][$host['Hoststatus']['current_state']]++;
+                }
+                if ($host['Hoststatus']['active_checks_enabled'] == 0) {
+                    $hostStateSummary['passive'][$host['Hoststatus']['current_state']]++;
+                }
+            }
+            $hostStateSummary['total']++;
+        }
+        return $hostStateSummary;
     }
 }

@@ -22,18 +22,17 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\System;
+namespace itnovum\openITCOCKPIT\WebSockets;
 
 
 use App;
+use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use GearmanWorker;
 use itnovum\openITCOCKPIT\Core\PushNotificationClientRepository;
+use itnovum\openITCOCKPIT\Core\UUID;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
-use Shell;
-use UUID;
-
 
 /**
  * Class PushNotificationsMessageInterface
@@ -47,24 +46,9 @@ class PushNotificationsMessageInterface implements MessageComponentInterface {
     private $clients;
 
     /**
-     * @var Shell
-     */
-    private $CakeShell;
-
-    /**
-     * @var array
-     */
-    private $systemsettings = [];
-
-    /**
      * @var string
      */
     private $apiKey;
-
-    /**
-     * @var array
-     */
-    private $Config;
 
     /**
      * @var GearmanWorker
@@ -78,20 +62,15 @@ class PushNotificationsMessageInterface implements MessageComponentInterface {
 
     /**
      * PushNotificationsMessageInterface constructor.
-     * @param Shell $CakeShell
      */
-    public function __construct(Shell $CakeShell) {
-        $this->CakeShell = $CakeShell;
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $this->systemsettings = $Systemsettings->findAsArray();
+    public function __construct() {
+        /** @var App\Model\Table\SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $SystemsettingsTable->findAsArray();
 
-        $this->apiKey = $this->systemsettings['SUDO_SERVER']['SUDO_SERVER.API_KEY'];
+        $this->apiKey = $systemsettings['SUDO_SERVER']['SUDO_SERVER.API_KEY'];
 
         $this->clients = new \SplObjectStorage;
-
-        \Configure::load('gearman');
-        $this->Config = \Configure::read('gearman');
 
         $this->Worker = $this->getWorker();
 
@@ -102,8 +81,11 @@ class PushNotificationsMessageInterface implements MessageComponentInterface {
      * @return GearmanWorker
      */
     public function getWorker() {
-        $worker = new GearmanWorker();
-        $worker->addServer($this->Config['address'], $this->Config['port']);
+        Configure::load('gearman');
+        $config = Configure::read('gearman');
+
+        $worker = new \GearmanWorker();
+        $worker->addServer($config['address'], $config['port']);
 
         $worker->addFunction('oitc_push_notifications', [$this, 'processNotification']);
         $worker->addOptions(GEARMAN_WORKER_NON_BLOCKING);
@@ -116,7 +98,7 @@ class PushNotificationsMessageInterface implements MessageComponentInterface {
      */
     public function onOpen(ConnectionInterface $conn) {
         //debug($conn->resourceId);
-        $uuid = \itnovum\openITCOCKPIT\Core\UUID::v4();
+        $uuid = UUID::v4();
         $conn->uuid = $uuid;
         $this->clients->attach($conn);
         $conn->send(json_encode([

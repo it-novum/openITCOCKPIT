@@ -37,6 +37,8 @@ use Symfony\Component\Finder\Finder;
 class MapUploadsTable extends Table {
 
     public $supportedFileExtensions = ['jpg', 'gif', 'png', 'jpeg'];
+    public $TYPE_BACKGROUND = 1;
+    public $TYPE_ICON_SET = 2;
 
     /**
      * Initialize method
@@ -366,5 +368,52 @@ class MapUploadsTable extends Table {
                 break;
         }
         imagedestroy($destImg);
+    }
+
+    /**
+     * @return array
+     */
+    public function getIconSets() {
+        $basePath = APP . '../' . 'plugins' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'items';
+        $finder = new Finder();
+        $finder->directories()->in($basePath);
+
+        $allIconsets = $this->find()->where([
+            'MapUploads.upload_type' => $this->TYPE_ICON_SET
+        ])->all()->toArray();
+
+        $availableIconsets = [];
+        foreach ($allIconsets as $iconset) {
+            if (file_exists($basePath . DS . $iconset['saved_name'] . DS . 'ok.png')) {
+                $availableIconsets[$iconset['saved_name']] = ['MapUpload' => $iconset];
+            }
+        }
+
+        /** @var \Symfony\Component\Finder\SplFileInfo $folder */
+        foreach ($finder as $folder) {
+            $dirName = $folder->getFilename();
+
+            //Does icon set exists in database?
+            if (!isset($availableIconsets[$dirName])) {
+                if (file_exists($basePath . DS . $dirName . DS . 'ok.png')) {
+                    //Icon set is missing in database, add it
+                    $data = [
+                        'upload_type'  => $this->TYPE_ICON_SET,
+                        'upload_name'  => $dirName,
+                        'saved_name'   => $dirName,
+                        'user_id'      => null,
+                        'container_id' => 1
+                    ];
+                    $mapUploadEntity = $this->newEntity($data);
+                    $this->save($mapUploadEntity);
+                    if (!$mapUploadEntity->hasErrors()) {
+                        $data['id'] = $mapUploadEntity->id;
+                        $availableIconsets[$dirName] = $data;
+                    }
+
+                }
+            }
+        }
+        return array_values($availableIconsets);
     }
 }

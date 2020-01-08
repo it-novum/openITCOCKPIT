@@ -893,7 +893,7 @@ class HostsController extends AppController {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         if ($this->request->is('get')) {
-            $hosts = $HostsTable->getHostsForCopy(func_get_args());
+            $hosts = $HostsTable->getHostsForEditDetails(func_get_args());
 
             /** @var $ContainersTable ContainersTable */
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
