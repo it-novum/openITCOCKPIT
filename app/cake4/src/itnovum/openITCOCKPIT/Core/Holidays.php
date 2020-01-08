@@ -52,10 +52,15 @@ class Holidays {
             /** @var $holiday Holiday */
             $holidayName = $holiday->getName(); //en_US
             if (isset($holiday->translations[$localCode])) { //exists de_DE ?
-                $holidayName = $holiday->translations[$localCode] . ' / ' . $holidayName; //Local translation + english
+                if($holiday->translations[$localCode] !== $holidayName) { //No not translate english to english
+                    $holidayName = $holiday->translations[$localCode] . ' / ' . $holidayName; //Local translation + english
+                }
             }else{
-                if (isset($holiday->translations[strtolower($countryCode)])) { //exists de ?
-                    $holidayName = $holiday->translations[strtolower($countryCode)] . ' / ' . $holidayName; //Local translation + english
+                $shortLocalCode = explode('_', $localCode, 2);  //exists 'de' ? (remove _DE from de_DE) ?
+                if (isset($holiday->translations[strtolower($shortLocalCode[0])])) {
+                    if($holiday->translations[strtolower($shortLocalCode[0])] !== $holidayName) { //No not translate english to english
+                        $holidayName = $holiday->translations[strtolower($shortLocalCode[0])] . ' / ' . $holidayName; //Local translation + english
+                    }
                 }
             }
 
