@@ -12,6 +12,7 @@ use App\Model\Entity\Host;
 use App\Model\Entity\Service;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostgroupsTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use Cake\Datasource\EntityInterface;
@@ -22,11 +23,15 @@ use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\MapConditions;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
+use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
 use MapModule\Model\Entity\Map;
@@ -261,6 +266,60 @@ class MapsTable extends Table {
                 'Maps.id'                => $realMapId,
                 'Mapsummaryitems.map_id' => $mapItemMapId,
             ]);
+
+        $result = $query->first();
+        if (empty($result)) {
+            return [];
+        }
+        return $query->toArray();
+    }
+
+    /**
+     * @param $object_id
+     * @return array
+     */
+    public function getMapsummaryitemForMapsummary($object_id) {
+        $query = $this->find()
+            ->contain(['Containers'])
+            ->join([
+                'table'      => 'mapsummaryitems',
+                'type'       => 'INNER',
+                'alias'      => 'Mapsummaryitems',
+                'conditions' => 'Mapsummaryitems.object_id = Maps.id',
+            ])
+            ->select([
+                'Mapsummaryitems.object_id',
+            ])
+            ->where([
+                'Mapsummaryitems.object_id' => $object_id,
+            ])->enableAutoFields(true);
+
+        $result = $query->first();
+        if (empty($result)) {
+            return [];
+        }
+        return $query->toArray();
+    }
+
+    /**
+     * @param $object_id
+     * @return array
+     */
+    public function getMapitemForMapsummary($object_id) {
+        $query = $this->find()
+            ->contain(['Containers'])
+            ->join([
+                'table'      => 'mapitems',
+                'type'       => 'INNER',
+                'alias'      => 'Mapitems',
+                'conditions' => 'Mapitems.object_id = Maps.id',
+            ])
+            ->select([
+                'Mapitems.object_id',
+            ])
+            ->where([
+                'Mapitems.object_id' => $object_id,
+            ])->enableAutoFields(true);
 
         $result = $query->first();
         if (empty($result)) {
@@ -1326,6 +1385,417 @@ class MapsTable extends Table {
             'BitMaskHostState'    => $bitMaskHostState,
             'BitMaskServiceState' => $bitMaskServiceState,
             'Map'                 => $map
+        ];
+    }
+
+    /**
+     * @param HostsTable $HostsTable
+     * @param ServicesTable $ServicesTable
+     * @param HoststatusTableInterface $HoststatusTable
+     * @param ServicestatusTableInterface $ServicestatusTable
+     * @param array $hostgroup
+     * @return array
+     */
+    public function getHostgroupSummary(HostsTable $HostsTable, ServicesTable $ServicesTable, HoststatusTableInterface $HoststatusTable, ServicestatusTableInterface $ServicestatusTable, array $hostgroup) {
+        $HoststatusFields = new HoststatusFields(new DbBackend());
+        $HoststatusFields
+            ->currentState()
+            ->isHardstate()
+            ->output()
+            ->perfdata()
+            ->currentCheckAttempt()
+            ->maxCheckAttempts()
+            ->lastCheck()
+            ->nextCheck()
+            ->lastStateChange()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged();
+
+        $hostUuids = Hash::extract($hostgroup['hosts'], '{n}.uuid');
+
+        $hoststatusByUuids = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
+        $hostStateSummary = $HostsTable->getHostStateSummary($hoststatusByUuids, false);
+
+        $ServicestatusFieds = new ServicestatusFields(new DbBackend());
+        $ServicestatusFieds
+            ->currentState()
+            ->isHardstate()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged()
+            ->output();
+        $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
+
+
+        if (empty($hoststatusByUuids)) {
+            $hoststatusByUuids['Hoststatus'] = [];
+        }
+        $hoststatusResult = [];
+        $cumulatedHostState = -1;
+        $cumulatedServiceState = null;
+        $allServiceStatus = [];
+        $totalServiceStateSummary = [
+            'state' => [
+                0 => 0,
+                1 => 0,
+                2 => 0,
+                3 => 0,
+            ],
+            'total' => 0
+        ];
+
+        $hostIdsGroupByState = [
+            0 => [],
+            1 => [],
+            2 => []
+        ];
+
+        $serviceIdsGroupByState = [
+            0 => [],
+            1 => [],
+            2 => [],
+            3 => []
+        ];
+
+
+        foreach ($hostgroup['hosts'] as $host) {
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host(['Host' => $host]);
+            if (isset($hoststatusByUuids[$Host->getUuid()])) {
+                $Hoststatus = new Hoststatus(
+                    $hoststatusByUuids[$Host->getUuid()]['Hoststatus']
+                );
+                $hostIdsGroupByState[$Hoststatus->currentState()][] = $host['id'];
+
+                if ($Hoststatus->currentState() > $cumulatedHostState) {
+                    $cumulatedHostState = $Hoststatus->currentState();
+                }
+            } else {
+                $Hoststatus = new Hoststatus(
+                    ['Hoststatus' => []]
+                );
+            }
+            $services = $ServicesTable->find()
+                ->join([
+                    [
+                        'table'      => 'servicetemplates',
+                        'type'       => 'INNER',
+                        'alias'      => 'Servicetemplates',
+                        'conditions' => 'Servicetemplates.id = Services.servicetemplate_id',
+                    ],
+                ])
+                ->select([
+                    'Services.id',
+                    'Services.name',
+                    'Services.uuid',
+                    'Servicetemplates.name'
+                ])
+                ->where([
+                    'Services.host_id'  => $Host->getId(),
+                    'Services.disabled' => 0
+                ])->all()->toArray();
+
+            $servicesUuids = Hash::extract($services, '{n}.uuid');
+            $servicesIdsByUuid = Hash::combine($services, '{n}.uuid', '{n}.id');
+            $servicestatusResults = $ServicestatusTable->byUuid($servicesUuids, $ServicestatusFieds, $ServicestatusConditions);
+
+            $serviceIdsGroupByStatePerHost = [
+                0 => [],
+                1 => [],
+                2 => [],
+                3 => []
+            ];
+            foreach ($servicestatusResults as $serviceUuid => $servicestatusResult) {
+                $allServiceStatus[] = $servicestatusResult['Servicestatus']['current_state'];
+                $serviceIdsGroupByState[$servicestatusResult['Servicestatus']['current_state']][] = $servicesIdsByUuid[$serviceUuid];
+                $serviceIdsGroupByStatePerHost[$servicestatusResult['Servicestatus']['current_state']][] = $servicesIdsByUuid[$serviceUuid];
+            }
+
+            $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatusResults);
+            $serviceStateSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, false);
+
+            $hoststatusResult[] = [
+                'Host'                   => $Host->toArray(),
+                'Hoststatus'             => $Hoststatus->toArray(),
+                'ServiceSummary'         => $serviceStateSummary,
+                'ServiceIdsGroupByState' => $serviceIdsGroupByStatePerHost
+            ];
+
+            foreach ($serviceStateSummary['state'] as $state => $stateValue) {
+                $totalServiceStateSummary['state'][$state] += $stateValue;
+            }
+            $totalServiceStateSummary['total'] += $serviceStateSummary['total'];
+        }
+        $hoststatusResult = Hash::sort($hoststatusResult, '{s}.Hoststatus.currentState', 'desc');
+
+        $hostgroup = [
+            'id'                  => $hostgroup['id'],
+            'name'                => $hostgroup['Containers']['name'],
+            'description'         => $hostgroup['description'],
+            'HostSummary'         => $hostStateSummary,
+            'TotalServiceSummary' => $totalServiceStateSummary
+        ];
+
+        if ($cumulatedHostState > 0) {
+            $CumulatedHostStatus = new Hoststatus([
+                'current_state' => $cumulatedHostState
+            ]);
+            $CumulatedHumanState = $CumulatedHostStatus->toArray()['humanState'];
+        } else {
+            if (!empty($allServiceStatus)) {
+                $cumulatedServiceState = (int)max($allServiceStatus);
+            }
+            $CumulatedServiceStatus = new Servicestatus([
+                'current_state' => $cumulatedServiceState
+            ]);
+            $CumulatedHumanState = $CumulatedServiceStatus->toArray()['humanState'];
+        }
+        return [
+            'Hostgroup'              => $hostgroup,
+            'Hosts'                  => $hoststatusResult,
+            'CumulatedHumanState'    => $CumulatedHumanState,
+            'HostIdsGroupByState'    => $hostIdsGroupByState,
+            'ServiceIdsGroupByState' => $serviceIdsGroupByState
+        ];
+    }
+
+    /**
+     * @param ServicesTable $ServicesTable
+     * @param HoststatusTableInterface $HoststatusTable
+     * @param ServicestatusTableInterface $Servicestatus
+     * @param array $host
+     * @param UserTime $UserTime
+     * @return array
+     */
+    public function getHostSummary(ServicesTable $ServicesTable, HoststatusTableInterface $HoststatusTable, ServicestatusTableInterface $Servicestatus, array $host, UserTime $UserTime) {
+        $HoststatusFields = new HoststatusFields(new DbBackend());
+        $HoststatusFields
+            ->currentState()
+            ->isHardstate()
+            ->output()
+            ->perfdata()
+            ->currentCheckAttempt()
+            ->maxCheckAttempts()
+            ->lastCheck()
+            ->nextCheck()
+            ->lastStateChange()
+            ->lastHardStateChange()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged();
+
+        $hoststatus = $HoststatusTable->byUuid($host['uuid'], $HoststatusFields);
+        if (empty($hoststatus)) {
+            $hoststatus['Hoststatus'] = [];
+        }
+
+        $hoststatus = new Hoststatus($hoststatus['Hoststatus'], $UserTime);
+
+        $services = $ServicesTable->find()
+            ->join([
+                [
+                    'table'      => 'servicetemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicetemplates',
+                    'conditions' => 'Servicetemplates.id = Services.servicetemplate_id',
+                ],
+            ])
+            ->select([
+                'Services.id',
+                'Services.name',
+                'Services.uuid',
+                'Servicetemplates.name'
+            ])
+            ->where([
+                'Services.host_id'  => $host['id'],
+                'Services.disabled' => 0
+            ])->all()->toArray();
+
+        $ServicestatusFieds = new ServicestatusFields(new DbBackend());
+        $ServicestatusFieds
+            ->currentState()
+            ->isHardstate()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged()
+            ->output();
+        $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
+
+        $servicesUuids = Hash::extract($services, '{n}.uuid');
+        $servicestatusResults = $Servicestatus->byUuid($servicesUuids, $ServicestatusFieds, $ServicestatusConditions);
+
+        $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatusResults);
+        $ServiceSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, false);
+        $serviceIdsGroupByState = [
+            0 => [],
+            1 => [],
+            2 => [],
+            3 => []
+        ];
+        $servicesResult = [];
+        foreach ($services as $service) {
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
+            if (isset($servicestatusResults[$Service->getUuid()])) {
+                $Servicestatus = new Servicestatus(
+                    $servicestatusResults[$Service->getUuid()]['Servicestatus']
+                );
+                $serviceIdsGroupByState[$Servicestatus->currentState()][] = $service['id'];
+            } else {
+                $Servicestatus = new Servicestatus(
+                    ['Servicestatus' => []]
+                );
+            }
+
+            $servicesResult[] = [
+                'Service'       => $Service->toArray(),
+                'Servicestatus' => $Servicestatus->toArray()
+            ];
+        }
+        $servicesResult = Hash::sort($servicesResult, '{s}.Servicestatus.currentState', 'desc');
+
+        $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
+        return [
+            'Host'                   => $Host->toArray(),
+            'Hoststatus'             => $hoststatus->toArray(),
+            'Services'               => $servicesResult,
+            'ServiceSummary'         => $ServiceSummary,
+            'ServiceIdsGroupByState' => $serviceIdsGroupByState
+        ];
+    }
+
+    /**
+     * @param ServicesTable $ServicesTable
+     * @param HoststatusTableInterface $HoststatusTable
+     * @param ServicestatusTableInterface $Servicestatus
+     * @param array $service
+     * @param UserTime $UserTime
+     * @return array
+     */
+    public function getServiceSummary(ServicesTable $ServicesTable, HoststatusTableInterface $HoststatusTable, ServicestatusTableInterface $Servicestatus, array $service, UserTime $UserTime) {
+        $HoststatusFields = new HoststatusFields(new DbBackend());
+        $HoststatusFields
+            ->currentState()
+            ->isHardstate()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged();
+
+        $hoststatus = $HoststatusTable->byUuid($service['host']['uuid'], $HoststatusFields);
+        if (empty($hoststatus)) {
+            $hoststatus['Hoststatus'] = [];
+        }
+
+        $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(
+            $hoststatus['Hoststatus'],
+            $UserTime
+        );
+
+        $ServicestatusFieds = new ServicestatusFields(new DbBackend());
+        $ServicestatusFieds
+            ->currentState()
+            ->isHardstate()
+            ->output()
+            ->perfdata()
+            ->currentCheckAttempt()
+            ->maxCheckAttempts()
+            ->lastCheck()
+            ->nextCheck()
+            ->lastStateChange()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged();
+
+        $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
+
+        $Servicestatus = $Servicestatus->byUuid($service['uuid'], $ServicestatusFieds, $ServicestatusConditions);
+        $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
+        if (!empty($Servicestatus)) {
+            $Servicestatus = new Servicestatus(
+                $Servicestatus['Servicestatus'],
+                $UserTime
+            );
+        } else {
+            $Servicestatus = new Servicestatus(
+                ['Servicestatus' => []]
+            );
+        }
+        $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
+
+        return [
+            'Host'          => $Host->toArray(),
+            'Hoststatus'    => $hoststatus->toArray(),
+            'Service'       => $Service->toArray(),
+            'Servicestatus' => $Servicestatus->toArray()
+        ];
+    }
+
+    /**
+     * @param ServicesTable $ServicesTable
+     * @param ServicestatusTableInterface $ServicestatusTable
+     * @param array $servicegroup
+     * @return array
+     */
+    public function getServicegroupSummary(ServicesTable $ServicesTable, ServicestatusTableInterface $ServicestatusTable, array $servicegroup) {
+        $ServicestatusFields = new ServicestatusFields(new DbBackend());
+        $ServicestatusFields
+            ->currentState()
+            ->isHardstate()
+            ->output()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged();
+
+        $serviceUuids = Hash::extract($servicegroup['services'], '{n}.uuid');
+        $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
+
+        $servicestatusResults = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields, $ServicestatusConditions);
+        $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatusResults);
+        $serviceStateSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, false);
+        $serviceIdsGroupByState = [
+            0 => [],
+            1 => [],
+            2 => [],
+            3 => []
+        ];
+        $cumulatedServiceState = null;
+        $servicesResult = [];
+        foreach ($servicegroup['services'] as $service) {
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service([
+                'Service'         => $service,
+                'Servicetemplate' => $service['servicetemplate']
+            ]);
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['host']);
+
+            if (isset($servicestatusResults[$Service->getUuid()])) {
+                $Servicestatus = new Servicestatus(
+                    $servicestatusResults[$Service->getUuid()]['Servicestatus']
+                );
+                $serviceIdsGroupByState[$Servicestatus->currentState()][] = $service['id'];
+
+            } else {
+                $Servicestatus = new Servicestatus(
+                    ['Servicestatus' => []]
+                );
+            }
+            $servicesResult[] = [
+                'Service'       => $Service->toArray(),
+                'Servicestatus' => $Servicestatus->toArray(),
+                'Host'          => $Host->toArray()
+            ];
+        }
+        $servicesResult = Hash::sort($servicesResult, '{s}.Servicestatus.currentState', 'desc');
+        if (!empty($servicestatusResults)) {
+            $cumulatedServiceState = Hash::apply($servicestatusResults, '{s}.Servicestatus.current_state', 'max');
+        }
+        $CumulatedServiceStatus = new Servicestatus([
+            'current_state' => $cumulatedServiceState
+        ]);
+
+        $servicegroup = [
+            'id'          => $servicegroup['id'],
+            'name'        => $servicegroup['container']['name'],
+            'description' => $servicegroup['description']
+        ];
+
+        return [
+            'Servicegroup'           => $servicegroup,
+            'ServiceSummary'         => $serviceStateSummary,
+            'Services'               => $servicesResult,
+            'CumulatedHumanState'    => $CumulatedServiceStatus->toArray()['humanState'],
+            'ServiceIdsGroupByState' => $serviceIdsGroupByState
         ];
     }
 }

@@ -271,7 +271,7 @@ class HostAndServiceSummaryIcon {
             $this->center - ($this->sizeInnerCircle / 2) + $this->border * 2,
             $this->center + $this->sizeInnerCircle / 10,
             $white,
-            WWW_ROOT . "/smartadmin/fonts/fontawesome-webfont.ttf",
+            WWW_ROOT . "/node_modules/font-awesome/fonts/fontawesome-webfont.ttf",
             '&#xf108;'
         );
         ImageTTFText(
@@ -281,7 +281,7 @@ class HostAndServiceSummaryIcon {
             $this->center - $this->sizeOuterCircle / 2 + $this->border * 2,
             $this->center + $this->sizeInnerCircle / 10,
             $white,
-            WWW_ROOT . "/smartadmin/fonts/fontawesome-webfont.ttf",
+            WWW_ROOT . "/node_modules/font-awesome/fonts/fontawesome-webfont.ttf",
             '&#xf013;'
         );
     }
