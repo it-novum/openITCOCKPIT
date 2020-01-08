@@ -155,7 +155,7 @@ class Holidays {
             'ES' => 'es_ES',
             'SE' => 'sv_SE',
             'CH' => 'de_CH',
-            'UA' => 'ru_UA',
+            'UA' => 'uk_UA',
             'GB' => 'en_GB',
             'US' => 'en_US'
         ];
