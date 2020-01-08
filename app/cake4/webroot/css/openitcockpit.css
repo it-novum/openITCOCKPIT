@@ -213,13 +213,19 @@ div.custom-control-right .custom-control-label::after {
     max-width: 14%;
 }
 
+.fc-button-primary {
+    background-color: #4285F4 !important;
+    border-color: #317ABF !important;
+    color: #FFF;
+    padding: 0px 4px !important;
+}
 
 .fc-day-number {
     float: left !important;
 }
 
 .fc-holidays-button {
-    background-color: #5cb85c !important;
+    background-color: #00C851 !important;
     border-color: #449D44 !important;
     color: #ffffff;
 }
@@ -237,7 +243,7 @@ div.custom-control-right .custom-control-label::after {
 
 .fc-deletemonthevents-button,
 .fc-deleteallevents-button {
-    background-color: #d9534f !important;
+    background-color: #CC0000 !important;
     border-color: #a94442 !important;
 }
 
@@ -265,6 +271,10 @@ div.custom-control-right .custom-control-label::after {
     opacity: 1;
 }
 
-fc-left .dropdown {
+.fc-left .dropdown {
     display: inline-block;
+}
+
+.fc-title{
+    color:#ffffff;
 }
