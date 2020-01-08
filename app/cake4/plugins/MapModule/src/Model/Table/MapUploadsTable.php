@@ -163,7 +163,7 @@ class MapUploadsTable extends Table {
      * @return array
      */
     public function getIcons() {
-        $basePath = APP . '../' . 'plugins' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'items';
+        $basePath = APP . '../' . 'plugins' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
         if (!is_dir($basePath)) {
             return [];
         }
@@ -384,8 +384,8 @@ class MapUploadsTable extends Table {
 
         $availableIconsets = [];
         foreach ($allIconsets as $iconset) {
-            if (file_exists($basePath . DS . $iconset['MapUpload']['saved_name'] . DS . 'ok.png')) {
-                $availableIconsets[$iconset['MapUpload']['saved_name']] = $iconset;
+            if (file_exists($basePath . DS . $iconset['saved_name'] . DS . 'ok.png')) {
+                $availableIconsets[$iconset['saved_name']] = ['MapUpload' => $iconset];
             }
         }
 

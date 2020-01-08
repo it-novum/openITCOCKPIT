@@ -51,12 +51,17 @@ class Holidays {
         foreach ($holidays as $holiday) {
             /** @var $holiday Holiday */
             $holidayName = $holiday->getName(); //en_US
-            if (isset($holiday->translations[$localCode])) {
+            if (isset($holiday->translations[$localCode])) { //exists de_DE ?
                 $holidayName = $holiday->translations[$localCode] . ' / ' . $holidayName; //Local translation + english
+            }else{
+                if (isset($holiday->translations[strtolower($countryCode)])) { //exists de ?
+                    $holidayName = $holiday->translations[strtolower($countryCode)] . ' / ' . $holidayName; //Local translation + english
+                }
             }
 
+
             $filteredHolidays[date('Y-m-d', $holiday->getTimestamp())] = [
-                'start'           => date('Y-m-d', $holiday->getTimestamp()),
+                'start'           => $holiday->format('Y-m-d'),
                 'title'           => $holidayName,
                 'default_holiday' => true,
                 'className'       => 'bg-color-magenta'

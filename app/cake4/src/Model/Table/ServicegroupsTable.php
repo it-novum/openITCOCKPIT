@@ -425,14 +425,22 @@ class ServicegroupsTable extends Table {
      * @param $id
      * @return array
      */
-    public function getServicegroupByIdForMapeditor($id) {
+    public function getServicegroupByIdForMapeditor($id, $MY_RIGHTS = []) {
+        if (!is_array($MY_RIGHTS)) {
+            $MY_RIGHTS = [$MY_RIGHTS];
+        }
+
         $query = $this->find()
             ->contain([
                 'Containers' => function (Query $q) {
-                    return $q->select([
+                    $q->select([
                         'Containers.id',
                         'Containers.name'
                     ]);
+                    if (!empty($MY_RIGHTS)) {
+                        return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+                    }
+                    return $q;
                 },
                 'Services'   => function (Query $q) {
                     return $q->contain([
@@ -469,7 +477,7 @@ class ServicegroupsTable extends Table {
                 'Servicegroups.description'
             ]);
 
-        $result = $query->all();
+        $result = $query->first();
         if (empty($result)) {
             return [];
         }

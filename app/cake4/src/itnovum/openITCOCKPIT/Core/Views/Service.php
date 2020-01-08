@@ -77,6 +77,8 @@ class Service {
      */
     private $disabled = false;
 
+    private $serviceType = GENERIC_SERVICE;
+
     /**
      * Service constructor.
      * @param $service
@@ -167,6 +169,9 @@ class Service {
             $this->disabled = (bool)$service['Service']['disabled'];
         }
 
+        if (isset($service['Service']['service_type'])) {
+            $this->serviceType = (int)$service['Service']['service_type'];
+        }
     }
 
     public static function fromServiceNotification($serviceNotification) {
@@ -239,6 +244,13 @@ class Service {
      */
     public function isDisabled() {
         return $this->disabled;
+    }
+
+    /**
+     * @return int
+     */
+    public function getServiceType(){
+        return $this->serviceType;
     }
 
     /**

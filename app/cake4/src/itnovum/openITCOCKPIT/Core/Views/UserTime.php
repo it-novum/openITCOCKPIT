@@ -71,6 +71,9 @@ class UserTime {
         if (!is_numeric($t_time)) {
             $t_time = strtotime($t_time);
         }
+        if (!is_numeric($t_time)) {
+            $t_time = 0;
+        }
 
         $Time = new Time($t_time);
         $Time->setTimezone(new \DateTimeZone($this->timezone));
@@ -86,6 +89,9 @@ class UserTime {
     public function customFormat($format, $t_time) {
         if (!is_numeric($t_time)) {
             $t_time = strtotime($t_time);
+        }
+        if (!is_numeric($t_time)) {
+            $t_time = 0;
         }
 
         $Time = new Time($t_time);

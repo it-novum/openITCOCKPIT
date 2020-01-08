@@ -58,9 +58,31 @@ app.post('/AreaChart', function(request, response){
 
     var useTwoYAxes = false;
     var yAxes = [{}];
+    ds = request.body.data[0].datasource;
+    if(ds.min !== null && ds.max !== null){
+        var stepSize = null;
+        var min = parseInt(ds.min, 10);
+        var max = parseInt(ds.max, 10);
+        if(min >= 0 && max <= 10){
+            //Fix larger steps for EVC
+            stepSize = 1;
+        }
+
+        yAxes = [{
+            ticks: {
+                beginAtZero: min === 0,
+                min: min,
+                max: max,
+                stepSize: stepSize
+            }
+        }];
+    }
+
     if(request.body.data.length === 2){
         useTwoYAxes = true;
-        yAxes = [{
+        var ds;
+
+        var y1 = {
             id: 'A',
             type: 'linear',
             position: 'left',
@@ -68,7 +90,18 @@ app.post('/AreaChart', function(request, response){
                 display: true,
                 labelString: request.body.data[0].datasource.label
             }
-        }, {
+        };
+
+        ds = request.body.data[0].datasource;
+        if(ds.min !== null && ds.max !== null){
+            y1.ticks = {
+                beginAtZero: parseInt(ds.min, 10) === 0,
+                min: parseInt(ds.min, 10),
+                max: parseInt(ds.max, 10)
+            };
+        }
+
+        var y2 = {
             id: 'B',
             type: 'linear',
             position: 'right',
@@ -79,7 +112,18 @@ app.post('/AreaChart', function(request, response){
             gridLines: {
                 display: false
             }
-        }];
+        };
+
+        ds = request.body.data[1].datasource;
+        if(ds.min !== null && ds.max !== null){
+            y2.ticks = {
+                beginAtZero: parseInt(ds.min, 10) === 0,
+                min: parseInt(ds.min, 10),
+                max: parseInt(ds.max, 10)
+            };
+        }
+
+        yAxes = [y1, y2];
     }
 
     for(var i in request.body.data){
@@ -157,6 +201,7 @@ app.post('/AreaChart', function(request, response){
     //console.log(util.inspect(chartJsOptions, false, null, true /* enable colors */));
     //console.log("\n");
 
+    //console.log(JSON.stringify(chartJsOptions));
 
     var chartNode = new ChartjsNode(request.body.settings.width, request.body.settings.height);
     return chartNode.drawChart(chartJsOptions)

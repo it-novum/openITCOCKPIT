@@ -41,6 +41,7 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\MapConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -532,7 +533,7 @@ class MapeditorsController extends AppController {
                 /** @var ServicesTable $ServicesTable */
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-                $service = $ServicesTable->getServiceById($objectId);
+                $service = $ServicesTable->getServiceById($objectId)->toArray();
 
                 if (!empty($service)) {
                     if ($this->hasRootPrivileges === false) {
@@ -582,9 +583,9 @@ class MapeditorsController extends AppController {
 
                 $servicegroup = $ServicegroupsTable->getServicegroupByIdForMapeditor($objectId);
 
-                if (!empty($servicegroup) && isset($servicegroup[0])) {
+                if (!empty($servicegroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($servicegroup[0]->toArray(), 'services.{n}.host.hosts_to_containers_sharing.{n}.id'), false)) {
+                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'services.{n}.host.hosts_to_containers_sharing.{n}.id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -593,7 +594,7 @@ class MapeditorsController extends AppController {
                     $properties = $MapsTable->getServicegroupInformationForSummaryIcon(
                         $HoststatusTable,
                         $ServicestatusTable,
-                        $servicegroup[0]->toArray()
+                        $servicegroup
                     );
                     break;
                 }
@@ -831,15 +832,27 @@ class MapeditorsController extends AppController {
         if ($objectId <= 0) {
             throw new \RuntimeException('Invalid object id');
         }
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
+        /** @var MapsTable $MapsTable */
+        $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
         switch ($this->request->getQuery('type')) {
             case 'host':
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
                 $host = $HostsTable->get($objectId, [
                     'contain' => [
-                        'Containers'
+                        'HostsToContainersSharing'
                     ],
                     'fields'  => [
                         'Hosts.id',
@@ -849,35 +862,18 @@ class MapeditorsController extends AppController {
                         'Hosts.disabled'
                     ],
                 ])->toArray();
-                /*
-                $host = $this->Host->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container'
-                    ],
-                    'fields'     => [
-                        'Host.id',
-                        'Host.uuid',
-                        'Host.name',
-                        'Host.description',
-                        'Host.disabled'
-                    ],
-                    'conditions' => [
-                        'Host.id' => $objectId
-                    ]
-                ]);
-                */
+
                 if (!empty($host)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($host, 'Containers.{n}.HostsToContainers.container_id'), false)) {
+                        if (!$this->allowedByContainerId(Hash::extract($host, 'hosts_to_containers_sharing.{n}.id'), false)) {
                             $this->render403();
                             return;
                         }
                     }
-                    $summary = $this->Map->getHostSummary(
-                        $this->Service,
-                        $this->Hoststatus,
-                        $this->Servicestatus,
+                    $summary = $MapsTable->getHostSummary(
+                        $ServicesTable,
+                        $HoststatusTable,
+                        $ServicestatusTable,
                         $host,
                         $UserTime
                     );
@@ -889,11 +885,12 @@ class MapeditorsController extends AppController {
 
                 throw new NotFoundException('Host not found!');
                 return;
+
                 break;
             case 'service':
                 /** @var ServicesTable $ServicesTable */
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-                $services = $ServicesTable->get($objectId, [
+                $service = $ServicesTable->get($objectId, [
                     'contain' => [
                         'Hosts'            => [
                             'fields' => [
@@ -901,7 +898,7 @@ class MapeditorsController extends AppController {
                                 'Hosts.uuid',
                                 'Hosts.name'
                             ],
-                            'Containers',
+                            'HostsToContainersSharing',
                         ],
                         'Servicetemplates' => [
                             'fields' => [
@@ -917,48 +914,18 @@ class MapeditorsController extends AppController {
                         'Services.disabled'
                     ],
                 ])->toArray();
-                /*
-                $service = $this->Service->find('first', [
-                    'recursive'  => -1,
-                    'fields'     => [
-                        'Service.id',
-                        'Service.name',
-                        'Service.uuid',
-                        'Service.description',
-                        'Service.disabled'
-                    ],
-                    'contain'    => [
-                        'Host'            => [
-                            'fields' => [
-                                'Host.id',
-                                'Host.uuid',
-                                'Host.name'
-                            ],
-                            'Container',
-                        ],
-                        'Servicetemplate' => [
-                            'fields' => [
-                                'Servicetemplate.name'
-                            ]
-                        ]
-                    ],
-                    'conditions' => [
-                        'Service.id' => $objectId
-                    ],
-                ]);
-                */
 
                 if (!empty($service)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($service, 'Hosts.Containers.{n}.HostsToContainers.container_id'), false)) {
+                        if (!$this->allowedByContainerId(Hash::extract($service, 'host.hosts_to_containers_sharing.{n}.id'), false)) {
                             $this->render403();
                             return;
                         }
                     }
-                    $summary = $this->Map->getServiceSummary(
-                        $this->Service,
-                        $this->Hoststatus,
-                        $this->Servicestatus,
+                    $summary = $MapsTable->getServiceSummary(
+                        $ServicesTable,
+                        $HoststatusTable,
+                        $ServicestatusTable,
                         $service,
                         $UserTime
                     );
@@ -966,8 +933,8 @@ class MapeditorsController extends AppController {
                     $this->set('summary', $summary);
                     $this->viewBuilder()->setOption('serialize', ['service', 'summary']);
                     return;
-
                 }
+
                 throw new NotFoundException('Service not found!');
                 return;
 
@@ -981,16 +948,19 @@ class MapeditorsController extends AppController {
                     /** @var HostgroupsTable $HostgroupsTable */
                     $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
                     $hostgroup = $HostgroupsTable->getHostsByHostgroupForMaps($objectId, $MY_RIGHTS);
+
                     if ($this->hasRootPrivileges === false) {
                         if (!$this->allowedByContainerId(
-                            array_unique(Hash::extract($hostgroup, 'hosts.{n}.hosts_to_containers_sharing.id'), false))) {
+                            array_unique(Hash::extract($hostgroup, 'hosts.{n}.hosts_to_containers_sharing.{n}.id'), false))) {
                             $this->render403();
                             return;
                         }
                     }
-                    $summary = $this->Map->getHostgroupSummary(
-                        $this->Host,
-                        $this->Service,
+                    $summary = $MapsTable->getHostgroupSummary(
+                        $HostsTable,
+                        $ServicesTable,
+                        $HoststatusTable,
+                        $ServicestatusTable,
                         $hostgroup
                     );
                     $this->set('type', 'hostgroup');
@@ -1002,100 +972,21 @@ class MapeditorsController extends AppController {
                 }
                 break;
             case 'servicegroup':
-                /** @var HostgroupsTable $HostgroupsTable */
+                /** @var ServicegroupsTable $ServicegroupsTable */
                 $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
-
-                $query = [
-                    'contain' => [
-                        'Containers' => [
-                            'fields' => [
-                                'Containers.name'
-                            ]
-                        ],
-                        'Services'   => [
-                            'Hosts'            => [
-                                'Containers',
-                                'conditions' => [
-                                    'Hosts.disabled' => 0
-                                ]
-                            ],
-                            'Servicetemplates' => [
-                                'fields' => [
-                                    'Servicetemplates.id',
-                                    'Servicetemplates.name'
-                                ]
-                            ],
-                            'conditions'       => [
-                                'Services.disabled' => 0
-                            ],
-                            'fields'           => [
-                                'Services.id',
-                                'Services.uuid',
-                                'Services.name'
-                            ]
-                        ]
-                    ],
-                    'fields'  => [
-                        'Servicegroups.description'
-                    ],
-                ];
-                if (!$this->hasRootPrivileges) {
-                    $query['conditions']['Containers.parent_id'] = $this->MY_RIGHTS;
-                }
-                $servicegroup = $ServicegroupsTable->get($objectId, $query)->toArray();
-                /*
-                $query = [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container' => [
-                            'fields' => [
-                                'Container.name'
-                            ]
-                        ],
-                        'Service'   => [
-                            'Host'            => [
-                                'Container',
-                                'conditions' => [
-                                    'Host.disabled' => 0
-                                ]
-                            ],
-                            'Servicetemplate' => [
-                                'fields' => [
-                                    'Servicetemplate.id',
-                                    'Servicetemplate.name'
-                                ]
-                            ],
-                            'conditions'      => [
-                                'Service.disabled' => 0
-                            ],
-                            'fields'          => [
-                                'Service.id',
-                                'Service.uuid',
-                                'Service.name'
-                            ]
-                        ]
-                    ],
-                    'fields'     => [
-                        'Servicegroup.description'
-                    ],
-                    'conditions' => [
-                        'Servicegroup.id' => $objectId
-                    ]
-                ];
-                $servicegroup = $this->Servicegroup->find('first', $query);
-                */
+                $servicegroup = $ServicegroupsTable->getServicegroupByIdForMapeditor($objectId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
 
                 if (!empty($servicegroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(array_unique(Hash::extract($servicegroup, 'Services.{n}.Hosts.Containers.{n}.HostsToContainers.container_id')), false)) {
+                        if (!$this->allowedByContainerId(array_unique(Hash::extract($servicegroup, 'services.{n}.host.hosts_to_containers_sharing.{n}.id')), false)) {
                             $this->render403();
                             return;
                         }
                     }
 
-                    $summary = $this->Map->getServicegroupSummary(
-                        $this->Service,
-                        $this->Servicestatus,
+                    $summary = $MapsTable->getServicegroupSummary(
+                        $ServicesTable,
+                        $ServicestatusTable,
                         $servicegroup
                     );
                     $this->set('type', 'servicegroup');
@@ -1108,71 +999,28 @@ class MapeditorsController extends AppController {
                 return;
                 break;
             case 'map':
+                //debug("todo: 1002 case map"); die();
+                /** @var MapsummaryitemsTable $MapsummaryitemsTable */
+                $MapsummaryitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapsummaryitems');
+
                 if ($summaryStateItem) {
-                    $map = $this->Map->find('first', [
-                        'recursive'  => -1,
-                        'contain'    => [
-                            'Container'
-                        ],
-                        'joins'      => [
-                            [
-                                'table'      => 'mapsummaryitems',
-                                'type'       => 'INNER',
-                                'alias'      => 'Mapsummaryitem',
-                                'conditions' => 'Mapsummaryitem.map_id = Map.id',
-                            ],
-                        ],
-                        'conditions' => [
-                            'Mapsummaryitem.object_id' => $objectId
-                        ],
-                        'fields'     => [
-                            'Map.*',
-                            'Mapsummaryitem.object_id'
-                        ]
-                    ]);
+                    $map = $MapsTable->getMapsummaryitemForMapsummary($objectId);
                 } else {
-                    $map = $this->Map->find('first', [
-                        'recursive'  => -1,
-                        'contain'    => [
-                            'Container'
-                        ],
-                        'joins'      => [
-                            [
-                                'table'      => 'mapitems',
-                                'type'       => 'INNER',
-                                'alias'      => 'Mapitem',
-                                'conditions' => 'Mapitem.object_id = Map.id',
-                            ],
-                        ],
-                        'conditions' => [
-                            'Mapitem.object_id' => $objectId
-                        ],
-                        'fields'     => [
-                            'Map.*',
-                            'Mapitem.object_id'
-                        ]
-                    ]);
+                    $map = $MapsTable->getMapitemForMapsummary($objectId);
                 }
 
-                if (!empty($map)) {
+                if (!empty($map) && isset($map[0])) {
+                    $map = $map[0]->toArray();
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($map, 'Container.{n}.MapsToContainer.container_id'), false)) {
+                        if (!$this->allowedByContainerId(Hash::extract($map, 'containers.{n}._joinData.id'), false)) {
                             $allowView = false;
                             break;
                         }
                     }
+
                     //fetch all dependent map items after permissions check
-                    $mapSummaryItemIdToResolve = $this->Mapsummaryitem->find('first', [
-                        'recursive'  => -1,
-                        'conditions' => [
-                            'Mapsummaryitem.object_id' => $objectId,
-                            'Mapsummaryitem.type'      => 'map',
-                            'Mapsummaryitem.map_id'    => $map['Map']['id']
-                        ],
-                        'fields'     => [
-                            'Mapsummaryitem.object_id'
-                        ]
-                    ]);
+                    $mapSummaryItemIdToResolve = $MapsummaryitemsTable->getMapsummaryitemsForMaps($objectId, $map['id']);
+                    debug($mapSummaryItemIdToResolve);die();
                     if (!empty($mapSummaryItemIdToResolve)) {
                         $query = [
                             'recursive'  => -1,
@@ -1190,7 +1038,7 @@ class MapeditorsController extends AppController {
                             'conditions' => [
                                 'Mapsummaryitem.type' => 'map',
                                 'NOT'                 => [
-                                    'Mapsummaryitem.map_id' => $map['Map']['id']
+                                    'Mapsummaryitem.map_id' => $map[0]->toArray()['id']
                                 ]
                             ],
                             'fields'     => [
