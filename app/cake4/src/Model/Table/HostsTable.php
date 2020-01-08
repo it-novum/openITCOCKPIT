@@ -517,6 +517,58 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param string $uuid
+     * @param bool $enableHydration
+     * @return array|Host
+     */
+    public function getHostsWithServicesByIdsForMapsumary($ids, $enableHydration = true) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->where([
+                'Hosts.id IN'    => $ids,
+                'Hosts.disabled' => 0,
+            ])
+            ->contain([
+                'HostsToContainersSharing',
+                'Services' => function (Query $q) {
+                    return $q
+                        ->join([
+                            [
+                                'table'      => 'servicetemplates',
+                                'type'       => 'INNER',
+                                'alias'      => 'Servicetemplates',
+                                'conditions' => 'Servicetemplates.id = Services.servicetemplate_id',
+                            ],
+                        ])
+                        ->select([
+                            'Services.id',
+                            'Services.name',
+                            'Services.uuid',
+                            'Services.host_id',
+                            'Servicetemplates.name'
+                        ])
+                        ->where([
+                            'Services.disabled' => 0
+                        ]);
+                }
+            ])
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.name'
+            ])
+            ->enableHydration($enableHydration);
+
+        $result = $query->all();
+        if (empty($result)) {
+            return [];
+        }
+        return $result->toArray();
+    }
+
+    /**
      * @param int $id
      * @return array|Host|null
      */
@@ -2331,7 +2383,7 @@ class HostsTable extends Table {
                     ]
                 ],
                 'Hosttemplates'            => [
-                    'fields' => [
+                    'fields'        => [
                         'Hosttemplates.id',
                         'Hosttemplates.description',
                         'Hosttemplates.host_url',
@@ -2343,13 +2395,13 @@ class HostsTable extends Table {
                         'Hosttemplates.notes',
                         'Hosttemplates.priority'
                     ],
-                    'Contacts'                 => [
+                    'Contacts'      => [
                         'fields' => [
                             'ContactsToHosttemplates.hosttemplate_id',
                             'Contacts.id'
                         ]
                     ],
-                    'Contactgroups'            => [
+                    'Contactgroups' => [
                         'fields' => [
                             'ContactgroupsToHosttemplates.hosttemplate_id',
                             'Contactgroups.id'
@@ -2362,9 +2414,11 @@ class HostsTable extends Table {
             ->disableHydration()
             ->all();
 
-        debug($query->toArray());
-
-        return $this->formatResultAsCake2($query->toArray(), false);
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        return $result;
     }
 
     /**

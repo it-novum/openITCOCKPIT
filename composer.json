@@ -10,6 +10,9 @@
         },
     "require": {
         "ext-gd": "*",
-        "ext-http": "*"
+        "ext-http": "*",
+        "ext-zip": "*",
+        "ext-exif": "*",
+        "ext-json": "*"
     }
 }

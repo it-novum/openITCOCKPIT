@@ -34,23 +34,20 @@ angular.module('openITCOCKPIT')
             },
             keepSharedContainers: false,
             keepContacts: false,
-            keepContactgroups: false
-        };
-
-        $scope.editSharedContainers = false;
-        $scope.editDescription = false;
-        $scope.editTags = false;
-        $scope.editPriority = false;
-        $scope.editCheckInterval = false;
-        $scope.editRetryInterval = false;
-        $scope.editMaxNumberOfCheckAttempts = false;
-        $scope.editNotificationInterval = false;
-        $scope.editContacts = false;
-        $scope.editContactgroups = false;
-        $scope.editHostUrl = false;
-        $scope.editNotes = false;
-
-
+            keepContactgroups: false,
+            editSharedContainers: false,
+            editDescription: false,
+            editTags: false,
+            editPriority: false,
+            editCheckInterval: false,
+            editRetryInterval: false,
+            editMaxNumberOfCheckAttempts: false,
+            editNotificationInterval: false,
+            editContacts: false,
+            editContactgroups: false,
+            editHostUrl: false,
+            editNotes: false
+        }
         $scope.load = function(){
 
             $http.get("/hosts/edit_details/" + ids.join('/') + ".json", {
@@ -58,6 +55,7 @@ angular.module('openITCOCKPIT')
                     'angular': true,
                 }
             }).then(function(result){
+                $scope.hosts = result.data.hosts;
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
                 $scope.sharingContainers = result.data.sharingContainers;
@@ -69,9 +67,14 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.editDetails = function(){
-            $http.post("/hosts/edit_details/.json?angular=true",
-                {
-                    data: $scope.sourceHosts
+            var params = {
+                'sourceHosts': $scope.hosts,
+                'details': $scope.post
+            };
+            console.log('TEST');
+            console.log(params);
+            $http.post("/hosts/edit_details/.json?angular=true", {
+                    data: params
                 }
             ).then(function(result){
                 NotyService.genericSuccess();
@@ -88,6 +91,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load();
+
         jQuery(function(){
             $('.tagsinput').tagsinput();
         });

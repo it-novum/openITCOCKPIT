@@ -163,6 +163,6 @@ class MapgadgetsTable extends Table {
      * @return bool
      */
     public function existsById($id) {
-        return $this->exists(['Mapitems.id' => $id]);
+        return $this->exists(['Mapgadgets.id' => $id]);
     }
 }
