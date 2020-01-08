@@ -17,6 +17,12 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 
+/*************************************/
+/*           LEGACY WARNING          */
+/* This is legacy code and will be   */
+/* removed with a newer version      */
+/*************************************/
+
 /**
  * SmsNotification command.
  * @deprecated Please use a newer SMS solution. This feature will be removed with a newer version
@@ -41,8 +47,6 @@ class SmsNotificationCommand extends Command {
     /* This is legacy code and will be   */
     /* removed with a newer version      */
     /*************************************/
-
-
 
     /**
      * @var array
@@ -97,8 +101,6 @@ class SmsNotificationCommand extends Command {
 
         $address = $args->getOption('address');
         $type = strtolower($args->getOption('type'));
-        $method = 'nrpe';
-
 
         if ($type === 'host') {
             $hostUuid = $args->getOption('hostname');
@@ -124,7 +126,7 @@ class SmsNotificationCommand extends Command {
             ]);
 
             $command = $this->config['nrpe']['check_nrpe'] . $args;
-            debug($command);
+            //debug($command);
             exec($command);
         }
 
@@ -155,7 +157,7 @@ class SmsNotificationCommand extends Command {
             ]);
 
             $command = $this->config['nrpe']['check_nrpe'] . $args;
-            debug($command);
+            //debug($command);
             exec($command);
         }
     }
