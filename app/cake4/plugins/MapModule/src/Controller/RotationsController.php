@@ -26,19 +26,17 @@
 namespace MapModule\Controller;
 
 use App\Model\Table\ContainersTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
 use itnovum\openITCOCKPIT\Filter\RotationFilter;
+use MapModule\Model\Table\RotationsTable;
 
 class RotationsController extends AppController {
-    public $layout = 'angularjs';
-    public $components = [
-        'ListFilter.ListFilter',
-    ];
-    public $helpers = [
-        'ListFilter.ListFilter',
-    ];
 
     public $listFilters = [
         'index' => [
@@ -51,21 +49,21 @@ class RotationsController extends AppController {
         ],
     ];
 
-    public $uses = [
-        'MapModule.Rotation',
-        'MapModule.Map'
-    ];
-
 
     public function index() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
         }
 
-        $RotationFilter = new RotationFilter($this->request);
+        /** @var RotationsTable $RotationsTable */
+        $RotationsTable = TableRegistry::getTableLocator()->get('MapModule.Rotations');
 
+        $RotationFilter = new RotationFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $RotationFilter->getPage());
+
+
+        /*
         $query = [
             'conditions' => $RotationFilter->indexFilter(),
             'order'      => $RotationFilter->getOrderForPaginator('Rotation.name', 'asc'),
@@ -96,20 +94,29 @@ class RotationsController extends AppController {
         if (!$this->hasRootPrivileges) {
             $query['conditions']['RotationsToContainers.container_id'] = $this->MY_RIGHTS;
         }
+        */
 
+        $limit = $PaginateOMat->getHandler()->getLimit();
+        $Paginator = null;
         if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            unset($query['limit']);
-            $all_rotations = $this->Rotation->find('all', $query);
+            $limit = null;
         } else {
-            $this->Paginator->settings = $query;
-            $this->Paginator->settings['page'] = $RotationFilter->getPage();
-            $all_rotations = $this->Paginator->paginate();
+            $Paginator = $PaginateOMat;
         }
 
+        $all_rotations = $RotationsTable->getAll(
+            $RotationFilter->indexFilter(),
+            $RotationFilter->getOrderForPaginator('Rotations.name', 'asc'),
+            $limit,
+            $Paginator,
+            $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
+
+        debug($all_rotations);die();
+
         foreach ($all_rotations as $key => $rotation) {
-            $all_rotations[$key]['Rotation']['allowEdit'] = false;
+            $all_rotations[$key]['allowEdit'] = false;
             if ($this->hasRootPrivileges == true) {
-                $all_rotations[$key]['Rotation']['allowEdit'] = true;
+                $all_rotations[$key]['allowEdit'] = true;
                 continue;
             }
             foreach ($rotation['Container'] as $cKey => $container) {
@@ -123,7 +130,7 @@ class RotationsController extends AppController {
         //build rotation link
         foreach ($all_rotations as $key => $rotation) {
             $all_rotations[$key]['Rotation']['ids'] = [];
-            foreach ($rotation['Map'] as $rKey => $map) {
+            foreach ($rotation['Maps'] as $rKey => $map) {
                 if (!isset($all_rotations[$key]['Rotation']['first_id'])) {
                     $all_rotations[$key]['Rotation']['first_id'] = $map['id'];
                 }
@@ -138,7 +145,6 @@ class RotationsController extends AppController {
     }
 
     public function add() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
@@ -228,7 +234,6 @@ class RotationsController extends AppController {
     }
 
     public function edit($id = null) {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -294,7 +299,7 @@ class RotationsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(400);
+        $this->response->withStatus(400);
         $this->set('message', __('Could not delete map rotation'));
         $this->viewBuilder()->setOption('serialize', ['message']);
 

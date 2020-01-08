@@ -26,8 +26,11 @@ namespace App\Lib;
 
 
 use App\Application;
+use Cake\Core\Plugin;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use Composer\Autoload\ClassLoader;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -74,15 +77,16 @@ class PluginManager {
     }
 
     private function addAllPlugins() {
+        /** @var ClassLoader $loader */
         $loader = require ROOT . '/vendor/autoload.php';
 
         //Autoload Plugin Classes
         foreach ($this->modules as $moduleName) {
-            $this->application->addPlugin($moduleName);
             $loader->setPsr4(
                 sprintf('%s\\', $moduleName),
                 PLUGIN . $moduleName . DS . 'src'
             );
+            $this->application->addPlugin($moduleName);
 
             /*
             $pluginAssociationsFile = PLUGIN . $moduleName . DS . 'config' . DS . 'associations.php';
@@ -91,6 +95,7 @@ class PluginManager {
                 self::$associations = Hash::merge(self::$associations, $mapping);
             }
             */
+
         }
 
         if ($this->bootstrapPlugins === true) {
