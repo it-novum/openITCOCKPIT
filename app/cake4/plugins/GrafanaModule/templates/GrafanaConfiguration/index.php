@@ -14,7 +14,7 @@
             <span>>
                 <?php echo __('Configuration'); ?>
             </span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+            <div class="third_level"> <?php echo __('Index'); ?></div>
         </h1>
     </div>
 </div>
@@ -193,7 +193,7 @@
                                         ng-click="checkGrafanaConnection()">
                                     <?php echo __('Check Grafana Connection'); ?>
                                 </button>
-                                <input class="btn btn-primary" type="submit" value="Save">&nbsp;
+                                <input class="btn btn-primary" type="submit" value="<?= __('Save') ?>">&nbsp;
                             </div>
                         </div>
                     </div>

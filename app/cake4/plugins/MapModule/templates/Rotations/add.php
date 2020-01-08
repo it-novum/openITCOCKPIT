@@ -122,7 +122,7 @@
                     <div class="col-xs-12 margin-top-10">
                         <div class="well formactions ">
                             <div class="pull-right">
-                                <input class="btn btn-primary" type="submit" value="Save">&nbsp;
+                                <input class="btn btn-primary" type="submit" value="<?= __('Save') ?>">&nbsp;
                                 <a ui-sref="RotationsIndex" class="btn btn-default">Cancel</a>
                             </div>
                         </div>
