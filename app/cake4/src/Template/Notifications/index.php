@@ -30,14 +30,12 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="ServicesIndex">
+        <a ui-sref="NotificationsIndex">
             <i class="fa fa-envelope"></i> <?php echo __('Notifications'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="ServicesIndex">
-            <i class="fa fa-desktop"></i> <?php echo __('Hosts'); ?>
-        </a>
+        <i class="fa fa-desktop"></i> <?php echo __('Hosts'); ?>
     </li>
     <li class="breadcrumb-item">
         <i class="fa fa-list"></i> <?php echo __('Overview'); ?>
@@ -222,6 +220,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- END FILTER -->
 
                     <div class="frame-wrap">
                         <table id="notification_list" class="table table-striped m-0 table-bordered">
