@@ -113,6 +113,7 @@ class AngularAssets implements AngularAssetsInterface {
         '/node_modules/node-waves/dist/waves.css',
         '/node_modules/bootstrap4-tagsinput/tagsinput.css',
         '/node_modules/bootstrap4c-chosen/dist/css/component-chosen.css',
+        '/node_modules/highlight-within-textarea/jquery.highlight-within-textarea.css',
         //  '/vendor/node_modules/jquery-tageditor/jquery.tag-editor.css',
         /*'/smartadmin4/dist/css/fa-brands.css',
         '/smartadmin4/dist/css/fa-regular.css',
@@ -151,7 +152,7 @@ class AngularAssets implements AngularAssetsInterface {
         //'vendor/image-picker.css',
         '/node_modules/angular-gridster/dist/angular-gridster.min.css',
         //'vendor/radio_buttons.css',
-        '/node_modules/highlight-within-textarea/jquery.highlight-within-textarea.css'
+
     ];
 
     /**

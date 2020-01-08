@@ -141,8 +141,8 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                                 <?php echo __('Command line'); ?>
                             </label>
                             <textarea class="form-control code-font" type="text" ng-model="post.Command.command_line"
-                                      cols="30" rows="6" id="commandLineTextArea">
-                                </textarea>
+                                      cols="30" rows="6" id="commandLineTextArea" >
+                            </textarea>
                             <div ng-repeat="error in errors.command_line">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -170,7 +170,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                             </label>
                             <textarea class="form-control" type="text" ng-model="post.Command.description"
                                       cols="30" rows="6" id="descriptionTextArea">
-                                </textarea>
+                            </textarea>
                         </div>
 
 
@@ -402,7 +402,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                                 <?php endforeach; ?>
                                 </tbody>
                             </table>
-                        <hr>
+                            <hr>
                         <?php endforeach; ?>
 
                     </div>
