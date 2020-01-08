@@ -131,6 +131,7 @@ class AngularAssets implements AngularAssetsInterface {
         '/node_modules/@fullcalendar/timegrid/main.css',
         '/node_modules/@fullcalendar/list/main.css',
         '/node_modules/@fullcalendar/bootstrap/main.css',
+        '/node_modules/flag-icon-css/css/flag-icon.css',
         //'/smartadmin/css/your_style.css',                             //check if we need this anymore
         //'/smartadmin/css/animate.css',
 

@@ -344,3 +344,9 @@ openITCOCKPIT v4 Utilities
     filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius='2');
     -ms-filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius='2');
 }
+
+.ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}

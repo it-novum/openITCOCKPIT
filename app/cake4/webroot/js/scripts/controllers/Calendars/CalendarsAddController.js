@@ -204,7 +204,7 @@ angular.module('openITCOCKPIT')
                     'aria-expanded': false,
                     'aria-haspopup': true
                 })
-                .append($('<img/>', {'class': 'flag flag-' + $scope.countryCode}))
+                .append($('<span/>', {'class': 'flag-icon flag-icon-' + $scope.countryCode}))
                 .append('<span class="caret caret-with-margin-left-5"></span>');
             $('.fc-holidays-button')
                 .parent().append(
@@ -224,8 +224,8 @@ angular.module('openITCOCKPIT')
                         $('<a/>', {
                             // 'class': 'dropdown-item'
                         }).append(
-                            $('<img/>', {
-                                'class': 'flag flag-' + key
+                            $('<span/>', {
+                                'class': 'flag-icon flag-icon-' + key
                             })
                         ).append(
                             $('<span/>', {
