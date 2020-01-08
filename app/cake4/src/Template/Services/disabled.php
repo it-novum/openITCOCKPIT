@@ -234,24 +234,6 @@
                                                 <?php echo __('Enable'); ?>
                                             </a>
                                         <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                            <a ng-if="service.allow_edit"
-                                               class="dropdown-item">
-                                                <?php
-                                                /**
-                                                 * @fixme
-                                                 * as the additional links helper is deprecated fix this with the replacement !
-                                                 */
-                                                echo $this->AdditionalLinks->renderAsListItems(
-                                                    $additionalLinksList,
-                                                    '{{service.Service.id}}',
-                                                    [],
-                                                    true
-                                                ); ?>
-                                            </a>
-
-
-                                        <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                             <a href="javascript:void(0);"
                                                ng-click="confirmDelete(getObjectForDelete(host, service))"
