@@ -17,7 +17,6 @@ angular.module('openITCOCKPIT').directive('mapLine', function($http, $interval){
                 $scope.item.endY = parseInt($scope.item.endY, 10);
 
                 $scope.z_index = parseInt($scope.item.z_index, 10);
-                console.log($scope.z_index);
 
                 var distance = Math.sqrt(
                     Math.pow(($scope.item.endX - $scope.item.startX), 2) + Math.pow(($scope.item.endY - $scope.item.startY), 2)
