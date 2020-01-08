@@ -1,8 +1,8 @@
 {
     "name": "your-name-here/MapModule",
-    "description": "MapModule plugin for CakePHP",
+    "description": "MapModule plugin for openITCOCKPIT",
     "type": "cakephp-plugin",
-    "license": "MIT",
+    "license": "Dual licensed",
     "require": {
         "cakephp/cakephp": "4.x-dev"
     },

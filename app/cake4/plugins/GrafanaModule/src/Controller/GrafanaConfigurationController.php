@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+namespace GrafanaModule\Controller;
 
 use App\Model\Table\HostgroupsTable;
 use Cake\ORM\TableRegistry;
@@ -32,27 +33,9 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 
 /**
  * Class GrafanaConfigurationController
- * @property GrafanaConfiguration $GrafanaConfiguration
- * @property GrafanaConfigurationHostgroupMembership $GrafanaConfigurationHostgroupMembership
- * @property Hostgroup $Hostgroup
- * @property Container $Container
- * @property GrafanaDashboard $GrafanaDashboard
+ * @package GrafanaModule\Controller
  */
-class GrafanaConfigurationController extends GrafanaModuleAppController {
-
-    public $layout = 'angularjs';
-
-    public $uses = [
-        'Hostgroup',
-        'Container',
-        'GrafanaModule.GrafanaConfiguration',
-        'GrafanaModule.GrafanaConfigurationHostgroupMembership',
-        'GrafanaModule.GrafanaDashboard'
-    ];
-
-    public $components = [
-        'CustomValidationErrors'
-    ];
+class GrafanaConfigurationController extends AppController {
 
     public function index() {
         $this->layout = 'blank';
@@ -182,7 +165,7 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
 
                 //Resolve: ITC-2169 RVID: 5-445b21 - Medium - Server-Side Request Forgery
                 $message = __('Error while connecting to Grafana server.');
-                $message = __('For detailed information, please uncomment line %s in %s. Detailed output is disabled due to security reasons.', (__LINE__ + 1),  __FILE__);
+                $message = __('For detailed information, please uncomment line %s in %s. Detailed output is disabled due to security reasons.', (__LINE__ + 1), __FILE__);
                 //$message = $client;
 
                 if (is_object($client) && property_exists($client, 'message')) {

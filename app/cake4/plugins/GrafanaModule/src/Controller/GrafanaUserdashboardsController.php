@@ -26,6 +26,7 @@
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Host;
@@ -33,6 +34,7 @@ use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\GrafanaUserDashboardFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
+use itnovum\openITCOCKPIT\Grafana\GrafanaDashboard;
 use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
 use itnovum\openITCOCKPIT\Grafana\GrafanaSeriesOverrides;
@@ -452,10 +454,10 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                             $GrafanaApiConfiguration->getApiUrl(),
                             $dashboard['GrafanaUserdashboard']['grafana_uid']
                         );
-                        $request = new \GuzzleHttp\Psr7\Request('DELETE', $deleteUrl, ['content-type' => 'application/json']);
+                        $request = new Request('DELETE', $deleteUrl, ['content-type' => 'application/json']);
                         try {
                             $response = $client->send($request);
-                        } catch (\Exception $e) {
+                        } catch (Exception $e) {
                             //Error while deleting dashboard form Grafana
                             //$message = $e->getMessage();
                             //$success = false;
@@ -784,7 +786,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
         if ($client instanceof Client) {
             $tag = new GrafanaTag();
-            $GrafanaDashboard = new \itnovum\openITCOCKPIT\Grafana\GrafanaDashboard();
+            $GrafanaDashboard = new GrafanaDashboard();
             $GrafanaDashboard->setTitle($dashboard['GrafanaUserdashboard']['name']);
             $GrafanaDashboard->setEditable(true);
             $GrafanaDashboard->setTags($tag->getTag());
@@ -836,7 +838,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             $json = $GrafanaDashboard->getGrafanaDashboardJson();
 
             if ($json) {
-                $request = new \GuzzleHttp\Psr7\Request('POST', $GrafanaApiConfiguration->getApiUrl() . '/dashboards/db', ['content-type' => 'application/json'], $json);
+                $request = new Request('POST', $GrafanaApiConfiguration->getApiUrl() . '/dashboards/db', ['content-type' => 'application/json'], $json);
                 try {
                     $response = $client->send($request);
                 } catch (BadRequestException $e) {
@@ -844,7 +846,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                     $responseBody = $response->getBody()->getContents();
                     $message = $responseBody;
                     $success = false;
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $message = $e->getMessage();
                     $success = false;
                 }
