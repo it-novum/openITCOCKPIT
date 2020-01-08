@@ -130,16 +130,20 @@ class MapitemsTable extends Table {
         $query = $this->find()
             ->select(['Mapitems.object_id'])
             ->where([
-                'Mapitems.map_id'    => $mapId,
-                'Mapitems.type'      => 'map',
+                'Mapitems.map_id' => $mapId,
+                'Mapitems.type'   => 'map',
             ]);
-        if($objectId !== null){
+        if ($objectId !== null) {
             $query->where([
                 'Mapitems.object_id' => $objectId,
             ]);
         }
 
-        return $query->first()->toArray();
+        $result = $query->first();
+        if (empty($result)) {
+            return [];
+        }
+        return $result->toArray();
     }
 
     /**

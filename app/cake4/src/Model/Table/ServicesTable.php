@@ -2515,6 +2515,11 @@ class ServicesTable extends Table {
         return $result;
     }
 
+    /**
+     * @param $ids
+     * @param bool $enableHydration
+     * @return array
+     */
     public function getServicesByIdsForMapeditor($ids, $enableHydration = false) {
         if (!is_array($ids)) {
             $ids = [$ids];
@@ -2549,28 +2554,60 @@ class ServicesTable extends Table {
                 'Services.disabled' => 0
             ])->enableHydration($enableHydration);
 
-        /*
-         * $dependentServices = $this->Service->find('all', [
-                                'recursive'  => -1,
-                                'contain'    => [
-                                    'Host' => [
-                                        'Container',
-                                        'fields' => [
-                                            'Host.id',
-                                            'Host.uuid'
-                                        ]
-                                    ]
-                                ],
-                                'conditions' => [
-                                    'Service.id'       => $allDependentMapElements['serviceIds'],
-                                    'Service.disabled' => 0
-                                ],
-                                'fields'     => [
-                                    'Service.id',
-                                    'Service.uuid'
-                                ]
-                            ]);
-         */
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        return $result;
+    }
+
+    /**
+     * @param $ids
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getServicesByIdsForMapsumary($ids, $enableHydration = false) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->join([
+                [
+                    'table'      => 'hosts',
+                    'alias'      => 'Hosts',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'Hosts.id = Services.host_id',
+                    ],
+                ],
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Hosts.id',
+                    ],
+                ],
+                [
+                    'table'      => 'servicetemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicetemplates',
+                    'conditions' => 'Servicetemplates.id = Services.servicetemplate_id',
+                ],
+            ])
+            ->select([
+                'Services.id',
+                'Services.uuid',
+                'Services.name',
+                'Servicetemplates.name',
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.name',
+                'HostsToContainers.container_id'
+            ])->where([
+                'Services.id IN'    => $ids,
+                'Services.disabled' => 0
+            ])->enableHydration($enableHydration);
 
         $result = $query->toArray();
         if (empty($result)) {

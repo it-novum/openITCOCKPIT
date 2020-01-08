@@ -64,6 +64,7 @@
         "erusev/parsedown-extra": "^0.7.1",
         "freedsx/ldap": "^0.5.0",
         "guzzlehttp/guzzle": "^6.5",
+        "jbbcode/jbbcode": "^1.4",
         "jdorn/sql-formatter": "^1.2",
         "mobiledetect/mobiledetectlib": "2.*",
         "spatie/emoji": "^2.1"

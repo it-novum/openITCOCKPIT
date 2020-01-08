@@ -31,8 +31,10 @@ use Cake\Filesystem\Folder;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Composer\Package\Archiver\ZipArchiver;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use MapModule\Model\Table\MapiconsTable;
 use MapModule\Model\Table\MapsTable;
 use MapModule\Model\Table\MapUploadsTable;
 use Symfony\Component\Filesystem\Filesystem;
@@ -46,10 +48,6 @@ use Symfony\Component\Finder\SplFileInfo;
  * @property Mapicon $Mapicon
  */
 class BackgroundUploadsController extends AppController {
-
-    public $uses = [
-        'MapModule.Mapicon',
-    ];
 
     public $TYPE_BACKGROUND = 1;
     public $TYPE_ICON_SET = 2;
@@ -201,14 +199,17 @@ class BackgroundUploadsController extends AppController {
             return;
         }
 
-        $response = $this->MapUpload->getUploadResponse($_FILES['file']['error']);
+        /** @var MapUploadsTable $MapsTable */
+        $MapUploadsTable = TableRegistry::getTableLocator()->get('MapModule.MapUploads');
+
+        $response = $MapUploadsTable->getUploadResponse($_FILES['file']['error']);
         if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
-            $iconImgDirectory = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
+            $iconImgDirectory = APP . '../' . 'plugins' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
 
             //$iconFolder = new Folder($iconImgDirectory);
             $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
 
-            if (!$this->MapUpload->isFileExtensionSupported($fileExtension)) {
+            if (!$MapUploadsTable->isFileExtensionSupported($fileExtension)) {
                 $response = [
                     'success' => false,
                     'message' => __('File extension ".%s" not supported!', $fileExtension)
@@ -243,16 +244,16 @@ class BackgroundUploadsController extends AppController {
             }
         }
 
-        $this->response->statusCode(200);
+        $this->response->withStatus(200);
         if (!$response['success']) {
-            $this->response->statusCode(500);
+            $this->response->withStatus(500);
         }
         $this->set('response', $response);
         $this->viewBuilder()->setOption('serialize', ['response']);
     }
 
     public function deleteIcon() {
-        $iconImgDirectory = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
+        $iconImgDirectory = APP . '../' . 'plugins' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -264,8 +265,11 @@ class BackgroundUploadsController extends AppController {
             throw new NotFoundException();
         }
 
+        /** @var MapiconsTable $MapiconsTable */
+        $MapiconsTable = TableRegistry::getTableLocator()->get('MapModule.Mapicons');
+
         unlink($fullFilePath);
-        if ($this->Mapicon->deleteAll(['Mapicon.icon' => $filename])) {
+        if ($MapiconsTable->deleteAll(['Mapicon.icon' => $filename])) {
             $response = [
                 'success' => true,
                 'message' => __('Icon deleted successfully.')
@@ -275,7 +279,7 @@ class BackgroundUploadsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response->withStatus(500);
         $response = [
             'success' => false,
             'message' => __('Error while deleting icon.')
@@ -295,10 +299,13 @@ class BackgroundUploadsController extends AppController {
             return;
         }
 
-        $response = $this->MapUpload->getUploadResponse($_FILES['file']['error']);
+        /** @var MapUploadsTable $MapsTable */
+        $MapUploadsTable = TableRegistry::getTableLocator()->get('MapModule.MapUploads');
+
+        $response = $MapUploadsTable->getUploadResponse($_FILES['file']['error']);
         if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
-            $iconsetImgDirectory = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'items';
-            $tempZipsDirectory = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'temp';
+            $iconsetImgDirectory = APP . '../' . 'plugins' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'items';
+            $tempZipsDirectory = APP . '../' . 'plugins' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'temp';
 
             if (!is_dir($tempZipsDirectory)) {
                 mkdir($tempZipsDirectory);
@@ -329,7 +336,7 @@ class BackgroundUploadsController extends AppController {
                     throw new Exception(__('Cannot move uploaded file'));
                 }
 
-                $zipFile = new ZipArchive();
+                $zipFile = new \ZipArchive();
                 $openZip = $zipFile->open($tempZipsDirectory . DS . $fileName);
                 if (!$openZip) {
                     throw new Exception(__('Could not open uploaded zip file.'));
@@ -397,7 +404,7 @@ class BackgroundUploadsController extends AppController {
                 //Check if all required icons exists and make sure the images are PNGs
                 $missingIcons = [];
                 $notAPng = [];
-                foreach ($this->MapUpload->getIconsNames() as $iconsName) {
+                foreach ($MapUploadsTable->getIconsNames() as $iconsName) {
                     if (!isset($iconsetIcons[$iconsName])) {
                         $missingIcons[] = $iconsName;
                     } else {
@@ -471,9 +478,9 @@ class BackgroundUploadsController extends AppController {
             }
         }
 
-        $this->response->statusCode(200);
+        $this->response->withStatus(200);
         if (!$response['success']) {
-            $this->response->statusCode(500);
+            $this->response->withStatus(500);
         }
         $this->set('response', $response);
         $this->viewBuilder()->setOption('serialize', ['response']);
