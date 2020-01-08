@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('pushNotifications', function($http, PushNotificationsService){
+angular.module('openITCOCKPIT').directive('pushNotifications', function($http, PushNotificationsService, $state){
     return {
         restrict: 'E',
 
@@ -85,9 +85,9 @@ angular.module('openITCOCKPIT').directive('pushNotifications', function($http, P
 
                     var notification = new Notification(data.data.title, options);
 
-                    var url = '/hosts/browser/' + data.data.hostUuid;
+                    var url = $state.href('HostsBrowser', {id: data.data.hostUuid});
                     if(data.data.type === 'service'){
-                        url = '/services/browser/' + data.data.serviceUuid;
+                        url = $state.href('ServicesBrowser', {id: data.data.serviceUuid});
                     }
 
                     notification.onclick = function(event){

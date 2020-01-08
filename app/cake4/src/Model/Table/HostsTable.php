@@ -2414,9 +2414,11 @@ class HostsTable extends Table {
             ->disableHydration()
             ->all();
 
-        debug($query->toArray());
-
-        return $this->formatResultAsCake2($query->toArray(), false);
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        return $result;
     }
 
     /**

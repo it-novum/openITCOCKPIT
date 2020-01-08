@@ -52,6 +52,7 @@
         "ext-pcntl": "*",
         "ext-posix": "*",
         "ext-redis": "*",
+        "azuyalabs/yasumi": "^2.2",
         "cakephp/acl": "4.x-dev",
         "cakephp/authentication": "2.x-dev",
         "cakephp/authorization": "2.x-dev",

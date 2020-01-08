@@ -51,12 +51,22 @@ class Holidays {
         foreach ($holidays as $holiday) {
             /** @var $holiday Holiday */
             $holidayName = $holiday->getName(); //en_US
-            if (isset($holiday->translations[$localCode])) {
-                $holidayName = $holiday->translations[$localCode] . ' / ' . $holidayName; //Local translation + english
+            if (isset($holiday->translations[$localCode])) { //exists de_DE ?
+                if($holiday->translations[$localCode] !== $holidayName) { //No not translate english to english
+                    $holidayName = $holiday->translations[$localCode] . ' / ' . $holidayName; //Local translation + english
+                }
+            }else{
+                $shortLocalCode = explode('_', $localCode, 2);  //exists 'de' ? (remove _DE from de_DE) ?
+                if (isset($holiday->translations[strtolower($shortLocalCode[0])])) {
+                    if($holiday->translations[strtolower($shortLocalCode[0])] !== $holidayName) { //No not translate english to english
+                        $holidayName = $holiday->translations[strtolower($shortLocalCode[0])] . ' / ' . $holidayName; //Local translation + english
+                    }
+                }
             }
 
+
             $filteredHolidays[date('Y-m-d', $holiday->getTimestamp())] = [
-                'start'           => date('Y-m-d', $holiday->getTimestamp()),
+                'start'           => $holiday->format('Y-m-d'),
                 'title'           => $holidayName,
                 'default_holiday' => true,
                 'className'       => 'bg-color-magenta'
@@ -145,7 +155,7 @@ class Holidays {
             'ES' => 'es_ES',
             'SE' => 'sv_SE',
             'CH' => 'de_CH',
-            'UA' => 'ru_UA',
+            'UA' => 'uk_UA',
             'GB' => 'en_GB',
             'US' => 'en_US'
         ];

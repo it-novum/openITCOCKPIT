@@ -928,8 +928,31 @@ class HostsController extends AppController {
         $HostsTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            debug(func_get_args());
-            foreach (func_get_args() as $host_id) {
+            $hostData = $this->request->getData('data.sourceHosts');
+            $detailsToEdit = $this->request->getData('data.details');
+            print_r($detailsToEdit);
+            return;
+            //die('END !!!');
+            //debug(func_get_args());
+            foreach ($hostData as $host) {
+                $primaryContainer = $host['container_id'];
+                $sharedContainers = Hash::extract(
+                    $host,
+                    'hosts_to_containers_sharing.{n}.HostsToContainers[container_id!='.$primaryContainer.'].container_id'
+                );
+                $hostSharingPermissions = new HostSharingPermissions(
+                    $primaryContainer,
+                    $this->hasRootPrivileges,
+                    $sharedContainers,
+                    $this->MY_RIGHTS
+                );
+                $allowSharing = $hostSharingPermissions->allowSharing();
+                if ($allowSharing) {
+
+                }
+
+debug($allowSharing);
+continue;
                 $data = ['Host' => []];
                 $host = $HostsTable->getHostById($host_id);
                 if (!empty($host)) {
@@ -1054,10 +1077,11 @@ class HostsController extends AppController {
                     unset($data);
                 }
             }
+         /*
             $this->setFlash(__('Host modified successfully'));
             $redirect = $this->Host->redirect($this->request->params, ['action' => 'index']);
             $this->redirect($redirect);
-
+*/
             return;
         }
 
