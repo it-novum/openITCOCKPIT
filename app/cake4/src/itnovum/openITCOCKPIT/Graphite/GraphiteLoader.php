@@ -167,6 +167,10 @@ class GraphiteLoader {
         }
 
         $options['query'] = $queryOptions;
+        if (!isset($options['query']['tz'])) {
+            // Query data from Graphite API in PHPs default timezone
+            $options['query']['tz'] = date_default_timezone_get();
+        }
 
         return new Client($options);
     }
