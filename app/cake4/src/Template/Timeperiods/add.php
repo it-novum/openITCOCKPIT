@@ -124,7 +124,7 @@ $weekdays = [
                                 id="ContactContainers"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
-                                chosen="containers"
+                                chosen="calendars"
                                 ng-options="calendar.key as calendar.value for calendar in calendars"
                                 ng-model="post.Timeperiod.calendar_id">
                             </select>
