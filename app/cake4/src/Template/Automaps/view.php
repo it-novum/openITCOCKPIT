@@ -113,7 +113,7 @@
                     <div class="row" ng-if="automap.show_label === false && automap.group_by_host === true">
                         <!-- Status color icons with host headline -->
                         <div class="row" ng-repeat="host in servicesByHost">
-                            <div class="col-xs-12">
+                            <div class="col-lg-12">
                                 <h3 class="margin-bottom-5">
                                     <i class="fa fa-desktop"></i>
                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
@@ -160,7 +160,7 @@
                     <div ng-if="automap.show_label === true && automap.group_by_host === true">
                         <!-- Status color icons with host and service name and host headline -->
                         <div class="row" ng-repeat="host in servicesByHost">
-                            <div class="col-xs-12">
+                            <div class="col-lg-12">
                                 <h3 class="margin-bottom-5">
                                     <i class="fa fa-desktop"></i>
                                     <strong>
