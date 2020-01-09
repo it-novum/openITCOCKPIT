@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('RotationsIndexController', function($scope, $http, SortService, MassChangeService){
 
-        SortService.setSort('Rotation.name');
+        SortService.setSort('Rotations.name');
         SortService.setDirection('asc');
         $scope.currentPage = 1;
 
@@ -28,8 +28,8 @@ angular.module('openITCOCKPIT')
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[Rotation.name]': $scope.filter.rotation.name,
-                    'filter[Rotation.interval]': $scope.filter.rotation.interval
+                    'filter[Rotations.name]': $scope.filter.rotation.name,
+                    'filter[Rotations.interval]': $scope.filter.rotation.interval
                 }
             }).then(function(result){
                 $scope.rotations = result.data.all_rotations;
@@ -59,8 +59,8 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.rotations){
                 for(var key in $scope.rotations){
-                    if($scope.rotations[key].Rotation.allowEdit){
-                        var id = $scope.rotations[key].Rotation.id;
+                    if($scope.rotations[key].allowEdit){
+                        var id = $scope.rotations[key].id;
                         $scope.massChange[id] = true;
                     }
                 }
@@ -72,8 +72,8 @@ angular.module('openITCOCKPIT')
             var selectedObjects = MassChangeService.getSelected();
             for(var key in $scope.rotations){
                 for(var id in selectedObjects){
-                    if(id == $scope.rotations[key].Rotation.id){
-                        objects[id] = $scope.rotations[key].Rotation.name;
+                    if(id == $scope.rotations[key].id){
+                        objects[id] = $scope.rotations[key].name;
                     }
 
                 }
@@ -83,7 +83,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(rotation){
             var object = {};
-            object[rotation.Rotation.id] = rotation.Rotation.name;
+            object[rotation.id] = rotation.name;
             return object;
         };
 

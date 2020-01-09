@@ -32,9 +32,11 @@ class RotationFilter extends Filter {
      */
     public function indexFilter() {
         $filters = [
-            'like' => [
-                'Rotation.name',
-                'Rotation.interval'
+            'like'   => [
+                'Rotations.name'
+            ],
+            'equals' => [
+                'Rotations.interval'
             ]
         ];
 

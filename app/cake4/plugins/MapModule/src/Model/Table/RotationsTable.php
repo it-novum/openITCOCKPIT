@@ -30,7 +30,6 @@ namespace MapModule\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Table\ContainersTable;
-use Cake\Database\Query;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Behavior\TimestampBehavior;
@@ -76,13 +75,20 @@ class RotationsTable extends Table {
 
         $this->addBehavior('Timestamp');
 
-        $this->hasMany('MapsToRotations', [
-            'foreignKey' => 'rotation_id',
-            'className'  => 'MapModule.MapsToRotations',
+        $this->belongsToMany('Containers', [
+            'className'        => 'Containers',
+            'foreignKey'       => 'rotation_id',
+            'targetForeignKey' => 'container_id',
+            'joinTable'        => 'rotations_to_containers',
+            'saveStrategy'     => 'replace',
         ]);
-        $this->hasMany('RotationsToContainers', [
-            'foreignKey' => 'rotation_id',
-            'className'  => 'MapModule.RotationsToContainers',
+
+        $this->belongsToMany('Maps', [
+            'className'        => 'MapModule.Maps',
+            'foreignKey'       => 'rotation_id',
+            'targetForeignKey' => 'map_id',
+            'joinTable'        => 'maps_to_rotations',
+            'saveStrategy'     => 'replace',
         ]);
     }
 
@@ -133,54 +139,38 @@ class RotationsTable extends Table {
 
         $query = $this->find()
             ->contain([
-                'MapsToRotations' => function (Query $q) {
-                    return $q->select([
-                        'MapsToRotations.map_id',
-                        'MapsToRotations.rotation_id'
-                    ]);
-                },
-                /*'RotationsToContainers' => function (Query $q) {
-                    return $q->select([
-                        'RotationsToContainers.container_id',
-                        'RotationsToContainers.rotation_id'
-                    ]);
-                }*/
-            ])
-            ->join([
-                [
-                    'table'      => 'rotations_to_containers',
-                    'type'       => 'INNER',
-                    'alias'      => 'RotationsToContainers',
-                    'conditions' => 'RotationsToContainers.rotation_id = Rotations.id',
-                ],
-            ])
-            ->where($indexFilter)
-            ->select([
-                'RotationsToContainers.container_id',
-                'RotationsToContainers.rotation_id',
+                'Maps',
+                'Containers'
             ]);
 
+        if (!empty($indexFilter)) {
+            $query->where($indexFilter);
+        }
         if (!empty($MY_RIGHTS)) {
             $query->where([
-                'RotationsToContainers.container_id IN' => $this->MY_RIGHTS
+                'Containers.id IN' => $MY_RIGHTS
             ]);
         }
         if ($limit !== null) {
             $query->limit($limit);
         }
-        $query->order($orderForPaginator)
+
+        $queryResult = $query->order($orderForPaginator)
             ->group(['Rotations.id'])
             ->enableAutoFields(true)
             ->all();
-        return $query->toArray();
-        if ($PaginateOMat === null) {
-            //Just execute query
-            $result = $this->formatResultAsCake2($query->toArray(), false);
+
+        if (empty($queryResult)) {
+            $result = [];
         } else {
-            if ($PaginateOMat->useScroll()) {
-                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            if ($PaginateOMat === null) {
+                $result = $query->toArray();
             } else {
-                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+                if ($PaginateOMat->useScroll()) {
+                    $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+                } else {
+                    $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+                }
             }
         }
 
