@@ -39,8 +39,8 @@ use Cake\ORM\Entity;
  * @property FrozenTime $created
  * @property FrozenTime $modified
  *
- * @property MapsToRotation[] $maps_to_rotations
- * @property RotationsToContainer[] $rotations_to_containers
+ * @property Maps[] $maps
+ * @property Containers[] $containers
  */
 class Rotation extends Entity {
     /**
@@ -57,7 +57,7 @@ class Rotation extends Entity {
         'interval'                => true,
         'created'                 => true,
         'modified'                => true,
-        'maps_to_rotations'       => true,
-        'rotations_to_containers' => true,
+        'maps'       => true,
+        'containers' => true,
     ];
 }

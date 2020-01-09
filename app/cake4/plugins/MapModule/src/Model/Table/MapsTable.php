@@ -486,6 +486,44 @@ class MapsTable extends Table {
     }
 
     /**
+     * @param array $conditions
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getMapsForRotations($conditions = [], $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->join([
+                'table'      => 'maps_to_containers',
+                'alias'      => 'MapsToContainers',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'MapsToContainers.map_id = Maps.id',
+                ]
+            ])
+            ->select([
+                'Maps.id',
+                'Maps.name',
+                'MapsToContainers.map_id',
+                'MapsToContainers.container_id'
+            ]);
+
+        if (!empty($conditions)) {
+            $query->where($conditions);
+        }
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'MapsToContainers.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $result = $query->all();
+        if (empty($result)) {
+            return [];
+        }
+        return $query->toArray();
+    }
+
+    /**
      * @param ServicesTable $Service
      * @param HoststatusTableInterface $Hoststatus
      * @param ServicestatusTableInterface $Servicestatus
