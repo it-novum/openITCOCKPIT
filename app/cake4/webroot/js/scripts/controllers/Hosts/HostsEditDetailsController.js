@@ -55,7 +55,7 @@ angular.module('openITCOCKPIT')
                     'angular': true,
                 }
             }).then(function(result){
-                $scope.hosts = result.data.hosts;
+                $scope.hostIds = ids;
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
                 $scope.sharingContainers = result.data.sharingContainers;
@@ -68,7 +68,7 @@ angular.module('openITCOCKPIT')
 
         $scope.editDetails = function(){
             var params = {
-                'sourceHosts': $scope.hosts,
+                'hosts': $scope.hostIds,
                 'details': $scope.post
             };
             console.log('TEST');
@@ -96,69 +96,69 @@ angular.module('openITCOCKPIT')
             $('.tagsinput').tagsinput();
         });
 
-        $scope.$watch('editSharedContainers', function(){
-            if($scope.editSharedContainers === false){
+        $scope.$watch('post.editSharedContainers', function(){
+            if($scope.post.editSharedContainers === false){
                 $scope.post.Host.hosts_to_containers_sharing._ids = [];
                 $scope.post.keepSharedContainers = false;
             }
         });
-        $scope.$watch('editDescription', function(){
-            if($scope.editDescription === false){
+        $scope.$watch('post.editDescription', function(){
+            if($scope.post.editDescription === false){
                 $scope.post.Host.description = null;
             }
         });
-        $scope.$watch('editTags', function(){
-            if($scope.editTags === false){
+        $scope.$watch('post.editTags', function(){
+            if($scope.post.editTags === false){
                 $scope.post.Host.tags = null;
                 $('.tagsinput').tagsinput('removeAll');
             }
         });
-        $scope.$watch('editPriority', function(){
-            if($scope.editPriority === false){
+        $scope.$watch('post.editPriority', function(){
+            if($scope.post.editPriority === false){
                 $scope.post.Host.priority = 0;
             }else{
                 $scope.post.Host.priority = 1;
             }
         });
-        $scope.$watch('editCheckInterval', function(){
-            if($scope.editCheckInterval === false){
+        $scope.$watch('post.editCheckInterval', function(){
+            if($scope.post.editCheckInterval === false){
                 $scope.post.Host.check_interval = null;
             }
         });
-        $scope.$watch('editRetryInterval', function(){
-            if($scope.editRetryInterval === false){
+        $scope.$watch('post.editRetryInterval', function(){
+            if($scope.post.editRetryInterval === false){
                 $scope.post.Host.retry_interval = null;
             }
         });
-        $scope.$watch('editMaxNumberOfCheckAttempts', function(){
-            if($scope.editMaxNumberOfCheckAttempts === false){
+        $scope.$watch('post.editMaxNumberOfCheckAttempts', function(){
+            if($scope.post.editMaxNumberOfCheckAttempts === false){
                 $scope.post.Host.max_check_attempts = null;
             }
         });
-        $scope.$watch('editNotificationInterval', function(){
-            if($scope.editNotificationInterval === false){
+        $scope.$watch('post.editNotificationInterval', function(){
+            if($scope.post.editNotificationInterval === false){
                 $scope.post.Host.notification_interval = null;
             }
         });
-        $scope.$watch('editContacts', function(){
-            if($scope.editContacts === false){
+        $scope.$watch('post.editContacts', function(){
+            if($scope.post.editContacts === false){
                 $scope.post.Host.contacts._ids = [];
                 $scope.post.keepContacts = false;
             }
         });
-        $scope.$watch('editContactgroups', function(){
-            if($scope.editContactgroups === false){
+        $scope.$watch('post.editContactgroups', function(){
+            if($scope.post.editContactgroups === false){
                 $scope.post.Host.contactgroups._ids = [];
                 $scope.post.keepContactgroups = false;
             }
         });
-        $scope.$watch('editHostUrl', function(){
-            if($scope.editHostUrl === false){
+        $scope.$watch('post.editHostUrl', function(){
+            if($scope.post.editHostUrl === false){
                 $scope.post.Host.host_url = null;
             }
         });
-        $scope.$watch('editNotes', function(){
-            if($scope.editNotes === false){
+        $scope.$watch('post.editNotes', function(){
+            if($scope.post.editNotes === false){
                 $scope.post.Host.notes = null;
             }
         });

@@ -27,12 +27,16 @@ declare(strict_types=1);
 
 namespace MapModule\Model\Table;
 
+use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Table\ContainersTable;
+use Cake\Database\Query;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use MapModule\Model\Entity\Rotation;
 
 /**
@@ -53,6 +57,10 @@ use MapModule\Model\Entity\Rotation;
  * @mixin TimestampBehavior
  */
 class RotationsTable extends Table {
+
+    use PaginationAndScrollIndexTrait;
+    use Cake2ResultTableTrait;
+
     /**
      * Initialize method
      *
@@ -100,5 +108,82 @@ class RotationsTable extends Table {
             ->notEmptyString('interval');
 
         return $validator;
+    }
+
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Rotations.id' => $id]);
+    }
+
+    /**
+     * @param array $indexFilter
+     * @param array $orderForPaginator
+     * @param int|null $limit
+     * @param PaginateOMat|null $PaginateOMat
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getAll(array $indexFilter, array $orderForPaginator, int $limit = null, PaginateOMat $PaginateOMat = null, $MY_RIGHTS = []) {
+        if (!is_array($MY_RIGHTS)) {
+            $MY_RIGHTS = [$MY_RIGHTS];
+        }
+
+        $query = $this->find()
+            ->contain([
+                'MapsToRotations' => function (Query $q) {
+                    return $q->select([
+                        'MapsToRotations.map_id',
+                        'MapsToRotations.rotation_id'
+                    ]);
+                },
+                /*'RotationsToContainers' => function (Query $q) {
+                    return $q->select([
+                        'RotationsToContainers.container_id',
+                        'RotationsToContainers.rotation_id'
+                    ]);
+                }*/
+            ])
+            ->join([
+                [
+                    'table'      => 'rotations_to_containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'RotationsToContainers',
+                    'conditions' => 'RotationsToContainers.rotation_id = Rotations.id',
+                ],
+            ])
+            ->where($indexFilter)
+            ->select([
+                'RotationsToContainers.container_id',
+                'RotationsToContainers.rotation_id',
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'RotationsToContainers.container_id IN' => $this->MY_RIGHTS
+            ]);
+        }
+        if ($limit !== null) {
+            $query->limit($limit);
+        }
+        $query->order($orderForPaginator)
+            ->group(['Rotations.id'])
+            ->enableAutoFields(true)
+            ->all();
+        return $query->toArray();
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->formatResultAsCake2($query->toArray(), false);
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
+        }
+
+        return $result;
     }
 }

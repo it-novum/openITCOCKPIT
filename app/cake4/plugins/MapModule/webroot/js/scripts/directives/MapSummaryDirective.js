@@ -55,30 +55,30 @@ angular.module('openITCOCKPIT').directive('mapSummary', function($http, $interva
                 switch(type){
                     case 'host':
                         if($scope.acl.hosts.browser){
-                            url = '/hosts/browser/' + objectId;
+                            url = '/#!/hosts/browser/' + objectId;
                         }
                         break;
 
                     case 'service':
                         if($scope.acl.services.browser){
-                            url = '/services/browser/' + objectId;
+                            url = '/#!/services/browser/' + objectId;
                         }
                         break;
 
                     case 'hostgroup':
                         if($scope.acl.hostgroups.extended){
-                            url = '/hostgroups/extended/' + objectId;
+                            url = '/#!/hostgroups/extended/' + objectId;
                         }
                         break;
 
                     case 'servicegroup':
                         if($scope.acl.servicegroups.extended){
-                            url = '/servicegroups/extended/' + objectId;
+                            url = '/#!/servicegroups/extended/' + objectId;
                         }
                         break;
 
                     case 'map':
-                        url = '/map_module/mapeditors/view/' + objectId;
+                        url = '/#!/map_module/mapeditors/view/' + objectId;
                         break;
 
                     default:
@@ -97,7 +97,7 @@ angular.module('openITCOCKPIT').directive('mapSummary', function($http, $interva
                 switch(type){
                     case 'host':
                         if($scope.acl.hosts.index){
-                            url = '/hosts/index?' + $httpParamSerializer({
+                            url = '/#!/hosts/index?' + $httpParamSerializer({
                                 'angular': true,
                                 'filter[Host.id][]': objectIds
                             });
@@ -106,7 +106,7 @@ angular.module('openITCOCKPIT').directive('mapSummary', function($http, $interva
 
                     case 'service':
                         if($scope.acl.services.index){
-                            url = '/services/index?' + $httpParamSerializer({
+                            url = '/#!/services/index?' + $httpParamSerializer({
                                 'angular': true,
                                 'filter[Service.id][]': objectIds
                             });

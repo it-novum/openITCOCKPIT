@@ -57,30 +57,30 @@ angular.module('openITCOCKPIT').directive('mapeditorView', function($http, $time
                 switch(item.type){
                     case 'host':
                         if($scope.acl.hosts.browser){
-                            url = '/hosts/browser/' + item.object_id;
+                            url = '/#!/hosts/browser/' + item.object_id;
                         }
                         break;
 
                     case 'service':
                         if($scope.acl.services.browser){
-                            url = '/services/browser/' + item.object_id;
+                            url = '/#!/services/browser/' + item.object_id;
                         }
                         break;
 
                     case 'hostgroup':
                         if($scope.acl.hostgroups.extended){
-                            url = '/hostgroups/extended/' + item.object_id;
+                            url = '/#!/hostgroups/extended/' + item.object_id;
                         }
                         break;
 
                     case 'servicegroup':
                         if($scope.acl.servicegroups.extended){
-                            url = '/servicegroups/extended/' + item.object_id;
+                            url = '/#!/servicegroups/extended/' + item.object_id;
                         }
                         break;
 
                     case 'map':
-                        url = '/map_module/mapeditors/view/' + item.object_id;
+                        url = '/#!/map_module/mapeditors/view/' + item.object_id;
                         break;
 
                     default:

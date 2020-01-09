@@ -607,6 +607,48 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param int $id
+     * @return array|Host|null
+     */
+    public function getHostByIdWithHosttemplateForEditDetails($id) {
+        $query = $this->find()
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'HostsToContainersSharing',
+                'Contacts'      => [
+                    'fields' => [
+                        'ContactsToHosts.host_id',
+                        'Contacts.id'
+                    ]
+                ],
+                'Contactgroups' => [
+                    'fields' => [
+                        'ContactgroupsToHosts.host_id',
+                        'Contactgroups.id'
+                    ]
+                ],
+                'Hosttemplates' => [
+                    'Contacts' => [
+                        'fields' => [
+                            'ContactsToHosttemplates.hosttemplate_id',
+                            'Contacts.id'
+                        ]
+                    ],
+                    'Contactgroups' => [
+                        'fields' => [
+                            'ContactgroupsToHosttemplates.hosttemplate_id',
+                            'Contactgroups.id'
+                        ]
+                    ]
+                ]
+            ])
+            ->first();
+        return $query;
+    }
+
+    /**
      * @param int|array $ids
      * @return array
      */

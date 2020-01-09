@@ -1260,9 +1260,10 @@ class MapeditorsController extends AppController {
             if ($this->request->getData('Mapitem.show_label') !== null) {
                 $item['show_label'] = (int)$this->request->getData('Mapitem.show_label');
             }
-            $MapItemsTable->patchEntity($itemEntity, $item);
-            if ($MapItemsTable->save($itemEntity)) {
-                $mapitem = new Mapitem($item);
+            $itemEntity = $MapItemsTable->patchEntity($itemEntity, $item);
+            $MapItemsTable->save($itemEntity);
+            if (!$itemEntity->hasErrors()) {
+                $mapitem = new Mapitem($itemEntity->toArray());
 
                 $this->set('Mapitem', [
                     'Mapitem' => $mapitem->toArray()

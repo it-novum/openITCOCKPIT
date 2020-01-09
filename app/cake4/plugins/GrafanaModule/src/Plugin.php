@@ -60,7 +60,7 @@ class Plugin extends BasePlugin {
     public function routes(RouteBuilder $routes): void {
         $routes->plugin(
             'GrafanaModule',
-            ['path' => '/grafana-module'],
+            ['path' => '/grafana_module'],
             function (RouteBuilder $builder) {
                 // Add custom routes here
 

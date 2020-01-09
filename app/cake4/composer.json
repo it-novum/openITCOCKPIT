@@ -87,8 +87,7 @@
         "psr-4": {
             "App\\": "src/",
             "itnovum\\openITCOCKPIT\\": "src/itnovum/openITCOCKPIT/",
-            "Statusengine\\": "src/Statusengine/",
-            "MapModule\\": "./plugins/MapModule/src/"
+            "Statusengine\\": "src/Statusengine/"
         },
         "files": [
             "src/3rd/imageSmoothArc.php"
@@ -97,8 +96,7 @@
     "autoload-dev": {
         "psr-4": {
             "App\\Test\\": "tests/",
-            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/",
-            "MapModule\\Test\\": "./plugins/MapModule/tests/"
+            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
         },
         "files": [
             "src/3rd/imageSmoothArc.php"
