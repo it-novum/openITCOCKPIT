@@ -22,17 +22,16 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 ?>
-<div class="col-xs-12">
-    <div class="col-xs-12 col-lg-3 hidden-mobile text-primary"
+<div class="row">
+    <div class="col-lg-3 hidden-mobile text-primary"
          ng-class="{'text-success': macro.objecttype_id === 512 || macro.objecttype_id === 4096}">
         <div style="padding-top: 29px; width: 100%;">
-            <!-- spacer for nice layout -->
         </div>
         <span ng-show="macro.name">
             $_{{macroName}}{{macro.name}}$
         </span>
     </div>
-    <div class="col-xs-12 col-lg-4 required" ng-class="{'has-error-force': errors.name}">
+    <div class="col-lg-4 required" ng-class="{'has-error-force': errors.name}">
         <label class="control-label">
             <?php echo __('Name'); ?>
         </label>
@@ -42,7 +41,7 @@
             <div class="text-danger">{{ error }}</div>
         </div>
     </div>
-    <div class="col-xs-12 col-lg-4 required" ng-class="{'has-error-force': errors.name}">
+    <div class="col-lg-4 required" ng-class="{'has-error-force': errors.name}">
         <label class="control-label">
             <?php echo __('Value'); ?>
         </label>
@@ -51,12 +50,12 @@
             <div class="text-danger">{{ error }}</div>
         </div>
     </div>
-    <div class="col-xs-12 col-sm-1">
-        <label><!-- just a spacer for a nice layout --> &nbsp;</label>
+    <div class="col-lg-1">
+        <label></label>
         <br>
         <button type="button" class="btn btn-default btn-sx txt-color-red" ng-click="callback(macro, index)"
                 style="margin-top: 7px;">
-            <i class="fa fa-trash-o fa-lg"></i>
+            <i class="fa fa-trash fa-lg"></i>
         </button>
     </div>
 </div>
