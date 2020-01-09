@@ -278,7 +278,7 @@
                                                 data-toggle="dropdown">
                                             <i class="caret"></i>
                                         </button>
-                                        <div class="dropdown-menu">
+                                        <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
                                                 <a ui-sref="ContactsEdit({id:contact.Contact.id})"
                                                    ng-if="contact.Contact.allow_edit"
