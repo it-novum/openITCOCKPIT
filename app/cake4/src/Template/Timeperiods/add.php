@@ -42,7 +42,7 @@ $weekdays = [
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="TimeperiodsIndex">
-            <i class="fa fa-cog"></i> <?php echo __('Time periods'); ?>
+            <i class="fa fa-clock-o"></i> <?php echo __('Time periods'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
