@@ -925,34 +925,67 @@ class HostsController extends AppController {
         }
 
         /** @var $HostsTable HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Containers');
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $hostData = $this->request->getData('data.sourceHosts');
+            $hostIds = $this->request->getData('data.hosts');
             $detailsToEdit = $this->request->getData('data.details');
-            print_r($detailsToEdit);
-            return;
-            //die('END !!!');
-            //debug(func_get_args());
-            foreach ($hostData as $host) {
-                $primaryContainer = $host['container_id'];
-                $sharedContainers = Hash::extract(
-                    $host,
-                    'hosts_to_containers_sharing.{n}.HostsToContainers[container_id!='.$primaryContainer.'].container_id'
-                );
+            foreach ($hostIds as $hostId) {
+                $sharedContainers = [];
+                $hostObject = $HostsTable->getHostByIdWithHosttemplateForEditDetails($hostId);
+                $primaryContainerId = $hostObject->get('container_id');
+                foreach ($hostObject->get('hosts_to_containers_sharing') as $container) {
+                    $containerId = $container->get('id');
+                    if($primaryContainerId !== $containerId){
+                        $sharedContainers[] = $containerId;
+                    }
+
+                }
+
                 $hostSharingPermissions = new HostSharingPermissions(
-                    $primaryContainer,
+                    $primaryContainerId,
                     $this->hasRootPrivileges,
                     $sharedContainers,
                     $this->MY_RIGHTS
                 );
+                print_r('Primary ID : '.$primaryContainerId.' - ');
+                print_r($sharedContainers);
+                debug($hostObject->get('hosttemplate'));
                 $allowSharing = $hostSharingPermissions->allowSharing();
                 if ($allowSharing) {
+                    $HostMergerForView = new HostMergerForView(['Host' => $hostObject->toArray()], $hostObject->get('hosttemplate'));
+                    $mergedHost = $HostMergerForView->getDataForView();
+debug($mergedHost);
 
+                    if ($this->request->getData('edit_sharing') == 1) {
+                        if (!empty($this->request->getData('Host.hosts_to_containers_sharing._ids'))) {
+                            if ($this->request->getData('keepSharedContainers') == 1) {
+                                $containersIds = array_unique(
+                                    array_merge(
+                                        $primaryContainerId,
+                                        $sharedContainers,
+                                        $this->request->getData('Host.hosts_to_containers_sharing._ids')
+                                    )
+                                );
+                            } else {
+                                $containersIds = array_unique(
+                                    array_merge(
+                                        $primaryContainerId,
+                                        $this->request->getData('Host.hosts_to_containers_sharing._ids')
+                                    )
+                                );
+                            }
+                            $hostObject->set([
+                                'hosts_to_containers_sharing' => [
+                                    '_ids' => $containersIds
+                                ]
+                            ]);
+                        }
+                    }
                 }
 
-debug($allowSharing);
-continue;
+                debug($allowSharing);
+                continue;
                 $data = ['Host' => []];
                 $host = $HostsTable->getHostById($host_id);
                 if (!empty($host)) {
@@ -1077,11 +1110,11 @@ continue;
                     unset($data);
                 }
             }
-         /*
-            $this->setFlash(__('Host modified successfully'));
-            $redirect = $this->Host->redirect($this->request->params, ['action' => 'index']);
-            $this->redirect($redirect);
-*/
+            /*
+               $this->setFlash(__('Host modified successfully'));
+               $redirect = $this->Host->redirect($this->request->params, ['action' => 'index']);
+               $this->redirect($redirect);
+   */
             return;
         }
 

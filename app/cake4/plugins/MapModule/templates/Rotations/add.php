@@ -31,7 +31,7 @@
             <span>>
                 <?php echo __('Rotation'); ?>
             </span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+            <div class="third_level"> <?php echo __('Add'); ?></div>
         </h1>
     </div>
 </div>

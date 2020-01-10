@@ -27,12 +27,15 @@ declare(strict_types=1);
 
 namespace MapModule\Model\Table;
 
+use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Table\ContainersTable;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use MapModule\Model\Entity\Rotation;
 
 /**
@@ -53,6 +56,10 @@ use MapModule\Model\Entity\Rotation;
  * @mixin TimestampBehavior
  */
 class RotationsTable extends Table {
+
+    use PaginationAndScrollIndexTrait;
+    use Cake2ResultTableTrait;
+
     /**
      * Initialize method
      *
@@ -68,13 +75,20 @@ class RotationsTable extends Table {
 
         $this->addBehavior('Timestamp');
 
-        $this->hasMany('MapsToRotations', [
-            'foreignKey' => 'rotation_id',
-            'className'  => 'MapModule.MapsToRotations',
+        $this->belongsToMany('Containers', [
+            'className'        => 'Containers',
+            'foreignKey'       => 'rotation_id',
+            'targetForeignKey' => 'container_id',
+            'joinTable'        => 'rotations_to_containers',
+            'saveStrategy'     => 'replace',
         ]);
-        $this->hasMany('RotationsToContainers', [
-            'foreignKey' => 'rotation_id',
-            'className'  => 'MapModule.RotationsToContainers',
+
+        $this->belongsToMany('Maps', [
+            'className'        => 'MapModule.Maps',
+            'foreignKey'       => 'rotation_id',
+            'targetForeignKey' => 'map_id',
+            'joinTable'        => 'maps_to_rotations',
+            'saveStrategy'     => 'replace',
         ]);
     }
 
@@ -100,5 +114,66 @@ class RotationsTable extends Table {
             ->notEmptyString('interval');
 
         return $validator;
+    }
+
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Rotations.id' => $id]);
+    }
+
+    /**
+     * @param array $indexFilter
+     * @param array $orderForPaginator
+     * @param int|null $limit
+     * @param PaginateOMat|null $PaginateOMat
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getAll(array $indexFilter, array $orderForPaginator, int $limit = null, PaginateOMat $PaginateOMat = null, $MY_RIGHTS = []) {
+        if (!is_array($MY_RIGHTS)) {
+            $MY_RIGHTS = [$MY_RIGHTS];
+        }
+
+        $query = $this->find()
+            ->contain([
+                'Maps',
+                'Containers'
+            ]);
+
+        if (!empty($indexFilter)) {
+            $query->where($indexFilter);
+        }
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
+        if ($limit !== null) {
+            $query->limit($limit);
+        }
+
+        $queryResult = $query->order($orderForPaginator)
+            ->group(['Rotations.id'])
+            ->enableAutoFields(true)
+            ->all();
+
+        if (empty($queryResult)) {
+            $result = [];
+        } else {
+            if ($PaginateOMat === null) {
+                $result = $query->toArray();
+            } else {
+                if ($PaginateOMat->useScroll()) {
+                    $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+                } else {
+                    $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+                }
+            }
+        }
+
+        return $result;
     }
 }

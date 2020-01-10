@@ -31,7 +31,7 @@
             <span>>
                 <?php echo __('Rotation'); ?>
             </span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+            <div class="third_level"> <?php echo __('Edit'); ?></div>
         </h1>
     </div>
 </div>
@@ -44,7 +44,7 @@
         <span class="widget-icon"> <i class="fa fa-retweet"></i> </span>
         <h2><?php echo __('Edit map rotation'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php if ($this->Acl->hasPermission('delete')): ?>
+            <?php if ($this->Acl->hasPermission('delete', 'rotations', 'MapModule')): ?>
                 <button type="button" class="btn btn-danger btn-xs" ng-click="confirmDelete(rotation)">
                     <i class="fa fa-trash-o"></i>
                     <?php echo __('Delete'); ?>

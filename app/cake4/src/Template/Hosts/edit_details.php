@@ -98,7 +98,7 @@
                                                                            id="keepExistingSharedContainers"
                                                                            ng-true-value="1"
                                                                            ng-false-value="0"
-                                                                           ng-disabled="!editSharedContainers"
+                                                                           ng-disabled="!post.editSharedContainers"
                                                                            ng-model="post.keepSharedContainers">
                                                                     <i class="checkbox-primary disabled"></i>
                                                                     <?php echo __('Keep existing'); ?>
@@ -112,40 +112,40 @@
                                         <div class="form-group">
                                             <label class="col-xs-12 col-lg-2 control-label">
                                                 <button class="btn btn-xs width-25"
-                                                        ng-class="{ 'btn-primary': !editDescription, 'btn-success': editDescription }"
-                                                        ng-click="editDescription = !editDescription"
+                                                        ng-class="{ 'btn-primary': !post.editDescription, 'btn-success': post.editDescription }"
+                                                        ng-click="post.editDescription = !post.editDescription"
                                                         title="<?php echo __('Unlock for edit'); ?>">
                                                     <i class="fa fa-lock fa-lock"
-                                                       ng-class="{ 'fa-lock': !editDescription, 'fa-unlock': editDescription }"></i>
+                                                       ng-class="{ 'fa-lock': !post.editDescription, 'fa-unlock': post.editDescription }"></i>
                                                 </button>
                                                 <?php echo __('Description'); ?>
                                             </label>
                                             <div class="col-xs-12 col-lg-10"
-                                                 ng-class="{ 'not-edit-area': !editDescription}">
+                                                 ng-class="{ 'not-edit-area': !post.editDescription}">
                                                 <input
                                                     class="form-control"
                                                     type="text"
-                                                    ng-disabled="!editDescription"
+                                                    ng-disabled="!post.editDescription"
                                                     ng-model="post.Host.description">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="col-xs-12 col-lg-2 control-label">
                                                 <button class="btn btn-xs width-25"
-                                                        name="editTags"
-                                                        ng-class="{ 'btn-primary': !editTags, 'btn-success': editTags }"
-                                                        ng-click="editTags = !editTags"
+                                                        name="post.editTags"
+                                                        ng-class="{ 'btn-primary': !post.editTags, 'btn-success': post.editTags }"
+                                                        ng-click="post.editTags = !post.editTags"
                                                         title="<?php echo __('Unlock for edit'); ?>">
                                                     <i class="fa fa-lock fa-lock"
-                                                       ng-class="{ 'fa-lock': !editTags, 'fa-unlock': editTags }"></i>
+                                                       ng-class="{ 'fa-lock': !post.editTags, 'fa-unlock': post.editTags }"></i>
                                                 </button>
                                                 <?php echo __('Tags'); ?>
                                             </label>
                                             <div class="col-xs-12 col-lg-10"
-                                                 ng-class="{ 'not-edit-area': !editTags}">
+                                                 ng-class="{ 'not-edit-area': !post.editTags}">
                                                 <input class="form-control tagsinput"
                                                        type="text"
-                                                       ng-disabled="!editTags"
+                                                       ng-disabled="!post.editTags"
                                                        ng-model="post.Host.tags">
                                                 <div class="help-block">
                                                     <?php echo __('Press return to separate tags'); ?>
@@ -156,16 +156,16 @@
                                             <label class="col-xs-12 col-lg-2 control-label">
                                                 <button class="btn btn-xs width-25"
                                                         name="editPriority"
-                                                        ng-class="{ 'btn-primary': !editPriority, 'btn-success': editPriority }"
-                                                        ng-click="editPriority = !editPriority"
+                                                        ng-class="{ 'btn-primary': !post.editPriority, 'btn-success': post.editPriority }"
+                                                        ng-click="post.editPriority = !post.editPriority"
                                                         title="<?php echo __('Unlock for edit'); ?>">
                                                     <i class="fa fa-lock fa-lock"
-                                                       ng-class="{ 'fa-lock': !editPriority, 'fa-unlock': editPriority }"></i>
+                                                       ng-class="{ 'fa-lock': !post.editPriority, 'fa-unlock': post.editPriority }"></i>
                                                 </button>
                                                 <?php echo __('Priority'); ?>
                                             </label>
                                             <div class="col-xs-12 col-lg-10"
-                                                 ng-class="{ 'not-edit-area': !editPriority}">
+                                                 ng-class="{ 'not-edit-area': !post.editPriority}">
                                                 <priority-directive priority="post.Host.priority"
                                                                     callback="setPriority"></priority-directive>
                                             </div>
@@ -191,15 +191,15 @@
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <button class="btn btn-xs width-25"
                                                     name="editCheckInterval"
-                                                    ng-class="{ 'btn-primary': !editCheckInterval, 'btn-success': editCheckInterval }"
-                                                    ng-click="editCheckInterval = !editCheckInterval"
+                                                    ng-class="{ 'btn-primary': !post.editCheckInterval, 'btn-success': post.editCheckInterval }"
+                                                    ng-click="post.editCheckInterval = !post.editCheckInterval"
                                                     title="<?php echo __('Unlock for edit'); ?>">
                                                 <i class="fa fa-lock fa-lock"
-                                                   ng-class="{ 'fa-lock': !editCheckInterval, 'fa-unlock': editCheckInterval }"></i>
+                                                   ng-class="{ 'fa-lock': !post.editCheckInterval, 'fa-unlock': post.editCheckInterval }"></i>
                                             </button>
                                             <?php echo __('Check interval'); ?>
                                         </label>
-                                        <div ng-class="{ 'not-edit-area': !editCheckInterval}">
+                                        <div ng-class="{ 'not-edit-area': !post.editCheckInterval}">
                                             <interval-input-directive
                                                 interval="post.Host.check_interval"></interval-input-directive>
                                         </div>
@@ -207,16 +207,16 @@
                                     <div class="form-group">
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <button class="btn btn-xs width-25"
-                                                    name="editRetryInterval"
-                                                    ng-class="{ 'btn-primary': !editRetryInterval, 'btn-success': editRetryInterval }"
-                                                    ng-click="editRetryInterval = !editRetryInterval"
+                                                    name="post.editRetryInterval"
+                                                    ng-class="{ 'btn-primary': !post.editRetryInterval, 'btn-success': post.editRetryInterval }"
+                                                    ng-click="post.editRetryInterval = !post.editRetryInterval"
                                                     title="<?php echo __('Unlock for edit'); ?>">
                                                 <i class="fa fa-lock fa-lock"
-                                                   ng-class="{ 'fa-lock': !editRetryInterval, 'fa-unlock': editRetryInterval }"></i>
+                                                   ng-class="{ 'fa-lock': !post.editRetryInterval, 'fa-unlock': post.editRetryInterval }"></i>
                                             </button>
                                             <?php echo __('Retry interval'); ?>
                                         </label>
-                                        <div ng-class="{ 'not-edit-area': !editRetryInterval}">
+                                        <div ng-class="{ 'not-edit-area': !post.editRetryInterval}">
                                             <interval-input-directive
                                                 interval="post.Host.retry_interval"></interval-input-directive>
                                         </div>
@@ -226,16 +226,16 @@
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <button class="btn btn-xs width-25"
                                                     name="editMaxNumberOfCheckAttempts"
-                                                    ng-class="{ 'btn-primary': !editMaxNumberOfCheckAttempts, 'btn-success': editMaxNumberOfCheckAttempts }"
-                                                    ng-click="editMaxNumberOfCheckAttempts = !editMaxNumberOfCheckAttempts"
+                                                    ng-class="{ 'btn-primary': !post.editMaxNumberOfCheckAttempts, 'btn-success': post.editMaxNumberOfCheckAttempts }"
+                                                    ng-click="post.editMaxNumberOfCheckAttempts = !post.editMaxNumberOfCheckAttempts"
                                                     title="<?php echo __('Unlock for edit'); ?>">
                                                 <i class="fa fa-lock fa-lock"
-                                                   ng-class="{ 'fa-lock': !editMaxNumberOfCheckAttempts, 'fa-unlock': editMaxNumberOfCheckAttempts }"></i>
+                                                   ng-class="{ 'fa-lock': !post.editMaxNumberOfCheckAttempts, 'fa-unlock': post.editMaxNumberOfCheckAttempts }"></i>
                                             </button>
                                             <?php echo __('Max. number of check attempts'); ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-7"
-                                             ng-class="{ 'not-edit-area': !editMaxNumberOfCheckAttempts}">
+                                             ng-class="{ 'not-edit-area': !post.editMaxNumberOfCheckAttempts}">
                                             <div class="btn-group">
                                                 <?php for ($i = 1; $i <= 10; $i++): ?>
                                                     <button
@@ -253,7 +253,7 @@
                                                 class="form-control"
                                                 type="number"
                                                 min="0"
-                                                ng-disabled="!editMaxNumberOfCheckAttempts"
+                                                ng-disabled="!post.editMaxNumberOfCheckAttempts"
                                                 ng-model="post.Host.max_check_attempts">
                                         </div>
                                         <div class="col-xs-12 col-lg-offset-2 col-lg-12"
@@ -288,15 +288,15 @@
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <button class="btn btn-xs width-25"
                                                     name="editNotificationInterval"
-                                                    ng-class="{ 'btn-primary': !editNotificationInterval, 'btn-success': editNotificationInterval }"
-                                                    ng-click="editNotificationInterval = !editNotificationInterval"
+                                                    ng-class="{ 'btn-primary': !post.editNotificationInterval, 'btn-success': post.editNotificationInterval }"
+                                                    ng-click="post.editNotificationInterval = !post.editNotificationInterval"
                                                     title="<?php echo __('Unlock for edit'); ?>">
                                                 <i class="fa fa-lock fa-lock"
-                                                   ng-class="{ 'fa-lock': !editNotificationInterval, 'fa-unlock': editNotificationInterval }"></i>
+                                                   ng-class="{ 'fa-lock': !post.editNotificationInterval, 'fa-unlock': post.editNotificationInterval }"></i>
                                             </button>
                                             <?php echo __('Notification interval'); ?>
                                         </label>
-                                        <div ng-class="{ 'not-edit-area': !editNotificationInterval}">
+                                        <div ng-class="{ 'not-edit-area': !post.editNotificationInterval}">
                                             <interval-input-directive
                                                 interval="post.Host.notification_interval"></interval-input-directive>
                                         </div>
@@ -306,22 +306,22 @@
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <button class="btn btn-xs width-25"
                                                     name="editContacts"
-                                                    ng-class="{ 'btn-primary': !editContacts, 'btn-success': editContacts }"
-                                                    ng-click="editContacts = !editContacts"
+                                                    ng-class="{ 'btn-primary': !post.editContacts, 'btn-success': post.editContacts }"
+                                                    ng-click="post.editContacts = !post.editContacts"
                                                     title="<?php echo __('Unlock for edit'); ?>">
                                                 <i class="fa fa-lock fa-lock"
-                                                   ng-class="{ 'fa-lock': !editContacts, 'fa-unlock': editContacts }"></i>
+                                                   ng-class="{ 'fa-lock': !post.editContacts, 'fa-unlock': post.editContacts }"></i>
                                             </button>
                                             <?php echo __('Contacts'); ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-10"
-                                             ng-class="{ 'not-edit-area': !editContacts}">
+                                             ng-class="{ 'not-edit-area': !post.editContacts}">
                                             <select
                                                 id="ContactsPeriodSelect"
                                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                                 class="form-control"
                                                 chosen="contacts"
-                                                ng-disabled="!editContacts"
+                                                ng-disabled="!post.editContacts"
                                                 multiple
                                                 ng-options="contact.key as contact.value for contact in contacts"
                                                 ng-model="post.Host.contacts._ids">
@@ -335,7 +335,7 @@
                                                                    id="keepExistingContacts"
                                                                    ng-true-value="1"
                                                                    ng-false-value="0"
-                                                                   ng-disabled="!editContacts"
+                                                                   ng-disabled="!post.editContacts"
                                                                    ng-model="post.keepContacts">
                                                             <i class="checkbox-primary disabled"></i>
                                                             <?php echo __('Keep existing'); ?>
@@ -350,22 +350,22 @@
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <button class="btn btn-xs width-25"
                                                     name="editContactgroups"
-                                                    ng-class="{ 'btn-primary': !editContactgroups, 'btn-success': editContactgroups }"
-                                                    ng-click="editContactgroups = !editContactgroups"
+                                                    ng-class="{ 'btn-primary': !post.editContactgroups, 'btn-success': post.editContactgroups }"
+                                                    ng-click="post.editContactgroups = !post.editContactgroups"
                                                     title="<?php echo __('Unlock for edit'); ?>">
                                                 <i class="fa fa-lock fa-lock"
-                                                   ng-class="{ 'fa-lock': !editContactgroups, 'fa-unlock': editContactgroups }"></i>
+                                                   ng-class="{ 'fa-lock': !post.editContactgroups, 'fa-unlock': post.editContactgroups }"></i>
                                             </button>
                                             <?php echo __('Contact groups'); ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-10"
-                                             ng-class="{ 'not-edit-area': !editContactgroups}">
+                                             ng-class="{ 'not-edit-area': !post.editContactgroups}">
                                             <select
                                                 id="ContactgroupsSelect"
                                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                                 class="form-control"
                                                 chosen="contactgroups"
-                                                ng-disabled="!editContactgroups"
+                                                ng-disabled="!post.editContactgroups"
                                                 multiple
                                                 ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
                                                 ng-model="post.Host.contactgroups._ids">
@@ -379,7 +379,7 @@
                                                                    id="keepExistingContactgroups"
                                                                    ng-true-value="1"
                                                                    ng-false-value="0"
-                                                                   ng-disabled="!editContactgroups"
+                                                                   ng-disabled="!post.editContactgroups"
                                                                    ng-model="post.keepContactgroups">
                                                             <i class="checkbox-primary disabled"></i>
                                                             <?php echo __('Keep existing'); ?>
@@ -409,20 +409,20 @@
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <button class="btn btn-xs width-25"
                                                     name="editHostUrl"
-                                                    ng-class="{ 'btn-primary': !editHostUrl, 'btn-success': editHostUrl }"
-                                                    ng-click="editHostUrl = !editHostUrl"
+                                                    ng-class="{ 'btn-primary': !post.editHostUrl, 'btn-success': post.editHostUrl }"
+                                                    ng-click="post.editHostUrl = !post.editHostUrl"
                                                     title="<?php echo __('Unlock for edit'); ?>">
                                                 <i class="fa fa-lock fa-lock"
-                                                   ng-class="{ 'fa-lock': !editHostUrl, 'fa-unlock': editHostUrl }"></i>
+                                                   ng-class="{ 'fa-lock': !post.editHostUrl, 'fa-unlock': post.editHostUrl }"></i>
                                             </button>
                                             <?php echo __('Host URL'); ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-10"
-                                             ng-class="{ 'not-edit-area': !editHostUrl}">
+                                             ng-class="{ 'not-edit-area': !post.editHostUrl}">
                                             <input
                                                 class="form-control"
                                                 placeholder="https://issues.example.org?host=$HOSTNAME$"
-                                                ng-disabled="!editHostUrl"
+                                                ng-disabled="!post.editHostUrl"
                                                 type="text"
                                                 ng-model="post.Host.host_url">
                                             <div class="help-block">
@@ -435,19 +435,19 @@
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <button class="btn btn-xs width-25"
                                                     name="editNotes"
-                                                    ng-class="{ 'btn-primary': !editNotes, 'btn-success': editNotes }"
-                                                    ng-click="editNotes = !editNotes"
+                                                    ng-class="{ 'btn-primary': !post.editNotes, 'btn-success': post.editNotes }"
+                                                    ng-click="post.editNotes = !post.editNotes"
                                                     title="<?php echo __('Unlock for edit'); ?>">
                                                 <i class="fa fa-lock fa-lock"
-                                                   ng-class="{ 'fa-lock': !editNotes, 'fa-unlock': editNotes }"></i>
+                                                   ng-class="{ 'fa-lock': !post.editNotes, 'fa-unlock': post.editNotes }"></i>
                                             </button>
                                             <?php echo __('Notes'); ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-10"
-                                             ng-class="{ 'not-edit-area': !editNotes}">
+                                             ng-class="{ 'not-edit-area': !post.editNotes}">
                                             <input
                                                 class="form-control"
-                                                ng-disabled="!editNotes"
+                                                ng-disabled="!post.editNotes"
                                                 type="text"
                                                 ng-model="post.Host.notes">
                                         </div>
