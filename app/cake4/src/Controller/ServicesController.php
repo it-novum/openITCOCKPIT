@@ -1735,20 +1735,17 @@ class ServicesController extends AppController {
         return;
     }
 
-    /**
-     * @deprecated
-     */
+
     public function loadServicesByContainerId() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $this->Service->virtualFields['servicename'] = 'CONCAT(Host.name,"/",IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name))';
-        $containerId = $this->request->getQuery('containerId');
+        $containerId = $this->request->getQuery('containerId', 0);
         $selected = $this->request->getQuery('selected');
         $ServiceFilter = new ServiceFilter($this->request);
         $containerIds = [ROOT_CONTAINER, $containerId];
 
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         if ($containerId == ROOT_CONTAINER) {
             //Don't panic! Only root users can edit /root objects ;)
@@ -1760,11 +1757,14 @@ class ServicesController extends AppController {
         $ServiceCondition->setContainerIds($containerIds);
         $ServiceCondition->setIncludeDisabled(false);
 
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
         $services = Api::makeItJavaScriptAble(
-            $this->Service->getServicesForAngular($ServiceCondition, $selected)
+            $ServicesTable->getServicesForAngular($ServiceCondition, $selected)
         );
 
-        $this->set(compact(['services']));
+        $this->set('services', $services);
         $this->viewBuilder()->setOption('serialize', ['services']);
     }
 

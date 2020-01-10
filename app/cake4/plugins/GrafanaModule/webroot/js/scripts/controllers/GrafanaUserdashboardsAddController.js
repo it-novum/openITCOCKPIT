@@ -35,7 +35,7 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('GrafanaUserdashboardsEditor', {id: result.data.id});
+                $state.go('GrafanaUserdashboardsEditor', {id: result.data.GrafanaUserdashboard.id});
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){

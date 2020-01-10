@@ -29,5 +29,5 @@ namespace GrafanaModule\Controller;
 
 use App\Controller\AppController as BaseController;
 
-class AppController extends BaseController {
+class AppController extends \App\Controller\AppController {
 }

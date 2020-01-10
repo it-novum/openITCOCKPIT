@@ -13,7 +13,7 @@
             <span>>
                 <?php echo __('User Dashboards'); ?>
             </span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+            <div class="third_level"> <?= __('Editor'); ?></div>
         </h1>
     </div>
 
@@ -32,11 +32,11 @@
         <?php
         $msg = __('Grafana Configuration');
         if ($this->Acl->hasPermission('index', 'GrafanaConfiguration', 'GrafanaModule')):
-            $msg = sprintf('<a href="/grafana_module/grafana_configuration">%s</a>', $msg);
+            $msg = sprintf('<a ui-sref="GrafanaConfigurationIndex">%s</a>', $msg);
         endif;
         ?>
 
-        <?php echo __('A valid %s is required, before this feature can be used.', $msg); ?>
+        <?php echo __('A valid {0} is required, before this feature can be used.', $msg); ?>
     </div>
 <?php endif; ?>
 
@@ -54,7 +54,7 @@
                     <?php echo __('Edit settings'); ?>
                 </a>
             <?php endif; ?>
-            <a ui-sref="GrafanaUserdashboardsIndex" class="btn btn-default btn-xs" iconcolor="white">
+            <a ui-sref="GrafanaUserdashboardsIndex" class="btn btn-default btn-xs">
                 <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
             </a>
         </div>

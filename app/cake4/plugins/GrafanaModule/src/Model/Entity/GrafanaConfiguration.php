@@ -37,9 +37,9 @@ use Cake\ORM\Entity;
  * @property string $api_url
  * @property string $api_key
  * @property string $graphite_prefix
- * @property int $use_https
- * @property int $use_proxy
- * @property int $ignore_ssl_certificate
+ * @property bool $use_https
+ * @property bool $use_proxy
+ * @property bool $ignore_ssl_certificate
  * @property string $dashboard_style
  * @property FrozenTime $created
  * @property FrozenTime $modified
@@ -55,14 +55,15 @@ class GrafanaConfiguration extends Entity {
      * @var array
      */
     protected $_accessible = [
-        'api_url'                => true,
-        'api_key'                => true,
-        'graphite_prefix'        => true,
-        'use_https'              => true,
-        'use_proxy'              => true,
-        'ignore_ssl_certificate' => true,
-        'dashboard_style'        => true,
-        'created'                => true,
-        'modified'               => true,
+        'api_url'                                    => true,
+        'api_key'                                    => true,
+        'graphite_prefix'                            => true,
+        'use_https'                                  => true,
+        'use_proxy'                                  => true,
+        'ignore_ssl_certificate'                     => true,
+        'dashboard_style'                            => true,
+        'created'                                    => true,
+        'modified'                                   => true,
+        'grafana_configuration_hostgroup_membership' => true
     ];
 }

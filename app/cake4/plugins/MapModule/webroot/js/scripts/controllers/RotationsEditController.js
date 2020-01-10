@@ -24,18 +24,18 @@ angular.module('openITCOCKPIT')
                 var selectedContainer = [];
                 var selectedMaps = [];
 
-                for(var key in $scope.rotation.Container){
-                    selectedContainer.push(parseInt($scope.rotation.Container[key].id, 10));
+                for(var key in $scope.rotation.containers){
+                    selectedContainer.push(parseInt($scope.rotation.containers[key].id, 10));
                 }
 
-                for(var key in $scope.rotation.Map){
-                    selectedMaps.push(parseInt($scope.rotation.Map[key].id, 10));
+                for(var key in $scope.rotation.maps){
+                    selectedMaps.push(parseInt($scope.rotation.maps[key].id, 10));
                 }
 
                 $scope.post.Rotation.container_id = selectedContainer;
                 $scope.post.Rotation.Map = selectedMaps;
-                $scope.post.Rotation.name = $scope.rotation.Rotation.name;
-                $scope.post.Rotation.interval = parseInt($scope.rotation.Rotation.interval, 10);
+                $scope.post.Rotation.name = $scope.rotation.name;
+                $scope.post.Rotation.interval = parseInt($scope.rotation.interval, 10);
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');

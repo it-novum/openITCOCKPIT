@@ -14,7 +14,7 @@
             <span>>
                 <?php echo __('Configuration'); ?>
             </span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+            <div class="third_level"> <?php echo __('Overview'); ?></div>
         </h1>
     </div>
 </div>
@@ -34,10 +34,10 @@
                         </label>
                         <div class="col col-xs-10">
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    placeholder="metrics.example.org"
-                                    ng-model="post.GrafanaConfiguration.api_url">
+                                class="form-control"
+                                type="text"
+                                placeholder="metrics.example.org"
+                                ng-model="post.api_url">
                             <div ng-repeat="error in errors.api_url">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -50,10 +50,10 @@
                         </label>
                         <div class="col col-xs-10">
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    placeholder="ZXhhbXBsZV9ncmFmYW5hX2FwaV9rZXk="
-                                    ng-model="post.GrafanaConfiguration.api_key">
+                                class="form-control"
+                                type="text"
+                                placeholder="ZXhhbXBsZV9ncmFmYW5hX2FwaV9rZXk="
+                                ng-model="post.api_key">
                             <div ng-repeat="error in errors.api_key">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -67,10 +67,10 @@
                         </label>
                         <div class="col col-xs-10">
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    placeholder="openitcockpit"
-                                    ng-model="post.GrafanaConfiguration.graphite_prefix">
+                                class="form-control"
+                                type="text"
+                                placeholder="openitcockpit"
+                                ng-model="post.graphite_prefix">
                             <div ng-repeat="error in errors.graphite_prefix">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -78,39 +78,70 @@
                     </div>
 
                     <div class="form-group">
-                        <?php
-                        echo $this->Form->fancyCheckbox('GrafanaConfiguration.use_https', [
-                            'caption'          => __('Use HTTPS'),
-                            'wrapGridClass'    => 'col col-md-1',
-                            'captionGridClass' => 'col col-md-2',
-                            'captionClass'     => 'control-label',
-                            'ng-model'         => 'post.GrafanaConfiguration.use_https'
-                        ]);
-                        ?>
+                        <label class="col col-md-2 control-label" for="enableHttps">
+                            <?php echo __('Connect via HTTPS'); ?>
+                        </label>
+
+
+                        <div class="col-xs-10 smart-form">
+                            <label class="checkbox small-checkbox-label no-required">
+                                <input type="checkbox" name="checkbox"
+                                       id="enableHttps"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       ng-model="post.use_https">
+                                <i class="checkbox-primary"></i>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <?php
-                        echo $this->Form->fancyCheckbox('GrafanaConfiguration.use_proxy', [
-                            'caption'          => __('Use Proxy'),
-                            'wrapGridClass'    => 'col col-md-1',
-                            'captionGridClass' => 'col col-md-2',
-                            'captionClass'     => 'control-label',
-                            'ng-model'         => 'post.GrafanaConfiguration.use_proxy'
-                        ]);
-                        ?>
+                        <label class="col col-md-2 control-label" for="use_proxy">
+                            <?php echo __('Use Proxy'); ?>
+                        </label>
+
+
+                        <div class="col-xs-10 smart-form">
+                            <label class="checkbox small-checkbox-label no-required">
+                                <input type="checkbox" name="checkbox"
+                                       id="use_proxy"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       ng-model="post.use_proxy">
+                                <i class="checkbox-primary"></i>
+                            </label>
+                            <div class="help-block">
+                                <?php
+                                if ($this->Acl->hasPermission('index', 'proxy', '')):
+                                    echo __('Determine if the <a ui-sref="ProxyIndex">configured proxy</a> shoud be used.');
+                                else:
+                                    echo __('Determine if the configured proxy shoud be used.');
+                                endif;
+                                ?>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <?php
-                        echo $this->Form->fancyCheckbox('GrafanaConfiguration.ignore_ssl_certificate', [
-                            'caption'          => __('Ignore SSL Certificate'),
-                            'wrapGridClass'    => 'col col-md-1',
-                            'captionGridClass' => 'col col-md-2',
-                            'captionClass'     => 'control-label',
-                            'ng-model'         => 'post.GrafanaConfiguration.ignore_ssl_certificate'
-                        ]);
-                        ?>
+                        <label class="col col-md-2 control-label" for="ignore_ssl_certificate">
+                            <?php echo __('Ignore SSL certificate'); ?>
+                        </label>
+
+
+                        <div class="col-xs-10 smart-form">
+                            <label class="checkbox small-checkbox-label no-required">
+                                <input type="checkbox" name="checkbox"
+                                       id="ignore_ssl_certificate"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       ng-model="post.ignore_ssl_certificate">
+                                <i class="checkbox-primary"></i>
+                            </label>
+                            <div class="help-block">
+
+                                <?php echo __('Disable certificate validation to allow usage of self-signed certificates.'); ?>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group required"
@@ -120,11 +151,11 @@
                         </label>
                         <div class="col col-xs-10">
                             <select
-                                    id="dashboard_style"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="dashboard_style"
-                                    ng-model="post.GrafanaConfiguration.dashboard_style">
+                                id="dashboard_style"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="dashboard_style"
+                                ng-model="post.dashboard_style">
                                 <option value="dark"><?php echo __('dark'); ?></option>
                                 <option value="light"><?php echo __('light'); ?></option>
                             </select>
@@ -140,14 +171,17 @@
                         </label>
                         <div class="col col-xs-10">
                             <select
-                                    id="dashboard_style"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="hostgroups"
-                                    ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
-                                    ng-model="post.GrafanaConfiguration.Hostgroup"
-                                    multiple>
+                                id="dashboard_style"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="hostgroups"
+                                ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+                                ng-model="post.Hostgroup"
+                                multiple>
                             </select>
+                            <div class="help-block">
+                                <?= __('Only generate dashboards for hosts in the selected host groups. If empty the system will generate a dashboard for all hosts.'); ?>
+                            </div>
                             <div ng-repeat="error in errors.Hostgroup">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -161,14 +195,17 @@
                         </label>
                         <div class="col col-xs-10">
                             <select
-                                    id="MapContainer"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="hostgroups"
-                                    ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
-                                    ng-model="post.GrafanaConfiguration.Hostgroup_excluded"
-                                    multiple>
+                                id="MapContainer"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="hostgroups"
+                                ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+                                ng-model="post.Hostgroup_excluded"
+                                multiple>
                             </select>
+                            <div class="help-block">
+                                <?= __('Do not generate dashboards for hosts in the selected host groups.'); ?>
+                            </div>
                             <div ng-repeat="error in errors.Hostgroup_excluded">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -193,7 +230,7 @@
                                         ng-click="checkGrafanaConnection()">
                                     <?php echo __('Check Grafana Connection'); ?>
                                 </button>
-                                <input class="btn btn-primary" type="submit" value="Save">&nbsp;
+                                <input class="btn btn-primary" type="submit" value="<?= __('Save') ?>">&nbsp;
                             </div>
                         </div>
                     </div>

@@ -23,7 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
@@ -50,7 +49,7 @@
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <?php if ($this->Acl->hasPermission('add')): ?>
+                        <?php if ($this->Acl->hasPermission('add', 'rotations', 'MapModule')): ?>
                             <a ui-sref="RotationsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
@@ -110,12 +109,12 @@
                                 <th class="no-sort sorting_disabled width-15">
                                     <i class="fa fa-check-square-o fa-lg"></i>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Rotation.name')">
-                                    <i class="fa" ng-class="getSortClass('Rotation.name')"></i>
+                                <th class="no-sort" ng-click="orderBy('Rotations.name')">
+                                    <i class="fa" ng-class="getSortClass('Rotations.name')"></i>
                                     <?php echo __('Rotation name'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Rotation.interval')">
-                                    <i class="fa" ng-class="getSortClass('Rotation.interval')"></i>
+                                <th class="no-sort" ng-click="orderBy('Rotations.interval')">
+                                    <i class="fa" ng-class="getSortClass('Rotations.interval')"></i>
                                     <?php echo __('Rotation interval'); ?>
                                 </th>
                                 <th class="no-sort text-center" style="width:60px;">
@@ -127,27 +126,27 @@
                             <tr ng-repeat="rotation in rotations">
                                 <td class="text-center" class="width-15">
                                     <input type="checkbox"
-                                           ng-model="massChange[rotation.Rotation.id]"
-                                           ng-show="rotation.Rotation.allowEdit">
+                                           ng-model="massChange[rotation.id]"
+                                           ng-show="rotation.allowEdit">
                                 </td>
                                 <td>
-                                    <a ng-if="rotation.Rotation.ids.length"
-                                       ui-sref="MapeditorsView({id: rotation.Rotation.first_id, rotation: rotation.Rotation.ids, interval: rotation.Rotation.interval})">
-                                        {{ rotation.Rotation.name }}
+                                    <a ng-if="rotation.ids.length"
+                                       ui-sref="MapeditorsView({id: rotation.first_id, rotation: rotation.ids, interval: rotation.interval})">
+                                        {{ rotation.name }}
                                     </a>
-                                    <a ui-sref="RotationsEdit({id: rotation.Rotation.id})"
-                                       ng-if="!rotation.Rotation.ids.length && rotation.Rotation.allowEdit">
-                                        {{ rotation.Rotation.name }}
+                                    <a ui-sref="RotationsEdit({id: rotation.id})"
+                                       ng-if="!rotation.ids.length && rotation.allowEdit">
+                                        {{ rotation.name }}
                                     </a>
                                 </td>
                                 <td>
-                                    {{ rotation.Rotation.interval }}
+                                    {{ rotation.interval }}
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <?php if ($this->Acl->hasPermission('edit')): ?>
-                                            <a ui-sref="RotationsEdit({id: rotation.Rotation.id})"
-                                               ng-if="rotation.Rotation.allowEdit"
+                                        <?php if ($this->Acl->hasPermission('edit', 'rotations', 'MapModule')): ?>
+                                            <a ui-sref="RotationsEdit({id: rotation.id})"
+                                               ng-if="rotation.allowEdit"
                                                class="btn btn-default">&nbsp;<i class="fa fa-cog "></i>&nbsp;</a>
                                         <?php else: ?>
                                             <a href="javascript:void(0);" class="btn btn-default">
@@ -158,28 +157,28 @@
                                         <?php endif; ?>
                                         <a href="javascript:void(0);" data-toggle="dropdown"
                                            class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-                                        <ul class="dropdown-menu pull-right" id="menuHack-{{rotation.Rotation.id}}">
-                                            <?php if ($this->Acl->hasPermission('edit')): ?>
-                                                <li ng-if="rotation.Rotation.allowEdit">
-                                                    <a ui-sref="RotationsEdit({id: rotation.Rotation.id})">
+                                        <ul class="dropdown-menu pull-right" id="menuHack-{{rotation.id}}">
+                                            <?php if ($this->Acl->hasPermission('edit', 'rotations', 'MapModule')): ?>
+                                                <li ng-if="rotation.allowEdit">
+                                                    <a ui-sref="RotationsEdit({id: rotation.id})">
                                                         <i class="fa fa-cog"></i> <?php echo __('Edit Rotation'); ?>
                                                     </a>
                                                 </li>
                                                 <li class="divider" ng-if="map.Map.allowEdit"></li>
                                             <?php endif; ?>
-                                            <li ng-if="rotation.Rotation.ids.length">
-                                                <a ui-sref="MapeditorsView({id: rotation.Rotation.first_id, rotation: rotation.Rotation.ids, interval: rotation.Rotation.interval})">
+                                            <li ng-if="rotation.ids.length">
+                                                <a ui-sref="MapeditorsView({id: rotation.first_id, rotation: rotation.ids, interval: rotation.interval})">
                                                     <i class="fa fa-eye"></i> <?php echo __('View'); ?>
                                                 </a>
                                             </li>
-                                            <li ng-if="rotation.Rotation.ids.length">
-                                                <a ui-sref="MapeditorsView({id: rotation.Rotation.first_id, rotation: rotation.Rotation.ids, interval: rotation.Rotation.interval, fullscreen: 'true'})">
+                                            <li ng-if="rotation.ids.length">
+                                                <a ui-sref="MapeditorsView({id: rotation.first_id, rotation: rotation.ids, interval: rotation.interval, fullscreen: 'true'})">
                                                     <i class="glyphicon glyphicon-resize-full"></i> <?php echo __('View in fullscreen'); ?>
                                                 </a>
                                             </li>
-                                            <?php if ($this->Acl->hasPermission('delete')): ?>
-                                                <li class="divider" ng-if="rotation.Rotation.allowEdit"></li>
-                                                <li ng-if="rotation.Rotation.allowEdit">
+                                            <?php if ($this->Acl->hasPermission('delete', 'rotations', 'MapModule')): ?>
+                                                <li class="divider" ng-if="rotation.allowEdit"></li>
+                                                <li ng-if="rotation.allowEdit">
                                                     <a class="txt-color-red"
                                                        href="javascript:void(0);" class="txt-color-red"
                                                        ng-click="confirmDelete(getObjectForDelete(rotation))">
