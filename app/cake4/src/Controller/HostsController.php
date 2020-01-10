@@ -891,16 +891,18 @@ class HostsController extends AppController {
         $User = new User($this->getUser());
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
         if ($this->request->is('get')) {
             $hosts = $HostsTable->getHostsForEditDetails(func_get_args());
 
             /** @var $ContainersTable ContainersTable */
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-            /** @var $ContactsTable ContactsTable */
-            $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-            /** @var $ContactgroupsTable ContactgroupsTable */
-            $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+
 
             $containerIds = $this->MY_RIGHTS;
             $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
@@ -936,42 +938,40 @@ class HostsController extends AppController {
                 $primaryContainerId = $hostObject->get('container_id');
                 foreach ($hostObject->get('hosts_to_containers_sharing') as $container) {
                     $containerId = $container->get('id');
-                    if($primaryContainerId !== $containerId){
+                    if ($primaryContainerId !== $containerId) {
                         $sharedContainers[] = $containerId;
                     }
-
                 }
-
                 $hostSharingPermissions = new HostSharingPermissions(
                     $primaryContainerId,
                     $this->hasRootPrivileges,
                     $sharedContainers,
                     $this->MY_RIGHTS
                 );
-                print_r('Primary ID : '.$primaryContainerId.' - ');
-                print_r($sharedContainers);
-                debug($hostObject->get('hosttemplate'));
+
                 $allowSharing = $hostSharingPermissions->allowSharing();
                 if ($allowSharing) {
-                    $HostMergerForView = new HostMergerForView(['Host' => $hostObject->toArray()], $hostObject->get('hosttemplate'));
+                    $hostData = $hostObject->toArray();
+                    $HostMergerForView = new HostMergerForView(['Host' => $hostData], $hostObject->get('hosttemplate'));
                     $mergedHost = $HostMergerForView->getDataForView();
-debug($mergedHost);
+                    $mergedHost['Host']['contacts'] = $hostData['contacts'];
+                    $mergedHost['Host']['contactgroups'] = $hostData['contactgroups'];
 
-                    if ($this->request->getData('edit_sharing') == 1) {
-                        if (!empty($this->request->getData('Host.hosts_to_containers_sharing._ids'))) {
-                            if ($this->request->getData('keepSharedContainers') == 1) {
+                    if ($detailsToEdit['editSharedContainers'] == 1) {
+                        if (!empty($detailsToEdit['Host']['hosts_to_containers_sharing']['_ids'])) {
+                            if ($detailsToEdit['keepSharedContainers'] == 1) {
                                 $containersIds = array_unique(
                                     array_merge(
                                         $primaryContainerId,
                                         $sharedContainers,
-                                        $this->request->getData('Host.hosts_to_containers_sharing._ids')
+                                        $detailsToEdit['Host']['hosts_to_containers_sharing']['_ids']
                                     )
                                 );
                             } else {
                                 $containersIds = array_unique(
                                     array_merge(
                                         $primaryContainerId,
-                                        $this->request->getData('Host.hosts_to_containers_sharing._ids')
+                                        $detailsToEdit['Host']['hosts_to_containers_sharing']['_ids']
                                     )
                                 );
                             }
@@ -982,9 +982,181 @@ debug($mergedHost);
                             ]);
                         }
                     }
+                    if ($detailsToEdit['editDescription'] == 1) {
+                        $newDescription =  $detailsToEdit['Host']['description'];
+                        if (!empty($newDescription) && strcmp($newDescription, $mergedHost['Host']['description']) !== 0) {
+                            $hostObject->set('description', $newDescription);
+                        }
+                    }
+                    if ($detailsToEdit['editTags'] == 1) {
+                        $newTags =  $detailsToEdit['Host']['tags'];
+                        if (!empty($newTags) && strcmp($newTags, $mergedHost['Host']['tags']) !== 0) {
+                            $hostObject->set('tags', $newTags);
+                        }
+                    }
+                    if ($detailsToEdit['editPriority'] == 1) {
+                        $newPriority =  $detailsToEdit['Host']['priority'];
+                        if (!empty($newPriority) && strcmp($newPriority, $mergedHost['Host']['priority']) !== 0) {
+                            $hostObject->set('priority', $newPriority);
+                        }
+                    }
+                    if ($detailsToEdit['editCheckInterval'] == 1) {
+                        $newCheckInterval =  $detailsToEdit['Host']['check_interval'];
+                        if (!empty($newCheckInterval) && $newCheckInterval != $mergedHost['Host']['check_interval']) {
+                            $hostObject->set('check_interval', $newCheckInterval);
+                        }
+                    }
+                    if ($detailsToEdit['editRetryInterval'] == 1) {
+                        $newRetryInterval =  $detailsToEdit['Host']['retry_interval'];
+                        if (!empty($newRetryInterval) && $newRetryInterval != $mergedHost['Host']['retry_interval']) {
+                            $hostObject->set('retry_interval', $newRetryInterval);
+                        }
+                    }
+                    if ($detailsToEdit['editMaxNumberOfCheckAttempts'] == 1) {
+                        $newMaxNumberOfCheckAttempts =  $detailsToEdit['Host']['max_check_attempts'];
+                        if (!empty($newMaxNumberOfCheckAttempts) && $newMaxNumberOfCheckAttempts != $mergedHost['Host']['max_check_attempts']) {
+                            $hostObject->set('max_check_attempts', $newMaxNumberOfCheckAttempts);
+                        }
+                    }
+                    if ($detailsToEdit['editNotificationInterval'] == 1) {
+                        $newNotificationInterval =  $detailsToEdit['Host']['notification_interval'];
+                        if (!empty($newNotificationInterval) && $newNotificationInterval != $mergedHost['Host']['notification_interval']) {
+                            $hostObject->set('notification_interval', $newNotificationInterval);
+                        }
+                    }
+                    if ($detailsToEdit['editNotificationInterval'] == 1) {
+                        $newNotificationInterval =  $detailsToEdit['Host']['notification_interval'];
+                        if (!empty($newNotificationInterval) && $newNotificationInterval != $mergedHost['Host']['notification_interval']) {
+                            $hostObject->set('notification_interval', $newNotificationInterval);
+                        }
+                    }
+                    if ($detailsToEdit['editContacts'] == 1) {
+                        $newContacts = $detailsToEdit['Host']['contacts']['_ids'];
+                        $allContactsAreVisibleForUser = false;
+                        $contactsFromHost = [];
+                        if (!empty($newContacts)) {
+                            //Check user permissions for already exists contacts. Are all existing contacts are visible for user
+                            if (!empty($mergedHost['Host']['contacts']) || !empty($mergedHost['Host']['hosttemplate']['contacts'])) {
+                                $contactsFromHost = $mergedHost['Host']['contacts'];
+                                if (empty($contactsFromHost)) {
+                                    $contactsFromHost = $mergedHost['Host']['hosttemplate']['contacts'];
+                                }
+                                if (!empty($contactsFromHost)) {
+                                    foreach ($contactsFromHost as $contact) {
+                                        $contactContainerIds = Hash::extract($contact['containers'], '{n}.id');
+                                        if (empty(array_intersect($contactContainerIds, $this->MY_RIGHTS))) {
+                                            break;
+                                        }
+                                    }
+                                    $allContactsAreVisibleForUser = true;
+                                } else {
+                                    $allContactsAreVisibleForUser = true; //nothing to do
+                                }
+                            }
+                            if ($allContactsAreVisibleForUser === true) {
+                                //Container permissions check for contacts
+                                // Host can use this contacts
+                                // Check if the contacts can be used by the host
+                                $contactsAfterContainerCheck = $ContactsTable->removeContactsWhichAreNotInContainer(
+                                    $newContacts,
+                                    $mergedHost['Host']['container_id']
+                                );
+                                if (empty(array_diff($newContacts, $contactsAfterContainerCheck))){
+                                    if ($detailsToEdit['keepContacts']) {
+                                        $hostObject->set([
+                                                'contacts' => [
+                                                    '_ids' => array_unique(
+                                                        array_merge(
+                                                            $contactsFromHost, $newContacts
+                                                        )
+                                                    )
+                                                ]
+                                            ]
+                                        );
+                                    } else {
+                                        $hostObject->set([
+                                                'contacts' => [
+                                                    '_ids' => $newContacts
+
+                                                ]
+                                            ]
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if ($detailsToEdit['editContactgroups'] == 1) {
+                        $newContactgroups = $detailsToEdit['Host']['contactgroups']['_ids'];
+                        $contactgroupsFromHost = [];
+                        $allContactGroupsAreVisibleForUser = false;
+                        if (!empty($newContacts)) {
+                            //Check user permissions for already exists contacts. Are all existing contact groups are visible for user
+                            if (!empty($mergedHost['Host']['contactgroups']) || !empty($mergedHost['Host']['hosttemplate']['contactgroups'])) {
+                                $contactgroupsFromHost = $mergedHost['Host']['contactgroups'];
+                                if (empty($contactgroupsFromHost)) {
+                                    $contactgroupsFromHost = $mergedHost['Host']['hosttemplate']['contactgroups'];
+                                }
+                                if (!empty($contactgroupsFromHost)) {
+                                    foreach ($contactgroupsFromHost as $contactgroup) {
+                                        $contactgroupContainerIds = Hash::extract($contactgroup['containers'], '{n}.parent_id');
+                                        if (empty(array_intersect($contactgroupContainerIds, $this->MY_RIGHTS))) {
+                                            break;
+                                        }
+                                    }
+                                    $allContactGroupsAreVisibleForUser = true;
+                                } else {
+                                    $allContactGroupsAreVisibleForUser = true; //nothing to do
+                                }
+                            }
+                            if ($allContactGroupsAreVisibleForUser === true) {
+                                // Container permissions check for contact groups
+                                // Host can use this contact groups
+                                // Check if the contact groups can be used by the host
+                                $contactgroupssAfterContainerCheck = $ContactgroupsTable->removeContactgroupsWhichAreNotInContainer(
+                                    $newContactgroups,
+                                    $mergedHost['Host']['container_id']
+                                );
+                                if (empty(array_diff($newContactgroups, $contactgroupssAfterContainerCheck))){
+                                    if ($detailsToEdit['keepContactgroups']) {
+                                        $hostObject->set([
+                                                'contactgroups' => [
+                                                    '_ids' => array_unique(
+                                                        array_merge(
+                                                            $contactgroupsFromHost, $newContactgroups
+                                                        )
+                                                    )
+                                                ]
+                                            ]
+                                        );
+                                    } else {
+                                        $hostObject->set([
+                                                'contactgroups' => [
+                                                    '_ids' => $newContactgroups
+
+                                                ]
+                                            ]
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if ($detailsToEdit['editHostUrl'] == 1) {
+                        $newHostUrl = $detailsToEdit['Host']['host_url'];
+                        if (!empty($newHostUrl) && strcmp($newHostUrl, $mergedHost['Host']['host_url']) !== 0) {
+                            $hostObject->set('host_url', $newHostUrl);
+                        }
+                    }
+                    if ($detailsToEdit['editNotes'] == 1) {
+                        $newNotes = $detailsToEdit['Host']['notes'];
+                        if (!empty($newNotes) && strcmp($newNotes, $mergedHost['Host']['notes']) !== 0) {
+                            $hostObject->set('notes', $newNotes);
+                        }
+                    }
                 }
 
-                debug($allowSharing);
                 continue;
                 $data = ['Host' => []];
                 $host = $HostsTable->getHostById($host_id);
@@ -995,7 +1167,6 @@ debug($mergedHost);
                     $data['Host']['name'] = $host->get('name');
                     $data['Host']['hosttemplate_id'] = $host->get('hosttemplate_id');
                     $data['Host']['address'] = $host->get('address');
-                    debug($host->get('container'));
                     return;
                     $hostSharingPermissions = new HostSharingPermissions(
                         $host['Host']['container_id'],
