@@ -30,8 +30,8 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="ContactsIndex">
-            <i class="fa fa-user"></i> <?php echo __('Contacts'); ?>
+        <a ui-sref="TimeperiodsIndex">
+            <i class="fa fa-clock-o"></i> <?php echo __('Time periods'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -43,12 +43,12 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Contacts'); ?>
-                    <span class="fw-300"><i><?php echo __('Copy contact/s'); ?></i></span>
+                    <?php echo __('Time Periods'); ?>
+                    <span class="fw-300"><i><?php echo __('Copy time period/s'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
-                    <?php if ($this->Acl->hasPermission('index', 'contacts')): ?>
-                        <a back-button fallback-state='ContactsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                    <?php if ($this->Acl->hasPermission('index', 'timeperiods')): ?>
+                        <a back-button fallback-state='TimeperiodsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -59,7 +59,7 @@
                     <div class="panel-content">
                         <div class="card margin-bottom-10" ng-repeat="sourceTimeperiod in sourceTimeperiods">
                             <div class="card-header">
-                                <i class="fa fa-cog"></i>
+                                <i class="fa fa-clock-o"></i>
                                 <?php echo __('Source time period:'); ?>
                                 {{sourceTimeperiod.Source.name}}
                             </div>
