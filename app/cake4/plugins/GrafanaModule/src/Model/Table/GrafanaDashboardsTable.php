@@ -109,9 +109,66 @@ class GrafanaDashboardsTable extends Table {
      * @return RulesChecker
      */
     public function buildRules(RulesChecker $rules): RulesChecker {
-        $rules->add($rules->existsIn(['configuration_id'], 'Configurations'));
         $rules->add($rules->existsIn(['host_id'], 'Hosts'));
 
         return $rules;
+    }
+
+    /**
+     * @param string $uuid
+     * @return bool
+     */
+    public function existsForUuid($uuid) {
+        return $this->exists(['GrafanaDashboards.host_uuid' => $uuid]);
+    }
+
+    /**
+     * @param array $MY_RIGHTS
+     * @return array|\Cake\Datasource\ResultSetInterface
+     */
+    public function getGrafanaDashboards($MY_RIGHTS = []){
+        $query = $this->find()
+            ->select([
+                'id',
+                'host_id',
+                'host_uuid',
+                'Host.name'
+            ])
+            ->join([
+                [
+                    'table'      => 'hosts',
+                    'alias'      => 'Host',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'Host.id = GrafanaDashboards.host_id',
+                    ],
+                ],
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ]
+            ])
+            ->group([
+                'Host.id'
+            ])
+            ->order([
+                'Host.name' => 'ASC'
+            ]);
+
+        if(!empty($MY_RIGHTS)){
+            $query->where([
+                'HostsToContainers.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+        $result = $query->all();
+        $result = $result->toArray();
+
+        return $result;
     }
 }

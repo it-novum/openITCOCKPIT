@@ -23,14 +23,30 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+namespace GrafanaModule\Controller;
+
 use App\Model\Table\ContainersTable;
+use App\Model\Table\ProxiesTable;
+use App\Model\Table\ServicesTable;
+use App\Model\Table\WidgetsTable;
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use GrafanaModule\Model\Entity\GrafanaUserdashboardPanel;
+use GrafanaModule\Model\Table\GrafanaConfigurationsTable;
+use GrafanaModule\Model\Table\GrafanaDashboardsTable;
+use GrafanaModule\Model\Table\GrafanaUserdashboardMetricsTable;
+use GrafanaModule\Model\Table\GrafanaUserdashboardPanelsTable;
+use GrafanaModule\Model\Table\GrafanaUserdashboardsTable;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Psr7\Request;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\GrafanaUserDashboardFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
@@ -50,365 +66,281 @@ use Statusengine\PerfdataParser;
 
 /**
  * Class GrafanaUserdashboardsController
- * @property GrafanaConfiguration $GrafanaConfiguration
- * @property GrafanaUserdashboard $GrafanaUserdashboard
- * @property GrafanaUserdashboardPanel $GrafanaUserdashboardPanel
- * @property GrafanaUserdashboardMetric $GrafanaUserdashboardMetric
- * @property \Host $Host
- * @property \Service $Service
- * @property Servicestatus $Servicestatus
- * @property AppPaginatorComponent $Paginator
+ * @package GrafanaModule\Controller
  */
-class GrafanaUserdashboardsController extends GrafanaModuleAppController {
-
-    public $layout = 'angularjs';
-
-    public $uses = [
-        'GrafanaModule.GrafanaConfiguration',
-        'GrafanaModule.GrafanaUserdashboard',
-        'GrafanaModule.GrafanaUserdashboardPanel',
-        'GrafanaModule.GrafanaUserdashboardMetric',
-        'Host',
-        'Service',
-        MONITORING_SERVICESTATUS
-    ];
-
-    public $components = [
-        'Paginator' => ['className' => 'AppPaginator'],
-    ];
+class GrafanaUserdashboardsController extends AppController {
 
     public function index() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
         }
 
-        $skipUnsyncDashboards = $this->request->query('skipUnsyncDashboards');
+        /** @var GrafanaUserdashboardsTable $GrafanaUserdashboardsTable */
+        $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
+
+        $skipUnsyncDashboards = $this->request->getQuery('skipUnsyncDashboards', 0) != 0;
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges === true) {
+            $MY_RIGHTS = [];
+        }
+
         $GrafanaUserDashboardFilter = new GrafanaUserDashboardFilter($this->request);
-        $conditions = $GrafanaUserDashboardFilter->indexFilter();
-        $conditions['GrafanaUserdashboard.container_id'] = $this->MY_RIGHTS;
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $GrafanaUserDashboardFilter->getPage());
+        $dashboards = $GrafanaUserdashboardsTable->getGrafanaUserdashboardsIndex($GrafanaUserDashboardFilter, $PaginateOMat, $MY_RIGHTS, $skipUnsyncDashboards);
 
-        if ($skipUnsyncDashboards) {
-            $conditions['AND']['NOT'] = [
-                'GrafanaUserdashboard.grafana_url IS NULL',
-                'GrafanaUserdashboard.grafana_url' => ''
-            ];
-        }
-        $query = [
-            'recursive'  => -1,
-            'conditions' => $conditions,
-            'order'      => $GrafanaUserDashboardFilter->getOrderForPaginator('GrafanaUserdashboard.name', 'ASC'),
-            'contain'    => ['Container']
-        ];
-
-        if ($this->isScrollRequest()) {
-            $this->Paginator->settings['page'] = $GrafanaUserDashboardFilter->getPage();
-            $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-            $allUserdashboards = $this->GrafanaUserdashboard->find('all', array_merge($this->Paginator->settings, $query));
-            $ScrollIndex->determineHasNextPage($allUserdashboards);
-            $ScrollIndex->scroll();
-        } else {
-            $this->Paginator->settings['page'] = $GrafanaUserDashboardFilter->getPage();
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $allUserdashboards = $this->Paginator->paginate('GrafanaUserdashboard', [], [key($this->Paginator->settings['order'])]);
-        }
-        foreach ($allUserdashboards as $key => $dashboard) {
-            $allUserdashboards[$key]['GrafanaUserdashboard']['allowEdit'] = false;
+        foreach ($dashboards as $key => $dashboard) {
+            $dashboards[$key]['allowEdit'] = false;
             if ($this->hasRootPrivileges == true) {
-                $allUserdashboards[$key]['GrafanaUserdashboard']['allowEdit'] = true;
+                $dashboards[$key]['allowEdit'] = true;
                 continue;
             } else {
-                if ($this->MY_RIGHTS_LEVEL[$dashboard['Container']['id']] == WRITE_RIGHT) {
-                    $allUserdashboards[$key]['GrafanaUserdashboard']['allowEdit'] = true;
+                if ($this->MY_RIGHTS_LEVEL[$dashboard['container_id']] === WRITE_RIGHT) {
+                    $dashboards[$key]['allowEdit'] = true;
                     continue;
                 }
             }
         }
 
-        $this->set('all_userdashboards', $allUserdashboards);
-        $toJson = ['all_userdashboards', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['all_userdashboards', 'scroll'];
-        }
-        $this->set('_serialize', $toJson);
-        $this->set('_serialize', $toJson);
-
+        $this->set('all_userdashboards', $dashboards);
+        $this->viewBuilder()->setOption('serialize', ['all_userdashboards']);
     }
 
     public function add() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
         }
-        $grafanaConfig = $this->GrafanaConfiguration->find('first', [
-            'recursive' => -1,
-            'order'     => ['GrafanaConfiguration.id' => 'DESC']
-        ]);
-        if ($this->request->is('post')) {
-            $this->GrafanaUserdashboard->create();
-            if (!isset($this->request->data['GrafanaUserdashboard']['configuration_id']) || empty($this->request->data['GrafanaUserdashboard']['configuration_id'])) {
-                $this->request->data['GrafanaUserdashboard']['configuration_id'] = $grafanaConfig['GrafanaConfiguration']['id'];;
-            }
-            if ($this->GrafanaUserdashboard->saveAll($this->request->data)) {
 
-                if ($this->request->ext === 'json') {
-                    $this->serializeId();
-                }
+        /** @var GrafanaConfigurationsTable $GrafanaConfigurationsTable */
+        $GrafanaConfigurationsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaConfigurations');
+
+        if ($this->request->is('post')) {
+            /** @var GrafanaUserdashboardsTable $GrafanaUserdashboardsTable */
+            $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
+
+            $data = $this->request->getData('GrafanaUserdashboard', []);
+            $entity = $GrafanaUserdashboardsTable->newEntity($data);
+            $entity->set('configuration_id', $GrafanaConfigurationsTable->getConfigurationId());
+            $entity->setAccess('configuration_id', false);
+
+            $entity = $GrafanaUserdashboardsTable->patchEntity($entity, $data);
+            $GrafanaUserdashboardsTable->save($entity);
+            if ($entity->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $entity->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
-            $this->serializeErrorMessage();
+
+            $this->set('GrafanaUserdashboard', $entity);
+            $this->viewBuilder()->setOption('serialize', ['GrafanaUserdashboard']);
         }
     }
 
 
+    /**
+     * @param int|null $userdashboardId
+     */
     public function editor($userdashboardId = null) {
-        $this->layout = 'blank';
         if (!$this->isApiRequest() && $userdashboardId === null) {
             //Only ship template for AngularJs
-            $grafanaConfig = $this->GrafanaConfiguration->find('first', [
-                'recursive' => -1,
-                'order'     => ['GrafanaConfiguration.id' => 'DESC']
-            ]);
-            $hasGrafanaConfig = false;
-            if (!empty($grafanaConfig)) {
-                $hasGrafanaConfig = true;
-            }
+
+            /** @var GrafanaConfigurationsTable $GrafanaConfigurationsTable */
+            $GrafanaConfigurationsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaConfigurations');
+            $grafanaConfig = $GrafanaConfigurationsTable->getGrafanaConfiguration();
+            $hasGrafanaConfig = $grafanaConfig['api_url'] !== '';
             $this->set('hasGrafanaConfig', $hasGrafanaConfig);
             return;
         }
 
-        if (!$this->request->is('GET')) {
+        if (!$this->request->is('get')) {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->GrafanaUserdashboard->exists($userdashboardId) && $userdashboardId !== null) {
+        /** @var GrafanaUserdashboardsTable $GrafanaUserdashboardsTable */
+        $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
+
+        if (!$GrafanaUserdashboardsTable->existsById($userdashboardId) && $userdashboardId !== null) {
             throw new NotFoundException(__('Invalid Userdashboard'));
         }
 
-        $dashboard = $this->GrafanaUserdashboard->find('first', $this->GrafanaUserdashboard->getQuery($userdashboardId));
-        $dashboard['rows'] = $this->GrafanaUserdashboard->extractRowsWithPanelsAndMetricsFromFindResult($dashboard);
+        $dashboard = $GrafanaUserdashboardsTable->getGrafanaUserDashboardEdit($userdashboardId);
+        $dashboard['rows'] = $GrafanaUserdashboardsTable->extractRowsWithPanelsAndMetricsFromFindResult($dashboard);
 
         $GrafanaUnits = new GrafanaTargetUnits();
-
         $this->set('userdashboardData', $dashboard);
         $this->set('grafanaUnits', $GrafanaUnits->getUnits());
-        $this->set('_serialize', ['userdashboardData', 'grafanaUnits']);
+        $this->viewBuilder()->setOption('serialize', ['userdashboardData', 'grafanaUnits']);
 
         return;
-
     }
 
-    /*public function getGrafanaUserdashboardUrl($userdashboardId) {
-
-        $userdashboardData = $this->GrafanaUserdashboardData->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'GrafanaUserdashboardData.userdashboard_id' => $userdashboardId
-            ]
-        ]);
-        debug($userdashboardData);
-        $userdashboardDataForGrafana = $this->GrafanaUserdashboardData->expandData($userdashboardData, true);
-        debug($userdashboardDataForGrafana);
-
-        $userdashboard = new \itnovum\openITCOCKPIT\Grafana\GrafanaUserdashboard();
-        $userdashboard->setRows($userdashboardDataForGrafana);
-        $userdashboard->setTitle('cooler title');
-        $userdashboard->createUserdashboard();
-
-        $this->set('userdashboardDataForGrafana', $userdashboardDataForGrafana);
-        $this->set('_serialize', ['userdashboardDataForGrafana']);
-    }*/
-
+    /**
+     * @param int|null $id
+     */
     public function edit($id = null) {
-        $this->layout = 'blank';
-        if (!$this->isApiRequest() && $id === null) {
+        if ($this->isHtmlRequest()) {
             //Only ship template for AngularJs
-            $grafanaConfig = $this->GrafanaConfiguration->find('first', [
-                'recursive' => -1,
-                'order'     => ['GrafanaConfiguration.id' => 'DESC']
-            ]);
-            $hasGrafanaConfig = false;
-            if (!empty($grafanaConfig)) {
-                $hasGrafanaConfig = true;
-            }
-            $this->set('hasGrafanaConfig', $hasGrafanaConfig);
             return;
         }
 
-        if (!$this->GrafanaUserdashboard->exists($id) && $id !== null) {
+        /** @var GrafanaConfigurationsTable $GrafanaConfigurationsTable */
+        $GrafanaConfigurationsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaConfigurations');
+        /** @var GrafanaUserdashboardsTable $GrafanaUserdashboardsTable */
+        $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
+        if (!$GrafanaUserdashboardsTable->existsById($id) && $id !== null) {
             throw new NotFoundException();
         }
 
-        $dashboard = $this->GrafanaUserdashboard->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'GrafanaUserdashboard.id'           => $id,
-                'GrafanaUserdashboard.container_id' => $this->MY_RIGHTS
-            ]
-        ]);
+        $dashboard = $GrafanaUserdashboardsTable->find()
+            ->where([
+                'GrafanaUserdashboards.id'              => $id,
+                'GrafanaUserdashboards.container_id IN' => $this->MY_RIGHTS
+            ])
+            ->first();
 
-        if (empty($dashboard)) {
-            $this->redirect([
-                'controller' => 'Angular',
-                'action'     => 'forbidden',
-                'plugin'     => ''
-            ]);
-        }
-        $dashboard['GrafanaUserdashboard']['container_id'] = (int)$dashboard['GrafanaUserdashboard']['container_id'];
-
-        if (!$this->isAngularJsRequest()) {
-            //Only ship html template
-            return;
+        if ($dashboard === null) {
+            return $this->render403();
         }
 
-        if ($this->isAngularJsRequest()) {
-            if ($this->request->is('GET')) {
-                $this->set('dashboard', $dashboard);
-                $this->set('_serialize', ['dashboard']);
+        if ($this->request->is('POST')) {
+            $dashboard->setAccess('id', false);
+            $dashboard = $GrafanaUserdashboardsTable->patchEntity($dashboard, $this->request->getData());
+
+            $GrafanaUserdashboardsTable->save($dashboard);
+            if ($dashboard->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $dashboard->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
-
-            if ($this->request->is('POST')) {
-                if ($this->GrafanaUserdashboard->save($this->request->data)) {
-                    $this->set('dashboard', $this->request->data);
-                    $this->set('_serialize', ['dashboard']);
-                    return;
-                }
-                $this->serializeErrorMessage();
-            }
         }
 
+        //GET
+        $grafanaConfig = $GrafanaConfigurationsTable->getGrafanaConfiguration();
+        $hasGrafanaConfig = $grafanaConfig['api_url'] !== '';
 
+        $this->set('hasGrafanaConfig', $hasGrafanaConfig);
+        $this->set('dashboard', $dashboard->toArray());
+        $this->viewBuilder()->setOption('serialize', ['dashboard', 'hasGrafanaConfig']);
     }
 
+    /**
+     * @param int|null $id
+     */
     public function view($id = null) {
-        $this->layout = 'blank';
-        if (!$this->isAngularJsRequest() && $id === null) {
-            //Only ship html template
+        if ($this->isHtmlRequest()) {
+            //Only ship template for AngularJs
             return;
         }
 
-        if (!$this->GrafanaUserdashboard->exists($id) && $id !== null) {
+        /** @var GrafanaUserdashboardsTable $GrafanaUserdashboardsTable */
+        $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
+
+        if (!$GrafanaUserdashboardsTable->existsById($id)) {
             throw new NotFoundException();
         }
 
-        $dashboard = $this->GrafanaUserdashboard->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'GrafanaUserdashboard.id'           => $id,
-                'GrafanaUserdashboard.container_id' => $this->MY_RIGHTS
-            ],
-            'contain'    => [
-                'Container'
-            ]
-        ]);
+        $dashboard = $GrafanaUserdashboardsTable->find()
+            ->where([
+                'GrafanaUserdashboards.id'              => $id,
+                'GrafanaUserdashboards.container_id IN' => $this->MY_RIGHTS
+            ])
+            ->first();
 
-        if (empty($dashboard)) {
-            $this->redirect([
-                'controller' => 'Angular',
-                'action'     => 'forbidden',
-                'plugin'     => ''
-            ]);
+        if ($dashboard === null) {
+            return $this->render403();
         }
 
-        $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
-            'recursive' => -1,
-            'contain'   => [
-                'GrafanaConfigurationHostgroupMembership'
-            ]
-        ]);
+        /** @var GrafanaConfigurationsTable $GrafanaConfigurationsTable */
+        $GrafanaConfigurationsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaConfigurations');
 
-        if (empty($grafanaConfiguration)) {
-            $this->setFlash(__('No Grafana configuration found.'), false);
-            return;
-        }
-
-        $allowEdit = $this->hasRootPrivileges;
-        if ($allowEdit === false) {
-            $allowEdit = $this->MY_RIGHTS_LEVEL[$dashboard['Container']['id']] == WRITE_RIGHT;
-        }
-
-
+        $grafanaConfiguration = $GrafanaConfigurationsTable->getGrafanaConfiguration();
         /** @var GrafanaApiConfiguration $GrafanaApiConfiguration */
         $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
 
-        /** @var $Proxy App\Model\Table\ProxiesTable */
-        $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+        $allowEdit = $this->hasRootPrivileges;
+        if ($allowEdit === false) {
+            $allowEdit = $this->MY_RIGHTS_LEVEL[$dashboard->get('container_id')] == WRITE_RIGHT;
+        }
+
+        /** @var ProxiesTable $ProxiesTable */
+        $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
 
         $dashboardFoundInGrafana = false;
-        if ($this->GrafanaConfiguration->existsUserDashboard($GrafanaApiConfiguration, $Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])) {
+        if ($GrafanaConfigurationsTable->existsUserDashboard($GrafanaApiConfiguration, $ProxiesTable->getSettings(), $dashboard->get('grafana_uid'))) {
             $dashboardFoundInGrafana = true;
         }
 
-        $this->set('dashboard', $dashboard);
+        $this->set('dashboard', $dashboard->toArray());
         $this->set('allowEdit', $allowEdit);
         $this->set('dashboardFoundInGrafana', $dashboardFoundInGrafana);
-        $this->set('_serialize', ['dashboard', 'allowEdit', 'dashboardFoundInGrafana']);
+        $this->viewBuilder()->setOption('serialize', ['dashboard', 'allowEdit', 'dashboardFoundInGrafana']);
     }
 
+    /**
+     * @param int $id
+     */
     public function getViewIframeUrl($id) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->GrafanaUserdashboard->exists($id)) {
-            throw new NotFoundException();
-        }
+        /** @var GrafanaUserdashboardsTable $GrafanaUserdashboardsTable */
+        $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
 
-        $dashboard = $this->GrafanaUserdashboard->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'GrafanaUserdashboard.id'           => $id,
-                'GrafanaUserdashboard.container_id' => $this->MY_RIGHTS
-            ],
-            'contain'    => [
-                'Container'
-            ]
-        ]);
+        /** @var GrafanaConfigurationsTable $GrafanaConfigurationsTable */
+        $GrafanaConfigurationsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaConfigurations');
 
-        if (empty($dashboard)) {
-            throw new NotFoundException();
-        }
-
-        $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
-            'recursive' => -1,
-            'contain'   => [
-                'GrafanaConfigurationHostgroupMembership'
-            ]
-        ]);
-
-        if (empty($grafanaConfiguration)) {
-            throw new RuntimeException('No Grafana configuration found.');
-        }
-
+        $grafanaConfiguration = $GrafanaConfigurationsTable->getGrafanaConfiguration();
         /** @var GrafanaApiConfiguration $GrafanaApiConfiguration */
         $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
 
-        /** @var $Proxy App\Model\Table\ProxiesTable */
-        $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+        if (!$GrafanaUserdashboardsTable->existsById($id)) {
+            throw new NotFoundException();
+        }
+
+        $dashboard = $GrafanaUserdashboardsTable->find()
+            ->where([
+                'GrafanaUserdashboards.id'              => $id,
+                'GrafanaUserdashboards.container_id IN' => $this->MY_RIGHTS
+            ])
+            ->first();
+
+        if ($dashboard === null) {
+            return $this->render403();
+        }
+
+
+        /** @var ProxiesTable $ProxiesTable */
+        $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
 
         $dashboardFoundInGrafana = false;
-        if ($this->GrafanaConfiguration->existsUserDashboard($GrafanaApiConfiguration, $Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])) {
+        if ($GrafanaConfigurationsTable->existsUserDashboard($GrafanaApiConfiguration, $ProxiesTable->getSettings(), $dashboard->get('grafana_uid'))) {
             $dashboardFoundInGrafana = true;
         }
 
-        $from = $this->request->query('from');
+        $from = $this->request->getQuery('from', null);
         if ($from === null) {
             $from = 'now-3h';
         }
-        $refresh = $this->request->query('refresh');
+        $refresh = $this->request->getQuery('refresh', null);
         if ($refresh === null) {
             $refresh = 0;
         }
-        $iframeUrl = $GrafanaApiConfiguration->getIframeUrlForUserDashboard($dashboard['GrafanaUserdashboard']['grafana_url'], $from, $refresh);
+        $iframeUrl = $GrafanaApiConfiguration->getIframeUrlForUserDashboard($dashboard->get('grafana_url'), $from, $refresh);
 
         $this->set('dashboardFoundInGrafana', $dashboardFoundInGrafana);
         $this->set('iframeUrl', $iframeUrl);
-        $this->set('_serialize', ['dashboardFoundInGrafana', 'iframeUrl']);
+        $this->viewBuilder()->setOption('serialize', ['dashboardFoundInGrafana', 'iframeUrl']);
     }
 
+    /**
+     * @param int $id
+     * @deprecated
+     */
     public function delete($id) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -467,34 +399,31 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
                 $this->set('success', true);
                 $this->set('message', __('User defined Grafana dashboard successfully deleted'));
-                $this->set('_serialize', ['success', 'message']);
+                $this->viewBuilder()->setOption('serialize', ['success', 'message']);
                 return;
             }
         }
 
-        $this->response->statusCode(400);
+        $this->response = $this->response->withStatus(400);
         $this->set('success', false);
         $this->set('message', __('Could not delete user defined Grafana dashboard'));
-        $this->set('_serialize', ['success', 'message']);
+        $this->viewBuilder()->setOption('serialize', ['success', 'message']);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        $grafanaConfig = $this->GrafanaConfiguration->find('first', [
-            'recursive' => -1,
-            'order'     => ['GrafanaConfiguration.id' => 'DESC']
-        ]);
+        /** @var GrafanaConfigurationsTable $GrafanaConfigurationsTable */
+        $GrafanaConfigurationsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaConfigurations');
+        $grafanaConfig = $GrafanaConfigurationsTable->getGrafanaConfiguration();
+        $hasGrafanaConfig = $grafanaConfig['api_url'] !== '';
 
-        $hasGrafanaConfig = false;
-        if (!empty($grafanaConfig)) {
-            $hasGrafanaConfig = true;
-        }
-
-
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->hasRootPrivileges === true) {
@@ -506,52 +435,50 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
         $this->set('hasGrafanaConfig', $hasGrafanaConfig);
         $this->set('containers', $containers);
-        $this->set('_serialize', ['containers', 'hasGrafanaConfig']);
+        $this->viewBuilder()->setOption('serialize', ['containers', 'hasGrafanaConfig']);
     }
 
     public function grafanaRow() {
-        $this->layout = 'blank';
         return;
     }
 
     public function grafanaPanel() {
-        $this->layout = 'blank';
         return;
     }
 
-    public function getPerformanceDataMetrics($serviceId) {
+    /**
+     * @param int $serviceId
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     */
+    public function getPerformanceDataMetrics($serviceId = 0) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->Service->exists($serviceId)) {
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+
+        if (!$ServicesTable->existsById($serviceId)) {
             throw new NotFoundException();
         }
 
-        $service = $this->Service->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
-                'Service.id',
-                'Service.uuid'
-            ],
-            'conditions' => [
-                'Service.id' => $serviceId,
-            ],
-        ]);
+
+        $service = $ServicesTable->getServiceById($serviceId);
 
 
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
         $ServicestatusFields->perfdata();
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
+        $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
 
         if (!empty($servicestatus)) {
             $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
             $this->set('perfdata', $PerfdataParser->parse());
-            $this->set('_serialize', ['perfdata']);
+            $this->viewBuilder()->setOption('serialize', ['perfdata']);
             return;
         }
         $this->set('perfdata', []);
-        $this->set('_serialize', ['perfdata']);
+        $this->viewBuilder()->setOption('serialize', ['perfdata']);
     }
 
     public function addMetricToPanel() {
@@ -559,60 +486,42 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $service = $this->Service->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
-                'Service.id',
-                'Service.host_id'
-            ],
-            'contain'    => [
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.name'
-                    ]
-                ],
-                'Host'            => [
-                    'fields' => [
-                        'Host.name'
-                    ]
-                ]
-            ],
-            'conditions' => [
-                'Service.id' => $this->request->data('GrafanaUserdashboardMetric.service_id'),
-            ],
-        ]);
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-        if (empty($service)) {
+        /** @var GrafanaUserdashboardMetricsTable $GrafanaUserdashboardMetricsTable */
+        $GrafanaUserdashboardMetricsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardMetrics');
+
+        $service = $ServicesTable->getServiceById($this->request->getData('GrafanaUserdashboardMetric.service_id', 0));
+
+        $data = $this->request->getData('GrafanaUserdashboardMetric', []);
+        if ($service === null) {
             //Trigger validation error
-            $this->request->data['GrafanaUserdashboardMetric']['service_id'] = null;
-            $this->request->data['GrafanaUserdashboardMetric']['host_id'] = null;
+            $data['service_id'] = null;
+            $data['host_id'] = null;
+        } else {
+            $data['host_id'] = $service->get('host_id');
         }
 
-        if (!isset($this->request->data['GrafanaUserdashboardMetric'])) {
-            throw new NotFoundException('Key GrafanaUserdashboardMetric not found in dataset');
-        }
+        $metric = $GrafanaUserdashboardMetricsTable->newEntity($data);
 
-        $metric = $this->request->data;
-        if (isset($service['Service']['host_id'])) {
-            $metric['GrafanaUserdashboardMetric']['host_id'] = (int)$service['Service']['host_id'];
-        }
-
-        $this->GrafanaUserdashboardMetric->create();
-        if ($this->GrafanaUserdashboardMetric->save($metric)) {
-            $metric = $this->request->data['GrafanaUserdashboardMetric'];
-            $metric['id'] = $this->GrafanaUserdashboardMetric->id;
-
-            $host = new Host($service);
-            $metric['Host'] = $host->toArray();
-
-            $service = new Service($service);
-            $metric['Service'] = $service->toArray();
-
-            $this->set('metric', $metric);
-            $this->set('_serialize', ['metric']);
+        $GrafanaUserdashboardMetricsTable->save($metric);
+        if ($metric->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $metric->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
-        $this->serializeErrorMessageFromModel('GrafanaUserdashboardMetric');
+
+        $Host = new Host($service->get('host'));
+        $Service = new Service($service->toArray());
+
+        $metric = $metric->toArray();
+        $metric['Host'] = $Host->toArray();
+        $metric['Service'] = $Service->toArray();
+
+        $this->set('metric', $metric);
+        $this->viewBuilder()->setOption('serialize', ['metric']);
     }
 
     public function removeMetricFromPanel() {
@@ -620,17 +529,22 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        if ($this->GrafanaUserdashboardMetric->exists($this->request->data('id'))) {
-            $id = $this->request->data('id');
-            if ($this->GrafanaUserdashboardMetric->delete($id)) {
+        $id = $this->request->getData('id', 0);
+
+        /** @var GrafanaUserdashboardMetricsTable $GrafanaUserdashboardMetricsTable */
+        $GrafanaUserdashboardMetricsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardMetrics');
+
+        if ($GrafanaUserdashboardMetricsTable->existsById($id)) {
+            $metric = $GrafanaUserdashboardMetricsTable->get($id);
+            if ($GrafanaUserdashboardMetricsTable->delete($metric)) {
                 $this->set('success', true);
-                $this->set('_serialize', ['success']);
+                $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             }
         }
 
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function addPanel() {
@@ -638,60 +552,82 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $this->GrafanaUserdashboardPanel->create();
-        if ($this->GrafanaUserdashboardPanel->save($this->request->data)) {
-            $id = $this->GrafanaUserdashboardPanel->id;
-            $this->set('panel', [
-                'id'               => $id,
-                'row'              => $this->request->data['GrafanaUserdashboardPanel']['row'],
-                'userdashboard_id' => $this->request->data['GrafanaUserdashboardPanel']['userdashboard_id'],
-                'unit'             => '',
-                'metrics'          => []
-            ]);
-            $this->set('_serialize', ['panel']);
+        /** @var GrafanaUserdashboardPanelsTable $GrafanaUserdashboardPanelsTable */
+        $GrafanaUserdashboardPanelsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardPanels');
+
+        $panel = $GrafanaUserdashboardPanelsTable->newEntity($this->request->getData('GrafanaUserdashboardPanel', []));
+
+        $GrafanaUserdashboardPanelsTable->save($panel);
+        if ($panel->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $panel->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
-        $this->serializeErrorMessageFromModel('GrafanaUserdashboardPanel');
+
+        $this->set('panel', [
+            'id'               => $panel->get('id'),
+            'row'              => $panel->get('row'),
+            'userdashboard_id' => $panel->get('userdashboard_id'),
+            'unit'             => '',
+            'metrics'          => []
+        ]);
+        $this->viewBuilder()->setOption('serialize', ['panel']);
     }
 
     public function removePanel() {
-        if ($this->GrafanaUserdashboardPanel->exists($this->request->data('id'))) {
-            $id = $this->request->data('id');
-            if ($this->GrafanaUserdashboardPanel->delete($id)) {
+        /** @var GrafanaUserdashboardPanelsTable $GrafanaUserdashboardPanelsTable */
+        $GrafanaUserdashboardPanelsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardPanels');
+
+        $id = $this->request->getData('id', 0);
+        if ($GrafanaUserdashboardPanelsTable->existsById($id)) {
+            $panel = $GrafanaUserdashboardPanelsTable->get($id);
+
+            if ($GrafanaUserdashboardPanelsTable->delete($panel)) {
                 $this->set('success', true);
-                $this->set('_serialize', ['success']);
+                $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             }
         }
 
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
+
 
     public function addRow() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        $id = $this->request->data('id');
-        if (!$this->GrafanaUserdashboard->exists($id)) {
+        $id = $this->request->getData('id', 0);
+
+        /** @var GrafanaUserdashboardsTable $GrafanaUserdashboardsTable */
+        $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
+        /** @var GrafanaUserdashboardPanelsTable $GrafanaUserdashboardPanelsTable */
+        $GrafanaUserdashboardPanelsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardPanels');
+
+        if (!$GrafanaUserdashboardsTable->existsById($id)) {
             throw new NotFoundException('GrafanaUserdashboard does not exisits');
         }
 
-        $this->GrafanaUserdashboardPanel->create();
         $data = [
-            'GrafanaUserdashboardPanel' => [
-                'userdashboard_id' => $id,
-                'row'              => $this->GrafanaUserdashboardPanel->getNextRow($id)
-            ]
+            'userdashboard_id' => $id,
+            'row'              => $GrafanaUserdashboardPanelsTable->getNextRow($id)
         ];
-        if ($this->GrafanaUserdashboardPanel->save($data)) {
-            $id = $this->GrafanaUserdashboardPanel->id;
-            $this->set('success', true);
-            $this->set('_serialize', ['success']);
+
+        $panel = $GrafanaUserdashboardPanelsTable->newEntity($data);
+
+        $GrafanaUserdashboardPanelsTable->save($panel);
+        if ($panel->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $panel->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
-        $this->serializeErrorMessageFromModel('GrafanaUserdashboardPanel');
+
+        $this->set('success', true);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function removeRow() {
@@ -699,20 +635,22 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $ids = $this->request->data('ids');
+        $success = false;
+        $ids = $this->request->getData('ids', []);
         if (!empty($ids) && is_array($ids)) {
-            $conditions = [
-                'GrafanaUserdashboardPanel.id' => $ids
-            ];
-            if ($this->GrafanaUserdashboardPanel->deleteAll($conditions)) {
-                $this->set('success', true);
-                $this->set('_serialize', ['success']);
-                return;
+            /** @var GrafanaUserdashboardPanelsTable $GrafanaUserdashboardPanelsTable */
+            $GrafanaUserdashboardPanelsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardPanels');
+            $success = true;
+            foreach ($ids as $id) {
+                $panel = $GrafanaUserdashboardPanelsTable->get($id);
+                if (!$GrafanaUserdashboardPanelsTable->delete($panel)) {
+                    $success = false;
+                }
             }
         }
 
-        $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->set('success', $success);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function savePanelUnit() {
@@ -720,30 +658,28 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $id = $this->request->data('id');
-        $unit = $this->request->data('unit');
-        $title = $this->request->data('title');
+        $id = $this->request->getData('id', 0);
+        $unit = $this->request->getData('unit', 'none');
+        $title = $this->request->getData('title', '');
+
+        /** @var GrafanaUserdashboardPanelsTable $GrafanaUserdashboardPanelsTable */
+        $GrafanaUserdashboardPanelsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardPanels');
 
         $GrafanaTargetUnits = new GrafanaTargetUnits();
-        if ($this->GrafanaUserdashboardPanel->exists($id) && $GrafanaTargetUnits->exists($unit)) {
-            $panel = $this->GrafanaUserdashboardPanel->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'GrafanaUserdashboardPanel.id' => $id
-                ],
-            ]);
+        if ($GrafanaUserdashboardPanelsTable->existsById($id) && $GrafanaTargetUnits->exists($unit)) {
+            $panel = $GrafanaUserdashboardPanelsTable->get($id);
+            $panel->set('title', $title);
+            $panel->set('unit', $unit);
 
-            $panel['GrafanaUserdashboardPanel']['unit'] = $unit;
-            $panel['GrafanaUserdashboardPanel']['title'] = $title;
-            if ($this->GrafanaUserdashboardPanel->save($panel)) {
+            if ($GrafanaUserdashboardPanelsTable->save($panel)) {
                 $this->set('success', true);
-                $this->set('_serialize', ['success']);
+                $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             }
         }
 
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function synchronizeWithGrafana($id = null) {
@@ -752,42 +688,35 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         }
 
         if ($id === null) {
-            $id = $this->request->data('id');
+            $id = $this->request->getData('id', 0);
         }
-        if (!$this->GrafanaUserdashboard->exists($id)) {
+
+        /** @var GrafanaUserdashboardsTable $GrafanaUserdashboardsTable */
+        $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
+        /** @var GrafanaConfigurationsTable $GrafanaConfigurationsTable */
+        $GrafanaConfigurationsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaConfigurations');
+
+        if (!$GrafanaUserdashboardsTable->existsById($id)) {
             throw new NotFoundException();
         }
 
-        $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
-            'recursive' => -1,
-            'contain'   => [
-                'GrafanaConfigurationHostgroupMembership'
-            ]
-        ]);
-
-        if (empty($grafanaConfiguration)) {
-            $this->set('success', false);
-            $this->set('message', __('No Grafana configuration found.'));
-            $this->set('_serialize', ['success', 'message']);
-            return;
-        }
-
+        $grafanaConfiguration = $GrafanaConfigurationsTable->getGrafanaConfiguration();
         /** @var GrafanaApiConfiguration $GrafanaApiConfiguration */
         $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
 
-        /** @var $Proxy App\Model\Table\ProxiesTable */
-        $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+        /** @var $ProxiesTable ProxiesTable */
+        $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
 
-        $client = $this->GrafanaConfiguration->testConnection($GrafanaApiConfiguration, $Proxy->getSettings());
+        $client = $GrafanaConfigurationsTable->testConnection($GrafanaApiConfiguration, $ProxiesTable->getSettings());
 
 
-        $dashboard = $this->GrafanaUserdashboard->find('first', $this->GrafanaUserdashboard->getQuery($id));
-        $rows = $this->GrafanaUserdashboard->extractRowsWithPanelsAndMetricsFromFindResult($dashboard);
+        $dashboard = $GrafanaUserdashboardsTable->getGrafanaUserDashboardEdit($id);
+        $rows = $GrafanaUserdashboardsTable->extractRowsWithPanelsAndMetricsFromFindResult($dashboard);
 
         if ($client instanceof Client) {
             $tag = new GrafanaTag();
             $GrafanaDashboard = new GrafanaDashboard();
-            $GrafanaDashboard->setTitle($dashboard['GrafanaUserdashboard']['name']);
+            $GrafanaDashboard->setTitle($dashboard['name']);
             $GrafanaDashboard->setEditable(true);
             $GrafanaDashboard->setTags($tag->getTag());
             $GrafanaDashboard->setHideControls(false);
@@ -841,30 +770,27 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                 $request = new Request('POST', $GrafanaApiConfiguration->getApiUrl() . '/dashboards/db', ['content-type' => 'application/json'], $json);
                 try {
                     $response = $client->send($request);
-                } catch (BadRequestException $e) {
+                } catch (BadResponseException $e) {
                     $response = $e->getResponse();
                     $responseBody = $response->getBody()->getContents();
                     $message = $responseBody;
                     $success = false;
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $message = $e->getMessage();
                     $success = false;
                 }
-                if ($response->getStatusCode() == 200) {
 
+                if ($response->getStatusCode() == 200) {
                     //Save Grafana URL and GUI to database
                     $responseBody = $response->getBody()->getContents();
                     $data = json_decode($responseBody);
 
-                    $dashboard = $this->GrafanaUserdashboard->find('first', [
-                        'recursive'  => -1,
-                        'conditions' => [
-                            'GrafanaUserdashboard.id' => $id
-                        ]
-                    ]);
-                    $dashboard['GrafanaUserdashboard']['grafana_uid'] = $data->uid;
-                    $dashboard['GrafanaUserdashboard']['grafana_url'] = $data->url;
-                    if ($this->GrafanaUserdashboard->save($dashboard)) {
+                    $enity = $GrafanaUserdashboardsTable->get($id);
+                    $enity->set('grafana_uid', $data->uid);
+                    $enity->set('grafana_url', $data->url);
+                    $GrafanaUserdashboardsTable->save($enity);
+
+                    if (!$enity->hasErrors()) {
                         $message = __('Synchronization finished successfully');
                         $success = true;
                     }
@@ -875,33 +801,30 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
         $this->set('success', $success);
         $this->set('message', $message);
-        $this->set('_serialize', ['success', 'message']);
+        $this->viewBuilder()->setOption('serialize', ['success', 'message']);
     }
 
     public function grafanaWidget() {
-        $this->layout = 'blank';
-
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
         }
 
-        $this->loadModel('Widget');
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        /** @var GrafanaConfigurationsTable $GrafanaConfigurationsTable */
+        $GrafanaConfigurationsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaConfigurations');
+        /** @var GrafanaUserdashboardsTable $GrafanaUserdashboardsTable */
+        $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
+
         if ($this->request->is('get')) {
-            $widgetId = (int)$this->request->query('widgetId');
-            if (!$this->Widget->exists($widgetId)) {
-                throw new RuntimeException('Invalid widget id');
+            $widgetId = (int)$this->request->getQuery('widgetId', 0);
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new \RuntimeException('Invalid widget id');
             }
 
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ],
-                'fields'     => [
-                    'Widget.json_data'
-                ]
-            ]);
+            $widget = $WidgetsTable->getWidgetByIdAsCake2($widgetId);
 
             $grafanaDashboardId = null;
             if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
@@ -911,67 +834,54 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                 }
             }
 
-
-            $dashboard = $this->GrafanaUserdashboard->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'GrafanaUserdashboard.id' => $grafanaDashboardId
-                ]
-            ]);
+            $dashboard = $GrafanaUserdashboardsTable->get($grafanaDashboardId);
 
             $iframeUrl = '';
             if (!empty($grafanaDashboardId) && !empty($dashboard)) {
-                $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
-                if (!empty($grafanaConfiguration)) {
+                $grafanaConfiguration = $GrafanaConfigurationsTable->getGrafanaConfiguration();
+                /** @var ProxiesTable $ProxiesTable */
+                $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
 
-                    /** @var $Proxy App\Model\Table\ProxiesTable */
-                    $Proxy = TableRegistry::getTableLocator()->get('Proxies');
-
-                    $GrafanaConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
-                    if ($this->GrafanaConfiguration->existsUserDashboard($GrafanaConfiguration, $Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])) {
-                        $iframeUrl = $GrafanaConfiguration->getIframeUrlForUserDashboard($dashboard['GrafanaUserdashboard']['grafana_url']);
-                    }
+                $GrafanaConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+                if ($GrafanaConfigurationsTable->existsUserDashboard($GrafanaConfiguration, $ProxiesTable->getSettings(), $dashboard->get('grafana_uid'))) {
+                    $iframeUrl = $GrafanaConfiguration->getIframeUrlForUserDashboard($dashboard->get('grafana_url'));
                 }
             }
 
 
             $this->set('grafana_userdashboard_id', $grafanaDashboardId);
             $this->set('iframe_url', $iframeUrl);
-            $this->set('_serialize', ['grafana_userdashboard_id', 'iframe_url']);
+            $this->viewBuilder()->setOption('serialize', ['grafana_userdashboard_id', 'iframe_url']);
             return;
         }
 
         if ($this->request->is('post')) {
-            $grafanaDashboardId = (int)$this->request->data('dashboard_id');
+            $grafanaDashboardId = (int)$this->request->getData('dashboard_id', 0);
             if ($grafanaDashboardId === 0) {
                 $grafanaDashboardId = null;
             }
 
-            $widgetId = (int)$this->request->data('Widget.id');
+            $widgetId = (int)$this->request->getData('Widget.id', 0);
 
-            if (!$this->Widget->exists($widgetId)) {
-                throw new RuntimeException('Invalid widget id');
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new \RuntimeException('Invalid widget id');
             }
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ],
-            ]);
 
-            $widget['Widget']['json_data'] = json_encode([
+            $widget = $WidgetsTable->get($widgetId);
+
+            $widget->set('json_data', json_encode([
                 'GrafanaUserdashboard' => [
                     'id' => $grafanaDashboardId
                 ]
-            ]);
-
-            if ($this->Widget->save($widget)) {
+            ]));
+            $WidgetsTable->save($widget);
+            if ($widget->hasErrors() === false) {
                 $this->set('grafana_userdashboard_id', $grafanaDashboardId);
-                $this->set('_serialize', ['grafana_userdashboard_id']);
+                $this->viewBuilder()->setOption('serialize', ['grafana_userdashboard_id']);
                 return;
             }
 
-            $this->serializeErrorMessageFromModel('Widget');
+            $this->serializeCake4ErrorMessage($widget);
             return;
         }
         throw new MethodNotAllowedException();
@@ -991,7 +901,6 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
     public function grafanaTimepicker() {
         if (!$this->isAngularJsRequest()) {
-            $this->layout = 'blank';
             //Only ship HTML Template
             return;
         }
@@ -1022,7 +931,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                     'now-24h' => __('Last 24 hours'),
                 ],
                 'update_interval' => [
-                    //'0'   => __('Disabled'), //Does not work via URL becuase is still in dashboard json :/
+                    //'0'   => __('Disabled'), //Does not work via URL because is still in dashboard json :/
                     '5s'  => __('Refresh every 5s'),
                     '10s' => __('Refresh every 10s'),
                     '30s' => __('Refresh every 30s'),
@@ -1032,7 +941,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                 ]
             ];
             $this->set('timeranges', $timeranges);
-            $this->set('_serialize', ['timeranges']);
+            $this->viewBuilder()->setOption('serialize', ['timeranges']);
         }
 
     }

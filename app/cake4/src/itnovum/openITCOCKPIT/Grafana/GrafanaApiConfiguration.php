@@ -27,6 +27,9 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
+use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
+
 class GrafanaApiConfiguration {
     /**
      * @var string
@@ -116,8 +119,8 @@ class GrafanaApiConfiguration {
     }
 
     /**
-     * @param $configuration
-     * @return Grafana Configuration
+     * @param array $configuration
+     * @return GrafanaApiConfiguration
      */
     public static function fromArray($configuration) {
         $apiUrl = null;
@@ -126,42 +129,60 @@ class GrafanaApiConfiguration {
         $useHttps = true;
         $useProxy = true;
         $ignoreSslCertificate = false;
+        $dashboardStyle = 'light';
         $includedHostgroups = [];
         $excludedHostgroups = [];
-        if (!empty($configuration['GrafanaConfiguration']['api_url'])) {
-            $apiUrl = $configuration['GrafanaConfiguration']['api_url'];
+
+        if (!empty($configuration['api_url'])) {
+            $apiUrl = $configuration['api_url'];
         }
-        if (!empty($configuration['GrafanaConfiguration']['api_key'])) {
-            $apiKey = $configuration['GrafanaConfiguration']['api_key'];
+        if (!empty($configuration['api_key'])) {
+            $apiKey = $configuration['api_key'];
         }
-        if (!empty($configuration['GrafanaConfiguration']['graphite_prefix'])) {
-            $graphitePrefix = $configuration['GrafanaConfiguration']['graphite_prefix'];
+        if (!empty($configuration['graphite_prefix'])) {
+            $graphitePrefix = $configuration['graphite_prefix'];
         }
-        if (isset($configuration['GrafanaConfiguration']['use_https'])) {
-            $useHttps = $configuration['GrafanaConfiguration']['use_https'];
+        if (isset($configuration['use_https'])) {
+            $useHttps = $configuration['use_https'];
         }
-        if (isset($configuration['GrafanaConfiguration']['use_proxy'])) {
-            $useProxy = $configuration['GrafanaConfiguration']['use_proxy'];
+        if (isset($configuration['use_proxy'])) {
+            $useProxy = $configuration['use_proxy'];
         }
-        if (isset($configuration['GrafanaConfiguration']['ignore_ssl_certificate'])) {
-            $ignoreSslCertificate = $configuration['GrafanaConfiguration']['ignore_ssl_certificate'];
+        if (isset($configuration['ignore_ssl_certificate'])) {
+            $ignoreSslCertificate = $configuration['ignore_ssl_certificate'];
         }
-        if (!empty($configuration['GrafanaConfiguration']['dashboard_style'])) {
-            $dashboardStyle = $configuration['GrafanaConfiguration']['dashboard_style'];
+        if (!empty($configuration['dashboard_style'])) {
+            $dashboardStyle = $configuration['dashboard_style'];
         }
 
-        if (!empty($configuration['GrafanaConfigurationHostgroupMembership'])) {
-            $includedHostgroups = \Hash::combine(
-                $configuration['GrafanaConfigurationHostgroupMembership'],
-                '{n}[excluded=0].hostgroup_id',
-                '{n}[excluded=0].hostgroup_id'
-            );
-            $excludedHostgroups = \Hash::combine(
-                $configuration['GrafanaConfigurationHostgroupMembership'],
-                '{n}[excluded=1].hostgroup_id',
-                '{n}[excluded=1].hostgroup_id'
-            );
+        if (isset($configuration['Hostgroup']) && is_array($configuration['Hostgroup'])) {
+            //Test grafana connection request
+            foreach ($configuration['Hostgroup'] as $hostgroupId) {
+                $includedHostgroups[$hostgroupId] = $hostgroupId;
+            }
         }
+
+        if (isset($configuration['Hostgroup_excluded']) && is_array($configuration['Hostgroup_excluded'])) {
+            //Test grafana connection request
+            foreach ($configuration['Hostgroup_excluded'] as $excludedHostgroupId) {
+                $excludedHostgroups[$excludedHostgroupId] = $excludedHostgroupId;
+            }
+        }
+
+        //Cake2 legacy
+        //if (!empty($configuration['GrafanaConfigurationHostgroupMembership'])) {
+        //    $includedHostgroups = Hash::combine(
+        //        $configuration['GrafanaConfigurationHostgroupMembership'],
+        //        '{n}[excluded=0].hostgroup_id',
+        //        '{n}[excluded=0].hostgroup_id'
+        //    );
+        //    $excludedHostgroups = Hash::combine(
+        //        $configuration['GrafanaConfigurationHostgroupMembership'],
+        //        '{n}[excluded=1].hostgroup_id',
+        //        '{n}[excluded=1].hostgroup_id'
+        //    );
+        //}
+
         return new self($apiUrl, $apiKey, $graphitePrefix, $useHttps, $useProxy, $ignoreSslCertificate, $includedHostgroups, $excludedHostgroups, $dashboardStyle);
     }
 
@@ -252,7 +273,7 @@ class GrafanaApiConfiguration {
      * @param string
      */
     public function setGrafanaUid($uid) {
-        if($uid === ''){
+        if ($uid === '') {
             $uid = null;
         }
         $this->grafana_uid = $uid;
@@ -291,7 +312,7 @@ class GrafanaApiConfiguration {
             $uiUrl = $this->getDockerUrl();
         }
 
-        if($this->grafana_uid !== null) {
+        if ($this->grafana_uid !== null) {
             //Old Grfana URL <? 5.4
             return sprintf(
                 '%s/d/%s/%s?theme=%s%s&from=%s&to=now&kiosk',
@@ -302,7 +323,7 @@ class GrafanaApiConfiguration {
                 $autoRefreshUrlStr,
                 $timerange
             );
-        }else{
+        } else {
             //Old Grfana URL <? 5.4
             return sprintf(
                 '%s/dashboard/db/%s?theme=%s%s&from=%s&to=now&kiosk',

@@ -33,7 +33,7 @@ class GrafanaUserDashboardFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'like' => [
-                'GrafanaUserdashboard.name',
+                'GrafanaUserdashboards.name',
             ]
         ];
 

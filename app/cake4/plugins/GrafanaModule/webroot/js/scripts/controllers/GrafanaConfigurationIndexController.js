@@ -2,18 +2,16 @@ angular.module('openITCOCKPIT')
     .controller('Grafana_configurationIndexController', function($scope, $http, NotyService, $state){
 
         $scope.post = {
-            GrafanaConfiguration: {
-                id: 1, //its 1 every time
-                api_url: '',
-                api_key: '',
-                graphite_prefix: '',
-                use_https: false, //number
-                use_proxy: true, //number
-                ignore_ssl_certificate: false, //number
-                dashboard_style: '', //light / dark
-                Hostgroup: [],
-                Hostgroup_excluded: []
-            }
+            id: 1, //its 1 every time
+            api_url: '',
+            api_key: '',
+            graphite_prefix: '',
+            use_https: 0, //number
+            use_proxy: 1, //number
+            ignore_ssl_certificate: 0, //number
+            dashboard_style: '', //light / dark
+            Hostgroup: [],
+            Hostgroup_excluded: []
         };
 
         $scope.hasError = null;
@@ -28,23 +26,23 @@ angular.module('openITCOCKPIT')
                 var selectedHostgroups = [];
                 var selectedHostgroupsExcluded = [];
 
-                for(var key in $scope.config.GrafanaConfiguration.Hostgroup){
-                    selectedHostgroups.push(parseInt($scope.config.GrafanaConfiguration.Hostgroup[key], 10));
+                for(var key in $scope.config.Hostgroup){
+                    selectedHostgroups.push(parseInt($scope.config.Hostgroup[key], 10));
                 }
 
-                for(var key in $scope.config.GrafanaConfiguration.Hostgroup_excluded){
-                    selectedHostgroupsExcluded.push(parseInt($scope.config.GrafanaConfiguration.Hostgroup_excluded[key], 10));
+                for(var key in $scope.config.Hostgroup_excluded){
+                    selectedHostgroupsExcluded.push(parseInt($scope.config.Hostgroup_excluded[key], 10));
                 }
 
-                $scope.post.GrafanaConfiguration.api_url = $scope.config.GrafanaConfiguration.api_url;
-                $scope.post.GrafanaConfiguration.api_key = $scope.config.GrafanaConfiguration.api_key;
-                $scope.post.GrafanaConfiguration.graphite_prefix = $scope.config.GrafanaConfiguration.graphite_prefix;
-                $scope.post.GrafanaConfiguration.use_https = parseInt($scope.config.GrafanaConfiguration.use_https, 10) === 1;
-                $scope.post.GrafanaConfiguration.use_proxy = parseInt($scope.config.GrafanaConfiguration.use_proxy, 10) === 1;
-                $scope.post.GrafanaConfiguration.ignore_ssl_certificate = parseInt($scope.config.GrafanaConfiguration.ignore_ssl_certificate, 10) === 1;
-                $scope.post.GrafanaConfiguration.dashboard_style = $scope.config.GrafanaConfiguration.dashboard_style;
-                $scope.post.GrafanaConfiguration.Hostgroup = selectedHostgroups;
-                $scope.post.GrafanaConfiguration.Hostgroup_excluded = selectedHostgroupsExcluded;
+                $scope.post.api_url = $scope.config.api_url;
+                $scope.post.api_key = $scope.config.api_key;
+                $scope.post.graphite_prefix = $scope.config.graphite_prefix;
+                $scope.post.use_https = parseInt($scope.config.use_https, 10);
+                $scope.post.use_proxy = parseInt($scope.config.use_proxy, 10);
+                $scope.post.ignore_ssl_certificate = parseInt($scope.config.ignore_ssl_certificate, 10);
+                $scope.post.dashboard_style = $scope.config.dashboard_style;
+                $scope.post.Hostgroup = selectedHostgroups;
+                $scope.post.Hostgroup_excluded = selectedHostgroupsExcluded;
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');

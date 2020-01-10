@@ -1,19 +1,10 @@
 angular.module('openITCOCKPIT')
     .controller('Grafana_userdashboardsEditController', function($scope, $http, $stateParams, $state, NotyService){
 
-        $scope.post = {
-            GrafanaUserdashboard: {
-                id: null,
-                container_id: null,
-                name: '',
-                configuration_id: null
-            }
-        };
+        $scope.hasGrafanaConfig = true;
+        $scope.post = {};
 
         $scope.id = $stateParams.id;
-
-        $scope.deleteUrl = "/grafana_module/grafana_userdashboards/delete/" + $scope.id + ".json?angular=true";
-        $scope.sucessUrl = '/grafana_module/grafana_userdashboards/index';
 
         $scope.load = function(){
             $http.get("/grafana_module/grafana_userdashboards/edit/" + $scope.id + ".json", {
@@ -21,10 +12,9 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                $scope.post.GrafanaUserdashboard.id = result.data.dashboard.GrafanaUserdashboard.id;
-                $scope.post.GrafanaUserdashboard.container_id = result.data.dashboard.GrafanaUserdashboard.container_id;
-                $scope.post.GrafanaUserdashboard.name = result.data.dashboard.GrafanaUserdashboard.name;
-                $scope.post.GrafanaUserdashboard.configuration_id = result.data.dashboard.GrafanaUserdashboard.configuration_id;
+                $scope.post = result.data.dashboard;
+
+                $scope.hasGrafanaConfig = result.data.hasGrafanaConfig;
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
