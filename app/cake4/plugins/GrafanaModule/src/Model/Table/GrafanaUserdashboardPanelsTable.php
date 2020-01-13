@@ -71,9 +71,10 @@ class GrafanaUserdashboardPanelsTable extends Table {
         ]);
 
         $this->hasMany('GrafanaUserdashboardMetrics', [
-            'foreignKey' => 'panel_id',
-            'className'  => 'GrafanaModule.GrafanaUserdashboardMetrics',
-            'dependent'  => true
+            'foreignKey'       => 'panel_id',
+            'className'        => 'GrafanaModule.GrafanaUserdashboardMetrics',
+            'dependent'        => true,
+            'cascadeCallbacks' => true
         ]);
     }
 
