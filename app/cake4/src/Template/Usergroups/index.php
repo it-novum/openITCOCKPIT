@@ -81,7 +81,7 @@
                                                 <span class="input-group-text"><i class="fa fa-filter"></i></span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
-                                                   placeholder="<?php echo __('Filter by full name'); ?>"
+                                                   placeholder="<?php echo __('Filter by name'); ?>"
                                                    ng-model="filter.Usergroups.name"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
