@@ -36,7 +36,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fa fa-edit"></i> <?php echo __('Edit local'); ?>
+        <i class="fa fa-edit"></i> <?php echo __('Edit'); ?>
     </li>
 </ol>
 
