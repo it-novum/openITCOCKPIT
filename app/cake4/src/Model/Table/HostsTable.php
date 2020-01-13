@@ -618,12 +618,23 @@ class HostsTable extends Table {
             ->contain([
                 'HostsToContainersSharing',
                 'Contacts'      => [
+                    'Containers' => [
+                        'fields' => [
+                            'ContactsToContainers.contact_id',
+                            'Containers.id'
+                        ]
+                    ],
                     'fields' => [
                         'ContactsToHosts.host_id',
                         'Contacts.id'
                     ]
                 ],
                 'Contactgroups' => [
+                    'Containers' => [
+                        'fields' => [
+                            'Containers.parent_id'
+                        ]
+                    ],
                     'fields' => [
                         'ContactgroupsToHosts.host_id',
                         'Contactgroups.id'
@@ -631,12 +642,23 @@ class HostsTable extends Table {
                 ],
                 'Hosttemplates' => [
                     'Contacts' => [
+                        'Containers' => [
+                            'fields' => [
+                                'ContactsToContainers.contact_id',
+                                'Containers.id'
+                            ]
+                        ],
                         'fields' => [
                             'ContactsToHosttemplates.hosttemplate_id',
                             'Contacts.id'
                         ]
                     ],
                     'Contactgroups' => [
+                        'Containers' => [
+                            'fields' => [
+                                'Containers.parent_id'
+                            ]
+                        ],
                         'fields' => [
                             'ContactgroupsToHosttemplates.hosttemplate_id',
                             'Contactgroups.id'

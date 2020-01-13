@@ -24,9 +24,9 @@ angular.module('openITCOCKPIT')
                 }
 
                 $scope.data = data;
-                $scope.containerId = parseInt(result.data.userdashboardData.GrafanaUserdashboard.container_id, 10);
+                $scope.containerId = parseInt(result.data.userdashboardData.container_id, 10);
 
-                $scope.name = result.data.userdashboardData.GrafanaUserdashboard.name;
+                $scope.name = result.data.userdashboardData.name;
                 $scope.grafanaUnits = result.data.grafanaUnits;
 
             }, function errorCallback(result){

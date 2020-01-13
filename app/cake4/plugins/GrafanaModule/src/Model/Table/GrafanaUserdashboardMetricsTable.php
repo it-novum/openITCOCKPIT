@@ -65,20 +65,20 @@ class GrafanaUserdashboardMetricsTable extends Table {
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        $this->belongsTo('Panels', [
+        $this->belongsTo('GrafanaUserdashboardPanels', [
             'foreignKey' => 'panel_id',
             'joinType'   => 'INNER',
-            'className'  => 'GrafanaModule.Panels',
+            'className'  => 'GrafanaModule.GrafanaUserdashboardPanels',
         ]);
         $this->belongsTo('Hosts', [
             'foreignKey' => 'host_id',
             'joinType'   => 'INNER',
-            'className'  => 'GrafanaModule.Hosts',
+            'className'  => 'Hosts',
         ]);
         $this->belongsTo('Services', [
             'foreignKey' => 'service_id',
             'joinType'   => 'INNER',
-            'className'  => 'GrafanaModule.Services',
+            'className'  => 'Services',
         ]);
     }
 
@@ -99,6 +99,21 @@ class GrafanaUserdashboardMetricsTable extends Table {
             ->requirePresence('metric', 'create')
             ->notEmptyString('metric');
 
+        $validator
+            ->integer('panel_id')
+            ->greaterThan('panel_id', 0)
+            ->notEmptyString('panel_id');
+
+        $validator
+            ->integer('host_id')
+            ->greaterThan('hopst_id', 0)
+            ->notEmptyString('host_id');
+
+        $validator
+            ->integer('service_id')
+            ->greaterThan('service_id', 0)
+            ->notEmptyString('service_id');
+
         return $validator;
     }
 
@@ -110,10 +125,19 @@ class GrafanaUserdashboardMetricsTable extends Table {
      * @return RulesChecker
      */
     public function buildRules(RulesChecker $rules): RulesChecker {
-        $rules->add($rules->existsIn(['panel_id'], 'Panels'));
+        $rules->add($rules->existsIn(['panel_id'], 'GrafanaUserdashboardPanels'));
         $rules->add($rules->existsIn(['host_id'], 'Hosts'));
         $rules->add($rules->existsIn(['service_id'], 'Services'));
 
         return $rules;
     }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['GrafanaUserdashboardMetrics.id' => $id]);
+    }
+
 }

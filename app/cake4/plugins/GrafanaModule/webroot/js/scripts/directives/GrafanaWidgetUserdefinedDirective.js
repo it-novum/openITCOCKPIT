@@ -46,8 +46,8 @@ angular.module('openITCOCKPIT').directive('grafanaWidgetUserdefined', function($
                     var availableGrafanaUserdefeinedDashboards = [];
                     for(var i in result.data.all_userdashboards){
                         availableGrafanaUserdefeinedDashboards.push({
-                            id: parseInt(result.data.all_userdashboards[i].GrafanaUserdashboard.id, 10),
-                            name: result.data.all_userdashboards[i].GrafanaUserdashboard.name
+                            id: parseInt(result.data.all_userdashboards[i].id, 10),
+                            name: result.data.all_userdashboards[i].name
                         });
                     }
 

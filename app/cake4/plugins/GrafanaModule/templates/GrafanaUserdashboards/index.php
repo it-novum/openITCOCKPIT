@@ -15,7 +15,7 @@
             <span>>
                 <?php echo __('User Dashboards'); ?>
             </span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+            <div class="third_level"> <?= __('Overview') ?></div>
         </h1>
     </div>
 </div>
@@ -56,7 +56,7 @@
                             <label class="input"> <i class="icon-prepend fa fa-tag"></i>
                                 <input type="text" class="input-sm"
                                        placeholder="<?php echo __('Filter by name'); ?>"
-                                       ng-model="filter.GrafanaUserdashboard.name"
+                                       ng-model="filter.GrafanaUserdashboards.name"
                                        ng-model-options="{debounce: 500}">
                             </label>
                         </div>
@@ -78,8 +78,8 @@
                     <th class="no-sort sorting_disabled width-15">
                         <i class="fa fa-check-square-o fa-lg"></i>
                     </th>
-                    <th class="no-sort" ng-click="orderBy('GrafanaUserdashboard.name')">
-                        <i class="fa" ng-class="getSortClass('GrafanaUserdashboard.name')"></i>
+                    <th class="no-sort" ng-click="orderBy('GrafanaUserdashboards.name')">
+                        <i class="fa" ng-class="getSortClass('GrafanaUserdashboards.name')"></i>
                         <?php echo __('User dashboard name'); ?>
                     </th>
                     <th class="no-sort text-center" style="width:70px;">
@@ -91,71 +91,71 @@
                 <tr ng-repeat="userdashboard in allUserdashboards">
                     <td class="text-center width-15">
                         <input type="checkbox"
-                               ng-model="massChange[userdashboard.GrafanaUserdashboard.id]"
-                               ng-show="userdashboard.GrafanaUserdashboard.allowEdit">
+                               ng-model="massChange[userdashboard.id]"
+                               ng-show="userdashboard.allowEdit">
                     </td>
                     <td>
                         <?php if ($this->Acl->hasPermission('view', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
-                            <a ui-sref="GrafanaUserdashboardsView({id: userdashboard.GrafanaUserdashboard.id})"
-                               ng-show="userdashboard.GrafanaUserdashboard.grafana_url !== ''">
-                                {{ userdashboard.GrafanaUserdashboard.name }}
+                            <a ui-sref="GrafanaUserdashboardsView({id: userdashboard.id})"
+                               ng-show="userdashboard.grafana_url !== ''">
+                                {{ userdashboard.name }}
                             </a>
-                            <span ng-show="userdashboard.GrafanaUserdashboard.grafana_url == ''">{{ userdashboard.GrafanaUserdashboard.name }}
+                            <span ng-show="userdashboard.grafana_url == ''">{{ userdashboard.name }}
                             </span>
-                            <span ng-show="userdashboard.GrafanaUserdashboard.grafana_url == ''"
+                            <span ng-show="userdashboard.grafana_url == ''"
                                   class="label label-primary font-xs">
                                 <?php echo __('Not synchronized'); ?>
                             </span>
                         <?php else: ?>
-                            {{ userdashboard.GrafanaUserdashboard.name }}
+                            {{ userdashboard.name }}
                         <?php endif; ?>
                     </td>
                     <td>
                         <div class="btn-group smart-form">
                             <?php if ($this->Acl->hasPermission('editor', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
-                                <a ui-sref="GrafanaUserdashboardsEditor({id: userdashboard.GrafanaUserdashboard.id})"
-                                   ng-if="userdashboard.GrafanaUserdashboard.allowEdit"
-                                   class="btn btn-default btn-xs">
-                                    <i class="fa fa-cog"></i>
+                                <a ui-sref="GrafanaUserdashboardsEditor({id: userdashboard.id})"
+                                   ng-if="userdashboard.allowEdit"
+                                   class="btn btn-default">
+                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                 </a>
-                                <a href="javascript:void(0);" class="btn btn-default btn-xs"
-                                   ng-if="!userdashboard.GrafanaUserdashboard.allowEdit">
-                                    <i class="fa fa-cog"></i>
+                                <a href="javascript:void(0);"
+                                   ng-if="!userdashboard.allowEdit"
+                                   class="btn btn-default disabled">
+                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                 </a>
                             <?php else: ?>
-                                <a href="javascript:void(0);" class="btn btn-default btn-xs">
-                                    <i class="fa fa-cog"></i>
-                                </a>
+                                <a href="javascript:void(0);" class="btn btn-default disabled">
+                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                             <?php endif; ?>
                             <a href="javascript:void(0);" data-toggle="dropdown"
                                class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
                             <ul class="dropdown-menu pull-right"
-                                id="menuHack-{{userdashboard.GrafanaUserdashboard.id}}">
+                                id="menuHack-{{userdashboard.id}}">
                                 <?php if ($this->Acl->hasPermission('editor', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
-                                    <li ng-if="userdashboard.GrafanaUserdashboard.allowEdit">
-                                        <a ui-sref="GrafanaUserdashboardsEditor({id: userdashboard.GrafanaUserdashboard.id})">
+                                    <li ng-if="userdashboard.allowEdit">
+                                        <a ui-sref="GrafanaUserdashboardsEditor({id: userdashboard.id})">
                                             <i class="fa fa-cog"></i> <?php echo __('Open in Editor'); ?>
                                         </a>
                                     </li>
                                 <?php endif; ?>
                                 <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
-                                    <li ng-if="userdashboard.GrafanaUserdashboard.allowEdit">
-                                        <a ui-sref="GrafanaUserdashboardsEdit({id: userdashboard.GrafanaUserdashboard.id})">
+                                    <li ng-if="userdashboard.allowEdit">
+                                        <a ui-sref="GrafanaUserdashboardsEdit({id: userdashboard.id})">
                                             <i class="fa fa-edit"></i> <?php echo __('Edit settings'); ?>
                                         </a>
                                     </li>
-                                    <li class="divider" ng-if="userdashboard.GrafanaUserdashboard.allowEdit"></li>
+                                    <li class="divider" ng-if="userdashboard.allowEdit"></li>
                                 <?php endif; ?>
 
                                 <?php if ($this->Acl->hasPermission('view', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                     <li>
-                                        <a ui-sref="GrafanaUserdashboardsView({id: userdashboard.GrafanaUserdashboard.id})">
+                                        <a ui-sref="GrafanaUserdashboardsView({id: userdashboard.id})">
                                             <i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
                                     </li>
                                 <?php endif; ?>
                                 <?php if ($this->Acl->hasPermission('delete', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
-                                    <li class="divider" ng-if="userdashboard.GrafanaUserdashboard.allowEdit"></li>
-                                    <li ng-if="userdashboard.GrafanaUserdashboard.allowEdit">
+                                    <li class="divider" ng-if="userdashboard.allowEdit"></li>
+                                    <li ng-if="userdashboard.allowEdit">
                                         <a class="txt-color-red"
                                            href="javascript:void(0);" class="txt-color-red"
                                            ng-click="confirmDelete(getObjectForDelete(userdashboard))">

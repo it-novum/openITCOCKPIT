@@ -36,6 +36,23 @@ class Menu implements MenuInterface {
      * @return array
      */
     public function getHeadlines() {
+        $Overview = new MenuHeadline(\itnovum\openITCOCKPIT\Core\Menu\Menu::MENU_OVERVIEW);
+        $Overview
+            ->addCategory((new MenuCategory(
+                'reports_category'
+            ))
+                ->addLink(new MenuLink(
+                    __('Grafana'),
+                    'GrafanaUserdashboardsIndex',
+                    'GrafanaUserdashboards',
+                    'index',
+                    'GrafanaModule',
+                    'fa fa-area-chart',
+                    [],
+                    4
+                ))
+            );
+
         $Configuration = new MenuHeadline(\itnovum\openITCOCKPIT\Core\Menu\Menu::MENU_CONFIGURATION);
         $Configuration
             ->addCategory((new MenuCategory(
@@ -53,7 +70,7 @@ class Menu implements MenuInterface {
                 ))
             );
 
-        return [$Configuration];
+        return [$Overview, $Configuration];
     }
 
 }

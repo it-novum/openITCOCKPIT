@@ -38,7 +38,8 @@ use Cake\ORM\Entity;
  * @property string $unit
  * @property string $title
  *
- * @property Userdashboard $userdashboard
+ * @property GrafanaUserdashboard $grafana_userdashboard
+ * @property GrafanaUserdashboardMetric[] $grafana_userdashboard_metrics
  */
 class GrafanaUserdashboardPanel extends Entity {
     /**
@@ -51,10 +52,11 @@ class GrafanaUserdashboardPanel extends Entity {
      * @var array
      */
     protected $_accessible = [
-        'userdashboard_id' => true,
-        'row'              => true,
-        'unit'             => true,
-        'title'            => true,
-        'userdashboard'    => true,
+        'userdashboard_id'              => true,
+        'row'                           => true,
+        'unit'                          => true,
+        'title'                         => true,
+        'grafana_userdashboard'         => true,
+        'grafana_userdashboard_metrics' => true
     ];
 }

@@ -25,7 +25,7 @@
 
 namespace itnovum\openITCOCKPIT\Grafana;
 
-use File;
+use \Cake\Filesystem\File;
 
 class GrafanaTag {
 
@@ -46,7 +46,7 @@ class GrafanaTag {
 
         try {
             $tagfile->write($this->generateTag());
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo $e->getMessage();
         }
 
@@ -60,7 +60,7 @@ class GrafanaTag {
                 //throw new Exception('Tag File could not be found in '. $this->tagfilePath);
                 $this->writeTagfile();
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo $e->getMessage();
         }
         return $tagfile->read();
