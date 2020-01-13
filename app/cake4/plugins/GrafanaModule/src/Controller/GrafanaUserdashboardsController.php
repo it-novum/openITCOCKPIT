@@ -32,6 +32,7 @@ use App\Model\Table\WidgetsTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use GrafanaModule\Model\Entity\GrafanaUserdashboardPanel;
 use GrafanaModule\Model\Table\GrafanaConfigurationsTable;
@@ -43,6 +44,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Psr7\Request;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
@@ -339,15 +341,23 @@ class GrafanaUserdashboardsController extends AppController {
 
     /**
      * @param int $id
-     * @deprecated
      */
     public function delete($id) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->GrafanaUserdashboard->exists($id)) {
-            throw new NotFoundException();
+        /** @var GrafanaConfigurationsTable $GrafanaConfigurationsTable */
+        $GrafanaConfigurationsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaConfigurations');
+        $grafanaConfiguration = $GrafanaConfigurationsTable->getGrafanaConfiguration();
+        $hasGrafanaConfig = $grafanaConfiguration['api_url'] !== '';
+        $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+
+        /** @var GrafanaUserdashboardsTable $GrafanaUserdashboardsTable */
+        $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
+
+        if (!$GrafanaUserdashboardsTable->existsById($id)) {
+            throw new NotFoundException('GrafanaUserdashboard does not exisits');
         }
 
         $writeContainers = [];
@@ -357,51 +367,36 @@ class GrafanaUserdashboardsController extends AppController {
             }
         }
 
-        $dashboard = $this->GrafanaUserdashboard->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'GrafanaUserdashboard.id'           => $id,
-                'GrafanaUserdashboard.container_id' => $writeContainers
-            ]
-        ]);
+        $dashboard = $GrafanaUserdashboardsTable->get($id);
+        if (!$this->isWritableContainer($dashboard->get('container_id'))) {
+            return $this->render403();
+        }
 
-        if (!empty($dashboard)) {
-            $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
-                'recursive' => -1,
-                'contain'   => [
-                    'GrafanaConfigurationHostgroupMembership'
-                ]
-            ]);
-            if ($this->GrafanaUserdashboard->delete($dashboard['GrafanaUserdashboard']['id'])) {
-                if (!empty($grafanaConfiguration)) {
-                    /** @var $Proxy App\Model\Table\ProxiesTable */
-                    $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+        // Delete dashboard at Grafana
+        /** @var ProxiesTable $ProxiesTable */
+        $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
 
-                    /** @var GrafanaApiConfiguration $GrafanaApiConfiguration */
-                    $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
-                    $client = $this->GrafanaConfiguration->testConnection($GrafanaApiConfiguration, $Proxy->getSettings());
-                    if ($client instanceof Client) {
-                        $deleteUrl = sprintf(
-                            '%s/dashboards/uid/%s',
-                            $GrafanaApiConfiguration->getApiUrl(),
-                            $dashboard['GrafanaUserdashboard']['grafana_uid']
-                        );
-                        $request = new Request('DELETE', $deleteUrl, ['content-type' => 'application/json']);
-                        try {
-                            $response = $client->send($request);
-                        } catch (Exception $e) {
-                            //Error while deleting dashboard form Grafana
-                            //$message = $e->getMessage();
-                            //$success = false;
-                        }
-                    }
-                }
-
-                $this->set('success', true);
-                $this->set('message', __('User defined Grafana dashboard successfully deleted'));
-                $this->viewBuilder()->setOption('serialize', ['success', 'message']);
-                return;
+        $client = $GrafanaConfigurationsTable->testConnection($GrafanaApiConfiguration, $ProxiesTable->getSettings());
+        if ($client instanceof Client) {
+            $deleteUrl = sprintf(
+                '%s/dashboards/uid/%s',
+                $GrafanaApiConfiguration->getApiUrl(),
+                $dashboard->get('grafana_uid')
+            );
+            $request = new Request('DELETE', $deleteUrl, ['content-type' => 'application/json']);
+            try {
+                $response = $client->send($request);
+            } catch (\Exception $e) {
+                Log::error('GrafanaModule: Error while deleting UserGrafanadashboard from Grafana');
+                Log::error($e->getMessage());
             }
+        }
+
+        if ($GrafanaUserdashboardsTable->delete($dashboard, ['cascadeCallbacks' => true])) {
+            $this->set('success', true);
+            $this->set('message', __('User defined Grafana dashboard successfully deleted'));
+            $this->viewBuilder()->setOption('serialize', ['success', 'message']);
+            return;
         }
 
         $this->response = $this->response->withStatus(400);
