@@ -624,7 +624,7 @@ class HostsTable extends Table {
                             'Containers.id'
                         ]
                     ],
-                    'fields' => [
+                    'fields'     => [
                         'ContactsToHosts.host_id',
                         'Contacts.id'
                     ]
@@ -635,20 +635,20 @@ class HostsTable extends Table {
                             'Containers.parent_id'
                         ]
                     ],
-                    'fields' => [
+                    'fields'     => [
                         'ContactgroupsToHosts.host_id',
                         'Contactgroups.id'
                     ]
                 ],
                 'Hosttemplates' => [
-                    'Contacts' => [
+                    'Contacts'      => [
                         'Containers' => [
                             'fields' => [
                                 'ContactsToContainers.contact_id',
                                 'Containers.id'
                             ]
                         ],
-                        'fields' => [
+                        'fields'     => [
                             'ContactsToHosttemplates.hosttemplate_id',
                             'Contacts.id'
                         ]
@@ -659,7 +659,7 @@ class HostsTable extends Table {
                                 'Containers.parent_id'
                             ]
                         ],
-                        'fields' => [
+                        'fields'     => [
                             'ContactgroupsToHosttemplates.hosttemplate_id',
                             'Contactgroups.id'
                         ]
@@ -1468,6 +1468,36 @@ class HostsTable extends Table {
         return [
             'Host' => $host
         ];
+    }
+
+    /**
+     * @param int $id
+     * @return array|null
+     */
+    public function getHostForBrowser($id) {
+        $query = $this->find()
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'Contactgroups' => [
+                    'Containers'
+                ],
+                'Contacts' => [
+                    'Containers'
+                ],
+                'Hostgroups',
+                'Customvariables',
+                'Parenthosts',
+                'HostsToContainersSharing',
+                'Hostcommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->disableHydration()
+            ->first();
+
+        return $query;
     }
 
     /**

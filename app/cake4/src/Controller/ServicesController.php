@@ -1246,15 +1246,31 @@ class ServicesController extends AppController {
      * @throws MissingDbBackendException
      * @throws GuzzleException
      */
-    public function browser($id = null) {
+    public function browser($idOrUuid = null) {
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
-
-        if (!$this->isAngularJsRequest()) {
+        if ($this->isHtmlRequest()) {
             //Only ship template
             $this->set('username', $User->getFullName());
             return;
         }
+
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $id = $idOrUuid;
+        if (!is_numeric($idOrUuid)) {
+            if (preg_match(UUID::regex(), $idOrUuid)) {
+                try {
+                    $lookupService = $ServicesTable->getServiceByUuid($idOrUuid);
+                    $id = $lookupService->get('id');
+                } catch (RecordNotFoundException $e) {
+                    throw new NotFoundException(__('Service not found'));
+                }
+            }
+        }
+        unset($idOrUuid);
 
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
@@ -1262,8 +1278,6 @@ class ServicesController extends AppController {
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        /** @var $ServicesTable ServicesTable */
-        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
         /** @var $HoststatusTable HoststatusTableInterface */
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
         /** @var $ServicestatusTable ServicestatusTableInterface */

@@ -22,6 +22,12 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+/**
+ * @var \App\View\AppView $this
+ * @var string $username
+ */
+
 ?>
 
 <query-handler-directive></query-handler-directive>

@@ -526,6 +526,66 @@ class HosttemplatesTable extends Table {
 
     /**
      * @param int $id
+     * @return array
+     */
+    public function getHosttemplateForHostBrowser($id) {
+        $query = $this->find()
+            ->where([
+                'Hosttemplates.id' => $id
+            ])
+            ->contain([
+                'Contactgroups' => [
+                    'Containers'
+                ],
+                'Contacts' => [
+                    'Containers'
+                ],
+                'Hostgroups',
+                'Customvariables',
+                'Hosttemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ],
+                'CheckCommand'                      => [
+                    'Commandarguments'
+                ]
+            ])
+            ->disableHydration()
+            ->first();
+
+        $hosttemplate = $query;
+
+        // Merge new command arguments that are missing in the host template to host template command arguments
+        // and remove old command arguments that don't exists in the command anymore.
+        $filteredCommandArgs = [];
+        foreach ($hosttemplate['check_command']['commandarguments'] as $commandargument) {
+            $valueExists = false;
+            foreach ($hosttemplate['hosttemplatecommandargumentvalues'] as $hosttemplatecommandargumentvalue) {
+                if ($commandargument['id'] === $hosttemplatecommandargumentvalue['commandargument']['id']) {
+                    $filteredCommandArgs[] = $hosttemplatecommandargumentvalue;
+                    $valueExists = true;
+                }
+            }
+            if (!$valueExists) {
+                $filteredCommandArgs[] = [
+                    'commandargument_id' => $commandargument['id'],
+                    'hostetemplate_id'   => $hosttemplate['id'],
+                    'value'              => '',
+                    'commandargument'    => [
+                        'name'       => $commandargument['name'],
+                        'human_name' => $commandargument['human_name'],
+                        'command_id' => $commandargument['command_id'],
+                    ]
+                ];
+            }
+        }
+
+        $hosttemplate['hosttemplatecommandargumentvalues'] = $filteredCommandArgs;
+
+        return $hosttemplate;
+    }
+
+    /**
+     * @param int $id
      * @return int
      */
     public function getContainerIdById($id) {

@@ -146,4 +146,22 @@ class UserTime {
         return $zero->diff($seconds)->format($format);
     }
 
+    /**
+     * @param int $t_time
+     * @return string
+     */
+    public function timeAgoInWords($t_time){
+        if (!is_numeric($t_time)) {
+            $t_time = strtotime($t_time);
+        }
+        if (!is_numeric($t_time)) {
+            $t_time = 0;
+        }
+
+        $Time = new Time($t_time);
+        $Time->setTimezone(new \DateTimeZone($this->timezone));
+
+        return $Time->timeAgoInWords();
+    }
+
 }

@@ -24,8 +24,6 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
-
-use CakeTime;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class Servicestatus {
@@ -453,8 +451,8 @@ class Servicestatus {
         $arr = $this->toArray();
         $arr['lastHardStateChange'] = $this->UserTime->secondsInHumanShort(time() - $this->getLastHardStateChange());
         $arr['last_state_change'] = $this->UserTime->secondsInHumanShort(time() - $this->getLastStateChange());
-        $arr['lastCheck'] = CakeTime::timeAgoInWords($this->getLastCheck());
-        $arr['nextCheck'] = CakeTime::timeAgoInWords($this->getNextCheck());
+        $arr['lastCheck'] = $this->UserTime->timeAgoInWords($this->getLastCheck());
+        $arr['nextCheck'] = $this->UserTime->timeAgoInWords($this->getNextCheck());
         return $arr;
     }
 

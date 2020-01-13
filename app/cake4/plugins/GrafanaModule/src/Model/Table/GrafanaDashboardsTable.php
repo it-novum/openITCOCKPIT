@@ -319,4 +319,16 @@ class GrafanaDashboardsTable extends Table {
         }
         return !empty(array_intersect($hostHostgroups, $excludedHostgroups));
     }
+
+    /**
+     * @param string $uuid
+     * @return EntityInterface|null
+     */
+    public function getDashboardByHostUuid($uuid) {
+        return $this->find()
+            ->where([
+                'GrafanaDashboards.host_uuid' => $uuid
+            ])
+            ->first();
+    }
 }
