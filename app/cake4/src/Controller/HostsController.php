@@ -903,10 +903,8 @@ class HostsController extends AppController {
             /** @var $ContainersTable ContainersTable */
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-
-            $containerIds = $this->MY_RIGHTS;
-            $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-            $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
+            $contacts = $ContactsTable->contactsByContainerId($this->MY_RIGHTS, 'list');
+            $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
 
             //get sharing containers
             $sharingContainers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
@@ -930,14 +928,18 @@ class HostsController extends AppController {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $hostIds = $this->request->getData('data.hosts');
-            $detailsToEdit = $this->request->getData('data.details');
+            $hostIds = $this->request->getData('data.hosts', []);
+            $detailsToEdit = $this->request->getData('data.details', []);
             foreach ($hostIds as $hostId) {
+                $dataToSave = [];
                 $sharedContainers = [];
                 $hostObject = $HostsTable->getHostByIdWithHosttemplateForEditDetails($hostId);
+                $hostObjectForChangelog = ['Host' => $hostObject->toArray()];
+                $containerIdsForChangelog = [];
                 $primaryContainerId = $hostObject->get('container_id');
                 foreach ($hostObject->get('hosts_to_containers_sharing') as $container) {
                     $containerId = $container->get('id');
+                    $containerIdsForChangelog[] = $containerId;
                     if ($primaryContainerId !== $containerId) {
                         $sharedContainers[] = $containerId;
                     }
@@ -948,6 +950,7 @@ class HostsController extends AppController {
                     $sharedContainers,
                     $this->MY_RIGHTS
                 );
+
 
                 $allowSharing = $hostSharingPermissions->allowSharing();
                 if ($allowSharing) {
@@ -960,74 +963,67 @@ class HostsController extends AppController {
                     if ($detailsToEdit['editSharedContainers'] == 1) {
                         if (!empty($detailsToEdit['Host']['hosts_to_containers_sharing']['_ids'])) {
                             if ($detailsToEdit['keepSharedContainers'] == 1) {
-                                $containersIds = array_unique(
-                                    array_merge(
-                                        $primaryContainerId,
-                                        $sharedContainers,
-                                        $detailsToEdit['Host']['hosts_to_containers_sharing']['_ids']
-                                    )
+                                $containerIds = array_merge(
+                                    $sharedContainers,
+                                    $detailsToEdit['Host']['hosts_to_containers_sharing']['_ids']
                                 );
+                                $containerIds[] = $primaryContainerId;
+
                             } else {
-                                $containersIds = array_unique(
-                                    array_merge(
-                                        $primaryContainerId,
-                                        $detailsToEdit['Host']['hosts_to_containers_sharing']['_ids']
-                                    )
-                                );
+                                $containerIds = $detailsToEdit['Host']['hosts_to_containers_sharing']['_ids'];
+                                $containerIds[] = $primaryContainerId;
+
                             }
-                            $hostObject->set([
-                                'hosts_to_containers_sharing' => [
-                                    '_ids' => $containersIds
-                                ]
-                            ]);
+                            $containerIds = array_unique($containerIds);
+
+                            $dataToSave['hosts_to_containers_sharing'] = [
+                                '_ids' => $containerIds
+                            ];
+
+                            $containerIdsForChangelog = $containerIds;
                         }
                     }
+
                     if ($detailsToEdit['editDescription'] == 1) {
-                        $newDescription =  $detailsToEdit['Host']['description'];
+                        $newDescription = $detailsToEdit['Host']['description'];
                         if (!empty($newDescription) && strcmp($newDescription, $mergedHost['Host']['description']) !== 0) {
-                            $hostObject->set('description', $newDescription);
+                            $dataToSave['description'] =$newDescription;
                         }
                     }
                     if ($detailsToEdit['editTags'] == 1) {
-                        $newTags =  $detailsToEdit['Host']['tags'];
+                        $newTags = $detailsToEdit['Host']['tags'];
                         if (!empty($newTags) && strcmp($newTags, $mergedHost['Host']['tags']) !== 0) {
-                            $hostObject->set('tags', $newTags);
+                            $dataToSave['tags'] =$newTags;
                         }
                     }
                     if ($detailsToEdit['editPriority'] == 1) {
-                        $newPriority =  $detailsToEdit['Host']['priority'];
-                        if (!empty($newPriority) && strcmp($newPriority, $mergedHost['Host']['priority']) !== 0) {
-                            $hostObject->set('priority', $newPriority);
+                        $newPriority = $detailsToEdit['Host']['priority'];
+                        if (!empty($newPriority) && $newPriority != $mergedHost['Host']['priority']) {
+                            $dataToSave['priority'] =$newPriority;
                         }
                     }
                     if ($detailsToEdit['editCheckInterval'] == 1) {
-                        $newCheckInterval =  $detailsToEdit['Host']['check_interval'];
+                        $newCheckInterval = $detailsToEdit['Host']['check_interval'];
                         if (!empty($newCheckInterval) && $newCheckInterval != $mergedHost['Host']['check_interval']) {
-                            $hostObject->set('check_interval', $newCheckInterval);
+                            $dataToSave['check_interval'] =$newCheckInterval;
                         }
                     }
                     if ($detailsToEdit['editRetryInterval'] == 1) {
-                        $newRetryInterval =  $detailsToEdit['Host']['retry_interval'];
+                        $newRetryInterval = $detailsToEdit['Host']['retry_interval'];
                         if (!empty($newRetryInterval) && $newRetryInterval != $mergedHost['Host']['retry_interval']) {
-                            $hostObject->set('retry_interval', $newRetryInterval);
+                            $dataToSave['retry_interval'] =$newRetryInterval;
                         }
                     }
                     if ($detailsToEdit['editMaxNumberOfCheckAttempts'] == 1) {
-                        $newMaxNumberOfCheckAttempts =  $detailsToEdit['Host']['max_check_attempts'];
+                        $newMaxNumberOfCheckAttempts = $detailsToEdit['Host']['max_check_attempts'];
                         if (!empty($newMaxNumberOfCheckAttempts) && $newMaxNumberOfCheckAttempts != $mergedHost['Host']['max_check_attempts']) {
-                            $hostObject->set('max_check_attempts', $newMaxNumberOfCheckAttempts);
+                            $dataToSave['max_check_attempts'] =$newMaxNumberOfCheckAttempts;
                         }
                     }
                     if ($detailsToEdit['editNotificationInterval'] == 1) {
-                        $newNotificationInterval =  $detailsToEdit['Host']['notification_interval'];
+                        $newNotificationInterval = $detailsToEdit['Host']['notification_interval'];
                         if (!empty($newNotificationInterval) && $newNotificationInterval != $mergedHost['Host']['notification_interval']) {
-                            $hostObject->set('notification_interval', $newNotificationInterval);
-                        }
-                    }
-                    if ($detailsToEdit['editNotificationInterval'] == 1) {
-                        $newNotificationInterval =  $detailsToEdit['Host']['notification_interval'];
-                        if (!empty($newNotificationInterval) && $newNotificationInterval != $mergedHost['Host']['notification_interval']) {
-                            $hostObject->set('notification_interval', $newNotificationInterval);
+                            $dataToSave['notification_interval'] =$newNotificationInterval;
                         }
                     }
                     if ($detailsToEdit['editContacts'] == 1) {
@@ -1061,27 +1057,22 @@ class HostsController extends AppController {
                                     $newContacts,
                                     $mergedHost['Host']['container_id']
                                 );
-                                if (empty(array_diff($newContacts, $contactsAfterContainerCheck))){
+                                if (empty(array_diff($newContacts, $contactsAfterContainerCheck))) {
                                     if ($detailsToEdit['keepContacts']) {
-                                        $hostObject->set([
-                                                'contacts' => [
-                                                    '_ids' => array_unique(
-                                                        array_merge(
-                                                            $contactsFromHost, $newContacts
-                                                        )
-                                                    )
-                                                ]
-                                            ]
-                                        );
+                                        $dataToSave['contacts'] =[
+                                            '_ids' => array_unique(
+                                                array_merge(
+                                                    $contactsFromHost, $newContacts
+                                                )
+                                            )
+                                        ];
                                     } else {
-                                        $hostObject->set([
-                                                'contacts' => [
-                                                    '_ids' => $newContacts
+                                        $dataToSave['contacts'] =[
+                                            '_ids' => $newContacts
 
-                                                ]
-                                            ]
-                                        );
+                                        ];
                                     }
+                                    $dataToSave['own_contacts'] = 1;
                                 }
                             }
                         }
@@ -1117,27 +1108,23 @@ class HostsController extends AppController {
                                     $newContactgroups,
                                     $mergedHost['Host']['container_id']
                                 );
-                                if (empty(array_diff($newContactgroups, $contactgroupssAfterContainerCheck))){
+                                if (empty(array_diff($newContactgroups, $contactgroupssAfterContainerCheck))) {
                                     if ($detailsToEdit['keepContactgroups']) {
-                                        $hostObject->set([
-                                                'contactgroups' => [
-                                                    '_ids' => array_unique(
-                                                        array_merge(
-                                                            $contactgroupsFromHost, $newContactgroups
-                                                        )
-                                                    )
-                                                ]
-                                            ]
-                                        );
-                                    } else {
-                                        $hostObject->set([
-                                                'contactgroups' => [
-                                                    '_ids' => $newContactgroups
+                                        $dataToSave['contactgroups'] = [
+                                            '_ids' => array_unique(
+                                                array_merge(
+                                                    $contactgroupsFromHost, $newContactgroups
+                                                )
+                                            )
+                                        ];
 
-                                                ]
-                                            ]
-                                        );
+                                    } else {
+                                        $dataToSave['contactgroups'] = [
+                                            '_ids' => $newContactgroups
+
+                                        ];
                                     }
+                                    $dataToSave['own_contactgroups'] = 1;
                                 }
                             }
                         }
@@ -1146,150 +1133,46 @@ class HostsController extends AppController {
                     if ($detailsToEdit['editHostUrl'] == 1) {
                         $newHostUrl = $detailsToEdit['Host']['host_url'];
                         if (!empty($newHostUrl) && strcmp($newHostUrl, $mergedHost['Host']['host_url']) !== 0) {
-                            $hostObject->set('host_url', $newHostUrl);
+                            $dataToSave['host_url'] = $newHostUrl;
                         }
                     }
                     if ($detailsToEdit['editNotes'] == 1) {
                         $newNotes = $detailsToEdit['Host']['notes'];
                         if (!empty($newNotes) && strcmp($newNotes, $mergedHost['Host']['notes']) !== 0) {
-                            $hostObject->set('notes', $newNotes);
+                            $dataToSave['notes'] = $newNotes;
                         }
                     }
-                }
 
-                continue;
-                $data = ['Host' => []];
-                $host = $HostsTable->getHostById($host_id);
-                if (!empty($host)) {
-                    //Fill up required fields
-                    $data['Host']['id'] = $host_id;
-                    $data['Host']['container_id'] = $host->get('container_id');
-                    $data['Host']['name'] = $host->get('name');
-                    $data['Host']['hosttemplate_id'] = $host->get('hosttemplate_id');
-                    $data['Host']['address'] = $host->get('address');
-                    return;
-                    $hostSharingPermissions = new HostSharingPermissions(
-                        $host['Host']['container_id'],
-                        $this->hasRootPrivileges,
-                        Hash::extract($host['Container'], '{n}.id'),
-                        $this->MY_RIGHTS
-                    );
-                    $allowSharing = $hostSharingPermissions->allowSharing();
-
-                    if ($allowSharing) {
-                        if ($this->request->getData('Host.edit_sharing') == 1) {
-                            if (!empty($this->request->getData('Host.shared_container'))) {
-                                if ($this->request->getData('Host.keep_sharing') == 1) {
-                                    $sharedContainer = Hash::extract($host, 'Container.{n}.id');
-                                    $containers = array_merge($sharedContainer, $this->request->getData('Host.shared_container'));
-                                    $data['Container']['Container'] = $containers;
-                                } else {
-                                    $containers = array_merge([$host['Host']['container_id']], $this->request->getData('Host.shared_container'));
-                                    $data['Container']['Container'] = $containers;
-                                }
-
-                            }
-                        }
-
-                    }
-
-                    if ($this->request->getData('Host.edit_description') == 1) {
-                        $data['Host']['description'] = $this->request->getData('Host.description');
-                    }
-
-                    if ($this->request->getData('Host.edit_contacts') == 1) {
-                        $_contacts = [];
-                        if ($this->request->getData('Host.keep_contacts') == 1) {
-                            if (!empty($host['Contact'])) {
-                                //Merge exsting contacts with new contacts
-                                $_contacts = Hash::extract($host['Contact'], '{n}.id');
-                                $_contacts = Hash::merge($_contacts, $this->request->getData('Host.Contact'));
-                                $_contacts = array_unique($_contacts);
-                            } else {
-                                // There are no old contacts to overwirte, wo we take the current request data
-                                $_contacts = $this->request->getData('Host.Contact');
-                            }
+                    if (!empty($dataToSave)) {
+                        $hostObject = $HostsTable->patchEntity($hostObject, $dataToSave);
+                        $HostsTable->save($hostObject);
+                        if ($hostObject->hasErrors()) {
+                            debug($hostObject->getErrors());
+                            //log edit_details errors
                         } else {
-                            ////Overwrite all old contacts
-                            $_contacts = $this->request->getData('Host.Contact');
-                        }
-                        $data['Host']['Contact'] = $_contacts;
-                        $data['Contact'] = [
-                            'Contact' => $_contacts,
-                        ];
-                    }
-
-                    if ($this->request->getData('Host.edit_contactgroups') == 1) {
-                        $_contactgroups = [];
-                        if ($this->request->getData('Host.keep_contactgroups') == 1) {
-                            if (!empty($host['Contactgroup'])) {
-                                //Merge existing contactgroups to new contact groups
-                                $_contactgroups = Hash::extract($host['Contactgroup'], '{n}.id');
-                                $_contactgroups = Hash::merge($_contactgroups, $this->request->getData('Host.Contactgroup'));
-                                $_contactgroups = array_unique($_contactgroups);
-                            } else {
-                                // There are no old contact groups to overwirte, wo we take the current request data
-                                $_contactgroups = $this->request->getData('Host.Contactgroup');
-                            }
-                        } else {
-                            //Overwrite all old contact groups
-                            $_contactgroups = $this->request->getData('Host.Contactgroup');
-                        }
-                        $data['Host']['Contactgroup'] = $_contactgroups;
-                        $data['Contactgroup'] = [
-                            'Contactgroup' => $_contactgroups,
-                        ];
-                    }
-
-                    if (!empty($data['Host']['Contact']) || !empty($data['Host']['Contactgroup'])) {
-                        //Welcome to nagios 4 -.-
-                        $data['Host']['own_contacts'] = 1;
-                        $data['Host']['own_contactgroups'] = 1;
-                    } else {
-                        if (isset($_contacts) || isset($_contactgroups)) {
-                            // Only if the user has submit a contact or a contact group, may be he want to delet all contacts.
-                            $data['Host']['own_contacts'] = 0;
-                            $data['Host']['own_contactgroups'] = 0;
-                            $data['Host']['Contact'] = [];
-                            $data['Host']['Contactgroup'] = [];
-                        }
-                    }
-
-                    if ($this->request->getData('Host.edit_url') == 1) {
-                        $data['Host']['host_url'] = $this->request->getData('Host.host_url');
-                    }
-
-                    if ($this->request->getData('Host.edit_tags') == 1) {
-                        $data['Host']['tags'] = $this->request->getData('Host.tags');
-                        if ($this->request->getData('Host.keep_tags') == 1) {
-                            if (!empty($host['Host']['tags'])) {
-                                //Host has tags, lets merge this
-                                $data['Host']['tags'] = implode(',', array_unique(Hash::merge(explode(',', $host['Host']['tags']), explode(',', $data['Host']['tags']))));
-                            } else {
-                                if (!empty($host['Hosttemplate']['tags'])) {
-                                    //The host has no own tags, lets merge from hosttemplate
-                                    $data['Host']['tags'] = implode(',', array_unique(Hash::merge(explode(',', $host['Hosttemplate']['tags']), explode(',', $data['Host']['tags']))));
-                                }
+                            /** @var  ChangelogsTable $ChangelogsTable */
+                            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                                'edit',
+                                'hosts',
+                                $hostObject->get('id'),
+                                OBJECT_HOST,
+                                $containerIdsForChangelog,
+                                $User->getId(),
+                                $hostObject->get('name'),
+                                $hostObjectForChangelog,
+                                ['Host' => $hostObject->toArray()]
+                            );
+                            if ($changelog_data) {
+                                /** @var Changelog $changelogEntry */
+                                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                                $ChangelogsTable->save($changelogEntry);
                             }
                         }
                     }
-
-                    if ($this->request->getData('Host.edit_priority') == 1) {
-                        $data['Host']['priority'] = $this->request->getData('Host.priority');
-                    }
-                    $this->Host->save($data);
-                    unset($data);
                 }
             }
-            /*
-               $this->setFlash(__('Host modified successfully'));
-               $redirect = $this->Host->redirect($this->request->params, ['action' => 'index']);
-               $this->redirect($redirect);
-   */
-            return;
         }
-
-        $this->set(compact(['contacts', 'contactgroups', 'sharingContainers']));
     }
 
     /**
