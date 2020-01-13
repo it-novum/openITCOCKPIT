@@ -354,3 +354,26 @@ openITCOCKPIT v4 Utilities
     white-space: nowrap;
     overflow: hidden;
 }
+
+
+/*
+ * Font Sizes
+ */
+.font-xs {
+    font-size: 85% !important;
+}
+.font-sm {
+    font-size: 95% !important;
+}
+.font-md {
+    font-size: 130% !important;
+}
+.font-lg {
+    font-size: 160% !important;
+}
+.font-xl {
+    font-size: 200% !important;
+}
+.font-400 {
+    font-size: 400% !important;
+}
