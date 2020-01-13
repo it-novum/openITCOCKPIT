@@ -124,7 +124,7 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                                                <span class="input-group-text"><i class="fa fa-building"></i></span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by company'); ?>"
@@ -137,11 +137,11 @@
                                     <div class="form-group">
                                         <div class="input-group input-group-sm">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fa fa-building"></i></span>
+                                                <span class="input-group-text"><i class="fa fa-users"></i></span>
                                             </div>
                                             <select
                                                 id="UserRoles"
-                                                data-placeholder="<?php echo __('Filter by company'); ?>"
+                                                data-placeholder="<?php echo __('Filter by user role'); ?>"
                                                 class="form-control"
                                                 chosen="usergroups"
                                                 multiple
@@ -261,7 +261,8 @@
                                             <?php if ($this->Acl->hasPermission('delete', 'users')): ?>
                                                 <a ng-click="confirmDelete(getObjectForDelete(user))"
                                                    ng-if="user.allow_edit && (user.id != myUserId)"
-                                                   class="dropdown-item">
+                                                   href="javascript:void(0);"
+                                                   class="dropdown-item txt-color-red">
                                                     <i class="fa fa-trash"></i>
                                                     <?php echo __('Delete'); ?>
                                                 </a>
@@ -315,7 +316,7 @@
 <div id="angularResetUserPasswordModal" class="modal" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title">
                     <i class="fa fa-edit"></i>
                     <?php echo __('Reset user password'); ?>

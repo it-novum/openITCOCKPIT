@@ -575,7 +575,7 @@
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                 <a ng-click="confirmDelete(getObjectForDelete(host, service))"
                                                    ng-if="service.Service.allow_edit"
-                                                   class="dropdown-item">
+                                                   class="dropdown-item txt-color-red">
                                                     <i class="fa fa-trash"></i>
                                                     <?php echo __('Delete'); ?>
                                                 </a>
