@@ -122,7 +122,8 @@
                                                     <div ng-switch-when="FRONTEND.AUTH_METHOD">
                                                         <select class="form-control systemsetting-input"
                                                                 ng-model="systemsetting.value">
-                                                            <option value="session"><?php echo __('PHP session'); ?></option>
+                                                            <option
+                                                                value="session"><?php echo __('PHP session'); ?></option>
                                                             <option value="ldap"><?php echo __('PHP LDAP'); ?></option>
                                                             <option value="sso"><?php echo __('SSO'); ?></option>
                                                         </select>
@@ -130,18 +131,22 @@
                                                     <div ng-switch-when="FRONTEND.LDAP.TYPE">
                                                         <select class="form-control systemsetting-input"
                                                                 ng-model="systemsetting.value">
-                                                            <option value="adldap"><?php echo __('Active Directory LDAP'); ?></option>
-                                                            <option value="openldap"><?php echo __('OpenLDAP'); ?></option>
+                                                            <option
+                                                                value="adldap"><?php echo __('Active Directory LDAP'); ?></option>
+                                                            <option
+                                                                value="openldap"><?php echo __('OpenLDAP'); ?></option>
                                                         </select>
                                                     </div>
-                                                    <div ng-switch-when="FRONTEND.LDAP.PASSWORD|MONITORING.ACK_RECEIVER_PASSWORD|FRONTEND.SSO.CLIENT_SECRET"
-                                                         ng-switch-when-separator="|">
+                                                    <div
+                                                        ng-switch-when="FRONTEND.LDAP.PASSWORD|MONITORING.ACK_RECEIVER_PASSWORD|FRONTEND.SSO.CLIENT_SECRET"
+                                                        ng-switch-when-separator="|">
                                                         <input type="password"
                                                                ng-model="systemsetting.value"
                                                                class="form-control systemsetting-input">
                                                     </div>
-                                                    <div ng-switch-when="FRONTEND.LDAP.USE_TLS|MONITORING.SINGLE_INSTANCE_SYNC|MONITORING.HOST_CHECK_ACTIVE_DEFAULT|MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT|FRONTEND.HIDDEN_USER_IN_CHANGELOG|FRONTEND.DISABLE_LOGIN_ANIMATION"
-                                                         ng-switch-when-separator="|">
+                                                    <div
+                                                        ng-switch-when="FRONTEND.LDAP.USE_TLS|MONITORING.SINGLE_INSTANCE_SYNC|MONITORING.HOST_CHECK_ACTIVE_DEFAULT|MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT|FRONTEND.HIDDEN_USER_IN_CHANGELOG|FRONTEND.DISABLE_LOGIN_ANIMATION"
+                                                        ng-switch-when-separator="|">
                                                         <select class="form-control systemsetting-input"
                                                                 ng-model="systemsetting.value">
                                                             <option value="0"><?php echo __('False'); ?></option>
@@ -151,12 +156,15 @@
                                                     <div ng-switch-when="FRONTEND.PRESELECTED_DOWNTIME_OPTION">
                                                         <select class="form-control systemsetting-input"
                                                                 ng-model="systemsetting.value">
-                                                            <option value="0"><?php echo __('Individual host'); ?></option>
-                                                            <option value="1"><?php echo __('Host including services'); ?></option>
+                                                            <option
+                                                                value="0"><?php echo __('Individual host'); ?></option>
+                                                            <option
+                                                                value="1"><?php echo __('Host including services'); ?></option>
                                                         </select>
                                                     </div>
-                                                    <div ng-switch-when="ARCHIVE.AGE.SERVICECHECKS|ARCHIVE.AGE.HOSTCHECKS|ARCHIVE.AGE.STATEHISTORIES|ARCHIVE.AGE.NOTIFICATIONS|ARCHIVE.AGE.LOGENTRIES|ARCHIVE.AGE.CONTACTNOTIFICATIONS|ARCHIVE.AGE.CONTACTNOTIFICATIONMETHODS"
-                                                         ng-switch-when-separator="|">
+                                                    <div
+                                                        ng-switch-when="ARCHIVE.AGE.SERVICECHECKS|ARCHIVE.AGE.HOSTCHECKS|ARCHIVE.AGE.STATEHISTORIES|ARCHIVE.AGE.NOTIFICATIONS|ARCHIVE.AGE.LOGENTRIES|ARCHIVE.AGE.CONTACTNOTIFICATIONS|ARCHIVE.AGE.CONTACTNOTIFICATIONMETHODS"
+                                                        ng-switch-when-separator="|">
                                                         <select class="form-control systemsetting-input"
                                                                 ng-options="i as i for i in dropdownOptionSequence"
                                                                 ng-model="systemsetting.value" convert-to-number>
@@ -209,5 +217,4 @@
             </div>
         </div>
     </div>
-</div>
 </div>
