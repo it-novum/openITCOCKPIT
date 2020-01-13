@@ -335,5 +335,20 @@ class ServiceMergerForBrowser {
         return $this->areContactsInheritedFromServicetemplate;
     }
 
+    /**
+     * @return bool
+     */
+    public function areContactsFromService() {
+        if (
+            $this->areContactsInheritedFromHosttemplate === false &&
+            $this->areContactsInheritedFromHost === false &&
+            $this->areContactsInheritedFromServicetemplate === false
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
 }
 

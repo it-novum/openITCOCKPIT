@@ -142,21 +142,17 @@ class HostsController extends AppController {
     use PluginManagerTableTrait;
 
 
-    /**
-     * @deprecated
-     */
     public function index() {
         /** @var User $User */
         $User = new User($this->getUser());
 
-        /** @var SystemsettingsTable $Systemsettings */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $masterInstanceName = $Systemsettings->getMasterInstanceName();
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
 
         $satellites = [];
-        $ModuleManager = new ModuleManager('DistributeModule');
-        if ($ModuleManager->moduleExists()) {
-            /** @var $SatellitesTable SatellitesTable */
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
             $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
@@ -164,9 +160,7 @@ class HostsController extends AppController {
         }
 
         if (!$this->isApiRequest()) {
-            /** @var SystemsettingsTable $Systemsettings */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
+            $this->set('QueryHandler', new QueryHandler($SystemsettingsTable->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
             $this->set('satellites', $satellites);
             //Only ship HTML template
@@ -2127,6 +2121,7 @@ class HostsController extends AppController {
         // Set data to fronend
         $this->set('mergedHost', $mergedHost);
         $this->set('docuExists', $DocumentationsTable->existsByUuid($hostObj->getUuid()));
+        $this->set('areContactsFromHost', $HostMergerForBrowser->areContactsFromHost());
         $this->set('areContactsInheritedFromHosttemplate', $HostMergerForBrowser->areContactsInheritedFromHosttemplate());
         $this->set('hoststatus', $hoststatus);
         $this->set('mainContainer', $mainContainer);
@@ -2143,6 +2138,7 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', [
             'mergedHost',
             'docuExists',
+            'areContactsFromHost',
             'areContactsInheritedFromHosttemplate',
             'hoststatus',
             'mainContainer',

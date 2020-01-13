@@ -28,50 +28,42 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\SystemsettingsTable;
+use App\Model\Table\TenantsTable;
+use Cake\Core\Plugin;
+use Cake\Http\Exception\BadRequestException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
-use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 /**
  * Class BrowsersController
- * @property Container Container
- * @property Systemsetting Systemsetting
- * @property Browser Browser
- * @property Tenant Tenant
- * @property AppAuthComponent Auth
+ * @package App\Controller
  */
 class BrowsersController extends AppController {
 
-    public $layout = 'blank';
-
-    public $uses = [
-        'Browser',
-        'Tenant'
-    ];
-
     /**
      * @param int|null $containerId
-     * @deprecated Refactor Satellite Model ->Satellite->
      */
     function index($containerId = null) {
         $User = new User($this->getUser());
 
         if (!$this->isApiRequest()) {
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $masterInstanceName = $Systemsettings->getMasterInstanceName();
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
             $SatelliteNames = [];
-            $ModuleManager = new ModuleManager('DistributeModule');
-            if ($ModuleManager->moduleExists()) {
-                $SatelliteModel = $ModuleManager->loadModel('Satellite');
-                $SatelliteNames = $SatelliteModel->find('list');
-                $SatelliteNames[0] = $masterInstanceName;
+
+
+            if (Plugin::isLoaded('DistributeModule')) {
+                /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+                $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+                $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+                $satellites[0] = $masterInstanceName;
             }
 
-            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
             $this->set('satellites', $SatelliteNames);
             //Only ship HTML template
@@ -83,7 +75,10 @@ class BrowsersController extends AppController {
         }
         $containerId = (int)$containerId;
 
-        $tenants = $this->getTenants();
+        /** @var TenantsTable $TenantsTable */
+        $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
+
+        $tenants = $TenantsTable->getTenantsForBrowsersIndex($this->MY_RIGHTS, $User->getId());
 
         $tenantsFiltered = [];
         foreach ($tenants as $tenantId => $tenantName) {
@@ -94,7 +89,7 @@ class BrowsersController extends AppController {
         $tenants = $tenantsFiltered;
         natcasesort($tenants);
 
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($containerId === ROOT_CONTAINER && !empty($tenants)) {
@@ -147,41 +142,5 @@ class BrowsersController extends AppController {
 
         $this->set('recursiveBrowser', $User->isRecursiveBrowserEnabled());
         $this->viewBuilder()->setOption('serialize', ['containers', 'recursiveBrowser', 'breadcrumbs']);
-    }
-
-
-    /**
-     * should be moved into the table
-     * @return mixed
-     * @deprecated
-     */
-    private function getTenants() {
-        $User = new User($this->getUser());
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
-        $user = $Users->getUserById($User->getId());
-
-        $tenants = [];
-        foreach ($user['containers'] as $_container) {
-            $_container = $_container['_joinData'];
-            $path = $ContainersTable->getPathByIdAndCacheResult($_container['container_id'], 'UserGetTenantIds');
-            foreach ($path as $subContainer) {
-                if ($subContainer['containertype_id'] == CT_TENANT) {
-                    $tenants[$subContainer['id']] = $subContainer['name'];
-                }
-            }
-        }
-
-        return $this->Tenant->tenantsByContainerId(
-            array_merge(
-                $this->MY_RIGHTS, array_keys(
-                    $tenants
-                )
-            ),
-            'list', 'container_id');
     }
 }

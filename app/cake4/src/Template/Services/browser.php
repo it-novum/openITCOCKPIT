@@ -70,8 +70,6 @@
                             </a>
                         </li>
                     <?php endif; ?>
-
-                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()'); ?>
                 </ul>
 
                 <div class="widget-toolbar" role="menu">
@@ -549,7 +547,7 @@
 
                                         <div
                                                 class="col-xs-12 col-sm-12 col-md-6 text-info"
-                                                ng-class="{'strikethrough': disableInheritance}">
+                                                ng-hide="areContactsFromService">
                                             <?php echo __('Contacts and contact groups got inherited from'); ?>
 
                                             <span
@@ -620,13 +618,13 @@
                                                             <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
                                                                 <a ng-if="contactgroup.allowEdit"
                                                                    ui-sref="ContactgroupsEdit({id: contactgroup.id})">
-                                                                    {{contactgroup.Container.name}}
+                                                                    {{contactgroup.container.name}}
                                                                 </a>
                                                                 <span ng-if="!contactgroup.allowEdit">
-                                                                    {{contactgroup.Container.name}}
+                                                                    {{contactgroup.container.name}}
                                                                 </span>
                                                             <?php else: ?>
-                                                                {{contactgroup.Container.name}}
+                                                                {{contactgroup.container.name}}
                                                             <?php endif; ?>
                                                         </div>
                                                     </td>
@@ -1016,10 +1014,6 @@
                                 </div>
                             </div>
                         </div>
-
-
-                        <!-- render additional Tabs if necessary -->
-                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tab', null, true); ?>
                     </div>
 
                     <div class="widget-footer text-right"></div>

@@ -94,6 +94,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.mergedHost = result.data.mergedHost;
                 $scope.checkCommand = result.data.checkCommand;
+                $scope.areContactsFromHost = result.data.areContactsFromHost;
                 $scope.areContactsInheritedFromHosttemplate = result.data.areContactsInheritedFromHosttemplate;
                 $scope.checkPeriod = result.data.checkPeriod;
                 $scope.notifyPeriod = result.data.notifyPeriod;

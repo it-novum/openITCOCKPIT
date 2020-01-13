@@ -710,7 +710,7 @@ class ServicesController extends AppController {
             }
 
             $ServiceComparisonForSave = new ServiceComparisonForSave(
-                $this->request->data,
+                $this->request->getData(),
                 $servicetemplate,
                 $HostsTable->getContactsAndContactgroupsById($host['Host']['id']),
                 $HosttemplatesTable->getContactsAndContactgroupsById($host['Host']['hosttemplate_id'])
@@ -733,7 +733,8 @@ class ServicesController extends AppController {
             $serviceEntity = $ServicesTable->patchEntity($serviceEntity, $dataForSave);
             $ServicesTable->save($serviceEntity);
 
-            $this->request->data['Host'] = [
+            $request = $this->request->getData();
+            $request['Host'] = [
                 [
                     'id'   => $host['Host']['id'],
                     'name' => $host['Host']['name'],
@@ -750,7 +751,7 @@ class ServicesController extends AppController {
 
                 $User = new User($this->getUser());
 
-                $extDataForChangelog = $ServicesTable->resolveDataForChangelog($this->request->data);
+                $extDataForChangelog = $ServicesTable->resolveDataForChangelog($request);
 
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
@@ -763,7 +764,7 @@ class ServicesController extends AppController {
                     $host['Host']['container_id'],
                     $User->getId(),
                     $host['Host']['name'] . '/' . $servicename,
-                    array_merge($ServicesTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($ServicesTable->resolveDataForChangelog($request), $request),
                     array_merge($ServicesTable->resolveDataForChangelog($serviceForChangelog), $serviceForChangelog)
                 );
                 if ($changelog_data) {
@@ -1551,6 +1552,7 @@ class ServicesController extends AppController {
         // Set data to fronend
         $this->set('mergedService', $mergedService);
         $this->set('host', ['Host' => $host]);
+        $this->set('areContactsFromService', $ServiceMergerForView->areContactsFromService());
         $this->set('areContactsInheritedFromHosttemplate', $ServiceMergerForView->areContactsInheritedFromHosttemplate());
         $this->set('areContactsInheritedFromHost', $ServiceMergerForView->areContactsInheritedFromHost());
         $this->set('areContactsInheritedFromServicetemplate', $ServiceMergerForView->areContactsInheritedFromServicetemplate());
@@ -1569,6 +1571,7 @@ class ServicesController extends AppController {
         $this->viewBuilder()->setOption('serialize', [
             'mergedService',
             'host',
+            'areContactsFromService',
             'areContactsInheritedFromHosttemplate',
             'areContactsInheritedFromHost',
             'areContactsInheritedFromServicetemplate',

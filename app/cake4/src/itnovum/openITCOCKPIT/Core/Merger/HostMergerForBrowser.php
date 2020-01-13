@@ -243,5 +243,9 @@ class HostMergerForBrowser {
         return $this->areContactsInheritedFromHosttemplate;
     }
 
+    public function areContactsFromHost(){
+        return !$this->areContactsInheritedFromHosttemplate;
+    }
+
 }
 

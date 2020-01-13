@@ -24,7 +24,10 @@
 //	confirmation.
 
 /**
- * @property \itnovum\openITCOCKPIT\Monitoring\QueryHandler $QueryHandler
+ * @var \App\View\AppView $this
+ * @var string $masterInstanceName
+ * @var string $username
+ * @var array $satellites
  */
 
 use itnovum\openITCOCKPIT\Core\RFCRouter;
@@ -50,14 +53,8 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 <massdelete></massdelete>
 <massdeactivate></massdeactivate>
 
-<?php if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
-    <div class="alert alert-danger alert-block">
-        <a href="#" data-dismiss="alert" class="close">×</a>
-        <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
-        </h4>
-        <?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
-    </div>
-<?php endif; ?>
+<query-handler-directive></query-handler-directive>
+
 
 <div class="row">
     <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
@@ -650,16 +647,6 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                                                 </li>
                                             <?php endif; ?>
 
-                                            <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                <li ng-if="host.Host.allow_edit">
-                                                    <?php echo $this->AdditionalLinks->renderAsListItems(
-                                                        $additionalLinksList,
-                                                        '{{host.Host.id}}',
-                                                        [],
-                                                        true
-                                                    ); ?>
-                                                </li>
-                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
                                                 <li class="divider" ng-if="host.Host.allow_edit"></li>
                                                 <li ng-if="host.Host.allow_edit">

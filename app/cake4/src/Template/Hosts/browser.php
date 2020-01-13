@@ -465,12 +465,12 @@ use Cake\Core\Plugin;
 
                                         <div
                                             class="col-xs-12 col-sm-12 col-md-6 text-info"
-                                            ng-class="{'strikethrough': disableInheritance}">
+                                            ng-hide="areContactsFromHost">
                                             <?php echo __('Contacts and contact groups got inherited from'); ?>
                                             <span ng-show="areContactsInheritedFromHosttemplate" class="bold">
 
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
-                                                    <a ui-sref="HosttemplatesEdit({id: host.Host.hosttemplate_id})">
+                                                    <a ui-sref="HosttemplatesEdit({id: mergedHost.hosttemplate_id})">
                                                         <?php echo __('host template'); ?>
                                                     </a>
                                                 <?php else: ?>
@@ -509,13 +509,13 @@ use Cake\Core\Plugin;
                                                             <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
                                                                 <a ng-if="contactgroup.allowEdit"
                                                                    ui-sref="ContactgroupsEdit({id: contactgroup.id})">
-                                                                    {{contactgroup.Container.name}}
+                                                                    {{contactgroup.container.name}}
                                                                 </a>
                                                                 <span ng-if="!contactgroup.allowEdit">
-                                                                    {{contactgroup.Container.name}}
+                                                                    {{contactgroup.container.name}}
                                                                 </span>
                                                             <?php else: ?>
-                                                                {{contactgroup.Container.name}}
+                                                                {{contactgroup.container.name}}
                                                             <?php endif; ?>
                                                         </div>
                                                     </td>
@@ -828,7 +828,7 @@ use Cake\Core\Plugin;
                                                     <td><?php echo __('Satellite'); ?></td>
                                                     <td>
                                                         <satellite-name
-                                                            satellite-id="mergedHost.satelliteId"
+                                                            satellite-id="mergedHost.satellite_id"
                                                             ng-if="mergedHost.is_satellite_host"
                                                         ></satellite-name>
                                                     </td>
@@ -1188,7 +1188,7 @@ use Cake\Core\Plugin;
 
                                         <td class="text-center">
                                             <strong title="<?php echo __('Passively transferred service'); ?>"
-                                                    ng-show="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                                    ng-show="service.Service.active_checks_enabled === false || mergedHost.is_satellite_host === true">
                                                 P
                                             </strong>
                                         </td>
