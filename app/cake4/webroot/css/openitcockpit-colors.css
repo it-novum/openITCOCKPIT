@@ -203,6 +203,10 @@ SECONDARY:                          #727b84;
     color: #a65858 !important;
 }
 
+.txt-ack {
+    color: #774DFF !important;
+}
+
 .input-group-addon-no-focus-label-success {
     background-color: #5cb85c !important;
     border-color: #ccc;

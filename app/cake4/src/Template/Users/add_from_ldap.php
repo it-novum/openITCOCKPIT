@@ -32,7 +32,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="UsersIndex">
-            <i class="fa fa-cog"></i> <?php echo __('Users'); ?>
+            <i class="fa fa-user"></i> <?php echo __('Users'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -85,7 +85,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                         <!-- User Container Roles permissions read/write -->
                         <div class="row" ng-repeat="userContainerRole in userContainerRoleContainerPermissions">
-                            <div class="col col-md-1"></div>
+                            <div class="col col-md-2"></div>
                             <div class="col col-md-10">
                                 <legend class="no-padding font-sm txt-ack">
                                     {{userContainerRole.path}}
@@ -417,7 +417,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <?php foreach ($timezones as $continent => $continentTimezones): ?>
                                     <optgroup label="<?php echo h($continent); ?>">
                                         <?php foreach ($continentTimezones as $timezoneKey => $timezoneName): ?>
-                                            <option value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
+                                            <option
+                                                value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
                                         <?php endforeach; ?>
                                     </optgroup>
                                 <?php endforeach;; ?>

@@ -32,7 +32,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="UsersIndex">
-            <i class="fa fa-cog"></i> <?php echo __('Users'); ?>
+            <i class="fa fa-user"></i> <?php echo __('Users'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
