@@ -189,7 +189,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                     break;
                                 }
 
-                                $childrenContainerId = [
+                                $childrenContainers = [
                                     $systemdowntime->get('object_id')
                                 ];
                                 if ($systemdowntime->get('is_recursive') == 1) {
@@ -292,7 +292,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
                                     break;
                                 }
 
-                                $childrenContainerId = [
+                                $childrenContainers = [
                                     $systemdowntime->get('object_id')
                                 ];
                                 if ($systemdowntime->get('is_recursive') == 1) {
