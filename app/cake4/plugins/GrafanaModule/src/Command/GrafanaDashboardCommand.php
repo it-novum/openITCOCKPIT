@@ -3,19 +3,40 @@ declare(strict_types=1);
 
 namespace GrafanaModule\Command;
 
+use App\Lib\Interfaces\ServicestatusTableInterface;
+use App\Model\Table\HostsTable;
 use App\Model\Table\ProxiesTable;
 use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Log\Log;
+use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use GrafanaModule\Model\Table\GrafanaConfigurationsTable;
+use GrafanaModule\Model\Table\GrafanaDashboardsTable;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Psr7\Request;
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
+use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\ValueObjects\Perfdata;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
+use itnovum\openITCOCKPIT\Grafana\GrafanaDashboard;
+use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
+use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
+use itnovum\openITCOCKPIT\Grafana\GrafanaSeriesOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTarget;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
+use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
+use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
+use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
+use Statusengine\PerfdataParser;
 
 /**
  * GrafanaDashboard command.
@@ -101,40 +122,33 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
     }
 
     public function createDashboard() {
-        $hosts = $this->Host->find('all', [
-            'recursive' => -1,
-            'fields'    => [
-                'Host.id',
-                'Host.uuid'
-            ],
-            'contain'   => [
-                'Hostgroup'    => [
-                    'fields' => [
-                        'Hostgroup.id'
-                    ]
-                ],
-                'Hosttemplate' => [
-                    'Hostgroup' => [
-                        'fields' => [
-                            'Hostgroup.id'
-                        ]
-                    ]
-                ]
-            ]
-        ]);
-        $filteredHosts = [];
-        if (!empty($hosts)) {
-            $filteredHosts = $this->GrafanaConfiguration->filterResults(
-                $hosts,
-                $this->GrafanaApiConfiguration->getIncludedHostgroups(),
-                $this->GrafanaApiConfiguration->getExcludedHostgroups()
-            );
-        }
-        if (!empty($filteredHosts)) {
-            $this->GrafanaDashboard->deleteAll(true);
-        }
-        foreach ($filteredHosts as $id => $hostData) {
-            $json = $this->getJsonForImport($id);
+        /** @var GrafanaConfigurationsTable $GrafanaConfigurationsTable */
+        $GrafanaConfigurationsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaConfigurations');
+
+        /** @var GrafanaDashboardsTable $GrafanaDashboardsTable */
+        $GrafanaDashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaDashboards');
+
+        $DbBackend = new DbBackend();
+        $ServicestatusTable = $DbBackend->getServicestatusTable();
+        $ServicestatusFields = new ServicestatusFields($DbBackend);
+        $ServicestatusFields->perfdata();
+        $ServicestatusConditions = new ServicestatusConditions($DbBackend);
+        $ServicestatusConditions->perfdataIsNotNull();
+
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $hosts = $GrafanaDashboardsTable->getHostsForDashboardCreationCronjob();
+        $filteredHosts = $GrafanaDashboardsTable->filterResults(
+            $hosts,
+            $this->GrafanaApiConfiguration->getIncludedHostgroups(),
+            $this->GrafanaApiConfiguration->getExcludedHostgroups()
+        );
+
+        $GrafanaDashboardsTable->deleteAll([]);
+
+        foreach ($filteredHosts as $id => $hostUuid) {
+            $json = $this->getJsonForImport($id, $HostsTable, $ServicestatusTable, $ServicestatusFields, $ServicestatusConditions);
 
             if ($json) {
                 $request = new Request('POST', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db', ['content-type' => 'application/json'], $json);
@@ -143,89 +157,105 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                 } catch (BadResponseException $e) {
                     $response = $e->getResponse();
                     $responseBody = $response->getBody()->getContents();
-                    $this->out('<error>' . $responseBody . '</error>');
+                    $this->io->error($responseBody);
                 }
 
                 if ($response->getStatusCode() == 200) {
-                    $this->out('<success>Dashboard for host with id ' . $id . ' created</success>');
+                    $this->io->success('Dashboard for host with id ' . $id . ' created');
 
                     $responseBody = $response->getBody()->getContents();
                     $responseBody = json_decode($responseBody, true);
 
-                    $this->GrafanaDashboard->create();
-                    $this->GrafanaDashboard->save([
-                        'GrafanaDashboard' => [
-                            'configuration_id' => 1,
-                            'host_id'          => $id,
-                            'host_uuid'        => $hostData['uuid'],
-                            'grafana_uid'      => $responseBody['uid']
-                        ]
+                    $entity = $GrafanaDashboardsTable->newEntity([
+                        'configuration_id' => $GrafanaConfigurationsTable->getConfigurationId(),
+                        'host_id'          => $id,
+                        'host_uuid'        => $hostUuid,
+                        'grafana_uid'      => $responseBody['uid']
                     ]);
+                    $GrafanaDashboardsTable->save($entity);
                 }
             }
         }
     }
 
-    public function getJsonForImport($hostId) {
-        $host = $this->Host->find('first', [
-            'conditions' => [
-                'Host.id' => $hostId,
-            ],
-            'fields'     => [
-                'Host.id',
-                'Host.name',
-                'Host.uuid',
-                'Host.address'
-            ],
-            'contain'    => [
-                'Service' => [
-                    'fields'          => [
-                        'Service.id',
-                        'Service.name',
-                        'Service.uuid',
-                        'Service.servicetemplate_id',
-                        'Service.process_performance_data'
-                    ],
-                    'Servicetemplate' => [
-                        'fields' => [
-                            'Servicetemplate.id',
-                            'Servicetemplate.name',
-                            'Servicetemplate.process_performance_data'
-                        ]
-                    ]
-                ]
-            ]
-        ]);
+    /**
+     * @param $hostId
+     * @param HostsTable $HostsTable
+     * @param ServicestatusTableInterface $ServicestatusTable
+     * @param ServicestatusFields $ServicestatusFields
+     * @param ServicestatusConditions $ServicestatusConditions
+     * @return bool|string
+     */
+    public function getJsonForImport($hostId, HostsTable $HostsTable, ServicestatusTableInterface $ServicestatusTable, ServicestatusFields $ServicestatusFields, ServicestatusConditions $ServicestatusConditions) {
+        $host = $HostsTable->find()
+            ->select([
+                'id',
+                'uuid',
+                'name'
+            ])
+            ->contain([
+                'Services' => function (Query $query) {
+                    return $query
+                        ->disableAutoFields()
+                        ->select([
+                            'id',
+                            'uuid',
+                            'name',
+                            'host_id',
+                            'servicetemplate_id'
+                        ])
+                        ->contain([
+                            'Servicetemplates' => function (Query $qery) {
+                                return $qery
+                                    ->disableAutoFields()
+                                    ->select([
+                                        'id',
+                                        'name'
+                                    ]);
+                            }
+                        ]);
+                }
+            ])
+            ->where([
+                'Hosts.id' => $hostId
+            ])
+            ->disableHydration()
+            ->first();
 
-        $DbBackend = new DbBackend();
-        $ServicestatusFields = new ServicestatusFields($DbBackend);
-        $ServicestatusFields->perfdata();
-        $ServicestatusConditions = new ServicestatusConditions($DbBackend);
-        $ServicestatusConditions->perfdataIsNotNull();
-        $servicestatus = $this->Servicestatus->byUuid(
-            Hash::extract($host, 'Service.{n}.uuid'),
+        if ($host === null) {
+            //Host not found
+            return false;
+        }
+
+        if (empty($host['services'])) {
+            //Host has no services
+            return false;
+        }
+
+        $servicestatus = $ServicestatusTable->byUuid(
+            Hash::extract($host, 'services.{n}.uuid'),
             $ServicestatusFields,
             $ServicestatusConditions
         );
 
         if (empty($servicestatus)) {
+            //No servicestatus for all services
             return false;
         }
         $grafanaDashboard = new GrafanaDashboard();
-        $grafanaDashboard->setTitle($host['Host']['uuid']);
+        $grafanaDashboard->setTitle($host['uuid']);
         $grafanaDashboard->setEditable(false);
         $grafanaDashboard->setTags($this->tag);
         $grafanaDashboard->setHideControls(true);
         $panelId = 1;
-        $internalServiceId = 0;
         $grafanaRow = new GrafanaRow();
 
 
-        foreach ($host['Service'] as $service) {
+        foreach ($host['services'] as $service) {
             $isRowFull = false;
             $serviceName = $service['name'];
             if ($serviceName === null || $serviceName === '') {
-                $serviceName = $service['Servicetemplate']['name'];
+                $serviceName = $service['servicetemplate']['name'];
             }
             if (!isset($servicestatus[$service['uuid']]['Servicestatus']['perfdata'])) {
                 continue;
@@ -234,7 +264,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
             $PerfdataParser = new PerfdataParser($servicestatus[$service['uuid']]['Servicestatus']['perfdata']);
             $perfdata = $PerfdataParser->parse();
             $grafanaPanel = new GrafanaPanel($panelId);
-            $grafanaPanel->setTitle(sprintf('%s - %s', $host['Host']['name'], $serviceName));
+            $grafanaPanel->setTitle(sprintf('%s - %s', $host['name'], $serviceName));
             $grafanaTargetCollection = new GrafanaTargetCollection();
             foreach ($perfdata as $label => $gauge) {
                 $Perfdata = Perfdata::fromArray($label, $gauge);
@@ -243,7 +273,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                         sprintf(
                             '%s.%s.%s.%s',
                             $this->GrafanaApiConfiguration->getGraphitePrefix(),
-                            $host['Host']['uuid'],
+                            $host['uuid'],
                             $service['uuid'],
                             $Perfdata->getReplacedLabel()
                         ),
@@ -287,7 +317,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
         } catch (BadResponseException $e) {
             $response = $e->getResponse();
             $responseBody = $response->getBody()->getContents();
-            $this->out('<error>' . $responseBody . '</error>');
+            $this->io->error($responseBody);
         }
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
@@ -303,35 +333,35 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
     private function deleteDashboards($tag) {
         try {
             if (empty($tag)) {
-                throw new Exception('No Tag given');
+                throw new \Exception('No Grafana Tag given');
             }
+
+            /** @var GrafanaDashboardsTable $GrafanaDashboardsTable */
+            $GrafanaDashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaDashboards');
 
             //Only delete auto generated dashboards
-            $dashboards = $this->GrafanaDashboard->find('all', [
-                'recursive' => -1,
-                'fields'    => [
-                    'GrafanaDashboard.host_uuid'
-                ]
-            ]);
+            $dashboardUuids = $GrafanaDashboardsTable->getAllDashboardsForDeleteCronjob();
 
-
-            foreach ($dashboards as $dashboard) {
-                $hostUuid = $dashboard['GrafanaDashboard']['host_uuid'];
+            foreach ($dashboardUuids as $dashboard) {
+                $hostUuid = $dashboard['host_uuid'];
                 $request = new Request('DELETE', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db/' . $hostUuid);
-                $response = $this->client->send($request);
 
-                if ($response->getStatusCode() == 200) {
-                    $body = $response->getBody();
-                    $response = json_decode($body->getContents());
-                    $this->out('<success>Dashboard ' . $hostUuid . ' deleted!</success>');
+                try {
+                    $response = $this->client->send($request);
+
+                    if ($response->getStatusCode() == 200) {
+                        $body = $response->getBody();
+                        $response = json_decode($body->getContents());
+                        $this->io->success('Dashboard ' . $hostUuid . ' deleted!');
+                    }
+                } catch (BadResponseException $e) {
+                    $response = $e->getResponse();
+                    $responseBody = $response->getBody()->getContents();
+                    $this->io->error($responseBody);
                 }
             }
-        } catch (Exception $e) {
-            $this->out('<error>' . $e->getMessage() . '</error>');
-        } catch (BadRequestException $e) {
-            $response = $e->getResponse();
-            $responseBody = $response->getBody()->getContents();
-            $this->out('<error>' . $responseBody . '</error>');
+        } catch (\Exception $e) {
+            $this->io->error($e->getMessage());
         }
     }
 }

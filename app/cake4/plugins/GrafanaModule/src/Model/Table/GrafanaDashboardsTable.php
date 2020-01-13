@@ -27,11 +27,14 @@ declare(strict_types=1);
 
 namespace GrafanaModule\Model\Table;
 
+use App\Model\Table\HostsTable;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use GrafanaModule\Model\Entity\GrafanaDashboard;
 
@@ -126,7 +129,7 @@ class GrafanaDashboardsTable extends Table {
      * @param array $MY_RIGHTS
      * @return array|\Cake\Datasource\ResultSetInterface
      */
-    public function getGrafanaDashboards($MY_RIGHTS = []){
+    public function getGrafanaDashboards($MY_RIGHTS = []) {
         $query = $this->find()
             ->select([
                 'id',
@@ -159,7 +162,7 @@ class GrafanaDashboardsTable extends Table {
                 'Host.name' => 'ASC'
             ]);
 
-        if(!empty($MY_RIGHTS)){
+        if (!empty($MY_RIGHTS)) {
             $query->where([
                 'HostsToContainers.container_id IN' => $MY_RIGHTS
             ]);
@@ -170,5 +173,150 @@ class GrafanaDashboardsTable extends Table {
         $result = $result->toArray();
 
         return $result;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllDashboardsForDeleteCronjob() {
+        $query = $this->find()
+            ->select('host_uuid')
+            ->disableHydration()
+            ->all();
+
+        if ($query === null) {
+            return [];
+        }
+
+        return $query->toArray();
+    }
+
+    /**
+     * @return array
+     */
+    public function getHostsForDashboardCreationCronjob() {
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $query = $HostsTable->find()
+            ->select([
+                'id',
+                'uuid'
+            ])
+            ->contain([
+                'Hostgroups'    => function (Query $query) {
+                    return $query
+                        ->disableAutoFields()
+                        ->select(['id']);
+                },
+                'Hosttemplates' => function (Query $query) {
+                    return $query
+                        ->disableAutoFields()
+                        ->select(['id'])
+                        ->contain([
+                            'Hostgroups' => function (Query $query) {
+                                return $query
+                                    ->disableAutoFields()
+                                    ->select(['id']);
+                            }
+                        ]);
+                }
+            ])
+            ->disableHydration()
+            ->all();
+
+        if ($query === null) {
+            return [];
+        }
+
+        return $query->toArray();
+    }
+
+    /**
+     * @param array $hostsUnfiltered
+     * @param array $includedHostgroups
+     * @param array $excludedHostgroups
+     * @return array filtered host ids
+     */
+    public function filterResults($hostsUnfiltered, $includedHostgroups = [], $excludedHostgroups = []) {
+        if (empty($includedHostgroups) && empty($excludedHostgroups)) {
+            return Hash::combine($hostsUnfiltered, '{n}.id', '{n}.uuid');
+        }
+
+        $hostsFiltered = [];
+        if (!empty($includedHostgroups)) {
+            //Filter by included AND excluded host groups
+
+            foreach ($hostsUnfiltered as $host) {
+                $hostgroupIds = Hash::extract($host, 'hostgroups.{n}.id');
+                $hosttemplateHostgroupIds = Hash::extract($host, 'hosttemplate.hostgroups.{n}.id');
+
+                $hostgroupIdsToCheck = $hosttemplateHostgroupIds;
+                if (!empty($hostgroupIds)) {
+                    //Host has own hostgroups
+                    $hostgroupIdsToCheck = $hostgroupIds;
+                }
+
+                if (empty($hostgroupIdsToCheck)) {
+                    //Host has no hostgroups so it can't be inside of $includedHostgroups
+                    continue;
+                }
+
+                $includeHost = $this->checkIntersectForIncludedHostgroups($hostgroupIdsToCheck, $includedHostgroups);
+                if (!empty($excludedHostgroups) && $includeHost === true) {
+                    if ($this->checkIntersectForExcludedHostgroups($hostgroupIdsToCheck, $excludedHostgroups)) {
+                        $includeHost = false;
+                    }
+                }
+
+                if ($includeHost) {
+                    $hostsFiltered[$host['id']] = $host['uuid'];
+                }
+            }
+        } else {
+            //Only filter by excluded host groups
+            foreach ($hostsUnfiltered as $host) {
+                $hostgroupIds = Hash::extract($host, 'hostgroups.{n}.id');
+                $hosttemplateHostgroupIds = Hash::extract($host, 'hosttemplate.hostgroups.{n}.id');
+
+                $hostgroupIdsToCheck = $hosttemplateHostgroupIds;
+                if (!empty($hostgroupIds)) {
+                    //Host has own hostgroups
+                    $hostgroupIdsToCheck = $hostgroupIds;
+                }
+
+                $excludeHost = $this->checkIntersectForExcludedHostgroups($hostgroupIdsToCheck, $excludedHostgroups);
+                if ($excludeHost === false) {
+                    $hostsFiltered[$host['id']] = $host['uuid'];
+                }
+            }
+
+        }
+
+        return $hostsFiltered;
+    }
+
+    /**
+     * @param $hostHostgroups
+     * @param $includedHostgroups
+     * @return bool
+     */
+    public function checkIntersectForIncludedHostgroups($hostHostgroups, $includedHostgroups) {
+        if (empty($includedHostgroups)) {
+            return true;
+        }
+        return !empty(array_intersect($hostHostgroups, $includedHostgroups));
+    }
+
+    /**
+     * @param $hostHostgroups
+     * @param $excludedHostgroups
+     * @return bool
+     */
+    public function checkIntersectForExcludedHostgroups($hostHostgroups, $excludedHostgroups) {
+        if (empty($excludedHostgroups)) {
+            return true;
+        }
+        return !empty(array_intersect($hostHostgroups, $excludedHostgroups));
     }
 }
