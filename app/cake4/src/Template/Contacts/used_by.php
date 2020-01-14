@@ -56,7 +56,7 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-                    <table class="table table-striped m-0 table-bordered">
+                    <table class="table table-striped m-0 table-bordered table-hover">
                         <thead>
                         <tr ng-if="objects.Contactgroups.length > 0">
                             <th class="bg-color-lightGray">

@@ -112,7 +112,7 @@
                     <!-- Filter End -->
 
                     <div class="frame-wrap">
-                        <table class="table table-striped m-0 table-bordered">
+                        <table class="table table-striped m-0 table-bordered table-hover">
                             <thead>
                             <tr>
                                 <th class="no-sort width-15">

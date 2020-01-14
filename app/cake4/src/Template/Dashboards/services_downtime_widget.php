@@ -128,7 +128,7 @@
 
 
 <div class=" margin-top-10">
-    <table id="hostdowntimes_list" class="table table-striped m-0 table-bordered">
+    <table id="hostdowntimes_list" class="table table-striped m-0 table-bordered table-hover">
         <thead>
         <tr>
             <th class="no-sort"><?php echo __('Running'); ?></th>

@@ -129,7 +129,7 @@
                         </div>
                     </div>
                     <!-- End Filter -->
-                    <table id="service_list" class="table table-striped m-0 table-bordered">
+                    <table id="service_list" class="table table-striped m-0 table-bordered table-hover">
                         <thead>
                         <tr>
                             <th colspan="2" class="no-sort">

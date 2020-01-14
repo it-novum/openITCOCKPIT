@@ -110,7 +110,7 @@
                     <!-- END FILTER -->
 
                     <div class="frame-wrap">
-                        <table id="automaps_list" class="table table-striped m-0 table-bordered">
+                        <table id="automaps_list" class="table table-striped m-0 table-bordered table-hover">
                             <thead>
                             <tr>
                                 <th class="no-sort width-5">

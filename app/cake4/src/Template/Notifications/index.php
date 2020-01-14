@@ -223,7 +223,7 @@
                     <!-- END FILTER -->
 
                     <div class="frame-wrap">
-                        <table id="notification_list" class="table table-striped m-0 table-bordered">
+                        <table id="notification_list" class="table table-striped m-0 table-bordered table-hover">
                             <thead>
                             <tr>
                                 <th class="no-sort" ng-click="orderBy('NotificationHosts.state')">

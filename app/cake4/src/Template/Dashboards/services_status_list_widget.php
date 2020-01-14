@@ -179,7 +179,7 @@
 </div>
 
 <div class="margin-top-10">
-    <table class="table table-striped m-0 table-bordered">
+    <table class="table table-striped m-0 table-bordered table-hover">
         <thead>
         <tr>
             <th class="no-sort" ng-click="orderBy('Servicestatus.current_state')">
