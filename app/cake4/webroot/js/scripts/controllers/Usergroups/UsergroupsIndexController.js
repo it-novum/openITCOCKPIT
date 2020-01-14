@@ -26,7 +26,7 @@ angular.module('openITCOCKPIT')
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
                 'filter[Usergroups.name]': $scope.filter.Usergroups.name,
-                'filter[Usergroups.desciption]': $scope.filter.Usergroups.desciption
+                'filter[Usergroups.description]': $scope.filter.Usergroups.description
             };
 
             $http.get("/usergroups/index.json", {
