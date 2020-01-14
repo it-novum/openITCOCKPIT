@@ -150,20 +150,6 @@
                             </a>
                         </li>
                     <?php endif; ?>
-                    <?php
-                    if ($this->Acl->hasPermission('edit', 'services')):
-                        if (!empty($additionalLinksList)):
-                            echo '<li class="divider"></li>';
-                        endif;
-                        echo $this->AdditionalLinks->renderAsListItems(
-                            $additionalLinksList,
-                            '{{config.serviceId}}',
-                            [],
-                            true,
-                            'config.allowEdit'
-                        );
-                    endif;
-                    ?>
                 </ul>
             </div>
 

@@ -24,7 +24,7 @@
             <?php
             echo __('Dashboard:');
             ?>
-            {{ dashboards.GrafanaUserdashboard.name }}
+            {{ dashboards.name }}
         </h2>
         <div class="widget-toolbar">
             <?php if ($this->Acl->hasPermission('editor', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
@@ -34,7 +34,7 @@
                     <?php echo __('Open in Editor'); ?>
                 </a>
             <?php endif; ?>
-            <a ui-sref="GrafanaUserdashboardsIndex" class="btn btn-default btn-xs" iconcolor="white">
+            <a ui-sref="GrafanaUserdashboardsIndex" class="btn btn-default btn-xs">
                 <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
             </a>
         </div>

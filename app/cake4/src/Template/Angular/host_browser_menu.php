@@ -145,20 +145,6 @@
                             </a>
                         </li>
                     <?php endif; ?>
-                    <?php
-                    if ($this->Acl->hasPermission('edit', 'hosts')):
-                        if (!empty($additionalLinksList)):
-                            echo '<li class="divider"></li>';
-                        endif;
-                        echo $this->AdditionalLinks->renderAsListItems(
-                            $additionalLinksList,
-                            '{{config.hostId}}',
-                            [],
-                            true,
-                            'config.allowEdit'
-                        );
-                    endif;
-                    ?>
                 </ul>
             </div>
 

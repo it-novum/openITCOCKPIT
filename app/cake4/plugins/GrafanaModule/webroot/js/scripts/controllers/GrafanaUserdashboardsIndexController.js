@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('Grafana_userdashboardsIndexController', function($scope, $http, SortService, MassChangeService, $state){
 
-        SortService.setSort('GrafanaUserdashboard.name');
+        SortService.setSort('GrafanaUserdashboards.name');
         SortService.setDirection('asc');
         $scope.currentPage = 1;
         $scope.useScroll = true;
@@ -9,7 +9,7 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                GrafanaUserdashboard: {
+                GrafanaUserdashboards: {
                     name: ''
                 }
             };
@@ -30,7 +30,7 @@ angular.module('openITCOCKPIT')
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[GrafanaUserdashboard.name]': $scope.filter.GrafanaUserdashboard.name
+                    'filter[GrafanaUserdashboards.name]': $scope.filter.GrafanaUserdashboards.name
                 }
             }).then(function(result){
                 $scope.allUserdashboards = result.data.all_userdashboards;
@@ -72,8 +72,8 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.allUserdashboards){
                 for(var key in $scope.allUserdashboards){
-                    if($scope.allUserdashboards[key].GrafanaUserdashboard.allowEdit){
-                        var id = $scope.allUserdashboards[key].GrafanaUserdashboard.id;
+                    if($scope.allUserdashboards[key].allowEdit){
+                        var id = $scope.allUserdashboards[key].id;
                         $scope.massChange[id] = true;
                     }
                 }
@@ -85,8 +85,8 @@ angular.module('openITCOCKPIT')
             var selectedObjects = MassChangeService.getSelected();
             for(var key in $scope.allUserdashboards){
                 for(var id in selectedObjects){
-                    if(id == $scope.allUserdashboards[key].GrafanaUserdashboard.id){
-                        objects[id] = $scope.allUserdashboards[key].GrafanaUserdashboard.name;
+                    if(id == $scope.allUserdashboards[key].id){
+                        objects[id] = $scope.allUserdashboards[key].name;
                     }
                 }
             }
@@ -95,7 +95,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(GrafanaUserdashboard){
             var object = {};
-            object[GrafanaUserdashboard.GrafanaUserdashboard.id] = GrafanaUserdashboard.GrafanaUserdashboard.name;
+            object[GrafanaUserdashboard.id] = GrafanaUserdashboard.name;
             return object;
         };
 

@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace GrafanaModule\Model\Table;
 
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Query;
@@ -34,6 +35,9 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use GrafanaModule\Model\Entity\GrafanaUserdashboard;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\GrafanaUserDashboardFilter;
 
 /**
  * GrafanaUserdashboards Model
@@ -51,6 +55,9 @@ use GrafanaModule\Model\Entity\GrafanaUserdashboard;
  * @method GrafanaUserdashboard findOrCreate($search, callable $callback = null, $options = [])
  */
 class GrafanaUserdashboardsTable extends Table {
+
+    use PaginationAndScrollIndexTrait;
+
     /**
      * Initialize method
      *
@@ -67,12 +74,20 @@ class GrafanaUserdashboardsTable extends Table {
         $this->belongsTo('Containers', [
             'foreignKey' => 'container_id',
             'joinType'   => 'INNER',
-            'className'  => 'GrafanaModule.Containers',
+            'className'  => 'Containers',
         ]);
-        $this->belongsTo('Configurations', [
+
+        $this->belongsTo('GrafanaConfigurations', [
             'foreignKey' => 'configuration_id',
             'joinType'   => 'INNER',
-            'className'  => 'GrafanaModule.Configurations',
+            'className'  => 'GrafanaModule.GrafanaConfigurations',
+        ]);
+
+        $this->hasMany('GrafanaUserdashboardPanels', [
+            'className'        => 'GrafanaModule.GrafanaUserdashboardPanels',
+            'foreignKey'       => 'userdashboard_id',
+            'dependent'        => true,
+            'cascadeCallbacks' => true
         ]);
     }
 
@@ -93,14 +108,14 @@ class GrafanaUserdashboardsTable extends Table {
             ->notEmptyString('name');
 
         $validator
-            ->scalar('grafana_uid')
-            ->maxLength('grafana_uid', 255)
-            ->notEmptyString('grafana_uid');
+            ->integer('container_id')
+            ->greaterThan('container_id', 0)
+            ->notEmptyString('container_id');
 
         $validator
-            ->scalar('grafana_url')
-            ->maxLength('grafana_url', 255)
-            ->notEmptyString('grafana_url');
+            ->integer('configuration_id')
+            ->greaterThan('configuration_id', 0)
+            ->notEmptyString('configuration_id');
 
         return $validator;
     }
@@ -114,8 +129,146 @@ class GrafanaUserdashboardsTable extends Table {
      */
     public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->existsIn(['container_id'], 'Containers'));
-        $rules->add($rules->existsIn(['configuration_id'], 'Configurations'));
+        $rules->add($rules->isUnique(['name']));
 
         return $rules;
+    }
+
+    /**
+     * @param GrafanaUserDashboardFilter $GrafanaUserDashboardFilter
+     * @param PaginateOMat|null $PaginateOMat
+     * @param array $MY_RIGHTS
+     * @param bool $skipUnsyncDashboards
+     * @return array
+     */
+    public function getGrafanaUserdashboardsIndex(GrafanaUserDashboardFilter $GrafanaUserDashboardFilter, $PaginateOMat = null, $MY_RIGHTS = [], $skipUnsyncDashboards = false) {
+        $query = $this->find('all');
+        $query->contain(['Containers']);
+        $query->where($GrafanaUserDashboardFilter->indexFilter());#
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'GrafanaUserdashboards.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        if ($skipUnsyncDashboards) {
+            $query->andWhere([
+                'grafana_url IS NOT NULL',
+                'grafana_url !=' => ''
+
+            ]);
+        }
+
+        $query->order($GrafanaUserDashboardFilter->getOrderForPaginator('GrafanaUserdashboards.name', 'asc'));
+        $query->disableHydration();
+
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $query->toArray();
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['GrafanaUserdashboards.id' => $id]);
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getGrafanaUserDashboardEdit($id) {
+        $query = $this->find()
+            ->contain([
+                'GrafanaUserdashboardPanels' => function (Query $query) {
+                    $query->contain([
+                        'GrafanaUserdashboardMetrics' => function (Query $query) {
+                            $query->contain([
+                                'Hosts'    => function (Query $query) {
+                                    $query->disableAutoFields();
+                                    $query->select([
+                                        'id',
+                                        'name',
+                                        'uuid'
+                                    ]);
+                                    return $query;
+                                },
+                                'Services' => function (Query $query) {
+                                    $query->disableAutoFields();
+                                    $query->select([
+                                        'id',
+                                        'name',
+                                        'uuid'
+                                    ]);
+                                    $query->contain([
+                                        'Servicetemplates' => function (Query $query) {
+                                            $query->disableAutoFields();
+                                            $query->select([
+                                                'id',
+                                                'name'
+                                            ]);
+                                            return $query;
+                                        }
+                                    ]);
+                                    return $query;
+                                }
+                            ]);
+                            return $query;
+                        }
+                    ])
+                        ->order([
+                            'GrafanaUserdashboardPanels.row' => 'ASC'
+                        ]);
+                    return $query;
+                },
+            ])
+            ->where(['GrafanaUserdashboards.id' => $id])
+            ->disableHydration();
+
+
+        $result = $query->first();
+        return $result;
+    }
+
+    /**
+     * @param array $findResult
+     * @return array
+     */
+    public function extractRowsWithPanelsAndMetricsFromFindResult($findResult) {
+        $rowsWithPanelsAndMetrics = [];
+        foreach ($findResult['grafana_userdashboard_panels'] as $k => $panel) {
+            $rowsWithPanelsAndMetrics[$panel['row']][$k] = [
+                'id'               => $panel['id'],
+                'userdashboard_id' => $panel['userdashboard_id'],
+                'row'              => $panel['row'],
+                'unit'             => $panel['unit'],
+                'title'            => $panel['title'],
+                'metrics'          => []
+            ];
+            foreach ($panel['grafana_userdashboard_metrics'] as $metric) {
+                $metric['servicetemplate'] = [];
+                if (isset($metric['service']['servicetemplate'])) {
+                    $metric['Servicetemplate'] = $metric['service']['servicetemplate'];
+                }
+                $host = new \itnovum\openITCOCKPIT\Core\Views\Host($metric['host']);
+                $service = new \itnovum\openITCOCKPIT\Core\Views\Service($metric['service']);
+                $metric['Host'] = $host->toArray();
+                $metric['Service'] = $service->toArray();
+                $rowsWithPanelsAndMetrics[$panel['row']][$k]['metrics'][] = $metric;
+            };
+        }
+        return $rowsWithPanelsAndMetrics;
     }
 }

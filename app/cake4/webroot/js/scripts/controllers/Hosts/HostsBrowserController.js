@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, $stateParams, $state, SortService, $interval, StatusHelperService){
+    .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, $stateParams, $state, SortService, $interval, StatusHelperService, UuidService){
 
         //$scope.id = QueryStringService.getCakeId();
         $scope.id = $stateParams.id;
@@ -93,8 +93,16 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.mergedHost = result.data.mergedHost;
-                $scope.mergedHost.Host.disabled = parseInt($scope.mergedHost.Host.disabled, 10);
-                $scope.tags = $scope.mergedHost.Host.tags.split(',');
+                $scope.checkCommand = result.data.checkCommand;
+                $scope.areContactsFromHost = result.data.areContactsFromHost;
+                $scope.areContactsInheritedFromHosttemplate = result.data.areContactsInheritedFromHosttemplate;
+                $scope.checkPeriod = result.data.checkPeriod;
+                $scope.notifyPeriod = result.data.notifyPeriod;
+
+
+
+                $scope.mergedHost.disabled = parseInt($scope.mergedHost.disabled, 10);
+                $scope.tags = $scope.mergedHost.tags.split(',');
                 $scope.hoststatus = result.data.hoststatus;
                 $scope.hoststateForIcon = {
                     Hoststatus: $scope.hoststatus
@@ -121,7 +129,7 @@ angular.module('openITCOCKPIT')
                     4: false,
                     5: false
                 };
-                var priority = parseInt($scope.mergedHost.Host.priority, 10);
+                var priority = parseInt($scope.mergedHost.priority, 10);
                 for(var i = 1; i <= priority; i++){
                     $scope.priorities[i] = true;
                 }
@@ -132,7 +140,7 @@ angular.module('openITCOCKPIT')
                 if(typeof $scope.hostBrowserMenuConfig === "undefined"){
                     $scope.hostBrowserMenuConfig = {
                         autoload: true,
-                        hostId: $scope.mergedHost.Host.id,
+                        hostId: $scope.mergedHost.id,
                         includeHoststatus: true,
                         showReschedulingButton: true,
                         rescheduleCallback: $scope.hostBrowserMenuReschedulingCallback,
@@ -253,7 +261,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDowntimeDelete = function(){
             var object = {};
-            object[$scope.downtime.internalDowntimeId] = $scope.mergedHost.Host.name;
+            object[$scope.downtime.internalDowntimeId] = $scope.mergedHost.name;
             return object;
         };
 
@@ -576,7 +584,7 @@ angular.module('openITCOCKPIT')
                 return true;
             }
             return false;
-        }
+        };
 
         $scope.calculateFailures = function(totalTime, criticalItems, start, end){
             var failuresDuration = 0;
@@ -592,7 +600,7 @@ angular.module('openITCOCKPIT')
         $scope.loadGrafanaIframeUrl = function(){
             $http.get("/hosts/getGrafanaIframeUrlForDatepicker/.json", {
                 params: {
-                    'uuid': $scope.mergedHost.Host.uuid,
+                    'uuid': $scope.mergedHost.uuid,
                     'angular': true,
                     'from': $scope.selectedGrafanaTimerange,
                     'refresh': $scope.selectedGrafanaAutorefresh
@@ -609,8 +617,34 @@ angular.module('openITCOCKPIT')
             $scope.loadGrafanaIframeUrl();
         };
 
+        $scope.loadIdOrUuid = function(){
+            if(UuidService.isUuid($scope.id)){
+                // UUID was passed via URL
+                $http.get("/hosts/byUuid/" + $scope.id + ".json", {
+                    params: {
+                        'angular': true
+                    }
+                }).then(function(result){
+                    $scope.id = result.data.host.id;
+                    $scope.loadHost();
+                }, function errorCallback(result){
+                    if(result.status === 403){
+                        $state.go('403');
+                    }
 
-        $scope.loadHost();
+                    if(result.status === 404){
+                        $state.go('404');
+                    }
+                });
+
+            }else{
+                // Integer id was passed via URL
+                $scope.loadHost();
+            }
+        };
+
+
+        $scope.loadIdOrUuid();
         $scope.loadTimezone();
         SortService.setCallback($scope.load);
 

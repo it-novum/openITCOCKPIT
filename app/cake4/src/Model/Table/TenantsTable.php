@@ -11,6 +11,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use EventcorrelationModule\Model\Table\EventcorrelationsTable;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
 
@@ -180,5 +181,79 @@ class TenantsTable extends Table {
         }
 
         return true;
+    }
+
+    /**
+     * @param array|int $containerIds
+     * @param string $type
+     * @param string $index
+     * @return array|null
+     */
+    public function tenantsByContainerId($containerIds, $type = 'all', $index = 'id') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $containerIds = array_unique($containerIds);
+
+        $query = $this->find()
+            ->where([
+                'container_id IN' => $containerIds
+            ])
+            ->contain([
+                'containers'
+            ])
+            ->disableHydration()
+            ->all();
+
+        switch ($type) {
+            case 'list':
+                $list = [];
+                foreach ($this->emptyArrayIfNull($query->toArray()) as $tenant) {
+                    $list[$tenant[$index]] = $tenant['Containers']['name'];
+                }
+                return $list;
+                break;
+
+            default:
+                return $this->emptyArrayIfNull($query->toArray());
+                break;
+        }
+    }
+
+    /**
+     * @param array $MY_RIGHTS
+     * @param int $userId
+     * @return array|null
+     */
+    public function getTenantsForBrowsersIndex($MY_RIGHTS, $userId) {
+        /** @var ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        /** @var UsersTable $UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        $user = $UsersTable->getUserById($userId);
+
+        $tenants = [];
+        foreach ($user['containers'] as $_container) {
+            $_container = $_container['_joinData'];
+            $path = $ContainersTable->getPathByIdAndCacheResult($_container['container_id'], 'UserGetTenantIds');
+            foreach ($path as $subContainer) {
+                if ($subContainer['containertype_id'] == CT_TENANT) {
+                    $tenants[$subContainer['id']] = $subContainer['name'];
+                }
+            }
+        }
+
+        /** @var TenantsTable $TenantsTable */
+        $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
+
+        return $TenantsTable->tenantsByContainerId(
+            array_merge(
+                $MY_RIGHTS, array_keys(
+                    $tenants
+                )
+            )
+            , 'list', 'container_id'
+        );
     }
 }

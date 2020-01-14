@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace GrafanaModule\Model\Entity;
 
+use App\Model\Table\ContainersTable;
 use Cake\ORM\Entity;
 
 /**
@@ -39,8 +40,8 @@ use Cake\ORM\Entity;
  * @property string $grafana_uid
  * @property string $grafana_url
  *
- * @property Container $container
- * @property Configuration $configuration
+ * @property ContainersTable $container
+ * @property GrafanaConfiguration $grafana_configuration
  */
 class GrafanaUserdashboard extends Entity {
     /**
@@ -53,12 +54,13 @@ class GrafanaUserdashboard extends Entity {
      * @var array
      */
     protected $_accessible = [
-        'container_id'     => true,
-        'configuration_id' => true,
-        'name'             => true,
-        'grafana_uid'      => true,
-        'grafana_url'      => true,
-        'container'        => true,
-        'configuration'    => true,
+        'container_id'                 => true,
+        'configuration_id'             => true,
+        'name'                         => true,
+        'grafana_uid'                  => true,
+        'grafana_url'                  => true,
+        'container'                    => true,
+        'grafana_configuration'        => true,
+        'grafana_userdashboard_panels' => true
     ];
 }

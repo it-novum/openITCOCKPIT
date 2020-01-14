@@ -27,24 +27,17 @@ declare(strict_types=1);
 
 namespace GrafanaModule\Model\Entity;
 
-use App\Model\Entity\Host;
-use App\Model\Entity\Service;
 use Cake\ORM\Entity;
 
 /**
- * GrafanaUserdashboardMetric Entity
+ * GrafanaConfiguration Entity
  *
  * @property int $id
- * @property int $panel_id
- * @property string $metric
- * @property int $host_id
- * @property int $service_id
- *
- * @property GrafanaUserdashboardPanel $grafana_userdashboard_panel
- * @property Host $host
- * @property Service $service
+ * @property int $configuration_id
+ * @property int $hostgroup_id
+ * @property bool $excluded
  */
-class GrafanaUserdashboardMetric extends Entity {
+class GrafanaConfigurationHostgroupMembership extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -55,12 +48,8 @@ class GrafanaUserdashboardMetric extends Entity {
      * @var array
      */
     protected $_accessible = [
-        'panel_id'                    => true,
-        'metric'                      => true,
-        'host_id'                     => true,
-        'service_id'                  => true,
-        'grafana_userdashboard_panel' => true,
-        'host'                        => true,
-        'service'                     => true,
+        'configuration_id' => true,
+        'hostgroup_id'     => true,
+        'excluded'         => true
     ];
 }

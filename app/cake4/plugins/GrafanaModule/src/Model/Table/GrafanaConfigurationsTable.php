@@ -28,12 +28,17 @@ declare(strict_types=1);
 namespace GrafanaModule\Model\Table;
 
 use Cake\Datasource\EntityInterface;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use GrafanaModule\Model\Entity\GrafanaConfiguration;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\Request;
+use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 
 /**
  * GrafanaConfigurations Model
@@ -64,6 +69,13 @@ class GrafanaConfigurationsTable extends Table {
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
+
+        $this->hasMany('GrafanaConfigurationHostgroupMembership', [
+            'foreignKey'   => 'configuration_id',
+            'joinType'     => 'INNER',
+            'className'    => 'GrafanaModule.GrafanaConfigurationHostgroupMembership',
+            'saveStrategy' => 'replace'
+        ]);
     }
 
     /**
@@ -96,17 +108,17 @@ class GrafanaConfigurationsTable extends Table {
             ->notEmptyString('graphite_prefix');
 
         $validator
-            ->integer('use_https')
+            ->boolean('use_https')
             ->requirePresence('use_https', 'create')
             ->notEmptyString('use_https');
 
         $validator
-            ->integer('use_proxy')
+            ->boolean('use_proxy')
             ->requirePresence('use_proxy', 'create')
             ->notEmptyString('use_proxy');
 
         $validator
-            ->integer('ignore_ssl_certificate')
+            ->boolean('ignore_ssl_certificate')
             ->requirePresence('ignore_ssl_certificate', 'create')
             ->notEmptyString('ignore_ssl_certificate');
 
@@ -117,5 +129,135 @@ class GrafanaConfigurationsTable extends Table {
             ->notEmptyString('dashboard_style');
 
         return $validator;
+    }
+
+    /**
+     * @return int 1
+     */
+    public function getConfigurationId() {
+        // 1 is the default id of the grafana configuration because at the moment
+        // openITCOCKPIT supports only one Grafana configuration.
+        return 1;
+    }
+
+    /**
+     * @return array
+     */
+    public function getGrafanaConfigurationForEdit() {
+        try {
+            $result = $this->find()
+                ->contain(['GrafanaConfigurationHostgroupMembership'])
+                ->disableHydration()
+                ->firstOrFail();
+
+            foreach ($result['grafana_configuration_hostgroup_membership'] as $hostgroup) {
+                if ($hostgroup['excluded'] === 0) {
+                    $result['Hostgroup'][] = $hostgroup['hostgroup_id'];
+                } else {
+                    $result['Hostgroup_excluded'][] = $hostgroup['hostgroup_id'];
+                }
+            }
+
+            unset($result['grafana_configuration_hostgroup_membership']);
+            return $result;
+        } catch (RecordNotFoundException $e) {
+            return [
+                'id'                     => $this->getConfigurationId(), //its 1 every time
+                'api_url'                => '',
+                'api_key'                => '',
+                'graphite_prefix'        => '',
+                'use_https'              => 1,
+                'use_proxy'              => 0,
+                'ignore_ssl_certificate' => 0,
+                'dashboard_style'        => 'light',
+                'Hostgroup'              => [],
+                'Hostgroup_excluded'     => []
+            ];
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getGrafanaConfiguration() {
+        return $this->getGrafanaConfigurationForEdit();
+    }
+
+    /**
+     * @return array|EntityInterface
+     */
+    public function getGrafanaConfigurationEntity() {
+        try {
+            return $this->find()->firstOrFail();
+        } catch (RecordNotFoundException $e) {
+            return $this->newEmptyEntity();
+        }
+    }
+
+
+    /**
+     * @param GrafanaApiConfiguration $GrafanaApiConfiguration
+     * @param array $proxySettings
+     * @return Client|string
+     */
+    public function testConnection(GrafanaApiConfiguration $GrafanaApiConfiguration, array $proxySettings) {
+        $options = [
+            'headers' => [
+                'authorization' => 'Bearer ' . $GrafanaApiConfiguration->getApiKey()
+            ],
+            'verify'  => $GrafanaApiConfiguration->isIgnoreSslCertificate()
+        ];
+        if ($GrafanaApiConfiguration->isUseProxy() && !(empty($proxySettings['ipaddress']) & empty($proxySettings['port']))) {
+            $options['proxy'] = [
+                'http'  => sprintf('%s:%s', $proxySettings['ipaddress'], $proxySettings['port']),
+                'https' => sprintf('%s:%s', $proxySettings['ipaddress'], $proxySettings['port'])
+            ];
+        } else {
+            $options['proxy'] = [
+                'http'  => false,
+                'https' => false
+            ];
+        }
+        $client = new Client($options);
+        $request = new Request('GET', $GrafanaApiConfiguration->getApiUrl() . '/org');
+        try {
+            $response = $client->send($request);
+        } catch (\Exception $e) {
+            if ($e instanceof ClientException) {
+                $response = $e->getResponse();
+                $responseBody = $response->getBody()->getContents();
+                return $responseBody;
+            }
+            return $e->getMessage();
+        }
+        if ($response->getStatusCode() == 200) {
+            return $client;
+        }
+    }
+
+    /**
+     * @param GrafanaApiConfiguration $GrafanaApiConfiguration
+     * @param $proxySettings
+     * @param $uid
+     * @return bool
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function existsUserDashboard(GrafanaApiConfiguration $GrafanaApiConfiguration, $proxySettings, $uid) {
+        $client = $this->testConnection($GrafanaApiConfiguration, $proxySettings);
+        $request = new \GuzzleHttp\Psr7\Request(
+            'GET',
+            sprintf('%s/dashboards/uid/%s', $GrafanaApiConfiguration->getApiUrl(), $uid),
+            ['content-type' => 'application/json']
+        );
+        try {
+            $response = $client->send($request);
+        } catch (\Exception $e) {
+            //debug($e->getMessage());
+            return false;
+        }
+        if ($response->getStatusCode() == 200) {
+            return true;
+        }
+        return false;
     }
 }

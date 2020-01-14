@@ -710,7 +710,7 @@ class ServicesController extends AppController {
             }
 
             $ServiceComparisonForSave = new ServiceComparisonForSave(
-                $this->request->data,
+                $this->request->getData(),
                 $servicetemplate,
                 $HostsTable->getContactsAndContactgroupsById($host['Host']['id']),
                 $HosttemplatesTable->getContactsAndContactgroupsById($host['Host']['hosttemplate_id'])
@@ -733,7 +733,8 @@ class ServicesController extends AppController {
             $serviceEntity = $ServicesTable->patchEntity($serviceEntity, $dataForSave);
             $ServicesTable->save($serviceEntity);
 
-            $this->request->data['Host'] = [
+            $request = $this->request->getData();
+            $request['Host'] = [
                 [
                     'id'   => $host['Host']['id'],
                     'name' => $host['Host']['name'],
@@ -750,7 +751,7 @@ class ServicesController extends AppController {
 
                 $User = new User($this->getUser());
 
-                $extDataForChangelog = $ServicesTable->resolveDataForChangelog($this->request->data);
+                $extDataForChangelog = $ServicesTable->resolveDataForChangelog($request);
 
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
@@ -763,7 +764,7 @@ class ServicesController extends AppController {
                     $host['Host']['container_id'],
                     $User->getId(),
                     $host['Host']['name'] . '/' . $servicename,
-                    array_merge($ServicesTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($ServicesTable->resolveDataForChangelog($request), $request),
                     array_merge($ServicesTable->resolveDataForChangelog($serviceForChangelog), $serviceForChangelog)
                 );
                 if ($changelog_data) {
@@ -1246,15 +1247,31 @@ class ServicesController extends AppController {
      * @throws MissingDbBackendException
      * @throws GuzzleException
      */
-    public function browser($id = null) {
+    public function browser($idOrUuid = null) {
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
-
-        if (!$this->isAngularJsRequest()) {
+        if ($this->isHtmlRequest()) {
             //Only ship template
             $this->set('username', $User->getFullName());
             return;
         }
+
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $id = $idOrUuid;
+        if (!is_numeric($idOrUuid)) {
+            if (preg_match(UUID::regex(), $idOrUuid)) {
+                try {
+                    $lookupService = $ServicesTable->getServiceByUuid($idOrUuid);
+                    $id = $lookupService->get('id');
+                } catch (RecordNotFoundException $e) {
+                    throw new NotFoundException(__('Service not found'));
+                }
+            }
+        }
+        unset($idOrUuid);
 
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
@@ -1262,8 +1279,6 @@ class ServicesController extends AppController {
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        /** @var $ServicesTable ServicesTable */
-        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
         /** @var $HoststatusTable HoststatusTableInterface */
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
         /** @var $ServicestatusTable ServicestatusTableInterface */
@@ -1537,6 +1552,7 @@ class ServicesController extends AppController {
         // Set data to fronend
         $this->set('mergedService', $mergedService);
         $this->set('host', ['Host' => $host]);
+        $this->set('areContactsFromService', $ServiceMergerForView->areContactsFromService());
         $this->set('areContactsInheritedFromHosttemplate', $ServiceMergerForView->areContactsInheritedFromHosttemplate());
         $this->set('areContactsInheritedFromHost', $ServiceMergerForView->areContactsInheritedFromHost());
         $this->set('areContactsInheritedFromServicetemplate', $ServiceMergerForView->areContactsInheritedFromServicetemplate());
@@ -1555,6 +1571,7 @@ class ServicesController extends AppController {
         $this->viewBuilder()->setOption('serialize', [
             'mergedService',
             'host',
+            'areContactsFromService',
             'areContactsInheritedFromHosttemplate',
             'areContactsInheritedFromHost',
             'areContactsInheritedFromServicetemplate',
@@ -1735,20 +1752,17 @@ class ServicesController extends AppController {
         return;
     }
 
-    /**
-     * @deprecated
-     */
+
     public function loadServicesByContainerId() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $this->Service->virtualFields['servicename'] = 'CONCAT(Host.name,"/",IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name))';
-        $containerId = $this->request->getQuery('containerId');
+        $containerId = $this->request->getQuery('containerId', 0);
         $selected = $this->request->getQuery('selected');
         $ServiceFilter = new ServiceFilter($this->request);
         $containerIds = [ROOT_CONTAINER, $containerId];
 
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         if ($containerId == ROOT_CONTAINER) {
             //Don't panic! Only root users can edit /root objects ;)
@@ -1760,11 +1774,14 @@ class ServicesController extends AppController {
         $ServiceCondition->setContainerIds($containerIds);
         $ServiceCondition->setIncludeDisabled(false);
 
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
         $services = Api::makeItJavaScriptAble(
-            $this->Service->getServicesForAngular($ServiceCondition, $selected)
+            $ServicesTable->getServicesForAngular($ServiceCondition, $selected)
         );
 
-        $this->set(compact(['services']));
+        $this->set('services', $services);
         $this->viewBuilder()->setOption('serialize', ['services']);
     }
 

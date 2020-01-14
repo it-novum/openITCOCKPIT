@@ -23,32 +23,32 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
-    <div class="alert alert-danger alert-block">
-        <a href="#" data-dismiss="alert" class="close">×</a>
-        <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
-        </h4>
-        <?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
-    </div>
-<?php endif; ?>
+/**
+ * @var \App\View\AppView $this
+ * @var string $masterInstanceName
+ * @var string $username
+ */
 
-<div class="alert alert-success alert-block" ng-show="showFlashSuccess">
-    <a href="#" data-dismiss="alert" class="close">×</a>
-    <h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
-    <?php echo __('Data refresh in'); ?> {{ autoRefreshCounter }} <?php echo __('seconds...'); ?>
-</div>
+use Cake\Core\Plugin;
+
+?>
+
+<query-handler-directive></query-handler-directive>
+
+<div ng-init="flashMshStr='<?php echo __('Command sent successfully. Refresh in 5 seconds'); ?>'"></div>
+
 
 <host-browser-menu
-        ng-if="hostBrowserMenuConfig"
-        config="hostBrowserMenuConfig"
-        last-load-date="lastLoadDate"></host-browser-menu>
+    ng-if="hostBrowserMenuConfig"
+    config="hostBrowserMenuConfig"
+    last-load-date="lastLoadDate"></host-browser-menu>
 
 <article class="row">
     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <div class="jarviswidget" role="widget">
             <header role="heading">
                 <h2 class="hidden-mobile hidden-tablet"><strong><?php echo __('Host'); ?>:</strong> {{
-                    mergedHost.Host.name }}</h2>
+                    mergedHost.name }}</h2>
                 <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                     <li class="active cursor-pointer">
                         <a ng-click="selectedTab = 'tab1'; hideTimeline()" data-toggle="tab">
@@ -73,14 +73,14 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                         </li>
                     <?php endif; ?>
 
-                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()', true); ?>
-
-                    <li class="cursor-pointer" ng-show="GrafanaDashboardExists">
-                        <a ng-click="selectedTab = 'tab5'; hideTimeline()" data-toggle="tab">
-                            <i class="fa fa-lg fa-area-chart"></i>
-                            <span class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span>
-                        </a>
-                    </li>
+                    <?php if (Plugin::isLoaded('GrafanaModule')): ?>
+                        <li class="cursor-pointer" ng-show="GrafanaDashboardExists">
+                            <a ng-click="selectedTab = 'tab5'; hideTimeline()" data-toggle="tab">
+                                <i class="fa fa-lg fa-area-chart"></i>
+                                <span class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
 
                 <div class="widget-toolbar" role="menu">
@@ -130,8 +130,10 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                             <?php echo __('Next check'); ?>
                                         </div>
                                         <div class="col-xs-6">
-                                            <span ng-if="mergedHost.Host.active_checks_enabled && mergedHost.Host.is_satellite_host === false">{{ hoststatus.nextCheck }}</span>
-                                            <span ng-if="mergedHost.Host.active_checks_enabled === false || mergedHost.Host.is_satellite_host === true">
+                                            <span
+                                                ng-if="mergedHost.active_checks_enabled && mergedHost.is_satellite_host === false">{{ hoststatus.nextCheck }}</span>
+                                            <span
+                                                ng-if="mergedHost.active_checks_enabled === false || mergedHost.is_satellite_host === true">
                                                 <?php echo __('n/a'); ?>
                                             </span>
                                         </div>
@@ -156,7 +158,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                     </div>
 
                                     <div class="row text-center padding-top-10 padding-bottom-10"
-                                         ng-show="canSubmitExternalCommands && mergedHost.Host.allowEdit">
+                                         ng-show="canSubmitExternalCommands && mergedHost.allowEdit">
                                         <div class="btn-group" role="group" aria-label="Basic example">
                                             <button type="button"
                                                     class="btn btn-default"
@@ -217,7 +219,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                             <div class="row" style="display: flex;">
                                 <div class="col-xs-12 col-sm-6 col-md-7 col-lg-9  padding-10">
 
-                                    <div class="row" ng-show="mergedHost.Host.disabled">
+                                    <div class="row" ng-show="mergedHost.disabled">
                                         <div class="col-xs-12 margin-bottom-10">
                                             <div class="browser-border padding-10 bg-warning" style="width: 100%;">
                                                 <div class="row">
@@ -275,9 +277,9 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                     <div class="col-xs-12 col-sm-1 no-padding">
                                                         <?php if ($this->Acl->hasPermission('delete', 'downtimes')): ?>
                                                             <button
-                                                                    class="btn btn-xs btn-danger"
-                                                                    ng-if="downtime.allowEdit && downtime.isCancellable"
-                                                                    ng-click="confirmHostDowntimeDelete(getObjectForDowntimeDelete())">
+                                                                class="btn btn-xs btn-danger"
+                                                                ng-if="downtime.allowEdit && downtime.isCancellable"
+                                                                ng-click="confirmHostDowntimeDelete(getObjectForDowntimeDelete())">
                                                                 <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
                                                             </button>
                                                         <?php endif; ?>
@@ -359,11 +361,11 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                     <td><?php echo __('Check command'); ?></td>
                                                     <td>
                                                         <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
-                                                            <a href="/commands/edit/{{ mergedHost.CheckCommand.id }}">
-                                                                {{ mergedHost.CheckCommand.name }}
+                                                            <a ui-sref="CommandsEdit({id: checkCommand.Command.id})">
+                                                                {{ checkCommand.Command.name }}
                                                             </a>
                                                         <?php else: ?>
-                                                            {{ mergedHost.CheckCommand.name }}
+                                                            {{ checkCommand.Command.name }}
                                                         <?php endif; ?>
                                                     </td>
                                                 </tr>
@@ -393,7 +395,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                 <tr>
                                                     <td><?php echo __('Check period'); ?></td>
                                                     <td>
-                                                        {{ mergedHost.CheckPeriod.name }}
+                                                        {{ checkPeriod.name }}
                                                     </td>
                                                 </tr>
 
@@ -441,7 +443,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                 <tr ng-repeat="parenthost in parenthosts">
                                                     <td class="text-center">
                                                         <hoststatusicon
-                                                                state="parentHoststatus[parenthost.uuid].currentState"></hoststatusicon>
+                                                            state="parentHoststatus[parenthost.uuid].currentState"></hoststatusicon>
                                                     </td>
                                                     <td>
                                                         <a ui-sref="HostsBrowser({id:parenthost.id})">
@@ -461,28 +463,35 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                             <h3 class="margin-top-5"><?php echo __('Notification overview'); ?></h3>
                                         </div>
 
+                                        <div
+                                            class="col-xs-12 col-sm-12 col-md-6 text-info"
+                                            ng-hide="areContactsFromHost">
+                                            <?php echo __('Contacts and contact groups got inherited from'); ?>
+                                            <span ng-show="areContactsInheritedFromHosttemplate" class="bold">
 
-                                        <div class="col-xs-12 col-sm-12 col-md-6">
-                                            <div class="alert alert-info"
-                                                 ng-show="mergedHost.areContactsFromHosttemplate">
-                                                <i class="fa-fw fa fa-info"></i>
-                                                <strong><?php echo __('Info'); ?>:</strong>
-                                                <?php echo __('Contacts have been inherited from the host template'); ?>
-                                            </div>
+                                                <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                                    <a ui-sref="HosttemplatesEdit({id: mergedHost.hosttemplate_id})">
+                                                        <?php echo __('host template'); ?>
+                                                    </a>
+                                                <?php else: ?>
+                                                    <?php echo __('host template'); ?>
+                                                <?php endif; ?>
+                                            </span>
+                                            .
                                         </div>
+
                                     </div>
 
                                     <div class="row">
                                         <div class="col-xs-12 col-sm-12 col-md-6">
                                             <table class="table table-bordered">
-                                                <tr ng-show="mergedHost.Contact.length">
+                                                <tr ng-show="mergedHost.contacts.length">
                                                     <td><?php echo __('Contacts'); ?></td>
                                                     <td>
-                                                        <div ng-repeat="contact in mergedHost.Contact">
+                                                        <div ng-repeat="contact in mergedHost.contacts">
                                                             <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
-                                                                <a
-                                                                        href="/contacts/edit/{{contact.id}}"
-                                                                        ng-if="contact.allowEdit">
+                                                                <a ng-if="contact.allowEdit"
+                                                                   ui-sref="ContactsEdit({id: contact.id})">
                                                                     {{contact.name}}
                                                                 </a>
                                                                 <span ng-if="!contact.allowEdit">{{contact.name}}</span>
@@ -493,21 +502,20 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                     </td>
                                                 </tr>
 
-                                                <tr ng-show="mergedHost.Contactgroup.length">
+                                                <tr ng-show="mergedHost.contactgroups.length">
                                                     <td><?php echo __('Contact groups'); ?></td>
                                                     <td>
-                                                        <div ng-repeat="contactgroup in mergedHost.Contactgroup">
+                                                        <div ng-repeat="contactgroup in mergedHost.contactgroups">
                                                             <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
-                                                                <a
-                                                                        href="/contactgroups/edit/{{contactgroup.id}}"
-                                                                        ng-if="contactgroup.allowEdit">
-                                                                    {{contactgroup.Container.name}}
+                                                                <a ng-if="contactgroup.allowEdit"
+                                                                   ui-sref="ContactgroupsEdit({id: contactgroup.id})">
+                                                                    {{contactgroup.container.name}}
                                                                 </a>
                                                                 <span ng-if="!contactgroup.allowEdit">
-                                                                    {{contactgroup.Container.name}}
+                                                                    {{contactgroup.container.name}}
                                                                 </span>
                                                             <?php else: ?>
-                                                                {{contactgroup.Container.name}}
+                                                                {{contactgroup.container.name}}
                                                             <?php endif; ?>
                                                         </div>
                                                     </td>
@@ -519,7 +527,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                             <table class="table table-bordered">
                                                 <tr>
                                                     <td><?php echo __('Notification period'); ?></td>
-                                                    <td>{{ mergedHost.NotifyPeriod.name }}</td>
+                                                    <td>{{ notifyPeriod.name }}</td>
                                                 </tr>
 
                                                 <tr>
@@ -546,31 +554,31 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                     <td><?php echo __('Notify on'); ?></td>
                                                     <td>
                                                         <span class="label label-success"
-                                                              ng-show="mergedHost.Host.notify_on_recovery"
+                                                              ng-show="mergedHost.notify_on_recovery"
                                                               style="margin-right: 2px;">
                                                             <?php echo __('Recover'); ?>
                                                         </span>
 
                                                         <span class="label label-danger"
-                                                              ng-show="mergedHost.Host.notify_on_down"
+                                                              ng-show="mergedHost.notify_on_down"
                                                               style="margin-right: 2px;">
                                                             <?php echo __('Down'); ?>
                                                         </span>
 
                                                         <span class="label label-default"
-                                                              ng-show="mergedHost.Host.notify_on_unreachable"
+                                                              ng-show="mergedHost.notify_on_unreachable"
                                                               style="margin-right: 2px;">
                                                             <?php echo __('Unreachable'); ?>
                                                         </span>
 
                                                         <span class="label label-primary"
-                                                              ng-show="mergedHost.Host.notify_on_flapping"
+                                                              ng-show="mergedHost.notify_on_flapping"
                                                               style="margin-right: 2px;">
                                                             <?php echo __('Flapping'); ?>
                                                         </span>
 
                                                         <span class="label label-primary"
-                                                              ng-show="mergedHost.Host.notify_on_downtime"
+                                                              ng-show="mergedHost.notify_on_downtime"
                                                               style="margin-right: 2px;">
                                                             <?php echo __('Downtime'); ?>
                                                         </span>
@@ -605,13 +613,15 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                         <div class="text-center txt-color-white">
                                             <div><?php echo __('Next check'); ?></div>
                                             <h3 class="margin-top-0">
-                                                <span ng-if="mergedHost.Host.active_checks_enabled && mergedHost.Host.is_satellite_host === false">
+                                                <span
+                                                    ng-if="mergedHost.active_checks_enabled && mergedHost.is_satellite_host === false">
                                                     {{ hoststatus.nextCheck }}
                                                     <small style="color: #333;"
                                                            ng-show="hoststatus.latency > 1">(+ {{ hoststatus.latency }})
                                                     </small>
                                                 </span>
-                                                <span ng-if="mergedHost.Host.active_checks_enabled === false || mergedHost.Host.is_satellite_host === true">
+                                                <span
+                                                    ng-if="mergedHost.active_checks_enabled === false || mergedHost.is_satellite_host === true">
                                                     <?php echo __('n/a'); ?>
                                                 </span>
                                             </h3>
@@ -630,7 +640,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                             </h3>
                                         </div>
 
-                                        <div ng-if="canSubmitExternalCommands && mergedHost.Host.allowEdit">
+                                        <div ng-if="canSubmitExternalCommands && mergedHost.allowEdit">
                                             <div class="browser-action"
                                                  ng-click="rescheduleHost(getObjectsForExternalCommand())">
                                                 <i class="fa fa-refresh"></i>
@@ -709,7 +719,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                             <table class="table table-bordered">
                                                 <tr>
                                                     <td><?php echo __('IP address'); ?></td>
-                                                    <td>{{ mergedHost.Host.address }}</td>
+                                                    <td>{{ mergedHost.address }}</td>
                                                 </tr>
 
                                                 <tr>
@@ -744,15 +754,15 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                 <tr>
                                                     <td><?php echo __('UUID'); ?></td>
                                                     <td>
-                                                        <code>{{ mergedHost.Host.uuid }}</code>
+                                                        <code>{{ mergedHost.uuid }}</code>
                                                         <span
-                                                                class="btn btn-default btn-xs"
-                                                                onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"
-                                                                title="<?php echo __('Copy to clipboard'); ?>">
+                                                            class="btn btn-default btn-xs"
+                                                            onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"
+                                                            title="<?php echo __('Copy to clipboard'); ?>">
                                                             <i class="fa fa-copy"></i>
                                                         </span>
                                                         <input type="text" style="display:none;" id="host-uuid-copy"
-                                                               value="{{ mergedHost.Host.uuid }}"
+                                                               value="{{ mergedHost.uuid }}"
                                                     </td>
                                                 </tr>
                                             </table>
@@ -765,13 +775,13 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                                                     <td>
                                                         <?php if ($this->Acl->hasPermission('index', 'browsers')): ?>
-                                                            <a href="/browsers/index?containerId={{mergedHost.Host.container_id}}"
-                                                               ng-if="mergedHost.Host.container_id != 1">
+                                                            <a href="/browsers/index?containerId={{mergedHost.container_id}}"
+                                                               ng-if="mergedHost.container_id != 1">
                                                                 /{{mainContainer}}
                                                             </a>
 
                                                             <a href="/browsers/index"
-                                                               ng-if="mergedHost.Host.container_id == 1">
+                                                               ng-if="mergedHost.container_id == 1">
                                                                 /{{mainContainer}}
                                                             </a>
                                                         <?php else: ?>
@@ -814,33 +824,33 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                     </td>
                                                 </tr>
 
-                                                <tr ng-show="mergedHost.Host.is_satellite_host">
+                                                <tr ng-show="mergedHost.is_satellite_host">
                                                     <td><?php echo __('Satellite'); ?></td>
                                                     <td>
                                                         <satellite-name
-                                                                satellite-id="mergedHost.Host.satelliteId"
-                                                                ng-if="mergedHost.Host.is_satellite_host"
+                                                            satellite-id="mergedHost.satellite_id"
+                                                            ng-if="mergedHost.is_satellite_host"
                                                         ></satellite-name>
                                                     </td>
                                                 </tr>
 
-                                                <tr ng-show="mergedHost.Host.is_satellite_host === false">
+                                                <tr ng-show="mergedHost.is_satellite_host === false">
                                                     <td><?php echo __('Instance'); ?></td>
                                                     <td>
                                                         <?php if (isset($masterInstanceName)) echo h($masterInstanceName); ?>
                                                     </td>
                                                 </tr>
 
-                                                <tr ng-show="mergedHost.Host.notes">
+                                                <tr ng-show="mergedHost.notes">
                                                     <td><?php echo __('Notes'); ?></td>
                                                     <td>
-                                                        {{mergedHost.Host.notes}}
+                                                        {{mergedHost.notes}}
                                                     </td>
                                                 </tr>
-                                                <tr ng-show="mergedHost.Host.description">
+                                                <tr ng-show="mergedHost.description">
                                                     <td><?php echo __('Description'); ?></td>
                                                     <td>
-                                                        {{mergedHost.Host.description}}
+                                                        {{mergedHost.description}}
                                                     </td>
                                                 </tr>
                                             </table>
@@ -938,9 +948,6 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                         </div>
 
 
-                        <!-- render additional Tabs if necessary -->
-                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tab', null, true); ?>
-
                         <div class="fade in active" ng-show="GrafanaDashboardExists && selectedTab == 'tab5'">
                             <div class="widget-toolbar">
                                 <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
@@ -971,7 +978,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                     </button>
 
                     <?php if ($this->Acl->hasPermission('add', 'services')): ?>
-                        <a ui-sref="ServicesAdd({hostId: mergedHost.Host.id})"
+                        <a ui-sref="ServicesAdd({hostId: mergedHost.id})"
                            class="btn btn-xs btn-success">
                             <i class="fa fa-plus"></i>
                             <?php echo __('Add'); ?>
@@ -1165,14 +1172,14 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                 <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                                    class="txt-color-blueDark">
                                                     <i class="fa fa-lg fa-area-chart"
-                                                       ng-mouseenter="mouseenter($event, mergedHost.Host.uuid, service)"
+                                                       ng-mouseenter="mouseenter($event, mergedHost.uuid, service)"
                                                        ng-mouseleave="mouseleave()"
                                                        ng-if="service.Service.has_graph">
                                                     </i>
                                                 </a>
                                             <?php else: ?>
                                                 <i class="fa fa-lg fa-area-chart"
-                                                   ng-mouseenter="mouseenter($event, mergedHost.Host.uuid, service)"
+                                                   ng-mouseenter="mouseenter($event, mergedHost.uuid, service)"
                                                    ng-mouseleave="mouseleave()"
                                                    ng-if="service.Service.has_graph">
                                                 </i>
@@ -1181,7 +1188,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                                         <td class="text-center">
                                             <strong title="<?php echo __('Passively transferred service'); ?>"
-                                                    ng-show="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                                    ng-show="service.Service.active_checks_enabled === false || mergedHost.is_satellite_host === true">
                                                 P
                                             </strong>
                                         </td>
@@ -1218,7 +1225,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                 <?php endif; ?>
                                                 <a href="javascript:void(0);" data-toggle="dropdown"
                                                    class="btn btn-default dropdown-toggle"><span
-                                                            class="caret"></span></a>
+                                                        class="caret"></span></a>
                                                 <ul class="dropdown-menu pull-right"
                                                     id="menuHack-{{service.Service.uuid}}">
                                                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
@@ -1231,7 +1238,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                     <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
                                                         <li ng-if="service.Service.allow_edit">
                                                             <a href="javascript:void(0);"
-                                                               ng-click="confirmDeactivate(getObjectForDelete(mergedHost.Host.name, service))">
+                                                               ng-click="confirmDeactivate(getObjectForDelete(mergedHost.name, service))">
                                                                 <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
                                                             </a>
                                                         </li>
@@ -1240,7 +1247,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                         <li class="divider"></li>
                                                         <li ng-if="service.Service.allow_edit">
                                                             <a href="javascript:void(0);" class="txt-color-red"
-                                                               ng-click="confirmDelete(getObjectForDelete(mergedHost.Host.name, service))">
+                                                               ng-click="confirmDelete(getObjectForDelete(mergedHost.name, service))">
                                                                 <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
                                                             </a>
                                                         </li>
@@ -1321,7 +1328,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                             <?php endif; ?>
                                             <a href="javascript:void(0);" data-toggle="dropdown"
                                                class="btn btn-default dropdown-toggle"><span
-                                                        class="caret"></span></a>
+                                                    class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right"
                                                 id="menuHack-{{service.Service.uuid}}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
@@ -1334,7 +1341,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                 <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <a href="javascript:void(0);"
-                                                           ng-click="confirmDeactivate(getObjectForDelete(mergedHost.Host.name, service))">
+                                                           ng-click="confirmDeactivate(getObjectForDelete(mergedHost.name, service))">
                                                             <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
                                                         </a>
                                                     </li>
@@ -1343,7 +1350,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                     <li class="divider"></li>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <a href="javascript:void(0);" class="txt-color-red"
-                                                           ng-click="confirmDelete(getObjectForDelete(mergedHost.Host.name, service))">
+                                                           ng-click="confirmDelete(getObjectForDelete(mergedHost.name, service))">
                                                             <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
                                                         </a>
                                                     </li>
@@ -1416,7 +1423,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                 <?php endif; ?>
                                                 <a href="javascript:void(0);" data-toggle="dropdown"
                                                    class="btn btn-default dropdown-toggle"><span
-                                                            class="caret"></span></a>
+                                                        class="caret"></span></a>
                                                 <ul class="dropdown-menu pull-right"
                                                     id="menuHack-{{service.Service.uuid}}">
                                                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
@@ -1429,7 +1436,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                     <?php if ($this->Acl->hasPermission('enable', 'services')): ?>
                                                         <li ng-if="service.Service.allow_edit">
                                                             <a href="javascript:void(0);"
-                                                               ng-click="confirmActivate(getObjectForDelete(mergedHost.Host.name, service))">
+                                                               ng-click="confirmActivate(getObjectForDelete(mergedHost.name, service))">
                                                                 <i class="fa fa-plug"></i> <?php echo __('Enable'); ?>
                                                             </a>
                                                         </li>
@@ -1438,7 +1445,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                         <li class="divider"></li>
                                                         <li ng-if="service.Service.allow_edit">
                                                             <a href="javascript:void(0);" class="txt-color-red"
-                                                               ng-click="confirmDelete(getObjectForDelete(mergedHost.Host.name, service))">
+                                                               ng-click="confirmDelete(getObjectForDelete(mergedHost.name, service))">
                                                                 <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
                                                             </a>
                                                         </li>

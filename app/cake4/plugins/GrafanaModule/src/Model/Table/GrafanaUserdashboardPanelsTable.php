@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace GrafanaModule\Model\Table;
 
 use Cake\Datasource\EntityInterface;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -38,7 +39,7 @@ use GrafanaModule\Model\Entity\GrafanaUserdashboardPanel;
 /**
  * GrafanaUserdashboardPanels Model
  *
- * @property UserdashboardsTable&BelongsTo $Userdashboards
+ * @property GrafanaUserdashboardsTable&BelongsTo $GrafanaUserdashboardsTable
  *
  * @method GrafanaUserdashboardPanel get($primaryKey, $options = [])
  * @method GrafanaUserdashboardPanel newEntity($data = null, array $options = [])
@@ -63,10 +64,17 @@ class GrafanaUserdashboardPanelsTable extends Table {
         $this->setDisplayField('title');
         $this->setPrimaryKey('id');
 
-        $this->belongsTo('Userdashboards', [
+        $this->belongsTo('GrafanaUserdashboards', [
             'foreignKey' => 'userdashboard_id',
             'joinType'   => 'INNER',
-            'className'  => 'GrafanaModule.Userdashboards',
+            'className'  => 'GrafanaModule.GrafanaUserdashboards',
+        ]);
+
+        $this->hasMany('GrafanaUserdashboardMetrics', [
+            'foreignKey'       => 'panel_id',
+            'className'        => 'GrafanaModule.GrafanaUserdashboardMetrics',
+            'dependent'        => true,
+            'cascadeCallbacks' => true
         ]);
     }
 
@@ -87,14 +95,11 @@ class GrafanaUserdashboardPanelsTable extends Table {
             ->notEmptyString('row');
 
         $validator
-            ->scalar('unit')
-            ->maxLength('unit', 255)
-            ->notEmptyString('unit');
+            ->integer('userdashboard_id')
+            ->requirePresence('userdashboard_id', 'create')
+            ->notEmptyString('userdashboard_id')
+            ->greaterThan('userdashboard_id', 0);
 
-        $validator
-            ->scalar('title')
-            ->maxLength('title', 255)
-            ->notEmptyString('title');
 
         return $validator;
     }
@@ -107,8 +112,39 @@ class GrafanaUserdashboardPanelsTable extends Table {
      * @return RulesChecker
      */
     public function buildRules(RulesChecker $rules): RulesChecker {
-        $rules->add($rules->existsIn(['userdashboard_id'], 'Userdashboards'));
+        $rules->add($rules->existsIn(['userdashboard_id'], 'GrafanaUserdashboards'));
 
         return $rules;
     }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['GrafanaUserdashboardPanels.id' => $id]);
+    }
+
+
+    /**
+     * @param $dashboardId
+     * @return int
+     */
+    public function getNextRow($dashboardId) {
+        try {
+            $result = $this->find()
+                ->where([
+                    'GrafanaUserdashboardPanels.userdashboard_id' => $dashboardId
+                ])
+                ->order([
+                    'GrafanaUserdashboardPanels.row' => 'DESC'
+                ])
+                ->firstOrFail();
+        } catch (RecordNotFoundException $e) {
+            return 0;
+        }
+
+        return $result->get('row') + 1;
+    }
+
 }
