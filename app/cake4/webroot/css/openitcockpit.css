@@ -291,11 +291,15 @@ td.fc-other-month {
 }
 
 /* highlight within textarea */
-.hwt-container{
+.hwt-container {
     width: 100%;
 }
 
-.hwt-highlights{
+.hwt-highlights {
     padding: 0.5rem 0.875rem;
     font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+}
+
+.no-border {
+    border: 0px;
 }
