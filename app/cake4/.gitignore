@@ -53,3 +53,9 @@ webroot/node_modules
 #######################
 config/graphite.php
 src/Lib/openITCOCKPIT_AvailableVersion.php
+
+# Plugins #
+#######################
+plugins/DistributeModule
+plugins/EventcorrelationModule
+plugins/OpenstreetmapModule
