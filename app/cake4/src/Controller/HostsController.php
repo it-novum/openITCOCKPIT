@@ -29,6 +29,8 @@ namespace App\Controller;
 
 use App\Lib\Constants;
 use App\Lib\Exceptions\MissingDbBackendException;
+use App\Lib\Interfaces\AcknowledgementHostsTableInterface;
+use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\PluginManagerTableTrait;
@@ -57,6 +59,7 @@ use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -65,6 +68,7 @@ use Cake\Utility\Hash;
 use DistributeModule\Model\Table\SatellitesTable;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\CommandArgReplacer;
 use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
@@ -75,10 +79,9 @@ use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
-use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
-use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\Merger\HostMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForView;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForView;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
@@ -95,6 +98,7 @@ use itnovum\openITCOCKPIT\Core\Timeline\TimeRangeSerializer;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
+use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\Downtime;
 use itnovum\openITCOCKPIT\Core\Views\Host;
@@ -106,7 +110,6 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
-use Nette\Schema\ValidationException;
 use Statusengine2Module\Model\Entity\DowntimeHost;
 use Statusengine2Module\Model\Entity\NotificationHost;
 
@@ -136,21 +139,17 @@ class HostsController extends AppController {
     use PluginManagerTableTrait;
 
 
-    /**
-     * @deprecated
-     */
     public function index() {
         /** @var User $User */
         $User = new User($this->getUser());
 
-        /** @var SystemsettingsTable $Systemsettings */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $masterInstanceName = $Systemsettings->getMasterInstanceName();
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
 
         $satellites = [];
-        $ModuleManager = new ModuleManager('DistributeModule');
-        if ($ModuleManager->moduleExists()) {
-            /** @var $SatellitesTable SatellitesTable */
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
             $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
@@ -158,9 +157,7 @@ class HostsController extends AppController {
         }
 
         if (!$this->isApiRequest()) {
-            /** @var SystemsettingsTable $Systemsettings */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
+            $this->set('QueryHandler', new QueryHandler($SystemsettingsTable->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
             $this->set('satellites', $satellites);
             //Only ship HTML template
@@ -681,7 +678,7 @@ class HostsController extends AppController {
         if ($this->request->is('post')) {
             $hosttemplateId = $this->request->getData('Host.hosttemplate_id');
             if ($hosttemplateId === null) {
-                throw new ValidationException('Hosttemplate id needs to set.');
+                throw new \RuntimeException('Hosttemplate id needs to set.');
             }
             if (!$HosttemplatesTable->existsById($hosttemplateId)) {
                 throw new NotFoundException(__('Invalid host template'));
@@ -903,10 +900,8 @@ class HostsController extends AppController {
             /** @var $ContainersTable ContainersTable */
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-
-            $containerIds = $this->MY_RIGHTS;
-            $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-            $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
+            $contacts = $ContactsTable->contactsByContainerId($this->MY_RIGHTS, 'list');
+            $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
 
             //get sharing containers
             $sharingContainers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
@@ -930,14 +925,18 @@ class HostsController extends AppController {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $hostIds = $this->request->getData('data.hosts');
-            $detailsToEdit = $this->request->getData('data.details');
+            $hostIds = $this->request->getData('data.hosts', []);
+            $detailsToEdit = $this->request->getData('data.details', []);
             foreach ($hostIds as $hostId) {
+                $dataToSave = [];
                 $sharedContainers = [];
                 $hostObject = $HostsTable->getHostByIdWithHosttemplateForEditDetails($hostId);
+                $hostObjectForChangelog = ['Host' => $hostObject->toArray()];
+                $containerIdsForChangelog = [];
                 $primaryContainerId = $hostObject->get('container_id');
                 foreach ($hostObject->get('hosts_to_containers_sharing') as $container) {
                     $containerId = $container->get('id');
+                    $containerIdsForChangelog[] = $containerId;
                     if ($primaryContainerId !== $containerId) {
                         $sharedContainers[] = $containerId;
                     }
@@ -948,6 +947,7 @@ class HostsController extends AppController {
                     $sharedContainers,
                     $this->MY_RIGHTS
                 );
+
 
                 $allowSharing = $hostSharingPermissions->allowSharing();
                 if ($allowSharing) {
@@ -960,74 +960,67 @@ class HostsController extends AppController {
                     if ($detailsToEdit['editSharedContainers'] == 1) {
                         if (!empty($detailsToEdit['Host']['hosts_to_containers_sharing']['_ids'])) {
                             if ($detailsToEdit['keepSharedContainers'] == 1) {
-                                $containersIds = array_unique(
-                                    array_merge(
-                                        $primaryContainerId,
-                                        $sharedContainers,
-                                        $detailsToEdit['Host']['hosts_to_containers_sharing']['_ids']
-                                    )
+                                $containerIds = array_merge(
+                                    $sharedContainers,
+                                    $detailsToEdit['Host']['hosts_to_containers_sharing']['_ids']
                                 );
+                                $containerIds[] = $primaryContainerId;
+
                             } else {
-                                $containersIds = array_unique(
-                                    array_merge(
-                                        $primaryContainerId,
-                                        $detailsToEdit['Host']['hosts_to_containers_sharing']['_ids']
-                                    )
-                                );
+                                $containerIds = $detailsToEdit['Host']['hosts_to_containers_sharing']['_ids'];
+                                $containerIds[] = $primaryContainerId;
+
                             }
-                            $hostObject->set([
-                                'hosts_to_containers_sharing' => [
-                                    '_ids' => $containersIds
-                                ]
-                            ]);
+                            $containerIds = array_unique($containerIds);
+
+                            $dataToSave['hosts_to_containers_sharing'] = [
+                                '_ids' => $containerIds
+                            ];
+
+                            $containerIdsForChangelog = $containerIds;
                         }
                     }
+
                     if ($detailsToEdit['editDescription'] == 1) {
-                        $newDescription =  $detailsToEdit['Host']['description'];
-                        if (!empty($newDescription) && strcmp($newDescription, $mergedHost['Host']['description']) !== 0) {
-                            $hostObject->set('description', $newDescription);
+                        $newDescription = $detailsToEdit['Host']['description'];
+                        if (!empty($newDescription) && $newDescription != $mergedHost['Host']['description']) {
+                            $dataToSave['description'] = $newDescription;
                         }
                     }
                     if ($detailsToEdit['editTags'] == 1) {
-                        $newTags =  $detailsToEdit['Host']['tags'];
-                        if (!empty($newTags) && strcmp($newTags, $mergedHost['Host']['tags']) !== 0) {
-                            $hostObject->set('tags', $newTags);
+                        $newTags = $detailsToEdit['Host']['tags'];
+                        if (!empty($newTags) && $newTags != $mergedHost['Host']['tags']) {
+                            $dataToSave['tags'] = $newTags;
                         }
                     }
                     if ($detailsToEdit['editPriority'] == 1) {
-                        $newPriority =  $detailsToEdit['Host']['priority'];
-                        if (!empty($newPriority) && strcmp($newPriority, $mergedHost['Host']['priority']) !== 0) {
-                            $hostObject->set('priority', $newPriority);
+                        $newPriority = $detailsToEdit['Host']['priority'];
+                        if (!empty($newPriority) && $newPriority != $mergedHost['Host']['priority']) {
+                            $dataToSave['priority'] = $newPriority;
                         }
                     }
                     if ($detailsToEdit['editCheckInterval'] == 1) {
-                        $newCheckInterval =  $detailsToEdit['Host']['check_interval'];
+                        $newCheckInterval = $detailsToEdit['Host']['check_interval'];
                         if (!empty($newCheckInterval) && $newCheckInterval != $mergedHost['Host']['check_interval']) {
-                            $hostObject->set('check_interval', $newCheckInterval);
+                            $dataToSave['check_interval'] = $newCheckInterval;
                         }
                     }
                     if ($detailsToEdit['editRetryInterval'] == 1) {
-                        $newRetryInterval =  $detailsToEdit['Host']['retry_interval'];
+                        $newRetryInterval = $detailsToEdit['Host']['retry_interval'];
                         if (!empty($newRetryInterval) && $newRetryInterval != $mergedHost['Host']['retry_interval']) {
-                            $hostObject->set('retry_interval', $newRetryInterval);
+                            $dataToSave['retry_interval'] = $newRetryInterval;
                         }
                     }
                     if ($detailsToEdit['editMaxNumberOfCheckAttempts'] == 1) {
-                        $newMaxNumberOfCheckAttempts =  $detailsToEdit['Host']['max_check_attempts'];
+                        $newMaxNumberOfCheckAttempts = $detailsToEdit['Host']['max_check_attempts'];
                         if (!empty($newMaxNumberOfCheckAttempts) && $newMaxNumberOfCheckAttempts != $mergedHost['Host']['max_check_attempts']) {
-                            $hostObject->set('max_check_attempts', $newMaxNumberOfCheckAttempts);
+                            $dataToSave['max_check_attempts'] = $newMaxNumberOfCheckAttempts;
                         }
                     }
                     if ($detailsToEdit['editNotificationInterval'] == 1) {
-                        $newNotificationInterval =  $detailsToEdit['Host']['notification_interval'];
+                        $newNotificationInterval = $detailsToEdit['Host']['notification_interval'];
                         if (!empty($newNotificationInterval) && $newNotificationInterval != $mergedHost['Host']['notification_interval']) {
-                            $hostObject->set('notification_interval', $newNotificationInterval);
-                        }
-                    }
-                    if ($detailsToEdit['editNotificationInterval'] == 1) {
-                        $newNotificationInterval =  $detailsToEdit['Host']['notification_interval'];
-                        if (!empty($newNotificationInterval) && $newNotificationInterval != $mergedHost['Host']['notification_interval']) {
-                            $hostObject->set('notification_interval', $newNotificationInterval);
+                            $dataToSave['notification_interval'] = $newNotificationInterval;
                         }
                     }
                     if ($detailsToEdit['editContacts'] == 1) {
@@ -1061,27 +1054,22 @@ class HostsController extends AppController {
                                     $newContacts,
                                     $mergedHost['Host']['container_id']
                                 );
-                                if (empty(array_diff($newContacts, $contactsAfterContainerCheck))){
+                                if (empty(array_diff($newContacts, $contactsAfterContainerCheck))) {
                                     if ($detailsToEdit['keepContacts']) {
-                                        $hostObject->set([
-                                                'contacts' => [
-                                                    '_ids' => array_unique(
-                                                        array_merge(
-                                                            $contactsFromHost, $newContacts
-                                                        )
-                                                    )
-                                                ]
-                                            ]
-                                        );
+                                        $dataToSave['contacts'] = [
+                                            '_ids' => array_unique(
+                                                array_merge(
+                                                    $contactsFromHost, $newContacts
+                                                )
+                                            )
+                                        ];
                                     } else {
-                                        $hostObject->set([
-                                                'contacts' => [
-                                                    '_ids' => $newContacts
+                                        $dataToSave['contacts'] = [
+                                            '_ids' => $newContacts
 
-                                                ]
-                                            ]
-                                        );
+                                        ];
                                     }
+                                    $dataToSave['own_contacts'] = 1;
                                 }
                             }
                         }
@@ -1099,7 +1087,7 @@ class HostsController extends AppController {
                                 }
                                 if (!empty($contactgroupsFromHost)) {
                                     foreach ($contactgroupsFromHost as $contactgroup) {
-                                        $contactgroupContainerIds = Hash::extract($contactgroup['containers'], '{n}.parent_id');
+                                        $contactgroupContainerIds = Hash::extract($contactgroup['container'], '{n}.parent_id');
                                         if (empty(array_intersect($contactgroupContainerIds, $this->MY_RIGHTS))) {
                                             break;
                                         }
@@ -1117,27 +1105,23 @@ class HostsController extends AppController {
                                     $newContactgroups,
                                     $mergedHost['Host']['container_id']
                                 );
-                                if (empty(array_diff($newContactgroups, $contactgroupssAfterContainerCheck))){
+                                if (empty(array_diff($newContactgroups, $contactgroupssAfterContainerCheck))) {
                                     if ($detailsToEdit['keepContactgroups']) {
-                                        $hostObject->set([
-                                                'contactgroups' => [
-                                                    '_ids' => array_unique(
-                                                        array_merge(
-                                                            $contactgroupsFromHost, $newContactgroups
-                                                        )
-                                                    )
-                                                ]
-                                            ]
-                                        );
-                                    } else {
-                                        $hostObject->set([
-                                                'contactgroups' => [
-                                                    '_ids' => $newContactgroups
+                                        $dataToSave['contactgroups'] = [
+                                            '_ids' => array_unique(
+                                                array_merge(
+                                                    $contactgroupsFromHost, $newContactgroups
+                                                )
+                                            )
+                                        ];
 
-                                                ]
-                                            ]
-                                        );
+                                    } else {
+                                        $dataToSave['contactgroups'] = [
+                                            '_ids' => $newContactgroups
+
+                                        ];
                                     }
+                                    $dataToSave['own_contactgroups'] = 1;
                                 }
                             }
                         }
@@ -1145,151 +1129,44 @@ class HostsController extends AppController {
 
                     if ($detailsToEdit['editHostUrl'] == 1) {
                         $newHostUrl = $detailsToEdit['Host']['host_url'];
-                        if (!empty($newHostUrl) && strcmp($newHostUrl, $mergedHost['Host']['host_url']) !== 0) {
-                            $hostObject->set('host_url', $newHostUrl);
+                        if (!empty($newHostUrl) && $newHostUrl !=  $mergedHost['Host']['host_url']) {
+                            $dataToSave['host_url'] = $newHostUrl;
                         }
                     }
                     if ($detailsToEdit['editNotes'] == 1) {
                         $newNotes = $detailsToEdit['Host']['notes'];
-                        if (!empty($newNotes) && strcmp($newNotes, $mergedHost['Host']['notes']) !== 0) {
-                            $hostObject->set('notes', $newNotes);
-                        }
-                    }
-                }
-
-                continue;
-                $data = ['Host' => []];
-                $host = $HostsTable->getHostById($host_id);
-                if (!empty($host)) {
-                    //Fill up required fields
-                    $data['Host']['id'] = $host_id;
-                    $data['Host']['container_id'] = $host->get('container_id');
-                    $data['Host']['name'] = $host->get('name');
-                    $data['Host']['hosttemplate_id'] = $host->get('hosttemplate_id');
-                    $data['Host']['address'] = $host->get('address');
-                    return;
-                    $hostSharingPermissions = new HostSharingPermissions(
-                        $host['Host']['container_id'],
-                        $this->hasRootPrivileges,
-                        Hash::extract($host['Container'], '{n}.id'),
-                        $this->MY_RIGHTS
-                    );
-                    $allowSharing = $hostSharingPermissions->allowSharing();
-
-                    if ($allowSharing) {
-                        if ($this->request->getData('Host.edit_sharing') == 1) {
-                            if (!empty($this->request->getData('Host.shared_container'))) {
-                                if ($this->request->getData('Host.keep_sharing') == 1) {
-                                    $sharedContainer = Hash::extract($host, 'Container.{n}.id');
-                                    $containers = array_merge($sharedContainer, $this->request->getData('Host.shared_container'));
-                                    $data['Container']['Container'] = $containers;
-                                } else {
-                                    $containers = array_merge([$host['Host']['container_id']], $this->request->getData('Host.shared_container'));
-                                    $data['Container']['Container'] = $containers;
-                                }
-
-                            }
-                        }
-
-                    }
-
-                    if ($this->request->getData('Host.edit_description') == 1) {
-                        $data['Host']['description'] = $this->request->getData('Host.description');
-                    }
-
-                    if ($this->request->getData('Host.edit_contacts') == 1) {
-                        $_contacts = [];
-                        if ($this->request->getData('Host.keep_contacts') == 1) {
-                            if (!empty($host['Contact'])) {
-                                //Merge exsting contacts with new contacts
-                                $_contacts = Hash::extract($host['Contact'], '{n}.id');
-                                $_contacts = Hash::merge($_contacts, $this->request->getData('Host.Contact'));
-                                $_contacts = array_unique($_contacts);
-                            } else {
-                                // There are no old contacts to overwirte, wo we take the current request data
-                                $_contacts = $this->request->getData('Host.Contact');
-                            }
-                        } else {
-                            ////Overwrite all old contacts
-                            $_contacts = $this->request->getData('Host.Contact');
-                        }
-                        $data['Host']['Contact'] = $_contacts;
-                        $data['Contact'] = [
-                            'Contact' => $_contacts,
-                        ];
-                    }
-
-                    if ($this->request->getData('Host.edit_contactgroups') == 1) {
-                        $_contactgroups = [];
-                        if ($this->request->getData('Host.keep_contactgroups') == 1) {
-                            if (!empty($host['Contactgroup'])) {
-                                //Merge existing contactgroups to new contact groups
-                                $_contactgroups = Hash::extract($host['Contactgroup'], '{n}.id');
-                                $_contactgroups = Hash::merge($_contactgroups, $this->request->getData('Host.Contactgroup'));
-                                $_contactgroups = array_unique($_contactgroups);
-                            } else {
-                                // There are no old contact groups to overwirte, wo we take the current request data
-                                $_contactgroups = $this->request->getData('Host.Contactgroup');
-                            }
-                        } else {
-                            //Overwrite all old contact groups
-                            $_contactgroups = $this->request->getData('Host.Contactgroup');
-                        }
-                        $data['Host']['Contactgroup'] = $_contactgroups;
-                        $data['Contactgroup'] = [
-                            'Contactgroup' => $_contactgroups,
-                        ];
-                    }
-
-                    if (!empty($data['Host']['Contact']) || !empty($data['Host']['Contactgroup'])) {
-                        //Welcome to nagios 4 -.-
-                        $data['Host']['own_contacts'] = 1;
-                        $data['Host']['own_contactgroups'] = 1;
-                    } else {
-                        if (isset($_contacts) || isset($_contactgroups)) {
-                            // Only if the user has submit a contact or a contact group, may be he want to delet all contacts.
-                            $data['Host']['own_contacts'] = 0;
-                            $data['Host']['own_contactgroups'] = 0;
-                            $data['Host']['Contact'] = [];
-                            $data['Host']['Contactgroup'] = [];
+                        if (!empty($newNotes) && $newNotes != $mergedHost['Host']['notes']) {
+                            $dataToSave['notes'] = $newNotes;
                         }
                     }
 
-                    if ($this->request->getData('Host.edit_url') == 1) {
-                        $data['Host']['host_url'] = $this->request->getData('Host.host_url');
-                    }
-
-                    if ($this->request->getData('Host.edit_tags') == 1) {
-                        $data['Host']['tags'] = $this->request->getData('Host.tags');
-                        if ($this->request->getData('Host.keep_tags') == 1) {
-                            if (!empty($host['Host']['tags'])) {
-                                //Host has tags, lets merge this
-                                $data['Host']['tags'] = implode(',', array_unique(Hash::merge(explode(',', $host['Host']['tags']), explode(',', $data['Host']['tags']))));
-                            } else {
-                                if (!empty($host['Hosttemplate']['tags'])) {
-                                    //The host has no own tags, lets merge from hosttemplate
-                                    $data['Host']['tags'] = implode(',', array_unique(Hash::merge(explode(',', $host['Hosttemplate']['tags']), explode(',', $data['Host']['tags']))));
-                                }
+                    if (!empty($dataToSave)) {
+                        $hostObject = $HostsTable->patchEntity($hostObject, $dataToSave);
+                        $HostsTable->save($hostObject);
+                        if (!$hostObject->hasErrors()) {
+                            /** @var  ChangelogsTable $ChangelogsTable */
+                            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                                'edit',
+                                'hosts',
+                                $hostObject->get('id'),
+                                OBJECT_HOST,
+                                $containerIdsForChangelog,
+                                $User->getId(),
+                                $hostObject->get('name'),
+                                $hostObjectForChangelog,
+                                ['Host' => $hostObject->toArray()]
+                            );
+                            if ($changelog_data) {
+                                /** @var Changelog $changelogEntry */
+                                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                                $ChangelogsTable->save($changelogEntry);
                             }
                         }
                     }
-
-                    if ($this->request->getData('Host.edit_priority') == 1) {
-                        $data['Host']['priority'] = $this->request->getData('Host.priority');
-                    }
-                    $this->Host->save($data);
-                    unset($data);
                 }
             }
-            /*
-               $this->setFlash(__('Host modified successfully'));
-               $redirect = $this->Host->redirect($this->request->params, ['action' => 'index']);
-               $this->redirect($redirect);
-   */
-            return;
         }
-
-        $this->set(compact(['contacts', 'contactgroups', 'sharingContainers']));
     }
 
     /**
@@ -1889,174 +1766,164 @@ class HostsController extends AppController {
     }
 
     /**
-     * @deprecated
+     * @param int|string|null $idOrUuid
+     * @throws MissingDbBackendException
      */
     public function browser($idOrUuid = null) {
-        if (!$this->isAngularJsRequest() && $idOrUuid === null) {
-            //AngularJS loads the HTML template via https://xxx/hosts/browser.html
-            $User = new User($this->getUser());
-            $ModuleManager = new ModuleManager('GrafanaModule');
-            if ($ModuleManager->moduleExists()) {
-                $this->loadModel('GrafanaModule.GrafanaDashboard');
-                $this->loadModel('GrafanaModule.GrafanaConfiguration');
-                $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
-                if (!empty($grafanaConfiguration)) {
-                    $GrafanaConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
-                    $this->set('GrafanaConfiguration', $GrafanaConfiguration);
-                }
-            }
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
-            $this->set('username', $User->getFullName());
-            $this->set('masterInstanceName', $Systemsettings->getMasterInstanceName());
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
+        if ($this->isHtmlRequest()) {
             //Only ship template
+
+            $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+            $this->set('masterInstanceName', $masterInstanceName);
+            $this->set('username', $User->getFullName());
             return;
         }
+
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         $id = $idOrUuid;
         if (!is_numeric($idOrUuid)) {
             if (preg_match(UUID::regex(), $idOrUuid)) {
-                $lookupHost = $this->Host->find('first', [
-                    'recursive'  => -1,
-                    'fields'     => [
-                        'Host.id'
-                    ],
-                    'conditions' => [
-                        'Host.uuid' => $idOrUuid
-                    ]
-                ]);
-                if (empty($lookupHost)) {
+                try {
+                    $lookupHost = $HostsTable->getHostByUuid($idOrUuid);
+                    $id = $lookupHost->get('id');
+                } catch (RecordNotFoundException $e) {
                     throw new NotFoundException(__('Host not found'));
                 }
-                $this->redirect([
-                    'controller' => 'hosts',
-                    'action'     => 'browser',
-                    $lookupHost['Host']['id']
-                ]);
+            }
+        }
+        unset($idOrUuid);
+
+        /** @var HosttemplatesTable $HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        /** @var HoststatusTableInterface $HoststatusTable */
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+        /** @var CommandsTable $CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var TimeperiodsTable $TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var AcknowledgementHostsTableInterface $AcknowledgementHostsTable */
+        $AcknowledgementHostsTable = $this->DbBackend->getAcknowledgementHostsTable();
+        /** @var DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable */
+        $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var DocumentationsTable $DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+
+        if (!$HostsTable->existsById($id)) {
+            throw new NotFoundException(__('Host not found'));
+        }
+
+        $host = $HostsTable->getHostForBrowser($id);
+
+        //Check permissions
+        $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n},id');
+        $containerIdsToCheck[] = $host['container_id'];
+
+        //Check if user is permitted to see this object
+        if (!$this->hasRootPrivileges) {
+            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+                $this->render403();
                 return;
             }
         }
 
-        /** @var $DocumentationsTable DocumentationsTable */
-        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
-
-        unset($idOrUuid);
-        if (!$this->Host->exists($id)) {
-            throw new NotFoundException(__('Invalid host'));
-        }
-        $rawHost = $this->Host->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.address',
-                'Host.container_id',
-                'Host.host_type',
-                'Host.host_url',
-            ],
-            'contain'    => [
-                'Container',
-                'Hosttemplate' => [
-                    'fields' => [
-                        'Hosttemplate.host_url'
-                    ]
-                ]
-            ],
-            'conditions' => [
-                'Host.id' => $id
-            ]
-        ]);
-        if ($rawHost['Host']['host_url'] === '' || $rawHost['Host']['host_url'] === null) {
-            $rawHost['Host']['host_url'] = $rawHost['Hosttemplate']['host_url'];
-        }
-        $containerIdsToCheck = Hash::extract($rawHost, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $rawHost['Host']['container_id'];
-        //Check if user is permitted to see this object
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-            $this->render403();
-            return;
-        }
-        if ($this->hasRootPrivileges) {
-            $allowEdit = true;
-        } else {
+        $allowEdit = $this->hasRootPrivileges;
+        if ($this->hasRootPrivileges === false) {
             $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIdsToCheck);
             $allowEdit = $ContainerPermissions->hasPermission();
         }
+        $hostObj = new Host($host, $allowEdit);
 
-        $hostQuery = $this->Host->getQueryForBrowser($id);
-        $host = $this->Host->find('first', $hostQuery);
-        $hosttemplateQuery = $this->Hosttemplate->getQueryForBrowser($host['Host']['hosttemplate_id']);
-        $hosttemplate = $this->Hosttemplate->find('first', $hosttemplateQuery);
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        $HosttemplateMerger = new HosttemplateMerger($host, $hosttemplate);
-        $mergedHost = [
-            'Host'                        => $HosttemplateMerger->mergeHostWithTemplate(),
-            'CheckPeriod'                 => $HosttemplateMerger->mergeCheckPeriod(),
-            'NotifyPeriod'                => $HosttemplateMerger->mergeNotifyPeriod(),
-            'CheckCommand'                => $HosttemplateMerger->mergeCheckCommand(),
-            'Customvariable'              => $HosttemplateMerger->mergeCustomvariables(),
-            'Hostcommandargumentvalue'    => $HosttemplateMerger->mergeCommandargumentsForReplace(),
-            'Contactgroup'                => $HosttemplateMerger->mergeContactgroups(),
-            'Contact'                     => $HosttemplateMerger->mergeContacts(),
-            'areContactsFromHost'         => $HosttemplateMerger->areContactsFromHost(),
-            'areContactsFromHosttemplate' => $HosttemplateMerger->areContactsFromHosttemplate(),
-        ];
-        $mergedHost['Host']['allowEdit'] = $allowEdit;
-        $mergedHost['Host']['satelliteId'] = (int)$mergedHost['Host']['satellite_id'];
-        $mergedHost['Host']['is_satellite_host'] = $mergedHost['Host']['satelliteId'] !== 0;
-        $mergedHost['checkIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['Host']['check_interval']);
-        $mergedHost['retryIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['Host']['retry_interval']);
-        $mergedHost['notificationIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['Host']['notification_interval']);
-        // Replace $HOSTNAME$
-        $HostMacroReplacerCommandLine = new HostMacroReplacer($host);
-        $hostCommandLine = $HostMacroReplacerCommandLine->replaceBasicMacros($mergedHost['CheckCommand']['command_line']);
-
-        $mergedHost['Host']['host_url_replaced'] = $mergedHost['Host']['host_url'];
-        if ($mergedHost['Host']['host_url'] !== '' && $mergedHost['Host']['host_url'] !== null) {
-            $mergedHost['Host']['host_url_replaced'] = $HostMacroReplacerCommandLine->replaceBasicMacros($mergedHost['Host']['host_url']);
+        //Load containers information
+        $mainContainer = $ContainersTable->treePath($host['container_id']);
+        //Add shared containers
+        $sharedContainers = [];
+        foreach ($host['hosts_to_containers_sharing'] as $container) {
+            if (isset($container['id']) && $container['id'] != $host['container_id']) {
+                $sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
+            }
         }
 
-        // Replace $_HOSTFOOBAR$
-        $HostCustomMacroReplacerCommandLine = new CustomMacroReplacer($mergedHost['Customvariable'], OBJECT_HOST);
-        $hostCommandLine = $HostCustomMacroReplacerCommandLine->replaceAllMacros($hostCommandLine);
-        // Replace Command args $ARGx$
-        $hostCommandLine = str_replace(
-            array_keys($mergedHost['Hostcommandargumentvalue']),
-            array_values($mergedHost['Hostcommandargumentvalue']),
-            $hostCommandLine
+        //Load required data to merge and display inheritance data
+        $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($host['id']);
+
+        //Merge host and inheritance data
+        $HostMergerForBrowser = new HostMergerForBrowser(
+            $host,
+            $hosttemplate
         );
+        $mergedHost = $HostMergerForBrowser->getDataForView();
+
+        $mergedHost['is_satellite_host'] = $hostObj->isSatelliteHost();
+        $mergedHost['allowEdit'] = $allowEdit;
+
+        //Replace macros in host url
+        $HostMacroReplacer = new HostMacroReplacer($mergedHost);
+        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST);
+        $mergedHost['host_url_replaced'] =
+            $HostCustomMacroReplacer->replaceAllMacros(
+                $HostMacroReplacer->replaceBasicMacros($mergedHost['host_url'])
+            );
+
+        $checkCommand = $CommandsTable->getCommandById($mergedHost['command_id']);
+        $checkPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedHost['check_period_id']);
+        $notifyPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedHost['notify_period_id']);
+
+        // Replace $HOSTNAME$
+        $hostCommandLine = $HostMacroReplacer->replaceBasicMacros($checkCommand['Command']['command_line']);
+
+        // Replace $_HOSTFOOBAR$
+        $hostCommandLine = $HostCustomMacroReplacer->replaceAllMacros($hostCommandLine);
+
+        // Replace $ARGn$
+        $ArgnReplacer = new CommandArgReplacer($mergedHost['hostcommandargumentvalues']);
+        $hostCommandLine = $ArgnReplacer->replace($hostCommandLine);
+
         $mergedHost['hostCommandLine'] = $hostCommandLine;
+
+        // Convert interval values for humans
+        $mergedHost['checkIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['check_interval']);
+        $mergedHost['retryIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['retry_interval']);
+        $mergedHost['notificationIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['notification_interval']);
+
         //Check permissions for Contacts
         $contactsWithContainers = [];
         $writeContainers = $this->getWriteContainers();
-        foreach ($mergedHost['Contact'] as $key => $contact) {
+
+        foreach ($mergedHost['contacts'] as $key => $contact) {
             $contactsWithContainers[$contact['id']] = [];
-            foreach ($contact['Container'] as $container) {
+            foreach ($contact['containers'] as $container) {
                 $contactsWithContainers[$contact['id']][] = $container['id'];
             }
-            $mergedHost['Contact'][$key]['allowEdit'] = true;
+
+            $mergedHost['contacts'][$key]['allowEdit'] = $this->hasRootPrivileges;
             if ($this->hasRootPrivileges === false) {
-                $all_contacts[$key]['allowEdit'] = false;
                 if (!empty(array_intersect($contactsWithContainers[$contact['id']], $writeContainers))) {
-                    $all_contacts[$key]['allowEdit'] = true;
+                    $mergedHost['contacts'][$key]['allowEdit'] = true;
                 }
             }
         }
 
-        /** @var $HoststatusTable HoststatusTableInterface */
-        $HoststatusTable = $this->DbBackend->getHoststatusTable();
-
         //Check permissions for Contact groups
-        foreach ($mergedHost['Contactgroup'] as $key => $contactgroup) {
-            $mergedHost['Contactgroup'][$key]['allowEdit'] = $this->isWritableContainer($contactgroup['Container']['parent_id']);
+        foreach ($mergedHost['contactgroups'] as $key => $contactgroup) {
+            $mergedHost['contactgroups'][$key]['allowEdit'] = $this->isWritableContainer($contactgroup['container']['parent_id']);
         }
+
+        //Load host status
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->wildcard();
-        $HoststatusConditions = new HoststatusConditions($this->DbBackend);
-        //$HoststatusConditions->hostsDownAndUnreachable();
-        $hoststatus = $HoststatusTable->byUuid($host['Host']['uuid'], $HoststatusFields);
+
+        $hoststatus = $HoststatusTable->byUuid($hostObj->getUuid(), $HoststatusFields);
         if (empty($hoststatus)) {
             //Empty host state for Hoststatus object
             $hoststatus = [
@@ -2065,69 +1932,74 @@ class HostsController extends AppController {
         }
         $Hoststatus = new Hoststatus($hoststatus['Hoststatus'], $UserTime);
         $hoststatus = $Hoststatus->toArrayForBrowser();
-        $hoststatus['longOutputHtml'] = $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($Hoststatus->getLongOutput(), true));
-        $parenthosts = $host['Parenthost'];
-        $ParentHoststatusFields = new HoststatusFields($this->DbBackend);
-        $ParentHoststatusFields->currentState()->lastStateChange();
-        $parentHostStatusRaw = $HoststatusTable->byUuid(
-            Hash::extract($host['Parenthost'], '{n}.uuid'),
-            $ParentHoststatusFields,
-            $HoststatusConditions
-        );
-        $parentHostStatus = [];
-        foreach ($parentHostStatusRaw as $uuid => $parentHoststatus) {
-            $ParentHoststatus = new Hoststatus($parentHoststatus['Hoststatus'], $UserTime);
-            $parentHostStatus[$uuid] = $ParentHoststatus->toArrayForBrowser();
-        }
-        //Get Containers
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        $mainContainer = $ContainersTable->treePath($rawHost['Host']['container_id']);
-        //Add shared containers
-        $sharedContainers = [];
-        foreach ($rawHost['Container'] as $container) {
-            if (isset($container['id']) && $container['id'] != $rawHost['Host']['container_id']) {
-                $sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
-            }
-        }
+
+        //Parse BBCode in long output
+        $BBCodeParser = new BBCodeParser();
+        $hoststatus['longOutputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($Hoststatus->getLongOutput(), true));
+
+        $mergedHost['allowEdit'] = $allowEdit;
+
+        $systemsettingsEntity = $SystemsettingsTable->getSystemsettingByKey('TICKET_SYSTEM.URL');
+        $ticketSystem = $systemsettingsEntity->get('value');
+
+        //Check for host acknowledgements and downtimes
         $acknowledgement = [];
         if ($Hoststatus->isAcknowledged()) {
-            $acknowledgement = $this->AcknowledgedHost->byHostUuid($host['Host']['uuid']);
+            $acknowledgement = $AcknowledgementHostsTable->byHostUuid($host->getUuid());
             if (!empty($acknowledgement)) {
-                $Acknowledgement = new AcknowledgementHost($acknowledgement['AcknowledgedHost'], $UserTime);
+                $Acknowledgement = new AcknowledgementHost($acknowledgement, $UserTime);
                 $acknowledgement = $Acknowledgement->toArray();
-                $ticketSystem = $this->Systemsetting->find('first', [
-                    'conditions' => ['key' => 'TICKET_SYSTEM.URL'],
-                ]);
+
                 $ticketDetails = [];
-                if (!empty($ticketSystem['Systemsetting']['value']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $Acknowledgement->getCommentData(), $ticketDetails)) {
+                if (!empty($ticketSystem) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $Acknowledgement->getCommentData(), $ticketDetails)) {
                     $commentDataHtml = $Acknowledgement->getCommentData();
                     if (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) {
                         $commentDataHtml = sprintf(
                             '<a href="%s%s" target="_blank">%s %s</a>',
-                            $ticketSystem['Systemsetting']['value'],
+                            $ticketSystem,
                             $ticketDetails[3],
                             $ticketDetails[1],
                             $ticketDetails[2]
                         );
                     }
                 } else {
-                    $commentDataHtml = $this->Bbcode->asHtml($Acknowledgement->getCommentData(), true);
+                    $commentDataHtml = $BBCodeParser->asHtml($Acknowledgement->getCommentData(), true);
                 }
+
                 $acknowledgement['commentDataHtml'] = $commentDataHtml;
             }
         }
+
         $downtime = [];
         if ($Hoststatus->isInDowntime()) {
-            $downtime = $this->DowntimeHost->byHostUuid($host['Host']['uuid'], true);
+            $downtime = $DowntimehistoryHostsTable->byHostUuid($hostObj->getUuid());
             if (!empty($downtime)) {
-                $Downtime = new Downtime($downtime['DowntimeHost'], $allowEdit, $UserTime);
+                $Downtime = new Downtime($downtime, $allowEdit, $UserTime);
                 $downtime = $Downtime->toArray();
             }
         }
+
+        //Load parent hosts and parent host status
+        $parenthosts = $host['parenthosts'];
+        $ParentHoststatusFields = new HoststatusFields($this->DbBackend);
+        $ParentHoststatusFields->currentState()->lastStateChange();
+        $parentHostStatusRaw = $HoststatusTable->byUuid(
+            Hash::extract($host['parenthosts'], '{n}.uuid'),
+            $ParentHoststatusFields
+        );
+        $parentHostStatus = [];
+        foreach ($parentHostStatusRaw as $uuid => $parentHoststatus) {
+            $ParentHoststatus = new Hoststatus($parentHoststatus['Hoststatus'], $UserTime);
+            $parentHostStatus[$uuid] = $ParentHoststatus->toArrayForBrowser();
+        }
+
         $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
+
+        // Set data to fronend
         $this->set('mergedHost', $mergedHost);
-        $this->set('docuExists', $DocumentationsTable->existsByUuid($rawHost['Host']['uuid']));
+        $this->set('docuExists', $DocumentationsTable->existsByUuid($hostObj->getUuid()));
+        $this->set('areContactsFromHost', $HostMergerForBrowser->areContactsFromHost());
+        $this->set('areContactsInheritedFromHosttemplate', $HostMergerForBrowser->areContactsInheritedFromHosttemplate());
         $this->set('hoststatus', $hoststatus);
         $this->set('mainContainer', $mainContainer);
         $this->set('sharedContainers', $sharedContainers);
@@ -2135,10 +2007,16 @@ class HostsController extends AppController {
         $this->set('parentHostStatus', $parentHostStatus);
         $this->set('acknowledgement', $acknowledgement);
         $this->set('downtime', $downtime);
+        $this->set('checkCommand', $checkCommand);
+        $this->set('checkPeriod', $checkPeriod);
+        $this->set('notifyPeriod', $notifyPeriod);
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
+
         $this->viewBuilder()->setOption('serialize', [
             'mergedHost',
             'docuExists',
+            'areContactsFromHost',
+            'areContactsInheritedFromHosttemplate',
             'hoststatus',
             'mainContainer',
             'sharedContainers',
@@ -2146,6 +2024,9 @@ class HostsController extends AppController {
             'parentHostStatus',
             'acknowledgement',
             'downtime',
+            'checkCommand',
+            'checkPeriod',
+            'notifyPeriod',
             'canSubmitExternalCommands'
         ]);
     }
@@ -2580,9 +2461,6 @@ class HostsController extends AppController {
         ]);
     }
 
-    /**
-     * @deprecated
-     */
     public function getGrafanaIframeUrlForDatepicker() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -2598,32 +2476,35 @@ class HostsController extends AppController {
             $refresh = 0;
         }
 
-        $grafanaDashboard = null;
         $GrafanaDashboardExists = false;
+        $iframeUrl = null;
 
-        $ModuleManager = new ModuleManager('GrafanaModule');
-        if ($ModuleManager->moduleExists()) {
-            $this->loadModel('GrafanaModule.GrafanaDashboard');
-            $this->loadModel('GrafanaModule.GrafanaConfiguration');
-            $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
-            if (!empty($grafanaConfiguration) && $this->GrafanaDashboard->existsForUuid($hostUuid)) {
+
+        if (Plugin::isLoaded('GrafanaModule')) {
+            /** @var \GrafanaModule\Model\Table\GrafanaConfigurationsTable $GrafanaConfigurationsTable */
+            $GrafanaConfigurationsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaConfigurations');
+
+            /** @var \GrafanaModule\Model\Table\GrafanaDashboardsTable $GrafanaDashboardsTable */
+            $GrafanaDashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaDashboards');
+
+            $grafanaConfiguration = $GrafanaConfigurationsTable->getGrafanaConfiguration();
+            $hasGrafanaConfig = $grafanaConfiguration['api_url'] !== '';
+            $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+
+            if ($GrafanaDashboardsTable->existsForUuid($hostUuid)) {
                 $GrafanaDashboardExists = true;
-                $dashboardFromDatabase = $this->GrafanaDashboard->find('first', [
-                    'conditions' => [
-                        'GrafanaDashboard.host_uuid' => $hostUuid
-                    ]
-                ]);
+                $dashboard = $GrafanaDashboardsTable->getDashboardByHostUuid($hostUuid);
 
-                $GrafanaConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
-                $GrafanaConfiguration->setHostUuid($hostUuid);
-                if (isset($dashboardFromDatabase['GrafanaDashboard']['grafana_uid'])) {
-                    $GrafanaConfiguration->setGrafanaUid($dashboardFromDatabase['GrafanaDashboard']['grafana_uid']);
+                $GrafanaApiConfiguration->setHostUuid($hostUuid);
+                if ($dashboard->get('grafana_uid')) {
+                    $GrafanaApiConfiguration->setGrafanaUid($dashboard->get('grafana_uid'));
                 }
-                $this->set('iframeUrl', $GrafanaConfiguration->getIframeUrlForDatepicker($timerange, $refresh));
+                $iframeUrl = $GrafanaApiConfiguration->getIframeUrlForDatepicker($timerange, $refresh);
             }
         }
 
         $this->set('GrafanaDashboardExists', $GrafanaDashboardExists);
+        $this->set('iframeUrl', $iframeUrl);
         $this->viewBuilder()->setOption('serialize', ['GrafanaDashboardExists', 'iframeUrl']);
     }
 

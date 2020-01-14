@@ -24,7 +24,11 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
-
+/**
+ * Class ModuleManager
+ * @package itnovum\openITCOCKPIT\Core
+ * @deprecated
+ */
 class ModuleManager {
 
     /**

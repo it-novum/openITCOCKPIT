@@ -71,14 +71,12 @@ angular.module('openITCOCKPIT')
                 'hosts': $scope.hostIds,
                 'details': $scope.post
             };
-            console.log('TEST');
-            console.log(params);
             $http.post("/hosts/edit_details/.json?angular=true", {
                     data: params
                 }
             ).then(function(result){
                 NotyService.genericSuccess();
-                //RedirectService.redirectWithFallback('HostsIndex');
+                RedirectService.redirectWithFallback('HostsIndex');
             }, function errorCallback(result){
                 //Print errors
                 NotyService.genericError();
