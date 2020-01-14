@@ -31,7 +31,7 @@ use itnovum\openITCOCKPIT\Filter\HostFilter;
 class HostControllerRequest {
 
     /**
-     * @var \CakeRequest
+     * @var ServerRequest
      */
     private $request;
 
@@ -49,23 +49,17 @@ class HostControllerRequest {
      * @return bool
      */
     public function isRequestFromBrowser() {
-        if (isset($this->request->query['BrowserContainerId'])) {
+        if ($this->request->getQuery('BrowserContainerId', null) !== null) {
             return true;
         }
-        return isset($this->request->params['named']['BrowserContainerId']);
+        return false;
     }
 
     /**
      * @return array
      */
     public function getBrowserContainerIdsByRequest() {
-        if (isset($this->request->params['named']['BrowserContainerId'])) {
-            $containerIds = $this->request->params['named']['BrowserContainerId'];
-        }
-
-        if (isset($this->request->query['BrowserContainerId'])) {
-            $containerIds = $this->request->query['BrowserContainerId'];
-        }
+        $containerIds = $this->request->getQuery('BrowserContainerId', []);
 
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];

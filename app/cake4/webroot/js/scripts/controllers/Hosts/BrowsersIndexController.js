@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('BrowsersIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, QueryStringService, $state){
-        SortService.setSort(QueryStringService.getValue('sort', 'Hoststatus.current_state'));
-        SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
+        SortService.setSort('Hoststatus.current_state');
+        SortService.setDirection('desc');
         $scope.containerId = parseInt(QueryStringService.getValue('containerId', 1), 10); //Default ROOT_CONTAINER
 
         $scope.containers = [];
@@ -24,9 +24,9 @@ angular.module('openITCOCKPIT')
                     output: ''
                 },
                 Host: {
-                    name: QueryStringService.getValue('filter[Host.name]', ''),
+                    name: QueryStringService.getValue('filter[Hosts.name]', ''),
                     keywords: '',
-                    address: QueryStringService.getValue('filter[Host.address]', ''),
+                    address: QueryStringService.getValue('filter[Hosts.address]', ''),
                     satellite_id: []
                 }
             };
@@ -74,14 +74,14 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Host.name]': $scope.filter.Host.name,
+                'filter[Hosts.name]': $scope.filter.Host.name,
                 'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,
                 'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
-                'filter[Host.keywords][]': $scope.filter.Host.keywords.split(','),
+                'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),
                 'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
-                'filter[Host.address]': $scope.filter.Host.address,
-                'filter[Host.satellite_id][]': $scope.filter.Host.satellite_id,
+                'filter[Hosts.address]': $scope.filter.Host.address,
+                'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id,
                 'BrowserContainerId': $scope.containerId
             };
 
@@ -215,6 +215,10 @@ angular.module('openITCOCKPIT')
         //Fire on page load
         defaultFilter();
         SortService.setCallback($scope.load);
+
+        jQuery(function(){
+            $("input[data-role=tagsinput]").tagsinput();
+        });
 
         $scope.$watch('filter', function(){
             $scope.currentPage = 1;

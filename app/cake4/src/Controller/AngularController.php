@@ -225,7 +225,7 @@ class AngularController extends AppController {
             $recursive = true;
         }
 
-        $containerIds = $this->request->getQuery('containerIds');
+        $containerIds = $this->request->getQuery('containerIds', []);
         if (!is_numeric($containerIds) && !is_array($containerIds)) {
             $containerIds = ROOT_CONTAINER;
         }
@@ -275,8 +275,8 @@ class AngularController extends AppController {
             /** @var HostsTable $HostsTable */
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-            $hoststatusCount = $HostsTable->getHoststatusCount($this->MY_RIGHTS, true);
-            $servicestatusCount = $HostsTable->getServicestatusCount($this->MY_RIGHTS, true);
+            $hoststatusCount = $HostsTable->getHoststatusCount($containerIdsForQuery, true);
+            $servicestatusCount = $HostsTable->getServicestatusCount($containerIdsForQuery, true);
         }
 
         if ($this->DbBackend->isCrateDb()) {
