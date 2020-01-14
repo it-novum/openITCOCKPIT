@@ -498,16 +498,6 @@
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                    <li ng-if="service.Service.allow_edit">
-                                                        <?php echo $this->AdditionalLinks->renderAsListItems(
-                                                            $additionalLinksList,
-                                                            '{{service.Service.id}}',
-                                                            [],
-                                                            true
-                                                        ); ?>
-                                                    </li>
-                                                <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                     <li class="divider"></li>
                                                     <li ng-if="service.Service.allow_edit">

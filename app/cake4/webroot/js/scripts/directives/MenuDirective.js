@@ -115,7 +115,7 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
 
                 if(keyCode === RETURN_KEY && $scope.menuFilterPosition === -1){
                     $state.go('HostsIndex', {
-                        filterHostname: $scope.menuFilter
+                        hostname: $scope.menuFilter
                     });
                 }
 

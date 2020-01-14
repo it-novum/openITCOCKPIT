@@ -1,8 +1,9 @@
 angular.module('openITCOCKPIT')
-    .controller('BrowsersIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, QueryStringService, $state){
+    .controller('BrowsersIndexController', function($scope, $http, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService, $state){
         SortService.setSort('Hoststatus.current_state');
         SortService.setDirection('desc');
-        $scope.containerId = parseInt(QueryStringService.getValue('containerId', 1), 10); //Default ROOT_CONTAINER
+
+        $scope.containerId = QueryStringService.getStateValue($stateParams, 'containerId', 1); //Default ROOT_CONTAINER
 
         $scope.containers = [];
         $scope.data = {
@@ -16,7 +17,7 @@ angular.module('openITCOCKPIT')
         var defaultFilter = function(){
             $scope.filter = {
                 Hoststatus: {
-                    current_state: QueryStringService.hoststate(),
+                    current_state: QueryStringService.hoststate($stateParams),
                     acknowledged: QueryStringService.getValue('has_been_acknowledged', false) === '1',
                     not_acknowledged: QueryStringService.getValue('has_not_been_acknowledged', false) === '1',
                     in_downtime: QueryStringService.getValue('in_downtime', false) === '1',
@@ -186,22 +187,16 @@ angular.module('openITCOCKPIT')
             return objects;
         };
 
-        $scope.linkForCopy = function(){
-            var baseUrl = '/hosts/copy/';
-            return buildUrl(baseUrl);
 
+        $scope.linkForCopy = function(){
+            var ids = Object.keys(MassChangeService.getSelected());
+            return ids.join(',');
         };
 
         $scope.linkForEditDetails = function(){
-            var baseUrl = '/hosts/edit_details/';
-            return buildUrl(baseUrl);
-        };
-
-        var buildUrl = function(baseUrl){
             var ids = Object.keys(MassChangeService.getSelected());
-            return baseUrl + ids.join('/');
+            return ids.join(',');
         };
-
 
         $scope.changepage = function(page){
             $scope.undoSelection();

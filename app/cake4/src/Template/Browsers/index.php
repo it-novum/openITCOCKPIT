@@ -102,44 +102,27 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                     </div>
 
                     <div ng-show="hoststatusSum > 0">
-                        <img ng-src="/angular/getPieChart/{{hoststatusCountHash[0]}}/{{hoststatusCountHash[1]}}/{{hoststatusCountHash[2]}}.png">
+                        <img
+                            ng-src="/angular/getPieChart/{{hoststatusCountHash[0]}}/{{hoststatusCountHash[1]}}/{{hoststatusCountHash[2]}}.png">
 
                         <div class="col-xs-12 text-center padding-bottom-10 font-xs">
                             <div class="col-xs-12 col-md-4 no-padding">
-                                <a ng-href="/ng/#!/hosts/index<?php echo RFCRouter::queryString([
-                                    'filter'    => [
-                                        'Hoststatus.current_state' => ['0' => 1]
-                                    ],
-                                    'sort'      => 'Hoststatus.last_state_change',
-                                    'direction' => 'desc',
-                                ]); ?>&BrowserContainerId={{containerId}}">
-                                    <i class="fa fa-square ok"></i>
+                                <a ui-sref="HostsIndex({hoststate: [0], sort: 'Hoststatus.last_state_change', direction: 'desc', BrowserContainerId: containerId})">
+                                    <i class="fa fa-square up"></i>
                                     {{hoststatusCountHash[0]}} ({{hoststatusCountPercentage[0]}} %)
                                 </a>
                             </div>
 
                             <div class="col-xs-12 col-md-4 no-padding">
-                                <a ng-href="/ng/#!/hosts/index<?php echo RFCRouter::queryString([
-                                    'filter'    => [
-                                        'Hoststatus.current_state' => ['1' => 1]
-                                    ],
-                                    'sort'      => 'Hoststatus.last_state_change',
-                                    'direction' => 'desc',
-                                ]); ?>&BrowserContainerId={{containerId}}">
-                                    <i class="fa fa-square critical"></i>
+                                <a ui-sref="HostsIndex({hoststate: [1], sort: 'Hoststatus.last_state_change', direction: 'desc', BrowserContainerId: containerId})">
+                                    <i class="fa fa-square down"></i>
                                     {{hoststatusCountHash[1]}} ({{hoststatusCountPercentage[1]}} %)
                                 </a>
                             </div>
 
                             <div class="col-xs-12 col-md-4 no-padding">
-                                <a ng-href="/ng/#!/hosts/index<?php echo RFCRouter::queryString([
-                                    'filter'    => [
-                                        'Hoststatus.current_state' => ['2' => 1]
-                                    ],
-                                    'sort'      => 'Hoststatus.last_state_change',
-                                    'direction' => 'desc',
-                                ]); ?>&BrowserContainerId={{containerId}}">
-                                    <i class="fa fa-square unknown"></i>
+                                <a ui-sref="HostsIndex({hoststate: [2], sort: 'Hoststatus.last_state_change', direction: 'desc', BrowserContainerId: containerId})">
+                                    <i class="fa fa-square unreachable"></i>
                                     {{hoststatusCountHash[2]}} ({{hoststatusCountPercentage[2]}} %)
                                 </a>
                             </div>
@@ -163,56 +146,33 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                     </div>
 
                     <div ng-show="servicestatusSum > 0">
-                        <img ng-src="/angular/getPieChart/{{servicestatusCountHash[0]}}/{{servicestatusCountHash[1]}}/{{servicestatusCountHash[2]}}/{{servicestatusCountHash[3]}}/.png">
+                        <img
+                            ng-src="/angular/getPieChart/{{servicestatusCountHash[0]}}/{{servicestatusCountHash[1]}}/{{servicestatusCountHash[2]}}/{{servicestatusCountHash[3]}}/.png">
 
                         <div class="col-xs-12 text-center padding-bottom-10 font-xs">
                             <div class="col-xs-12 col-md-3 no-padding">
-                                <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
-                                    'filter'    => [
-                                        'Servicestatus.current_state' => ['0' => 1]
-                                    ],
-                                    'sort'      => 'Servicestatus.last_state_change',
-                                    'direction' => 'desc',
-                                ]); ?>&BrowserContainerId={{containerId}}">
+                                <a ui-sref="ServicesIndex({servicestate: [0], sort: 'Servicestatus.last_state_change', direction: 'desc', BrowserContainerId: containerId})">
                                     <i class="fa fa-square ok"></i>
                                     {{servicestatusCountHash[0]}} ({{servicestatusCountPercentage[0]}} %)
                                 </a>
                             </div>
 
                             <div class="col-xs-12 col-md-3 no-padding">
-                                <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
-                                    'filter'    => [
-                                        'Servicestatus.current_state' => ['1' => 1]
-                                    ],
-                                    'sort'      => 'Servicestatus.last_state_change',
-                                    'direction' => 'desc',
-                                ]); ?>&BrowserContainerId={{containerId}}">
+                                <a ui-sref="ServicesIndex({servicestate: [1], sort: 'Servicestatus.last_state_change', direction: 'desc', BrowserContainerId: containerId})">
                                     <i class="fa fa-square warning"></i>
                                     {{servicestatusCountHash[1]}} ({{servicestatusCountPercentage[1]}} %)
                                 </a>
                             </div>
 
                             <div class="col-xs-12 col-md-3 no-padding">
-                                <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
-                                    'filter'    => [
-                                        'Servicestatus.current_state' => ['2' => 1]
-                                    ],
-                                    'sort'      => 'Servicestatus.last_state_change',
-                                    'direction' => 'desc',
-                                ]); ?>&BrowserContainerId={{containerId}}">
+                                <a ui-sref="ServicesIndex({servicestate: [2], sort: 'Servicestatus.last_state_change', direction: 'desc', BrowserContainerId: containerId})">
                                     <i class="fa fa-square critical"></i>
                                     {{servicestatusCountHash[2]}} ({{servicestatusCountPercentage[2]}} %)
                                 </a>
                             </div>
 
                             <div class="col-xs-12 col-md-3 no-padding">
-                                <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
-                                    'filter'    => [
-                                        'Servicestatus.current_state' => ['3' => 1]
-                                    ],
-                                    'sort'      => 'Servicestatus.last_state_change',
-                                    'direction' => 'desc',
-                                ]); ?>&BrowserContainerId={{containerId}}">
+                                <a ui-sref="ServicesIndex({servicestate: [3], sort: 'Servicestatus.last_state_change', direction: 'desc', BrowserContainerId: containerId})">
                                     <i class="fa fa-square unknown"></i>
                                     {{servicestatusCountHash[3]}} ({{servicestatusCountPercentage[3]}} %)
                                 </a>
@@ -393,13 +353,13 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                                         <legend><?php echo __('Instance'); ?></legend>
                                         <div class="form-group smart-form">
                                             <select
-                                                    id="Instance"
-                                                    data-placeholder="<?php echo __('Filter by instance'); ?>"
-                                                    class="form-control"
-                                                    chosen="{}"
-                                                    multiple
-                                                    ng-model="filter.Host.satellite_id"
-                                                    ng-model-options="{debounce: 500}">
+                                                id="Instance"
+                                                data-placeholder="<?php echo __('Filter by instance'); ?>"
+                                                class="form-control"
+                                                chosen="{}"
+                                                multiple
+                                                ng-model="filter.Host.satellite_id"
+                                                ng-model-options="{debounce: 500}">
                                                 <?php
                                                 foreach ($satellites as $satelliteId => $satelliteName):
                                                     printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
@@ -522,7 +482,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
                                 <td class="text-center">
                                     <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                        <a href="/services/serviceList/{{ host.Host.id }}"
+                                        <a ui-sref="ServicesServiceList({id: host.Host.id})"
                                            class="txt-color-blueDark"
                                            ng-if="host.Host.has_graphs">
                                             <i class="fa fa-lg fa-area-chart"></i>
@@ -586,18 +546,23 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                                 <td class="width-50">
                                     <div class="btn-group">
                                         <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                            <a ui-sref="HostsEdit({id:host.Host.id})"
+                                            <a ui-sref="HostsEdit({id: host.Host.id})"
                                                ng-if="host.Host.allow_edit"
                                                class="btn btn-default">
                                                 &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                             </a>
+                                            <a href="javascript:void(0);"
+                                               ng-if="!host.Host.allow_edit"
+                                               class="btn btn-default disabled">
+                                                &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                            </a>
                                         <?php else: ?>
-                                            <a href="javascript:void(0);" class="btn btn-default">
+                                            <a href="javascript:void(0);" class="btn btn-default disabled">
                                                 &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                         <?php endif; ?>
                                         <a href="javascript:void(0);" data-toggle="dropdown"
                                            class="btn btn-default dropdown-toggle"><span
-                                                    class="caret"></span></a>
+                                                class="caret"></span></a>
                                         <ul class="dropdown-menu pull-right" id="menuHack-{{host.Host.uuid}}">
                                             <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                 <li ng-if="host.Host.allow_edit">
@@ -624,7 +589,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                                 <li>
-                                                    <a href="/services/serviceList/{{host.Host.id}}">
+                                                    <a ui-sref="ServicesServiceList({id: host.Host.id})">
                                                         <i class="fa fa-list"></i> <?php echo __('Service List'); ?>
                                                     </a>
                                                 </li>
@@ -691,7 +656,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                                 </span>
                         </div>
                         <div class="col-xs-12 col-md-2">
-                            <a ng-href="{{ linkForCopy() }}" class="a-clean">
+                            <a ui-sref="HostsCopy({ids: linkForCopy()})" class="a-clean">
                                 <i class="fa fa-lg fa-files-o"></i>
                                 <?php echo __('Copy'); ?>
                             </a>
@@ -707,11 +672,11 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                                 <a href="javascript:void(0);" class="btn btn-default"><?php echo __('More'); ?></a>
                                 <a href="javascript:void(0);" data-toggle="dropdown"
                                    class="btn btn-default dropdown-toggle"><span
-                                            class="caret"></span></a>
+                                        class="caret"></span></a>
                                 <ul class="dropdown-menu">
                                     <?php if ($this->Acl->hasPermission('edit_details', 'Hosts', '')): ?>
                                         <li>
-                                            <a ng-href="{{ linkForEditDetails() }}" class="a-clean">
+                                            <a ui-sref="HostsEditDetails({ids: linkForEditDetails()})" class="a-clean">
                                                 <i class="fa fa-cog"></i> <?php echo __('Edit details'); ?>
                                             </a>
                                         </li>

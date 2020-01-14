@@ -173,7 +173,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('BrowsersIndex', {
-                url: '/browsers/index',
+                url: '/browsers/index?containerId',
+                params: {
+                    containerId: {
+                        value: null
+                    }
+                },
                 templateUrl: "/browsers/index.html",
                 controller: "BrowsersIndexController"
             })
@@ -299,7 +304,22 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('ServicesIndex', {
-                url: '/services/index',
+                url: '/services/index?servicestate&sort&direction&BrowserContainerId',
+                params: {
+                    servicestate: {
+                        value: null,
+                        array: true
+                    },
+                    sort: {
+                        value: null
+                    },
+                    direction: {
+                        value: null
+                    },
+                    BrowserContainerId: {
+                        value: null
+                    }
+                },
                 templateUrl: "/services/index.html",
                 controller: "ServicesIndexController"
             })
@@ -906,12 +926,24 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('HostsIndex', {
-                url: '/hosts/index',
+                url: '/hosts/index?hostname&hoststate&sort&direction&BrowserContainerId',
                 templateUrl: "/hosts/index.html",
                 params: {
-                    filterHostname: {
+                    hostname: {
+                        value: null
+                    },
+                    hoststate: {
                         value: null,
-                        squash: true
+                        array: true
+                    },
+                    sort: {
+                        value: null
+                    },
+                    direction: {
+                        value: null
+                    },
+                    BrowserContainerId: {
+                        value: null
                     }
                 },
                 controller: "HostsIndexController"

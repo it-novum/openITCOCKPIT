@@ -104,42 +104,45 @@ angular.module('openITCOCKPIT')
                 return query.hasOwnProperty(varName);
             },
 
-            hoststate: function(){
-                var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
-                if(sourceUrl.includes('/ng/#!/')){
-                    sourceUrl = sourceUrl.replace('/ng/#!', '');
-                }
-                var query = parseUri(sourceUrl).queryKey;
-
+            hoststate: function(stateParams){
                 var states = {
                     up: false,
                     down: false,
                     unreachable: false
                 };
 
-                for(var key in query){
-                    if(key === 'filter[Hoststatus.current_state][0]'){
-                        states.up = true;
-                    }
-                    if(key === 'filter[Hoststatus.current_state][1]'){
-                        states.down = true;
-                    }
-                    if(key === 'filter[Hoststatus.current_state][2]'){
-                        states.unreachable = true;
+                if(typeof stateParams === "undefined"){
+                    return states;
+                }
+
+                if(typeof stateParams.hoststate === "undefined"){
+                    return states;
+                }
+
+                for(var index in stateParams.hoststate){
+                    switch(stateParams.hoststate[index]){
+                        case 0:
+                        case '0':
+                            states.up = true;
+                            break;
+
+                        case 1:
+                        case '1':
+                            states.down = true;
+                            break;
+
+                        case 2:
+                        case '2':
+                            states.unreachable = true;
+                            break;
                     }
                 }
-                return states;
 
+                return states;
             },
 
 
-            servicestate: function(){
-                var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
-                if(sourceUrl.includes('/ng/#!/')){
-                    sourceUrl = sourceUrl.replace('/ng/#!', '');
-                }
-                var query = parseUri(sourceUrl).queryKey;
-
+            servicestate: function(stateParams){
                 var states = {
                     ok: false,
                     warning: false,
@@ -147,21 +150,53 @@ angular.module('openITCOCKPIT')
                     unknown: false
                 };
 
-                for(var key in query){
-                    if(key === 'filter[Servicestatus.current_state][0]'){
-                        states.ok = true;
-                    }
-                    if(key === 'filter[Servicestatus.current_state][1]'){
-                        states.warning = true;
-                    }
-                    if(key === 'filter[Servicestatus.current_state][2]'){
-                        states.critical = true;
-                    }
-                    if(key === 'filter[Servicestatus.current_state][3]'){
-                        states.unknown = true;
+                if(typeof stateParams === "undefined"){
+                    return states;
+                }
+
+                if(typeof stateParams.servicestate === "undefined"){
+                    return states;
+                }
+
+                for(var index in stateParams.servicestate){
+                    switch(stateParams.servicestate[index]){
+                        case 0:
+                        case '0':
+                            states.ok = true;
+                            break;
+
+                        case 1:
+                        case '1':
+                            states.warning = true;
+                            break;
+
+                        case 2:
+                        case '2':
+                            states.critical = true;
+                            break;
+
+                        case 3:
+                        case '3':
+                            states.unknown = true;
+                            break;
                     }
                 }
+
                 return states;
+            },
+
+            getStateValue: function(stateParams, varName, defaultReturn){
+                defaultReturn = (typeof defaultReturn === 'undefined') ? null : defaultReturn;
+
+                if(typeof stateParams[varName] !== "undefined"){
+                    if(stateParams[varName] === null){
+                        return defaultReturn;
+                    }
+
+                    return stateParams[varName];
+                }
+
+                return defaultReturn;
             }
         }
     });

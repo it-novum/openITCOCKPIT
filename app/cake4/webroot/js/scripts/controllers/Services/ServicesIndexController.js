@@ -1,9 +1,10 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, QueryStringService){
+    .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService){
         $rootScope.lastObjectName = null;
 
-        SortService.setSort(QueryStringService.getValue('sort', ''));
-        SortService.setDirection(QueryStringService.getValue('direction', ''));
+        SortService.setSort(QueryStringService.getStateValue($stateParams,'sort', 'Servicesstatus.current_state'));
+        SortService.setDirection(QueryStringService.getStateValue($stateParams,'direction', 'desc'));
+
         $scope.currentPage = 1;
 
         $scope.id = QueryStringService.getCakeId();
@@ -14,7 +15,7 @@ angular.module('openITCOCKPIT')
         var defaultFilter = function(){
             $scope.filter = {
                 Servicestatus: {
-                    current_state: QueryStringService.servicestate(),
+                    current_state: QueryStringService.servicestate($stateParams),
                     acknowledged: QueryStringService.getValue('has_been_acknowledged', false) === '1',
                     not_acknowledged: QueryStringService.getValue('has_not_been_acknowledged', false) === '1',
                     in_downtime: QueryStringService.getValue('in_downtime', false) === '1',
@@ -124,8 +125,8 @@ angular.module('openITCOCKPIT')
                 'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Servicestatus.active_checks_enabled]': passive
             };
-            if(QueryStringService.hasValue('BrowserContainerId')){
-                params['BrowserContainerId'] = QueryStringService.getValue('BrowserContainerId');
+            if(QueryStringService.getStateValue($stateParams,'BrowserContainerId') !== null){
+                params['BrowserContainerId'] = QueryStringService.getStateValue($stateParams,'BrowserContainerId');
             }
 
             $http.get("/services/index.json", {

@@ -1838,7 +1838,7 @@ class HostsController extends AppController {
         }
 
         //Load required data to merge and display inheritance data
-        $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($host['id']);
+        $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($host['hosttemplate_id']);
 
         //Merge host and inheritance data
         $HostMergerForBrowser = new HostMergerForBrowser(
