@@ -113,89 +113,88 @@
                     <!-- Filter End -->
 
                     <div class="frame-wrap">
-                    <table class="table table-striped m-0 table-bordered table-hover">
-                        <thead>
-                        <tr>
-                            <th class="no-sort sorting_disabled width-15">
-                                <i class="fa fa-check-square fa-lg"></i>
-                            </th>
-                            <th class="no-sort" ng-click="orderBy('Containers.name')">
-                                <i class="fa" ng-class="getSortClass('Containers.name')"></i>
-                                <?php echo __('Location name'); ?>
-                            </th>
-                            <th class="no-sort" ng-click="orderBy('Locations.description')">
-                                <i class="fa" ng-class="getSortClass('Locations.description')"></i>
-                                <?php echo __('Description'); ?>
-                            </th>
-                            <th class="no-sort text-center">
-                                <i class="fa fa-cog fa-lg"></i>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr ng-repeat="location in locations">
-                            <td class="text-center" class="width-15">
-                                <input type="checkbox"
-                                       ng-model="massChange[location.Location.id]"
-                                       ng-show="location.Location.allowEdit">
-                            </td>
-                            <td>
-                                {{ location.Location.container.name }}
-                            </td>
-                            <td>
-                                {{ location.Location.description }}
-                            </td>
+                        <table class="table table-striped m-0 table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th class="no-sort sorting_disabled width-15">
+                                    <i class="fa fa-check-square fa-lg"></i>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Containers.name')">
+                                    <i class="fa" ng-class="getSortClass('Containers.name')"></i>
+                                    <?php echo __('Location name'); ?>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Locations.description')">
+                                    <i class="fa" ng-class="getSortClass('Locations.description')"></i>
+                                    <?php echo __('Description'); ?>
+                                </th>
+                                <th class="no-sort text-center">
+                                    <i class="fa fa-cog fa-lg"></i>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="location in locations">
+                                <td class="text-center" class="width-15">
+                                    <input type="checkbox"
+                                           ng-model="massChange[location.Location.id]"
+                                           ng-show="location.Location.allowEdit">
+                                </td>
+                                <td>
+                                    {{ location.Location.container.name }}
+                                </td>
+                                <td>
+                                    {{ location.Location.description }}
+                                </td>
 
-                            <td class="width-50">
-                                <div class="btn-group btn-group-xs" role="group">
-                                    <?php if ($this->Acl->hasPermission('edit', 'locations')): ?>
-                                        <a ui-sref="LocationsEdit({id: location.Location.id})"
-                                           ng-if="location.Location.allowEdit"
-                                           class="btn btn-default btn-lower-padding">
-                                            <i class="fa fa-cog"></i>
-                                        </a>
-                                    <?php else: ?>
-                                        <a href="javascript:void(0);"
-                                           class="btn btn-default btn-lower-padding">
-                                            <i class="fa fa-cog"></i></a>
-                                    <?php endif; ?>
-                                    <button type="button"
-                                            class="btn btn-default dropdown-toggle btn-lower-padding"
-                                            data-toggle="dropdown">
-                                        <i class="caret"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-right">
+                                <td class="width-50">
+                                    <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'locations')): ?>
                                             <a ui-sref="LocationsEdit({id: location.Location.id})"
                                                ng-if="location.Location.allowEdit"
-                                               class="dropdown-item">
+                                               class="btn btn-default btn-lower-padding">
                                                 <i class="fa fa-cog"></i>
-                                                <?php echo __('Edit'); ?>
                                             </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);"
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i></a>
                                         <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('showDetails', 'locations')): ?>
-                                            <a ng-if="location.Location.allowEdit"
-                                               class="dropdown-item"
-                                               ui-sref="ContainersShowDetails({id: location.Location.container_id, location: 'LocationsIndex'})">
-                                                <i class="fa fa-key"></i>
-                                                <?php echo __('Show details'); ?>
-                                            </a>
-                                        <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('delete', 'locations')): ?>
-                                            <a ng-click="confirmDelete(getObjectForDelete(location))"
-                                               ng-if="location.Location.allowEdit"
-                                               href="javascript:void(0);"
-                                               class="dropdown-item txt-color-red">
-                                                <i class="fa fa-trash"></i>
-                                                <?php echo __('Delete'); ?>
-                                            </a>
-                                        <?php endif; ?>
+                                        <button type="button"
+                                                class="btn btn-default dropdown-toggle btn-lower-padding"
+                                                data-toggle="dropdown">
+                                            <i class="caret"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <?php if ($this->Acl->hasPermission('edit', 'locations')): ?>
+                                                <a ui-sref="LocationsEdit({id: location.Location.id})"
+                                                   ng-if="location.Location.allowEdit"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-cog"></i>
+                                                    <?php echo __('Edit'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('showDetails', 'locations')): ?>
+                                                <a class="dropdown-item"
+                                                   ui-sref="ContainersShowDetails({id: location.Location.container_id, location: 'LocationsIndex'})">
+                                                    <i class="fa fa-key"></i>
+                                                    <?php echo __('Show details'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('delete', 'locations')): ?>
+                                                <a ng-click="confirmDelete(getObjectForDelete(location))"
+                                                   ng-if="location.Location.allowEdit"
+                                                   href="javascript:void(0);"
+                                                   class="dropdown-item txt-color-red">
+                                                    <i class="fa fa-trash"></i>
+                                                    <?php echo __('Delete'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                         <div class="margin-top-10" ng-show="locations.length == 0">
                             <div class="text-center text-danger italic">
                                 <?php echo __('No entries match the selection'); ?>

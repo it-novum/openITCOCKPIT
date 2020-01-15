@@ -160,7 +160,8 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                 <?php foreach ($timezones as $continent => $continentTimezons): ?>
                                     <optgroup label="<?php echo h($continent); ?>">
                                         <?php foreach ($continentTimezons as $timezoneKey => $timezoneName): ?>
-                                            <option value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
+                                            <option
+                                                value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
                                         <?php endforeach; ?>
                                     </optgroup>
                                 <?php endforeach;; ?>
