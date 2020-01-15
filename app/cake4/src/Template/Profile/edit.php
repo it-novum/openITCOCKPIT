@@ -286,7 +286,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                              width="70" height="70">
                         <span ng-if="post.User.image == null"
                               class="text-muted"> <?php echo __('You have no own image uploaded yet'); ?></span>
-                        <img ng-if="post.User.image != null" ng-src="/userimages/{{post.User.image}}" alt="profile_img"
+                        <img ng-if="post.User.image != null" ng-src="/img/userimages/{{post.User.image}}" alt="profile_img"
                              width="70" height="70">
                         <a ng-if="post.User.image != null" class="txt-color-red"
                            href="javascript:void(0);"
