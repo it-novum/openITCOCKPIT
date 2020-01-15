@@ -79,8 +79,8 @@ class AngularAssets implements AngularAssetsInterface {
         'legacy/js/lib/GraphDefaults.js',
         'legacy/js/lib/jqconsole.min.js',
         'node_modules/jquery-blockui/jquery.blockUI.js',
-        /*'js/lib/jquery-jvectormap-1.2.2.min.js',
-        'js/lib/maps/jquery-jvectormap-world-mill-en.js', */
+        'legacy/js/lib/jquery-jvectormap-1.2.2.min.js',
+        'legacy/js/lib/maps/jquery-jvectormap-world-mill-en.js',
         'node_modules/@fullcalendar/core/main.js',
         'node_modules/@fullcalendar/interaction/main.js',
         'node_modules/@fullcalendar/daygrid/main.js',
@@ -94,8 +94,8 @@ class AngularAssets implements AngularAssetsInterface {
     ];
 
     private $cssFiles = [
-        /*'lib/jquery-jvectormap-1.2.2.css',
-           'lib/jquery.imgareaselect-0.9.10/imgareaselect-animated.css',
+
+        /*   'lib/jquery.imgareaselect-0.9.10/imgareaselect-animated.css',
            'lib/jquery.svg.css',*/
         /*'/vendor/node_modules/bootstrap/dist/js/bootstrap.css',
         '/vendor/node_modules/bootstrap/dist/js/bootstrap-grid.css',*/
@@ -121,6 +121,7 @@ class AngularAssets implements AngularAssetsInterface {
         '/smartadmin4/dist/css/vendors.bundle.css',
         '/smartadmin4/dist/css/app.bundle.css',
         '/smartadmin4/dist/css/themes/cust-theme-10.css',
+        '/legacy/css/lib/jquery-jvectormap-1.2.2.css',
         '/node_modules/font-awesome/css/font-awesome.css',
         '/node_modules/@fortawesome/fontawesome-free/css/all.min.css',
         '/css/console.css',
