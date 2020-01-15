@@ -55,7 +55,7 @@
 
                     <div class="jarviswidget-ctrls" role="menu"></div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-file-text-o"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Log Entries'); ?> </h2>
+                    <h2 class="hidden-mobile"><?php echo __('Log entries overview'); ?> </h2>
 
                 </header>
 
@@ -72,7 +72,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by record and UUID'); ?>"
-                                                   ng-model="filter.Logentry.logentry_data"
+                                                   ng-model="filter.Logentries.logentry_data"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -85,15 +85,15 @@
                                         <legend><?php echo __('Filter hy host'); ?></legend>
                                         <div class="form-group smart-form">
                                             <select
-                                                    id="HostnameFilterSelect"
-                                                    data-placeholder="<?php echo __('Filter by host'); ?>"
-                                                    class="form-control"
-                                                    chosen="hosts"
-                                                    multiple
-                                                    ng-model="filter.Host.id"
-                                                    callback="loadHosts"
-                                                    ng-options="host.key as host.value for host in hosts"
-                                                    ng-model-options="{debounce: 500}">
+                                                id="HostnameFilterSelect"
+                                                data-placeholder="<?php echo __('Filter by host'); ?>"
+                                                class="form-control"
+                                                chosen="hosts"
+                                                multiple
+                                                ng-model="filter.Host.id"
+                                                callback="loadHosts"
+                                                ng-options="host.key as host.value for host in hosts"
+                                                ng-model-options="{debounce: 500}">
                                             </select>
                                         </div>
                                     </fieldset>
@@ -104,13 +104,13 @@
                                         <legend><?php echo __('Filter by type'); ?></legend>
                                         <div class="form-group smart-form">
                                             <select
-                                                    id="LogentryTypeFilter"
-                                                    data-placeholder="<?php echo __('Filter by log entry type'); ?>"
-                                                    class="form-control"
-                                                    chosen="{}"
-                                                    multiple
-                                                    ng-model="filter.Logentry.logentry_type"
-                                                    ng-model-options="{debounce: 500}">
+                                                id="LogentryTypeFilter"
+                                                data-placeholder="<?php echo __('Filter by log entry type'); ?>"
+                                                class="form-control"
+                                                chosen="{}"
+                                                multiple
+                                                ng-model="filter.Logentries.logentry_type"
+                                                ng-model-options="{debounce: 500}">
                                                 <?php
                                                 foreach ($logentry_types as $typeId => $typeName):
                                                     printf('<option value="%s">%s</option>', h($typeId), h($typeName));
@@ -141,32 +141,33 @@
                                    class="table table-striped table-hover table-bordered smart-form">
                                 <thead>
                                 <tr>
-                                    <th class="no-sort" ng-click="orderBy('Logentry.entry_time')">
-                                        <i class="fa" ng-class="getSortClass('Logentry.entry_time')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Logentries.entry_time')">
+                                        <i class="fa" ng-class="getSortClass('Logentries.entry_time')"></i>
                                         <?php echo __('Date'); ?>
                                     </th>
 
-                                    <th class="no-sort" ng-click="orderBy('Logentry.logentry_type')">
-                                        <i class="fa" ng-class="getSortClass('Logentry.logentry_type')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Logentries.logentry_type')">
+                                        <i class="fa" ng-class="getSortClass('Logentries.logentry_type')"></i>
                                         <?php echo __('Type'); ?>
                                     </th>
 
-                                    <th class="no-sort" ng-click="orderBy('Logentry.logentry_data')">
-                                        <i class="fa" ng-class="getSortClass('Logentry.logentry_data')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Logentries.logentry_data')">
+                                        <i class="fa" ng-class="getSortClass('Logentries.logentry_data')"></i>
                                         <?php echo __('Record'); ?>
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="logentry in logentries">
+                                    {{logentry}}
                                     <td>
-                                        {{ logentry.Logentry.entry_time }}
+                                        {{ logentry.entry_time }}
                                     </td>
                                     <td>
-                                        {{ logentry.Logentry.logentry_type_string }}
+                                        {{ logentry.logentry_type_string }}
                                     </td>
                                     <td>
-                                        {{ logentry.Logentry.logentry_data }}
+                                        <div compile="logentry.logentry_data_html"></div>
                                     </td>
                                 </tr>
                                 </tbody>

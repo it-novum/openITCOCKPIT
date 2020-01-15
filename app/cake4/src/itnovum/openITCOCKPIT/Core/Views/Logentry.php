@@ -51,24 +51,24 @@ class Logentry {
      * @param null $UserTime
      */
     public function __construct($logentry, $UserTime = null) {
-        if (isset($logentry['Logentry']['id'])) {
-            $this->id = (int)$logentry['Logentry']['id'];
+        if (isset($logentry['id'])) {
+            $this->id = (int)$logentry['id'];
         }
 
-        if (isset($logentry['Logentry']['logentry_time'])) {
-            $this->logentry_time = $logentry['Logentry']['logentry_time'];
+        if (isset($logentry['logentry_time'])) {
+            $this->logentry_time = $logentry['logentry_time'];
         }
 
-        if (isset($logentry['Logentry']['entry_time'])) {
-            $this->entry_time = $logentry['Logentry']['entry_time'];
+        if (isset($logentry['entry_time'])) {
+            $this->entry_time = $logentry['entry_time'];
         }
 
-        if (isset($logentry['Logentry']['logentry_type'])) {
-            $this->logentry_type = (int)$logentry['Logentry']['logentry_type'];
+        if (isset($logentry['logentry_type'])) {
+            $this->logentry_type = (int)$logentry['logentry_type'];
         }
 
-        if (isset($logentry['Logentry']['logentry_data'])) {
-            $this->logentry_data = $logentry['Logentry']['logentry_data'];
+        if (isset($logentry['logentry_data'])) {
+            $this->logentry_data = $logentry['logentry_data'];
         }
 
         $this->UserTime = $UserTime;

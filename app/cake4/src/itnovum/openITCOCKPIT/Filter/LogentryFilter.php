@@ -28,19 +28,70 @@ namespace itnovum\openITCOCKPIT\Filter;
 class LogentryFilter extends Filter {
 
     /**
+     * @var array
+     */
+    private $uuids = [];
+
+    /**
      * @return array
      */
     public function indexFilter() {
         $filters = [
             'equals' => [
-                'Logentry.logentry_type',
+                'Logentries.logentry_type',
             ],
             'like'   => [
-                'Logentry.logentry_data'
+                'Logentries.logentry_data'
             ]
         ];
 
         return $this->getConditionsByFilters($filters);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasHostIdFilter() {
+        return !empty($this->getHostIds());
+    }
+
+    /**
+     * @return array
+     */
+    public function getHostIds() {
+        $filter = $this->Request->getQuery('filter', []);
+        $hostIds = [];
+
+        if (isset($filter['Host.id'])) {
+            $hostIds = $filter['Host.id'];
+
+            if (!is_array($hostIds)) {
+                $hostIds = [$hostIds];
+                array_unique($hostIds);
+            }
+        }
+
+        return $hostIds;
+    }
+
+    /**
+     * @param array|string $uuids
+     */
+    public function addUuidsToMatching($uuids) {
+        if (!is_array($uuids)) {
+            $uuids = [$uuids];
+        }
+
+        foreach ($uuids as $uuid) {
+            $this->uuids[] = $uuid;
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getMatchingUuids(){
+        return $this->uuids;
     }
 
 }

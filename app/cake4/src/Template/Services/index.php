@@ -81,7 +81,7 @@
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-cog"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Services'); ?> </h2>
+                    <h2 class="hidden-mobile"><?php echo __('Services overview'); ?> </h2>
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <li class="active">
                             <a ui-sref="ServicesIndex">

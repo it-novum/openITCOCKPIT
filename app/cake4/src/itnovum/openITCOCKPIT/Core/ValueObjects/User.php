@@ -74,7 +74,7 @@ class User {
 
     }
 
-    /**
+    /**getUserTime
      * @return boolean
      */
     public function isRecursiveBrowserEnabled() {
