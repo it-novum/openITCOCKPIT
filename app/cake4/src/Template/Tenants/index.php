@@ -173,7 +173,7 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('edit', 'tenants')): ?>
+                                            <?php if ($this->Acl->hasPermission('showDetails', 'tenants')): ?>
                                                 <a ng-if="tenant.Tenant.allowEdit"
                                                    class="dropdown-item"
                                                    ui-sref="ContainersShowDetails({id: tenant.Tenant.container_id, tenant: 'TenantsIndex'})">
