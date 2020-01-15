@@ -35,7 +35,10 @@ class ContactgroupsFilter extends Filter {
             'like' => [
                 'Containers.name',
                 'Contactgroups.description'
-            ]
+            ],
+            'equals' => [
+                'Contactgroups.id'
+            ],
         ];
 
         return $this->getConditionsByFilters($filters);

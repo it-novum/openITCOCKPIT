@@ -67,6 +67,10 @@
                        tabindex="1">
             </div>
 
+    <div class="pull-left" top-search="">
+        <!-- Content get loaded by AngularJS Directive -->
+    </div>
+
 
 
 

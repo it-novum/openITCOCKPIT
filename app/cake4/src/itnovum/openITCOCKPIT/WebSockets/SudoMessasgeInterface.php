@@ -173,118 +173,118 @@ class SudoMessasgeInterface implements MessageComponentInterface {
                 break;
 
             case 'rescheduleHost':
-                $this->ExternalCommand->rescheduleHost(['uuid' => $msg->data[0], 'type' => $msg->data[1], 'satellite_id' => $msg->data[2]]);
+                $this->ExternalCommands->rescheduleHost(['uuid' => $msg->data[0], 'type' => $msg->data[1], 'satellite_id' => $msg->data[2]]);
                 break;
 
             case 'rescheduleHostWithQuery':
-                $this->ExternalCommand->rescheduleHostWithQuery(['uuid' => $msg->data[0], 'type' => $msg->data[1]]);
+                $this->ExternalCommands->rescheduleHostWithQuery(['uuid' => $msg->data[0], 'type' => $msg->data[1]]);
                 break;
 
             case 'rescheduleHostgroup':
-                $this->ExternalCommand->rescheduleHostgroup(['hostgroupUuid' => $msg->data[0], 'type' => $msg->data[1]]);
+                $this->ExternalCommands->rescheduleHostgroup(['hostgroupUuid' => $msg->data[0], 'type' => $msg->data[1]]);
                 break;
 
             case 'commitPassiveResult':
-                $this->ExternalCommand->passiveTransferHostCheckresult(['uuid' => $msg->data[0], 'comment' => $msg->data[1], 'state' => $msg->data[2], 'forceHardstate' => $msg->data[3], 'repetitions' => $msg->data[4]]);
+                $this->ExternalCommands->passiveTransferHostCheckresult(['uuid' => $msg->data[0], 'comment' => $msg->data[1], 'state' => $msg->data[2], 'forceHardstate' => $msg->data[3], 'repetitions' => $msg->data[4]]);
                 break;
 
             case 'commitPassiveServiceResult':
-                $this->ExternalCommand->passiveTransferServiceCheckresult(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'comment' => $msg->data[2], 'state' => $msg->data[3], 'forceHardstate' => $msg->data[4], 'repetitions' => $msg->data[5]]);
+                $this->ExternalCommands->passiveTransferServiceCheckresult(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'comment' => $msg->data[2], 'state' => $msg->data[3], 'forceHardstate' => $msg->data[4], 'repetitions' => $msg->data[5]]);
                 break;
 
             case 'enableOrDisableHostFlapdetection':
-                $this->ExternalCommand->enableOrDisableHostFlapdetection(['uuid' => $msg->data[0], 'condition' => $msg->data[1]]);
+                $this->ExternalCommands->enableOrDisableHostFlapdetection(['uuid' => $msg->data[0], 'condition' => $msg->data[1]]);
                 break;
 
             case 'enableOrDisableServiceFlapdetection':
-                $this->ExternalCommand->enableOrDisableServiceFlapdetection(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'condition' => $msg->data[2]]);
+                $this->ExternalCommands->enableOrDisableServiceFlapdetection(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'condition' => $msg->data[2]]);
                 break;
 
             case 'rescheduleService':
-                $this->ExternalCommand->rescheduleService(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'satellite_id' => $msg->data[2]]);
+                $this->ExternalCommands->rescheduleService(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'satellite_id' => $msg->data[2]]);
                 break;
 
             case 'rescheduleServiceWithQuery':
-                $this->ExternalCommand->rescheduleServiceWithQuery(['uuid' => $msg->data[0]]);
+                $this->ExternalCommands->rescheduleServiceWithQuery(['uuid' => $msg->data[0]]);
                 break;
 
             case 'sendCustomHostNotification':
-                $this->ExternalCommand->sendCustomHostNotification(['hostUuid' => $msg->data[0], 'type' => $msg->data[1], 'author' => $msg->data[2], 'comment' => $msg->data[3]]);
+                $this->ExternalCommands->sendCustomHostNotification(['hostUuid' => $msg->data[0], 'type' => $msg->data[1], 'author' => $msg->data[2], 'comment' => $msg->data[3]]);
                 break;
 
             case 'sendCustomServiceNotification':
-                $this->ExternalCommand->sendCustomServiceNotification(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'type' => $msg->data[2], 'author' => $msg->data[3], 'comment' => $msg->data[4]]);
+                $this->ExternalCommands->sendCustomServiceNotification(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'type' => $msg->data[2], 'author' => $msg->data[3], 'comment' => $msg->data[4]]);
                 break;
 
             case 'submitServicestateAck':
-                $this->ExternalCommand->setServiceAck(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'comment' => $msg->data[2], 'author' => $msg->data[3], 'sticky' => $msg->data[4]]);
+                $this->ExternalCommands->setServiceAck(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'comment' => $msg->data[2], 'author' => $msg->data[3], 'sticky' => $msg->data[4]]);
                 break;
 
             case 'submitServiceAckWithQuery':
-                $this->ExternalCommand->setServiceAckWithQuery(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'comment' => $msg->data[2], 'author' => $msg->data[3], 'sticky' => $msg->data[4]]);
+                $this->ExternalCommands->setServiceAckWithQuery(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'comment' => $msg->data[2], 'author' => $msg->data[3], 'sticky' => $msg->data[4]]);
                 break;
 
             case 'submitHoststateAck':
-                $this->ExternalCommand->setHostAck(['hostUuid' => $msg->data[0], 'comment' => $msg->data[1], 'author' => $msg->data[2], 'sticky' => $msg->data[3], 'type' => $msg->data[4]]);
+                $this->ExternalCommands->setHostAck(['hostUuid' => $msg->data[0], 'comment' => $msg->data[1], 'author' => $msg->data[2], 'sticky' => $msg->data[3], 'type' => $msg->data[4]]);
                 break;
 
             case 'submitHostAckWithQuery':
-                $this->ExternalCommand->setHostAckWithQuery(['hostUuid' => $msg->data[0], 'comment' => $msg->data[1], 'author' => $msg->data[2], 'sticky' => $msg->data[3], 'type' => $msg->data[4]]);
+                $this->ExternalCommands->setHostAckWithQuery(['hostUuid' => $msg->data[0], 'comment' => $msg->data[1], 'author' => $msg->data[2], 'sticky' => $msg->data[3], 'type' => $msg->data[4]]);
                 break;
 
             case 'submitHostgroupAck':
-                $this->ExternalCommand->setHostgroupAck(['hostgroupUuid' => $msg->data[0], 'comment' => $msg->data[1], 'author' => $msg->data[2], 'sticky' => $msg->data[3], 'type' => $msg->data[4]]);
+                $this->ExternalCommands->setHostgroupAck(['hostgroupUuid' => $msg->data[0], 'comment' => $msg->data[1], 'author' => $msg->data[2], 'sticky' => $msg->data[3], 'type' => $msg->data[4]]);
                 break;
 
             case 'submitServiceDowntime':
-                $this->ExternalCommand->setServiceDowntime(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'start' => strtotime($msg->data[2]), 'end' => strtotime($msg->data[3]), 'comment' => $msg->data[4], 'author' => $msg->data[5]]);
+                $this->ExternalCommands->setServiceDowntime(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'start' => strtotime($msg->data[2]), 'end' => strtotime($msg->data[3]), 'comment' => $msg->data[4], 'author' => $msg->data[5]]);
                 break;
 
             case 'submitHostDowntime':
-                $this->ExternalCommand->setHostDowntime(['hostUuid' => $msg->data[0], 'start' => strtotime($msg->data[1]), 'end' => strtotime($msg->data[2]), 'comment' => $msg->data[3], 'author' => $msg->data[4], 'downtimetype' => $msg->data[5]]);
+                $this->ExternalCommands->setHostDowntime(['hostUuid' => $msg->data[0], 'start' => strtotime($msg->data[1]), 'end' => strtotime($msg->data[2]), 'comment' => $msg->data[3], 'author' => $msg->data[4], 'downtimetype' => $msg->data[5]]);
                 break;
 
             case 'submitHostgroupDowntime':
-                $this->ExternalCommand->setHostgroupDowntime(['hostgroupUuid' => $msg->data[0], 'start' => strtotime($msg->data[1]), 'end' => strtotime($msg->data[2]), 'comment' => $msg->data[3], 'author' => $msg->data[4], 'downtimetype' => $msg->data[5]]);
+                $this->ExternalCommands->setHostgroupDowntime(['hostgroupUuid' => $msg->data[0], 'start' => strtotime($msg->data[1]), 'end' => strtotime($msg->data[2]), 'comment' => $msg->data[3], 'author' => $msg->data[4], 'downtimetype' => $msg->data[5]]);
                 break;
 
             case 'submitDisableHostNotifications':
-                $this->ExternalCommand->disableHostNotifications(['uuid' => $msg->data[0], 'type' => $msg->data[1]]);
+                $this->ExternalCommands->disableHostNotifications(['uuid' => $msg->data[0], 'type' => $msg->data[1]]);
                 break;
 
             case 'submitEnableHostNotifications':
-                $this->ExternalCommand->enableHostNotifications(['uuid' => $msg->data[0], 'type' => $msg->data[1]]);
+                $this->ExternalCommands->enableHostNotifications(['uuid' => $msg->data[0], 'type' => $msg->data[1]]);
                 break;
 
             case 'submitDisableHostgroupNotifications':
-                $this->ExternalCommand->disableHostgroupNotifications(['hostgroupUuid' => $msg->data[0], 'type' => $msg->data[1]]);
+                $this->ExternalCommands->disableHostgroupNotifications(['hostgroupUuid' => $msg->data[0], 'type' => $msg->data[1]]);
                 break;
 
             case 'submitEnableHostgroupNotifications':
-                $this->ExternalCommand->enableHostgroupNotifications(['hostgroupUuid' => $msg->data[0], 'type' => $msg->data[1]]);
+                $this->ExternalCommands->enableHostgroupNotifications(['hostgroupUuid' => $msg->data[0], 'type' => $msg->data[1]]);
                 break;
 
             case 'submitDisableServiceNotifications':
-                $this->ExternalCommand->disableServiceNotifications(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1]]);
+                $this->ExternalCommands->disableServiceNotifications(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1]]);
                 break;
 
             case 'submitEnableServiceNotifications':
-                $this->ExternalCommand->enableServiceNotifications(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1]]);
+                $this->ExternalCommands->enableServiceNotifications(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1]]);
                 break;
 
             case 'submitDeleteHostDowntime':
-                $this->ExternalCommand->deleteHostDowntime($msg->data[0]);
+                $this->ExternalCommands->deleteHostDowntime($msg->data[0]);
                 if (isset($msg->data[1])) { // deleting service downtimes too
                     $servicesArr = explode(',', $msg->data[1]);
                     foreach ($servicesArr as $serviceDowntimeId) {
                         if ($serviceDowntimeId === '0' || empty($serviceDowntimeId)) continue;
-                        $this->ExternalCommand->deleteServiceDowntime($serviceDowntimeId);
+                        $this->ExternalCommands->deleteServiceDowntime($serviceDowntimeId);
                     }
                 }
                 break;
 
             case 'submitDeleteServiceDowntime':
-                $this->ExternalCommand->deleteServiceDowntime($msg->data[0]);
+                $this->ExternalCommands->deleteServiceDowntime($msg->data[0]);
                 break;
         }
     }

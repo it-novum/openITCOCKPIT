@@ -207,17 +207,6 @@
                                                     </li>
                                                 <?php endif; ?>
 
-                                                <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
-                                                    <li ng-if="servicetemplate.Servicetemplate.allow_edit">
-                                                        <?php echo $this->AdditionalLinks->renderAsListItems(
-                                                            $additionalLinksList,
-                                                            '{{servicetemplate.Servicetemplate.id}}',
-                                                            [],
-                                                            true
-                                                        ); ?>
-                                                    </li>
-                                                <?php endif; ?>
-
                                                 <?php if ($this->Acl->hasPermission('delete', 'servicetemplates')): ?>
                                                     <li class="divider"
                                                         ng-if="servicetemplate.Servicetemplate.allow_edit"></li>

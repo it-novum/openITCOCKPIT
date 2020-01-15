@@ -34,60 +34,42 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
             <?php if ($this->Acl->hasPermission('index', 'Hosts', '')): ?>
                 <div class="col-xs-12 col-md-4 col-lg-4 no-padding">
-                    <a ng-href="/ng/#!/hosts/index<?php echo RFCRouter::queryString([
-                        'filter'    => [
-                            'Hoststatus.current_state' => ['0' => 1]
-                        ],
-                        'sort'      => 'Hoststatus.last_state_change',
-                        'direction' => 'desc',
-                    ]); ?>">
-                        <i class="fa fa-square ok"></i>
+                    <a ui-sref="HostsIndex({hoststate: [0], sort: 'Hoststatus.last_state_change', direction: 'desc'})">
+                        <i class="fa fa-square up"></i>
                         {{hoststatusCount[0]}} ({{hoststatusCountPercentage[0]}} %)
                     </a>
                 </div>
             <?php else: ?>
                 <div class="col-xs-12 col-md-4 col-lg-4">
-                    <i class="fa fa-square ok"></i>
+                    <i class="fa fa-square up"></i>
                     {{hoststatusCount[0]}} ({{hoststatusCountPercentage[0]}} %)
                 </div>
             <?php endif; ?>
 
             <?php if ($this->Acl->hasPermission('index', 'Hosts', '')): ?>
                 <div class="col-xs-12 col-md-4 col-lg-4 no-padding">
-                    <a ng-href="/ng/#!/hosts/index<?php echo RFCRouter::queryString([
-                        'filter'    => [
-                            'Hoststatus.current_state' => ['1' => 1]
-                        ],
-                        'sort'      => 'Hoststatus.last_state_change',
-                        'direction' => 'desc',
-                    ]); ?>">
-                        <i class="fa fa-square critical"></i>
+                    <a ui-sref="HostsIndex({hoststate: [1], sort: 'Hoststatus.last_state_change', direction: 'desc'})">
+                        <i class="fa fa-square down"></i>
                         {{hoststatusCount[1]}} ({{hoststatusCountPercentage[1]}} %)
                     </a>
                 </div>
             <?php else: ?>
                 <div class="col-xs-12 col-md-4 col-lg-4">
-                    <i class="fa fa-square critical"></i>
+                    <i class="fa fa-square down"></i>
                     {{hoststatusCount[1]}} ({{hoststatusCountPercentage[1]}} %)
                 </div>
             <?php endif; ?>
 
             <?php if ($this->Acl->hasPermission('index', 'Hosts', '')): ?>
                 <div class="col-xs-12 col-md-4 col-lg-4 no-padding">
-                    <a ng-href="/ng/#!/hosts/index<?php echo RFCRouter::queryString([
-                        'filter'    => [
-                            'Hoststatus.current_state' => ['2' => 1]
-                        ],
-                        'sort'      => 'Hoststatus.last_state_change',
-                        'direction' => 'desc',
-                    ]); ?>">
-                        <i class="fa fa-square unknown"></i>
+                    <a ui-sref="HostsIndex({hoststate: [2], sort: 'Hoststatus.last_state_change', direction: 'desc'})">
+                        <i class="fa fa-square unreachable"></i>
                         {{hoststatusCount[2]}} ({{hoststatusCountPercentage[2]}} %)
                     </a>
                 </div>
             <?php else: ?>
                 <div class="col-xs-12 col-md-4 col-lg-4">
-                    <i class="fa fa-square unknown"></i>
+                    <i class="fa fa-square unreachable"></i>
                     {{hoststatusCount[2]}} ({{hoststatusCountPercentage[2]}} %)
                 </div>
             <?php endif; ?>

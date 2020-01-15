@@ -32,7 +32,10 @@ class ContactsFilter extends Filter {
      */
     public function indexFilter() {
         $filters = [
-            'like' => [
+            'equals' => [
+                'Contacts.id'
+            ],
+            'like'   => [
                 'Contacts.name',
                 'Contacts.email',
                 'Contacts.phone'

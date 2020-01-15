@@ -29,6 +29,11 @@ namespace itnovum\openITCOCKPIT\Core;
 
 use Cake\Routing\Route\Route;
 
+/**
+ * Class RFCRouter
+ * @package itnovum\openITCOCKPIT\Core
+ * @deprecated
+ */
 class RFCRouter extends Route {
 
     /**

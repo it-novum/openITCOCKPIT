@@ -53,7 +53,7 @@ class BrowsersController extends AppController {
             /** @var SystemsettingsTable $SystemsettingsTable */
             $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
             $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
-            $SatelliteNames = [];
+            $satellites = [];
 
 
             if (Plugin::isLoaded('DistributeModule')) {
@@ -65,7 +65,7 @@ class BrowsersController extends AppController {
             }
 
             $this->set('username', $User->getFullName());
-            $this->set('satellites', $SatelliteNames);
+            $this->set('satellites', $satellites);
             //Only ship HTML template
             return;
         }

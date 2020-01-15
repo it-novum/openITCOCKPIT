@@ -32,10 +32,13 @@ class ServicetemplateFilter extends Filter {
      */
     public function indexFilter() {
         $filters = [
-            'like' => [
+            'like'   => [
                 'Servicetemplates.name',
                 'Servicetemplates.template_name',
                 'Servicetemplates.description',
+            ],
+            'equals' => [
+                'Servicetemplates.id'
             ]
         ];
 

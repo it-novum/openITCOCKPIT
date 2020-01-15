@@ -36,6 +36,9 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use AppAuthComponent;
 use Cake\Cache\Cache;
+use Cake\Http\Exception\BadRequestException;
+use Cake\Http\Exception\NotFoundException;
+use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use DateTime;
@@ -225,7 +228,7 @@ class AngularController extends AppController {
             $recursive = true;
         }
 
-        $containerIds = $this->request->getQuery('containerIds');
+        $containerIds = $this->request->getQuery('containerIds', [ROOT_CONTAINER]);
         if (!is_numeric($containerIds) && !is_array($containerIds)) {
             $containerIds = ROOT_CONTAINER;
         }
@@ -275,8 +278,8 @@ class AngularController extends AppController {
             /** @var HostsTable $HostsTable */
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-            $hoststatusCount = $HostsTable->getHoststatusCount($this->MY_RIGHTS, true);
-            $servicestatusCount = $HostsTable->getServicestatusCount($this->MY_RIGHTS, true);
+            $hoststatusCount = $HostsTable->getHoststatusCount($containerIdsForQuery, true);
+            $servicestatusCount = $HostsTable->getServicestatusCount($containerIdsForQuery, true);
         }
 
         if ($this->DbBackend->isCrateDb()) {
@@ -352,6 +355,85 @@ class AngularController extends AppController {
 
         $this->set('menu', $menu);
         $this->viewBuilder()->setOption('serialize', ['menu']);
+    }
+
+    public function topSearch() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            //Search request
+            $type = $this->request->getData('type');
+            $searchStr = $this->request->getData('searchStr');
+
+            if ($type !== 'uuid') {
+                throw new BadRequestException('Unknown type');
+            }
+
+            $tablesToSeach = [
+                'Hosts',
+                'Hosttemplates',
+                'Timeperiods',
+                'Commands',
+                'Contacts',
+                'Contactgroups',
+                'Hostgroups',
+                'Servicegroups',
+                'Services',
+                'Servicetemplates',
+                'Hostescalations',
+                'Serviceescalations',
+                'Hostdependencies',
+                'Servicedependencies'
+            ];
+
+            foreach ($tablesToSeach as $TableName) {
+                /** @var Table $Table */
+                $Table = TableRegistry::getTableLocator()->get($TableName);
+
+                $result = $Table->find()
+                    ->select([
+                        'id',
+                        'uuid'
+                    ])
+                    ->where([
+                        'uuid' => $searchStr
+                    ])
+                    ->first();
+
+                if ($result !== null) {
+                    $hasPermission = $this->hasPermission('index', strtolower($TableName), '');
+                    $this->set('hasPermission', $hasPermission);
+
+                    if (!$hasPermission) {
+                        $this->set('message', __('You are not permitted to access this object.'));
+                        $this->viewBuilder()->setOption('serialize', [
+                            'hasPermission',
+                            'message'
+                        ]);
+                        $this->response = $this->response->withStatus(403);
+                        return;
+                    }
+
+                    $this->set('state', $TableName . 'Index');
+                    $this->set('id', $result->get('id'));
+                    $this->viewBuilder()->setOption('serialize', [
+                        'state',
+                        'id',
+                        'hasPermission'
+                    ]);
+                    return;
+                }
+            }
+        }
+
+        $this->set('message', __('Object could not be found.'));
+        $this->viewBuilder()->setOption('serialize', [
+            'message'
+        ]);
+        $this->response = $this->response->withStatus(404);
     }
 
     public function websocket_configuration() {

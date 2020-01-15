@@ -33,6 +33,7 @@ class ServiceescalationsFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'equals' => [
+                'Serviceescalations.id',
                 'Serviceescalations.first_notification',
                 'Serviceescalations.last_notification',
                 'Serviceescalations.escalate_on_recovery',
@@ -40,7 +41,7 @@ class ServiceescalationsFilter extends Filter {
                 'Serviceescalations.escalate_on_critical',
                 'Serviceescalations.escalate_on_unknown'
             ],
-            'like'  => [
+            'like'   => [
                 'Services.servicename',
                 'ServicesExcluded.servicename',
                 'Servicegroups.name',

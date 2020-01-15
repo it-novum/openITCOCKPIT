@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostescalationsIndexController', function($scope, $http, MassChangeService, SortService, QueryStringService){
+    .controller('HostescalationsIndexController', function($scope, $http, $stateParams, MassChangeService, SortService, QueryStringService){
 
         SortService.setSort(QueryStringService.getValue('sort', 'Hostescalations.id'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
@@ -16,6 +16,7 @@ angular.module('openITCOCKPIT')
         var defaultFilter = function(){
             $scope.filter = {
                 Hostescalations: {
+                    id: QueryStringService.getStateValue($stateParams, 'id', []),
                     first_notification: '',
                     last_notification: '',
                     escalate_on_recovery: '',
@@ -51,6 +52,7 @@ angular.module('openITCOCKPIT')
                     'angular': true,
                     'scroll': $scope.useScroll,
                     'page': $scope.currentPage,
+                    'filter[Hostescalations.id][]': $scope.filter.Hostescalations.id,
                     'filter[Hostescalations.first_notification]': $scope.filter.Hostescalations.first_notification,
                     'filter[Hostescalations.last_notification]': $scope.filter.Hostescalations.last_notification,
                     'filter[Hostescalations.escalate_on_recovery]': $scope.filter.Hostescalations.escalate_on_recovery,

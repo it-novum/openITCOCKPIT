@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostdependenciesIndexController', function($scope, $http, MassChangeService, SortService, QueryStringService){
+    .controller('HostdependenciesIndexController', function($scope, $http, $stateParams, MassChangeService, SortService, QueryStringService){
 
         SortService.setSort(QueryStringService.getValue('sort', 'HostdependenciesIndexController.id'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
@@ -16,6 +16,7 @@ angular.module('openITCOCKPIT')
         var defaultFilter = function(){
             $scope.filter = {
                 Hostdependencies: {
+                    id: QueryStringService.getStateValue($stateParams, 'id', []),
                     inherits_parent: '',
                     execution_fail_on_up: '',
                     execution_fail_on_down: '',
@@ -56,6 +57,7 @@ angular.module('openITCOCKPIT')
                     'angular': true,
                     'scroll': $scope.useScroll,
                     'page': $scope.currentPage,
+                    'filter[Hostdependencies.id][]': $scope.filter.Hostdependencies.id,
                     'filter[Hostdependencies.inherits_parent]': $scope.filter.Hostdependencies.inherits_parent,
                     'filter[Hostdependencies.execution_fail_on_up]': $scope.filter.Hostdependencies.execution_fail_on_up,
                     'filter[Hostdependencies.execution_fail_on_down]': $scope.filter.Hostdependencies.execution_fail_on_down,

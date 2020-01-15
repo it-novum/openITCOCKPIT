@@ -33,13 +33,14 @@ class HostescalationsFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'equals' => [
+                'Hostescalations.id',
                 'Hostescalations.first_notification',
                 'Hostescalations.last_notification',
                 'Hostescalations.escalate_on_recovery',
                 'Hostescalations.escalate_on_down',
                 'Hostescalations.escalate_on_unreachable'
             ],
-            'like'  => [
+            'like'   => [
                 'Hosts.name',
                 'HostsExcluded.name',
                 'Hostgroups.name',

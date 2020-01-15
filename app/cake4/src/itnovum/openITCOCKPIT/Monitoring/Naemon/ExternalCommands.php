@@ -955,7 +955,7 @@ class ExternalCommands {
      * @return bool
      */
     public function open() {
-        if (file_exists($this->externalCommandFile)) {
+        if (!file_exists($this->externalCommandFile)) {
             Log::error(sprintf('SudoServer: File "%s" does not exisits!', $this->externalCommandFile));
             return false;
         }

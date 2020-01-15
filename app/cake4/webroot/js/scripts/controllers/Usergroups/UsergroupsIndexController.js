@@ -12,7 +12,7 @@ angular.module('openITCOCKPIT')
             $scope.filter = {
                 Usergroups: {
                     name: '',
-                    desciption: ''
+                    description: ''
                 }
             };
         };

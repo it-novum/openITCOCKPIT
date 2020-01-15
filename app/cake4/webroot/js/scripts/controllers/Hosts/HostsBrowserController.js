@@ -643,7 +643,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-
+        //Fire on page load
         $scope.loadIdOrUuid();
         $scope.loadTimezone();
         SortService.setCallback($scope.load);
