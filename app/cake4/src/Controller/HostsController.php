@@ -79,9 +79,7 @@ use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
-use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
-use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForView;
@@ -963,13 +961,13 @@ class HostsController extends AppController {
 
                     if ($detailsToEdit['editDescription'] == 1) {
                         $newDescription = $detailsToEdit['Host']['description'];
-                        if (!empty($newDescription) && strcmp($newDescription, $mergedHost['Host']['description']) !== 0) {
+                        if (!empty($newDescription) && $newDescription != $mergedHost['Host']['description']) {
                             $dataToSave['description'] = $newDescription;
                         }
                     }
                     if ($detailsToEdit['editTags'] == 1) {
                         $newTags = $detailsToEdit['Host']['tags'];
-                        if (!empty($newTags) && strcmp($newTags, $mergedHost['Host']['tags']) !== 0) {
+                        if (!empty($newTags) && $newTags != $mergedHost['Host']['tags']) {
                             $dataToSave['tags'] = $newTags;
                         }
                     }
@@ -1067,7 +1065,7 @@ class HostsController extends AppController {
                                 }
                                 if (!empty($contactgroupsFromHost)) {
                                     foreach ($contactgroupsFromHost as $contactgroup) {
-                                        $contactgroupContainerIds = Hash::extract($contactgroup['containers'], '{n}.parent_id');
+                                        $contactgroupContainerIds = Hash::extract($contactgroup['container'], '{n}.parent_id');
                                         if (empty(array_intersect($contactgroupContainerIds, $this->MY_RIGHTS))) {
                                             break;
                                         }
@@ -1109,13 +1107,13 @@ class HostsController extends AppController {
 
                     if ($detailsToEdit['editHostUrl'] == 1) {
                         $newHostUrl = $detailsToEdit['Host']['host_url'];
-                        if (!empty($newHostUrl) && strcmp($newHostUrl, $mergedHost['Host']['host_url']) !== 0) {
+                        if (!empty($newHostUrl) && $newHostUrl !=  $mergedHost['Host']['host_url']) {
                             $dataToSave['host_url'] = $newHostUrl;
                         }
                     }
                     if ($detailsToEdit['editNotes'] == 1) {
                         $newNotes = $detailsToEdit['Host']['notes'];
-                        if (!empty($newNotes) && strcmp($newNotes, $mergedHost['Host']['notes']) !== 0) {
+                        if (!empty($newNotes) && $newNotes != $mergedHost['Host']['notes']) {
                             $dataToSave['notes'] = $newNotes;
                         }
                     }
@@ -1123,10 +1121,7 @@ class HostsController extends AppController {
                     if (!empty($dataToSave)) {
                         $hostObject = $HostsTable->patchEntity($hostObject, $dataToSave);
                         $HostsTable->save($hostObject);
-                        if ($hostObject->hasErrors()) {
-                            debug($hostObject->getErrors());
-                            //log edit_details errors
-                        } else {
+                        if (!$hostObject->hasErrors()) {
                             /** @var  ChangelogsTable $ChangelogsTable */
                             $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
                             $changelog_data = $ChangelogsTable->parseDataForChangelog(
