@@ -23,107 +23,114 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="RegistersIndex">
+            <i class="fa fa-check-square"></i> <?php echo __('Registration'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fas fa-certificate"></i> <?php echo __('License'); ?>
+    </li>
+</ol>
+
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-check-square-o fa-fw "></i>
-            <?php echo __('openITCOCKPIT'); ?>
-            <span>>
-                <?php echo __('Registration'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
-
-
-<div class="jarviswidget">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-check-square-o"></i> </span>
-        <h2>
-            <?php echo __('Register this openITCOCKPIT instance'); ?>
-        </h2>
-
-        <div class="widget-toolbar" role="menu">
-            <button type="button" class="btn btn-default btn-xs" ng-click="toggleFullscreenMode();">
-                <i class="fa fa-heart"></i>
-                <?php echo __('Credits'); ?>
-            </button>
-        </div>
-
-    </header>
-    <div class="widget-body">
-        <form ng-submit="submit();" class="form-horizontal">
-            <div class="row">
-                <div class="col-xs-12 col-md-12 col-lg-8">
-                    <div class="form-group required" ng-class="{'has-error': errors.license}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('License key'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Registration'); ?>
+                    <span class="fw-300"><i><?php echo __('Register this openICOCKPIT instance'); ?></i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <button type="button" class="btn btn-xs btn-default mr-1 shadow-0"
+                            ng-click="toggleFullscreenMode();">
+                        <i class="fa fa-heart"></i>
+                        <?php echo __('Credits'); ?>
+                    </button>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <form ng-submit="submit();" class="form-horizontal">
+                        <div class="form-group" ng-class="{'has-error': errors.license}">
+                            <label class="control-label">
+                                <?php echo __('License key'); ?>
+                            </label>
                             <input
-                                    class="form-control"
-                                    type="text"
+                                class="form-control"
+                                type="text"
                                 <?php if ($disableAutocomplete): ?>
                                     autocomplete="off"
                                 <?php endif; ?>
-                                    ng-model="post.Registers.license">
+                                ng-model="post.Registers.license">
                             <div ng-repeat="error in errors.license">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                             <div class="help-block">
                                 <a href="https://openitcockpit.io/#Subscription" target="_blank">
-                                    <i class="fa fa-external-link-square"></i>
+                                    <i class="fas external-link-alt"></i>
                                     <?php echo __('Get your openITCOCKPIT Enterprise Subscription today'); ?>
                                 </a>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="row" ng-show="valid">
-                <div class="col-xs-12 col-md-12 col-lg-12">
 
-                    <div class="row" ng-show="hasLicense">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6" style="background-image: url('/img/certs/{{certImage}}'); min-height: 667px; background-repeat: no-repeat; background-size: 100%;">
+                        <div class="row" ng-show="valid">
+                            <div class="col-xs-12 col-md-12 col-lg-12">
 
-                            <dl class="dl-horizontal" style="padding-top: 30%;">
-                                <dt><?php echo __('First name'); ?>:</dt>
-                                <dd class="code-font text-info">{{license.firstname}}</dd>
+                                <div class="row" ng-show="hasLicense">
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6"
+                                         style="background-image: url('/img/certs/{{certImage}}'); min-height: 667px; background-repeat: no-repeat; background-size: 100%;">
 
-                                <dt><?php echo __('Last name'); ?>:</dt>
-                                <dd class="code-font text-info">{{license.lastname}}</dd>
+                                        <div class="row">
+                                        <dl class="dl-horizontal col-lg-6" style="padding-top: 30%;">
+                                            <dt><?php echo __('First name'); ?>:</dt>
+                                            <dd class="code-font text-info">{{license.firstname}}</dd>
 
-                                <dt><?php echo __('Email'); ?>:</dt>
-                                <dd class="code-font text-info">{{license.email}}</dd>
+                                            <dt><?php echo __('Last name'); ?>:</dt>
+                                            <dd class="code-font text-info">{{license.lastname}}</dd>
 
-                                <dt><?php echo __('Company'); ?>:</dt>
-                                <dd class="code-font text-info">{{license.company}}</dd>
+                                            <dt><?php echo __('Expires'); ?>:</dt>
+                                            <dd class="code-font text-info">{{license.expire}}</dd>
 
-                                <dt><?php echo __('Expires'); ?>:</dt>
-                                <dd class="code-font text-info">{{license.expire}}</dd>
+                                            <dt><?php echo __('License key'); ?>:</dt>
+                                            <dd class="code-font text-info">{{license.licence}}</dd>
+                                        </dl>
 
-                                <dt><?php echo __('License key'); ?>:</dt>
-                                <dd class="code-font text-info">{{license.licence}}</dd>
-                            </dl>
+                                        <dl class="dl-horizontal col-lg-6" style="padding-top: 30%;">
+                                            <dt><?php echo __('Email'); ?>:</dt>
+                                            <dd class="code-font text-info">{{license.email}}</dd>
 
+                                            <dt><?php echo __('Company'); ?>:</dt>
+                                            <dd class="code-font text-info">{{license.company}}</dd>
+                                        </dl>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
-                    </div>
 
-                </div>
-            </div>
-
-            <div class="row">
-
-                <div class="col-xs-12 margin-top-10">
-                    <div class="well formactions ">
-                        <div class="pull-right">
-                            <input class="btn btn-primary" type="submit" value="<?php echo __('Register'); ?>">
+                        <div class="card margin-top-10">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <button class="btn btn-primary"
+                                            type="submit"><?php echo __('Register'); ?></button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+
+
+                    </form>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
@@ -164,7 +171,7 @@
         </p>
 
         <p>
-            <img src="/img/logos/3rd/jquery_ui.png" >
+            <img src="/img/logos/3rd/jquery_ui.png">
         </p>
 
         <p>
@@ -191,8 +198,8 @@
             <img src="/img/logos/openITCOCKPIT_dark.png" style="width: 600px;">
         </p>
 
-        <br />
-        <br />
+        <br/>
+        <br/>
         <div class="credits-fineprint">Press ESC to exit</div>
 
     </div>
