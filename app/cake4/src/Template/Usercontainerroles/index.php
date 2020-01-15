@@ -109,7 +109,7 @@
                                     <i class="fa" ng-class="getSortClass('Usercontainerroles.name')"></i>
                                     <?php echo __('Name'); ?>
                                 </th>
-                                <th class="no-sort text-center width-120">
+                                <th class="no-sort text-center width-80">
                                     <i class="fa fa-cog fa-lg"></i>
                                 </th>
                             </tr>

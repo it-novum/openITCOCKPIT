@@ -22,120 +22,119 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+$timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="UsercontainerrolesIndex">
+            <i class="fa fa-users"></i> <?php echo __('User container roles'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-plus"></i> <?php echo __('Add'); ?>
+    </li>
+</ol>
+
 
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-users fa-fw "></i>
-            <?php echo __('User container roles'); ?>
-            <span>>
-                <?php echo __('Add'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
-
-<div class="jarviswidget">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-users"></i> </span>
-        <h2><?php echo __('Create new user container role'); ?></h2>
-        <div class="widget-toolbar" role="menu">
-            <?php if ($this->Acl->hasPermission('index', 'usercontainerroles')): ?>
-                <a back-button fallback-state='UsercontainerrolesIndex' class="btn btn-default btn-xs">
-                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
-                </a>
-            <?php endif; ?>
-        </div>
-    </header>
-    <div>
-        <div class="widget-body">
-            <form ng-submit="submit();" class="form-horizontal"
-                  ng-init="successMessage=
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('User conatiner role'); ?>
+                    <span class="fw-300"><i><?php echo __('Create new user container role'); ?></i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <?php if ($this->Acl->hasPermission('index', 'usercontainerroles')): ?>
+                        <a back-button fallback-state='UsercontainerrolesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <form ng-submit="submit();" class="form-horizontal"
+                          ng-init="successMessage=
             {objectName : '<?php echo __('User container role'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
-                <div class="row">
-
-                    <div class="form-group required" ng-class="{'has-error': errors.name}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Role name'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+                        <div class="form-group" ng-class="{'has-error': errors.name}">
+                            <label class="control-label">
+                                <?php echo __('Role name'); ?>
+                            </label>
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="post.Usercontainerrole.name">
+                                class="form-control"
+                                type="text"
+                                ng-model="post.Usercontainerrole.name">
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.containers}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Container'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+                        <div class="form-group required" ng-class="{'has-error': errors.containers}">
+                            <label class="control-label" for="Container">
+                                <?php echo __('Container'); ?>
+                            </label>
                             <select
-                                    id="UserContainers"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="containers"
-                                    multiple
-                                    ng-options="container.key as container.value for container in containers"
-                                    ng-model="selectedContainers">
+                                id="Container"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="containers"
+                                multiple
+                                ng-options="container.key as container.value for container in containers"
+                                ng-model="selectedContainers">
                             </select>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Container permissions read/write -->
-                    <div class="row" ng-repeat="container in selectedContainerWithPermission">
-                        <div class="col col-md-2"></div>
-                        <div class="col col-md-10">
-                            <legend class="no-padding font-sm txt-ack">
-                                {{container.name}}
-                            </legend>
-                            <input name="ucgroup-{{container.container_id}}"
-                                   type="radio"
-                                   value="1"
-                                   ng-model="container.permission_level"
-                                   ng-disabled="container.container_id === 1"
-                                   ng-checked="container.permission_level == 1">
-                            <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
+                        <!-- User Container Roles permissions read/write -->
+                        <div class="row" ng-repeat="container in selectedContainerWithPermission">
+                            <div class="col col-md-2"></div>
+                            <div class="col col-md-10">
+                                <legend class="no-padding font-sm txt-ack">
+                                    {{container.name}}
+                                </legend>
+                                <input name="ucgroup-{{container.container_id}}"
+                                       type="radio"
+                                       value="1"
+                                       ng-model="container.permission_level"
+                                       ng-disabled="container.container_id === 1"
+                                       ng-checked="container.permission_level == 1">
+                                <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
 
-                            <input name="ucgroup-{{container.container_id}}"
-                                   type="radio"
-                                   value="2"
-                                   ng-model="container.permission_level"
-                                   ng-disabled="container.container_id === 1"
-                                   ng-checked="container.permission_level == 2">
-                            <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                                <input name="ucgroup-{{container.container_id}}"
+                                       type="radio"
+                                       value="2"
+                                       ng-model="container.permission_level"
+                                       ng-disabled="container.container_id === 1"
+                                       ng-checked="container.permission_level == 2">
+                                <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                            </div>
                         </div>
-                    </div>
 
-                </div>
-
-                <div class="col-xs-12 margin-top-10 margin-bottom-10">
-                    <div class="well formactions ">
-                        <div class="pull-right">
-                            <label>
-                                <input type="checkbox" ng-model="data.createAnother">
-                                <?php echo _('Create another'); ?>
-                            </label>
-
-                            <input class="btn btn-primary" type="submit"
-                                   value="<?php echo __('Create user container role'); ?>">
-
-                            <a back-button fallback-state='UsercontainerrolesIndex'
-                               class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        <div class="card margin-top-10">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <label>
+                                        <input type="checkbox" ng-model="data.createAnother">
+                                        <?php echo _('Create another'); ?>
+                                    </label>
+                                    <button class="btn btn-primary"
+                                            type="submit"><?php echo __('Create user container role'); ?></button>
+                                    <a back-button fallback-state='UsercontainerrolesIndex'
+                                       class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
-
-
