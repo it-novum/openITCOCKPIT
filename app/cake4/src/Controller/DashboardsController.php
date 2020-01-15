@@ -846,8 +846,8 @@ class DashboardsController extends AppController {
 
             $userImage = '/img/fallback_user.png';
             if ($user->get('image') != null && $user->get('image') != '') {
-                if (file_exists(WWW_ROOT . 'userimages' . DS . $user->get('image'))) {
-                    $userImage = '/userimages' . DS . $user->get('image');
+                if (file_exists(WWW_ROOT . 'img' . DS . 'userimages' . DS . $user->get('image'))) {
+                    $userImage = '/img/userimages' . DS . $user->get('image');
                 }
             }
 

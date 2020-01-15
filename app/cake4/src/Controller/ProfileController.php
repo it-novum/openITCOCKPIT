@@ -29,24 +29,21 @@ namespace App\Controller;
 
 use App\Model\Table\ApikeysTable;
 use App\Model\Table\UsersTable;
+use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Session;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Apikey;
 
 /**
  * Class ProfileController
- * @property AppAuthComponent $Auth
- * @property Session $Session
+ * @package App\Controller
  */
 class ProfileController extends AppController {
-
-    public $layout = 'blank';
-
-    public $components = ['Upload', 'Session'];
 
     public function edit() {
         if (!$this->isApiRequest()) {
@@ -83,7 +80,7 @@ class ProfileController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $data = $this->request->getData('User');
+            $data = $this->request->getData('User', []);
 
             $user = $UsersTable->get($User->getId());
             $user->setAccess('id', false);
@@ -114,7 +111,10 @@ class ProfileController extends AppController {
             }
 
             //Update user information in $_SESSION
-            $this->Session->write('Auth', $UsersTable->getActiveUsersByIdForCake2Login($User->getId()));
+
+            $session = $this->request->getSession();
+            $session->write('Auth', $UsersTable->get($User->getId()));
+
             $this->set('user', $user);
             $this->viewBuilder()->setOption('serialize', ['user']);
         }
@@ -149,7 +149,9 @@ class ProfileController extends AppController {
             return;
         }
 
-        $this->Session->write('Auth', $UsersTable->getActiveUsersByIdForCake2Login($User->getId()));
+        $session = $this->request->getSession();
+        $session->write('Auth', $UsersTable->get($User->getId()));
+
         $this->set('message', __('Password changed successfully.'));
         $this->viewBuilder()->setOption('serialize', ['message']);
     }
@@ -164,19 +166,35 @@ class ProfileController extends AppController {
 
         /** @var $UsersTable UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
-        $user = $UsersTable->get($this->Auth->user('id'), ['contain' => 'containers', 'users_to_containers']);
+        $user = $UsersTable->get($User->getId(), [
+            'contain' => [
+                'containers'
+            ]
+        ]);
+
+        if ($user === null) {
+            throw new NotFoundException();
+        }
 
         /***** Change users profile image *****/
-        if (!file_exists(WWW_ROOT . 'userimages')) {
-            mkdir(WWW_ROOT . 'userimages');
+        if (!is_dir(WWW_ROOT . 'img' . DS . 'userimages')) {
+            mkdir(WWW_ROOT . 'img' . DS . 'userimages');
         }
-        $this->Upload->setPath(WWW_ROOT . 'userimages' . DS);
-        if (isset($_FILES['Picture']['tmp_name']) && isset($_FILES['Picture']['name'])) {
-            $filename = $this->Upload->uploadUserimage($_FILES['Picture']);
 
+        if (isset($_FILES['Picture']['tmp_name']) && isset($_FILES['Picture']['name'])) {
+            $filename = $UsersTable->uploadProfilePicture();
             if ($filename) {
-                $oldFilename = $user->image;
-                $user->image = $filename;
+                //Delete old image
+
+                $oldImage = $user->get('image');
+                if ($oldImage !== '' && $oldImage !== null) {
+                    $oldImageFull = WWW_ROOT . 'img' . DS . 'userimages' . DS . $oldImage;
+                    if (file_exists($oldImageFull) && !is_dir($oldImageFull)) {
+                        unlink($oldImageFull);
+                    }
+                }
+
+                $user->set('image', $filename);
                 //prevent multiple hash of password
                 unset($user->password);
                 $UsersTable->save($user);
@@ -186,21 +204,21 @@ class ProfileController extends AppController {
                     $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
                 }
-                $this->Session->write('Auth', $UsersTable->getActiveUsersByIdForCake2Login($User->getId()));
 
-                //Delete old image
-                $path = WWW_ROOT . 'userimages' . DS;
-                if (!is_null($oldFilename) && file_exists($path . $oldFilename) && !is_dir($path . $oldFilename)) {
-                    unlink($path . $oldFilename);
+                //Update cached data in user identity / current session
+                $session = $this->request->getSession();
+                $UserEntity = $session->read('Auth');
+                if ($UserEntity instanceof \App\Model\Entity\User) {
+                    $UserEntity->set('image', $filename);
                 }
 
-
-                $this->response->statusCode(200);
+                $this->response = $this->response->withStatus(200);
                 $this->set('success', true);
                 $this->set('message', __('File Upload success!'));
                 $this->viewBuilder()->setOption('serialize', ['success', 'message']);
                 return;
             }
+
             $this->response = $this->response->withStatus(400);
             $this->set('error', __('Could not save image data, may be wrong data type. Allowed types are .png, .jpg and .gif'));
             $this->set('message', __('Could not save image data, may be wrong data type. Allowed types are .png, .jpg and .gif'));
@@ -255,14 +273,15 @@ class ProfileController extends AppController {
 
         if ($this->request->is('post')) {
             //Update an api key by id
-            if (isset($this->request->data['Apikey']['id'])) {
-                $id = $this->request->data['Apikey']['id'];
+            $data = $this->request->getData('Apikey', []);
+            if (isset($data['id'])) {
+                $id = $data['id'];
 
                 if (!$ApikeysTable->existsById($id)) {
                     throw new NotFoundException(__('Invalid API key'));
                 }
                 $apikey = $ApikeysTable->get($id);
-                $apikey = $ApikeysTable->patchEntity($apikey, $this->request->data['Apikey']);
+                $apikey = $ApikeysTable->patchEntity($apikey, $data);
 
                 $ApikeysTable->save($apikey);
                 if ($apikey->hasErrors()) {
@@ -297,7 +316,9 @@ class ProfileController extends AppController {
                 'key'  => $apikey,
                 'time' => time()
             ];
-            $this->Session->write('latest_api_key', $newApiKey);
+
+            $session = $this->request->getSession();
+            $session->write('latest_api_key', $newApiKey);
 
             $this->set('apikey', $apikey);
             $this->viewBuilder()->setOption('serialize', ['apikey']);
@@ -308,9 +329,11 @@ class ProfileController extends AppController {
             $User = new User($this->getUser());
             //Save new API key
             //Resolve ITC-2170
-            $newApiKey = $this->Session->read('latest_api_key');
-            $this->Session->delete('latest_api_key');
-            $this->Session->delete('latest_api_key');
+            $session = $this->request->getSession();
+
+            $newApiKey = $session->read('latest_api_key');
+            $session->delete('latest_api_key');
+
             if (!isset($newApiKey['key']) || !$newApiKey['time']) {
                 throw new BadRequestException();
             }
@@ -321,7 +344,7 @@ class ProfileController extends AppController {
 
             $apikey = [
                 'apikey'      => $newApiKey['key'],
-                'description' => $this->request->getData('Apikey.description'),
+                'description' => $this->request->getData('Apikey.description', ''),
                 'user_id'     => $User->getId()
             ];
 
@@ -377,15 +400,22 @@ class ProfileController extends AppController {
             return;
         }
 
+        $User = new User($this->getUser());
+
         /** @var $UsersTable UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
-        $user = $UsersTable->get($this->Auth->user('id'), ['contain' => 'containers', 'users_to_containers']);
+        $user = $UsersTable->get($User->getId(), [
+            'contain' => [
+                'containers'
+            ]
+        ]);
+
         //prevent multiple hash of password
         unset($user->password);
 
         if ($user->image != null && $user->image != '') {
-            if (file_exists(WWW_ROOT . 'userimages' . DS . $user->image)) {
-                unlink(WWW_ROOT . 'userimages' . DS . $user->image);
+            if (file_exists(WWW_ROOT . 'img' . DS . 'userimages' . DS . $user->image)) {
+                unlink(WWW_ROOT . 'img' . DS . 'userimages' . DS . $user->image);
             }
         }
 
@@ -398,9 +428,15 @@ class ProfileController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
-        $this->Session->delete('Auth.User.image');
 
-        $this->response->statusCode(200);
+        //Update cached data in user identity / current session
+        $session = $this->request->getSession();
+        $UserEntity = $session->read('Auth');
+        if ($UserEntity instanceof \App\Model\Entity\User) {
+            $UserEntity->set('image', null);
+        }
+
+        $this->response = $this->response->withStatus(200);
         $this->set('success', true);
         $this->set('message', __('File deleted sucessfully'));
         $this->viewBuilder()->setOption('serialize', ['success', 'message']);
