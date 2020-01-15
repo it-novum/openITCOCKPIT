@@ -74,7 +74,7 @@
                             </div>
                             <div class="help-block">
                                 <a href="https://openitcockpit.io/#Subscription" target="_blank">
-                                    <i class="fas external-link-alt"></i>
+                                    <i class="fas fa-external-link-alt"></i>
                                     <?php echo __('Get your openITCOCKPIT Enterprise Subscription today'); ?>
                                 </a>
                             </div>
@@ -89,27 +89,27 @@
                                          style="background-image: url('/img/certs/{{certImage}}'); min-height: 667px; background-repeat: no-repeat; background-size: 100%;">
 
                                         <div class="row">
-                                        <dl class="dl-horizontal col-lg-6" style="padding-top: 30%;">
-                                            <dt><?php echo __('First name'); ?>:</dt>
-                                            <dd class="code-font text-info">{{license.firstname}}</dd>
+                                            <dl class="dl-horizontal col-lg-6" style="padding-top: 30%;">
+                                                <dt><?php echo __('First name'); ?>:</dt>
+                                                <dd class="code-font text-info">{{license.firstname}}</dd>
 
-                                            <dt><?php echo __('Last name'); ?>:</dt>
-                                            <dd class="code-font text-info">{{license.lastname}}</dd>
+                                                <dt><?php echo __('Last name'); ?>:</dt>
+                                                <dd class="code-font text-info">{{license.lastname}}</dd>
 
-                                            <dt><?php echo __('Expires'); ?>:</dt>
-                                            <dd class="code-font text-info">{{license.expire}}</dd>
+                                                <dt><?php echo __('Expires'); ?>:</dt>
+                                                <dd class="code-font text-info">{{license.expire}}</dd>
 
-                                            <dt><?php echo __('License key'); ?>:</dt>
-                                            <dd class="code-font text-info">{{license.licence}}</dd>
-                                        </dl>
+                                                <dt><?php echo __('License key'); ?>:</dt>
+                                                <dd class="code-font text-info">{{license.licence}}</dd>
+                                            </dl>
 
-                                        <dl class="dl-horizontal col-lg-6" style="padding-top: 30%;">
-                                            <dt><?php echo __('Email'); ?>:</dt>
-                                            <dd class="code-font text-info">{{license.email}}</dd>
+                                            <dl class="dl-horizontal col-lg-6" style="padding-top: 30%;">
+                                                <dt><?php echo __('Email'); ?>:</dt>
+                                                <dd class="code-font text-info">{{license.email}}</dd>
 
-                                            <dt><?php echo __('Company'); ?>:</dt>
-                                            <dd class="code-font text-info">{{license.company}}</dd>
-                                        </dl>
+                                                <dt><?php echo __('Company'); ?>:</dt>
+                                                <dd class="code-font text-info">{{license.company}}</dd>
+                                            </dl>
                                         </div>
                                     </div>
                                 </div>

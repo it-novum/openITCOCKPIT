@@ -51,32 +51,12 @@
             <i class="ni ni-menu"></i>
         </a>
     </div>
-    <div class="search">
-        <form class="app-forms hidden-xs-down row padding-top-10" role="search" action="page_search.html" autocomplete="off">
-            <div class="input-group">
-                <select
-                    data-placeholder="<?php echo __('Choose Type'); ?>"
-                    class="form-control custom-select no-border"
-                    style="max-width: 100px;"
-                    >
-                    <option value="host">Host</option>
-                    <option value="host">Service</option>
-                    <option value="host">UUID</option>
-                </select>
-                <input type="text" id="" placeholder="Search for anything" class="form-control no-border"
-                       tabindex="1">
-            </div>
 
-    <div class="pull-left" top-search="">
+
+    <div class="search" top-search="">
         <!-- Content get loaded by AngularJS Directive -->
     </div>
 
-
-
-
-
-        </form>
-    </div>
 
     <div class="ml-auto d-flex">
         <div class="header-icon">

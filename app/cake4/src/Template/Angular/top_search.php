@@ -23,31 +23,31 @@
 //  confirmation.
 ?>
 
-<div class="input-group input-group-sm header-search">
-    <div class="input-group-btn padding-top-10" ng-init="type='<?= __('host') ?>';name='<?= __('Hosts') ?>'">
+<div class="input-group">
+    <div class="input-group-btn input-group-prepend" ng-init="type='<?= __('host') ?>';name='<?= __('Hosts') ?>'">
         <button type="button"
-                class="btn btn-default dropdown-toggle"
+                class="btn btn-default dropdown-toggle no-border"
                 data-toggle="dropdown" aria-expanded="false">
             <span ng-hide="isSearching">{{name}}</span>
             <i class="fa fa-spinner fa-spin" ng-show="isSearching"></i>
             <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
-            <li ng-class="{active: type === 'host'}">
+            <li ng-class="{active: type === 'host'}" class="dropdown-item">
                 <a href="javascript:void(0)"
                    ng-click="setSearchType('host', '<?= __('Hosts') ?>')">
                     <i class="fa fa-check" ng-show="type === 'host'"></i>
                     <?= __('Hosts') ?>
                 </a>
             </li>
-            <li ng-class="{active: type === 'service'}">
+            <li ng-class="{active: type === 'service'}" class="dropdown-item">
                 <a href="javascript:void(0)"
                    ng-click="setSearchType('service', '<?= __('Services') ?>')">
                     <i class="fa fa-check" ng-show="type === 'service'"></i>
                     <?= __('Services') ?>
                 </a>
             </li>
-            <li ng-class="{active: type === 'uuid'}">
+            <li ng-class="{active: type === 'uuid'}" class="dropdown-item">
                 <a href="javascript:void(0)"
                    ng-click="setSearchType('uuid', '<?= __('UUID') ?>')">
                     <i class="fa fa-check" ng-show="type === 'uuid'"></i>
@@ -59,6 +59,8 @@
 
     <input id="search-fld"
            type="text"
+           class="form-control"
+           style="border: 1px solid #f6f6f6"
            placeholder="<?= __('Type to search') ?>"
            ng-model="searchStr"
            ng-keydown="isReturnKey($event)"
