@@ -327,7 +327,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
             <form ng-submit="submitPassword();" class="form-horizontal">
 
                 <div class="row" ng-show="isLdapUser">
-                    <div class="col-xs-12 text-center text-info" ng-show="apikeys.length === 0">
+                    <div class="col-xs-12 text-center text-info padding-top-10" ng-show="isLdapUser">
                         <i class="fa fa-info-circle"></i>
                         <?php echo __('LDAP users need to change their password through the operating system or an LDAP account manager tool.'); ?>
                     </div>

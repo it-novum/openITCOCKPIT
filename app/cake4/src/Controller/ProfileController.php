@@ -45,8 +45,6 @@ use itnovum\openITCOCKPIT\Core\Views\Apikey;
  */
 class ProfileController extends AppController {
 
-    //public $components = ['Upload', 'Session'];
-
     public function edit() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -82,7 +80,7 @@ class ProfileController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $data = $this->request->getData('User');
+            $data = $this->request->getData('User', []);
 
             $user = $UsersTable->get($User->getId());
             $user->setAccess('id', false);
@@ -113,7 +111,10 @@ class ProfileController extends AppController {
             }
 
             //Update user information in $_SESSION
-            //$this->Session->write('Auth', $UsersTable->getActiveUsersByIdForCake2Login($User->getId()));
+
+            $session = $this->request->getSession();
+            $session->write('Auth', $UsersTable->get($User->getId()));
+
             $this->set('user', $user);
             $this->viewBuilder()->setOption('serialize', ['user']);
         }
@@ -148,7 +149,9 @@ class ProfileController extends AppController {
             return;
         }
 
-        $this->Session->write('Auth', $UsersTable->getActiveUsersByIdForCake2Login($User->getId()));
+        $session = $this->request->getSession();
+        $session->write('Auth', $UsersTable->get($User->getId()));
+
         $this->set('message', __('Password changed successfully.'));
         $this->viewBuilder()->setOption('serialize', ['message']);
     }
@@ -205,7 +208,7 @@ class ProfileController extends AppController {
                 //Update cached data in user identity / current session
                 $session = $this->request->getSession();
                 $UserEntity = $session->read('Auth');
-                if($UserEntity instanceof \App\Model\Entity\User){
+                if ($UserEntity instanceof \App\Model\Entity\User) {
                     $UserEntity->set('image', $filename);
                 }
 
@@ -429,7 +432,7 @@ class ProfileController extends AppController {
         //Update cached data in user identity / current session
         $session = $this->request->getSession();
         $UserEntity = $session->read('Auth');
-        if($UserEntity instanceof \App\Model\Entity\User){
+        if ($UserEntity instanceof \App\Model\Entity\User) {
             $UserEntity->set('image', null);
         }
 
