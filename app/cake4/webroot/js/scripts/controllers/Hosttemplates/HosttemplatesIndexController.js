@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HosttemplatesIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService, $state){
+    .controller('HosttemplatesIndexController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService, $state){
         $rootScope.lastObjectName = null;
 
         SortService.setSort(QueryStringService.getValue('sort', 'Hosttemplates.name'));
@@ -12,6 +12,7 @@ angular.module('openITCOCKPIT')
         var defaultFilter = function(){
             $scope.filter = {
                 Hosttemplates: {
+                    id: QueryStringService.getStateValue($stateParams, 'id', []),
                     name: ''
                 }
             };
@@ -39,6 +40,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
+                'filter[Hosttemplates.id][]': $scope.filter.Hosttemplates.id,
                 'filter[Hosttemplates.name]': $scope.filter.Hosttemplates.name
             };
 

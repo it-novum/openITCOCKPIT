@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostgroupsIndexController', function($scope, $http, SortService, MassChangeService){
+    .controller('HostgroupsIndexController', function($scope, $http, $stateParams, SortService, MassChangeService, QueryStringService){
 
         SortService.setSort('Containers.name');
         SortService.setDirection('asc');
@@ -13,6 +13,7 @@ angular.module('openITCOCKPIT')
                     name: ''
                 },
                 hostgroups: {
+                    id: QueryStringService.getStateValue($stateParams, 'id', []),
                     description: ''
                 }
             };
@@ -32,6 +33,7 @@ angular.module('openITCOCKPIT')
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
+                    'filter[Hostgroups.id][]': $scope.filter.hostgroups.id,
                     'filter[Containers.name]': $scope.filter.containers.name,
                     'filter[Hostgroups.description]': $scope.filter.hostgroups.description
                 }

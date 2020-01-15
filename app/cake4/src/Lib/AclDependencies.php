@@ -76,6 +76,7 @@ class AclDependencies {
             ->allow('Angular', 'menustats')
             ->allow('Angular', 'statuscount')
             ->allow('Angular', 'menu')
+            ->allow('Angular', 'topSearch')
             ->allow('Angular', 'websocket_configuration')
             ->allow('Angular', 'push_configuration')
             ->allow('Angular', 'export')
@@ -141,9 +142,6 @@ class AclDependencies {
             ->allow('Downtimes', 'icon');
 
         $this
-            ->allow('Forward', 'index');
-
-        $this
             ->allow('Packetmanager', 'getPackets');
 
         $this
@@ -158,11 +156,6 @@ class AclDependencies {
 
         $this
             ->allow('Proxy', 'getSettings');
-
-        $this
-            ->allow('Search', 'index')
-            ->allow('Search', 'hostMacro')
-            ->allow('Search', 'serviceMacro');
 
         $this
             ->allow('Services', 'icon')

@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ContactgroupsIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService){
+    .controller('ContactgroupsIndexController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService){
         $rootScope.lastObjectName = null;
 
         SortService.setSort(QueryStringService.getValue('sort', 'Containers.name'));
@@ -16,6 +16,7 @@ angular.module('openITCOCKPIT')
                     name: ''
                 },
                 Contactgroups: {
+                    id: QueryStringService.getStateValue($stateParams, 'id', []),
                     description: ''
                 }
             };
@@ -43,6 +44,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
+                'filter[Contactgroups.id][]': $scope.filter.Contactgroups.id,
                 'filter[Containers.name]': $scope.filter.Containers.name,
                 'filter[Contactgroups.description]': $scope.filter.Contactgroups.description
             };

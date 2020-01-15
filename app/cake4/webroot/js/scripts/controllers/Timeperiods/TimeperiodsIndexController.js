@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('TimeperiodsIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService){
+    .controller('TimeperiodsIndexController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService){
         $rootScope.lastObjectName = null;
 
         SortService.setSort(QueryStringService.getValue('sort', 'Timeperiods.name'));
@@ -13,6 +13,7 @@ angular.module('openITCOCKPIT')
         var defaultFilter = function(){
             $scope.filter = {
                 Timeperiods: {
+                    id: QueryStringService.getStateValue($stateParams, 'id', []),
                     name: '',
                     description: ''
                 }
@@ -41,6 +42,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
+                'filter[Timeperiods.id][]': $scope.filter.Timeperiods.id,
                 'filter[Timeperiods.name]': $scope.filter.Timeperiods.name,
                 'filter[Timeperiods.description]': $scope.filter.Timeperiods.description
             };

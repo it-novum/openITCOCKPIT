@@ -32,8 +32,11 @@ class HosttemplateFilter extends Filter {
      */
     public function indexFilter() {
         $filters = [
-            'like' => [
+            'like'   => [
                 'Hosttemplates.name',
+            ],
+            'equals' => [
+                'Hosttemplates.id'
             ]
         ];
 

@@ -34,6 +34,10 @@
         <system-health></system-health>
     </div>
 
+    <div class="pull-left" top-search="">
+        <!-- Content get loaded by AngularJS Directive -->
+    </div>
+
 
     <div class="pull-right">
         <div class="btn-header pull-right">

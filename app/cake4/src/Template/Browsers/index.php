@@ -30,9 +30,6 @@
  * @var array $satellites
  */
 
-use itnovum\openITCOCKPIT\Core\RFCRouter;
-
-
 ?>
 <ol class="breadcrumb">
     <li></li> <!-- leading / -->

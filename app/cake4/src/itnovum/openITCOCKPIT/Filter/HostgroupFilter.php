@@ -35,7 +35,10 @@ class HostgroupFilter extends Filter {
             'like' => [
                 'Containers.name',
                 'Hostgroups.description'
-            ]
+            ],
+            'equals' => [
+                'Hostgroups.id'
+            ],
         ];
 
         return $this->getConditionsByFilters($filters);

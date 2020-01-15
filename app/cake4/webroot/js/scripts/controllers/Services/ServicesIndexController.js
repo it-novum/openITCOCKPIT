@@ -2,7 +2,7 @@ angular.module('openITCOCKPIT')
     .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService){
         $rootScope.lastObjectName = null;
 
-        SortService.setSort(QueryStringService.getStateValue($stateParams,'sort', 'Servicesstatus.current_state'));
+        SortService.setSort(QueryStringService.getStateValue($stateParams,'sort', 'Servicestatus.current_state'));
         SortService.setDirection(QueryStringService.getStateValue($stateParams,'direction', 'desc'));
 
         $scope.currentPage = 1;
@@ -25,8 +25,8 @@ angular.module('openITCOCKPIT')
                     output: ''
                 },
                 Services: {
-                    id: QueryStringService.getIds('filter[Services.id][]', []),
-                    name: QueryStringService.getValue('filter[Services.servicename]', ''),
+                    id: QueryStringService.getStateValue($stateParams, 'id', []),
+                    name: QueryStringService.getStateValue($stateParams,'servicename', ''),
                     keywords: '',
                     not_keywords: ''
                 },

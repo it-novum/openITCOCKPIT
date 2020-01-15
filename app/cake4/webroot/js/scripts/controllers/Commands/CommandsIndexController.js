@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('CommandsIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService){
+    .controller('CommandsIndexController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService){
         $rootScope.lastObjectName = null;
 
         SortService.setSort(QueryStringService.getValue('sort', 'Commands.name'));
@@ -12,6 +12,7 @@ angular.module('openITCOCKPIT')
         var defaultFilter = function(){
             $scope.filter = {
                 Commands: {
+                    id: QueryStringService.getStateValue($stateParams, 'id', []),
                     name: '',
                     service_checks: true,
                     host_checks: true,
@@ -59,6 +60,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
+                'filter[Commands.id][]': $scope.filter.Commands.id,
                 'filter[Commands.name]': $scope.filter.Commands.name,
                 'filter[Commands.command_type][]': getSelectedCommandTypeFilters()
             };
