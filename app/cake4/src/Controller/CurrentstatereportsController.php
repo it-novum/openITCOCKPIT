@@ -49,9 +49,8 @@ use Statusengine\PerfdataParser;
 
 
 /**
- * @property CurrentstatereportForm $CurrentstatereportForm
- * @property DbBackend $DbBackend
- * @property AppPaginatorComponent $Paginator
+ * Class CurrentstatereportsController
+ * @package App\Controller
  */
 class CurrentstatereportsController extends AppController {
     public $layout = 'blank';
@@ -63,7 +62,7 @@ class CurrentstatereportsController extends AppController {
         }
         $currentstatereportForm = new CurrentstatereportForm();
 
-        $currentstatereportForm->execute($this->request->data);
+        $currentstatereportForm->execute($this->request->getData(null, []));
 
         if (!empty($currentstatereportForm->getErrors())) {
             $this->response = $this->response->withStatus(400);
@@ -79,7 +78,7 @@ class CurrentstatereportsController extends AppController {
             );
 
 
-            $ServiceConditions->setServiceIds($this->request->getData('services'));
+            $ServiceConditions->setServiceIds($this->request->getData('services', []));
             $ServiceConditions->setContainerIds($this->MY_RIGHTS);
             $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
                 'Hosts.name'  => 'asc',
@@ -205,7 +204,7 @@ class CurrentstatereportsController extends AppController {
      * @return array
      * @throws MissingDbBackendException
      */
-    protected function createReport(ServiceConditions $ServiceConditions, ServicestatusConditions $ServicestatusConditions, $pdf = false) {
+    private function createReport(ServiceConditions $ServiceConditions, ServicestatusConditions $ServicestatusConditions, $pdf = false) {
 
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
