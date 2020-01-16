@@ -147,7 +147,6 @@
                             </th>
                         </tr>
                         </thead>
-
                         <tbody>
                         <tr ng-repeat-start="host in services">
                             <td colspan="13" class="service_table_host_header">

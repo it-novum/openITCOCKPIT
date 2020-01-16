@@ -31,7 +31,7 @@ abstract class Filter {
     /**
      * @var ServerRequest
      */
-    private $Request;
+    protected $Request;
 
     public function __construct(ServerRequest $Request) {
         $this->Request = $Request;

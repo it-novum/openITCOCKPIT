@@ -28,10 +28,15 @@ declare(strict_types=1);
 namespace Statusengine2Module\Model\Table;
 
 use App\Lib\Interfaces\LogentriesTableInterface;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Database\Expression\Comparison;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\LogentryFilter;
 
 /**
  * NagiosLogentries Model
@@ -55,6 +60,8 @@ class LogentriesTable extends Table implements LogentriesTableInterface {
     /*   define it in the implemented interface first!   */
     /*                         !!!                       */
     /*****************************************************/
+
+    use PaginationAndScrollIndexTrait;
 
     /**
      * Initialize method
@@ -91,5 +98,38 @@ class LogentriesTable extends Table implements LogentriesTableInterface {
      */
     public function buildRules(RulesChecker $rules): RulesChecker {
         return $rules;
+    }
+
+    /**
+     * @param LogentryFilter $LogentryFilter
+     * @param PaginateOMat|null $PaginateOMat
+     * @return array
+     */
+    public function getLogentries(LogentryFilter $LogentryFilter, $PaginateOMat = null) {
+        //Get all user ids where container assigned are made directly at the user
+        $query = $this->find()
+            ->where($LogentryFilter->indexFilter())
+            ->order($LogentryFilter->getOrderForPaginator('Logentries.entry_time', 'desc'));
+
+        if(!empty($LogentryFilter->getMatchingUuids())){
+            $query->andWhere(new Comparison(
+                'Logentries.logentry_data',
+                sprintf('.*(%s).*', implode('|', $LogentryFilter->getMatchingUuids())),
+                'string',
+                'RLIKE'
+            ));
+        }
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $query->toArray();
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+        return $result;
     }
 }

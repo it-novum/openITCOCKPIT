@@ -1,6 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('LogentriesIndexController', function($scope, $http, $httpParamSerializer, SortService, QueryStringService){
-        SortService.setSort(QueryStringService.getValue('sort', 'Logentry.entry_time'));
+        SortService.setSort(QueryStringService.getValue('sort', 'Logentries.entry_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
@@ -9,7 +9,7 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                Logentry: {
+                Logentries: {
                     logentry_data: '',
                     logentry_type: ''
                 },
@@ -32,18 +32,18 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Logentry.logentry_data]': $scope.filter.Logentry.logentry_data,
+                'filter[Logentries.logentry_data]': $scope.filter.Logentries.logentry_data,
                 'filter[Host.id][]': $scope.filter.Host.id
             };
 
-            if($scope.filter.Logentry.logentry_type.length > 0){
-                params['filter[Logentry.logentry_type][]'] = $scope.filter.Logentry.logentry_type;
+            if($scope.filter.Logentries.logentry_type.length > 0){
+                params['filter[Logentries.logentry_type][]'] = $scope.filter.Logentries.logentry_type;
             }
 
             $http.get("/logentries/index.json", {
                 params: params
             }).then(function(result){
-                $scope.logentries = result.data.all_logentries;
+                $scope.logentries = result.data.logentries;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;

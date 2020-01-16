@@ -27,110 +27,65 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\itnovum\openITCOCKPIT\Core\UuidCache;
+use App\Model\Table\HostsTable;
+use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\LogentryTypes;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Logentry;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\LogentryFilter;
 
 class LogentriesController extends AppController {
 
-    /*
-     * Attention! In this case we load an external Model from the monitoring plugin! The Controller
-     * use this external model to fetch the required data out of the database
-     */
-    public $uses = [MONITORING_LOGENTRY, 'Host', 'Service'];
-
-    public $components = ['ListFilter.ListFilter', 'RequestHandler', 'Uuid'];
-    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
-    public $layout = 'blank';
-
 
     public function index() {
-
         if (!$this->isAngularJsRequest()) {
-            //Ship .html request
-            $this->set('logentry_types', $this->Logentry->types());
+            //Only ship HTML template for angular
+            $LogentryTypes = new LogentryTypes();
+            $this->set('logentry_types', $LogentryTypes->getTypes());
             return;
         }
 
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
+        $LogentriesTable = $this->DbBackend->getLogentriesTable();
+
         $LogentryFilter = new LogentryFilter($this->request);
 
+        if ($LogentryFilter->hasHostIdFilter()) {
+            /** @var HostsTable $HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-        $this->Paginator->settings['order'] = $LogentryFilter->getOrderForPaginator('Logentry.entry_time', 'desc');
-        $this->Paginator->settings['page'] = $LogentryFilter->getPage();
-        $this->Paginator->settings['conditions'] = $LogentryFilter->indexFilter();
-
-        if (isset($this->request->query['filter']['Host.id']) && !empty($this->request->query['filter']['Host.id'])) {
-            $hosts = $this->Host->find('all', [
-                'recursive'  => -1,
-                'fields'     => [
-                    'Host.id',
-                    'Host.uuid'
-                ],
-                'conditions' => [
-                    'Host.id' => $this->request->query['filter']['Host.id']
-                ]
-            ]);
-            if (!empty($hosts)) {
-                $orConditions = [];
-                foreach ($hosts as $host) {
-                    $orConditions[] = $host['Host']['uuid'];
-                }
-                $this->Paginator->settings['conditions']['Logentry.logentry_data rlike'] = sprintf('.*(%s).*', implode('|', $orConditions));
-            }
+            $hostIds = $LogentryFilter->getHostIds();
+            $hosts = $HostsTable->getHostsByIds($hostIds);
+            $LogentryFilter->addUuidsToMatching(Hash::extract($hosts, '{n}.uuid'));
         }
 
-        $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-        if ($this->isScrollRequest()) {
-            $logentries = $this->Logentry->find('all', $this->Paginator->settings);
-            $ScrollIndex->determineHasNextPage($logentries);
-            $ScrollIndex->scroll();
-        } else {
-            $logentries = $this->Paginator->paginate();
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $LogentryFilter->getPage());
+
+        $UuidCache = new UuidCache();
+        $UuidCache->buildCache();
+
+        $all_logentries = $LogentriesTable->getLogentries($LogentryFilter, $PaginateOMat);
+        $logentries = [];
+
+        foreach ($all_logentries as $logentry) {
+            $logentry = new Logentry($logentry, $UserTime);
+            $logentry = $logentry->toArray();
+
+            $logentry['logentry_data_html'] = $UuidCache->replaceUuidWithAngularJsLink(h($logentry['logentry_data']));
+            $logentries[] = $logentry;
         }
 
-
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-
-
-        $all_logentries = [];
-        $foundUuids = [];
-        foreach ($logentries as $logentry) {
-            $matches = [];
-            preg_match_all(UUID::regex(), $logentry['Logentry']['logentry_data'], $matches);
-            foreach ($matches[0] as $uuid) {
-                $foundUuids[$uuid] = $uuid;
-            }
-        }
-
-
-        $uuidToName = $this->Uuid->getNameForUuids($foundUuids, false);
-
-        foreach ($logentries as $logentry) {
-            $logentry['Logentry']['logentry_data'] = preg_replace_callback(UUID::regex(), function ($matches) use ($uuidToName) {
-                foreach ($matches as $match) {
-                    if (isset($uuidToName[$match])) {
-                        return $uuidToName[$match];
-                    }
-                }
-            }, $logentry['Logentry']['logentry_data']);
-
-            $Logentry = new Logentry($logentry, $UserTime);
-
-            $all_logentries[] = [
-                'Logentry' => $Logentry->toArray()
-            ];
-        }
-
-
-        $this->set('all_logentries', $all_logentries);
-
-        $toJson = ['all_logentries', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['all_logentries', 'scroll'];
-        }
-        $this->viewBuilder()->setOption('serialize', $toJson);
+        $this->set('logentries', $logentries);
+        $this->viewBuilder()->setOption('serialize', ['logentries']);
     }
 
 }

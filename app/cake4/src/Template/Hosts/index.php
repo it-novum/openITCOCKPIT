@@ -83,7 +83,7 @@
                     <div class="jarviswidget-ctrls" role="menu"></div>
 
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-desktop"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Hosts'); ?></h2>
+                    <h2 class="hidden-mobile"><?php echo __('Hosts overview'); ?></h2>
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <li class="active">
                             <a ui-sref="HostsIndex"><i
