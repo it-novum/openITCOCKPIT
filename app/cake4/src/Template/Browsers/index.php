@@ -405,7 +405,7 @@
                         <table class="table table-striped m-0 table-bordered table-hover">
                             <thead>
                             <tr>
-                                <th colspan="2" class="no-sort width-90" ng-click="orderBy('Hoststatus.current_state')">
+                                <th colspan="2" class="no-sort width-95" ng-click="orderBy('Hoststatus.current_state')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.current_state')"></i>
                                     <?php echo __('Hoststatus'); ?>
                                 </th>
@@ -601,16 +601,16 @@
                                             <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
                                                 <a ui-sref="ServicetemplategroupsAllocateToHost({id: 0, hostId: host.Host.id})"
                                                    class="dropdown-item">
-                                                    <i class="fa fa-external-link"></i>
+                                                    <i class="fa fa-external-link-alt"></i>
                                                     <?php echo __('Allocate service template group'); ?>
                                                 </a>
                                             <?php endif; ?>
 
                                             <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
                                                 <a ng-click="confirmAddHostsToHostgroup(getObjectForDelete(host))"
-                                                   class="dropdown-item">
+                                                   class="dropdown-item" href="javascript:void(0);">
                                                     <i class="fa fa-sitemap"></i>
-                                                    <?php echo __('Service List'); ?>
+                                                    <?php echo __('Append to host group'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('deactivate', 'hosts')): ?>
@@ -685,13 +685,13 @@
                                     <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('deactivate', 'Hosts', '')): ?>
                                         <a ng-click="confirmDeactivate(getObjectsForDelete())"
-                                           class="dropdown-item">
+                                           class="dropdown-item" href="javascript:void(0);">
                                             <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
                                         </a>
                                     <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
                                         <a ng-click="confirmAddHostsToHostgroup(getObjectsForDelete())"
-                                           class="dropdown-item">
+                                           class="dropdown-item" href="javascript:void(0);">
                                             <i class="fa fa-sitemap"></i> <?php echo __('Append to host group'); ?>
                                         </a>
                                     <?php endif; ?>
