@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="MacrosIndex">
-            <i class="fa fa-user"></i> <?php echo __('User defined macros'); ?>
+            <i class="fa fa-usd"></i> <?php echo __('User defined macros'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
