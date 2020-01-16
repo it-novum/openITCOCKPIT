@@ -440,6 +440,7 @@ class Servicestatus {
         $arr['isInMonitoring'] = $this->isInMonitoring();
         $arr['humanState'] = $this->ServiceStatusAsString();
         $arr['cssClass'] = $this->ServiceStatusBackgroundColor();
+        $arr['textClass'] = $this->ServiceStatusColor();
         return $arr;
     }
 

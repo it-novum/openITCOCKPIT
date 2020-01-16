@@ -31,6 +31,7 @@ use App\Form\CurrentstatereportForm;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
+use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\DbBackend;
@@ -110,17 +111,15 @@ class CurrentstatereportsController extends AppController {
 
     public function createPdfReport() {
         //Rewrite GET to "POST"
-        $this->request->data = $this->request->getQuery('data');
-        $this->layout = 'Admin.default';
-
+        $data = $this->request->getQuery('data', []);
 
         $currentstatereportForm = new CurrentstatereportForm();
-        $currentstatereportForm->execute($this->request->data);
+        $currentstatereportForm->execute($data);
 
 
         if (!empty($currentstatereportForm->getErrors())) {
 
-            $this->set('input', $this->request->data);
+            $this->set('input', $data);
 
             $this->response = $this->response->withStatus(400);
             $this->set('error', $currentstatereportForm->getErrors());
@@ -169,32 +168,21 @@ class CurrentstatereportsController extends AppController {
             true
         );
 
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
         $this->set('all_services', $all_services);
+        $this->set('UserTime', $UserTime);
 
 
-        $binary_path = '/usr/bin/wkhtmltopdf';
-        if (file_exists('/usr/local/bin/wkhtmltopdf')) {
-            $binary_path = '/usr/local/bin/wkhtmltopdf';
-        }
-
-        $this->pdfConfig = [
-            'engine'             => 'CakePdf.WkHtmlToPdf',
-            'margin'             => [
-                'bottom' => 15,
-                'left'   => 0,
-                'right'  => 0,
-                'top'    => 15,
-            ],
-            'encoding'           => 'UTF-8',
-            'download'           => true,
-            'binary'             => $binary_path,
-            'orientation'        => 'portrait',
-            'filename'           => 'Currentstatereport_' . date('dmY_his') . '.pdf',
-            'no-pdf-compression' => '*',
-            'image-dpi'          => '900',
-            'background'         => true,
-            'no-background'      => false,
-        ];
+        $this->viewBuilder()->setOption(
+            'pdfConfig',
+            [
+                'download' => true,
+                'filename' => __('Currentstatereport_') . date('dmY_his') . '.pdf',
+            ]
+        );
+        return;
     }
 
     /**

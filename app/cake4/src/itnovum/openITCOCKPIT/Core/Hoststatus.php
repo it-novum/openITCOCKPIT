@@ -460,6 +460,7 @@ class Hoststatus {
         $arr['isInMonitoring'] = $this->isInMonitoring();
         $arr['humanState'] = $this->HostStatusAsString();
         $arr['cssClass'] = $this->HostStatusBackgroundColor();
+        $arr['textClass'] = $this->HostStatusColor();
         return $arr;
     }
 

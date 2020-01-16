@@ -228,3 +228,29 @@ TypeFactory::build('timestamp')
 //Inflector::rules('irregular', ['red' => 'redlings']);
 //Inflector::rules('uninflected', ['dontinflectme']);
 //Inflector::rules('transliteration', ['/å/' => 'aa']);
+
+
+//Configure CakePHP and WkHtmlToPdf
+//default path of apt-get install wkhtmltopdf (Mostly old and broken)
+$WkHtmlToPdfBinary = '/usr/bin/wkhtmltopdf';
+if (file_exists('/usr/local/bin/wkhtmltopdf')) {
+    //Installed from deb file from https://wkhtmltopdf.org/ (newer version and working)
+    $WkHtmlToPdfBinary = '/usr/local/bin/wkhtmltopdf';
+}
+Configure::write('CakePdf', [
+    'engine' => [
+        'className' => 'CakePdf.WkHtmlToPdf',
+        // Mac OS X / Linux is usually like:
+        'binary'    => $WkHtmlToPdfBinary,
+        // On Windows environmnent you NEED to use the path like
+        // old fashioned MS-DOS Paths, otherwise you will keep getting:
+        // WKHTMLTOPDF didn't return any data
+        // 'binary' => 'C:\\Progra~1\\wkhtmltopdf\\bin\\wkhtmltopdf.exe',
+        // 'cwd' => 'C:\\Progra~1\\wkhtmltopdf\\bin',
+        'options'   => [
+            'print-media-type' => false,
+            'outline'          => true,
+            'dpi'              => 96
+        ],
+    ],
+]);
