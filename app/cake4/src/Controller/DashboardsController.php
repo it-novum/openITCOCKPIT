@@ -35,6 +35,9 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
+use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\TableRegistry;
@@ -862,6 +865,10 @@ class DashboardsController extends AppController {
         }
     }
 
+    /**
+     * @throws \Exception
+     * @deprecated
+     */
     public function parentOutagesWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
