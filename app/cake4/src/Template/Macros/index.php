@@ -23,20 +23,24 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-usd fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
-            <span>>
-                <?php echo __('User defined macros'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="MacrosIndex">
+            <i class="fa fa-user"></i> <?php echo __('User defined macros'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-list"></i> <?php echo __('Overview'); ?>
+    </li>
+</ol>
 
 <div class="row">
-    <div class="col-xs-12">
+    <div class="col-lg-12">
         <div class="alert alert-block alert-warning">
             <a class="close" data-dismiss="alert" href="#">×</a>
             <h4 class="alert-heading">
@@ -50,211 +54,192 @@
     </div>
 </div>
 
-<section id="widget-grid" class="">
-    <div class="row">
-        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                <header>
-                    <div class="widget-toolbar" role="menu">
-
-                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
-                            <i class="fa fa-refresh"></i>
-                            <?php echo __('Refresh'); ?>
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Macros'); ?>
+                    <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
+                        <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
+                    </button>
+                    <?php if ($this->Acl->hasPermission('add', 'macros')): ?>
+                        <button class="btn btn-xs btn-success mr-1 shadow-0" ng-click="triggerAddModal()">
+                            <i class="fas fa-plus"></i> <?php echo __('New'); ?>
                         </button>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <div class="frame-wrap">
+                        <table class="table table-striped m-0 table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th class="no-sort">
+                                    <?php echo __('Name'); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo __('Value'); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo __('Description'); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo __('Actions'); ?>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="macro in macros">
+                                <td class="text-primary bold">
+                                    {{macro.name}}
+                                </td>
+                                <td>
+                                    <code ng-class="{'macroPassword': macro.password}">
+                                        {{macro.value}}
+                                    </code>
+                                </td>
+                                <td>
+                                    {{macro.description}}
+                                </td>
+                                <td>
+                                    <button class="btn btn-default txt-color-red btn-sm"
+                                            title="<?php echo __('Hide value'); ?>"
+                                            ng-click="macro.password = 1"
+                                            ng-hide="macro.password">
+                                        <i class="fa fa-eye-slash fa-lg"></i>
+                                    </button>
 
-                        <?php if ($this->Acl->hasPermission('add', 'macros')): ?>
-                            <button type="button" class="btn btn-xs btn-success" ng-click="triggerAddModal()">
-                                <i class="fa fa-plus"></i> <?php echo __('New'); ?>
-                            </button>
-                        <?php endif; ?>
+                                    <button class="btn btn-default txt-color-blue btn-sm"
+                                            title="<?php echo __('Show value'); ?>"
+                                            ng-click="macro.password = 0"
+                                            ng-show="macro.password">
+                                        <i class="fa fa-eye fa-lg"></i>
+                                    </button>
 
-                    </div>
-                    <div class="jarviswidget-ctrls" role="menu">
-                    </div>
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-usd"></i> </span>
-                    <h2 class="hidden-mobile hidden-tablet"><?php echo __('User defined macros'); ?> </h2>
-                </header>
-                <div>
-
-                    <div class="widget-body no-padding">
-
-                        <div class="mobile_table">
-                            <table id="macrosTable" class="table table-striped table-hover table-bordered smart-form"
-                                   style="">
-                                <thead>
-                                <tr>
-                                    <th class="no-sort">
-                                        <?php echo __('Name'); ?>
-                                    </th>
-                                    <th class="no-sort">
-                                        <?php echo __('Value'); ?>
-                                    </th>
-                                    <th class="no-sort">
-                                        <?php echo __('Description'); ?>
-                                    </th>
-                                    <th class="no-sort">
-                                        <?php echo __('Actions'); ?>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="macro in macros">
-                                    <td class="text-primary bold">
-                                        {{macro.name}}
-                                    </td>
-                                    <td>
-                                        <code ng-class="{'macroPassword': macro.password}">
-                                            {{macro.value}}
-                                        </code>
-                                    </td>
-                                    <td>
-                                        {{macro.description}}
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-default txt-color-red btn-sm"
-                                                title="<?php echo __('Hide value'); ?>"
-                                                ng-click="macro.password = 1"
-                                                ng-hide="macro.password">
-                                            <i class="fa fa-eye-slash fa-lg"></i>
-                                        </button>
-
-                                        <button class="btn btn-default txt-color-blue btn-sm"
-                                                title="<?php echo __('Show value'); ?>"
-                                                ng-click="macro.password = 0"
-                                                ng-show="macro.password">
-                                            <i class="fa fa-eye fa-lg"></i>
-                                        </button>
-
-                                        <button class="btn btn-default btn-sm" ng-click="triggerEditModal(macro);"
-                                                title="<?php echo __('Edit macro'); ?>">
-                                            <i class="fa fa-cog fa-lg"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="row margin-top-10 margin-bottom-10">
-                            <div class="row margin-top-10 margin-bottom-10" ng-show="macros.length == 0">
-                                <div class="col-xs-12 text-center txt-color-red italic">
-                                    <?php echo __('No entries match the selection'); ?>
-                                </div>
+                                    <button class="btn btn-default btn-sm" ng-click="triggerEditModal(macro);"
+                                            title="<?php echo __('Edit macro'); ?>">
+                                        <i class="fa fa-cog fa-lg"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="margin-top-10" ng-show="users.length == 0">
+                            <div class="text-center text-danger italic">
+                                <?php echo __('No entries match the selection'); ?>
                             </div>
                         </div>
                     </div>
-                    
-
                     <div class="col-xs-12 padding-bottom-10 text-info">
                         <i class="fa fa-info-circle"></i>
                         <?php echo __('Nagios supports up to 256 $USERx$ macros ($USER1$ through $USER256$)'); ?>
                     </div>
                 </div>
             </div>
-        </article>
+        </div>
     </div>
-</section>
-
+</div>
 
 <!-- Add macro modal -->
 <div id="addMacroModal" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
+            <div class="modal-header bg-default">
+                <h5 class="modal-title">
                     <i class="fa fa-usd"></i>
                     <?php echo __('Add user defined macro'); ?>
-                </h4>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
             </div>
             <div class="modal-body">
-
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="form-group smart-form hintmark_red">
-                            <?php echo __('Select macro name'); ?>
-                        </div>
-                    </div>
-                    <div class="col-xs-12">
-                        <div class="form-group" ng-class="{'has-error': errors.name}">
-                            <select
-                                    id="AddMacroNameSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="availableMacros"
-                                    ng-options="value as value for (key , value) in availableMacros"
-                                    ng-model="post.Macro.name">
-                            </select>
-                            <div ng-repeat="error in errors.name">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
+                <div class="form-group required" ng-class="{'has-error': errors.name}">
+                    <label class="control-label" for="AddMacroNameSelect">
+                        <?php echo __('Plugin'); ?>
+                    </label>
+                    <select
+                        id="AddMacroNameSelect"
+                        data-placeholder="<?php echo __('Please choose'); ?>"
+                        class="form-control"
+                        class="form-control"
+                        chosen="availableMacros"
+                        ng-options="value as value for (key , value) in availableMacros"
+                        ng-model="post.Macro.name">
+                    </select>
+                    <div ng-repeat="error in errors.name">
+                        <div class="help-block text-danger">{{ error }}</div>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-xs-12 col-lg-6 smart-form">
-                        <div class="form-group smart-form" ng-class="{'has-error': errors.value}">
-                            <label class="label hintmark_red"><?php echo __('Value'); ?></label>
-                            <label class="input"> <b class="icon-prepend">
-                                    <i class="fa fa-usd"></i>
-                                </b>
-                                <input type="text" class="input-sm" ng-class="{'macroPassword': post.Macro.password}"
-                                       ng-model="post.Macro.value">
-                            </label>
-                            <div ng-repeat="error in errors.value">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
+                <div class="form-group" ng-class="{'has-error': errors.value}">
+                    <label class="control-label">
+                        <?php echo __('Value'); ?>
+                    </label>
+                    <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa fa-usd"></i></span>
                     </div>
-                    <div class="col-xs-12 col-lg-6 smart-form" ng-class="{'has-error': errors.description}">
-                        <div class="form-group smart-form">
-                            <label class="label"><?php echo __('Description'); ?></label>
-                            <label class="input"> <b class="icon-prepend">
-                                    <i class="fa fa-pencil"></i>
-                                </b>
-                                <input type="text" class="input-sm"
-                                       ng-model="post.Macro.description">
-                            </label>
-                        </div>
-                        <div ng-repeat="error in errors.description">
-                            <div class="help-block text-danger">{{ error }}</div>
-                        </div>
+                    <input
+                        class="form-control"
+                        type="text"
+                        ng-model="post.Macro.value">
+                    </div>
+                    <div ng-repeat="error in errors.value">
+                        <div class="help-block text-danger">{{ error }}</div>
                     </div>
                 </div>
 
-                <div class="row padding-top-10">
-                    <div class="col-xs-12 smart-form" ng-class="{'has-error': errors.password}">
+                <div class="form-group" ng-class="{'has-error': errors.description}">
+                    <label class="control-label">
+                        <?php echo __('Description'); ?>
+                    </label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                        </div>
+                    <input
+                        class="form-control"
+                        type="text"
+                        ng-model="post.Macro.description">
+                    <div ng-repeat="error in errors.description">
+                        <div class="help-block text-danger">{{ error }}</div>
+                    </div>
+                    </div>
+                </div>
 
-                        <label class="checkbox small-checkbox-label">
-                            <input type="checkbox" name="checkbox"
-                                   ng-true-value="1"
-                                   ng-false-value="0"
-                                   ng-model="post.Macro.password">
-                            <i class="checkbox-primary"></i>
+                <div class="form-group" ng-class="{'has-error': errors.password}">
+                    <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                         ng-class="{'has-error': errors.password}">
+
+                        <input type="checkbox"
+                               id="hideMacro"
+                               class="custom-control-input"
+                               ng-true-value="1"
+                               ng-false-value="0"
+                               ng-model="post.Macro.password">
+                        <label class="custom-control-label" for="hideMacro">
                             <?php echo __('Hide value'); ?>
-                            <div ng-repeat="error in errors.password">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                            <div class="help-block">
-                                <?php echo __('Blur macro value to prevent accidentally leak values if your PC is connected to a projector or television.'); ?>
-                                <?php echo __('Security notice: The value will be still written to the HTML document in plaintext!'); ?>
-                            </div>
                         </label>
+                    </div>
 
+                    <div class="col col-xs-12 col-md-offset-2 help-block">
+                        <?php echo __('Blur macro value to prevent accidentally leak values if your PC is connected to a projector or television.'); ?>
+                        <?php echo __('Security notice: The value will be still written to the HTML document in plaintext!'); ?>
                     </div>
                 </div>
-
             </div>
-
             <div class="modal-footer">
-
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <?php echo __('Close'); ?>
-                </button>
-
                 <button type="button" class="btn btn-primary" ng-click="saveMacro()">
                     <?php echo __('Save'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
                 </button>
             </div>
         </div>
@@ -264,115 +249,106 @@
 
 <!-- Edit macro modal -->
 <div id="editMacroModal" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
+            <div class="modal-header bg-default">
+                <h5 class="modal-title">
                     <i class="fa fa-usd"></i>
                     <?php echo __('Edit user defined macro'); ?>
-                </h4>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
             </div>
             <div class="modal-body">
-
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="form-group smart-form hintmark_red">
-                            <?php echo __('Select macro name'); ?>
-                        </div>
+                <div class="form-group required" ng-class="{'has-error': errors.name}">
+                    <label class="control-label" for="EditMacroNameSelect">
+                        <?php echo __('Select macro name'); ?>
+                    </label>
+                    <select
+                        id="EditMacroNameSelect"
+                        data-placeholder="<?php echo __('Please choose'); ?>"
+                        class="form-control"
+                        class="form-control"
+                        chosen="availableMacros"
+                        ng-options="value as value for (key , value) in availableMacros"
+                        ng-model="editPost.Macro.name">
+                    </select>
+                    <div class="help-block txt-color-yellow">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        <?php echo __('If you change the macro name, you manually need to edit all occurrences of the macro!'); ?>
                     </div>
-                    <div class="col-xs-12">
-                        <div class="form-group" ng-class="{'has-error': errors.name}">
-                            <select
-                                    id="EditMacroNameSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="availableMacros"
-                                    ng-options="value as value for (key , value) in availableMacros"
-                                    ng-model="editPost.Macro.name">
-                            </select>
-                            <div ng-repeat="error in errors.name">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-
-
-                            <div class="help-block txt-color-yellow">
-                                <i class="fa fa-exclamation-triangle"></i>
-                                <?php echo __('If you change the macro name, you manually need to edit all occurrences of the macro!'); ?>
-                            </div>
-
-                        </div>
+                    <div ng-repeat="error in errors.name">
+                        <div class="help-block text-danger">{{ error }}</div>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-xs-12 col-lg-6 smart-form">
-                        <div class="form-group smart-form" ng-class="{'has-error': errors.value}">
-                            <label class="label hintmark_red"><?php echo __('Value'); ?></label>
-                            <label class="input"> <b class="icon-prepend">
-                                    <i class="fa fa-usd"></i>
-                                </b>
-                                <input type="text" class="input-sm"
-                                       ng-class="{'macroPassword': editPost.Macro.password}"
-                                       ng-model="editPost.Macro.value">
-                            </label>
-                            <div ng-repeat="error in errors.value">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
+                <div class="form-group" ng-class="{'has-error': errors.value}">
+                    <label class="control-label">
+                        <?php echo __('Value'); ?>
+                    </label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-usd"></i></span>
                         </div>
+                        <input
+                            class="form-control"
+                            type="text"
+                            ng-model="editPost.Macro.value">
                     </div>
-                    <div class="col-xs-12 col-lg-6 smart-form" ng-class="{'has-error': errors.description}">
-                        <div class="form-group smart-form">
-                            <label class="label"><?php echo __('Description'); ?></label>
-                            <label class="input"> <b class="icon-prepend">
-                                    <i class="fa fa-pencil"></i>
-                                </b>
-                                <input type="text" class="input-sm"
-                                       ng-model="editPost.Macro.description">
-                            </label>
+                    <div ng-repeat="error in errors.value">
+                        <div class="help-block text-danger">{{ error }}</div>
+                    </div>
+                </div>
+
+                <div class="form-group" ng-class="{'has-error': errors.description}">
+                    <label class="control-label">
+                        <?php echo __('Description'); ?>
+                    </label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
                         </div>
+                        <input
+                            class="form-control"
+                            type="text"
+                            ng-model="editPost.Macro.description">
                         <div ng-repeat="error in errors.description">
                             <div class="help-block text-danger">{{ error }}</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="row padding-top-10">
-                    <div class="col-xs-12 smart-form" ng-class="{'has-error': errors.password}">
+                <div class="form-group" ng-class="{'has-error': errors.password}">
+                    <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                         ng-class="{'has-error': errors.password}">
 
-                        <label class="checkbox small-checkbox-label">
-                            <input type="checkbox" name="checkbox"
-                                   ng-true-value="1"
-                                   ng-false-value="0"
-                                   ng-model="editPost.Macro.password">
-                            <i class="checkbox-primary"></i>
+                        <input type="checkbox"
+                               id="editHideMacro"
+                               class="custom-control-input"
+                               ng-true-value="1"
+                               ng-false-value="0"
+                               ng-model="editPost.Macro.password">
+                        <label class="custom-control-label" for="editHideMacro">
                             <?php echo __('Hide value'); ?>
-                            <div ng-repeat="error in errors.password">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                            <div class="help-block">
-                                <?php echo __('Blur macro value to prevent accidentally leak values if your PC is connected to a projector or television.'); ?>
-                                <?php echo __('Security notice: The value will be still written to the HTML document in plaintext!'); ?>
-                            </div>
                         </label>
+                    </div>
 
+                    <div class="col col-xs-12 col-md-offset-2 help-block">
+                        <?php echo __('Blur macro value to prevent accidentally leak values if your PC is connected to a projector or television.'); ?>
+                        <?php echo __('Security notice: The value will be still written to the HTML document in plaintext!'); ?>
                     </div>
                 </div>
-
             </div>
-
             <div class="modal-footer">
-
-                <button type="button" class="btn btn-danger pull-left" ng-click="deleteMacro()">
-                    <?php echo __('Delete'); ?>
-                </button>
-
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <?php echo __('Close'); ?>
-                </button>
-
                 <button type="button" class="btn btn-primary" ng-click="editMacro()">
                     <?php echo __('Save'); ?>
+                </button>
+                <button type="button" class="btn btn-danger" ng-click="deleteMacro()">
+                    <?php echo __('Delete'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
                 </button>
             </div>
         </div>
