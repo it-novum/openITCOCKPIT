@@ -602,7 +602,11 @@ class ServicesTable extends Table {
             $query = $this->find();
             $query
                 ->innerJoinWith('Hosts')
-                ->innerJoinWith('Hosts.HostsToContainersSharing')
+                ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+                    return $q->where([
+                        'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
+                    ]);
+                })
                 ->innerJoinWith('Servicetemplates')
                 ->select([
                     'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
@@ -665,7 +669,11 @@ class ServicesTable extends Table {
         $query = $this->find();
         $query
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+                return $q->where([
+                    'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
+                ]);
+            })
             ->innerJoinWith('Servicetemplates')
             ->select([
                 'Services.id',
@@ -701,7 +709,11 @@ class ServicesTable extends Table {
             $query = $this->find();
             $query
                 ->innerJoinWith('Hosts')
-                ->innerJoinWith('Hosts.HostsToContainersSharing')
+                ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+                    return $q->where([
+                        'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
+                    ]);
+                })
                 ->innerJoinWith('Servicetemplates')
                 ->select([
                     'Services.id',

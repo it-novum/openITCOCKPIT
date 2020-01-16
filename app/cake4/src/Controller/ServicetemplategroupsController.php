@@ -53,22 +53,11 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\ServicetemplategroupsFilter;
 
-
 /**
- * @property Servicetemplategroup $Servicetemplategroup
- * @property Servicetemplate $Servicetemplate
- * @property Container $Container
- * @property Host $Host
- * @property Hostgroup $Hostgroup
- * @property AppPaginatorComponent $Paginator
+ * Class ServicetemplategroupsController
+ * @package App\Controller
  */
 class ServicetemplategroupsController extends AppController {
-    public $layout = 'blank';
-
-    public $uses = [
-        'Changelog',
-    ];
-
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -274,7 +263,6 @@ class ServicetemplategroupsController extends AppController {
     }
 
     public function append() {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -485,7 +473,6 @@ class ServicetemplategroupsController extends AppController {
      * @param int|null $servicetemplategroupId
      */
     public function allocateToHost($servicetemplategroupId = null) {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -645,7 +632,6 @@ class ServicetemplategroupsController extends AppController {
      * @param int|null $servicetemplategroupId
      */
     public function allocateToHostgroup($servicetemplategroupId = null) {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -823,7 +809,6 @@ class ServicetemplategroupsController extends AppController {
      * @param int|null $servicetemplategroupId
      */
     public function allocateToMatchingHostgroup($servicetemplategroupId = null) {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -867,7 +852,7 @@ class ServicetemplategroupsController extends AppController {
         } catch (RecordNotFoundException $e) {
             $this->response = $this->response->withStatus(400);
             $this->set('success', false);
-            $this->set('message', __('No matching host group "%s" found.', $servicetemplategroupName));
+            $this->set('message', __('No matching host group "{0}" found.', $servicetemplategroupName));
             $this->viewBuilder()->setOption('serialize', ['success', 'message']);
             return;
         }
@@ -984,7 +969,7 @@ class ServicetemplategroupsController extends AppController {
 
         $this->set('success', true);
         $this->set('services', ['_ids' => $newServiceIds]);
-        $this->set('message', __('Created %s new services', sizeof($newServiceIds)));
+        $this->set('message', __('Created {0} new services', sizeof($newServiceIds)));
         $this->set('errors', $errors);
         $this->viewBuilder()->setOption('serialize', ['success', 'services', 'errors', 'message']);
     }
@@ -995,7 +980,7 @@ class ServicetemplategroupsController extends AppController {
      ****************************/
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
