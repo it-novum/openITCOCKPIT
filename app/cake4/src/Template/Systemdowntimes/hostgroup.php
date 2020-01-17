@@ -181,7 +181,7 @@
 
                                     <td>
                                         <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
-                                            <a href="/hostgroups/edit/{{ downtime.Hostgroup.id }}">
+                                            <a ui-sref="HostgroupsEdit({id: downtime.Hostgroup.id})">
                                                 {{ downtime.Container.name }}
                                             </a>
                                         <?php else: ?>

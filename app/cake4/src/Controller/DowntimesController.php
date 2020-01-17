@@ -251,12 +251,26 @@ class DowntimesController extends AppController {
         if (!empty($error['Downtime'])) {
             $this->response = $this->response->withStatus(400);
             $this->set('success', false);
-        } else {
-            $this->set('success', true);
-        }
+            $this->set('error', $error);
+            $this->viewBuilder()->setOption('serialize', ['error', 'success']);
+            return;
 
+        }
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+        $offset = $UserTime->getUserTimeToServerOffset();
+
+        $start = strtotime($start);
+        $end = strtotime($end);
+
+        $start = date('d.m.Y H:i', $start - $offset);
+        $end = date('d.m.Y H:i', $end - $offset);
+
+        $this->set('success', true);
         $this->set('error', $error);
-        $this->viewBuilder()->setOption('serialize', ['error', 'success']);
+        $this->set('start', $start);
+        $this->set('end', $end);
+        $this->viewBuilder()->setOption('serialize', ['error', 'success', 'start', 'end']);
     }
 
     /**
