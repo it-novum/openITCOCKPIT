@@ -794,6 +794,11 @@ angular.module('openITCOCKPIT')
             graphAutoRefreshIntervalId = null;
         };
 
+        //Disable status update interval, if the object gets removed from DOM.
+        $scope.$on('$destroy', function(){
+            disableGraphAutorefresh();
+        });
+
         $scope.loadIdOrUuid();
         $scope.loadTimezone();
 
