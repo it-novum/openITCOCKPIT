@@ -533,7 +533,7 @@
                                     <?php if ($this->Acl->hasPermission('edit', 'hostdependencies')): ?>
                                         <a ui-sref="HostdependenciesEdit({id:hostdependency.id})"
                                            ng-if="hostdependency.allowEdit">
-                                           class="btn btn-default btn-lower-padding">
+                                            class="btn btn-default btn-lower-padding">
                                             <i class="fa fa-cog"></i>
                                         </a>
                                     <?php else: ?>
@@ -550,7 +550,7 @@
                                         <?php if ($this->Acl->hasPermission('edit', 'hostdependencies')): ?>
                                             <a ui-sref="HostdependenciesEdit({id:hostdependency.id})"
                                                ng-if="hostdependency.allowEdit">
-                                               class="dropdown-item">
+                                                class="dropdown-item">
                                                 <i class="fa fa-cog"></i>
                                                 <?php echo __('Edit'); ?>
                                             </a>
@@ -558,8 +558,8 @@
                                         <?php if ($this->Acl->hasPermission('delete', 'hostdependencies')): ?>
                                             <a ng-click="confirmDelete(getObjectForDelete(hostdependency))"
                                                ng-if="hostdependency.allowEdit">
-                                               href="javascript:void(0);"
-                                               class="dropdown-item txt-color-red">
+                                                href="javascript:void(0);"
+                                                class="dropdown-item txt-color-red">
                                                 <i class="fa fa-trash"></i>
                                                 <?php echo __('Delete'); ?>
                                             </a>
