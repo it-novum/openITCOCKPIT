@@ -346,7 +346,7 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
                 ['Objects.object_id = DowntimeHosts.object_id', 'DowntimeHosts.downtime_type = 2'] //Downtime.downtime_type = 2 Host downtime
             )
             ->order([
-                'DowntimeServices.entry_time' => 'DESC'
+                'DowntimeHosts.entry_time' => 'DESC'
             ])
             ->where([
                 'Objects.name1'         => $uuid,
