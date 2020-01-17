@@ -35,6 +35,9 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
+use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\TableRegistry;
@@ -846,8 +849,8 @@ class DashboardsController extends AppController {
 
             $userImage = '/img/fallback_user.png';
             if ($user->get('image') != null && $user->get('image') != '') {
-                if (file_exists(WWW_ROOT . 'userimages' . DS . $user->get('image'))) {
-                    $userImage = '/userimages' . DS . $user->get('image');
+                if (file_exists(WWW_ROOT . 'img' . DS . 'userimages' . DS . $user->get('image'))) {
+                    $userImage = '/img/userimages' . DS . $user->get('image');
                 }
             }
 
@@ -862,6 +865,10 @@ class DashboardsController extends AppController {
         }
     }
 
+    /**
+     * @throws \Exception
+     * @deprecated
+     */
     public function parentOutagesWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template

@@ -33,6 +33,7 @@ class HostdependenciesFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'equals' => [
+                'Hostdependencies.id',
                 'Hostdependencies.inherits_parent',
                 'Hostdependencies.execution_fail_on_up',
                 'Hostdependencies.execution_fail_on_down',
@@ -45,7 +46,7 @@ class HostdependenciesFilter extends Filter {
                 'Hostdependencies.notification_fail_on_pending',
                 'Hostdependencies.notification_none'
             ],
-            'like'  => [
+            'like'   => [
                 'Hosts.name',
                 'HostsDependent.name',
                 'Hostgroups.name',

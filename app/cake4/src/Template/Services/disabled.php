@@ -65,7 +65,7 @@
                     <div class="jarviswidget-ctrls" role="menu"></div>
 
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-plug"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Disabled services'); ?> </h2>
+                    <h2 class="hidden-mobile"><?php echo __('Disabled services overview'); ?> </h2>
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                             <li class="">
@@ -235,16 +235,6 @@
                                                            ng-click="confirmActivate(getObjectForDelete(host, service))">
                                                             <i class="fa fa-plug"></i> <?php echo __('Enable'); ?>
                                                         </a>
-                                                    </li>
-                                                <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                    <li ng-if="service.allow_edit">
-                                                        <?php echo $this->AdditionalLinks->renderAsListItems(
-                                                            $additionalLinksList,
-                                                            '{{service.id}}',
-                                                            [],
-                                                            true
-                                                        ); ?>
                                                     </li>
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'services')): ?>

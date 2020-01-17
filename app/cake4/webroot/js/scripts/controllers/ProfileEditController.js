@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ProfileEditController', function($scope, $http, $state, $stateParams, NotyService){
+    .controller('ProfileEditController', function($scope, $http, $state, $stateParams, $rootScope, NotyService){
 
         $scope.init = true;
         $scope.apikeys = [];
@@ -44,9 +44,7 @@ angular.module('openITCOCKPIT')
                 data.password = '';
                 data.confirm_password = '';
 
-                $scope.post = {
-                    User: data
-                };
+                $scope.post.User = data;
 
             }, function errorCallback(result){
                 if(result.status === 403){
@@ -86,6 +84,9 @@ angular.module('openITCOCKPIT')
                 maxFilesize: $scope.maxUploadLimit.value, //MB
                 acceptedFiles: 'image/*', //mimetypes
                 paramName: "Picture",
+                headers: {
+                    'X-CSRF-TOKEN': $rootScope._csrfToken
+                },
                 success: function(obj){
                     var $previewElement = $(obj.previewElement);
                     var response = JSON.parse(obj.xhr.response);
@@ -169,8 +170,8 @@ angular.module('openITCOCKPIT')
 
                 $scope.post.Password = {
                     current_password: null,
-                        password: null,
-                        confirm_password: null
+                    password: null,
+                    confirm_password: null
                 };
                 $scope.errors = {};
 

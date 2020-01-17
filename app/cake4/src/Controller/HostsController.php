@@ -115,24 +115,8 @@ use Statusengine2Module\Model\Entity\NotificationHost;
 
 
 /**
- * @property Host $Host
- * @property Hosttemplatecommandargumentvalue $Hosttemplatecommandargumentvalue
- * @property Hostcommandargumentvalue $Hostcommandargumentvalue
- * @property Contact $Contact
- * @property Contactgroup $Contactgroup
- * @property DeletedHost $DeletedHost
- * @property DeletedService $DeletedService
- * @property Container $Container
- * @property Hosttemplate $Hosttemplate
- * @property Hostgroup $Hostgroup
- * @property Timeperiod $Timeperiod
- * @property DowntimeHost $DowntimeHost
- * @property \BbcodeComponent $Bbcode
- * @property StatehistoryHost $StatehistoryHost
- * @property NotificationHost $NotificationHost
- * @property Service $Service
- *
- * @property \AppPaginatorComponent $Paginator
+ * Class HostsController
+ * @package App\Controller
  */
 class HostsController extends AppController {
 
@@ -157,7 +141,6 @@ class HostsController extends AppController {
         }
 
         if (!$this->isApiRequest()) {
-            $this->set('QueryHandler', new QueryHandler($SystemsettingsTable->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
             $this->set('satellites', $satellites);
             //Only ship HTML template
@@ -296,12 +279,7 @@ class HostsController extends AppController {
         }
 
         $this->set('all_hosts', $all_hosts);
-
-        $toJson = ['all_hosts', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['all_hosts', 'scroll'];
-        }
-        $this->viewBuilder()->setOption('serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', ['all_hosts']);
     }
 
     public function icon() {
@@ -1855,7 +1833,7 @@ class HostsController extends AppController {
         }
 
         //Load required data to merge and display inheritance data
-        $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($host['id']);
+        $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($host['hosttemplate_id']);
 
         //Merge host and inheritance data
         $HostMergerForBrowser = new HostMergerForBrowser(
@@ -1945,7 +1923,7 @@ class HostsController extends AppController {
         //Check for host acknowledgements and downtimes
         $acknowledgement = [];
         if ($Hoststatus->isAcknowledged()) {
-            $acknowledgement = $AcknowledgementHostsTable->byHostUuid($host->getUuid());
+            $acknowledgement = $AcknowledgementHostsTable->byHostUuid($hostObj->getUuid());
             if (!empty($acknowledgement)) {
                 $Acknowledgement = new AcknowledgementHost($acknowledgement, $UserTime);
                 $acknowledgement = $Acknowledgement->toArray();

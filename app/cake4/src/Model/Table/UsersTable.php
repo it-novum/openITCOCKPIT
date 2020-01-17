@@ -13,6 +13,7 @@ use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Utility\Security;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
 
@@ -909,9 +910,9 @@ class UsersTable extends Table {
         $query = $this->find();
         return $query
             ->where([
-                'Users.firstname'  => $firstname,
-                'Users.lastname'   => $lastname,
-                'Users.is_active'  => 1
+                'Users.firstname' => $firstname,
+                'Users.lastname'  => $lastname,
+                'Users.is_active' => 1
             ])
             ->first();
     }
@@ -1045,5 +1046,94 @@ class UsersTable extends Table {
         }
 
         return $userToDelete;
+    }
+
+    /**
+     * @return false|string
+     */
+    public function uploadProfilePicture() {
+        $path = WWW_ROOT . 'img' . DS . 'userimages' . DS;
+
+        if ($_FILES['Picture']['error'] !== UPLOAD_ERR_OK) {
+            return false;
+        }
+
+        if (!is_dir($path)) {
+            return false;
+        }
+
+        $tmpImage = UUID::v4();
+        if (move_uploaded_file($_FILES['Picture']['tmp_name'], $path . $tmpImage)) {
+            $newImage = UUID::v4() . '.png';
+
+            //Try to create new user image from uploaded image
+
+            $tmpImageFull = $path . $tmpImage;
+            $newImageFull = $path . $newImage;
+
+            $imgsize = getimagesize($tmpImageFull);
+            $width = $imgsize[0];
+            $height = $imgsize[1];
+            $imgtype = $imgsize[2];
+
+            switch ($imgtype) {
+                /**
+                 * 1 => GIF
+                 * 2 => JPG
+                 * 3 => PNG
+                 * 4 => SWF
+                 * 5 => PSD
+                 * 6 => BMP
+                 * 7 => TIFF(intel byte order)
+                 * 8 => TIFF(motorola byte order)
+                 * 9 => JPC
+                 * 10 => JP2
+                 * 11 => JPX
+                 * 12 => JB2
+                 * 13 => SWC
+                 * 14 => IFF
+                 * 15 => WBMP
+                 * 16 => XBM
+                 */
+                case 1:
+                    $srcImg = imagecreatefromgif($tmpImageFull);
+                    break;
+                case 2:
+                    $srcImg = imagecreatefromjpeg($tmpImageFull);
+                    break;
+                case 3:
+                    $srcImg = imagecreatefrompng($tmpImageFull);
+                    break;
+                default:
+                    //Filetype not supported!
+                    return false;
+                    break;
+            }
+
+            $newWidth = 120;
+            $newHeight = 120;
+            //Thanks to http://php.net/manual/de/function.imagecopyresized.php#50019 :)
+            if ($width > $height && $newWidth < $newHeight) {
+                $newHeight = $height / ($width / $newWidth);
+            } else if ($width < $height && $newHeight < $width) {
+                $newWidth = $width / ($height / $newHeight);
+            } else {
+                $newHeight = $height;
+                $newWidth = $width;
+            }
+            $destImg = imagecreatetruecolor($newWidth, $newHeight);
+            $transparent = imagecolorallocatealpha($destImg, 0, 0, 0, 127);
+            imagefill($destImg, 0, 0, $transparent);
+            imagecopyresized($destImg, $srcImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            imagealphablending($destImg, false);
+            imagesavealpha($destImg, true);
+            imagepng($destImg, $newImageFull);
+            imagedestroy($destImg);
+
+            //Delete source image
+            unlink($tmpImageFull);
+            return $newImage;
+        }
+        return false;
     }
 }

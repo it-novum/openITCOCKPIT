@@ -33,6 +33,7 @@ class ServicedependenciesFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'equals' => [
+                'Servicedependencies.id',
                 'Servicedependencies.inherits_parent',
                 'Servicedependencies.execution_fail_on_ok',
                 'Servicedependencies.execution_fail_on_warning',
@@ -47,7 +48,7 @@ class ServicedependenciesFilter extends Filter {
                 'Servicedependencies.notification_fail_on_pending',
                 'Servicedependencies.notification_none'
             ],
-            'like'  => [
+            'like'   => [
                 'Services.servicename',
                 'ServicesDependent.servicename',
                 'Servicegroups.name',

@@ -50,10 +50,16 @@ class Systemdowntime {
     private $author;
 
     /**
+     * @var UserTime|null
+     */
+    private $UserTime;
+
+    /**
      * Systemdowntime constructor.
      * @param array $systemdowntime
+     * @param UserTime|null $UserTime
      */
-    public function __construct($systemdowntime) {
+    public function __construct($systemdowntime, $UserTime = null) {
         $this->id = (int)$systemdowntime['id'];
         $this->objecttypeId = (int)$systemdowntime['objecttype_id'];
         $this->objectId = (int)$systemdowntime['object_id'];
@@ -74,6 +80,7 @@ class Systemdowntime {
         $this->duration = (int)$systemdowntime['duration'];
         $this->comment = $systemdowntime['comment'];
         $this->author = $systemdowntime['author'];
+        $this->UserTime = $UserTime;
     }
 
     /**
@@ -168,6 +175,16 @@ class Systemdowntime {
     }
 
     public function toArray() {
-        return get_object_vars($this);
+        $arr = get_object_vars($this);
+        if($this->UserTime instanceof UserTime){
+            $offset = $this->UserTime->getUserTimeToServerOffset();
+
+            $startTime = strtotime($this->startTime);
+            $startTime = $startTime + $offset;
+
+            $arr['startTime'] = date('H:i', $startTime);
+        }
+
+        return $arr;
     }
 }

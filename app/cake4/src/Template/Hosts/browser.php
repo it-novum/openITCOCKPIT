@@ -775,19 +775,11 @@ use Cake\Core\Plugin;
 
                                                     <td>
                                                         <?php if ($this->Acl->hasPermission('index', 'browsers')): ?>
-                                                            <a href="/browsers/index?containerId={{mergedHost.container_id}}"
-                                                               ng-if="mergedHost.container_id != 1">
-                                                                /{{mainContainer}}
-                                                            </a>
-
-                                                            <a href="/browsers/index"
-                                                               ng-if="mergedHost.container_id == 1">
+                                                            <a ui-sref="BrowsersIndex({containerId: mergedHost.container_id})">
                                                                 /{{mainContainer}}
                                                             </a>
                                                         <?php else: ?>
-                                                            <div ng-repeat="(key, value) in sharedContainers">
-                                                                /{{mainContainer}}
-                                                            </div>
+                                                            /{{mainContainer}}
                                                         <?php endif; ?>
                                                     </td>
 
@@ -798,12 +790,7 @@ use Cake\Core\Plugin;
 
                                                         <?php if ($this->Acl->hasPermission('index', 'browsers')): ?>
                                                             <div ng-repeat="(key, value) in sharedContainers">
-                                                                <a href="/browsers/index?containerId={{key}}"
-                                                                   ng-if="key != 1">
-                                                                    /{{value}}
-                                                                </a>
-
-                                                                <a href="/browsers/index" ng-if="key == 1">
+                                                                <a ui-sref="BrowsersIndex({containerId: key})">
                                                                     /{{value}}
                                                                 </a>
                                                             </div>
@@ -1371,7 +1358,7 @@ use Cake\Core\Plugin;
 
                             <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
 
-                        </div> <!-- cloase tab2 -->
+                        </div> <!-- close tab2 -->
 
                         <div id="serviceTab3" class="tab-pane fade active in" ng-if="activeTab === 'disabled'">
 
@@ -1467,7 +1454,7 @@ use Cake\Core\Plugin;
                                 <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                             </div>
 
-                        </div> <!-- cloase tab4 -->
+                        </div> <!-- close tab4 -->
                     </div>
                 </div>
             </div>

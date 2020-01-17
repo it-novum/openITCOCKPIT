@@ -266,7 +266,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.getObjectsForExternalCommand = function(){
-            return [$scope.mergedHost];
+            return [{
+                Host: $scope.mergedHost
+            }];
         };
 
         $scope.changepage = function(page){
@@ -643,7 +645,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-
+        //Fire on page load
         $scope.loadIdOrUuid();
         $scope.loadTimezone();
         SortService.setCallback($scope.load);

@@ -197,7 +197,7 @@
 
                                     <td>
                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                            <a href="/hosts/browser/{{ downtime.Host.id }}">
+                                            <a ui-sref="HostsBrowser({id: downtime.Host.id})">
                                                 {{ downtime.Host.hostname }}
                                             </a>
                                         <?php else: ?>
@@ -207,7 +207,7 @@
 
                                     <td>
                                         <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                            <a href="/services/browser/{{ downtime.Service.id }}">
+                                            <a ui-sref="ServicesBrowser({id: downtime.Service.id})">
                                                 {{ downtime.Service.servicename }}
                                             </a>
                                         <?php else: ?>

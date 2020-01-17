@@ -2,23 +2,19 @@ angular.module('openITCOCKPIT')
     .controller('HostsIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, QueryStringService, $stateParams){
         $rootScope.lastObjectName = null;
 
-        SortService.setSort(QueryStringService.getValue('sort', 'Hoststatus.current_state'));
-        SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
+        SortService.setSort(QueryStringService.getStateValue($stateParams, 'sort', 'Hoststatus.current_state'));
+        SortService.setDirection(QueryStringService.getStateValue($stateParams, 'direction', 'desc'));
         $scope.currentPage = 1;
 
         $scope.useScroll = true;
 
-        filterHostname = null;
-        if(typeof $stateParams.filterHostname !== "undefined"){
-            var filterHostname = $stateParams.filterHostname;
-        }
-
+        filterHostname = QueryStringService.getStateValue($stateParams, 'hostname');
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
                 Hoststatus: {
-                    current_state: QueryStringService.hoststate(),
+                    current_state: QueryStringService.hoststate($stateParams),
                     acknowledged: QueryStringService.getValue('has_been_acknowledged', false) === '1',
                     not_acknowledged: QueryStringService.getValue('has_not_been_acknowledged', false) === '1',
                     in_downtime: QueryStringService.getValue('in_downtime', false) === '1',
@@ -26,8 +22,8 @@ angular.module('openITCOCKPIT')
                     output: ''
                 },
                 Host: {
-                    id: QueryStringService.getIds('filter[Hosts.id][]', []),
-                    name: (filterHostname)?filterHostname:'',
+                    id: QueryStringService.getStateValue($stateParams, 'id', []),
+                    name: (filterHostname) ? filterHostname : '',
                     description: '',
                     keywords: '',
                     not_keywords: '',
@@ -76,8 +72,8 @@ angular.module('openITCOCKPIT')
                 'filter[Hosts.address]': $scope.filter.Host.address,
                 'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id
             };
-            if(QueryStringService.hasValue('BrowserContainerId')){
-                params['BrowserContainerId'] = QueryStringService.getValue('BrowserContainerId');
+            if(QueryStringService.getStateValue($stateParams, 'BrowserContainerId') !== null){
+                params['BrowserContainerId'] = QueryStringService.getStateValue($stateParams, 'BrowserContainerId');
             }
 
             $http.get("/hosts/index.json", {

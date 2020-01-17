@@ -155,17 +155,19 @@ class AngularAssets implements AngularAssetsInterface {
         //Load Plugin configuration files
 
         $Folder = new Folder(PLUGIN);
-        $folders = $Folder->find();
+        $folders = $Folder->subdirectories();
 
         $loadedModules = array_filter($folders, function ($value) {
             return strpos($value, 'Module') !== false;
         });
 
         foreach ($loadedModules as $loadedModule) {
-            $file = PLUGIN . $loadedModule . DS . 'Lib' . DS . 'AngularAssets.php';
+            $file =  $loadedModule . DS . 'src' . DS . 'Lib' . DS . 'AngularAssets.php';
             if (file_exists($file)) {
                 require_once $file;
-                $dynamicAngularAssets = sprintf('itnovum\openITCOCKPIT\%s\AngularAssets\AngularAssets', $loadedModule);
+                $moduleNameArray = explode('/', $loadedModule);
+                $moduleName = array_pop($moduleNameArray);
+                $dynamicAngularAssets = sprintf('itnovum\openITCOCKPIT\%s\AngularAssets\AngularAssets', $moduleName);
                 $ModuleAngularAssets = new $dynamicAngularAssets();
                 /** @var AngularAssetsInterface $ModuleAngularAssets */
                 foreach ($ModuleAngularAssets->getJsFiles() as $jsFile) {
@@ -184,17 +186,19 @@ class AngularAssets implements AngularAssetsInterface {
         //Load Plugin configuration files
 
         $Folder = new Folder(PLUGIN);
-        $folders = $Folder->find();
+        $folders = $Folder->subdirectories();
 
         $loadedModules = array_filter($folders, function ($value) {
             return strpos($value, 'Module') !== false;
         });
 
         foreach ($loadedModules as $loadedModule) {
-            $file = PLUGIN . $loadedModule . DS . 'Lib' . DS . 'AngularAssets.php';
+            $file = $loadedModule . DS . 'src' .DS . 'Lib' . DS . 'AngularAssets.php';
             if (file_exists($file)) {
                 require_once $file;
-                $dynamicAngularAssets = sprintf('itnovum\openITCOCKPIT\%s\AngularAssets\AngularAssets', $loadedModule);
+                $moduleNameArray = explode('/', $loadedModule);
+                $moduleName = array_pop($moduleNameArray);
+                $dynamicAngularAssets = sprintf('itnovum\openITCOCKPIT\%s\AngularAssets\AngularAssets', $moduleName);
                 $ModuleAngularAssets = new $dynamicAngularAssets();
                 /** @var AngularAssetsInterface $ModuleAngularAssets */
                 foreach ($ModuleAngularAssets->getCssFiles() as $cssFile) {

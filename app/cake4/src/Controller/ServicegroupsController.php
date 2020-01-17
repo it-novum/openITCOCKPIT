@@ -65,16 +65,9 @@ use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 
 /**
  * Class ServicegroupsController
- *
- * @property AppPaginatorComponent $Paginator
+ * @package App\Controller
  */
 class ServicegroupsController extends AppController {
-
-    public $uses = [
-        'Changelog'
-    ];
-
-    public $layout = 'blank';
 
 
     public function index() {
@@ -492,8 +485,11 @@ class ServicegroupsController extends AppController {
         }
     }
 
+    /**
+     * @throws MissingDbBackendException
+     * @deprecated
+     */
     public function listToPdf() {
-        $this->layout = 'Admin.default';
 
         /** @var $ServicegroupsTable ServicegroupsTable */
         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');

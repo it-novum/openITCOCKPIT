@@ -157,7 +157,7 @@ class Menu {
                         1
                     ))
                     ->addLink(new MenuLink(
-                        __('Log Entries'),
+                        __('Log entries'),
                         'LogentriesIndex',
                         'logentries',
                         'index',

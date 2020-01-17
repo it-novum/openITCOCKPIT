@@ -65,20 +65,10 @@ use Statusengine2Module\Model\Table\ServicestatusTable;
 
 /**
  * Class HostgroupsController
- *
- * @property AppPaginatorComponent $Paginator
- * @property DbBackend $DbBackend
+ * @package App\Controller
  */
 class HostgroupsController extends AppController {
 
-    /**
-     * @var boolean
-     */
-    public $uses = [
-        'Changelog'
-    ];
-
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -471,8 +461,15 @@ class HostgroupsController extends AppController {
             __('unreachable')
         ], $hostgroupHoststatusOverview);
 
+        $hostgroup = $hostgroup->toArray();
+
+        $hostgroup['allowEdit'] = $this->hasPermission('edit', 'hostgroups');
+        if ($this->hasRootPrivileges === false && $hostgroup['allowEdit'] === true) {
+            $hostgroup['allowEdit'] = $this->allowedByContainerId($hostgroup['parent_id']);
+        }
+
         $data = [
-            'Hostgroup'     => $hostgroup->toArray(),
+            'Hostgroup'     => $hostgroup,
             'Hosts'         => $all_hosts,
             'StatusSummary' => $hostgroupHoststatusOverview
         ];
@@ -482,11 +479,12 @@ class HostgroupsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hostgroup']);
     }
 
+
     /**
      * @throws MissingDbBackendException
+     * @deprecated
      */
     public function listToPdf() {
-        $this->layout = 'Admin.default';
 
         /** @var $HostgroupsTable HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');

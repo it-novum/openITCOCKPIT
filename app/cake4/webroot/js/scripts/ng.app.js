@@ -3,7 +3,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
         return {
             response: function(result){
                 if(result.data.hasOwnProperty('_csrfToken')){
-                    $rootScope._csrfToken = result.data._csrfToken;
+                    if(result.data._csrfToken !== null){
+                        $rootScope._csrfToken = result.data._csrfToken;
+                    }
                 }
 
                 var url = result.config.url;
@@ -173,7 +175,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('BrowsersIndex', {
-                url: '/browsers/index',
+                url: '/browsers/index?containerId',
+                params: {
+                    containerId: {
+                        value: null
+                    }
+                },
                 templateUrl: "/browsers/index.html",
                 controller: "BrowsersIndexController"
             })
@@ -299,7 +306,29 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('ServicesIndex', {
-                url: '/services/index',
+                url: '/services/index?servicename&servicestate&sort&direction&BrowserContainerId',
+                params: {
+                    servicename: {
+                        value: null
+                    },
+                    servicestate: {
+                        value: null,
+                        array: true
+                    },
+                    sort: {
+                        value: null
+                    },
+                    direction: {
+                        value: null
+                    },
+                    BrowserContainerId: {
+                        value: null
+                    },
+                    id: {
+                        value: null,
+                        array: true
+                    }
+                },
                 templateUrl: "/services/index.html",
                 controller: "ServicesIndexController"
             })
@@ -444,6 +473,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('HostgroupsIndex', {
                 url: '/hostgroups/index',
+                params: {
+                    id: {
+                        value: null,
+                        array: true
+                    }
+                },
                 templateUrl: "/hostgroups/index.html",
                 controller: "HostgroupsIndexController"
             })
@@ -498,6 +533,11 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('ServicedependenciesIndex', {
                 url: '/servicedependencies/index',
+                params: {
+                    id: {
+                        value: null
+                    }
+                },
                 templateUrl: "/servicedependencies/index.html",
                 controller: "ServicedependenciesIndexController"
             })
@@ -516,6 +556,11 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('ServiceescalationsIndex', {
                 url: '/serviceescalations/index',
+                params: {
+                    id: {
+                        value: null
+                    }
+                },
                 templateUrl: "/serviceescalations/index.html",
                 controller: "ServiceescalationsIndexController"
             })
@@ -534,6 +579,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('ServicegroupsIndex', {
                 url: '/servicegroups/index',
+                params: {
+                    id: {
+                        value: null,
+                        array: true
+                    }
+                },
                 templateUrl: "/servicegroups/index.html",
                 controller: "ServicegroupsIndexController"
             })
@@ -594,6 +645,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('CommandsIndex', {
                 url: '/commands/index',
+                params: {
+                    id: {
+                        value: null,
+                        array: true
+                    }
+                },
                 templateUrl: "/commands/index.html",
                 controller: "CommandsIndexController"
             })
@@ -648,6 +705,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('TimeperiodsIndex', {
                 url: '/timeperiods/index',
+                params: {
+                    id: {
+                        value: null,
+                        array: true
+                    }
+                },
                 templateUrl: "/timeperiods/index.html",
                 controller: "TimeperiodsIndexController"
             })
@@ -721,6 +784,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('ContactsIndex', {
                 url: '/contacts/index',
+                params: {
+                    id: {
+                        value: null,
+                        array: true
+                    }
+                },
                 templateUrl: "/contacts/index.html",
                 controller: "ContactsIndexController"
             })
@@ -757,6 +826,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('ContactgroupsIndex', {
                 url: '/contactgroups/index',
+                params: {
+                    id: {
+                        value: null,
+                        array: true
+                    }
+                },
                 templateUrl: "/contactgroups/index.html",
                 controller: "ContactgroupsIndexController"
             })
@@ -787,6 +862,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('HostescalationsIndex', {
                 url: '/hostescalations/index',
+                params: {
+                    id: {
+                        value: null,
+                        array: true
+                    }
+                },
                 templateUrl: "/hostescalations/index.html",
                 controller: "HostescalationsIndexController"
             })
@@ -805,6 +886,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('HosttemplatesIndex', {
                 url: '/hosttemplates/index',
+                params: {
+                    id: {
+                        value: null,
+                        array: true
+                    }
+                },
                 templateUrl: "/hosttemplates/index.html",
                 controller: "HosttemplatesIndexController"
             })
@@ -906,12 +993,28 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('HostsIndex', {
-                url: '/hosts/index',
+                url: '/hosts/index?hostname&hoststate&sort&direction&BrowserContainerId',
                 templateUrl: "/hosts/index.html",
                 params: {
-                    filterHostname: {
+                    hostname: {
+                        value: null
+                    },
+                    hoststate: {
                         value: null,
-                        squash: true
+                        array: true
+                    },
+                    sort: {
+                        value: null
+                    },
+                    direction: {
+                        value: null
+                    },
+                    BrowserContainerId: {
+                        value: null
+                    },
+                    id: {
+                        value: null,
+                        array: true
                     }
                 },
                 controller: "HostsIndexController"
@@ -967,6 +1070,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('HostdependenciesIndex', {
                 url: '/hostdependencies/index',
+                params: {
+                    id: {
+                        value: null,
+                        array: true
+                    }
+                },
                 templateUrl: "/hostdependencies/index.html",
                 controller: "HostdependenciesIndexController"
             })
@@ -985,6 +1094,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('ServicetemplatesIndex', {
                 url: '/servicetemplates/index',
+                params: {
+                    id: {
+                        value: null,
+                        array: true
+                    }
+                },
                 templateUrl: "/servicetemplates/index.html",
                 controller: "ServicetemplatesIndexController"
             })
@@ -1169,6 +1284,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 url: '/automaps/view/:id',
                 templateUrl: "/automaps/view.html",
                 controller: "AutomapsViewController"
+            })
+
+            .state('SearchIndex', {
+                url: '/search/index',
+                templateUrl: "/search/index.html",
+                controller: "SearchIndexController"
             })
 
     })

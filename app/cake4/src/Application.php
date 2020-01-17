@@ -67,6 +67,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         $this->addPlugin('Authentication');
         $this->addPlugin('Authorization');
 
+        $this->addPlugin('CakePdf');
+
         if (PHP_SAPI === 'cli') {
             try {
                 $this->addPlugin('Bake');

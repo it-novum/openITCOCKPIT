@@ -36,6 +36,9 @@ class TimeperiodsFilter extends Filter {
                 'Timeperiods.name',
                 'Timeperiods.description'
             ],
+            'equals' => [
+                'Timeperiods.id'
+            ],
         ];
 
         return $this->getConditionsByFilters($filters);

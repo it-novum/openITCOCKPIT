@@ -34,9 +34,6 @@
                    ng-model="menuFilter"
                    ng-keydown="navigate($event)"
             />
-            <a href="/search/index" class="form-control pull-right no-padding" id="searchMainMenu">
-                <i class="fa fa-search-plus"></i>
-            </a>
         </div>
     </li>
 

@@ -36,6 +36,7 @@ class CommandsFilter extends Filter {
                 'Commands.name',
             ],
             'equals' => [
+                'Commands.id',
                 'Commands.command_type'
             ]
         ];

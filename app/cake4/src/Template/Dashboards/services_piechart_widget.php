@@ -22,8 +22,6 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-use itnovum\openITCOCKPIT\Core\RFCRouter;
-
 ?>
 <div class="row no-padding">
     <div class="col-xs-12 text-center">
@@ -34,13 +32,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
             <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
                 <div class="col-xs-12 col-md-3 no-padding">
-                    <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
-                        'filter'    => [
-                            'Servicestatus.current_state' => ['0' => 1]
-                        ],
-                        'sort'      => 'Servicestatus.last_state_change',
-                        'direction' => 'desc',
-                    ]); ?>">
+                    <a ui-sref="ServicesIndex({servicestate: [0], sort: 'Servicestatus.last_state_change', direction: 'desc'})">
                         <i class="fa fa-square ok"></i>
                         {{servicestatusCount[0]}} ({{servicestatusCountPercentage[0]}} %)
                     </a>
@@ -54,13 +46,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
             <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
                 <div class="col-xs-12 col-md-3 no-padding">
-                    <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
-                        'filter'    => [
-                            'Servicestatus.current_state' => ['1' => 1]
-                        ],
-                        'sort'      => 'Servicestatus.last_state_change',
-                        'direction' => 'desc',
-                    ]); ?>">
+                    <a ui-sref="ServicesIndex({servicestate: [1], sort: 'Servicestatus.last_state_change', direction: 'desc'})">
                         <i class="fa fa-square warning"></i>
                         {{servicestatusCount[1]}} ({{servicestatusCountPercentage[1]}} %)
                     </a>
@@ -74,13 +60,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
             <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
                 <div class="col-xs-12 col-md-3 no-padding">
-                    <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
-                        'filter'    => [
-                            'Servicestatus.current_state' => ['2' => 1]
-                        ],
-                        'sort'      => 'Servicestatus.last_state_change',
-                        'direction' => 'desc',
-                    ]); ?>">
+                    <a ui-sref="ServicesIndex({servicestate: [2], sort: 'Servicestatus.last_state_change', direction: 'desc'})">
                         <i class="fa fa-square critical"></i>
                         {{servicestatusCount[2]}} ({{servicestatusCountPercentage[2]}} %)
                     </a>
@@ -94,13 +74,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
             <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
                 <div class="col-xs-12 col-md-3 no-padding">
-                    <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
-                        'filter'    => [
-                            'Servicestatus.current_state' => ['3' => 1]
-                        ],
-                        'sort'      => 'Servicestatus.last_state_change',
-                        'direction' => 'desc',
-                    ]); ?>">
+                    <a ui-sref="ServicesIndex({servicestate: [3], sort: 'Servicestatus.last_state_change', direction: 'desc'})">
                         <i class="fa fa-square unknown"></i>
                         {{servicestatusCount[3]}} ({{servicestatusCountPercentage[3]}} %)
                     </a>
