@@ -3,7 +3,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
         return {
             response: function(result){
                 if(result.data.hasOwnProperty('_csrfToken')){
-                    $rootScope._csrfToken = result.data._csrfToken;
+                    if(result.data._csrfToken !== null){
+                        $rootScope._csrfToken = result.data._csrfToken;
+                    }
                 }
 
                 var url = result.config.url;

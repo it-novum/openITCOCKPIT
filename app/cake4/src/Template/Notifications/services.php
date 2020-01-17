@@ -293,9 +293,9 @@
                                 <td>
                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                         <a ui-sref="HostsBrowser({id:Notification.Host.id})">
-                                            {{ Notification.Host.hostname }}</a>
+                                            {{ Notification.Host.name }}</a>
                                     <?php else: ?>
-                                        {{ Notification.Host.hostname }}
+                                        {{ Notification.Host.name }}
                                     <?php endif; ?>
                                 </td>
                                 <td>
@@ -311,7 +311,7 @@
                                 </td>
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
-                                        <a href="/contacts/edit/{{ Notification.Contact.id }}">
+                                        <a ui-sref="ContactsEdit({id: Notification.Contact.id})">
                                             {{ Notification.Contact.name }}</a>
                                     <?php else: ?>
                                         {{ Notification.Contact.name }}

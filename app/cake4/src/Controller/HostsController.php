@@ -1923,7 +1923,7 @@ class HostsController extends AppController {
         //Check for host acknowledgements and downtimes
         $acknowledgement = [];
         if ($Hoststatus->isAcknowledged()) {
-            $acknowledgement = $AcknowledgementHostsTable->byHostUuid($host->getUuid());
+            $acknowledgement = $AcknowledgementHostsTable->byHostUuid($hostObj->getUuid());
             if (!empty($acknowledgement)) {
                 $Acknowledgement = new AcknowledgementHost($acknowledgement, $UserTime);
                 $acknowledgement = $Acknowledgement->toArray();

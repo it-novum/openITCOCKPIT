@@ -187,7 +187,8 @@ class AngularRequest {
      * @return bool
      */
     public function queryHasField($field) {
-        return isset($this->Request->query['filter'][$field]);
+        $query = $this->Request->getQuery();
+        return isset($query['filter'][$field]);
     }
 
     /**
@@ -196,12 +197,14 @@ class AngularRequest {
      */
     public function getQueryFieldValue($field, $strict = false) {
         if ($this->queryHasField($field)) {
+            $query = $this->Request->getQuery();
+
             if ($strict === false) {
-                return $this->Request->query['filter'][$field];
+                return $query['filter'][$field];
             }
 
             if ($strict === true) {
-                $value = $this->Request->query['filter'][$field];
+                $value = $query['filter'][$field];
                 if (is_array($value)) {
                     $value = array_filter($value, function ($val) {
                         if ($val === null || $val === '') {
@@ -225,8 +228,10 @@ class AngularRequest {
      * @return string
      */
     public function getSort($default = '') {
-        if (isset($this->Request->query['sort'])) {
-            return $this->Request->query['sort'];
+        $query = $this->Request->getQuery();
+
+        if (isset($query['sort'])) {
+            return $query['sort'];
         }
         return $default;
     }
@@ -236,8 +241,10 @@ class AngularRequest {
      * @return string
      */
     public function getDirection($default = '') {
-        if (isset($this->Request->query['direction'])) {
-            return $this->Request->query['direction'];
+        $query = $this->Request->getQuery();
+
+        if (isset($query['direction'])) {
+            return $query['direction'];
         }
         return $default;
     }
@@ -258,8 +265,10 @@ class AngularRequest {
      * @return int
      */
     public function getPage($default = 1) {
-        if (isset($this->Request->query['page'])) {
-            return (int)$this->Request->query['page'];
+        $query = $this->Request->getQuery();
+
+        if (isset($query['page'])) {
+            return (int)$query['page'];
         }
         return $default;
     }

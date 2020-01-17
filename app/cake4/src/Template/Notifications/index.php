@@ -267,7 +267,7 @@
                                     {{ Notification.NotificationHost.start_time }}
                                 </td>
                                 <td>
-                                    <a href="/contacts/edit/{{ Notification.Contact.id }}">
+                                    <a ui-sref="ContactsEdit({id: Notification.Contact.id})">
                                         {{ Notification.Contact.name }}</a>
                                 </td>
                                 <td>

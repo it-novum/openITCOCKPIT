@@ -139,7 +139,6 @@ class DowntimesController extends AppController {
 
         //Process conditions
         $DowntimeServiceConditions = new DowntimeServiceConditions();
-        $DowntimeServiceConditions->setLimit($this->Paginator->settings['limit']);
         $DowntimeServiceConditions->setFrom($ServiceDowntimesControllerRequest->getFrom());
         $DowntimeServiceConditions->setTo($ServiceDowntimesControllerRequest->getTo());
         $DowntimeServiceConditions->setHideExpired($ServiceDowntimesControllerRequest->hideExpired());
