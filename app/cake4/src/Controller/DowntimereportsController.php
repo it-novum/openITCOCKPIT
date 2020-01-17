@@ -32,8 +32,10 @@ use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Model\Table\HostsTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\CakePHP\Set;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
@@ -146,7 +148,7 @@ class DowntimereportsController extends AppController {
     public function createPdfReport() {
         //Rewrite GET to "POST"
         $downtimeReportForm = new DowntimereportForm();
-        $downtimeReportForm->execute($this->request->getData('data', []));
+        $downtimeReportForm->execute($this->request->getQuery('data', []));
 
         $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
@@ -167,7 +169,12 @@ class DowntimereportsController extends AppController {
 
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->getData('timeperiod_id'));
+
+        if (!$TimeperiodsTable->existsById($this->request->getQuery('data.timeperiod_id', 0))) {
+            throw new NotFoundException('Timperiod not found!');
+        }
+
+        $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->getQuery('data.timeperiod_id', 0));
         if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
             $this->response = $this->response->withStatus(400);
             $this->set('error', [
@@ -180,15 +187,15 @@ class DowntimereportsController extends AppController {
         }
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        $fromDate = strtotime($this->request->getData('from_date') . ' 00:00:00');
-        $toDate = strtotime($this->request->getData('to_date') . ' 23:59:59');
+        $fromDate = strtotime($this->request->getQuery('data.from_date', date('d.m.Y')) . ' 00:00:00');
+        $toDate = strtotime($this->request->getQuery('data.to_date', date('d.m.Y')) . ' 23:59:59');
 
         $this->set('fromDate', $fromDate);
         $this->set('toDate', $toDate);
 
 
-        $evaluationType = $this->request->getData('evaluation_type');
-        $reflectionState = $this->request->getData('reflection_state');
+        $evaluationType = $this->request->getQuery('data.evaluation_type', 0);
+        $reflectionState = $this->request->getQuery('data.reflection_state', 0);
 
         $hostsUuids = $HostsTable->getHostsByContainerId($this->MY_RIGHTS, 'list', 'uuid');
         if (empty($hostsUuids)) {
@@ -356,8 +363,6 @@ class DowntimereportsController extends AppController {
                                 'last_state'      => $Hoststatus->currentState(),
                                 'last_hard_state' => $Hoststatus->getLastHardState(),
                                 'state_type'      => (int)$Hoststatus->isHardState(),
-                                'HoststatusIcon'  => new HoststatusIcon($Hoststatus->currentState())
-
                             ]
                         ];
 
@@ -416,12 +421,11 @@ class DowntimereportsController extends AppController {
                     if ($Servicestatus->getLastStateChange() <= $fromDate) {
                         $stateHistoryServiceTmp = [
                             'StatehistoryService' => [
-                                'state_time'        => $fromDate,
-                                'state'             => $Servicestatus->currentState(),
-                                'last_state'        => $Servicestatus->currentState(),
-                                'last_hard_state'   => $Servicestatus->getLastHardState(),
-                                'state_type'        => (int)$Servicestatus->isHardState(),
-                                'ServicestatusIcon' => new ServicestatusIcon($Servicestatus->currentState())
+                                'state_time'      => $fromDate,
+                                'state'           => $Servicestatus->currentState(),
+                                'last_state'      => $Servicestatus->currentState(),
+                                'last_hard_state' => $Servicestatus->getLastHardState(),
+                                'state_type'      => (int)$Servicestatus->isHardState()
                             ]
                         ];
 

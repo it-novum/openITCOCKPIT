@@ -76,7 +76,7 @@ $Logo = new Logo();
             </div>
         </div>
         <?php
-        if(!empty($error['no_downtimes']['empty'])):
+        if (!empty($error['no_downtimes']['empty'])):
             echo $error['no_downtimes']['empty'];
         endif;
         if (!empty($downtimeReport['hostsWithOutages'])):?>
@@ -132,24 +132,25 @@ $Logo = new Logo();
                                                 <div class="col-md-3">
                                                     <?= __('Status'); ?>
                                                 </div>
-                                                <?php
-                                                for ($i = 0; $i < 3; $i++):?>
-                                                    <div class="col-md-3 <?= $this->Status->HostStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md padding-5">
+                                                <?php for ($i = 0; $i < 3; $i++): ?>
+                                                    <?php $HoststatusIcon = new \itnovum\openITCOCKPIT\Core\Views\HoststatusIcon($i); ?>
+                                                    <div
+                                                        class="col-md-3 <?= $HoststatusIcon->getBgColor() ?> downtime-report-state-overview font-md padding-5">
                                                         <strong class="txt-color-white">
                                                             <strong class="txt-color-white">
                                                                 <?= $hostWithOutages['pieChartData']['widgetOverview'][$i]['percent']; ?>
                                                             </strong>
                                                         </strong>
                                                     </div>
-                                                <?php
-                                                endfor;
-                                                ?>
+                                                <?php endfor; ?>
                                                 <div class="col-md-3">
                                                     &nbsp;
                                                 </div>
                                                 <?php
                                                 for ($i = 0; $i < 3; $i++):?>
-                                                    <div class="col-md-3 <?= $this->Status->HostStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md padding-5">
+                                                    <?php $HoststatusIcon = new \itnovum\openITCOCKPIT\Core\Views\HoststatusIcon($i); ?>
+                                                    <div
+                                                        class="col-md-3 <?= $HoststatusIcon->getBgColor() ?> downtime-report-state-overview font-md padding-5">
                                                         <strong class="txt-color-white">
                                                             <?= $hostWithOutages['pieChartData']['widgetOverview'][$i]['human']; ?>
                                                         </strong>
@@ -189,35 +190,38 @@ $Logo = new Logo();
                                                             </div>
                                                             <div class="col-md-3 text-right padding-bottom-10">
                                                                 <?php
-                                                                $overview_chart = $this->PieChart->createPieChart([
+                                                                $overview_chart = \itnovum\openITCOCKPIT\Core\Views\PieChart::createPieChartOnDisk([
                                                                     $service['Service']['reportData'][0],
                                                                     $service['Service']['reportData'][1],
                                                                     $service['Service']['reportData'][2],
                                                                     $service['Service']['reportData'][3]
                                                                 ]);
                                                                 ?>
-                                                                <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
-                                                                     width="100"/>
+                                                                <img
+                                                                    src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
+                                                                    width="100"/>
                                                             </div>
-                                                            <?php
-                                                            for ($i = 0; $i <= 3; $i++):?>
-                                                                <div class="col-md-3 text-right font-md">
-                                                                    <em>
-                                                                        <?= $this->Status->humanSimpleServiceStatus($i); ?>
-                                                                    </em>
-                                                                </div>
-                                                                <div class="col-md-3 <?= $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md">
-                                                                    <strong class="txt-color-white">
-                                                                        <?= $service['pieChartData']['widgetOverview'][$i]['percent']; ?>
-                                                                    </strong>
-                                                                </div>
-                                                                <div class="col-md-3 <?= $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md">
-                                                                    <strong class="txt-color-white">
-                                                                        <?= $service['pieChartData']['widgetOverview'][$i]['human']; ?>
-                                                                    </strong>
-                                                                </div>
-                                                            <?php
-                                                            endfor;
+                                                            <?php for ($i = 0; $i <= 3; $i++): ?>
+                                                            <?php $ServicestatusIcon = new \itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon($i); ?>
+                                                            <div class="col-md-3 text-right font-md">
+                                                                <em>
+                                                                    <?= $ServicestatusIcon->getHumanState(); ?>
+                                                                </em>
+                                                            </div>
+                                                            <div
+                                                                class="col-md-3 <?= $ServicestatusIcon->getBgColor(); ?> downtime-report-state-overview font-md">
+                                                                <strong class="txt-color-white">
+                                                                    <?= $service['pieChartData']['widgetOverview'][$i]['percent']; ?>
+                                                                </strong>
+                                                            </div>
+                                                            <div
+                                                                class="col-md-3 <?= $ServicestatusIcon->getBgColor(); ?> downtime-report-state-overview font-md">
+                                                                <strong class="txt-color-white">
+                                                                    <?= $service['pieChartData']['widgetOverview'][$i]['human']; ?>
+                                                                </strong>
+                                                            </div>
+                                                        <?php
+                                                        endfor;
                                                         endif;
                                                     endforeach;
                                                 endif;
@@ -276,7 +280,9 @@ $Logo = new Logo();
                                             </div>
                                             <?php
                                             for ($i = 0; $i < 3; $i++):?>
-                                                <div class="col-md-3 <?= $this->Status->HostStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md padding-5">
+                                                <?php $HoststatusIcon = new \itnovum\openITCOCKPIT\Core\Views\HoststatusIcon($i); ?>
+                                                <div
+                                                    class="col-md-3 <?= $HoststatusIcon->getBgColor() ?> downtime-report-state-overview font-md padding-5">
                                                     <strong class="txt-color-white">
                                                         <strong class="txt-color-white">
                                                             <?= $hostWithoutOutages['pieChartData']['widgetOverview'][$i]['percent']; ?>
@@ -291,7 +297,9 @@ $Logo = new Logo();
                                             </div>
                                             <?php
                                             for ($i = 0; $i < 3; $i++):?>
-                                                <div class="col-md-3 <?= $this->Status->HostStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md padding-5">
+                                                <?php $HoststatusIcon = new \itnovum\openITCOCKPIT\Core\Views\HoststatusIcon($i); ?>
+                                                <div
+                                                    class="col-md-3 <?= $HoststatusIcon->getBgColor() ?> downtime-report-state-overview font-md padding-5">
                                                     <strong class="txt-color-white">
                                                         <?= $hostWithoutOutages['pieChartData']['widgetOverview'][$i]['human']; ?>
                                                     </strong>
@@ -332,29 +340,33 @@ $Logo = new Logo();
                                                         </div>
                                                         <div class="col-md-3 text-right padding-bottom-10">
                                                             <?php
-                                                            $overview_chart = $this->PieChart->createPieChart([
+                                                            $overview_chart = \itnovum\openITCOCKPIT\Core\Views\PieChart::createPieChartOnDisk([
                                                                 $service['Service']['reportData'][0],
                                                                 $service['Service']['reportData'][1],
                                                                 $service['Service']['reportData'][2],
                                                                 $service['Service']['reportData'][3]
                                                             ]);
                                                             ?>
-                                                            <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
-                                                                 width="100"/>
+                                                            <img
+                                                                src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
+                                                                width="100"/>
                                                         </div>
                                                         <?php
                                                         for ($i = 0; $i <= 3; $i++):?>
+                                                            <?php $ServicestatusIcon = new \itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon($i); ?>
                                                             <div class="col-md-3 text-right font-md">
                                                                 <em>
-                                                                    <?= $this->Status->humanSimpleServiceStatus($i); ?>
+                                                                    <?= $ServicestatusIcon->getHumanState() ?>
                                                                 </em>
                                                             </div>
-                                                            <div class="col-md-3 <?= $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md">
+                                                            <div
+                                                                class="col-md-3 <?= $ServicestatusIcon->getBgColor() ?> downtime-report-state-overview font-md">
                                                                 <strong class="txt-color-white">
                                                                     <?= $service['pieChartData']['widgetOverview'][$i]['percent']; ?>
                                                                 </strong>
                                                             </div>
-                                                            <div class="col-md-3 <?= $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md">
+                                                            <div
+                                                                class="col-md-3 <?= $ServicestatusIcon->getBgColor() ?> downtime-report-state-overview font-md">
                                                                 <strong class="txt-color-white">
                                                                     <?= $service['pieChartData']['widgetOverview'][$i]['human']; ?>
                                                                 </strong>
@@ -372,7 +384,7 @@ $Logo = new Logo();
                 </div>
             </section>
         <?php endif; ?>
-        </section>
     </div>
 </div>
 </body>
+
