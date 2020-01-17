@@ -1923,7 +1923,7 @@ class HostsController extends AppController {
         //Check for host acknowledgements and downtimes
         $acknowledgement = [];
         if ($Hoststatus->isAcknowledged()) {
-            $acknowledgement = $AcknowledgementHostsTable->byHostUuid($host->getUuid());
+            $acknowledgement = $AcknowledgementHostsTable->byHostUuid($hostObj->getUuid());
             if (!empty($acknowledgement)) {
                 $Acknowledgement = new AcknowledgementHost($acknowledgement, $UserTime);
                 $acknowledgement = $Acknowledgement->toArray();
@@ -2055,7 +2055,6 @@ class HostsController extends AppController {
      * @deprecated
      */
     public function listToPdf() {
-        $this->layout = 'Admin.default';
         $HostFilter = new HostFilter($this->request);
 
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);

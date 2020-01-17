@@ -17,6 +17,7 @@ namespace App;
 
 use App\Authenticator\SslAuthenticator;
 use App\Identifier\LdapIdentifier;
+use App\Identifier\PasswordIdentifier;
 use App\Identifier\SslIdentifier;
 use App\Lib\PluginManager;
 use App\Middleware\AppAuthenticationMiddleware;
@@ -66,6 +67,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         $this->addPlugin('Acl');
         $this->addPlugin('Authentication');
         $this->addPlugin('Authorization');
+
+        $this->addPlugin('CakePdf');
 
         if (PHP_SAPI === 'cli') {
             try {
@@ -145,7 +148,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 
         // Load identifiers (Username / Password)
         $service->loadIdentifier('Authentication.Password', [
-            'fields' => $fields
+            'className' => PasswordIdentifier::class,
+            'fields'    => $fields
         ]);
 
         // Try to login the user through an SSL Certificate

@@ -207,12 +207,6 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2">
-                                <a ui-sref="ContactsCopy({ids: linkForCopy()})" class="a-clean">
-                                    <i class="fa fa-lg fa-files-o"></i>
-                                    <?php echo __('Copy'); ?>
-                                </a>
-                            </div>
                             <div class="col-xs-12 col-md-4 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fa fa-lg fa-trash-o"></i>

@@ -53,22 +53,11 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\ServicetemplategroupsFilter;
 
-
 /**
- * @property Servicetemplategroup $Servicetemplategroup
- * @property Servicetemplate $Servicetemplate
- * @property Container $Container
- * @property Host $Host
- * @property Hostgroup $Hostgroup
- * @property AppPaginatorComponent $Paginator
+ * Class ServicetemplategroupsController
+ * @package App\Controller
  */
 class ServicetemplategroupsController extends AppController {
-    public $layout = 'blank';
-
-    public $uses = [
-        'Changelog',
-    ];
-
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -130,7 +119,7 @@ class ServicetemplategroupsController extends AppController {
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function add() {
         if (!$this->isApiRequest()) {
@@ -140,12 +129,12 @@ class ServicetemplategroupsController extends AppController {
 
         /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
         $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
-        $this->request->data['Servicetemplategroup']['uuid'] = UUID::v4();
-        $this->request->data['Servicetemplategroup']['container']['containertype_id'] = CT_SERVICETEMPLATEGROUP;
 
 
         $servicetemplategroup = $ServicetemplategroupsTable->newEmptyEntity();
         $servicetemplategroup = $ServicetemplategroupsTable->patchEntity($servicetemplategroup, $this->request->getData('Servicetemplategroup'));
+        $servicetemplategroup->set('uuid', UUID::v4());
+        $servicetemplategroup->get('container')->set('containertype_id', CT_SERVICETEMPLATEGROUP);
 
         $ServicetemplategroupsTable->save($servicetemplategroup);
         if ($servicetemplategroup->hasErrors()) {
@@ -158,7 +147,9 @@ class ServicetemplategroupsController extends AppController {
 
             $User = new User($this->getUser());
 
-            $extDataForChangelog = $ServicetemplategroupsTable->resolveDataForChangelog($this->request->data);
+            $request = $this->request->getData();
+
+            $extDataForChangelog = $ServicetemplategroupsTable->resolveDataForChangelog($request);
             /** @var  ChangelogsTable $ChangelogsTable */
             $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -170,7 +161,7 @@ class ServicetemplategroupsController extends AppController {
                 $servicetemplategroup->get('container')->get('parent_id'),
                 $User->getId(),
                 $servicetemplategroup->get('container')->get('name'),
-                array_merge($this->request->data, $extDataForChangelog)
+                array_merge($request, $extDataForChangelog)
             );
 
                 if ($changelog_data) {
@@ -191,7 +182,7 @@ class ServicetemplategroupsController extends AppController {
 
     /**
      * @param int|null $id
-     * @throws Exception
+     * @throws \Exception
      */
     public function edit($id = null) {
         if (!$this->isApiRequest()) {
@@ -246,6 +237,8 @@ class ServicetemplategroupsController extends AppController {
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
+                $request = $this->request->getData();
+
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'servicetemplategroups',
@@ -254,7 +247,7 @@ class ServicetemplategroupsController extends AppController {
                     $servicetemplategroupEntity->get('container')->get('parent_id'),
                     $User->getId(),
                     $servicetemplategroupEntity->get('container')->get('name'),
-                    array_merge($ServicetemplategroupsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($ServicetemplategroupsTable->resolveDataForChangelog($request), $request),
                     array_merge($ServicetemplategroupsTable->resolveDataForChangelog($servicetemplategroupForChangeLog), $servicetemplategroupForChangeLog)
                 );
                 if ($changelog_data) {
@@ -274,7 +267,6 @@ class ServicetemplategroupsController extends AppController {
     }
 
     public function append() {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -485,7 +477,6 @@ class ServicetemplategroupsController extends AppController {
      * @param int|null $servicetemplategroupId
      */
     public function allocateToHost($servicetemplategroupId = null) {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -645,7 +636,6 @@ class ServicetemplategroupsController extends AppController {
      * @param int|null $servicetemplategroupId
      */
     public function allocateToHostgroup($servicetemplategroupId = null) {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -823,7 +813,6 @@ class ServicetemplategroupsController extends AppController {
      * @param int|null $servicetemplategroupId
      */
     public function allocateToMatchingHostgroup($servicetemplategroupId = null) {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -867,7 +856,7 @@ class ServicetemplategroupsController extends AppController {
         } catch (RecordNotFoundException $e) {
             $this->response = $this->response->withStatus(400);
             $this->set('success', false);
-            $this->set('message', __('No matching host group "%s" found.', $servicetemplategroupName));
+            $this->set('message', __('No matching host group "{0}" found.', $servicetemplategroupName));
             $this->viewBuilder()->setOption('serialize', ['success', 'message']);
             return;
         }
@@ -984,7 +973,7 @@ class ServicetemplategroupsController extends AppController {
 
         $this->set('success', true);
         $this->set('services', ['_ids' => $newServiceIds]);
-        $this->set('message', __('Created %s new services', sizeof($newServiceIds)));
+        $this->set('message', __('Created {0} new services', sizeof($newServiceIds)));
         $this->set('errors', $errors);
         $this->viewBuilder()->setOption('serialize', ['success', 'services', 'errors', 'message']);
     }
@@ -995,7 +984,7 @@ class ServicetemplategroupsController extends AppController {
      ****************************/
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {

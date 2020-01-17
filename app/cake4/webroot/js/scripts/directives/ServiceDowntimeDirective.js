@@ -5,7 +5,6 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
 
         controller: function($scope){
 
-
             $scope.doDowntime = false;
             $scope.downtimeModal = {
                 comment: '',
@@ -22,6 +21,7 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
 
             $scope.setServiceDowntimeObjects = function(_objects){
                 objects = _objects;
+                $scope.loadDowntimeDefaults();
             };
 
             $scope.setServiceDowntimeAuthor = function(_author){
@@ -30,6 +30,19 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
 
             $scope.setServiceDowntimeCallback = function(_callback){
                 callbackName = _callback;
+            };
+
+            $scope.loadDowntimeDefaults = function(){
+                $http.get("/angular/getDowntimeData.json", {
+                    params: {
+                        'angular': true
+                    }
+                }).then(function(result){
+                    $scope.downtimeModal.from_date = result.data.defaultValues.from_date;
+                    $scope.downtimeModal.from_time = result.data.defaultValues.from_time;
+                    $scope.downtimeModal.to_date = result.data.defaultValues.to_date;
+                    $scope.downtimeModal.to_time = result.data.defaultValues.to_time;
+                });
             };
 
             $scope.doServiceDowntime = function(){
@@ -51,8 +64,8 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
                         SudoService.send(SudoService.toJson('submitServiceDowntime', [
                             object.Host.uuid,
                             object.Service.uuid,
-                            $scope.downtimeModal.from_date + ' ' + $scope.downtimeModal.from_time,
-                            $scope.downtimeModal.to_date + ' ' + $scope.downtimeModal.to_time,
+                            result.data.start, //Converted user time to server time
+                            result.data.end, //Converted user time to server time
                             $scope.downtimeModal.comment,
                             author
                         ]));

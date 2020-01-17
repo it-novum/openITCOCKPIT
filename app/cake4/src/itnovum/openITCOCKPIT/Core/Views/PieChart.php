@@ -26,6 +26,7 @@ namespace itnovum\openITCOCKPIT\Core\Views;
 
 
 use Exception;
+use Symfony\Component\Filesystem\Filesystem;
 
 class PieChart {
 
@@ -261,5 +262,57 @@ class PieChart {
                 }
             }
         }
+    }
+
+    /**
+     * @param $chart_data
+     * @return string
+     * @throws Exception
+     */
+    public static function createPieChartOnDisk($chart_data) {
+
+        $PieChart = new self();
+        $PieChart->createPieChart($chart_data);
+
+
+        if (!is_dir(WWW_ROOT . 'img' . DS . 'charts')) {
+            $fs = new Filesystem();
+            $fs->mkdir(WWW_ROOT . 'img' . DS . 'charts');
+        }
+
+        $filepath = WWW_ROOT . 'img' . DS . 'charts';
+        $filename = uniqid() . '.png';
+
+        $image = $PieChart->getImage();
+        imagepng($image, $filepath . DS . $filename, 0);
+        imagedestroy($image);
+
+        return $filename;
+    }
+
+    /**
+     * @param $chart_data
+     * @return string
+     * @throws Exception
+     */
+    public static function createHalfPieChartOnDisk($chart_data) {
+
+        $filepath = WWW_ROOT . 'img' . DS . 'charts';
+
+        if (!is_dir(WWW_ROOT . 'img' . DS . 'charts')) {
+            $fs = new Filesystem();
+            $fs->mkdir(WWW_ROOT . 'img' . DS . 'charts');
+        }
+
+        $filename = uniqid() . '.png';
+
+        $PieChart = new self();
+        $PieChart->createHalfPieChart($chart_data);
+
+        $image = $PieChart->getImage();
+        imagepng($image, $filepath . DS . $filename, 0);
+        imagedestroy($image);
+
+        return $filename;
     }
 }

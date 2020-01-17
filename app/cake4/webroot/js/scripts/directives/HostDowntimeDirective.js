@@ -33,12 +33,16 @@ angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoSe
             };
 
             $scope.loadHostdowntimeDefaultSelection = function(){
-                $http.get("/angular/downtime_host.json", {
+                $http.get("/angular/getDowntimeData.json", {
                     params: {
                         'angular': true
                     }
                 }).then(function(result){
-                    $scope.downtimeModal.hostDowntimeType = String(result.data.preselectedDowntimetype);
+                    $scope.downtimeModal.from_date = result.data.defaultValues.from_date;
+                    $scope.downtimeModal.from_time = result.data.defaultValues.from_time;
+                    $scope.downtimeModal.to_date = result.data.defaultValues.to_date;
+                    $scope.downtimeModal.to_time = result.data.defaultValues.to_time;
+                    $scope.downtimeModal.hostDowntimeType = String(result.data.defaultValues.downtimetype_id);
                 });
             };
 
@@ -60,8 +64,8 @@ angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoSe
                         $scope.percentage = Math.round(i / count * 100);
                         SudoService.send(SudoService.toJson('submitHostDowntime', [
                             object.Host.uuid,
-                            $scope.downtimeModal.from_date + ' ' + $scope.downtimeModal.from_time,
-                            $scope.downtimeModal.to_date + ' ' + $scope.downtimeModal.to_time,
+                            result.data.start, //Converted user time to server time
+                            result.data.end, //Converted user time to server time
                             $scope.downtimeModal.comment,
                             author,
                             $scope.downtimeModal.hostDowntimeType

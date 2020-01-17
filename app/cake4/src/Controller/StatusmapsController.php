@@ -46,8 +46,6 @@ use itnovum\openITCOCKPIT\Filter\StatusmapFilter;
  */
 class StatusmapsController extends AppController {
 
-    public $layout = 'angularjs';
-
     public $uses = [
         'Host',
         'Service',
@@ -60,8 +58,6 @@ class StatusmapsController extends AppController {
     public $components = ['StatusMap'];
 
     public function index() {
-        $this->layout = 'blank';
-
         if (!$this->isAngularJsRequest()) {
             return;
         }
@@ -260,7 +256,6 @@ class StatusmapsController extends AppController {
      *
      */
     public function hostAndServicesSummaryStatus($hostId = null) {
-        $this->layout = 'blank';
         if (!$hostId) {
             throw new NotFoundException(__('Invalid request parameters'));
         }

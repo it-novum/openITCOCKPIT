@@ -118,6 +118,23 @@ class HoststatusIcon {
         }
     }
 
+    public function getBgColor() {
+        if ($this->state === null) {
+            return 'bg-primary';
+        }
+
+        switch ($this->state) {
+            case 0:
+                return 'bg-up';
+
+            case 1:
+                return 'bg-down';
+
+            default:
+                return 'bg-unreachable';
+        }
+    }
+
     /**
      * @return string
      */

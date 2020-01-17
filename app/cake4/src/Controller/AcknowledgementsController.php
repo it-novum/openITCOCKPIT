@@ -38,19 +38,16 @@ use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\AcknowledgementsControllerRequest;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
 use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use Statusengine2Module\Model\Entity\AcknowledgementHost;
 
 /**
  * Class AcknowledgementsController
- * @property AppPaginatorComponent $Paginator
- * @property AppAuthComponent $Auth
- * @property DbBackend $DbBackend
+ * @package App\Controller
  */
 class AcknowledgementsController extends AppController {
-
-    public $layout = 'blank';
 
     /**
      * @param int|null $id
@@ -170,7 +167,7 @@ class AcknowledgementsController extends AppController {
         $BBCodeParser = new BBCodeParser();
         $all_acknowledgements = [];
         foreach ($AcknowledgementServicesTable->getAcknowledgements($Conditions, $PaginateOMat) as $acknowledgement) {
-            $AcknowledgedService = new itnovum\openITCOCKPIT\Core\Views\AcknowledgementService($acknowledgement, $UserTime);
+            $AcknowledgedService = new AcknowledgementService($acknowledgement, $UserTime);
             $acknowledgementArray = $AcknowledgedService->toArray();
             $acknowledgementArray['comment_data'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($acknowledgementArray['comment_data'], true));
             $all_acknowledgements[] = [

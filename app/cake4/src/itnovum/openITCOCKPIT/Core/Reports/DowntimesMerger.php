@@ -35,7 +35,7 @@ class DowntimesMerger {
      * @param array $systemfailures
      * @return array
      */
-    public function mergeDowntimesWithSystemfailures($key = 'DowntimeHost', $downtimes = [], $systemfailures = []) {
+    public static function mergeDowntimesWithSystemfailures($key = 'DowntimeHost', $downtimes = [], $systemfailures = []) {
         if (empty($systemfailures)) {
             return $downtimes;
         }

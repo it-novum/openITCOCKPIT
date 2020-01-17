@@ -89,7 +89,7 @@ class DaterangesCreator {
      * @param $time_slices array
      * @return array
      */
-    private function removeUselessTimeslices($date_start, $date_end, $time_slices) {
+    private static function removeUselessTimeslices($date_start, $date_end, $time_slices) {
         $time_slices_new = [];
         foreach ($time_slices as $time_slice) {
             $current_time_slice_start = date('Ymd', $time_slice['start']);
@@ -141,7 +141,7 @@ class DaterangesCreator {
      * @param $current_date
      * @return bool
      */
-    private function dateIsBetween($start_date, $end_date, $current_date) {
+    private static function dateIsBetween($start_date, $end_date, $current_date) {
         return (($current_date >= $start_date) && ($current_date <= $end_date));
     }
 

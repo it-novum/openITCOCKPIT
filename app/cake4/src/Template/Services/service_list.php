@@ -646,7 +646,7 @@
 
                                     <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
 
-                                </div> <!-- cloase tab2 -->
+                                </div> <!-- close tab2 -->
 
                                 <div ng-if="activeTab === 'disabled'">
 
@@ -782,7 +782,7 @@
                                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                                     </div>
 
-                                </div> <!-- cloase tab4 -->
+                                </div> <!-- close tab4 -->
 
                                 <div ng-if="activeTab === 'deleted'">
 
@@ -824,7 +824,7 @@
 
                                     </div>
 
-                                </div> <!-- cloase tab4 -->
+                                </div> <!-- close tab4 -->
 
                             </div>
                         </div>

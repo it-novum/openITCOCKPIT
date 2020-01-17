@@ -26,7 +26,6 @@ namespace itnovum\openITCOCKPIT\Core\Views;
 
 
 use Cake\I18n\Time;
-use CakeTime;
 use DateTime;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
@@ -150,7 +149,7 @@ class UserTime {
      * @param int $t_time
      * @return string
      */
-    public function timeAgoInWords($t_time){
+    public function timeAgoInWords($t_time) {
         if (!is_numeric($t_time)) {
             $t_time = strtotime($t_time);
         }
@@ -162,6 +161,56 @@ class UserTime {
         $Time->setTimezone(new \DateTimeZone($this->timezone));
 
         return $Time->timeAgoInWords();
+    }
+
+    /**
+     * @return bool|int
+     * @throws \Exception
+     */
+    public function getUserTimeToServerOffset() {
+        $ServerTime = new \DateTime();
+        $ServerTimeZone = new \DateTimeZone($ServerTime->getTimezone()->getName());
+
+        return $this->get_timezone_offset($ServerTimeZone->getName(), $this->timezone);
+    }
+
+    /**
+     * @return int
+     * @throws \Exception
+     */
+    public function getUserTimeOffset() {
+        $UserTime = new \DateTime($this->timezone);
+        return $UserTime->getOffset();
+    }
+
+    /**
+     * @return int
+     * @throws \Exception
+     */
+    public function getServerTimeOffset() {
+        $ServerTime = new \DateTime();
+        return $ServerTime->getOffset();
+    }
+
+
+    /**
+     * @param $remote_tz
+     * @param null $origin_tz
+     * @return bool|int
+     * @throws \Exception
+     */
+    private function get_timezone_offset($remote_tz, $origin_tz = null) {
+        if ($origin_tz === null) {
+            if (!is_string($origin_tz = date_default_timezone_get())) {
+                return false; // A UTC timestamp was returned -- bail out!
+            }
+        }
+        $origin_dtz = new \DateTimeZone($origin_tz);
+        $remote_dtz = new \DateTimeZone($remote_tz);
+        $origin_dt = new \DateTime("now", $origin_dtz);
+        $remote_dt = new \DateTime("now", $remote_dtz);
+        $offset = $origin_dtz->getOffset($origin_dt) - $remote_dtz->getOffset($remote_dt);
+        return $offset;
     }
 
 }

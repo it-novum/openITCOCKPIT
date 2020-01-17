@@ -47,8 +47,6 @@ use itnovum\openITCOCKPIT\Core\ModuleManager;
  */
 class ContainersController extends AppController {
 
-    public $layout = 'blank';
-
     public function index() {
         return;
     }
@@ -117,7 +115,7 @@ class ContainersController extends AppController {
 
             /** @var $ContainersTable ContainersTable */
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-            $containerId = (int)$this->request->data['Container']['id'];
+            $containerId = (int)$this->request->getData('Container.id', 0);
 
             if (!$ContainersTable->existsById($containerId)) {
                 throw new NotFoundException(__('Invalid container'));

@@ -131,6 +131,29 @@ class ServicestatusIcon {
     /**
      * @return string
      */
+    public function getBgColor() {
+        if ($this->state === null) {
+            return 'bg-primary';
+        }
+
+        switch ($this->state) {
+            case 0:
+                return 'bg-ok';
+
+            case 1:
+                return 'bg-warning';
+
+            case 2:
+                return 'bg-critical';
+
+            default:
+                return 'bg-unknown';
+        }
+    }
+
+    /**
+     * @return string
+     */
     public function getHumanState() {
         if ($this->state === null) {
             return __('Not found in monitoring');

@@ -32,6 +32,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
@@ -39,18 +40,13 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 /**
  * Class DocumentationsController
- * @property Documentation $Documentation
- * @property AppAuthComponent $Auth
+ * @package App\Controller
  */
 class DocumentationsController extends AppController {
-
-    public $layout = 'blank';
-
-
     /**
      * @param null $uuid
      * @param string $type
-     * @throws Exception
+     * @throws \Exception
      */
     public function view($uuid = null, $type = 'host') {
         if (!$this->isAngularJsRequest()) {
@@ -59,7 +55,7 @@ class DocumentationsController extends AppController {
         }
 
         if (empty($type)) {
-            throw new InvalidArgumentException();
+            throw new BadRequestException();
         }
         $type = strtolower($type);
 
@@ -148,7 +144,7 @@ class DocumentationsController extends AppController {
                 break;
 
             default:
-                throw new InvalidArgumentException('Type not supported.');
+                throw new BadRequestException('Type not supported.');
                 break;
         }
 
@@ -219,7 +215,7 @@ class DocumentationsController extends AppController {
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function wiki() {
         if (!$this->isAngularJsRequest()) {
@@ -274,7 +270,7 @@ class DocumentationsController extends AppController {
                 throw new NotFoundException('Markdown file not found!');
             }
 
-            $parsedown = new ParsedownExtra();
+            $parsedown = new \ParsedownExtra();
             $html = $parsedown->text(file_get_contents($file));
 
             $this->set('documentation', $documentations[$category]['children'][$documentation]);

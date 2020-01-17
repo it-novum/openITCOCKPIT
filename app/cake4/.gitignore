@@ -54,6 +54,7 @@ webroot/node_modules
 config/graphite.php
 src/Lib/openITCOCKPIT_AvailableVersion.php
 webroot/img/userimages
+webroot/img/charts
 
 # Plugins #
 #######################

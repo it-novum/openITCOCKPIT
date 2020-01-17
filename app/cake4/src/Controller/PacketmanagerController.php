@@ -35,7 +35,6 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 use itnovum\openITCOCKPIT\Core\ValueObjects\License;
 
 class PacketmanagerController extends AppController {
-    public $layout = 'Admin.default';
     public $components = ['Session'];
     public $uses = ['Register'];
 
@@ -86,7 +85,6 @@ class PacketmanagerController extends AppController {
      * Fake repository for the packages. The purpose of this action is development and/or testing.
      */
     public function getPackets() {
-        $this->layout = 'json';
         $this->response->type('json');
         $fixedContent =
             '{

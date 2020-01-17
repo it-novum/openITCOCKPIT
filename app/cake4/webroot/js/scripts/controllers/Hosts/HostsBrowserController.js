@@ -266,7 +266,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.getObjectsForExternalCommand = function(){
-            return [$scope.mergedHost];
+            return [{
+                Host: $scope.mergedHost
+            }];
         };
 
         $scope.changepage = function(page){

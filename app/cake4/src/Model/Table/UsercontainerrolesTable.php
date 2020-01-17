@@ -93,11 +93,6 @@ class UsercontainerrolesTable extends Table {
     }
 
     /**
-     * Saving additional data to through table
-     * table key is the main table which is associated with this model, not the 'through' table
-     * ie:
-     * users is associated with containers through ContainersUsersMemberships
-     * in save method: $this->request->data['containers'] = containerPermissionsForSave($myKeyValueData)
      * @param array $containerPermissions
      * @return array
      */

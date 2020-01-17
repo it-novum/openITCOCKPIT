@@ -32,8 +32,10 @@ use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Model\Table\HostsTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\CakePHP\Set;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
@@ -49,6 +51,8 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
+use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -56,19 +60,10 @@ use Statusengine2Module\Model\Entity\DowntimeService;
 use Statusengine2Module\Model\Table\StatehistoryHostsTable;
 
 /**
- * @property AppPaginatorComponent $Paginator
- * @property AppAuthComponent $Auth
- * @property DbBackend $DbBackend
- * @property PerfdataBackend $PerfdataBackend
- *
- * @property Downtimereport $Downtimereport
- * @property Host $Host
- * @property Service $Service
- * @property Timeperiod $Timeperiod
+ * Class DowntimereportsController
+ * @package App\Controller
  */
 class DowntimereportsController extends AppController {
-
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isApiRequest()) {
@@ -76,7 +71,7 @@ class DowntimereportsController extends AppController {
             return;
         }
         $downtimeReportForm = new DowntimereportForm();
-        $downtimeReportForm->execute($this->request->data);
+        $downtimeReportForm->execute($this->request->getData());
 
         $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
@@ -152,11 +147,8 @@ class DowntimereportsController extends AppController {
      */
     public function createPdfReport() {
         //Rewrite GET to "POST"
-        $this->request->data = $this->request->getQuery('data');
-        $this->layout = 'Admin.default';
-
         $downtimeReportForm = new DowntimereportForm();
-        $downtimeReportForm->execute($this->request->data);
+        $downtimeReportForm->execute($this->request->getQuery('data', []));
 
         $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
@@ -177,7 +169,12 @@ class DowntimereportsController extends AppController {
 
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->getData('timeperiod_id'));
+
+        if (!$TimeperiodsTable->existsById($this->request->getQuery('data.timeperiod_id', 0))) {
+            throw new NotFoundException('Timperiod not found!');
+        }
+
+        $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->getQuery('data.timeperiod_id', 0));
         if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
             $this->response = $this->response->withStatus(400);
             $this->set('error', [
@@ -190,15 +187,15 @@ class DowntimereportsController extends AppController {
         }
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        $fromDate = strtotime($this->request->getData('from_date') . ' 00:00:00');
-        $toDate = strtotime($this->request->getData('to_date') . ' 23:59:59');
+        $fromDate = strtotime($this->request->getQuery('data.from_date', date('d.m.Y')) . ' 00:00:00');
+        $toDate = strtotime($this->request->getQuery('data.to_date', date('d.m.Y')) . ' 23:59:59');
 
         $this->set('fromDate', $fromDate);
         $this->set('toDate', $toDate);
 
 
-        $evaluationType = $this->request->getData('evaluation_type');
-        $reflectionState = $this->request->getData('reflection_state');
+        $evaluationType = $this->request->getQuery('data.evaluation_type', 0);
+        $reflectionState = $this->request->getQuery('data.reflection_state', 0);
 
         $hostsUuids = $HostsTable->getHostsByContainerId($this->MY_RIGHTS, 'list', 'uuid');
         if (empty($hostsUuids)) {
@@ -234,29 +231,15 @@ class DowntimereportsController extends AppController {
         }
 
         $this->set('downtimeReport', $downtimeReport);
+        $this->set('UserTime', $UserTime);
 
-        $binary_path = '/usr/bin/wkhtmltopdf';
-        if (file_exists('/usr/local/bin/wkhtmltopdf')) {
-            $binary_path = '/usr/local/bin/wkhtmltopdf';
-        }
-        $this->pdfConfig = [
-            'engine'             => 'CakePdf.WkHtmlToPdf',
-            'margin'             => [
-                'bottom' => 15,
-                'left'   => 0,
-                'right'  => 0,
-                'top'    => 15,
-            ],
-            'encoding'           => 'UTF-8',
-            'download'           => true,
-            'binary'             => $binary_path,
-            'orientation'        => 'portrait',
-            'filename'           => 'Downtimereport.pdf',
-            'no-pdf-compression' => '*',
-            'image-dpi'          => '900',
-            'background'         => true,
-            'no-background'      => false,
-        ];
+        $this->viewBuilder()->setOption(
+            'pdfConfig',
+            [
+                'download' => true,
+                'filename' => __('Downtimereport_') . date('dmY_his') . '.pdf',
+            ]
+        );
     }
 
 
@@ -379,7 +362,7 @@ class DowntimereportsController extends AppController {
                                 'state'           => $Hoststatus->currentState(),
                                 'last_state'      => $Hoststatus->currentState(),
                                 'last_hard_state' => $Hoststatus->getLastHardState(),
-                                'state_type'      => (int)$Hoststatus->isHardState()
+                                'state_type'      => (int)$Hoststatus->isHardState(),
                             ]
                         ];
 

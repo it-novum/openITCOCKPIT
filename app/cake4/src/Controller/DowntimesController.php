@@ -139,7 +139,6 @@ class DowntimesController extends AppController {
 
         //Process conditions
         $DowntimeServiceConditions = new DowntimeServiceConditions();
-        $DowntimeServiceConditions->setLimit($this->Paginator->settings['limit']);
         $DowntimeServiceConditions->setFrom($ServiceDowntimesControllerRequest->getFrom());
         $DowntimeServiceConditions->setTo($ServiceDowntimesControllerRequest->getTo());
         $DowntimeServiceConditions->setHideExpired($ServiceDowntimesControllerRequest->hideExpired());
@@ -252,12 +251,26 @@ class DowntimesController extends AppController {
         if (!empty($error['Downtime'])) {
             $this->response = $this->response->withStatus(400);
             $this->set('success', false);
-        } else {
-            $this->set('success', true);
-        }
+            $this->set('error', $error);
+            $this->viewBuilder()->setOption('serialize', ['error', 'success']);
+            return;
 
+        }
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+        $offset = $UserTime->getUserTimeToServerOffset();
+
+        $start = strtotime($start);
+        $end = strtotime($end);
+
+        $start = date('d.m.Y H:i', $start - $offset);
+        $end = date('d.m.Y H:i', $end - $offset);
+
+        $this->set('success', true);
         $this->set('error', $error);
-        $this->viewBuilder()->setOption('serialize', ['error', 'success']);
+        $this->set('start', $start);
+        $this->set('end', $end);
+        $this->viewBuilder()->setOption('serialize', ['error', 'success', 'start', 'end']);
     }
 
     /**
@@ -273,7 +286,7 @@ class DowntimesController extends AppController {
             throw new \InvalidArgumentException('$internalDowntimeId needs to be an integer!');
         }
 
-        if (!isset($this->request->data['type'])) {
+        if ($this->request->getData('type') === null) {
             throw new \InvalidArgumentException('Parameter type is missing');
         }
 

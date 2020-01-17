@@ -64,8 +64,6 @@ use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
  */
 class ServicetemplatesController extends AppController {
 
-    public $layout = 'blank';
-
     public $uses = [
         'Servicetemplate', //Remove me
         'Service', //Remove me
@@ -147,14 +145,15 @@ class ServicetemplatesController extends AppController {
         if ($this->request->is('post')) {
             /** @var $ServicetemplatesTable ServicetemplatesTable */
             $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
-            $this->request->data['Servicetemplate']['uuid'] = UUID::v4();
-            if (!isset($this->request->data['Servicetemplate']['servicetemplatetype_id'])) {
-                $this->request->data['Servicetemplate']['servicetemplatetype_id'] = GENERIC_SERVICE;
+
+            $request = $this->request->getData('Servicetemplate', []);
+            if (!isset($request['servicetemplatetype_id'])) {
+                $request['servicetemplatetype_id'] = GENERIC_SERVICE;
             }
 
-
             $servicetemplate = $ServicetemplatesTable->newEmptyEntity();
-            $servicetemplate = $ServicetemplatesTable->patchEntity($servicetemplate, $this->request->getData('Servicetemplate'));
+            $servicetemplate = $ServicetemplatesTable->patchEntity($servicetemplate, $request);
+            $servicetemplate->set('uuid', UUID::v4());
 
             $ServicetemplatesTable->save($servicetemplate);
             if ($servicetemplate->hasErrors()) {
@@ -167,7 +166,7 @@ class ServicetemplatesController extends AppController {
 
                 $User = new User($this->getUser());
 
-                $extDataForChangelog = $ServicetemplatesTable->resolveDataForChangelog($this->request->data);
+                $extDataForChangelog = $ServicetemplatesTable->resolveDataForChangelog($request);
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -179,7 +178,7 @@ class ServicetemplatesController extends AppController {
                     $servicetemplate->get('container_id'),
                     $User->getId(),
                     $servicetemplate->get('template_name'),
-                    array_merge($this->request->data, $extDataForChangelog)
+                    array_merge($request, $extDataForChangelog)
                 );
 
                 if ($changelog_data) {
@@ -275,7 +274,7 @@ class ServicetemplatesController extends AppController {
                     $servicetemplateEntity->get('container_id'),
                     $User->getId(),
                     $servicetemplateEntity->template_name,
-                    array_merge($ServicetemplatesTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($ServicetemplatesTable->resolveDataForChangelog($this->request->getData()), $this->request->getData()),
                     array_merge($ServicetemplatesTable->resolveDataForChangelog($servicetemplateForChangeLog), $servicetemplateForChangeLog)
                 );
                 if ($changelog_data) {

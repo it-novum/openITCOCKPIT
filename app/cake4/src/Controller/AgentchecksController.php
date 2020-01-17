@@ -42,7 +42,6 @@ use itnovum\openITCOCKPIT\Filter\AgentchecksFilter;
  * @property AppPaginatorComponent $Paginator
  */
 class AgentchecksController extends AppController {
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isAngularJsRequest()) {

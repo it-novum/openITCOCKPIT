@@ -1381,7 +1381,7 @@ use Cake\Core\Plugin;
 
                             <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
 
-                        </div> <!-- cloase tab2 -->
+                        </div> <!-- close tab2 -->
 
                         <div id="serviceTab3" class="tab-pane fade active in" ng-if="activeTab === 'disabled'">
 
@@ -1477,7 +1477,7 @@ use Cake\Core\Plugin;
                                 <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                             </div>
 
-                        </div> <!-- cloase tab4 -->
+                        </div> <!-- close tab4 -->
                     </div>
                 </div>
             </div>

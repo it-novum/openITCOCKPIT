@@ -74,8 +74,6 @@ use Statusengine2Module\Model\Table\StatehistoryHostsTable;
  * @property AppPaginatorComponent $Paginator
  */
 class InstantreportsController extends AppController {
-    public $layout = 'blank';
-
 
     public function index() {
         if (!$this->isApiRequest()) {
@@ -177,7 +175,7 @@ class InstantreportsController extends AppController {
         }
 
         $instantreportForm = new InstantreportForm();
-        $instantreportForm->execute($this->request->data);
+        $instantreportForm->execute($this->request->getData());
 
         if (!empty($instantreportForm->getErrors())) {
             $this->response = $this->response->withStatus(400);
@@ -215,7 +213,7 @@ class InstantreportsController extends AppController {
 
         return;
         $downtimeReportForm = new DowntimereportForm();
-        $downtimeReportForm->execute($this->request->data);
+        $downtimeReportForm->execute($this->request->getData());
 
         $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
@@ -357,7 +355,6 @@ class InstantreportsController extends AppController {
             'from'       => $UserTime->format($fromDate),
             'to'         => $UserTime->format($toDate)
         ];
-        debug($reportDetails);
         $globalDowntimes = [];
         if ($instantReport->get('downtimes') === 1) {
             /** @var $SystemfailuresTable SystemfailuresTable */
@@ -528,7 +525,7 @@ class InstantreportsController extends AppController {
                 }
             }
         }
-        print_r($instantReport->toArray());
+        //print_r($instantReport->toArray());
         return $reportData;
 
         return;
@@ -940,6 +937,16 @@ class InstantreportsController extends AppController {
 
         $this->set('containers', $containers);
         $this->viewBuilder()->setOption('serialize', ['containers']);
+    }
+
+    public function hostAvailabilityPieChart() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function serviceAvailabilityBarChart() {
+        //Only ship HTML template
+        return;
     }
 
 }

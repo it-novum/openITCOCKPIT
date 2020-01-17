@@ -53,7 +53,6 @@ use itnovum\openITCOCKPIT\Filter\AgentchecksFilter;
  * @property AppPaginatorComponent $Paginator
  */
 class AgentconfigsController extends AppController {
-    public $layout = 'blank';
 
     /**
      * @param int|null $hostId
@@ -374,7 +373,8 @@ class AgentconfigsController extends AppController {
             }
 
             $host = $HostsTable->get($hostId);
-            $this->request->data['Host'] = [
+            $request = $this->request->getData();
+            $request['Host'] = [
                 [
                     'id'   => $host->get('id'),
                     'name' => $host->get('name')
@@ -390,7 +390,7 @@ class AgentconfigsController extends AppController {
             }
 
             $ServiceComparisonForSave = new ServiceComparisonForSave(
-                $this->request->data,
+                $request,
                 $servicetemplate,
                 $HostsTable->getContactsAndContactgroupsById($host->get('id')),
                 $HosttemplatesTable->getContactsAndContactgroupsById($host->get('hosttemplate_id'))
@@ -419,7 +419,7 @@ class AgentconfigsController extends AppController {
 
                 $User = new User($this->getUser());
 
-                $extDataForChangelog = $ServicesTable->resolveDataForChangelog($this->request->data);
+                $extDataForChangelog = $ServicesTable->resolveDataForChangelog($request);
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'services',
@@ -428,7 +428,7 @@ class AgentconfigsController extends AppController {
                     $host->get('container_id'),
                     $User->getId(),
                     $host->get('name') . '/' . $servicename,
-                    array_merge($this->request->data, $extDataForChangelog)
+                    array_merge($request, $extDataForChangelog)
                 );
 
                 if ($changelog_data) {

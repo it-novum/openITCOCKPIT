@@ -3,6 +3,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 /**
  * Systemdowntime Entity
@@ -39,7 +40,9 @@ class Systemdowntime extends Entity {
         'downtimetype_id' => true,
         'weekdays'        => true,
         'day_of_month'    => true,
+        'from_date'       => true,
         'from_time'       => true,
+        'to_date'         => true,
         'to_time'         => true,
         'duration'        => true,
         'comment'         => true,
@@ -124,7 +127,26 @@ class Systemdowntime extends Entity {
     /**
      * @return string
      */
-    public function getRecurringDowntimeComment(){
+    public function getRecurringDowntimeComment() {
         return 'AUTO[' . $this->id . ']: ' . $this->comment;
+    }
+
+    /**
+     * @param UserTime $UserTime
+     * @return bool
+     * @throws \Exception
+     */
+    public function shiftFromTime(UserTime $UserTime) {
+        $offset = $UserTime->getUserTimeToServerOffset();
+
+        $fromTime = strtotime($this->from_time);
+        if ($fromTime === false) {
+            return false;
+        }
+
+        $fromTime = $fromTime - $offset;
+
+        $this->from_time = date('H:i', $fromTime);
+        return true;
     }
 }
