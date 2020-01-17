@@ -298,7 +298,7 @@
                         <table class="table table-striped m-0 table-bordered table-hover">
                             <thead>
                             <tr>
-                                <th class="text-align-center"><i class="fa fa-check-square-o"
+                                <th class="text-align-center"><i class="fa fa-check-square"
                                                                  aria-hidden="true"></i></th>
                                 <th><?php echo __('Services'); ?></th>
                                 <th><?php echo __('Excluded services'); ?></th>
