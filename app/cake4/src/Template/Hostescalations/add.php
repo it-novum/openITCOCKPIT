@@ -84,7 +84,7 @@ Once a host or service escalated, contacts, contact group and notification optio
 
                         <div class="form-group" ng-class="{'has-error': errors.hosts}">
                             <label class="control-label">
-                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                <i class="fa fa-plus up" aria-hidden="true"></i>
                                 <?php echo __('Hosts'); ?>
                             </label>
                             <div class="input-group">
@@ -106,7 +106,7 @@ Once a host or service escalated, contacts, contact group and notification optio
 
                         <div class="form-group" ng-class="{'has-error': errors.hosts_excluded}">
                             <label class="control-label">
-                                <i class="fa fa-minus" aria-hidden="true"></i>
+                                <i class="fa fa-minus down" aria-hidden="true"></i>
                                 <?php echo __('Excluded Hosts'); ?>
                             </label>
                             <div class="input-group">
@@ -128,7 +128,7 @@ Once a host or service escalated, contacts, contact group and notification optio
 
                         <div class="form-group" ng-class="{'has-error': errors.hostgroups}">
                             <label class="control-label">
-                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                <i class="fa fa-plus up" aria-hidden="true"></i>
                                 <?php echo __('Host groups'); ?>
                             </label>
                             <div class="input-group">
@@ -149,7 +149,7 @@ Once a host or service escalated, contacts, contact group and notification optio
 
                         <div class="form-group" ng-class="{'has-error': errors.hostgroups_excluded}">
                             <label class="control-label">
-                                <i class="fa fa-minus" aria-hidden="true"></i>
+                                <i class="fa fa-minus down" aria-hidden="true"></i>
                                 <?php echo __('Excluded host groups'); ?>
                             </label>
                             <div class="input-group">
@@ -344,10 +344,3 @@ Once a host or service escalated, contacts, contact group and notification optio
         </div>
     </div>
 </div>
-
-
-
-
-
-
-
