@@ -38,6 +38,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\AngularRequest;
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\SystemdowntimesConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -50,13 +51,10 @@ use itnovum\openITCOCKPIT\Filter\SystemdowntimesFilter;
 
 
 /**
- * @property AppPaginatorComponent $Paginator
- * @property DbBackend $DbBackend
- * @property AppAuthComponent $Auth
+ * Class SystemdowntimesController
+ * @package App\Controller
  */
 class SystemdowntimesController extends AppController {
-
-    public $layout = 'blank';
 
     public function host() {
         if (!$this->isAngularJsRequest()) {
@@ -82,6 +80,9 @@ class SystemdowntimesController extends AppController {
 
         $recurringHostDowntimes = $SystemdowntimesTable->getRecurringHostDowntimes($Conditions, $PaginateOMat);
 
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
         //Prepare data for API
         $all_host_recurring_downtimes = [];
         foreach ($recurringHostDowntimes as $recurringHostDowntime) {
@@ -98,7 +99,7 @@ class SystemdowntimesController extends AppController {
             }
 
             $Host = new Host($recurringHostDowntime['host']);
-            $Systemdowntime = new Systemdowntime($recurringHostDowntime);
+            $Systemdowntime = new Systemdowntime($recurringHostDowntime, $UserTime);
 
             $tmpRecord = [
                 'Host'           => $Host->toArray(),
@@ -140,6 +141,9 @@ class SystemdowntimesController extends AppController {
 
         $recurringServiceDowntimes = $SystemdowntimesTable->getRecurringServiceDowntimes($Conditions, $PaginateOMat);
 
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
         //Prepare data for API
         $all_service_recurring_downtimes = [];
         foreach ($recurringServiceDowntimes as $recurringServiceDowntime) {
@@ -157,7 +161,7 @@ class SystemdowntimesController extends AppController {
 
             $Service = new Service($recurringServiceDowntime['service'], $recurringServiceDowntime['servicename'], $allowEdit);
             $Host = new Host($recurringServiceDowntime['service']['host'], $allowEdit);
-            $Systemdowntime = new Systemdowntime($recurringServiceDowntime);
+            $Systemdowntime = new Systemdowntime($recurringServiceDowntime, $UserTime);
 
             $tmpRecord = [
                 'Service'        => $Service->toArray(),
@@ -201,6 +205,9 @@ class SystemdowntimesController extends AppController {
 
         $recurringHostgroupDowntimes = $SystemdowntimesTable->getRecurringHostgroupDowntimes($Conditions, $PaginateOMat);
 
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
         //Prepare data for API
         $all_hostgroup_recurring_downtimes = [];
         foreach ($recurringHostgroupDowntimes as $recurringHostgroupDowntime) {
@@ -215,7 +222,7 @@ class SystemdowntimesController extends AppController {
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
 
-            $Systemdowntime = new Systemdowntime($recurringHostgroupDowntime);
+            $Systemdowntime = new Systemdowntime($recurringHostgroupDowntime, $UserTime);
 
             $tmpRecord = [
                 'Container'      => $recurringHostgroupDowntime['hostgroup']['container'],
@@ -259,6 +266,9 @@ class SystemdowntimesController extends AppController {
 
         $recurringNodeDowntimes = $SystemdowntimesTable->getRecurringNodeDowntimes($Conditions, $PaginateOMat);
 
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
         //Prepare data for API
         $all_node_recurring_downtimes = [];
         foreach ($recurringNodeDowntimes as $recurringNodeDowntime) {
@@ -273,7 +283,7 @@ class SystemdowntimesController extends AppController {
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
 
-            $Systemdowntime = new Systemdowntime($recurringNodeDowntime);
+            $Systemdowntime = new Systemdowntime($recurringNodeDowntime, $UserTime);
 
             $tmpRecord = [
                 'Container'      => $recurringNodeDowntime['container'],
@@ -350,10 +360,19 @@ class SystemdowntimesController extends AppController {
             $isRecurringDowntime = $data['is_recurring'] === 1 || $data['is_recurring'] === '1';
             $success = true;
 
+            $UserTime = $User->getUserTime();
+
             if ($isRecurringDowntime) {
                 //Recurring downtimes will get saved to the database
+                foreach ($Entities as $Entity) {
+                    /** @var \App\Model\Entity\Systemdowntime $Entity */
+                    $Entity->shiftFromTime($UserTime);
+                }
+
                 $success = $SystemdowntimesTable->saveMany($Entities);
             } else {
+                $offset = $UserTime->getUserTimeToServerOffset();
+
                 //Normal downtimes will be passed to the monitoring engine
                 $GearmanClient = new Gearman();
                 /** @var $HostsTable HostsTable */
@@ -376,8 +395,8 @@ class SystemdowntimesController extends AppController {
                     $payload = [
                         'hostUuid'     => $hostUuid,
                         'downtimetype' => $Entity->get('downtimetype_id'),
-                        'start'        => $start,
-                        'end'          => $end,
+                        'start'        => $start - $offset,
+                        'end'          => $end - $offset,
                         'comment'      => $Entity->get('comment'),
                         'author'       => $Entity->get('author'),
                     ];
@@ -448,14 +467,22 @@ class SystemdowntimesController extends AppController {
             $isRecurringDowntime = $data['is_recurring'] === 1 || $data['is_recurring'] === '1';
             $success = true;
 
+            $UserTime = $User->getUserTime();
+
             if ($isRecurringDowntime) {
                 //Recurring downtimes will get saved to the database
+                foreach ($Entities as $Entity) {
+                    /** @var \App\Model\Entity\Systemdowntime $Entity */
+                    $Entity->shiftFromTime($UserTime);
+                }
                 $success = $SystemdowntimesTable->saveMany($Entities);
             } else {
                 //Normal downtimes will be passed to the monitoring engine
                 $GearmanClient = new Gearman();
                 /** @var $HostgroupsTable HostgroupsTable */
                 $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+                $offset = $UserTime->getUserTimeToServerOffset();
 
                 foreach ($Entities as $Entity) {
                     $start = strtotime(
@@ -474,8 +501,8 @@ class SystemdowntimesController extends AppController {
                     $payload = [
                         'hostgroupUuid' => $hostgroupUuid,
                         'downtimetype'  => $Entity->get('downtimetype_id'),
-                        'start'         => $start,
-                        'end'           => $end,
+                        'start'         => $start - $offset,
+                        'end'           => $end - $offset,
                         'comment'       => $Entity->get('comment'),
                         'author'        => $Entity->get('author')
                     ];
@@ -547,14 +574,22 @@ class SystemdowntimesController extends AppController {
             $isRecurringDowntime = $data['is_recurring'] === 1 || $data['is_recurring'] === '1';
             $success = true;
 
+            $UserTime = $User->getUserTime();
+
             if ($isRecurringDowntime) {
                 //Recurring downtimes will get saved to the database
+                foreach ($Entities as $Entity) {
+                    /** @var \App\Model\Entity\Systemdowntime $Entity */
+                    $Entity->shiftFromTime($UserTime);
+                }
                 $success = $SystemdowntimesTable->saveMany($Entities);
             } else {
                 //Normal downtimes will be passed to the monitoring engine
                 $GearmanClient = new Gearman();
                 /** @var $ServicesTable ServicesTable */
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+                $offset = $UserTime->getUserTimeToServerOffset();
 
                 foreach ($Entities as $Entity) {
                     $start = strtotime(
@@ -577,8 +612,8 @@ class SystemdowntimesController extends AppController {
                     $payload = [
                         'hostUuid'    => $hostUuid,
                         'serviceUuid' => $serviceUuid,
-                        'start'       => $start,
-                        'end'         => $end,
+                        'start'       => $start - $offset,
+                        'end'         => $end - $offset,
                         'comment'     => $Entity->get('comment'),
                         'author'      => $Entity->get('author')
                     ];
@@ -650,8 +685,15 @@ class SystemdowntimesController extends AppController {
             $isRecurringDowntime = $data['is_recurring'] === 1 || $data['is_recurring'] === '1';
             $success = true;
 
+            $UserTime = $User->getUserTime();
+
             if ($isRecurringDowntime) {
                 //Recurring downtimes will get saved to the database
+                foreach ($Entities as $Entity) {
+                    /** @var \App\Model\Entity\Systemdowntime $Entity */
+                    $Entity->shiftFromTime($UserTime);
+                }
+
                 $success = $SystemdowntimesTable->saveMany($Entities);
             } else {
                 //Normal downtimes will be passed to the monitoring engine
@@ -660,6 +702,8 @@ class SystemdowntimesController extends AppController {
                 $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
                 /** @var $HostsTable HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+                $offset = $UserTime->getUserTimeToServerOffset();
 
                 foreach ($Entities as $Entity) {
 
@@ -703,8 +747,8 @@ class SystemdowntimesController extends AppController {
                             $payload = [
                                 'hostUuid'     => $hostUuid,
                                 'downtimetype' => $Entity->get('downtimetype_id'),
-                                'start'        => $start,
-                                'end'          => $end,
+                                'start'        => $start - $offset,
+                                'end'          => $end - $offset,
                                 'comment'      => $Entity->get('comment'),
                                 'author'       => $Entity->get('author'),
                             ];

@@ -7,6 +7,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\SystemdowntimesConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
@@ -35,7 +36,7 @@ class SystemdowntimesTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('systemdowntimes');
@@ -75,7 +76,7 @@ class SystemdowntimesTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -216,6 +217,41 @@ class SystemdowntimesTable extends Table {
                     return false;
                 },
                 'message' => __('End time needs to be a valid date.')
+            ])
+            ->add('to_time', 'custom2', [
+                'rule'    => function ($value, $context) {
+                    if (isset($context['data']['is_recurring']) && $context['data']['is_recurring'] === 1) {
+                        //Recurring dont have to_time
+                        return true;
+                    }
+
+                    if (!isset($context['data']['from_date']) || !isset($context['data']['from_time'])) {
+                        return false;
+                    }
+
+                    if (!isset($context['data']['to_date']) || !isset($context['data']['to_time'])) {
+                        return false;
+                    }
+
+
+                    $fromDatetime = $context['data']['from_date'] . ' ' . $context['data']['from_time'];
+                    $fromTimestamp = strtotime($fromDatetime);
+                    if ($fromTimestamp === false) {
+                        return false;
+                    }
+
+                    $toDatetime = $context['data']['to_date'] . ' ' . $context['data']['to_time'];
+                    $toTimestamp = strtotime($toDatetime);
+                    if ($toTimestamp === false) {
+                        return false;
+                    }
+
+                    if (is_numeric($fromTimestamp) && is_numeric($toTimestamp) && $fromTimestamp > 0 && $toTimestamp > 0) {
+                        return $fromTimestamp < $toTimestamp;
+                    }
+                    return false;
+                },
+                'message' => __('"From" date should be greater then "to" date.')
             ]);
 
         $validator
@@ -266,7 +302,7 @@ class SystemdowntimesTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         return $rules;
     }
 

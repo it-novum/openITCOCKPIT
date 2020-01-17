@@ -52,6 +52,7 @@ use itnovum\openITCOCKPIT\Core\ServiceMacroReplacer;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -570,11 +571,14 @@ class AngularController extends AppController {
         }
         $downtimetypeId = Cache::read('FRONTEND.PRESELECTED_DOWNTIME_OPTION', 'permissions');
 
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
         $defaultValues = [
-            'from_date'       => date('d.m.Y'),
-            'from_time'       => date('H:i'),
-            'to_date'         => date('d.m.Y'),
-            'to_time'         => date('H:i', time() + 60 * 15),
+            'from_date'       => $UserTime->customFormat('d.m.Y', time()),
+            'from_time'       => $UserTime->customFormat('H:i', time()),
+            'to_date'         => $UserTime->customFormat('d.m.Y', time()),
+            'to_time'         => $UserTime->customFormat('H:i', time() + 60 * 15),
             'duration'        => 15,
             'comment'         => __('In maintenance'),
             'downtimetype_id' => $downtimetypeId
