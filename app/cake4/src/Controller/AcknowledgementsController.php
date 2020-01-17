@@ -44,13 +44,9 @@ use Statusengine2Module\Model\Entity\AcknowledgementHost;
 
 /**
  * Class AcknowledgementsController
- * @property AppPaginatorComponent $Paginator
- * @property AppAuthComponent $Auth
- * @property DbBackend $DbBackend
+ * @package App\Controller
  */
 class AcknowledgementsController extends AppController {
-
-    public $layout = 'blank';
 
     /**
      * @param int|null $id

@@ -41,13 +41,9 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
  * Class ServicechecksController
- * @property AppPaginatorComponent $Paginator
- * @property AppAuthComponent $Auth
- * @property DbBackend $DbBackend
+ * @package App\Controller
  */
 class ServicechecksController extends AppController {
-
-    public $layout = 'blank';
 
     /**
      * @param null $id
