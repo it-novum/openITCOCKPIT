@@ -145,6 +145,10 @@ openITCOCKPIT v4 Utilities
     padding-top: 25px;
 }
 
+.padding-left-25{
+    padding-left: 25px;
+}
+
 .padding-35 {
     padding: 35px;
 }
@@ -390,3 +394,9 @@ openITCOCKPIT v4 Utilities
 .font-400 {
     font-size: 400% !important;
 }
+
+.bordered-vertical-on-left {
+    border-left: 5px inset #428bca;
+    border-radius: 7px;
+}
+
