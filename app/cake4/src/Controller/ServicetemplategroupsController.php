@@ -119,7 +119,7 @@ class ServicetemplategroupsController extends AppController {
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function add() {
         if (!$this->isApiRequest()) {
@@ -129,12 +129,12 @@ class ServicetemplategroupsController extends AppController {
 
         /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
         $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
-        $this->request->data['Servicetemplategroup']['uuid'] = UUID::v4();
-        $this->request->data['Servicetemplategroup']['container']['containertype_id'] = CT_SERVICETEMPLATEGROUP;
 
 
         $servicetemplategroup = $ServicetemplategroupsTable->newEmptyEntity();
         $servicetemplategroup = $ServicetemplategroupsTable->patchEntity($servicetemplategroup, $this->request->getData('Servicetemplategroup'));
+        $servicetemplategroup->set('uuid', UUID::v4());
+        $servicetemplategroup->get('container')->set('containertype_id', CT_SERVICETEMPLATEGROUP);
 
         $ServicetemplategroupsTable->save($servicetemplategroup);
         if ($servicetemplategroup->hasErrors()) {
@@ -147,7 +147,9 @@ class ServicetemplategroupsController extends AppController {
 
             $User = new User($this->getUser());
 
-            $extDataForChangelog = $ServicetemplategroupsTable->resolveDataForChangelog($this->request->data);
+            $request = $this->request->getData();
+
+            $extDataForChangelog = $ServicetemplategroupsTable->resolveDataForChangelog($request);
             /** @var  ChangelogsTable $ChangelogsTable */
             $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -159,7 +161,7 @@ class ServicetemplategroupsController extends AppController {
                 $servicetemplategroup->get('container')->get('parent_id'),
                 $User->getId(),
                 $servicetemplategroup->get('container')->get('name'),
-                array_merge($this->request->data, $extDataForChangelog)
+                array_merge($request, $extDataForChangelog)
             );
 
                 if ($changelog_data) {
@@ -180,7 +182,7 @@ class ServicetemplategroupsController extends AppController {
 
     /**
      * @param int|null $id
-     * @throws Exception
+     * @throws \Exception
      */
     public function edit($id = null) {
         if (!$this->isApiRequest()) {
@@ -235,6 +237,8 @@ class ServicetemplategroupsController extends AppController {
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
+                $request = $this->request->getData();
+
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'servicetemplategroups',
@@ -243,7 +247,7 @@ class ServicetemplategroupsController extends AppController {
                     $servicetemplategroupEntity->get('container')->get('parent_id'),
                     $User->getId(),
                     $servicetemplategroupEntity->get('container')->get('name'),
-                    array_merge($ServicetemplategroupsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($ServicetemplategroupsTable->resolveDataForChangelog($request), $request),
                     array_merge($ServicetemplategroupsTable->resolveDataForChangelog($servicetemplategroupForChangeLog), $servicetemplategroupForChangeLog)
                 );
                 if ($changelog_data) {

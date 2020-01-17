@@ -286,7 +286,7 @@ class DowntimesController extends AppController {
             throw new \InvalidArgumentException('$internalDowntimeId needs to be an integer!');
         }
 
-        if (!isset($this->request->data['type'])) {
+        if ($this->request->getData('type') === null) {
             throw new \InvalidArgumentException('Parameter type is missing');
         }
 
