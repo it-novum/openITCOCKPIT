@@ -197,7 +197,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        ng-model="post.Hostdependency.inherits_parent">
-                                <label class="custom-control-label" for="userIsActive">
+                                <label class="custom-control-label" for="HostdependenciesInheritParent">
                                     <?php echo __('Inherits parent'); ?>
                                 </label>
                             </div>
@@ -323,14 +323,14 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                     </div>
 
                                     <div class="custom-control custom-checkbox margin-bottom-10"
-                                         ng-class="{'has-error': errors.execution_fail_on_unreachable}">
+                                         ng-class="{'has-error': errors.notification_fail_on_unreachable}">
                                         <input type="checkbox" class="custom-control-input"
                                                ng-true-value="1"
                                                ng-false-value="0"
-                                               id="execution_fail_on_unreachable"
-                                               ng-model="post.Hostdependency.execution_fail_on_unreachable">
+                                               id="notification_fail_on_unreachable"
+                                               ng-model="post.Hostdependency.notification_fail_on_unreachable">
                                         <label class="custom-control-label"
-                                               for="execution_fail_on_unreachable">
+                                               for="notification_fail_on_unreachable">
                                             <span class="badge badge-secondary notify-label"><?php echo __('Unreachable'); ?></span>
                                             <i class="checkbox-secondary"></i>
                                         </label>
