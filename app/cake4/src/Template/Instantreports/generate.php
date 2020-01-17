@@ -132,27 +132,11 @@
                 </form>
             </section>
             <section ng-if="tabName == 'instantReport'" id="instantReport">
-               ReportData here !!!!
-                {{reportData}}
                 <div class="row">
-                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                        <div class="jarviswidget jarviswidget-sortable" role="widget">
-                            <header role="heading">
-                                <h2>
-                                        <span class="fa-stack">
-                                            <i class="fa fa-desktop fa-lg fa-stack-1x"></i>
-                                            <i class="fa fa-check-circle fa-stack-1x fa-xs cornered cornered-lr ok padding-bottom-2"></i>
-                                        </span>
-                                    <?php echo __('Hosts without outages:'); ?>
-                                </h2>
-                            </header>
-                            <div class="well padding-bottom-10">
-                                <div class="row" ng-repeat="(uuid, host) in reportData.hostsWithoutOutages.hosts">
-                                    <host-availability-overview data="host" evaluation-type="1"
-                                                                dynamic-color="false"></host-availability-overview>
-                                </div>
-                            </div>
-                        </div>
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-repeat="report in reportData">
+
+                            <host-availability-pie-chart data="report"></host-availability-pie-chart>
+
                     </article>
                 </div>
             </section>

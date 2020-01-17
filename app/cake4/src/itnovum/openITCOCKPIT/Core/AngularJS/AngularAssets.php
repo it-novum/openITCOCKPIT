@@ -89,7 +89,12 @@ class AngularAssets implements AngularAssetsInterface {
         'legacy/js/lib/highlight-within-textarea/jquery.highlight-within-textarea.js',
 
         'node_modules/underscore/underscore-min.js',
-        'node_modules/jquery-sparkline/jquery.sparkline.min.js'
+        'node_modules/jquery-sparkline/jquery.sparkline.min.js',
+        'js/lib/raphael-charts-cust/raphael.js',
+        'js/lib/raphael-charts-cust/raphael-charts-0.2.1.js',
+        'js/lib/raphael-charts-cust/g.raphael.js',
+        'js/lib/raphael-charts-cust/g.bar.js',
+        'js/lib/raphael-charts-cust/pielicious.js',
 
 
         //'js/scripts/ng.app.js',

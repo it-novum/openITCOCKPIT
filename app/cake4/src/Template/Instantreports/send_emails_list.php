@@ -31,7 +31,7 @@
             <?php echo __('Reporting'); ?>
             <span>>
                 <?php echo __('Instant Report'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -54,12 +54,12 @@
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <li>
                             <a href="/instantreports/index"><i class="fa fa-archive"></i> <span
-                                        class="hidden-mobile hidden-tablet"> <?php echo __('Saved'); ?> </span> </a>
+                                    class="hidden-mobile hidden-tablet"> <?php echo __('Saved'); ?> </span> </a>
                         </li>
                         <?php if ($this->Acl->hasPermission('sendEmailsList')): ?>
                             <li class="active">
                                 <a href="/instantreports/sendEmailsList"><i class="fa fa-paper-plane"></i> <span
-                                            class="hidden-mobile hidden-tablet"> <?php echo __('Send Emails'); ?> </span></a>
+                                        class="hidden-mobile hidden-tablet"> <?php echo __('Send Emails'); ?> </span></a>
                             </li>
                         <?php endif; ?>
 
@@ -118,23 +118,23 @@
                                                        class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                                 <?php else: ?>
                                                     <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
-                                                                class="fa fa-cog"></i>&nbsp;</a>
+                                                            class="fa fa-cog"></i>&nbsp;</a>
                                                 <?php endif; ?>
                                                 <a href="javascript:void(0);" data-toggle="dropdown"
                                                    class="btn btn-default dropdown-toggle"><span
-                                                            class="caret"></span></a>
+                                                        class="caret"></span></a>
                                                 <ul class="dropdown-menu pull-right">
                                                     <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
                                                         <li>
                                                             <a href="<?php echo Router::url(['action' => 'edit', $instantReport['Instantreport']['id']]); ?>"><i
-                                                                        class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                                    class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
                                                     <?php if ($this->Acl->hasPermission('generate')): ?>
                                                         <li>
                                                             <a href="<?php echo Router::url(['action' => 'generate', $instantReport['Instantreport']['id']]); ?>"><i
-                                                                        class="fa fa-file-image-o"></i> <?php echo __('Generate'); ?>
+                                                                    class="fa fa-file-image-o"></i> <?php echo __('Generate'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
@@ -155,7 +155,8 @@
                         <?php if (empty($allInstantReports)): ?>
                             <div class="noMatch">
                                 <center>
-                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
+                                    <span
+                                        class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
                                 </center>
                             </div>
                         <?php endif; ?>
@@ -178,5 +179,6 @@
                     </div>
                 </div>
             </div>
+        </article>
     </div>
 </section>
