@@ -41,7 +41,7 @@ SECONDARY:                          #727b84;
     color: #CFCFCF !important;
 }
 
-.not-monitored {
+.not-monitored, .text-primary {
     color: #4285F4 !important;
 }
 
