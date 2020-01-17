@@ -86,7 +86,6 @@ class PacketmanagerController extends AppController {
      * Fake repository for the packages. The purpose of this action is development and/or testing.
      */
     public function getPackets() {
-        $this->layout = 'json';
         $this->response->type('json');
         $fixedContent =
             '{

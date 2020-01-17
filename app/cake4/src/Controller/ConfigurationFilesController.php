@@ -119,7 +119,6 @@ class ConfigurationFilesController extends AppController {
      * @throws \Exception
      */
     public function phpNSTAMaster() {
-        $this->layout = 'blank';
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster', 'phpNstaMaster');
     }
 
