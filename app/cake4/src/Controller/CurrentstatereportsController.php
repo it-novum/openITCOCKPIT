@@ -54,7 +54,6 @@ use Statusengine\PerfdataParser;
  * @package App\Controller
  */
 class CurrentstatereportsController extends AppController {
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isApiRequest()) {

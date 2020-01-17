@@ -49,6 +49,8 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
+use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -56,19 +58,10 @@ use Statusengine2Module\Model\Entity\DowntimeService;
 use Statusengine2Module\Model\Table\StatehistoryHostsTable;
 
 /**
- * @property AppPaginatorComponent $Paginator
- * @property AppAuthComponent $Auth
- * @property DbBackend $DbBackend
- * @property PerfdataBackend $PerfdataBackend
- *
- * @property Downtimereport $Downtimereport
- * @property Host $Host
- * @property Service $Service
- * @property Timeperiod $Timeperiod
+ * Class DowntimereportsController
+ * @package App\Controller
  */
 class DowntimereportsController extends AppController {
-
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isApiRequest()) {
@@ -76,7 +69,7 @@ class DowntimereportsController extends AppController {
             return;
         }
         $downtimeReportForm = new DowntimereportForm();
-        $downtimeReportForm->execute($this->request->data);
+        $downtimeReportForm->execute($this->request->getData());
 
         $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
@@ -152,11 +145,8 @@ class DowntimereportsController extends AppController {
      */
     public function createPdfReport() {
         //Rewrite GET to "POST"
-        $this->request->data = $this->request->getQuery('data');
-        $this->layout = 'Admin.default';
-
         $downtimeReportForm = new DowntimereportForm();
-        $downtimeReportForm->execute($this->request->data);
+        $downtimeReportForm->execute($this->request->getData('data', []));
 
         $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
@@ -234,29 +224,15 @@ class DowntimereportsController extends AppController {
         }
 
         $this->set('downtimeReport', $downtimeReport);
+        $this->set('UserTime', $UserTime);
 
-        $binary_path = '/usr/bin/wkhtmltopdf';
-        if (file_exists('/usr/local/bin/wkhtmltopdf')) {
-            $binary_path = '/usr/local/bin/wkhtmltopdf';
-        }
-        $this->pdfConfig = [
-            'engine'             => 'CakePdf.WkHtmlToPdf',
-            'margin'             => [
-                'bottom' => 15,
-                'left'   => 0,
-                'right'  => 0,
-                'top'    => 15,
-            ],
-            'encoding'           => 'UTF-8',
-            'download'           => true,
-            'binary'             => $binary_path,
-            'orientation'        => 'portrait',
-            'filename'           => 'Downtimereport.pdf',
-            'no-pdf-compression' => '*',
-            'image-dpi'          => '900',
-            'background'         => true,
-            'no-background'      => false,
-        ];
+        $this->viewBuilder()->setOption(
+            'pdfConfig',
+            [
+                'download' => true,
+                'filename' => __('Downtimereport_') . date('dmY_his') . '.pdf',
+            ]
+        );
     }
 
 
@@ -379,7 +355,9 @@ class DowntimereportsController extends AppController {
                                 'state'           => $Hoststatus->currentState(),
                                 'last_state'      => $Hoststatus->currentState(),
                                 'last_hard_state' => $Hoststatus->getLastHardState(),
-                                'state_type'      => (int)$Hoststatus->isHardState()
+                                'state_type'      => (int)$Hoststatus->isHardState(),
+                                'HoststatusIcon'  => new HoststatusIcon($Hoststatus->currentState())
+
                             ]
                         ];
 
@@ -438,11 +416,12 @@ class DowntimereportsController extends AppController {
                     if ($Servicestatus->getLastStateChange() <= $fromDate) {
                         $stateHistoryServiceTmp = [
                             'StatehistoryService' => [
-                                'state_time'      => $fromDate,
-                                'state'           => $Servicestatus->currentState(),
-                                'last_state'      => $Servicestatus->currentState(),
-                                'last_hard_state' => $Servicestatus->getLastHardState(),
-                                'state_type'      => (int)$Servicestatus->isHardState()
+                                'state_time'        => $fromDate,
+                                'state'             => $Servicestatus->currentState(),
+                                'last_state'        => $Servicestatus->currentState(),
+                                'last_hard_state'   => $Servicestatus->getLastHardState(),
+                                'state_type'        => (int)$Servicestatus->isHardState(),
+                                'ServicestatusIcon' => new ServicestatusIcon($Servicestatus->currentState())
                             ]
                         ];
 

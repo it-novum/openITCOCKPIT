@@ -23,26 +23,37 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use itnovum\openITCOCKPIT\Core\Views\Logo;
+use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\Core\Views\MultipleBarChart;
+
+/**
+ * @var \App\View\AppView $this
+ * @var array $downtimeReport
+ * @var int $fromDate
+ * @var int $toDate
+ * @var \itnovum\openITCOCKPIT\Core\Views\UserTime $UserTime
+ *
+ */
 
 $Logo = new Logo();
 ?>
 <head>
     <?php
     $css = [
-        '/css/vendor/bootstrap/css/bootstrap.css',
-        '/css/vendor/bootstrap/css/bootstrap-theme.css',
-        '/smartadmin/css/font-awesome.css',
-        '/smartadmin/css/smartadmin-production.css',
-        '/smartadmin/css/your_style.css',
-        '/css/app.css',
-        '/css/pdf_list_style.css',
-        '/css/bootstrap_pdf.css',
+        '/legacy/css/vendor/bootstrap/css/bootstrap.css',
+        '/legacy/css/vendor/bootstrap/css/bootstrap-theme.css',
+        '/legacy/smartadmin/css/font-awesome.css',
+        '/legacy/smartadmin/css/smartadmin-production.css',
+        '/legacy/smartadmin/css/your_style.css',
+        '/legacy/css/app.css',
+        '/legacy/css/pdf_list_style.css',
+        '/legacy/css/bootstrap_pdf.css',
     ];
     ?>
 
     <?php
     foreach ($css as $cssFile): ?>
-        <link rel="stylesheet" type="text/css" href="<?php echo WWW_ROOT . $cssFile; ?>"/>
+        <link rel="stylesheet" type="text/css" href="<?= WWW_ROOT . $cssFile; ?>"/>
     <?php
     endforeach; ?>
 </head>
@@ -54,14 +65,14 @@ $Logo = new Logo();
                 <i class="fa fa-calendar txt-color-blueDark"></i>
                 <?php
                 echo __('Analysis period: ');
-                echo h($this->Time->format($fromDate, $this->Auth->user('dateformat'), false)); ?>
+                echo h($UserTime->format($fromDate)); ?>
                 <i class="fa fa-long-arrow-right"></i>
                 <?php
-                echo h($this->Time->format($toDate, $this->Auth->user('dateformat'), false));
+                echo h($UserTime->format($toDate));
                 ?>
             </div>
             <div class="col-md-3 text-left">
-                <img src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
+                <img src="<?= $Logo->getLogoPdfPath(); ?>" width="200"/>
             </div>
         </div>
         <?php
@@ -79,7 +90,7 @@ $Logo = new Logo();
                                             <i class="fa fa-check fa-stack-1x ok"></i>
                                             <i class="fa fa-ban fa-stack-2x critical opacity-50"></i>
                                         </span>
-                                    <?php echo __('Involved in outages (Hosts):'); ?>
+                                    <?= __('Involved in outages (Hosts):'); ?>
                                 </h2>
                             </header>
                             <div class="well padding-bottom-10">
@@ -88,12 +99,13 @@ $Logo = new Logo();
                                     ?>
                                     <div class="widget-body">
                                         <?php
-                                        $overview_chart = $this->MultipleBarChart->createBarChart(
-                                            Set::combine($hostsWithOutages['hosts'], '{n}.Host.name', '{n}.Host.reportData'
-                                            )
+                                        $MultipleBarChart = new MultipleBarChart();
+
+                                        $overview_chart = $MultipleBarChart->createBarChart(
+                                            Hash::combine($hostsWithOutages['hosts'], '{n}.Host.name', '{n}.Host.reportData')
                                         );
                                         ?>
-                                        <img src="<?php echo WWW_ROOT; ?>img/charts/<?php echo $overview_chart; ?>"/>
+                                        <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"/>
                                     </div>
                                     <?php
                                     foreach ($hostsWithOutages['hosts'] as $hostWithOutages):?>
@@ -101,31 +113,31 @@ $Logo = new Logo();
                                             <header role="heading">
                                                 <h2 class="bold  txt-color-blueDark">
                                                     <i class="fa fa-desktop txt-color-blueDark"></i>
-                                                    <?php echo h($hostWithOutages['Host']['name']); ?>
+                                                    <?= h($hostWithOutages['Host']['name']); ?>
                                                 </h2>
                                             </header>
                                             <div class="widget-body font-md txt-color-blueDark">
                                                 <div class="col-md-3 ">
-                                                    <?php echo __('Description'); ?>
+                                                    <?= __('Description'); ?>
                                                 </div>
                                                 <div class="col-md-9">
-                                                    <?php echo h(($hostWithOutages['Host']['description']) ? $hostWithOutages['Host']['description'] : ' - '); ?>
+                                                    <?= h(($hostWithOutages['Host']['description']) ? $hostWithOutages['Host']['description'] : ' - '); ?>
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <?php echo __('IP address'); ?>
+                                                    <?= __('IP address'); ?>
                                                 </div>
                                                 <div class="col-md-9">
-                                                    <?php echo h($hostWithOutages['Host']['address']); ?>
+                                                    <?= h($hostWithOutages['Host']['address']); ?>
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <?php echo __('Status'); ?>
+                                                    <?= __('Status'); ?>
                                                 </div>
                                                 <?php
                                                 for ($i = 0; $i < 3; $i++):?>
-                                                    <div class="col-md-3 <?php echo $this->Status->HostStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md padding-5">
+                                                    <div class="col-md-3 <?= $this->Status->HostStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md padding-5">
                                                         <strong class="txt-color-white">
                                                             <strong class="txt-color-white">
-                                                                <?php echo $hostWithOutages['pieChartData']['widgetOverview'][$i]['percent']; ?>
+                                                                <?= $hostWithOutages['pieChartData']['widgetOverview'][$i]['percent']; ?>
                                                             </strong>
                                                         </strong>
                                                     </div>
@@ -137,9 +149,9 @@ $Logo = new Logo();
                                                 </div>
                                                 <?php
                                                 for ($i = 0; $i < 3; $i++):?>
-                                                    <div class="col-md-3 <?php echo $this->Status->HostStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md padding-5">
+                                                    <div class="col-md-3 <?= $this->Status->HostStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md padding-5">
                                                         <strong class="txt-color-white">
-                                                            <?php echo $hostWithOutages['pieChartData']['widgetOverview'][$i]['human']; ?>
+                                                            <?= $hostWithOutages['pieChartData']['widgetOverview'][$i]['human']; ?>
                                                         </strong>
                                                     </div>
                                                 <?php
@@ -153,7 +165,7 @@ $Logo = new Logo();
                                                     if (!empty($servicesWithOutages)):?>
                                                         <div class="col-md-9 padding-top-10 padding-bottom-10">
                                                             <strong class="txt-color-blueDark">
-                                                                <?php echo __('Involved in outages (Services):'); ?>
+                                                                <?= __('Involved in outages (Services):'); ?>
                                                             </strong>
                                                         </div>
                                                     <?php endif;
@@ -165,14 +177,14 @@ $Logo = new Logo();
                                                             ?>
                                                             <div class="col-md-12 txt-color-blueDark">
                                                                 <i class="fa fa-cog txt-color-blueDark"></i>
-                                                                <?php echo h($serviceName);
+                                                                <?= h($serviceName);
                                                                 ?>
                                                             </div>
                                                             <div class="col-md-3 text-right padding-right-20 text-info">
-                                                                <?php echo __('Servicetemplate'); ?>
+                                                                <?= __('Servicetemplate'); ?>
                                                             </div>
                                                             <div class="col-md-9 text-info">
-                                                                <?php echo h($service['Servicetemplate']['template_name']);
+                                                                <?= h($service['Servicetemplate']['template_name']);
                                                                 ?>
                                                             </div>
                                                             <div class="col-md-3 text-right padding-bottom-10">
@@ -184,24 +196,24 @@ $Logo = new Logo();
                                                                     $service['Service']['reportData'][3]
                                                                 ]);
                                                                 ?>
-                                                                <img src="<?php echo WWW_ROOT; ?>img/charts/<?php echo $overview_chart; ?>"
+                                                                <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
                                                                      width="100"/>
                                                             </div>
                                                             <?php
                                                             for ($i = 0; $i <= 3; $i++):?>
                                                                 <div class="col-md-3 text-right font-md">
                                                                     <em>
-                                                                        <?php echo $this->Status->humanSimpleServiceStatus($i); ?>
+                                                                        <?= $this->Status->humanSimpleServiceStatus($i); ?>
                                                                     </em>
                                                                 </div>
-                                                                <div class="col-md-3 <?php echo $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md">
+                                                                <div class="col-md-3 <?= $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md">
                                                                     <strong class="txt-color-white">
-                                                                        <?php echo $service['pieChartData']['widgetOverview'][$i]['percent']; ?>
+                                                                        <?= $service['pieChartData']['widgetOverview'][$i]['percent']; ?>
                                                                     </strong>
                                                                 </div>
-                                                                <div class="col-md-3 <?php echo $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md">
+                                                                <div class="col-md-3 <?= $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md">
                                                                     <strong class="txt-color-white">
-                                                                        <?php echo $service['pieChartData']['widgetOverview'][$i]['human']; ?>
+                                                                        <?= $service['pieChartData']['widgetOverview'][$i]['human']; ?>
                                                                     </strong>
                                                                 </div>
                                                             <?php
@@ -233,7 +245,7 @@ $Logo = new Logo();
                                             <i class="fa fa-circle-o fa-stack-2x txt-color-blueLight"></i>
                                             <i class="fa fa-check fa-stack-1x ok"></i>
                                         </span>
-                                    <?php echo __(' Hosts without outages:'); ?>
+                                    <?= __(' Hosts without outages:'); ?>
                                 </h2>
                             </header>
                             <div class="well padding-bottom-10">
@@ -243,31 +255,31 @@ $Logo = new Logo();
                                         <header role="heading">
                                             <h2 class="bold  txt-color-blueDark">
                                                 <i class="fa fa-desktop txt-color-blueDark"></i>
-                                                <?php echo h($hostWithoutOutages['Host']['name']); ?>
+                                                <?= h($hostWithoutOutages['Host']['name']); ?>
                                             </h2>
                                         </header>
                                         <div class="widget-body font-md txt-color-blueDark">
                                             <div class="col-md-3 ">
-                                                <?php echo __('Description'); ?>
+                                                <?= __('Description'); ?>
                                             </div>
                                             <div class="col-md-9">
-                                                <?php echo h(($hostWithoutOutages['Host']['description']) ? $hostWithoutOutages['Host']['description'] : ' - '); ?>
+                                                <?= h(($hostWithoutOutages['Host']['description']) ? $hostWithoutOutages['Host']['description'] : ' - '); ?>
                                             </div>
                                             <div class="col-md-3">
-                                                <?php echo __('IP address'); ?>
+                                                <?= __('IP address'); ?>
                                             </div>
                                             <div class="col-md-9">
-                                                <?php echo h($hostWithoutOutages['Host']['address']); ?>
+                                                <?= h($hostWithoutOutages['Host']['address']); ?>
                                             </div>
                                             <div class="col-md-3">
-                                                <?php echo __('Status'); ?>
+                                                <?= __('Status'); ?>
                                             </div>
                                             <?php
                                             for ($i = 0; $i < 3; $i++):?>
-                                                <div class="col-md-3 <?php echo $this->Status->HostStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md padding-5">
+                                                <div class="col-md-3 <?= $this->Status->HostStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md padding-5">
                                                     <strong class="txt-color-white">
                                                         <strong class="txt-color-white">
-                                                            <?php echo $hostWithoutOutages['pieChartData']['widgetOverview'][$i]['percent']; ?>
+                                                            <?= $hostWithoutOutages['pieChartData']['widgetOverview'][$i]['percent']; ?>
                                                         </strong>
                                                     </strong>
                                                 </div>
@@ -279,9 +291,9 @@ $Logo = new Logo();
                                             </div>
                                             <?php
                                             for ($i = 0; $i < 3; $i++):?>
-                                                <div class="col-md-3 <?php echo $this->Status->HostStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md padding-5">
+                                                <div class="col-md-3 <?= $this->Status->HostStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md padding-5">
                                                     <strong class="txt-color-white">
-                                                        <?php echo $hostWithoutOutages['pieChartData']['widgetOverview'][$i]['human']; ?>
+                                                        <?= $hostWithoutOutages['pieChartData']['widgetOverview'][$i]['human']; ?>
                                                     </strong>
                                                 </div>
                                             <?php
@@ -296,7 +308,7 @@ $Logo = new Logo();
                                                 if (!empty($servicesWithOutages)): ?>
                                                     <div class="col-md-9 padding-top-10 padding-bottom-10">
                                                         <strong class="txt-color-blueDark">
-                                                            <?php echo __('Involved in outages (Services):'); ?>
+                                                            <?= __('Involved in outages (Services):'); ?>
                                                         </strong>
                                                     </div>
                                                 <?php endif;
@@ -308,14 +320,14 @@ $Logo = new Logo();
                                                         ?>
                                                         <div class="col-md-12 txt-color-blueDark">
                                                             <i class="fa fa-cog txt-color-blueDark"></i>
-                                                            <?php echo h($serviceName);
+                                                            <?= h($serviceName);
                                                             ?>
                                                         </div>
                                                         <div class="col-md-3 text-right padding-right-20 text-info">
-                                                            <?php echo __('Servicetemplate'); ?>
+                                                            <?= __('Servicetemplate'); ?>
                                                         </div>
                                                         <div class="col-md-9 text-info">
-                                                            <?php echo h($service['Servicetemplate']['template_name']);
+                                                            <?= h($service['Servicetemplate']['template_name']);
                                                             ?>
                                                         </div>
                                                         <div class="col-md-3 text-right padding-bottom-10">
@@ -327,24 +339,24 @@ $Logo = new Logo();
                                                                 $service['Service']['reportData'][3]
                                                             ]);
                                                             ?>
-                                                            <img src="<?php echo WWW_ROOT; ?>img/charts/<?php echo $overview_chart; ?>"
+                                                            <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
                                                                  width="100"/>
                                                         </div>
                                                         <?php
                                                         for ($i = 0; $i <= 3; $i++):?>
                                                             <div class="col-md-3 text-right font-md">
                                                                 <em>
-                                                                    <?php echo $this->Status->humanSimpleServiceStatus($i); ?>
+                                                                    <?= $this->Status->humanSimpleServiceStatus($i); ?>
                                                                 </em>
                                                             </div>
-                                                            <div class="col-md-3 <?php echo $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md">
+                                                            <div class="col-md-3 <?= $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md">
                                                                 <strong class="txt-color-white">
-                                                                    <?php echo $service['pieChartData']['widgetOverview'][$i]['percent']; ?>
+                                                                    <?= $service['pieChartData']['widgetOverview'][$i]['percent']; ?>
                                                                 </strong>
                                                             </div>
-                                                            <div class="col-md-3 <?php echo $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md">
+                                                            <div class="col-md-3 <?= $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-md">
                                                                 <strong class="txt-color-white">
-                                                                    <?php echo $service['pieChartData']['widgetOverview'][$i]['human']; ?>
+                                                                    <?= $service['pieChartData']['widgetOverview'][$i]['human']; ?>
                                                                 </strong>
                                                             </div>
                                                         <?php endfor;
