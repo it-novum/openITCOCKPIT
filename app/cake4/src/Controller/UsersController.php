@@ -475,7 +475,7 @@ class UsersController extends AppController {
         $containerId = (int)$this->request->getQuery('containerId', 0);
         // Due to the only filter condition is the container_id (no LIMIT or LIKE in SQL )
         // I think the selected parameter is not required
-        //$selected = $this->request->query('selected');
+        //$selected = $this->request->getQuery('selected', []);
 
         if ($containerId === 0) {
             //Missing parameter in URL
