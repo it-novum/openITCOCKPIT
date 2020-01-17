@@ -252,14 +252,22 @@
                                         {{ Notification.NotificationHost.start_time }}
                                     </td>
                                     <td>
-                                        <a ui-sref="ContactsEdit({id: Notification.Contact.id})">{{
-                                            Notification.Contact.name }}
-                                        </a>
+                                        <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
+                                            <a ui-sref="ContactsEdit({id: Notification.Contact.id})">{{
+                                                Notification.Contact.name }}
+                                            </a>
+                                        <?php else: ?>
+                                            {{ Notification.Contact.name }}
+                                        <?php endif; ?>
                                     </td>
                                     <td>
-                                        <a ui-sref="CommandsEdit({id:Notification.Command.id})">{{
-                                            Notification.Command.name }}
-                                        </a>
+                                        <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
+                                            <a ui-sref="CommandsEdit({id:Notification.Command.id})">{{
+                                                Notification.Command.name }}
+                                            </a>
+                                        <?php else: ?>
+                                            {{ Notification.Command.name }}
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         {{ Notification.NotificationHost.output }}
