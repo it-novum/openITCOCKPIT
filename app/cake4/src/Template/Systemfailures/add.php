@@ -55,7 +55,7 @@
         <div class="widget-body">
             <form ng-submit="submit();" class="form-horizontal"
                   ng-init="successMessage=
-            {objectName : '<?php echo __('System failure'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+            {objectName : '<?php echo __('System failure'); ?>' , message: '<?php echo __(' created successfully'); ?>'}">
 
                 <div class="row">
                     <div class="col-xs-12">
