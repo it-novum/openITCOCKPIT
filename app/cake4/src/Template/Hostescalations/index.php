@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="HostescalationsIndex">
-            <i class="fa fa-bomb"></i> <?php echo __('Host Escalations'); ?>
+            <i class="fa fa-bomb"></i> <?php echo __('Host escalations'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -170,7 +170,8 @@
                                             <div class="form-group">
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
-                                                        <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                                                        <span class="input-group-text"><i
+                                                                class="fa fa-envelope"></i></span>
                                                     </div>
                                                     <input class="form-control form-control-sm"
                                                            type="number"
@@ -186,7 +187,8 @@
                                             <div class="form-group">
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
-                                                        <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                                                        <span class="input-group-text"><i
+                                                                class="fa fa-envelope"></i></span>
                                                     </div>
                                                     <input class="form-control form-control-sm"
                                                            type="number"
@@ -203,7 +205,8 @@
                                             <div class="form-group">
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
-                                                        <span class="input-group-text"><i class="fa fa-clock"></i></span>
+                                                        <span class="input-group-text"><i
+                                                                class="fa fa-clock"></i></span>
                                                     </div>
                                                     <input class="form-control form-control-sm"
                                                            type="number"
@@ -445,11 +448,11 @@
                                 </td>
                                 <td class="text-align-center">
                                     <div>
-                                                <span class="label-forced label-success margin-right-5"
-                                                      title="<?php echo __('Recovery'); ?>"
-                                                      ng-show="hostescalation.escalate_on_recovery">
-                                                    <?php echo __('R'); ?>
-                                                </span>
+                                        <span class="label-forced label-success margin-right-5"
+                                              title="<?php echo __('Recovery'); ?>"
+                                              ng-show="hostescalation.escalate_on_recovery">
+                                            <?php echo __('R'); ?>
+                                        </span>
                                         <span class="label-forced label-danger margin-right-5"
                                               title="<?php echo __('Down'); ?>"
                                               ng-show="hostescalation.escalate_on_down">
@@ -463,48 +466,42 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <div class="btn-group smart-form">
+                                    <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
                                             <a ui-sref="HostescalationsEdit({id: hostescalation.id})"
                                                ng-if="hostescalation.allowEdit"
-                                               class="btn btn-default">
-                                                &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                            </a>
-                                            <a href="javascript:void(0);"
-                                               ng-if="!hostescalation.allowEdit"
-                                               class="btn btn-default disabled">
-                                                &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i>
                                             </a>
                                         <?php else: ?>
-                                            <a href="javascript:void(0);" class="btn btn-default">
-                                                &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                            </a>
+                                            <a href="javascript:void(0);"
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i></a>
                                         <?php endif; ?>
-                                        <a href="javascript:void(0);" data-toggle="dropdown"
-                                           class="btn btn-default dropdown-toggle"><span
-                                                class="caret"></span></a>
-                                        <ul class="dropdown-menu pull-right"
-                                            id="menuHack-{{hostescalation.id}}">
+                                        <button type="button"
+                                                class="btn btn-default dropdown-toggle btn-lower-padding"
+                                                data-toggle="dropdown">
+                                            <i class="caret"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
-                                                <li ng-if="hostescalation.allowEdit">
-                                                    <a ui-sref="HostescalationsEdit({id:hostescalation.id})">
-                                                        <i class="fa fa-cog"></i>
-                                                        <?php echo __('Edit'); ?>
-                                                    </a>
-                                                </li>
+                                                <a ui-sref="HostescalationsEdit({id: hostescalation.id})"
+                                                   ng-if="hostescalation.allowEdit"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-cog"></i>
+                                                    <?php echo __('Edit'); ?>
+                                                </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hostescalations')): ?>
-                                                <li class="divider"
-                                                    ng-if="hostescalation.allowEdit"></li>
-                                                <li ng-if="hostescalation.allowEdit">
-                                                    <a href="javascript:void(0);"
-                                                       class="txt-color-red"
-                                                       ng-click="confirmDelete(getObjectForDelete(hostescalation))">
-                                                        <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
-                                                    </a>
-                                                </li>
+                                                <a ng-click="confirmDelete(getObjectForDelete(hostescalation))"
+                                                   ng-if="hostescalation.allowEdit"
+                                                   href="javascript:void(0);"
+                                                   class="dropdown-item txt-color-red">
+                                                    <i class="fa fa-trash"></i>
+                                                    <?php echo __('Delete'); ?>
+                                                </a>
                                             <?php endif; ?>
-                                        </ul>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
