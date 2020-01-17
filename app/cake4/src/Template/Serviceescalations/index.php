@@ -55,7 +55,7 @@
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
                     <?php if ($this->Acl->hasPermission('add', 'serviceescalations')): ?>
-                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="ServiceescalationsIndex">
+                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="ServiceescalationsAdd">
                             <i class="fas fa-plus"></i> <?php echo __('New'); ?>
                         </button>
                     <?php endif; ?>
