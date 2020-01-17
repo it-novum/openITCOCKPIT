@@ -39,12 +39,9 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
  * Class HostchecksController
- * @property AppPaginatorComponent $Paginator
+ * @package App\Controller
  */
 class HostchecksController extends AppController {
-
-
-    public $layout = 'blank';
 
     public function index($id = null) {
         if (!$this->isAngularJsRequest()) {

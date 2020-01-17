@@ -66,20 +66,16 @@
                     <div class="help-block text-danger">{{ error }}</div>
                 </div>
             </div>
-            <div
-                    ng-init="reportMessage={successMessage : '<?php echo __('Report created successfully'); ?>' , errorMessage: '<?php echo __('Report could not be created'); ?>'}">
+            <div>
                 <section ng-show="tabName == 'reportConfig'" id="reportConfig">
-                    <?php
-                    echo $this->Form->create('Downtimereport', [
-                        'class' => 'form-horizontal clear',
-                    ]);
-                    ?>
-                    <div ng-class="{'has-error': errors.services}">
-                        <div class="form-group">
-                            <label class="col-xs-1 col-md-1 col-lg-1 control-label">
-                                <?php echo __('Evaluation'); ?>
-                            </label>
-                            <div class="col col-xs-10 col-md-10 col-lg-10">
+                    <form ng-submit="submit();" class="form-horizontal"
+                          ng-init="reportMessage={successMessage : '<?php echo __('Report created successfully'); ?>' , errorMessage: '<?php echo __('Report could not be created'); ?>'}">
+                        <div ng-class="{'has-error': errors.services}">
+                            <div class="form-group">
+                                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                                    <?php echo __('Evaluation'); ?>
+                                </label>
+                                <div class="col col-xs-10 col-md-10 col-lg-10">
                                 <span>
                                     <input type="radio"
                                            id="hosts"
@@ -90,7 +86,7 @@
                                         <?php echo __('Hosts'); ?>
                                     </label>
                                 </span>
-                                <span class="padding-left-10">
+                                    <span class="padding-left-10">
                                     <input type="radio"
                                            id="hostandservices"
                                            ng-model="post.evaluation_type"
@@ -100,83 +96,83 @@
                                         <?php echo __('Hosts and Services'); ?>
                                     </label>
                                 </span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-xs-1 col-md-1 col-lg-1 control-label">
-                                <?php echo __('Report format'); ?>
-                            </label>
-                            <div class="col col-xs-10 col-md-10 col-lg-10">
-                                <select
+                            <div class="form-group">
+                                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                                    <?php echo __('Report format'); ?>
+                                </label>
+                                <div class="col col-xs-10 col-md-10 col-lg-10">
+                                    <select
                                         class="form-control"
                                         ng-model="post.report_format">
-                                    <option ng-value="1"><?php echo __('PDF'); ?></option>
-                                    <option ng-value="2"><?php echo __('HTML'); ?></option>
-                                </select>
+                                        <option ng-value="1"><?php echo __('PDF'); ?></option>
+                                        <option ng-value="2"><?php echo __('HTML'); ?></option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
-                            <label class="col col-md-1 control-label">
-                                <?php echo __('Timeperiod'); ?>
-                            </label>
-                            <div class="col col-xs-10 col-lg-10">
-                                <select
+                            <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
+                                <label class="col col-md-1 control-label">
+                                    <?php echo __('Timeperiod'); ?>
+                                </label>
+                                <div class="col col-xs-10 col-lg-10">
+                                    <select
                                         data-placeholder="<?php echo __('Please choose a timeperiod'); ?>"
                                         class="form-control"
                                         chosen="timeperiods"
                                         ng-options="timeperiod.Timeperiod.id as timeperiod.Timeperiod.name for timeperiod in timeperiods"
                                         ng-model="post.timeperiod_id">
-                                </select>
-                                <div ng-repeat="error in errors.timeperiod_id">
-                                    <div class="help-block text-danger">{{ error }}</div>
+                                    </select>
+                                    <div ng-repeat="error in errors.timeperiod_id">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group required" ng-class="{'has-error': errors.from_date}">
-                            <label class="col col-md-1 control-label"
-                                   for="FromTime"><?php echo __('From'); ?></label>
-                            <div class="col col-xs-10 col-md-10 col-lg-10">
-                                <input type="text" class="form-control" ng-model="post.from_date"
-                                       placeholder="<?php echo __('DD.MM.YYYY'); ?>">
-                                <div ng-repeat="error in errors.from_date">
-                                    <div class="help-block text-danger">{{ error }}</div>
+                            <div class="form-group required" ng-class="{'has-error': errors.from_date}">
+                                <label class="col col-md-1 control-label"
+                                       for="FromTime"><?php echo __('From'); ?></label>
+                                <div class="col col-xs-10 col-md-10 col-lg-10">
+                                    <input type="text" class="form-control" ng-model="post.from_date"
+                                           placeholder="<?php echo __('DD.MM.YYYY'); ?>">
+                                    <div ng-repeat="error in errors.from_date">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group required" ng-class="{'has-error': errors.to_date}">
-                            <label class="col col-md-1 control-label"
-                                   for="ToTime"><?php echo __('To'); ?></label>
-                            <div class="col col-xs-10 col-md-10 col-lg-10">
-                                <input type="text" class="form-control" ng-model="post.to_date"
-                                       placeholder="<?php echo __('DD.MM.YYYY'); ?>">
-                                <div ng-repeat="error in errors.to_date">
-                                    <div class="help-block text-danger">{{ error }}</div>
+                            <div class="form-group required" ng-class="{'has-error': errors.to_date}">
+                                <label class="col col-md-1 control-label"
+                                       for="ToTime"><?php echo __('To'); ?></label>
+                                <div class="col col-xs-10 col-md-10 col-lg-10">
+                                    <input type="text" class="form-control" ng-model="post.to_date"
+                                           placeholder="<?php echo __('DD.MM.YYYY'); ?>">
+                                    <div ng-repeat="error in errors.to_date">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-xs-1 col-md-1 col-lg-1 control-label">
-                                <?php echo __('Reflection state'); ?>
-                            </label>
-                            <div class="col col-xs-10 col-md-10 col-lg-10">
-                                <select class="form-control" ng-model="post.reflection_state">
-                                    <option ng-value="1"><?php echo __('soft and hard state'); ?></option>
-                                    <option ng-value="2"><?php echo __('only hard state'); ?></option>
-                                </select>
+                            <div class="form-group">
+                                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                                    <?php echo __('Reflection state'); ?>
+                                </label>
+                                <div class="col col-xs-10 col-md-10 col-lg-10">
+                                    <select class="form-control" ng-model="post.reflection_state">
+                                        <option ng-value="1"><?php echo __('soft and hard state'); ?></option>
+                                        <option ng-value="2"><?php echo __('only hard state'); ?></option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group" ng-show="post.report_format == 2">
-                            <label class="col-xs-12 col-lg-1 control-label" for="setColorDynamically">
-                                <?php echo __('Dynamic color'); ?>
-                            </label>
-                            <div class="col-xs-12 col-lg-10 smart-form">
-                                <label class="checkbox small-checkbox-label no-required no-padding-top">
-                                    <input type="checkbox" name="checkbox"
-                                           id="setColorDynamically"
-                                           ng-model="setColorDynamically">
-                                    <i class="checkbox-primary"></i>
-                                    <?php echo __('Yes'); ?>
-                                    <span class="margin-left-10 label-group-width-auto">
+                            <div class="form-group" ng-show="post.report_format == 2">
+                                <label class="col-xs-12 col-lg-1 control-label" for="setColorDynamically">
+                                    <?php echo __('Dynamic color'); ?>
+                                </label>
+                                <div class="col-xs-12 col-lg-10 smart-form">
+                                    <label class="checkbox small-checkbox-label no-required no-padding-top">
+                                        <input type="checkbox" name="checkbox"
+                                               id="setColorDynamically"
+                                               ng-model="setColorDynamically">
+                                        <i class="checkbox-primary"></i>
+                                        <?php echo __('Yes'); ?>
+                                        <span class="margin-left-10 label-group-width-auto">
                                         <span class="label-small" style="background:#449d44;">100%</span>
                                         <span class="label-small" style="background:#55a03e;">90%</span>
                                         <span class="label-small" style="background:#65a339;">80%</span>
@@ -189,19 +185,20 @@
                                         <span class="label-small" style="background:#cc3e29;">10%</span>
                                         <span class="label-small" style="background:#c9302c;">0%</span>
                                     </span>
-                                </label>
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-xs-12 margin-top-10 margin-bottom-10">
-                        <div class="well formactions ">
-                            <div class="pull-right">
-                                <button type="button" ng-click="createDowntimeReport()" class="btn btn-primary">
-                                    <?php echo __('Create report'); ?>
-                                </button>
+                        <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                            <div class="well formactions ">
+                                <div class="pull-right">
+                                    <button type="button" ng-click="createDowntimeReport()" class="btn btn-primary">
+                                        <?php echo __('Create report'); ?>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </section>
                 <section ng-if="tabName == 'calendarOverview'" id="calendarOverview">
                     <downtimecalendar downtimes="reportData.downtimes" from-date="post.from_date"

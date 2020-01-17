@@ -23,11 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+namespace itnovum\openITCOCKPIT\Core\Views;
 
-class MultipleBarChartHelper extends AppHelper {
-    public function __construct(View $view, $settings = []) {
-        parent::__construct($view, $settings);
-    }
+
+use Cake\Filesystem\Folder;
+
+class MultipleBarChart {
 
     public function createBarChart($chartData, $maxBars = 10) {
         $filepath = WWW_ROOT . 'img' . DS . 'charts';

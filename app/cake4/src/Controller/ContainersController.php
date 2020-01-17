@@ -117,7 +117,7 @@ class ContainersController extends AppController {
 
             /** @var $ContainersTable ContainersTable */
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-            $containerId = (int)$this->request->data['Container']['id'];
+            $containerId = (int)$this->request->getData('Container.id', 0);
 
             if (!$ContainersTable->existsById($containerId)) {
                 throw new NotFoundException(__('Invalid container'));

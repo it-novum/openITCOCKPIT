@@ -43,12 +43,9 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
  * Class StatehistoriesController
- * @property AppAuthComponent $Auth
- * @property AppPaginatorComponent $Paginator
+ * @package App\Controller
  */
 class StatehistoriesController extends AppController {
-
-    public $layout = 'blank';
 
     /**
      * @param int|null $id

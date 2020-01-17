@@ -215,7 +215,7 @@ class InstantreportsController extends AppController {
 
         return;
         $downtimeReportForm = new DowntimereportForm();
-        $downtimeReportForm->execute($this->request->data);
+        $downtimeReportForm->execute($this->request->getData());
 
         $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
