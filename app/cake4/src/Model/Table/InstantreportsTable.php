@@ -394,7 +394,9 @@ class InstantreportsTable extends Table {
      * @return array
      */
     public function getHostsAndServicesByInstantreport(Instantreport $instantReport, $MY_RIGHTS = []) {
-        $instantReportObjects = [];
+        $instantReportObjects = [
+            'Hosts' => []
+        ];
         switch ($instantReport->get('type')) {
             case 1: //Host groups
                 /** @var  $HostgroupsTable HostgroupsTable */
@@ -669,7 +671,7 @@ class InstantreportsTable extends Table {
                                                     'Servicetemplates.name'
                                                 ]
                                             ],
-                                            'hosts'            => function (Query $q) use ($MY_RIGHTS) {
+                                            'Hosts'            => function (Query $q) use ($MY_RIGHTS) {
                                                 $q->disableAutoFields()
                                                     ->select([
                                                         'Hosts.id',
@@ -741,10 +743,10 @@ class InstantreportsTable extends Table {
                     ->disableHydration()
                     ->all()
                     ->toArray();
-
                 foreach ($servicegroups as $servicegroup) {
                     // services from service group
                     foreach ($servicegroup['services'] as $service) {
+
                         if (!array_key_exists($service['Hosts']['id'], $instantReportObjects['Hosts'])) {
                             $instantReportObjects['Hosts'][$service['Hosts']['id']] = [
                                 'id'   => $service['Hosts']['id'],
@@ -765,21 +767,22 @@ class InstantreportsTable extends Table {
                     if (!empty($servicegroup['servicetemplates'])) {
                         foreach ($servicegroup['servicetemplates'] as $servicetemplateWithServices) {
                             foreach ($servicetemplateWithServices['services'] as $service) {
-                                if (!array_key_exists($service['Hosts']['id'], $instantReportObjects['Hosts'])) {
-                                    $instantReportObjects['Hosts'][$service['Hosts']['id']] = [
-                                        'id'   => $service['Hosts']['id'],
-                                        'uuid' => $service['Hosts']['uuid'],
-                                        'name' => $service['Hosts']['name']
+                                if (!array_key_exists($service['host']['id'], $instantReportObjects['Hosts'])) {
+                                    $instantReportObjects['Hosts'][$service['host']['id']] = [
+                                        'id'   => $service['host']['id'],
+                                        'uuid' => $service['host']['uuid'],
+                                        'name' => $service['host']['name']
                                     ];
                                 }
                                 if ($instantReport->get('evaluation') > 1) {
 
-                                    $instantReportObjects['Hosts'][$service['Hosts']['id']]['Services'][$service['id']] = [
+                                    $instantReportObjects['Hosts'][$service['host']['id']]['Services'][$service['id']] = [
                                         'id'   => $service['id'],
                                         'uuid' => $service['uuid'],
                                         'name' => ($service['name']) ? $service['name'] : $service['Servicetemplates']['name']
                                     ];
                                 }
+
                             }
                         }
                     }

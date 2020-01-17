@@ -90,7 +90,12 @@ class AngularAssets implements AngularAssetsInterface {
         /*'js/vendor/Chart.min.js',
         'js/vendor/chartjs-plugin-piechart-center-element.min.js', */
         'node_modules/highlight-within-textarea/jquery.highlight-within-textarea.js',
-        'node_modules/jquery-sparkline/jquery.sparkline.min.js'
+        'node_modules/jquery-sparkline/jquery.sparkline.min.js',
+        'js/lib/raphael-charts-cust/raphael.js',
+        'js/lib/raphael-charts-cust/raphael-charts-0.2.1.js',
+        'js/lib/raphael-charts-cust/g.raphael.js',
+        'js/lib/raphael-charts-cust/g.bar.js',
+        'js/lib/raphael-charts-cust/pielicious.js'
     ];
 
     private $cssFiles = [
