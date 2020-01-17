@@ -53,7 +53,6 @@ use itnovum\openITCOCKPIT\Filter\AgentchecksFilter;
  * @property AppPaginatorComponent $Paginator
  */
 class AgentconfigsController extends AppController {
-    public $layout = 'blank';
 
     /**
      * @param int|null $hostId

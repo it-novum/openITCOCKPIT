@@ -39,14 +39,9 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 /**
  * Class DocumentationsController
- * @property Documentation $Documentation
- * @property AppAuthComponent $Auth
+ * @package App\Controller
  */
 class DocumentationsController extends AppController {
-
-    public $layout = 'blank';
-
-
     /**
      * @param null $uuid
      * @param string $type

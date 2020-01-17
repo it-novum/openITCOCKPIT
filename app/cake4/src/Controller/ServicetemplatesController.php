@@ -64,8 +64,6 @@ use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
  */
 class ServicetemplatesController extends AppController {
 
-    public $layout = 'blank';
-
     public $uses = [
         'Servicetemplate', //Remove me
         'Service', //Remove me

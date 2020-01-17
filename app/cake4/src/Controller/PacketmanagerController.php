@@ -35,7 +35,6 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 use itnovum\openITCOCKPIT\Core\ValueObjects\License;
 
 class PacketmanagerController extends AppController {
-    public $layout = 'Admin.default';
     public $components = ['Session'];
     public $uses = ['Register'];
 

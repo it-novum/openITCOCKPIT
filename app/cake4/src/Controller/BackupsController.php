@@ -28,7 +28,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 class BackupsController extends AppController {
-    public $layout = 'Admin.default';
     public $components = ['GearmanClient'];
 
     public function index() {

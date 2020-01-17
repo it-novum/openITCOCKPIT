@@ -46,8 +46,6 @@ use itnovum\openITCOCKPIT\Filter\StatusmapFilter;
  */
 class StatusmapsController extends AppController {
 
-    public $layout = 'angularjs';
-
     public $uses = [
         'Host',
         'Service',

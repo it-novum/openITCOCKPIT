@@ -63,8 +63,6 @@ class HosttemplatesController extends AppController {
         'Changelog'
     ];
 
-    public $layout = 'blank';
-
     public function index() {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template

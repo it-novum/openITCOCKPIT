@@ -47,8 +47,6 @@ use itnovum\openITCOCKPIT\Core\ModuleManager;
  */
 class ContainersController extends AppController {
 
-    public $layout = 'blank';
-
     public function index() {
         return;
     }

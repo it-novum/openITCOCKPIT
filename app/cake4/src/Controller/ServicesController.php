@@ -122,8 +122,6 @@ use Statusengine\PerfdataParser;
  */
 class ServicesController extends AppController {
 
-    public $layout = 'blank';
-
     public $uses = [
         'Changelog',
         'Service'
