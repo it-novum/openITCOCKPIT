@@ -1,5 +1,5 @@
 {
-    "name": "your-name-here/Statusengine2Module",
+    "name": "open-itcockpit/Statusengine2Module",
     "description": "Statusengine2Module plugin for openITCOCKPIT",
     "type": "cakephp-plugin",
     "license": "Dual licensed",

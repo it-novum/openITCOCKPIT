@@ -1,5 +1,5 @@
 {
-    "name": "your-name-here/NagiosModule",
+    "name": "open-itcockpit/NagiosModule",
     "description": "NagiosModule plugin for openITCOCKPIT",
     "type": "cakephp-plugin",
     "license": "Dual licensed",
