@@ -159,450 +159,451 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- hostname/hostgroup filter end -->
+                        </div>
+                        <!-- hostname/hostgroup filter end -->
 
-                            <!-- execution fail on filter start -->
-                            <div class="row">
-                                <div class="col-xs-12 col-lg-3">
-                                    <fieldset>
-                                        <h5><?php echo __('Execution fail on ...'); ?></h5>
-                                        <div class="form-group">
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox"
-                                                       id="statusFilterFailOnUp"
-                                                       class="custom-control-input"
-                                                       name="checkbox"
-                                                       checked="checked"
-                                                       ng-model="filter.Hostdependencies.execution_fail_on_up"
-                                                       ng-model-options="{debounce: 500}"
-                                                       ng-true-value="1"
-                                                       ng-false-value="">
-                                                <label class="custom-control-label custom-control-label-up"
-                                                       for="statusFilterFailOnUp"><?php echo __('Up'); ?></label>
-                                            </div>
-
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox"
-                                                       id="statusFilterFailOnDown"
-                                                       class="custom-control-input"
-                                                       name="checkbox"
-                                                       checked="checked"
-                                                       ng-model="filter.Hostdependencies.execution_fail_on_down"
-                                                       ng-model-options="{debounce: 500}"
-                                                       ng-true-value="1"
-                                                       ng-false-value="">
-                                                <label class="custom-control-label custom-control-label-down"
-                                                       for="statusFilterFailOnDown"><?php echo __('Down'); ?></label>
-                                            </div>
-
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox"
-                                                       id="statusFilterFailOnUnreachable"
-                                                       class="custom-control-input"
-                                                       name="checkbox"
-                                                       checked="checked"
-                                                       ng-model="filter.Hostdependencies.execution_fail_on_unreachable"
-                                                       ng-model-options="{debounce: 500}"
-                                                       ng-true-value="1"
-                                                       ng-false-value="">
-                                                <label class="custom-control-label custom-control-label-unreachable"
-                                                       for="statusFilterFailOnUnreachable"><?php echo __('Unreachable'); ?></label>
-                                            </div>
-
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox"
-                                                       id="statusFilterFailOnPending"
-                                                       class="custom-control-input"
-                                                       name="checkbox"
-                                                       checked="checked"
-                                                       ng-model="filter.Hostdependencies.execution_fail_on_pending"
-                                                       ng-model-options="{debounce: 500}"
-                                                       ng-true-value="1"
-                                                       ng-false-value="">
-                                                <label class="custom-control-label"
-                                                       for="statusFilterFailOnPending"><?php echo __('Pending'); ?></label>
-                                            </div>
-
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox"
-                                                       id="statusFilterFailOnExecutionNone"
-                                                       class="custom-control-input"
-                                                       name="checkbox"
-                                                       checked="checked"
-                                                       ng-model="filter.Hostdependencies.execution_none"
-                                                       ng-model-options="{debounce: 500}"
-                                                       ng-true-value="1"
-                                                       ng-false-value="">
-                                                <label class="custom-control-label"
-                                                       for="statusFilterFailOnExecutionNone"><?php echo __('Execution none'); ?></label>
-                                            </div>
+                        <!-- execution fail on filter start -->
+                        <div class="row">
+                            <div class="col-xs-12 col-lg-3">
+                                <fieldset>
+                                    <h5><?php echo __('Execution fail on ...'); ?></h5>
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="statusFilterFailOnUp"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-model="filter.Hostdependencies.execution_fail_on_up"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <label class="custom-control-label custom-control-label-up"
+                                                   for="statusFilterFailOnUp"><?php echo __('Up'); ?></label>
                                         </div>
-                                    </fieldset>
-                                </div>
-                                <div class="col-xs-12 col-lg-3">
-                                    <fieldset>
-                                        <h5><?php echo __('Notification fail on ...'); ?></h5>
-                                        <div class="form-group">
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox"
-                                                       id="statusFilterNotificationFailOnUp"
-                                                       class="custom-control-input"
-                                                       name="checkbox"
-                                                       checked="checked"
-                                                       ng-model="filter.Hostdependencies.notification_fail_on_up"
-                                                       ng-model-options="{debounce: 500}"
-                                                       ng-true-value="1"
-                                                       ng-false-value="">
-                                                <label class="custom-control-label custom-control-label-up"
-                                                       for="statusFilterNotificationFailOnUp"><?php echo __('Up'); ?></label>
-                                            </div>
 
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox"
-                                                       id="statusFilterNotificationFailOnDown"
-                                                       class="custom-control-input"
-                                                       name="checkbox"
-                                                       checked="checked"
-                                                       ng-model="filter.Hostdependencies.notification_fail_on_down"
-                                                       ng-model-options="{debounce: 500}"
-                                                       ng-true-value="1"
-                                                       ng-false-value="">
-                                                <label class="custom-control-label custom-control-label-down"
-                                                       for="statusFilterNotificationFailOnDown"><?php echo __('Down'); ?></label>
-                                            </div>
-
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox"
-                                                       id="statusFilterNotificationFailOnUnreachable"
-                                                       class="custom-control-input"
-                                                       name="checkbox"
-                                                       checked="checked"
-                                                       ng-model="filter.Hostdependencies.notification_fail_on_unreachable"
-                                                       ng-model-options="{debounce: 500}"
-                                                       ng-true-value="1"
-                                                       ng-false-value="">
-                                                <label class="custom-control-label custom-control-label-unreachable"
-                                                       for="statusFilterNotificationFailOnUnreachable"><?php echo __('Unreachable'); ?></label>
-                                            </div>
-
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox"
-                                                       id="statusFilterNotificationFailOnPending"
-                                                       class="custom-control-input"
-                                                       name="checkbox"
-                                                       checked="checked"
-                                                       ng-model="filter.Hostdependencies.notification_fail_on_pending"
-                                                       ng-model-options="{debounce: 500}"
-                                                       ng-true-value="1"
-                                                       ng-false-value="">
-                                                <label class="custom-control-label"
-                                                       for="statusFilterNotificationFailOnPending"><?php echo __('Pending'); ?></label>
-                                            </div>
-
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox"
-                                                       id="statusFilterFailOnNotificationNone"
-                                                       class="custom-control-input"
-                                                       name="checkbox"
-                                                       checked="checked"
-                                                       ng-model="filter.Hostdependencies.notification_none"
-                                                       ng-model-options="{debounce: 500}"
-                                                       ng-true-value="1"
-                                                       ng-false-value="">
-                                                <label class="custom-control-label"
-                                                       for="statusFilterFailOnNotificationNone"><?php echo __('Notification none'); ?></label>
-                                            </div>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="statusFilterFailOnDown"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-model="filter.Hostdependencies.execution_fail_on_down"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <label class="custom-control-label custom-control-label-down"
+                                                   for="statusFilterFailOnDown"><?php echo __('Down'); ?></label>
                                         </div>
-                                    </fieldset>
-                                </div>
-                                <div class="col-xs-12 col-lg-3">
-                                    <fieldset>
-                                        <h5><?php echo __('Options'); ?></h5>
-                                        <div class="form-group">
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox"
-                                                       id="FilterInheritsParent"
-                                                       class="custom-control-input"
-                                                       name="checkbox"
-                                                       checked="checked"
-                                                       ng-model="filter.Hostdependencies.inherits_parent"
-                                                       ng-model-options="{debounce: 500}"
-                                                       ng-true-value="1"
-                                                       ng-false-value="0">
-                                                <label class="custom-control-label"
-                                                       for="FilterInheritsParent"><?php echo __('Inherits parent'); ?></label>
-                                            </div>
+
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="statusFilterFailOnUnreachable"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-model="filter.Hostdependencies.execution_fail_on_unreachable"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <label class="custom-control-label custom-control-label-unreachable"
+                                                   for="statusFilterFailOnUnreachable"><?php echo __('Unreachable'); ?></label>
                                         </div>
-                                    </fieldset>
-                                </div>
+
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="statusFilterFailOnPending"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-model="filter.Hostdependencies.execution_fail_on_pending"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <label class="custom-control-label"
+                                                   for="statusFilterFailOnPending"><?php echo __('Pending'); ?></label>
+                                        </div>
+
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="statusFilterFailOnExecutionNone"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-model="filter.Hostdependencies.execution_none"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <label class="custom-control-label"
+                                                   for="statusFilterFailOnExecutionNone"><?php echo __('Execution none'); ?></label>
+                                        </div>
+                                    </div>
+                                </fieldset>
                             </div>
-                            <!-- execution fail on filter end -->
+                            <div class="col-xs-12 col-lg-3">
+                                <fieldset>
+                                    <h5><?php echo __('Notification fail on ...'); ?></h5>
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="statusFilterNotificationFailOnUp"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-model="filter.Hostdependencies.notification_fail_on_up"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <label class="custom-control-label custom-control-label-up"
+                                                   for="statusFilterNotificationFailOnUp"><?php echo __('Up'); ?></label>
+                                        </div>
+
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="statusFilterNotificationFailOnDown"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-model="filter.Hostdependencies.notification_fail_on_down"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <label class="custom-control-label custom-control-label-down"
+                                                   for="statusFilterNotificationFailOnDown"><?php echo __('Down'); ?></label>
+                                        </div>
+
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="statusFilterNotificationFailOnUnreachable"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-model="filter.Hostdependencies.notification_fail_on_unreachable"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <label class="custom-control-label custom-control-label-unreachable"
+                                                   for="statusFilterNotificationFailOnUnreachable"><?php echo __('Unreachable'); ?></label>
+                                        </div>
+
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="statusFilterNotificationFailOnPending"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-model="filter.Hostdependencies.notification_fail_on_pending"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <label class="custom-control-label"
+                                                   for="statusFilterNotificationFailOnPending"><?php echo __('Pending'); ?></label>
+                                        </div>
+
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="statusFilterFailOnNotificationNone"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-model="filter.Hostdependencies.notification_none"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <label class="custom-control-label"
+                                                   for="statusFilterFailOnNotificationNone"><?php echo __('Notification none'); ?></label>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-xs-12 col-lg-3">
+                                <fieldset>
+                                    <h5><?php echo __('Options'); ?></h5>
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="FilterInheritsParent"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-model="filter.Hostdependencies.inherits_parent"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="0">
+                                            <label class="custom-control-label"
+                                                   for="FilterInheritsParent"><?php echo __('Inherits parent'); ?></label>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
                         </div>
-                        <div class="float-right">
-                            <button type="button" ng-click="resetFilter()"
-                                    class="btn btn-xs btn-danger">
-                                <?php echo __('Reset Filter'); ?>
-                            </button>
-                        </div>
+                        <!-- execution fail on filter end -->
                     </div>
-                    <!-- End Filter -->
+                    <div class="float-right">
+                        <button type="button" ng-click="resetFilter()"
+                                class="btn btn-xs btn-danger">
+                            <?php echo __('Reset Filter'); ?>
+                        </button>
+                    </div>
                 </div>
-                <div class="frame-wrap">
-                    <table class="table table-striped m-0 table-bordered table-hover">
-                        <thead>
-                        <tr>
-                            <th class="text-align-center"><i class="fa fa-check-square"
-                                                             aria-hidden="true"></i></th>
-                            <th><?php echo __('Hosts'); ?></th>
-                            <th><?php echo __('Dependent hosts'); ?></th>
-                            <th><?php echo __('Host groups'); ?></th>
-                            <th><?php echo __('Dependent host groups'); ?></th>
-                            <th><?php echo __('Timeperiod'); ?></th>
-                            <th class="no-sort"><?php echo __('Execution failure criteria'); ?></th>
-                            <th class="no-sort"><?php echo __('Notification failure criteria'); ?></th>
-                            <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr ng-repeat="hostdependency in hostdependencies">
-                            <td class="text-center" class="width-15">
-                                <?php if ($this->Acl->hasPermission('delete', 'hostdependencies')): ?>
-                                    <input type="checkbox"
-                                           ng-model="massChange[hostdependency.id]"
-                                           ng-show="hostdependency.allowEdit">
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <ul class="list-unstyled">
-                                    <li ng-repeat="host in hostdependency.hosts">
-                                        <div class="label-group label-breadcrumb label-breadcrumb-default padding-2">
-                                            <label class="label label-default label-xs">
-                                                <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
-                                            </label>
-                                            <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                <a ui-sref="HostsEdit({id:host.id})"
-                                                   class="label label-light label-xs">
-                                                    {{host.name}}
-                                                </a>
-                                            <?php else: ?>
-                                                <span class="label label-light label-xs">
+                <!-- End Filter -->
+            </div>
+            <div class="frame-wrap">
+                <table class="table table-striped m-0 table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th class="text-align-center"><i class="fa fa-check-square"
+                                                         aria-hidden="true"></i></th>
+                        <th><?php echo __('Hosts'); ?></th>
+                        <th><?php echo __('Dependent hosts'); ?></th>
+                        <th><?php echo __('Host groups'); ?></th>
+                        <th><?php echo __('Dependent host groups'); ?></th>
+                        <th><?php echo __('Timeperiod'); ?></th>
+                        <th class="no-sort"><?php echo __('Execution failure criteria'); ?></th>
+                        <th class="no-sort"><?php echo __('Notification failure criteria'); ?></th>
+                        <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="hostdependency in hostdependencies">
+                        <td class="text-center" class="width-15">
+                            <?php if ($this->Acl->hasPermission('delete', 'hostdependencies')): ?>
+                                <input type="checkbox"
+                                       ng-model="massChange[hostdependency.id]"
+                                       ng-show="hostdependency.allowEdit">
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="host in hostdependency.hosts">
+                                    <div class="label-group label-breadcrumb label-breadcrumb-default padding-2">
+                                        <label class="label label-default label-xs">
+                                            <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
+                                        </label>
+                                        <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                            <a ui-sref="HostsEdit({id:host.id})"
+                                               class="label label-light label-xs">
+                                                {{host.name}}
+                                            </a>
+                                        <?php else: ?>
+                                            <span class="label label-light label-xs">
                                                                 {{host.name}}
                                                             </span>
-                                            <?php endif; ?>
-                                            <i ng-if="host.disabled == 1"
-                                               class="fa fa-power-off text-danger"
-                                               title="disabled" aria-hidden="true"></i>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </td>
-                            <td>
-                                <ul class="list-unstyled">
-                                    <li ng-repeat="host in hostdependency.hosts_dependent">
-                                        <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2">
-                                            <label class="label label-primary label-xs">
-                                                <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
-                                            </label>
-                                            <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                <a ui-sref="HostsEdit({id:host.id})"
-                                                   class="label label-light label-xs">
-                                                    {{host.name}}
-                                                </a>
-                                            <?php else: ?>
-                                                <span class="label label-light label-xs">
+                                        <?php endif; ?>
+                                        <i ng-if="host.disabled == 1"
+                                           class="fa fa-power-off text-danger"
+                                           title="disabled" aria-hidden="true"></i>
+                                    </div>
+                                </li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="host in hostdependency.hosts_dependent">
+                                    <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2">
+                                        <label class="label label-primary label-xs">
+                                            <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
+                                        </label>
+                                        <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                            <a ui-sref="HostsEdit({id:host.id})"
+                                               class="label label-light label-xs">
+                                                {{host.name}}
+                                            </a>
+                                        <?php else: ?>
+                                            <span class="label label-light label-xs">
                                                                 {{host.name}}
                                                             </span>
-                                            <?php endif; ?>
-                                            <i ng-if="host.disabled == 1"
-                                               class="fa fa-power-off text-danger"
-                                               title="disabled" aria-hidden="true"></i>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </td>
-                            <td>
-                                <ul class="list-unstyled">
-                                    <li ng-repeat="hostgroup in hostdependency.hostgroups">
-                                        <div class="label-group label-breadcrumb label-breadcrumb-default padding-2">
-                                            <label class="label label-default label-xs">
-                                                <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
-                                            </label>
-                                            <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
-                                                <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
-                                                   class="label label-light label-xs">
-                                                    {{hostgroup.container.name}}
-                                                </a>
-                                            <?php else: ?>
-                                                <span class="label label-light label-xs">
+                                        <?php endif; ?>
+                                        <i ng-if="host.disabled == 1"
+                                           class="fa fa-power-off text-danger"
+                                           title="disabled" aria-hidden="true"></i>
+                                    </div>
+                                </li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="hostgroup in hostdependency.hostgroups">
+                                    <div class="label-group label-breadcrumb label-breadcrumb-default padding-2">
+                                        <label class="label label-default label-xs">
+                                            <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
+                                        </label>
+                                        <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
+                                            <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
+                                               class="label label-light label-xs">
+                                                {{hostgroup.container.name}}
+                                            </a>
+                                        <?php else: ?>
+                                            <span class="label label-light label-xs">
                                                             {{hostgroup.container.name}}
                                                         </span>
-                                            <?php endif; ?>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </td>
-                            <td>
-                                <ul class="list-unstyled">
-                                    <li ng-repeat="hostgroup in hostdependency.hostgroups_dependent">
-                                        <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2">
-                                            <label class="label label-primary label-xs">
-                                                <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
-                                            </label>
-                                            <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
-                                                <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
-                                                   class="label label-light label-xs">
-                                                    {{hostgroup.container.name}}
-                                                </a>
-                                            <?php else: ?>
-                                                <span class="label label-light label-xs">
+                                        <?php endif; ?>
+                                    </div>
+                                </li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="hostgroup in hostdependency.hostgroups_dependent">
+                                    <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2">
+                                        <label class="label label-primary label-xs">
+                                            <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
+                                        </label>
+                                        <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
+                                            <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
+                                               class="label label-light label-xs">
+                                                {{hostgroup.container.name}}
+                                            </a>
+                                        <?php else: ?>
+                                            <span class="label label-light label-xs">
                                                                 {{hostgroup.container.name}}
                                                             </span>
-                                            <?php endif; ?>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </td>
-                            <td>
-                                <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
-                                    <a ui-sref="TimeperiodsEdit({id: hostdependency.timeperiod.id})">{{
-                                        hostdependency.timeperiod.name }}</a>
-                                <?php else: ?>
-                                    {{ hostdependency.timeperiod.name }}
-                                <?php endif; ?>
-                            </td>
-                            <td class="text-align-center">
-                                <div>
+                                        <?php endif; ?>
+                                    </div>
+                                </li>
+                            </ul>
+                        </td>
+                        <td>
+                            <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                <a ui-sref="TimeperiodsEdit({id: hostdependency.timeperiod.id})">{{
+                                    hostdependency.timeperiod.name }}</a>
+                            <?php else: ?>
+                                {{ hostdependency.timeperiod.name }}
+                            <?php endif; ?>
+                        </td>
+                        <td class="text-align-center">
+                            <div>
                                             <span class="label-forced label-success margin-right-5"
                                                   title="<?php echo __('Up'); ?>"
                                                   ng-show="hostdependency.execution_fail_on_up">
                                                 <?php echo __('O'); ?>
                                             </span>
-                                    <span class="label-forced label-danger margin-right-5"
-                                          title="<?php echo __('Down'); ?>"
-                                          ng-show="hostdependency.execution_fail_on_down">
+                                <span class="label-forced label-danger margin-right-5"
+                                      title="<?php echo __('Down'); ?>"
+                                      ng-show="hostdependency.execution_fail_on_down">
                                                     <?php echo __('D'); ?>
                                                 </span>
-                                    <span class="label-forced label-default margin-right-5"
-                                          title="<?php echo __('Unreachable'); ?>"
-                                          ng-show="hostdependency.execution_fail_on_unreachable">
+                                <span class="label-forced label-default margin-right-5"
+                                      title="<?php echo __('Unreachable'); ?>"
+                                      ng-show="hostdependency.execution_fail_on_unreachable">
                                                     <?php echo __('U'); ?>
                                                 </span>
-                                    <span class="label-forced label-primary margin-right-5"
-                                          title="<?php echo __('Pending'); ?>"
-                                          ng-show="hostdependency.execution_fail_on_pending">
+                                <span class="label-forced label-primary margin-right-5"
+                                      title="<?php echo __('Pending'); ?>"
+                                      ng-show="hostdependency.execution_fail_on_pending">
                                                     <?php echo __('P'); ?>
                                                 </span>
-                                    <span class="label-forced label-primary margin-right-5"
-                                          title="<?php echo __('Execution none'); ?>"
-                                          ng-show="hostdependency.execution_none">
+                                <span class="label-forced label-primary margin-right-5"
+                                      title="<?php echo __('Execution none'); ?>"
+                                      ng-show="hostdependency.execution_none">
                                                     <?php echo __('N'); ?>
                                                 </span>
-                                </div>
-                            </td>
-                            <td class="text-align-center">
-                                <div>
+                            </div>
+                        </td>
+                        <td class="text-align-center">
+                            <div>
                                             <span class="label-forced label-success margin-right-5"
                                                   title="<?php echo __('Up'); ?>"
                                                   ng-show="hostdependency.notification_fail_on_up">
                                                 <?php echo __('O'); ?>
                                             </span>
-                                    <span class="label-forced label-danger margin-right-5"
-                                          title="<?php echo __('Down'); ?>"
-                                          ng-show="hostdependency.notification_fail_on_down">
+                                <span class="label-forced label-danger margin-right-5"
+                                      title="<?php echo __('Down'); ?>"
+                                      ng-show="hostdependency.notification_fail_on_down">
                                                     <?php echo __('D'); ?>
                                                 </span>
-                                    <span class="label-forced label-default margin-right-5"
-                                          title="<?php echo __('Unreachable'); ?>"
-                                          ng-show="hostdependency.notification_fail_on_unreachable">
+                                <span class="label-forced label-default margin-right-5"
+                                      title="<?php echo __('Unreachable'); ?>"
+                                      ng-show="hostdependency.notification_fail_on_unreachable">
                                                     <?php echo __('U'); ?>
                                                 </span>
-                                    <span class="label-forced label-primary margin-right-5"
-                                          title="<?php echo __('Pending'); ?>"
-                                          ng-show="hostdependency.notification_fail_on_pending">
+                                <span class="label-forced label-primary margin-right-5"
+                                      title="<?php echo __('Pending'); ?>"
+                                      ng-show="hostdependency.notification_fail_on_pending">
                                                     <?php echo __('P'); ?>
                                                 </span>
-                                    <span class="label-forced label-primary margin-right-5"
-                                          title="<?php echo __('Notification none'); ?>"
-                                          ng-show="hostdependency.notification_none">
+                                <span class="label-forced label-primary margin-right-5"
+                                      title="<?php echo __('Notification none'); ?>"
+                                      ng-show="hostdependency.notification_none">
                                                     <?php echo __('N'); ?>
                                                 </span>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <div class="btn-group btn-group-xs" role="group">
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-xs" role="group">
+                                <?php if ($this->Acl->hasPermission('edit', 'hostdependencies')): ?>
+                                    <a ui-sref="HostdependenciesEdit({id:hostdependency.id})"
+                                       ng-if="hostdependency.allowEdit"
+                                       class="btn btn-default btn-lower-padding">
+                                        <i class="fa fa-cog"></i>
+                                    </a>
+                                <?php else: ?>
+                                    <a href="javascript:void(0);"
+                                       class="btn btn-default btn-lower-padding">
+                                        <i class="fa fa-cog"></i></a>
+                                <?php endif; ?>
+                                <button type="button"
+                                        class="btn btn-default dropdown-toggle btn-lower-padding"
+                                        data-toggle="dropdown">
+                                    <i class="caret"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right">
                                     <?php if ($this->Acl->hasPermission('edit', 'hostdependencies')): ?>
                                         <a ui-sref="HostdependenciesEdit({id:hostdependency.id})"
                                            ng-if="hostdependency.allowEdit"
-                                            class="btn btn-default btn-lower-padding">
+                                           class="dropdown-item">
                                             <i class="fa fa-cog"></i>
+                                            <?php echo __('Edit'); ?>
                                         </a>
-                                    <?php else: ?>
-                                        <a href="javascript:void(0);"
-                                           class="btn btn-default btn-lower-padding">
-                                            <i class="fa fa-cog"></i></a>
                                     <?php endif; ?>
-                                    <button type="button"
-                                            class="btn btn-default dropdown-toggle btn-lower-padding"
-                                            data-toggle="dropdown">
-                                        <i class="caret"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-right">
-                                        <?php if ($this->Acl->hasPermission('edit', 'hostdependencies')): ?>
-                                            <a ui-sref="HostdependenciesEdit({id:hostdependency.id})"
-                                               ng-if="hostdependency.allowEdit"
-                                                class="dropdown-item">
-                                                <i class="fa fa-cog"></i>
-                                                <?php echo __('Edit'); ?>
-                                            </a>
-                                        <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('delete', 'hostdependencies')): ?>
-                                            <a ng-click="confirmDelete(getObjectForDelete(hostdependency))"
-                                               ng-if="hostdependency.allowEdit"
-                                                href="javascript:void(0);"
-                                                class="dropdown-item txt-color-red">
-                                                <i class="fa fa-trash"></i>
-                                                <?php echo __('Delete'); ?>
-                                            </a>
-                                        <?php endif; ?>
-                                    </div>
+                                    <?php if ($this->Acl->hasPermission('delete', 'hostdependencies')): ?>
+                                        <a ng-click="confirmDelete(getObjectForDelete(hostdependency))"
+                                           ng-if="hostdependency.allowEdit"
+                                           href="javascript:void(0);"
+                                           class="dropdown-item txt-color-red">
+                                            <i class="fa fa-trash"></i>
+                                            <?php echo __('Delete'); ?>
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <div class="margin-top-10" ng-show="hostdependencies.length == 0">
-                        <div class="text-center text-danger italic">
-                            <?php echo __('No entries match the selection'); ?>
-                        </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="margin-top-10" ng-show="hostdependencies.length == 0">
+                    <div class="text-center text-danger italic">
+                        <?php echo __('No entries match the selection'); ?>
                     </div>
-                    <div class="row margin-top-10 margin-bottom-10">
-                        <div class="col-xs-12 col-md-2 text-muted text-center">
-                            <span ng-show="selectedElements > 0">({{selectedElements}})</span>
-                        </div>
-                        <div class="col-xs-12 col-md-2">
+                </div>
+                <div class="row margin-top-10 margin-bottom-10">
+                    <div class="col-xs-12 col-md-2 text-muted text-center">
+                        <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                    </div>
+                    <div class="col-xs-12 col-md-2">
                                 <span ng-click="selectAll()" class="pointer">
                                     <i class="fas fa-lg fa-check-square"></i>
                                     <?php echo __('Select all'); ?>
                                 </span>
-                        </div>
-                        <div class="col-xs-12 col-md-2">
+                    </div>
+                    <div class="col-xs-12 col-md-2">
                                 <span ng-click="undoSelection()" class="pointer">
                                     <i class="fas fa-lg fa-square"></i>
                                     <?php echo __('Undo selection'); ?>
                                 </span>
-                        </div>
-                        <div class="col-xs-12 col-md-2 txt-color-red">
+                    </div>
+                    <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fas fa-trash"></i>
                                     <?php echo __('Delete all'); ?>
                                 </span>
-                        </div>
                     </div>
-                    <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
-                    <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
-                    <?php echo $this->element('paginator_or_scroll'); ?>
                 </div>
+                <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                <?php echo $this->element('paginator_or_scroll'); ?>
             </div>
         </div>
     </div>
+</div>
 </div>
