@@ -60,3 +60,5 @@ webroot/img/userimages
 plugins/DistributeModule
 plugins/EventcorrelationModule
 plugins/OpenstreetmapModule
+plugins/SlackModule
+plugins/ServicenowModule
