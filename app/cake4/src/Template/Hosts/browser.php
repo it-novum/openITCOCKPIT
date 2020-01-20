@@ -73,6 +73,15 @@ use Cake\Core\Plugin;
                         </li>
                     <?php endif; ?>
 
+                    <?php if (Plugin::isLoaded('ServicenowModule')): ?>
+                        <li class="cursor-pointer">
+                            <a ng-click="selectedTab = 'tab4'; hideTimeline()" data-toggle="tab">
+                                <i class="fa fa-lg fa-user-circle"></i>
+                                <span class="hidden-mobile hidden-tablet"> <?php echo __('ServiceNow'); ?> </span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
                     <?php if (Plugin::isLoaded('GrafanaModule')): ?>
                         <li class="cursor-pointer" ng-show="GrafanaDashboardExists">
                             <a ng-click="selectedTab = 'tab5'; hideTimeline()" data-toggle="tab">
@@ -934,6 +943,20 @@ use Cake\Core\Plugin;
                             </div>
                         </div>
 
+                        <div class="fade in active" ng-show="selectedTab == 'tab4'">
+                            <div class="jarviswidget margin-bottom-0 padding-10" id="wid-id-0">
+                                <?php if ($this->Acl->hasPermission('host_configuration', 'elements', 'servicenowModule') && Plugin::isLoaded('ServicenowModule')): ?>
+                                    <servicenow-host-element last-load="{{ lastLoadDate }}"
+                                                             host-uuid="{{ mergedHost.uuid }}"
+                                                             editable="<?php echo $this->Acl->hasPermission('edit', 'hosts'); ?>">
+                                    </servicenow-host-element>
+                                <?php else: ?>
+                                    <label class="text-danger">
+                                        <?php echo __('No permissions'); ?>
+                                    </label>
+                                <?php endif; ?>
+                            </div>
+                        </div>
 
                         <div class="fade in active" ng-show="GrafanaDashboardExists && selectedTab == 'tab5'">
                             <div class="widget-toolbar">

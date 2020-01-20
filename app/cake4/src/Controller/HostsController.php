@@ -2055,7 +2055,6 @@ class HostsController extends AppController {
      * @deprecated
      */
     public function listToPdf() {
-        $this->layout = 'Admin.default';
         $HostFilter = new HostFilter($this->request);
 
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);

@@ -1,5 +1,5 @@
 {
-    "name": "your-name-here/MapModule",
+    "name": "open-itcockpit/MapModule",
     "description": "MapModule plugin for openITCOCKPIT",
     "type": "cakephp-plugin",
     "license": "Dual licensed",

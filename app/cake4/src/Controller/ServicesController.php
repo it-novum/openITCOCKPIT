@@ -122,8 +122,6 @@ use Statusengine\PerfdataParser;
  */
 class ServicesController extends AppController {
 
-    public $layout = 'blank';
-
     public $uses = [
         'Changelog',
         'Service'
@@ -1601,8 +1599,6 @@ class ServicesController extends AppController {
     }
 
     public function listToPdf() {
-        $this->layout = 'Admin.default';
-
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 

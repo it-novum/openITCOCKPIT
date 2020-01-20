@@ -40,7 +40,6 @@ use itnovum\openITCOCKPIT\Filter\HostFilter;
  * @property AppPaginatorComponent $Paginator
  */
 class DeletedHostsController extends AppController {
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isAngularJsRequest()) {

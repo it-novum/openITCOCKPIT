@@ -43,8 +43,6 @@ use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
  */
 class GraphgeneratorsController extends AppController {
 
-    public $layout = 'blank';
-
     /**
      * New method for AngularJS
      * @throws GuzzleException

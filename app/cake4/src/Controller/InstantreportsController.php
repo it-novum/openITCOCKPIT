@@ -74,8 +74,6 @@ use Statusengine2Module\Model\Table\StatehistoryHostsTable;
  * @property AppPaginatorComponent $Paginator
  */
 class InstantreportsController extends AppController {
-    public $layout = 'blank';
-
 
     public function index() {
         if (!$this->isApiRequest()) {

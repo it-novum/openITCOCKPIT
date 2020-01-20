@@ -28,7 +28,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 class SystemController extends AppController {
-    public $layout = 'Admin.default';
 
     function changelog() {
         //Rander the Changelog
