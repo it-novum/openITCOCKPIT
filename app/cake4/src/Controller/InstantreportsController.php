@@ -197,7 +197,7 @@ class InstantreportsController extends AppController {
         if ($instantReport === null) {
             $this->response = $this->response->withStatus(400);
             $this->set('error', [
-                'no_downtimes' => [
+                'no_data' => [
                     'empty' => __('No report data specified time found (%s - %s) !',
                         date('d.m.Y', $fromDate),
                         date('d.m.Y', $toDate)
@@ -498,7 +498,8 @@ class InstantreportsController extends AppController {
                 $timeSlices,
                 $allStatehistories,
                 ($instantReport->get('reflection') === 2),
-                true
+                true,
+                $totalTime
             );
             //FileDebugger::dump($reportData[$hostUuid]);
 
@@ -525,7 +526,12 @@ class InstantreportsController extends AppController {
                 }
             }
         }
-        //print_r($instantReport->toArray());
+        $reportData = [
+            'hosts' => $reportData,
+            'reportDetails' => $reportDetails
+        ];
+
+
         return $reportData;
 
         return;

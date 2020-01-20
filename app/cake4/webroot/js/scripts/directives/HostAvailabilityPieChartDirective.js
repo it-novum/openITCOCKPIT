@@ -7,31 +7,33 @@ angular.module('openITCOCKPIT').directive('hostAvailabilityPieChart', function($
         },
         controller: function($scope){
             $timeout(function(){
-                var paper = new Raphael(document.getElementById('hostPieChart-' + $scope.data.Host.id), 360, 130),
-                    pie = paper.pielicious(120, 60, 100, {
-                        data: [70,20,20,3],
+                var paper = new Raphael(document.getElementById('hostPieChart-' + $scope.data.Host.id), 400, 130),
+                    pie = paper.pielicious(100, 50, 100, {
+                        data: [
+                            $scope.data.Host.reportData[0],
+                            $scope.data.Host.reportData[1],
+                            $scope.data.Host.reportData[2]
+                        ],
                         //colors: colors,
-                        titles: ["Ok", "Warning", "Critical", "Unknown"],
-                        colors: ["#3FC837","#DF8F1D","#C9302C", "#92A2A8"],
-                        labels: ["Ok", "Warning", "Critical", "Unknown"],
-                        handles: ["Ok", "Warning", "Critical", "Unknown"],
-                        //hrefs: ['http://google.com', 'http://apple.com', 'http://yahoo.com', 'http://yahoo.com'],
-                        gradient: {darkness: 5, lightness: 6, degrees: 180},
-                    //  cursor: "pointer",
+                        //titles: ["Up", "Down", "Unreachable"],
+                        colors: ["#3FC837", "#C9302C", "#92A2A8"],
+                        labels: ["Up", "Down", "Unreachable"],
+                        gradient: {darkness: 12, lightness: 9, degrees: 180},
                         marker: "square",
-                        threeD: {height: 10, tilt: 0.5},
-                        //donut: {diameter: 0.4, tilt: 0.6},
+                        threeD: {
+                            height: 10,
+                            tilt: 0.5
+                        },
                         legend: {
                             labels: [
-                                "Ok (3%)",
-                                "Warning (12%)",
-                                "Critical (8%)",
-                                "Unknown (0%)"
+                                $scope.data.Host.reportData.percentage[0],
+                                $scope.data.Host.reportData.percentage[1],
+                                $scope.data.Host.reportData.percentage[2]
                             ],
-                            x: 250,
-                            y: 10,
+                            x: 220,
+                            y: 15,
                             fontSize: 12,
-                            events: true
+                            events: false
                         },
 
                         evolution: false,

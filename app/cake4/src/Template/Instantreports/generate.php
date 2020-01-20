@@ -37,7 +37,7 @@
 
 <div class="jarviswidget">
     <header>
-        <span class="widget-icon"> <i class="fa fa-pencil-square-o"></i> </span>
+        <span class="widget-icon"> <i class="fa fa-magic"></i> </span>
         <h2><?php echo __('Create instant report'); ?></h2>
         <ul class="nav nav-tabs pull-right">
             <li ng-class="{'active': tabName=='reportConfig'}" ng-click="tabName='reportConfig'">
@@ -132,6 +132,18 @@
                 </form>
             </section>
             <section ng-if="tabName == 'instantReport'" id="instantReport">
+                <div class="row margin-top-10 font-md padding-bottom-10">
+                    <div class="col-md-9 text-left">
+                        <i class="fa fa-calendar txt-color-blueDark"></i>
+                        <?php echo __('Analysis period: '); ?>
+                        {{reportDetails.from}}
+                        <i class="fa fa-long-arrow-right"></i>
+                        {{reportDetails.from}}
+                    </div>
+                    <div class="col-md-3 text-left">
+
+                    </div>
+                </div>
                 <div class="row">
                     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-repeat="report in reportData">
 

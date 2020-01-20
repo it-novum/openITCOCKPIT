@@ -56,7 +56,8 @@ angular.module('openITCOCKPIT')
                         message: $scope.reportMessage.successMessage
                     });
                     $scope.errors = null;
-                    $scope.reportData = result.data.instantReport;
+                    $scope.reportData = result.data.instantReport.hosts;
+                    $scope.reportDetails = result.data.instantReport.reportDetails;
                     console.log($scope.reportData);
 
                 }, function errorCallback(result){

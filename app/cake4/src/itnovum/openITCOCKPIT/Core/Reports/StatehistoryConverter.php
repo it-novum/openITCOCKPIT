@@ -33,11 +33,27 @@ class StatehistoryConverter {
      * @param $timeSlices
      * @param $stateHistoryArray
      * @param $checkHardState
-     * @param bool $isHost
-     * @return mixed
+     * @param $isHost
+     * @param $totalTime
+     * @return array
      */
-    public static function generateReportData($timeSlices, $stateHistoryArray, $checkHardState, $isHost = false) {
+    public static function generateReportData($timeSlices, $stateHistoryArray, $checkHardState, $isHost, $totalTime) {
         $evaluationData = array_fill(0, ($isHost) ? 3 : 4, 0); // host states => 0,1,2; service statea => 0,1,2,3
+        if ($isHost) {
+            $humanStates = [
+                0 => __('Up'),
+                1 => __('Down'),
+                2 => __('Unreachable')
+            ];
+        } else {
+            $humanStates = [
+                0 => __('Ok'),
+                1 => __('Warning'),
+                2 => __('Critical'),
+                3 => __('Unknown')
+            ];
+        }
+
         $stateOk = 0;
         $stateUnknown = ($isHost) ? 2 : 3;//if the end of date in the future
         $outageState = ($isHost) ? 1 : 2; // 1 for host down and 2 for service critical
@@ -79,6 +95,12 @@ class StatehistoryConverter {
 
             $evaluationData[$currentState] += $timeSlice['end'] - $time;
 
+        }
+        foreach ($evaluationData as $state => $value) {
+            $evaluationData['percentage'][$state] = sprintf('%s (%s%%)',
+                $humanStates[$state],
+                number_format($value/$totalTime*100, 3)
+            );
         }
         unset($timeSlices, $stateHistory);
         return $evaluationData;
