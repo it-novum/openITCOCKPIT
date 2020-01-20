@@ -314,16 +314,16 @@
                                         <li ng-repeat="host in hostescalation.hosts">
                                             <div class="label-group label-breadcrumb label-breadcrumb-success padding-2"
                                                  title="{{host.name}}">
-                                                <label class="label label-success label-xs">
+                                                <label class="badge badge-success label-xs">
                                                     <i class="fa fa-plus" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                     <a ui-sref="HostsEdit({id:host.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge badge-light label-xs">
                                                         {{host.name}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                                 {{host.name}}
                                                             </span>
                                                 <?php endif; ?>
@@ -339,16 +339,16 @@
                                         <li ng-repeat="host in hostescalation.hosts_excluded">
                                             <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
                                                  title="{{host.name}}">
-                                                <label class="label label-danger label-xs">
+                                                <label class="badge badge-danger label-xs">
                                                     <i class="fa fa-minus" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                     <a ui-sref="HostsEdit({id:host.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge badge-light label-xs">
                                                         {{host.name}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                                 {{host.name}}
                                                             </span>
                                                 <?php endif; ?>
@@ -364,16 +364,16 @@
                                         <li ng-repeat="hostgroup in hostescalation.hostgroups">
                                             <div class="label-group label-breadcrumb label-breadcrumb-success padding-2"
                                                  title="{{hostgroup.container.name}}">
-                                                <label class="label label-success label-xs">
+                                                <label class="badge badge-success label-xs">
                                                     <i class="fa fa-plus" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
                                                     <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge badge-light label-xs">
                                                         {{hostgroup.container.name}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                             {{hostgroup.container.name}}
                                                         </span>
                                                 <?php endif; ?>
@@ -386,16 +386,16 @@
                                         <li ng-repeat="hostgroup in hostescalation.hostgroups_excluded">
                                             <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
                                                  title="{{hostgroup.container.name}}">
-                                                <label class="label label-danger label-xs">
+                                                <label class="badge badge-danger label-xs">
                                                     <i class="fa fa-minus" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
                                                     <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge badge-light label-xs">
                                                         {{hostgroup.container.name}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                                 {{hostgroup.container.name}}
                                                             </span>
                                                 <?php endif; ?>
@@ -448,17 +448,17 @@
                                 </td>
                                 <td class="text-align-center">
                                     <div>
-                                        <span class="label-forced label-success margin-right-5"
+                                        <span class="label-forced badge-success margin-right-5"
                                               title="<?php echo __('Recovery'); ?>"
                                               ng-show="hostescalation.escalate_on_recovery">
                                             <?php echo __('R'); ?>
                                         </span>
-                                        <span class="label-forced label-danger margin-right-5"
+                                        <span class="label-forced badge-danger margin-right-5"
                                               title="<?php echo __('Down'); ?>"
                                               ng-show="hostescalation.escalate_on_down">
                                                     <?php echo __('D'); ?>
                                                 </span>
-                                        <span class="label-forced label-default margin-right-5"
+                                        <span class="label-forced badge-secondary margin-right-5"
                                               title="<?php echo __('Unreachable'); ?>"
                                               ng-show="hostescalation.escalate_on_unreachable">
                                                     <?php echo __('U'); ?>

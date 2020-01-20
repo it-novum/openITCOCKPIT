@@ -328,16 +328,16 @@
                                         <li ng-repeat="service in serviceescalation.services"
                                             title="{{service.servicename}}">
                                             <div class="label-group label-breadcrumb label-breadcrumb-success padding-2">
-                                                <label class="label label-success label-xs">
+                                                <label class="badge badge-success label-xs">
                                                     <i class="fa fa-plus" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                     <a ui-sref="ServicesEdit({id: service.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge badge-light label-xs">
                                                         {{service.servicename}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                                 {{service.servicename}}
                                                             </span>
                                                 <?php endif; ?>
@@ -353,16 +353,16 @@
                                         <li ng-repeat="service in serviceescalation.services_excluded"
                                             title="{{service.servicename}}">
                                             <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
-                                                <label class="label label-danger label-xs">
+                                                <label class="badge badge-danger label-xs">
                                                     <i class="fa fa-minus" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                     <a ui-sref="ServicesEdit({id: service.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge badge-light label-xs">
                                                         {{service.servicename}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                                 {{service.servicename}}
                                                             </span>
                                                 <?php endif; ?>
@@ -378,16 +378,16 @@
                                         <li ng-repeat="servicegroup in serviceescalation.servicegroups">
                                             <div class="label-group label-breadcrumb label-breadcrumb-success padding-2"
                                                  title="{{servicegroup.container.name}}">
-                                                <label class="label label-success label-xs">
+                                                <label class="badge badge-success label-xs">
                                                     <i class="fa fa-plus" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
                                                     <a ui-sref="ServicegroupsEdit({id: servicegroup.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge badge-light label-xs">
                                                         {{servicegroup.container.name}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                             {{servicegroup.container.name}}
                                                         </span>
                                                 <?php endif; ?>
@@ -400,16 +400,16 @@
                                         <li ng-repeat="servicegroup in serviceescalation.servicegroups_excluded">
                                             <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
                                                  title="{{servicegroup.container.name}}">
-                                                <label class="label label-danger label-xs">
+                                                <label class="badge badge-danger label-xs">
                                                     <i class="fa fa-minus" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
                                                     <a ui-sref="ServicegroupsEdit({id: servicegroup.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge badge-light label-xs">
                                                         {{servicegroup.container.name}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                                 {{servicegroup.container.name}}
                                                             </span>
                                                 <?php endif; ?>
@@ -462,22 +462,22 @@
                                 </td>
                                 <td class="text-align-center">
                                     <div>
-                                                <span class="label-forced label-success margin-right-5"
-                                                      title="<?php echo __('Recovery'); ?>"
-                                                      ng-show="serviceescalation.escalate_on_recovery">
-                                                    <?php echo __('R'); ?>
-                                                </span>
-                                        <span class="label-forced label-warning margin-right-5"
+                                        <span class="label-forced badge-success margin-right-5"
+                                              title="<?php echo __('Recovery'); ?>"
+                                              ng-show="serviceescalation.escalate_on_recovery">
+                                            <?php echo __('R'); ?>
+                                        </span>
+                                        <span class="label-forced badge-warning margin-right-5"
                                               title="<?php echo __('Warning'); ?>"
                                               ng-show="serviceescalation.escalate_on_warning">
                                                     <?php echo __('W'); ?>
                                                 </span>
-                                        <span class="label-forced label-danger margin-right-5"
+                                        <span class="label-forced badge-danger margin-right-5"
                                               title="<?php echo __('Critical'); ?>"
                                               ng-show="serviceescalation.escalate_on_critical">
                                                     <?php echo __('C'); ?>
                                                 </span>
-                                        <span class="label-forced label-default margin-right-5"
+                                        <span class="label-forced badge-secondary margin-right-5"
                                               title="<?php echo __('Unknown'); ?>"
                                               ng-show="serviceescalation.escalate_on_unknown">
                                                     <?php echo __('U'); ?>

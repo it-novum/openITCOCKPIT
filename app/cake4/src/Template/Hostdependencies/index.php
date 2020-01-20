@@ -376,16 +376,16 @@
                                         <li ng-repeat="host in hostdependency.hosts">
                                             <div
                                                 class="label-group label-breadcrumb label-breadcrumb-default padding-2">
-                                                <label class="label label-default label-xs">
+                                                <label class="badge badge-default label-xs">
                                                     <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                     <a ui-sref="HostsEdit({id:host.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge label-light label-xs">
                                                         {{host.name}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                                 {{host.name}}
                                                             </span>
                                                 <?php endif; ?>
@@ -401,16 +401,16 @@
                                         <li ng-repeat="host in hostdependency.hosts_dependent">
                                             <div
                                                 class="label-group label-breadcrumb label-breadcrumb-primary padding-2">
-                                                <label class="label label-primary label-xs">
+                                                <label class="badge badge-primary label-xs">
                                                     <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                     <a ui-sref="HostsEdit({id:host.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge badge-light label-xs">
                                                         {{host.name}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                                 {{host.name}}
                                                             </span>
                                                 <?php endif; ?>
@@ -426,16 +426,16 @@
                                         <li ng-repeat="hostgroup in hostdependency.hostgroups">
                                             <div
                                                 class="label-group label-breadcrumb label-breadcrumb-default padding-2">
-                                                <label class="label label-default label-xs">
+                                                <label class="badge badge-default label-xs">
                                                     <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
                                                     <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge badge-light label-xs">
                                                         {{hostgroup.container.name}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                             {{hostgroup.container.name}}
                                                         </span>
                                                 <?php endif; ?>
@@ -448,16 +448,16 @@
                                         <li ng-repeat="hostgroup in hostdependency.hostgroups_dependent">
                                             <div
                                                 class="label-group label-breadcrumb label-breadcrumb-primary padding-2">
-                                                <label class="label label-primary label-xs">
+                                                <label class="badge badge-primary label-xs">
                                                     <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
                                                     <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge badge-light label-xs">
                                                         {{hostgroup.container.name}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                                 {{hostgroup.container.name}}
                                                             </span>
                                                 <?php endif; ?>
@@ -475,56 +475,56 @@
                                 </td>
                                 <td class="text-align-center">
                                     <div>
-                                            <span class="label-forced label-success margin-right-5"
-                                                  title="<?php echo __('Up'); ?>"
-                                                  ng-show="hostdependency.execution_fail_on_up">
-                                                <?php echo __('O'); ?>
-                                            </span>
-                                        <span class="label-forced label-danger margin-right-5"
+                                        <span class="label-forced badge-success margin-right-5"
+                                              title="<?php echo __('Up'); ?>"
+                                              ng-show="hostdependency.execution_fail_on_up">
+                                            <?php echo __('O'); ?>
+                                        </span>
+                                        <span class="label-forced badge-danger margin-right-5"
                                               title="<?php echo __('Down'); ?>"
                                               ng-show="hostdependency.execution_fail_on_down">
                                                     <?php echo __('D'); ?>
                                                 </span>
-                                        <span class="label-forced label-default margin-right-5"
+                                        <span class="label-forced badge-secondary margin-right-5"
                                               title="<?php echo __('Unreachable'); ?>"
                                               ng-show="hostdependency.execution_fail_on_unreachable">
                                                     <?php echo __('U'); ?>
                                                 </span>
-                                        <span class="label-forced label-primary margin-right-5"
+                                        <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Pending'); ?>"
                                               ng-show="hostdependency.execution_fail_on_pending">
                                                     <?php echo __('P'); ?>
                                                 </span>
-                                        <span class="label-forced label-primary margin-right-5"
+                                        <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Execution none'); ?>"
                                               ng-show="hostdependency.execution_none">
                                                     <?php echo __('N'); ?>
-                                                </span>
+                                        </span>
                                     </div>
                                 </td>
                                 <td class="text-align-center">
                                     <div>
-                                            <span class="label-forced label-success margin-right-5"
-                                                  title="<?php echo __('Up'); ?>"
-                                                  ng-show="hostdependency.notification_fail_on_up">
-                                                <?php echo __('O'); ?>
-                                            </span>
-                                        <span class="label-forced label-danger margin-right-5"
+                                        <span class="label-forced badge-success margin-right-5"
+                                              title="<?php echo __('Up'); ?>"
+                                              ng-show="hostdependency.notification_fail_on_up">
+                                            <?php echo __('O'); ?>
+                                        </span>
+                                        <span class="label-forced badge-danger margin-right-5"
                                               title="<?php echo __('Down'); ?>"
                                               ng-show="hostdependency.notification_fail_on_down">
                                                     <?php echo __('D'); ?>
                                                 </span>
-                                        <span class="label-forced label-default margin-right-5"
+                                        <span class="label-forced badge-secondary margin-right-5"
                                               title="<?php echo __('Unreachable'); ?>"
                                               ng-show="hostdependency.notification_fail_on_unreachable">
                                                     <?php echo __('U'); ?>
                                                 </span>
-                                        <span class="label-forced label-primary margin-right-5"
+                                        <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Pending'); ?>"
                                               ng-show="hostdependency.notification_fail_on_pending">
                                                     <?php echo __('P'); ?>
                                                 </span>
-                                        <span class="label-forced label-primary margin-right-5"
+                                        <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Notification none'); ?>"
                                               ng-show="hostdependency.notification_none">
                                                     <?php echo __('N'); ?>

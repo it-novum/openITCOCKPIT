@@ -404,16 +404,16 @@
                                         <li ng-repeat="service in servicedependency.services">
                                             <div class="label-group label-breadcrumb label-breadcrumb-default padding-2"
                                                  title="{{service.servicename}}">
-                                                <label class="label label-default label-xs">
+                                                <label class="badge badge-default label-xs">
                                                     <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                     <a ui-sref="ServicesEdit({id:service.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge badge-light label-xs">
                                                         {{service.servicename}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                                 {{service.servicename}}
                                                             </span>
                                                 <?php endif; ?>
@@ -429,16 +429,16 @@
                                         <li ng-repeat="service in servicedependency.services_dependent">
                                             <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2"
                                                  title="{{service.servicename}}">
-                                                <label class="label label-primary label-xs">
+                                                <label class="badge badge-primary label-xs">
                                                     <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                     <a ui-sref="ServicesEdit({id:service.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge badge-light label-xs">
                                                         {{service.servicename}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                                 {{service.servicename}}
                                                             </span>
                                                 <?php endif; ?>
@@ -454,16 +454,16 @@
                                         <li ng-repeat="servicegroup in servicedependency.servicegroups">
                                             <div class="label-group label-breadcrumb label-breadcrumb-default padding-2"
                                                  title="{{servicegroup.container.name}}">
-                                                <label class="label label-default label-xs">
+                                                <label class="badge badge-secondary label-xs">
                                                     <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
                                                     <a ui-sref="ServicegroupsEdit({id: servicegroup.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge badge-light label-xs">
                                                         {{servicegroup.container.name}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                             {{servicegroup.container.name}}
                                                         </span>
                                                 <?php endif; ?>
@@ -476,16 +476,16 @@
                                         <li ng-repeat="servicegroup in servicedependency.servicegroups_dependent">
                                             <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2"
                                                  title="{{servicegroup.container.name}}">
-                                                <label class="label label-primary label-xs">
+                                                <label class="badge badge-primary label-xs">
                                                     <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
                                                 </label>
                                                 <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
                                                     <a ui-sref="ServicegroupsEdit({id: servicegroup.id})"
-                                                       class="label label-light label-xs">
+                                                       class="badge badge-light label-xs">
                                                         {{servicegroup.container.name}}
                                                     </a>
                                                 <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                    <span class="badge badge-light label-xs">
                                                                 {{servicegroup.container.name}}
                                                             </span>
                                                 <?php endif; ?>
@@ -503,32 +503,32 @@
                                 </td>
                                 <td class="text-align-center">
                                     <div>
-                                                <span class="label-forced label-success margin-right-5"
-                                                      title="<?php echo __('Ok'); ?>"
-                                                      ng-show="servicedependency.execution_fail_on_ok">
-                                                    <?php echo __('O'); ?>
-                                                </span>
-                                        <span class="label-forced label-warning margin-right-5"
+                                        <span class="label-forced badge-success margin-right-5"
+                                              title="<?php echo __('Ok'); ?>"
+                                              ng-show="servicedependency.execution_fail_on_ok">
+                                            <?php echo __('O'); ?>
+                                        </span>
+                                        <span class="label-forced badge-warning margin-right-5"
                                               title="<?php echo __('Warning'); ?>"
                                               ng-show="servicedependency.execution_fail_on_warning">
                                                     <?php echo __('W'); ?>
                                                 </span>
-                                        <span class="label-forced label-danger margin-right-5"
+                                        <span class="label-forced badge-danger margin-right-5"
                                               title="<?php echo __('Critical'); ?>"
                                               ng-show="servicedependency.execution_fail_on_critical">
                                                     <?php echo __('C'); ?>
                                                 </span>
-                                        <span class="label-forced label-default margin-right-5"
+                                        <span class="label-forced badge-secondary margin-right-5"
                                               title="<?php echo __('Unknown'); ?>"
                                               ng-show="servicedependency.execution_fail_on_unknown">
                                                     <?php echo __('U'); ?>
                                                 </span>
-                                        <span class="label-forced label-primary margin-right-5"
+                                        <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Pending'); ?>"
                                               ng-show="servicedependency.execution_fail_on_pending">
                                                     <?php echo __('P'); ?>
                                                 </span>
-                                        <span class="label-forced label-primary margin-right-5"
+                                        <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Execution none'); ?>"
                                               ng-show="servicedependency.execution_none">
                                                     <?php echo __('N'); ?>
@@ -537,32 +537,32 @@
                                 </td>
                                 <td class="text-align-center">
                                     <div>
-                                                <span class="label-forced label-success margin-right-5"
-                                                      title="<?php echo __('Ok'); ?>"
-                                                      ng-show="servicedependency.notification_fail_on_ok">
-                                                    <?php echo __('O'); ?>
-                                                </span>
-                                        <span class="label-forced label-warning margin-right-5"
+                                        <span class="label-forced badge-success margin-right-5"
+                                              title="<?php echo __('Ok'); ?>"
+                                              ng-show="servicedependency.notification_fail_on_ok">
+                                            <?php echo __('O'); ?>
+                                        </span>
+                                        <span class="label-forced badge-warning margin-right-5"
                                               title="<?php echo __('Warning'); ?>"
                                               ng-show="servicedependency.notification_fail_on_warning">
                                                     <?php echo __('W'); ?>
                                                 </span>
-                                        <span class="label-forced label-danger margin-right-5"
+                                        <span class="label-forced badge-danger margin-right-5"
                                               title="<?php echo __('Critical'); ?>"
                                               ng-show="servicedependency.notification_fail_on_critical">
                                                     <?php echo __('C'); ?>
                                                 </span>
-                                        <span class="label-forced label-default margin-right-5"
+                                        <span class="label-forced badge-secondary margin-right-5"
                                               title="<?php echo __('Unknown'); ?>"
                                               ng-show="servicedependency.notification_fail_on_unknown">
                                                     <?php echo __('U'); ?>
                                                 </span>
-                                        <span class="label-forced label-primary margin-right-5"
+                                        <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Pending'); ?>"
                                               ng-show="servicedependency.notification_fail_on_pending">
                                                     <?php echo __('P'); ?>
                                                 </span>
-                                        <span class="label-forced label-primary margin-right-5"
+                                        <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Notification none'); ?>"
                                               ng-show="servicedependency.notification_none">
                                                     <?php echo __('N'); ?>
