@@ -54,7 +54,10 @@
         opts = opts || {};
 
         var data = opts.data || [],
-            wholePie = (data && data.length === 1) || false,
+
+            wholePie = (data && data.filter(function(number){
+                return number > 0;
+            }).length === 1) || false,
             slicedPie = !wholePie,
             gradient = (opts.gradient && is(opts.gradient, "object")) || false,
             gradientDarkness = (gradient && opts.gradient.darkness ? opts.gradient.darkness : 0),
@@ -117,7 +120,7 @@
                 this.bordersAnimationIn = bordersAnimationIn;
             },
 
-        // Adopted from https://bgrins.github.io/TinyColor/
+            // Adopted from https://bgrins.github.io/TinyColor/
             PieColor = function PieColor() {
                 if (!(this instanceof PieColor)) {
                     return new PieColor();
@@ -286,18 +289,16 @@
                         if (shuffler.isResetArcInitialAngle(initialAngle, terminalAngle)) {
                             initialAngle = terminalAngle > 360 ? 360 : initialAngle;
                         }
-
                         var R2 = threeD ? R1 * tilt3d : R1,
                             x1start = calculateX(startX, R1, initialAngle),
                             y1start = calculateY(startY, R2, initialAngle),
                             y1end = calculateY(startY + height3d, R2, initialAngle),
-                            x2start = calculateAngledX(startX, R1, initialAngle, terminalAngle),
+                            x2start = calculateAngledX(startX, (wholePie)?(R1-(R1*2)):R1, initialAngle, terminalAngle),
                             y2start = calculateAngledY(startY, R2, initialAngle, terminalAngle),
                             y2end = calculateAngledY(startY + height3d, R2, initialAngle, terminalAngle),
                             largeArcFlag = (abs(terminalAngle - initialAngle) > 180),
                             sweepFlagPositiveAngle = 1,
                             sweepFlagNegativeAngle = 0;
-
                         return {
                             path: [
                                 ["M", x1start, y1start ],
@@ -316,8 +317,8 @@
                             outlineThickness =
                                 (threeD
                                     ? ((defaultOutlineRingThickness + defaultOutlineRingThickness * tilt3d) > 12
-                                    ? 12
-                                    : (defaultOutlineRingThickness + defaultOutlineRingThickness * tilt3d))
+                                        ? 12
+                                        : (defaultOutlineRingThickness + defaultOutlineRingThickness * tilt3d))
                                     : defaultOutlineRingThickness),
                             outerR1 = innerR1 + outlineThickness,
                             outerR2 = innerR2 + (threeD ? (outlineThickness / 2) : outlineThickness),
@@ -332,7 +333,6 @@
                             largeArcFlag = (abs(terminalAngle - initialAngle) > 180),
                             sweepFlagPositiveAngle = 1,
                             sweepFlagNegativeAngle = 0;
-
                         return {
                             path: [
                                 ["M", x1start, y1start ],
@@ -709,9 +709,11 @@
                 "fill": "#474747",
                 "cursor": cursor,
                 "font-size": fontSize,
-                "text-anchor": "start",
-                "href": bucket.href
+                "text-anchor": "start"
             });
+            if(bucket.href !== ''){
+                text.attr({"href": bucket.href});
+            }
             text.handle = bucket.handle;
             descriptions.push(text);
 
@@ -729,6 +731,7 @@
         }
 
         function fillDataBuckets() {
+            var color3DForWholePie = null;
             var currentSliceOutline,
                 currentValue,
                 currentColor,
@@ -740,6 +743,14 @@
                 currentSliceShiftX,
                 currentSliceShiftY;
             colors = colors.length > 0 ? colors : pieColor.randomRgb(data.length);
+            if(wholePie){
+                for (index = 0; index < data.length; index += 1) {
+                    if(data[index]> 0){
+                        color3DForWholePie = colors[index];
+                    }
+                }
+
+            }
             for (index = 0; index < data.length; index += 1) {
                 currentValue = data[index] || 0;
                 currentColor = colors[index];
@@ -758,6 +769,7 @@
 
                 bucket[index] = {};
                 bucket[index].color = currentColor;
+
                 bucket[index].label = currentLabel;
                 bucket[index].title = currentTitle;
                 bucket[index].href = currentHref;
@@ -786,7 +798,11 @@
                         bucket[index].initialSideBorder = paper.path().attr(attr("wall", currentBucket, (evolution ? currentBucket.initialSideBorderOriginZero : currentBucket.initialSideBorderOrigin)));
                         bucket[index].terminalSideBorder = paper.path().attr(attr("wall", currentBucket, (evolution ? currentBucket.terminalSideBorderOriginZero : currentBucket.terminalSideBorderOrigin)));
                     }
+                    if(wholePie){
+                        bucket[index].color = color3DForWholePie;
+                    }
                     bucket[index].arc = paper.path().attr(attr("arc", currentBucket, (evolution ? currentBucket.arcOriginZero : currentBucket.arcOrigin)));
+                    bucket[index].color = currentColor;
                 }
                 bucket[index].slice = paper.path().attr(attr("slice", currentBucket, (evolution ? currentBucket.sliceOriginZero : currentBucket.sliceOrigin)));
                 bucket[index].slice.handle = bucket[index].handle;
