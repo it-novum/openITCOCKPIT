@@ -58,7 +58,6 @@ angular.module('openITCOCKPIT')
                     $scope.errors = null;
                     $scope.reportData = result.data.instantReport.hosts;
                     $scope.reportDetails = result.data.instantReport.reportDetails;
-                    console.log($scope.reportData);
 
                 }, function errorCallback(result){
                     NotyService.genericError({

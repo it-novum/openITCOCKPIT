@@ -14,11 +14,8 @@ angular.module('openITCOCKPIT').directive('hostAvailabilityPieChart', function($
                             $scope.data.Host.reportData[1],
                             $scope.data.Host.reportData[2]
                         ],
-                        //colors: colors,
-                        //titles: ["Up", "Down", "Unreachable"],
                         colors: ["#3FC837", "#C9302C", "#92A2A8"],
-                        labels: ["Up", "Down", "Unreachable"],
-                        gradient: {darkness: 12, lightness: 9, degrees: 180},
+                        gradient: {darkness: 14, lightness: 6, degrees: 180},
                         marker: "square",
                         threeD: {
                             height: 10,

@@ -140,7 +140,7 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
             ]);
         }
 
-        if ($StatehistoryServiceConditions->hardStateTypeAndUpState()) {
+        if ($StatehistoryServiceConditions->hardStateTypeAndOkState()) {
             $query->andWhere([
                 'OR' => [
                     'StatehistoryServices.state_type' => 1,

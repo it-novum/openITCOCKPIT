@@ -52,7 +52,7 @@ class StatehistoryServiceConditions extends ListSettingsConditions {
     /**
      * @var bool
      */
-    private $hardStateTypeAndUpState = false;
+    private $hardStateTypeAndOkState = false;
 
     /**
      * @param $uuid
@@ -97,15 +97,15 @@ class StatehistoryServiceConditions extends ListSettingsConditions {
     /**
      * @param $value
      */
-    public function setHardStateTypeAndUpState($value) {
-        $this->hardStateTypeAndUpState = (bool)$value;
+    public function setHardStateTypeAndOkState($value) {
+        $this->hardStateTypeAndOkState = (bool)$value;
     }
 
     /**
      * @return bool
      */
-    public function hardStateTypeAndUpState() {
-        return $this->hardStateTypeAndUpState;
+    public function hardStateTypeAndOkState() {
+        return $this->hardStateTypeAndOkState;
     }
 }
 
