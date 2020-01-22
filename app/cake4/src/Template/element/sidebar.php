@@ -108,7 +108,7 @@
                 </a>
             </li>
             <li>
-                <a ui-sref="SupportsIssue" data-toggle="tooltip" data-placement="top" title="Support Chat">
+                <a ui-sref="SupportsIssue" data-toggle="tooltip" data-placement="top" title="Report a Bug">
                     <i class="fas fa-bug"></i>
                 </a>
             </li>
