@@ -30,7 +30,7 @@
 ?>
 <aside class="page-sidebar">
     <div class="page-logo">
-        <a href="#" class="page-logo-link press-scale-down d-flex align-items-center position-relative"
+        <a href="javascript:void(0);" class="page-logo-link press-scale-down d-flex align-items-center position-relative"
            data-toggle="modal" data-target="#modal-shortcut">
             <img src="/img/logos/itc_lupe_weiss_28.png" alt="logo" aria-roledescription="logo">
             <span class="page-logo-text mr-1"><?php echo $systemname; ?></span>
@@ -103,18 +103,18 @@
         </a>
         <ul class="list-table m-auto nav-footer-buttons">
             <li>
-                <a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Chat logs">
-                    <i class="fa fa-comments"></i>
+                <a ui-sref="StatisticsIndex" data-toggle="tooltip" data-placement="top" title="Anonymous statistics">
+                    <i class="fa fa-line-chart"></i>
                 </a>
             </li>
             <li>
-                <a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Support Chat">
+                <a ui-sref="SupportsIssue" data-toggle="tooltip" data-placement="top" title="Support Chat">
+                    <i class="fas fa-bug"></i>
+                </a>
+            </li>
+            <li>
+                <a href="https://openitcockpit.io/#Subscription" data-toggle="tooltip" data-placement="top" title="Support">
                     <i class="fa fa-life-ring"></i>
-                </a>
-            </li>
-            <li>
-                <a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="Make a call">
-                    <i class="fa fa-phone"></i>
                 </a>
             </li>
         </ul>
