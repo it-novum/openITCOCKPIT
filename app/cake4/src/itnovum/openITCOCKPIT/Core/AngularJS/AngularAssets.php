@@ -52,13 +52,15 @@ class AngularAssets implements AngularAssetsInterface {
         'legacy/js/lib/ColorGenerator.js',
         'legacy/js/lib/colr.js',
         'legacy/js/lib/php.js',
-        /* 'smartadmin/js/plugin/flot/jquery.flot.cust.js',                        //legacy but no new alternative
-         'vendor/node_modules/flot-axislabels/jquery.flot.axislabels.js',
-         'vendor/node_modules/flot/jquery.flot.time.js',
-         'vendor/node_modules/flot/jquery.flot.fillbetween.js',
-         'vendor/node_modules/flot/jquery.flot.resize.js',
-         'vendor/node_modules/flot/jquery.flot.threshold.js',
-         'vendor/node_modules/flot/jquery.flot.selection.js',*/
+        //'legacy/smartadmin/js/plugin/flot/jquery.flot.cust.js', //legacy but no new alternative
+        'node_modules/flot-axislabels/jquery.flot.axislabels.js',
+        'node_modules/flot/jquery.flot.time.js',
+        'node_modules/flot/jquery.flot.fillbetween.js',
+        //'node_modules/flot/jquery.flot.pie.js',
+        'node_modules/flot/jquery.flot.resize.js',
+        //'node_modules/flot/jquery.flot.navigate.js',
+        'node_modules/flot/jquery.flot.threshold.js',
+        'node_modules/flot/jquery.flot.selection.js',
         'node_modules/jquery-nestable/jquery.nestable.js',
         'legacy/js/lib/angular-nestable.js',
         'legacy/js/lib/parseuri.js',
@@ -176,7 +178,7 @@ class AngularAssets implements AngularAssetsInterface {
         });
 
         foreach ($loadedModules as $loadedModule) {
-            $file =  $loadedModule . DS . 'src' . DS . 'Lib' . DS . 'AngularAssets.php';
+            $file = $loadedModule . DS . 'src' . DS . 'Lib' . DS . 'AngularAssets.php';
             if (file_exists($file)) {
                 require_once $file;
                 $moduleNameArray = explode('/', $loadedModule);
@@ -207,7 +209,7 @@ class AngularAssets implements AngularAssetsInterface {
         });
 
         foreach ($loadedModules as $loadedModule) {
-            $file = $loadedModule . DS . 'src' .DS . 'Lib' . DS . 'AngularAssets.php';
+            $file = $loadedModule . DS . 'src' . DS . 'Lib' . DS . 'AngularAssets.php';
             if (file_exists($file)) {
                 require_once $file;
                 $moduleNameArray = explode('/', $loadedModule);

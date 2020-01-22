@@ -48,7 +48,8 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'systemfailures')): ?>
-                        <a back-button fallback-state='SystemfailuresIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button fallback-state='SystemfailuresIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -104,7 +105,9 @@
                             </label>
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="icon-prepend far fa-calendar-alt"></i></span>
+                                    <span class="input-group-text">
+                                        <i class="icon-prepend far fa-calendar-alt"></i>
+                                    </span>
                                 </div>
                                 <input
                                     id="SystemfailureFromDate"
@@ -120,7 +123,7 @@
                                     type="text"
                                     placeholder="hh:mm"
                                     ng-model="post.Systemfailure.from_time">
-                                        <div ng-repeat="error in errors.start_time">
+                                <div ng-repeat="error in errors.start_time">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
@@ -132,7 +135,9 @@
                             </label>
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="icon-prepend far fa-calendar-alt"></i></span>
+                                    <span class="input-group-text">
+                                        <i class="icon-prepend far fa-calendar-alt"></i>
+                                    </span>
                                 </div>
                                 <input
                                     id="SystemfailureToDate"

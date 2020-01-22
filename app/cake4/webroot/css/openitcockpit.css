@@ -373,3 +373,30 @@ td.fc-other-month {
     width: 100%;
     padding: 10px;
 }
+
+.dl-inline {
+    width: 100%;
+    overflow: hidden;
+    padding: 0;
+    margin: 0
+}
+
+.dl-inline > dt{
+    float: left;
+    width: 30%;
+    /* adjust the width; make sure the total of both is 100% */
+    padding: 0;
+    margin: 0
+}
+
+.dl-inline > dd{
+    float: left;
+    width: 50%;
+    /* adjust the width; make sure the total of both is 100% */
+    padding: 0;
+    margin: 0
+}
+
+.progress{
+    background-color: #f6f6f6;
+}
