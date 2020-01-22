@@ -168,6 +168,9 @@ app.post('/AreaChart', function(request, response){
         .then(function(buffer){
             response.writeHead(200, {'Content-Type': 'image/png'});
             response.end(buffer, 'binary');
+        })
+        .finally(() => {
+            chartNode.destroy();
         });
 });
 
