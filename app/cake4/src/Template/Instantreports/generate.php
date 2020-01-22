@@ -74,11 +74,11 @@
                         </label>
                         <div class="col col-xs-10 col-lg-10">
                             <select
-                                    data-placeholder="<?php echo __('Please choose a instant report'); ?>"
-                                    class="form-control"
-                                    chosen="instantreports"
-                                    ng-options="instantreport.Instantreport.id as instantreport.Instantreport.name for instantreport in instantreports"
-                                    ng-model="post.instantreport_id">
+                                data-placeholder="<?php echo __('Please choose a instant report'); ?>"
+                                class="form-control"
+                                chosen="instantreports"
+                                ng-options="instantreport.Instantreport.id as instantreport.Instantreport.name for instantreport in instantreports"
+                                ng-model="post.instantreport_id">
                             </select>
                             <div ng-repeat="error in errors.instantreport_id">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -91,8 +91,8 @@
                         </label>
                         <div class="col col-xs-10 col-md-10 col-lg-10">
                             <select
-                                    class="form-control"
-                                    ng-model="post.report_format">
+                                class="form-control"
+                                ng-model="post.report_format">
                                 <option ng-value="1"><?php echo __('PDF'); ?></option>
                                 <option ng-value="2"><?php echo __('HTML'); ?></option>
                             </select>
@@ -146,12 +146,52 @@
                 </div>
                 <div class="row">
                     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-repeat="report in reportData">
-
-                            <host-availability-pie-chart data="report"></host-availability-pie-chart>
-
+                        <div class="col-xs-12 col-md-12 col-lg-12 padding-5">
+                            <div class="jarviswidget jarviswidget-sortable" role="widget">
+                                <header role="heading">
+                                    <h2>
+                                        <i class="fa fa-desktop"></i>
+                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                            <a ui-sref="HostsBrowser({id:report.Host.id})">
+                                                {{report.Host.name}}
+                                            </a>
+                                        <?php else: ?>
+                                            {{report.Host.name}}
+                                        <?php endif; ?>
+                                    </h2>
+                                </header>
+                                <div class="widget-body">
+                                    <div class="row">
+                                        <div class="col col-md-12 padding-2">
+                                            <host-availability-pie-chart data="report"></host-availability-pie-chart>
+                                        </div>
+                                    </div>
+                                    <div class="row" ng-repeat="service in report.Host.Services">
+                                        <div class="col col-md-12 padding-2">
+                                            <i class="fa fa-cog"></i>
+                                            <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                                <a ui-sref="ServicesBrowser({id:service.Service.id})">
+                                                    {{service.Service.name}}
+                                                </a>
+                                            <?php else: ?>
+                                                {{service.Service.name}}
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="col col-md-12 no-padding">
+                                            <div class="col col-md-3 col-xs-12 no-padding">
+                                                <service-availability-bar-chart
+                                                    data="service"></service-availability-bar-chart>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </article>
                 </div>
             </section>
         </div>
     </div>
 </div>
+
+

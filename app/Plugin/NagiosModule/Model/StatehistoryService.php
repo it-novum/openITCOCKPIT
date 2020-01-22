@@ -70,7 +70,7 @@ class StatehistoryService extends NagiosModuleAppModel {
 
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
 
-        if ($StatehistoryServiceConditions->hardStateTypeAndUpState()) {
+        if ($StatehistoryServiceConditions->hardStateTypeAndOkState()) {
             $query['conditions']['OR'] = [
                 'StatehistoryService.state_type' => 1,
                 'StatehistoryService.state'      => 0

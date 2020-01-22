@@ -62,7 +62,7 @@ class StatehistoryService extends Statusengine3ModuleAppModel {
             $query['conditions']['is_hardstate'] = $stateType;
         }
 
-        if ($StatehistoryServiceConditions->hardStateTypeAndUpState()) {
+        if ($StatehistoryServiceConditions->hardStateTypeAndOkState()) {
             $query['conditions']['OR'] = [
                 'StatehistoryService.is_hardstate' => 1,
                 'StatehistoryService.state'        => 0

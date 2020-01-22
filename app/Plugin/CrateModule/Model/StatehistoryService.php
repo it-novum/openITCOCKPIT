@@ -71,7 +71,7 @@ class StatehistoryService extends CrateModuleAppModel {
 
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
 
-        if ($StatehistoryServiceConditions->hardStateTypeAndUpState()) {
+        if ($StatehistoryServiceConditions->hardStateTypeAndOkState()) {
             $query['or'] = [
                 ['StatehistoryService.is_hardstate = ?' => [1]],
                 ['StatehistoryService.state = ?' => [0]],

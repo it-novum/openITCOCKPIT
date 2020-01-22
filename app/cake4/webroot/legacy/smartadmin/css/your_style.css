@@ -2807,3 +2807,19 @@ fc-left .dropdown {
     filter: opacity(.5);
     pointer-events:none;
 }
+
+.serviceBarChart{
+    height: 30px;
+}
+
+.barchart-legend-container ul {
+    margin: 0;
+    overflow: hidden;
+    padding: 3px 0px;
+}
+
+.barchart-legend-label {
+    list-style: none;
+    float: left;
+    margin-right: 15px;
+}

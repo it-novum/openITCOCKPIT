@@ -392,7 +392,7 @@ class DowntimereportsController extends AppController {
             $Conditions = new StatehistoryServiceConditions();
             $Conditions->setOrder(['StatehistoryServices.state_time' => 'desc']);
             if ($reflectionState === 2) { // type 2 hard state only
-                $Conditions->setHardStateTypeAndUpState(true); // 1 => Hard State
+                $Conditions->setHardStateTypeAndOkState(true); // 1 => Hard State
             }
             $Conditions->setFrom($fromDate);
             $Conditions->setTo($toDate);
