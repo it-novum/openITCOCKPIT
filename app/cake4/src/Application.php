@@ -15,7 +15,9 @@
 
 namespace App;
 
+use App\Authenticator\ApikeyAuthenticator;
 use App\Authenticator\SslAuthenticator;
+use App\Identifier\ApikeyIdentifier;
 use App\Identifier\LdapIdentifier;
 use App\Identifier\PasswordIdentifier;
 use App\Identifier\SslIdentifier;
@@ -146,6 +148,11 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             ]);
         }
 
+        // Load Apikey identifier
+        $service->loadIdentifier('Authentication.Apikey', [
+            'className' => ApikeyIdentifier::class
+        ]);
+
         // Load identifiers (Username / Password)
         $service->loadIdentifier('Authentication.Password', [
             'className' => PasswordIdentifier::class,
@@ -158,6 +165,13 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
                 'className' => SslAuthenticator::class
             ]);
         }
+
+        $service->loadAuthenticator('Authentication.Apikey', [
+            'queryParam'  => 'apikey',
+            'header'      => 'Authorization',
+            'apikeyPrefix' => 'X-OITC-API',
+            'className'   => ApikeyAuthenticator::class,
+        ]);
 
         // Load the authenticators, you want session first
         $expireAt = new \DateTime();

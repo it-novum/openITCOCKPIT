@@ -8,11 +8,12 @@ use App\Model\Entity\User;
 use Authentication\PasswordHasher\DefaultPasswordHasher;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
-use Cake\Utility\Security;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
@@ -875,6 +876,30 @@ class UsersTable extends Table {
                 'Users.is_active' => 1
             ])
             ->first();
+    }
+
+    /**
+     * @param string v
+     * @return array|EntityInterface|null
+     */
+    public function getUserByApikeyForLogin(string $apikey) {
+        $query = $this->find()
+            ->join([
+                [
+                    'table'      => 'apikeys',
+                    'alias'      => 'Apikeys',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Apikeys.user_id = Users.id'
+                    ]
+                ]
+            ])
+            ->enableAutoFields()
+            ->where([
+                'Users.is_active' => 1,
+                'Apikeys.apikey' => $apikey
+            ]);
+        return $query->first();
     }
 
     /**
