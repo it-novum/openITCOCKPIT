@@ -99,7 +99,7 @@ class StatehistoryConverter {
         foreach ($evaluationData as $state => $value) {
             $evaluationData['percentage'][$state] = sprintf('%s (%s%%)',
                 $humanStates[$state],
-                number_format($value/$totalTime*100, 3)
+                floatval(number_format($value/$totalTime*100, 3))
             );
         }
         unset($timeSlices, $stateHistory);
