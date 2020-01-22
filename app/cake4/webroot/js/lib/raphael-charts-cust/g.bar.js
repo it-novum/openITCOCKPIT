@@ -699,7 +699,6 @@
             X = (width - 1) / total;
 
         !opts.stacked && (barheight /= multi || 1);
-
         for(var i = 0; i < len; i++){
             stack = [];
             frontParams = {
@@ -742,9 +741,11 @@
                 for(var s = stack.length; s--;){
                     stack[s].toFront();
                 }
-
+                var lastSideColor = null;
                 for(var s = 0, ss = stack.length; s < ss; s++){
-
+                    if(values[s] > 0){
+                        lastSideColor = opts.darkColors[s];
+                    }
                     var bar = stack[s],
                         cover,
                         val = Math.round((size + bar.value) * X),
@@ -755,9 +756,10 @@
                         fill: grad_angle + "-" + opts.lightColors[s] + "-" + opts.colors[s]
 //                            fill: grad_angle + "-" + opts.darkColors[s] + "-" + opts.lightColors[s]
                     };
+
                     sideParams = {
                         stroke: "none",
-                        fill: opts.darkColors[s]
+                        fill: (lastSideColor !== null) ?lastSideColor: opts.darkColors[s]
                     };
                     w = (maxp / opts.max) * opts.values[i];
                     if(show3d){
@@ -767,7 +769,6 @@
                             sidePath = createSidePath(x + size * X, bar.y - bar.h / 2, bar.value * X, barheight - 1, size3d);
                             createPart(sidePath, sideParams, paper);
                         }
-
                     }
                     cvr.bars.push(bar);
                     size && bar.attr({path: path});

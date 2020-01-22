@@ -180,7 +180,7 @@
                                         <div class="col col-md-12 no-padding">
                                             <div class="col col-md-3 col-xs-12 no-padding">
                                                 <service-availability-bar-chart
-                                                    data="service"></service-availability-bar-chart>
+                                                    data="service.Service"></service-availability-bar-chart>
                                             </div>
                                         </div>
                                     </div>
