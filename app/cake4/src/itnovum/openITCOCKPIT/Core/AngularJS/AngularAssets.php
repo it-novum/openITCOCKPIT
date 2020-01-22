@@ -52,7 +52,7 @@ class AngularAssets implements AngularAssetsInterface {
         'legacy/js/lib/ColorGenerator.js',
         'legacy/js/lib/colr.js',
         'legacy/js/lib/php.js',
-        //'legacy/smartadmin/js/plugin/flot/jquery.flot.cust.js', //legacy but no new alternative
+        'legacy/smartadmin/js/plugin/flot/jquery.flot.cust.js', //legacy but no new alternative
         'node_modules/flot-axislabels/jquery.flot.axislabels.js',
         'node_modules/flot/jquery.flot.time.js',
         'node_modules/flot/jquery.flot.fillbetween.js',
