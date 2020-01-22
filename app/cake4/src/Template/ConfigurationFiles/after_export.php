@@ -31,7 +31,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\AfterExport;
 
 <form ng-submit="submit();" class="form-horizontal">
     <?php foreach ($AfterExport->getDefaults()['int'] as $key => $defaultValue): ?>
-        <div class="form-group" ng-class="{'has-error': errors.Configfile.<?php echo $key; ?>}">
+        <div class="form-group required" ng-class="{'has-error': errors.Configfile.<?php echo $key; ?>}">
             <label class="control-label">
                 <?php echo h($key); ?>
             </label>
@@ -48,29 +48,25 @@ use itnovum\openITCOCKPIT\ConfigGenerator\AfterExport;
             </div>
         </div>
     <?php endforeach; ?>
-    </div>
 
 
-        <?php foreach ($AfterExport->getDefaults()['string'] as $key => $defaultValue): ?>
-            <div class="form-group" ng-class="{'has-error': errors.Configfile.<?php echo $key; ?>}">
-                <label class="control-label">
-                    <?php echo h($key); ?>
-                </label>
-                <input
-                    class="form-control"
-                    type="text"
-                    ng-model="post.string.<?php echo $key; ?>">
-                <div g-repeat="error in errors.Configfile.<?php echo $key; ?>">
-                    <div class="help-block text-danger">{{ error }}</div>
-                </div>
-                <div class="help-block">
-                    <?php echo h($AfterExport->getHelpText($key)); ?>
-                </div>
+    <?php foreach ($AfterExport->getDefaults()['string'] as $key => $defaultValue): ?>
+        <div class="form-group required" ng-class="{'has-error': errors.Configfile.<?php echo $key; ?>}">
+            <label class="control-label">
+                <?php echo h($key); ?>
+            </label>
+            <input
+                class="form-control"
+                type="text"
+                ng-model="post.string.<?php echo $key; ?>">
+            <div g-repeat="error in errors.Configfile.<?php echo $key; ?>">
+                <div class="help-block text-danger">{{ error }}</div>
             </div>
-
-        <?php endforeach; ?>
-    </div>
-
+            <div class="help-block">
+                <?php echo h($AfterExport->getHelpText($key)); ?>
+            </div>
+        </div>
+    <?php endforeach; ?>
 
     <div class="card margin-top-10">
         <div class="card-body">
