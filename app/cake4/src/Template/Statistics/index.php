@@ -54,14 +54,14 @@
                         <div class="alert alert-info" ng-show="settings.Systemsetting.value === 0">
                             <i class="fa-fw fa fa-times"></i>
                             <?php echo __('Sending of anonymous statistics is currently disabled.'); ?>
-                            <button class="btn btn-xs btn-success pull-right" ng-click="save(1)">
+                            <button class="btn btn-xs btn-success float-right" ng-click="save(1)">
                                 <?php echo __('Enable'); ?>
                             </button>
                         </div>
                         <div class="alert alert-info" ng-show="settings.Systemsetting.value === 2">
                             <i class="fa-fw fa fa-times"></i>
                             <?php echo __('Sending of anonymous statistics is currently disabled. Waiting for your approval.'); ?>
-                            <button class="btn btn-xs btn-success pull-right" ng-click="save(1)">
+                            <button class="btn btn-xs btn-success float-right" ng-click="save(1)">
                                 <?php echo __('Enable'); ?>
                             </button>
                         </div>
@@ -69,7 +69,7 @@
                         <div class="alert alert-success" ng-show="settings.Systemsetting.value === 1">
                             <i class="fa-fw fa fa-check"></i>
                             <?php echo __('Sending of anonymous statistics is currently enabled. Many thanks for your support!'); ?>
-                            <button class="btn btn-xs btn-danger pull-right" ng-click="save(0)">
+                            <button class="btn btn-xs btn-danger float-right" ng-click="save(0)">
                                 <?php echo __('Disable'); ?>
                             </button>
                         </div>
