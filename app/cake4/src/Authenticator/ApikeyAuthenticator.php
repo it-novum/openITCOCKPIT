@@ -27,11 +27,13 @@ namespace App\Authenticator;
 
 
 use Authentication\Authenticator\AbstractAuthenticator;
+use Authentication\Authenticator\AuthenticationRequiredException;
 use Authentication\Authenticator\Result;
 use Authentication\Authenticator\ResultInterface;
+use Authentication\Authenticator\StatelessInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class ApikeyAuthenticator extends AbstractAuthenticator {
+class ApikeyAuthenticator extends AbstractAuthenticator implements StatelessInterface {
 
     /**
      * Authenticate a user based on the request information.
@@ -61,4 +63,21 @@ class ApikeyAuthenticator extends AbstractAuthenticator {
         return new Result($user, Result::SUCCESS);
     }
 
+
+    /**
+     * Create a challenge exception
+     *
+     * Create an exception with the appropriate headers and response body
+     * to challenge a request that has missing or invalid credentials.
+     *
+     * This is primarily used by authentication methods that use the WWW-Authorization
+     * header.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request The request.
+     * @return void
+     * @throws \Authentication\Authenticator\AuthenticationRequiredException
+     */
+    public function unauthorizedChallenge(ServerRequestInterface $request): void {
+        //throw new AuthenticationRequiredException([], '');
+    }
 }
