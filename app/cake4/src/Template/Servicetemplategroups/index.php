@@ -175,7 +175,7 @@
                                                 <a class="dropdown-item"
                                                    href="javascript:void(0);"
                                                    ui-sref="ServicetemplategroupsAllocateToHostgroup({id: servicetemplategroup.Servicetemplategroup.id})">
-                                                    <i class="fa fa-external-link"></i>
+                                                    <i class="fa fa-external-link-alt"></i>
                                                     <?php echo __('Allocate to host group'); ?>
                                                 </a>
                                             <?php endif; ?>
@@ -183,7 +183,7 @@
                                                 <a class="dropdown-item"
                                                    href="javascript:void(0);"
                                                    ng-click="allocateToMatchingHostgroup(servicetemplategroup.Servicetemplategroup.id)">
-                                                    <i class="fa fa-external-link"></i>
+                                                    <i class="fa fa-external-link-alt"></i>
                                                     <?php echo __('Allocate to matching host group'); ?>
                                                 </a>
                                             <?php endif; ?>
@@ -191,7 +191,7 @@
                                                 <a class="dropdown-item"
                                                    href="javascript:void(0);"
                                                    ui-sref="ServicetemplategroupsAllocateToHost({id: servicetemplategroup.Servicetemplategroup.id})">
-                                                    <i class="fa fa-external-link"></i>
+                                                    <i class="fa fa-external-link-alt"></i>
                                                     <?php echo __('Allocate to host'); ?>
                                                 </a>
                                             <?php endif; ?>
