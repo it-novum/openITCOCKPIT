@@ -2816,6 +2816,12 @@ fc-left .dropdown {
     margin: 0;
     overflow: hidden;
     padding: 3px 0px;
+    display: -webkit-flex;
+}
+
+.barchart-legend-container ul li{
+    -webkit-flex: 1 0 0px;
+    overflow: hidden;
 }
 
 .barchart-legend-label {

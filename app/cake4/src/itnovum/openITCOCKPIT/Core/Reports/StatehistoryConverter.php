@@ -34,31 +34,17 @@ class StatehistoryConverter {
      * @param $stateHistoryArray
      * @param $checkHardState
      * @param $isHost
-     * @param $totalTime
      * @return array
      */
-    public static function generateReportData($timeSlices, $stateHistoryArray, $checkHardState, $isHost, $totalTime) {
-        $evaluationData = array_fill(0, ($isHost) ? 3 : 4, 0); // host states => 0,1,2; service statea => 0,1,2,3
-        if ($isHost) {
-            $humanStates = [
-                0 => __('Up'),
-                1 => __('Down'),
-                2 => __('Unreachable')
-            ];
-        } else {
-            $humanStates = [
-                0 => __('Ok'),
-                1 => __('Warning'),
-                2 => __('Critical'),
-                3 => __('Unknown')
-            ];
-        }
+    public static function generateReportData($timeSlices, $stateHistoryArray, $checkHardState, $isHost = false) {
+        $evaluationData = array_fill(0, ($isHost) ? 3 : 4, 0); // host states => 0,1,2; service states => 0,1,2,3
 
         $stateOk = 0;
         $stateUnknown = ($isHost) ? 2 : 3;//if the end of date in the future
         $outageState = ($isHost) ? 1 : 2; // 1 for host down and 2 for service critical
         $setInitialState = false;
         $currentState = 0;
+
         foreach ($timeSlices as $timeSliceKey => $timeSlice) {
             $time = $timeSlice['start'];
             if ($time > strtotime('today 23:59:59')) { // ignore time_slice in the future
@@ -66,7 +52,7 @@ class StatehistoryConverter {
             }
             reset($stateHistoryArray);
             foreach ($stateHistoryArray as $key => $stateHistory) {
-                $stateTimeTimestamp = strtotime($stateHistory['state_time']);
+                $stateTimeTimestamp = $stateHistory['state_time'];
                 if (!$setInitialState) {
                     $currentState = $stateHistory['last_state'];
                     if ($checkHardState && $stateHistory['last_state'] != 0) {
@@ -95,12 +81,6 @@ class StatehistoryConverter {
 
             $evaluationData[$currentState] += $timeSlice['end'] - $time;
 
-        }
-        foreach ($evaluationData as $state => $value) {
-            $evaluationData['percentage'][$state] = sprintf('%s (%s%%)',
-                $humanStates[$state],
-                floatval(number_format($value/$totalTime*100, 3))
-            );
         }
         unset($timeSlices, $stateHistory);
         return $evaluationData;
@@ -252,5 +232,30 @@ class StatehistoryConverter {
             }
         }
         return $newOutagesArray;
+    }
+
+    public static function getPercentageValues($values, $totalTime, $isHost = true) {
+        if ($isHost) {
+            $humanStates = [
+                0 => __('Up'),
+                1 => __('Down'),
+                2 => __('Unreachable')
+            ];
+        } else {
+            $humanStates = [
+                0 => __('Ok'),
+                1 => __('Warning'),
+                2 => __('Critical'),
+                3 => __('Unknown')
+            ];
+        }
+
+        foreach ($values as $state => $value) {
+            $values[$state] = sprintf('%s (%s%%)',
+                $humanStates[$state],
+                floatval(number_format($value / $totalTime * 100, 3))
+            );
+        }
+        return $values;
     }
 }

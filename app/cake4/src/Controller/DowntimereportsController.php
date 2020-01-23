@@ -36,12 +36,10 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\CakePHP\Set;
-use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
-use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
 use itnovum\openITCOCKPIT\Core\Reports\DowntimeReportBarChartWidgetDataPreparer;
 use itnovum\openITCOCKPIT\Core\Reports\DowntimeReportPieChartWidgetDataPreparer;
@@ -51,8 +49,6 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
-use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
-use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -324,7 +320,7 @@ class DowntimereportsController extends AppController {
 
             //Process conditions
             $Conditions = new StatehistoryHostConditions();
-            $Conditions->setOrder(['StatehistoryHosts.state_time' => 'desc']);
+            $Conditions->setOrder(['StatehistoryHosts.state_time' => 'asc']);
             if ($reflectionState === 2) { // type 2 hard state only
                 $Conditions->setHardStateTypeAndUpState(true); // 1 => Hard State
             }
@@ -336,7 +332,6 @@ class DowntimereportsController extends AppController {
 
             /** @var \Statusengine2Module\Model\Entity\StatehistoryHost[] $statehistoriesHost */
             $statehistoriesHost = $StatehistoryHostsTable->getStatehistoryIndex($Conditions);
-
             if (empty($statehistoriesHost)) {
                 $record = $StatehistoryHostsTable->getLastRecord($Conditions);
                 if (!empty($record)) {
@@ -371,10 +366,9 @@ class DowntimereportsController extends AppController {
                     }
                 }
             }
-
-            foreach ($statehistoriesHost as $statehistoryHost) {
+            foreach ($statehistoriesHost as $index => $statehistoryHost) {
                 /** @var StatehistoryHostsTable|StatehistoryHost $statehistoryHost */
-                $StatehistoryHost = new StatehistoryHost($statehistoryHost->toArray(), $UserTime);
+                $StatehistoryHost = new StatehistoryHost($statehistoryHost->toArray());
                 $allStatehistories[] = $StatehistoryHost->toArray();
             }
 
@@ -386,11 +380,12 @@ class DowntimereportsController extends AppController {
                 true
             );
         }
+
         foreach (array_keys($services) as $uuid) {
             $allStatehistories = [];
             //Process conditions
             $Conditions = new StatehistoryServiceConditions();
-            $Conditions->setOrder(['StatehistoryServices.state_time' => 'desc']);
+            $Conditions->setOrder(['StatehistoryServices.state_time' => 'asc']);
             if ($reflectionState === 2) { // type 2 hard state only
                 $Conditions->setHardStateTypeAndOkState(true); // 1 => Hard State
             }
@@ -437,7 +432,7 @@ class DowntimereportsController extends AppController {
 
             foreach ($statehistoriesService as $statehistoryService) {
                 /** @var \Statusengine2Module\Model\Entity\StatehistoryService|StatehistoryService $statehistoryService */
-                $StatehistoryService = new StatehistoryService($statehistoryService->toArray(), $UserTime);
+                $StatehistoryService = new StatehistoryService($statehistoryService->toArray());
                 $allStatehistories[] = $StatehistoryService->toArray();
             }
             $reportData[$services[$uuid]['Host']['uuid']]['Services'][$uuid] = $services[$uuid];
