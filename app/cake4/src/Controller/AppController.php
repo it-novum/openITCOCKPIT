@@ -39,6 +39,7 @@ use Cake\Cache\Cache;
 use Cake\Controller\Controller;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\EventInterface;
+use Cake\I18n\I18n;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
@@ -108,6 +109,10 @@ class AppController extends Controller {
         $this->loadComponent('Authentication.Authentication', [
             'logoutRedirect' => '/users/login'  // Default is false
         ]);
+
+        if(isset($this->getUser()->i18n) && strlen($this->getUser()->i18n) >= 3){
+            I18n::setLocale($this->getUser()->i18n);
+        }
 
         /*
          * Enable the following component for recommended CakePHP security settings.
