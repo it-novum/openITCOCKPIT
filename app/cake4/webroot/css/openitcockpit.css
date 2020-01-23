@@ -357,13 +357,16 @@ td.fc-other-month {
     -webkit-box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.05);
 
 }
+
 .jvectormap-zoomin:hover,
 .jvectormap-zoomout:hover {
     background: #777;
 }
+
 .jvectormap-zoomin {
     top: 0px;
 }
+
 .jvectormap-zoomout {
     top: 24px;
 }
@@ -381,7 +384,7 @@ td.fc-other-month {
     margin: 0
 }
 
-.dl-inline > dt{
+.dl-inline > dt {
     float: left;
     width: 30%;
     /* adjust the width; make sure the total of both is 100% */
@@ -389,7 +392,7 @@ td.fc-other-month {
     margin: 0
 }
 
-.dl-inline > dd{
+.dl-inline > dd {
     float: left;
     width: 50%;
     /* adjust the width; make sure the total of both is 100% */
@@ -397,6 +400,34 @@ td.fc-other-month {
     margin: 0
 }
 
-.progress{
+.progress {
     background-color: #f6f6f6;
+}
+
+.dropzoneStyle {
+    min-height: 175px;
+    padding: 15px;
+    border: 2px dashed #dedede;
+    border-radius: 5px;
+    background: #f5f5f5;
+}
+
+pre {
+    display: block;
+    padding: 9.5px;
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 1.42857143;
+    color: #333;
+    word-break: break-all;
+    word-wrap: break-word;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+    overflow: auto;
+}
+
+.bold {
+    font-weight: bold;;
 }
