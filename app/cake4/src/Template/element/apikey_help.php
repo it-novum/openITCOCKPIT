@@ -40,12 +40,7 @@
                         <?php echo __('Click on "Edit profile" in the top left corner.'); ?>
                     </div>
                     <div class="col-xs-12">
-                        <?php
-                        echo $this->Html->image(
-                            '/img/apikey_help/edit_profile.png',
-                            ['class' => 'img-responsive']
-                        );
-                        ?>
+                        <img src="/img/apikey_help/edit_profile.png" class="img-responsive" />
                     </div>
 
                     <div class="col-xs-12">
