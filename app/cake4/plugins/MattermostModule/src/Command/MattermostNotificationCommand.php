@@ -48,6 +48,10 @@ use Spatie\Emoji\Emoji;
 
 /**
  * MattermostNotification command.
+ *
+ * Docs:
+ * https://docs.mattermost.com/developer/webhooks-incoming.html
+ * https://docs.mattermost.com/developer/interactive-messages.html#message-buttons
  */
 class MattermostNotificationCommand extends Command {
 
