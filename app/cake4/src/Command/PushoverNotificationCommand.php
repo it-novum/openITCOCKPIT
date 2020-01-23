@@ -414,6 +414,7 @@ class PushoverNotificationCommand extends Command {
             );
         }
 
+        $this->state = 2;
         $this->type = strtolower($args->getOption('type'));
 
         if ($args->getOption('notificationtype') === '') {
@@ -431,6 +432,7 @@ class PushoverNotificationCommand extends Command {
         $this->hostUuid = $args->getOption('hostuuid');
 
         if ($this->type === 'service') {
+            $this->state = 3;
             if ($args->getOption('serviceuuid') === '') {
                 throw new \itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions(
                     'Option --serviceuuid is missing'
@@ -439,12 +441,10 @@ class PushoverNotificationCommand extends Command {
             $this->serviceUuid = $args->getOption('serviceuuid');
         }
 
-        if ($args->getOption('state') === '') {
-            throw new \itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions(
-                'Option --state is missing'
-            );
+        if ($args->getOption('state') !== '') {
+            //Not all notifications have a state like ack or downtime messages.
+            $this->state = (int)$args->getOption('state');
         }
-        $this->state = (int)$args->getOption('state');
 
         if ($args->getOption('output') === '') {
             throw new \itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions(
