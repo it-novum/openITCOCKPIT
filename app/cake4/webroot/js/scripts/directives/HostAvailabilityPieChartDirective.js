@@ -7,8 +7,8 @@ angular.module('openITCOCKPIT').directive('hostAvailabilityPieChart', function($
         },
         controller: function($scope){
             $timeout(function(){
-                var paper = new Raphael(document.getElementById('hostPieChart-' + $scope.data.Host.id), 400, 130),
-                    pie = paper.pielicious(100, 50, 100, {
+                var paper = new Raphael(document.getElementById('hostPieChart-' + $scope.data.Host.id), 400, 130)
+                    .pielicious(100, 50, 100, {
                         data: [
                             $scope.data.Host.reportData[0],
                             $scope.data.Host.reportData[1],
@@ -40,10 +40,7 @@ angular.module('openITCOCKPIT').directive('hostAvailabilityPieChart', function($
             });
         },
 
-        link: function($scope, element, attr){
-            element.ready(function(){
-
-            });
+        link: function(){
         }
     };
 });

@@ -685,16 +685,17 @@
                 markerElement = paper.path("M " + legendXstart + ", " + legendYstart + " l 28,0  0,16  -28,0  0,-16z");
             } else if (marker === "circle") {
                 markerElement = paper.circle(legendXstart + (2 * radius), legendYstart + radius, radius);
-                markerAttrs = {
-                    stroke: "none",
-                    fill: "180-" + calculateDarkColor(bucket.color) + "-" + calculateLightColor(bucket.color)
-                };
+
             } else if (marker === "ellipse") {
                 radius = 10;
                 markerElement = paper.ellipse(legendXstart + (2 * radius), legendYstart + radius, 1.25 * radius, radius * 0.75);
             } else if (marker === "square") {
                 markerElement = paper.path("M " + legendXstart + ", " + legendYstart + " l 16,0  0,16  -16,0  0,-16z");
             }
+            markerAttrs = {
+                stroke: "none",
+                fill: "180-" + calculateDarkColor(bucket.color) + "-" + calculateLightColor(bucket.color)
+            };
             if (markerElement) {
                 markerElement.attr(markerAttrs);
                 markerElement.handle = bucket.handle;

@@ -166,13 +166,6 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             ]);
         }
 
-        $service->loadAuthenticator('Authentication.Apikey', [
-            'queryParam'  => 'apikey',
-            'header'      => 'Authorization',
-            'apikeyPrefix' => 'X-OITC-API',
-            'className'   => ApikeyAuthenticator::class,
-        ]);
-
         // Load the authenticators, you want session first
         $expireAt = new \DateTime();
         $expireAt->setTimestamp(time() + (3600 * 24 * 31)); // In one month
@@ -186,6 +179,14 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         $service->loadAuthenticator('Authentication.Form', [
             'fields'   => $fields,
             'loginUrl' => '/users/login',
+        ]);
+
+        //Stateless API Key login
+        $service->loadAuthenticator('Authentication.Apikey', [
+            'queryParam'  => 'apikey',
+            'header'      => 'Authorization',
+            'apikeyPrefix' => 'X-OITC-API',
+            'className'   => ApikeyAuthenticator::class,
         ]);
 
         return $service;

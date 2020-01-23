@@ -1,2 +1,2 @@
-<div id="serviceBarChart-{{data.Service.id}}" class="serviceBarChart"></div>
+<div id="serviceBarChart-{{data.id}}" class="serviceBarChart"></div>
 
