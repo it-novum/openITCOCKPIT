@@ -63,3 +63,4 @@ plugins/EventcorrelationModule
 plugins/OpenstreetmapModule
 plugins/SlackModule
 plugins/ServicenowModule
+plugins/PagerdutyModule
