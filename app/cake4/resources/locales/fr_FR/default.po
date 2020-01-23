@@ -1230,13 +1230,13 @@ msgid "Service groups"
 msgstr "Groupes de service"
 
 msgid "Hosts"
-msgstr "Hôte : %s"
+msgstr "Hôte"
 
 msgid "Services"
 msgstr "Prestations de service"
 
 msgid "Hosts "
-msgstr "Hôte : %s "
+msgstr "Hôte "
 
 msgid "Hosts and Services "
 msgstr "Hôtes et Services "
@@ -4014,7 +4014,7 @@ msgid "Time"
 msgstr "Temps"
 
 msgid "Monitoring"
-msgstr "surveillance"
+msgstr "Surveillance"
 
 msgid "Check_MK Agent"
 msgstr "Agent Check_MK"
@@ -7422,7 +7422,7 @@ msgid "host"
 msgstr "hôte"
 
 msgid "hosts"
-msgstr "Hôte : %s"
+msgstr "hôte"
 
 msgid "Hosttemplate name"
 msgstr "Nom du modèle d'hôte"
