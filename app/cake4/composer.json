@@ -73,7 +73,7 @@
     },
     "require-dev": {
         "cakephp/bake": "^2.0",
-        "cakephp/cakephp-codesniffer": "dev-next",
+        "cakephp/cakephp-codesniffer": "^4.0",
         "cakephp/debug_kit": "^4.0",
         "cakephp/migrations": "4.x-dev",
         "josegonzalez/dotenv": "3.*",
