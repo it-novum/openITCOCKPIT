@@ -314,7 +314,7 @@ class AppController extends Controller {
     /**
      * @return IdentityInterface|null
      */
-    public function getUser() {
+    protected function getUser() {
         return $this->Authentication->getIdentity();
     }
 
