@@ -126,7 +126,7 @@
                             <div class="card-body">
                                 <div class="float-right">
                                     <button class="btn btn-primary" type="submit">
-                                        <?php echo __('Create contact group'); ?>
+                                        <?php echo __('Update contact group'); ?>
                                     </button>
                                     <a back-button fallback-state='ContactgroupsIndex' class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
