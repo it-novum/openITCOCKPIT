@@ -31,11 +31,11 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="ServicetemplategroupsIndex">
-            <i class="fa fa-pencil-square-o"></i> <?php echo __('Allocate service template group'); ?>
+            <i class="fa fa-pencil-square-o"></i> <?php echo __('Service template group'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fa fa-plus"></i> <?php echo __('To host'); ?>
+        <i class="fa fa-plus"></i> <?php echo __('Allocate service template group to host'); ?>
     </li>
 </ol>
 
