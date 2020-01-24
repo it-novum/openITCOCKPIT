@@ -219,185 +219,15 @@ class AclDependencies {
             ->allow('Statistics', 'ask_anonymous_statistics');
 
         $this
-            ->allow('Login', 'index')
-            ->allow('Login', 'login')
-            ->allow('Login', 'onetimetoken')
-            ->allow('Login', 'logout')
-            ->allow('Login', 'auth_required')
-            ->allow('Login', 'lock');
-
-        // Add dependencies
-        $this
-            ->allow('Angular', 'index')
-            ->allow('Angular', 'paginator')
-            ->allow('Angular', 'scroll')
-            ->allow('Angular', 'mass_delete')
-            ->allow('Angular', 'mass_deactivate')
-            ->allow('Angular', 'confirm_delete')
-            ->allow('Angular', 'confirm_deactivate')
-            ->allow('Angular', 'mass_activate')
-            ->allow('Angular', 'user_timezone')
-            ->allow('Angular', 'version_check')
-            ->allow('Angular', 'menustats')
-            ->allow('Angular', 'statuscount')
-            ->allow('Angular', 'menu')
-            ->allow('Angular', 'websocket_configuration')
-            ->allow('Angular', 'push_configuration')
-            ->allow('Angular', 'export')
-            ->allow('Angular', 'not_found')
-            ->allow('Angular', 'forbidden')
-            ->allow('Angular', 'executing')
-            ->allow('Angular', 'acknowledge_service')
-            ->allow('Angular', 'downtime_service')
-            ->allow('Angular', 'reschedule_host')
-            ->allow('Angular', 'downtime_host')
-            ->allow('Angular', 'acknowledge_host')
-            ->allow('Angular', 'enable_host_notifications')
-            ->allow('Angular', 'disable_host_notifications')
-            ->allow('Angular', 'system_health')
-            ->allow('Angular', 'getDowntimeData')
-            ->allow('Angular', 'mass_delete_host_downtimes')
-            ->allow('Angular', 'mass_delete_service_downtimes')
-            ->allow('Angular', 'submit_host_result')
-            ->allow('Angular', 'disable_host_flap_detection')
-            ->allow('Angular', 'enable_host_flap_detection')
-            ->allow('Angular', 'send_host_notification')
-            ->allow('Angular', 'submit_service_result')
-            ->allow('Angular', 'disable_service_flap_detection')
-            ->allow('Angular', 'enable_service_flap_detection')
-            ->allow('Angular', 'send_service_notification')
-            ->allow('Angular', 'enable_service_notifications')
-            ->allow('Angular', 'disable_service_notifications')
-            ->allow('Angular', 'getPieChart')
-            ->allow('Angular', 'getHalfPieChart')
-            ->allow('Angular', 'getCumulatedHostAndServiceStateIcon')
-            ->allow('Angular', 'getHostAndServiceStateSummaryIcon')
-            ->allow('Angular', 'macros')
-            ->allow('Angular', 'ldap_configuration')
-            ->allow('Angular', 'priority')
-            ->allow('Angular', 'intervalInput')
-            ->allow('Angular', 'intervalInputWithDiffer')
-            ->allow('Angular', 'humanTime')
-            ->allow('Angular', 'template_diff')
-            ->allow('Angular', 'template_diff_button')
-            ->allow('Angular', 'queryhandler')
-            ->allow('Angular', 'hostBrowserMenu')
-            ->allow('Angular', 'serviceBrowserMenu')
-            ->allow('Angular', 'durationInput')
-            ->allow('Angular', 'calendar')
-            ->allow('Angular', 'reload_required');
+            ->allow('Pages', 'index');
 
         $this
-            ->allow('Automaps', 'icon')
-            ->allow('Automaps', 'loadContainers');
+            ->allow('Users', 'login')
+            ->allow('Users', 'logout');
 
-        $this
-            ->allow('Calendars', 'loadCalendarsByContainerId');
-
-        $this
-            ->allow('Containers', 'byTenantForSelect')
-            ->allow('Containers', 'byTenant')
-            ->allow('Containers', 'loadContainersForAngular')
-            ->allow('Containers', 'loadContainers')
-            ->allow('Containers', 'loadContainersByContainerId');
-
-        $this
-            ->allow('Downtimes', 'validateDowntimeInputFromAngular')
-            ->allow('Downtimes', 'icon');
-
-        $this
-            ->allow('Forward', 'index');
-
-        $this
-            ->allow('Packetmanager', 'getPackets');
-
-        $this
-            ->allow('Profile', 'edit')
-            ->allow('Profile', 'changePassword')
-            ->allow('Profile', 'upload_profile_icon')
-            ->allow('Profile', 'deleteImage')
-            ->allow('Profile', 'apikey')
-            ->allow('Profile', 'edit_apikey')
-            ->allow('Profile', 'delete_apikey')
-            ->allow('Profile', 'create_apikey');
-
-        $this
-            ->allow('Proxy', 'getSettings');
-
-        $this
-            ->allow('Search', 'index')
-            ->allow('Search', 'hostMacro')
-            ->allow('Search', 'serviceMacro');
-
-        $this
-            ->allow('Services', 'icon')
-            ->allow('Services', 'servicecumulatedstatusicon')
-            ->allow('Services', 'details')
-            ->allow('Services', 'byUuid')
-            ->allow('Services', 'loadServicesByStringCake4')
-            ->allow('Services', 'loadServicesByContainerIdCake4');
-
-        $this
-            ->allow('Graphgenerators', 'getPerfdataByUuid');
-
-        $this
-            ->allow('Dashboards', 'index')
-            ->allow('Dashboards', 'getWidgetsForTab')
-            ->allow('Dashboards', 'dynamicDirective')
-            ->allow('Dashboards', 'welcomeWidget')
-            ->allow('Dashboards', 'saveGrid')
-            ->allow('Dashboards', 'addWidgetToTab')
-            ->allow('Dashboards', 'removeWidgetFromTab')
-            ->allow('Dashboards', 'saveTabOrder')
-            ->allow('Dashboards', 'addNewTab')
-            ->allow('Dashboards', 'renameDashboardTab')
-            ->allow('Dashboards', 'deleteDashboardTab')
-            ->allow('Dashboards', 'startSharing')
-            ->allow('Dashboards', 'stopSharing')
-            ->allow('Dashboards', 'getSharedTabs')
-            ->allow('Dashboards', 'createFromSharedTab')
-            ->allow('Dashboards', 'checkForUpdates')
-            ->allow('Dashboards', 'neverPerformUpdates')
-            ->allow('Dashboards', 'updateSharedTab')
-            ->allow('Dashboards', 'renameWidget')
-            ->allow('Dashboards', 'lockOrUnlockTab')
-            ->allow('Dashboards', 'restoreDefault')
-            ->allow('Dashboards', 'hostsPiechartWidget')
-            ->allow('Dashboards', 'hostsPiechart180Widget')
-            ->allow('Dashboards', 'servicesPiechartWidget')
-            ->allow('Dashboards', 'servicesPiechart180Widget')
-            ->allow('Dashboards', 'hostsStatusListWidget')
-            ->allow('Dashboards', 'servicesStatusListWidget')
-            ->allow('Dashboards', 'saveTabRotateInterval')
-            ->allow('Dashboards', 'parentOutagesWidget')
-            ->allow('Dashboards', 'hostsDowntimeWidget')
-            ->allow('Dashboards', 'servicesDowntimeWidget')
-            ->allow('Dashboards', 'noticeWidget')
-            ->allow('Dashboards', 'trafficLightWidget')
-            ->allow('Dashboards', 'getServiceWithStateById')
-            ->allow('Dashboards', 'hostStatusOverviewWidget')
-            ->allow('Dashboards', 'tachoWidget')
-            ->allow('Dashboards', 'serviceStatusOverviewWidget');
-
-        $this
-            ->allow('Hosts', 'view')
-            ->allow('Hosts', 'icon')
-            ->allow('Hosts', 'hostservicelist')
-            ->allow('Hosts', 'loadParentHostsByString')
-            ->allow('Hosts', 'hoststatus')
-            ->allow('Hosts', 'byUuid');
-
-        $this
-            ->allow('Statistics', 'ask_anonymous_statistics');
-
-        $this
-            ->allow('Login', 'index')
-            ->allow('Login', 'login')
-            ->allow('Login', 'onetimetoken')
-            ->allow('Login', 'logout')
-            ->allow('Login', 'auth_required')
-            ->allow('Login', 'lock');
-
+        ///////////////////////////////
+        //    Add dependencies       //
+        //////////////////////////////
         $this
             ->dependency('Agentchecks', 'add', 'Agentchecks', 'loadServicetemplates')
             ->dependency('Agentchecks', 'edit', 'Agentchecks', 'loadServicetemplates');
@@ -727,6 +557,20 @@ class AclDependencies {
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'GraphiteWeb')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'restorDefault')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'dynamicDirective');
+
+
+        //Load Plugin ALC Dependencies
+        foreach (PluginManager::getAvailablePlugins() as $pluginName) {
+            $className = sprintf('\%s\Lib\AclDependencies', $pluginName);
+            if (class_exists($className)) {
+                /** @var PluginAclDependencies $PluginAclDependencies */
+                $PluginAclDependencies = new $className();
+
+                $this->allow[$pluginName] = $PluginAclDependencies->getAllow();
+                $this->dependencies[$pluginName] = $PluginAclDependencies->getDependencies();
+            }
+        }
+
     }
 
     /**
@@ -778,49 +622,111 @@ class AclDependencies {
         $acos = [];
         foreach ($threadedAcos as $threadedAco) {
             foreach ($threadedAco['children'] as $controllerAcos) {
-                $acos[$controllerAcos['alias']] = [
-                    'id'      => $controllerAcos['id'],
-                    'actions' => []
-                ];
-                foreach ($controllerAcos['children'] as $actionAco) {
-                    $acos[$controllerAcos['alias']]['actions'][$actionAco['alias']] = [
-                        'id' => $actionAco['id'],
+                if (substr($controllerAcos['alias'], -6) === 'Module') {
+                    $pluginAcos = $controllerAcos;
+                    foreach ($pluginAcos['children'] as $pluginControllerAcos) {
+                        $acos[$pluginAcos['alias']][$pluginControllerAcos['alias']] = [
+                            'id'      => $pluginControllerAcos['id'],
+                            'actions' => []
+                        ];
+                        foreach ($pluginControllerAcos['children'] as $pluginActionAcos) {
+                            $acos[$pluginAcos['alias']][$pluginControllerAcos['alias']]['actions'][$pluginActionAcos['alias']] = [
+                                'id' => $pluginActionAcos['id'],
+                            ];
+                        }
+                    }
+                } else {
+                    //Core
+                    $acos[$controllerAcos['alias']] = [
+                        'id'      => $controllerAcos['id'],
+                        'actions' => []
                     ];
+                    foreach ($controllerAcos['children'] as $actionAco) {
+                        $acos[$controllerAcos['alias']]['actions'][$actionAco['alias']] = [
+                            'id' => $actionAco['id'],
+                        ];
+                    }
                 }
             }
         }
 
         //Add always allowed ACL actions to $selectedAcos
         foreach ($this->allow as $controller => $actions) {
-            foreach ($actions as $action) {
-                if (isset($acos[$controller]['actions'][$action]['id'])) {
-                    $acoId = $acos[$controller]['actions'][$action]['id'];
+            if (substr($controller, -6) === 'Module') {
+                $pluginName = $controller;
+                foreach ($actions as $pluginController => $pluginActions) {
+                    foreach ($pluginActions as $pluginAction) {
+                        if (isset($acos[$pluginName][$pluginController]['actions'][$pluginAction]['id'])) {
+                            //debug(implode('/', [$pluginName, $pluginController, $pluginAction]));
+                            $acoId = $acos[$pluginName][$pluginController]['actions'][$pluginAction]['id'];
 
-                    $selectedAcos[$acoId] = 1;
+                            $selectedAcos[$acoId] = 1;
+                        }
+                    }
+                }
+            } else {
+                //Core
+                foreach ($actions as $action) {
+                    if (isset($acos[$controller]['actions'][$action]['id'])) {
+                        $acoId = $acos[$controller]['actions'][$action]['id'];
+
+                        $selectedAcos[$acoId] = 1;
+                    }
                 }
             }
         }
 
         //Build up dependency tree (dependent ACL actions)
         $dependencyTree = [];
-        foreach ($this->dependencies as $controller => $actions) {
-            foreach ($actions as $action => $dependentControllers) {
-                foreach ($dependentControllers as $dependentController => $dependentActions) {
-                    foreach ($dependentActions as $dependentAction) {
-                        //debug(sprintf(
-                        //    '%s/%s depends on %s/%s',
-                        //    $controller,
-                        //    $action,
-                        //    $dependentController,
-                        //    $dependentAction
-                        //));
+        foreach ($this->dependencies as $controller => $actions) { //1 core
+            if (substr($controller, -6) === 'Module') {
+                $pluginName = $controller;
+                $pluginControllers = $actions;
+                foreach ($pluginControllers as $pluginController => $pluginControllerActions) { // like 1 for core
+                    foreach ($pluginControllerActions as $pluginAction => $dependentPluginControllers) { //like 2 for core
+                        foreach ($dependentPluginControllers as $dependentPluginController => $dependentPluginActions) { // like 3 for core
+                            foreach ($dependentPluginActions as $dependentPluginAction) { // like 4 for core
+                                //debug(sprintf(
+                                //    '[%s] %s/%s depends on %s/%s',
+                                //    $pluginName,
+                                //    $pluginController,
+                                //    $pluginAction,
+                                //    $dependentPluginController,
+                                //    $dependentPluginAction
+                                //));
 
-                        if (isset($acos[$controller]['actions'][$action]['id'])) {
-                            if (isset($acos[$dependentController]['actions'][$dependentAction]['id'])) {
-                                $acoId = $acos[$controller]['actions'][$action]['id'];
-                                $dependentAcoId = $acos[$dependentController]['actions'][$dependentAction]['id'];
+                                if (isset($acos[$pluginName][$pluginController]['actions'][$pluginAction]['id'])) {
+                                    if (isset($acos[$pluginName][$dependentPluginController]['actions'][$dependentPluginAction]['id'])) {
+                                        $acoId = $acos[$pluginName][$pluginController]['actions'][$pluginAction]['id'];
+                                        $dependentAcoId = $acos[$pluginName][$dependentPluginController]['actions'][$dependentPluginAction]['id'];
 
-                                $dependencyTree[$acoId][] = $dependentAcoId;
+                                        $dependencyTree[$acoId][] = $dependentAcoId;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                //Core
+                foreach ($actions as $action => $dependentControllers) { //2 core
+                    foreach ($dependentControllers as $dependentController => $dependentActions) { //3 core
+                        foreach ($dependentActions as $dependentAction) { //4 core
+                            //debug(sprintf(
+                            //    '%s/%s depends on %s/%s',
+                            //    $controller,
+                            //    $action,
+                            //    $dependentController,
+                            //    $dependentAction
+                            //));
+
+                            if (isset($acos[$controller]['actions'][$action]['id'])) {
+                                if (isset($acos[$dependentController]['actions'][$dependentAction]['id'])) {
+                                    $acoId = $acos[$controller]['actions'][$action]['id'];
+                                    $dependentAcoId = $acos[$dependentController]['actions'][$dependentAction]['id'];
+
+                                    $dependencyTree[$acoId][] = $dependentAcoId;
+                                }
                             }
                         }
                     }
@@ -846,34 +752,75 @@ class AclDependencies {
 
     public function filterAcosForFrontend($acosResultThreaded) {
         $allDependenciesSimplified = [];
-        foreach ($this->dependencies as $controllerName => $actions) {
-            foreach ($actions as $actionName => $dependentController) {
-                foreach($dependentController as $dependentControllerName => $dependentActions){
-                    foreach($dependentActions as $dependentAction){
-                        if (!isset($allDependenciesSimplified[$dependentControllerName])) {
-                            $allDependenciesSimplified[$dependentControllerName] = [];
-                        }
+        foreach ($this->dependencies as $controllerName => $actions) { //1
+            if (substr($controllerName, -6) === 'Module') {
+                $pluginName = $controllerName;
+                $pluginControllers = $actions;
 
-                        $allDependenciesSimplified[$dependentControllerName][$dependentAction] = $dependentAction;
+                foreach ($pluginControllers as $pluginControllerName => $pluginActions) { //Like 1 for core
+                    foreach ($pluginActions as $pluginActionName => $dependentPluginController) { //Like 2 for core
+                        foreach ($dependentPluginController as $dependentPluginControllerName => $dependentPluginActions) { //Like 3 for core
+                            foreach ($dependentPluginActions as $dependentPluginAction) { //Like 4 for core
+                                if (!isset($allDependenciesSimplified[$pluginName][$dependentPluginControllerName])) {
+                                    $allDependenciesSimplified[$pluginName][$dependentPluginControllerName] = [];
+                                }
+
+                                $allDependenciesSimplified[$pluginName][$dependentPluginControllerName][$dependentPluginAction] = $dependentPluginAction;
+                            }
+                        }
+                    }
+                }
+            } else {
+                //Core
+                foreach ($actions as $actionName => $dependentController) { //2
+                    foreach ($dependentController as $dependentControllerName => $dependentActions) { //3
+                        foreach ($dependentActions as $dependentAction) { //4
+                            if (!isset($allDependenciesSimplified[$dependentControllerName])) {
+                                $allDependenciesSimplified[$dependentControllerName] = [];
+                            }
+
+                            $allDependenciesSimplified[$dependentControllerName][$dependentAction] = $dependentAction;
+                        }
                     }
                 }
             }
         }
 
-
         foreach ($acosResultThreaded[0]['children'] as $controllerIndex => $controller) {
-            $controllerName = $controller['alias'];
-            foreach ($controller['children'] as $actionIndex => $action) {
-                $actionName = $action['alias'];
+            if (substr($controller['alias'], -6) === 'Module') {
+                $pluginName = $controller['alias'];
+                foreach ($controller['children'] as $pluginControllerIndex => $pluginController) {
+                    $pluginControllerName = $pluginController['alias'];
+                    foreach ($pluginController['children'] as $pluginActionIndex => $pluginAction) {
+                        $pluginActionName = $pluginAction['alias'];
 
-                // Remove ACOs that are always allow (the user cannot untick them!)
-                if (isset($this->allow[$controllerName][$actionName])) {
-                    unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$actionIndex]);
+                        // Remove ACOs that are always allow (the user cannot untick them!)
+                        if (isset($this->allow[$pluginName][$pluginControllerName][$pluginActionName])) {
+                            unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$pluginControllerIndex]['children'][$pluginActionIndex]);
+                        }
+
+                        // Remove ACOs if they are dependencies of other ACOs (the user cannot untick them!)
+                        if (isset($allDependenciesSimplified[$pluginName][$pluginControllerName][$pluginActionName])) {
+                            unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$pluginControllerIndex]['children'][$pluginActionIndex]);
+                        }
+                    }
                 }
 
-                // Remove ACOs if they are dependencies of other ACOs (the user cannot untick them!)
-                if (isset($allDependenciesSimplified[$controllerName][$actionName])) {
-                    unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$actionIndex]);
+            } else {
+                //Core
+                $controllerName = $controller['alias'];
+                foreach ($controller['children'] as $actionIndex => $action) {
+                    $actionName = $action['alias'];
+
+                    // Remove ACOs that are always allow (the user cannot untick them!)
+                    if (isset($this->allow[$controllerName][$actionName])) {
+                        unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$actionIndex]);
+                    }
+
+                    // Remove ACOs if they are dependencies of other ACOs (the user cannot untick them!)
+                    if (isset($allDependenciesSimplified[$controllerName][$actionName])) {
+                        unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$actionIndex]);
+                    }
                 }
             }
 

@@ -2,11 +2,13 @@
 
 namespace App\Model\Table;
 
+use Acl\Model\Table\AcosTable;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Core\Configure;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
-use Configure;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
@@ -27,6 +29,7 @@ use itnovum\openITCOCKPIT\Filter\GenericFilter;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class UsergroupsTable extends Table {
+    use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
 
     /**
@@ -117,9 +120,9 @@ class UsergroupsTable extends Table {
             $result = $this->formatResultAsCake2($query->toArray(), false);
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scrollCake4($query, $PaginateOMat->getHandler(), false);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
-                $result = $this->paginateCake4($query, $PaginateOMat->getHandler(), false);
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
             }
         }
 
@@ -144,292 +147,46 @@ class UsergroupsTable extends Table {
     }
 
     /**
-     * @param $acosAsNest
+     * @param bool $useAcoIdAsKey
      * @return array
      */
-    public function getAlwaysAllowedAcos($acosAsNest) {
-        Configure::load('acl_dependencies');
+    public function getAllAcosAsList($useAcoIdAsKey = true) {
+        /** @var AcosTable $AcosTable */
+        $AcosTable = TableRegistry::getTableLocator()->get('Acl.Acos');
 
-        //Load Plugin configuration files
-        $modulePlugins = array_filter(\CakePlugin::loaded(), function ($value) {
-            return strpos($value, 'Module') !== false;
-        });
-        foreach ($modulePlugins as $moduleName) {
-            $pluginAclConfigFile = OLD_APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
-            if (file_exists($pluginAclConfigFile)) {
-                Configure::load($moduleName . '.acl_dependencies');
-            }
-        }
-        //all acl_dependencies
-        $config = Configure::read('acl_dependencies');
+        $acosAsList = [];
+        $acos = $AcosTable->find('threaded')
+            ->disableHydration()
+            ->all();
 
-        $appControllerAcoNames = $config['AppController'];
-        $alwaysAllowedAcos = $config['always_allowed'];
-        unset($config);
+        $acos = $acos->toArray();
 
-        $result = [];
-
-        foreach ($acosAsNest as $usergroupAcos) {
-            foreach ($usergroupAcos['children'] as $controllerAcos) {
-                $controllerName = $controllerAcos['Aco']['alias'];
-                if (!strpos($controllerName, 'Module')) {
-                    //Core ACLs
-                    foreach ($controllerAcos['children'] as $actionAco) {
-                        $actionName = $actionAco['Aco']['alias'];
-                        $acoId = $actionAco['Aco']['id'];
-
-                        $permitRight = false;
-                        if (!isset($result[$acoId])) {
-                            if (in_array($actionName, $appControllerAcoNames)) {
-                                $permitRight = true;
-                            }
-                            if (isset($alwaysAllowedAcos[$controllerName]) && in_array($actionName, $alwaysAllowedAcos[$controllerName])) {
-                                $permitRight = true;
-                            }
-
-                            if ($permitRight === true) {
-                                $result[$acoId] = $controllerName . DS . $actionName;
-                            }
+        foreach ($acos[0]['children'] as $controller) {
+            if (substr($controller['alias'], -6) === 'Module') {
+                $module = $controller;
+                foreach ($module['children'] as $moduleController) {
+                    foreach ($moduleController['children'] as $moduleAction) {
+                        if ($useAcoIdAsKey === true) {
+                            $acosAsList[$moduleAction['id']] = $module['alias'] . '/' . $moduleController['alias'] . '/' . $moduleAction['alias'];
+                        } else {
+                            $key = $module['alias'] . '/' . $moduleController['alias'] . '/' . $moduleAction['alias'];
+                            $acosAsList[$key] = $moduleAction['id'];
                         }
                     }
-                } else {
-                    //Plugin ACLs
-                    $pluginName = $controllerAcos['Aco']['alias'];
-                    $pluginAcos = $controllerAcos;
-                    foreach ($pluginAcos['children'] as $controllerAcos) {
-                        $controllerName = $controllerAcos['Aco']['alias'];
-                        foreach ($controllerAcos['children'] as $actionAco) {
-                            $actionName = $actionAco['Aco']['alias'];
-                            $acoId = $actionAco['Aco']['id'];
-
-                            $permitRight = false;
-                            if (!isset($result[$acoId])) {
-                                if (in_array($actionName, $appControllerAcoNames)) {
-                                    $permitRight = true;
-                                }
-                                if (isset($alwaysAllowedAcos[$controllerName]) && in_array($actionName, $alwaysAllowedAcos[$controllerName])) {
-                                    $permitRight = true;
-                                }
-
-                                if ($permitRight === true) {
-                                    $result[$acoId] = $pluginName . DS . $controllerName . DS . $actionName;
-                                }
-                            }
-                        }
+                }
+            } else {
+                //Core Controller
+                foreach ($controller['children'] as $action) {
+                    if ($useAcoIdAsKey === true) {
+                        $acosAsList[$action['id']] = $controller['alias'] . '/' . $action['alias'];
+                    } else {
+                        $key = $controller['alias'] . '/' . $action['alias'];
+                        $acosAsList[$key] = $action['id'];
                     }
                 }
             }
         }
-        return $result;
-    }
 
-
-    /**
-     * Return an array of aco ids + dependenc aco ids
-     * @param $acosAsNest
-     * @return array
-     */
-    public function getAcoDependencies($acosAsNest) {
-        Configure::load('acl_dependencies');
-
-        //Load Plugin configuration files
-        $modulePlugins = array_filter(\CakePlugin::loaded(), function ($value) {
-            return strpos($value, 'Module') !== false;
-        });
-
-        foreach ($modulePlugins as $moduleName) {
-            $pluginAclConfigFile = OLD_APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
-            if (file_exists($pluginAclConfigFile)) {
-                Configure::load($moduleName . '.acl_dependencies');
-            }
-        }
-
-        $acoDependencies = Configure::read('acl_dependencies.dependencies');
-        $appControllerAcoNames = Configure::read('acl_dependencies.AppController');
-        $result = [];
-        foreach ($acosAsNest as $usergroupAcos) {
-            foreach ($usergroupAcos['children'] as $controllerAcos) {
-                $controllerName = $controllerAcos['Aco']['alias'];
-                if (!strpos($controllerName, 'Module')) {
-                    //Core ACL
-                    //Has some of the controller actions dependencies?
-                    if (isset($acoDependencies[$controllerName])) {
-                        $acos = [];
-                        foreach ($controllerAcos['children'] as $actionAco) {
-                            $acos[$actionAco['Aco']['alias']] = $actionAco['Aco']['id'];
-                        }
-                        if (!empty($acos)) {
-                            //Match found acos to dependencies
-                            foreach ($acoDependencies[$controllerName] as $action => $dependenActions) {
-                                if (isset($acos[$action])) {
-                                    foreach ($dependenActions as $dependendAction) {
-                                        if (isset($acos[$dependendAction])) {
-                                            $result[$acos[$action]][$acos[$dependendAction]] = $controllerName . DS . $action . DS . $dependendAction;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    $pluginName = $controllerAcos['Aco']['alias'];
-                    $pluginAcos = $controllerAcos;
-                    foreach ($pluginAcos['children'] as $controllerAcos) {
-                        $controllerName = $controllerAcos['Aco']['alias'];
-                        //Has some of the controller actions dependencies?
-                        if (isset($acoDependencies[$controllerName])) {
-                            $acos = [];
-                            foreach ($controllerAcos['children'] as $actionAco) {
-                                $acos[$actionAco['Aco']['alias']] = $actionAco['Aco']['id'];
-                            }
-                            if (!empty($acos)) {
-                                //Match found acos to dependencies
-                                foreach ($acoDependencies[$controllerName] as $action => $dependenActions) {
-                                    if (isset($acos[$action])) {
-                                        foreach ($dependenActions as $dependendAction) {
-                                            if (isset($acos[$dependendAction])) {
-                                                $result[$acos[$action]][$acos[$dependendAction]] = $pluginName . DS . $controllerName . DS . $action . DS . $dependendAction;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return $result;
-    }
-
-
-    /**
-     * Return a array of aco ids that needs to enabled for specific usergroup!
-     * @param $acosAsNest
-     * @param $userGroupName
-     * @return array
-     */
-    public function getUsergroupAcos($acosAsNest, $userGroupName) {
-        Configure::load('acl_dependencies');
-
-        //Load Plugin configuration files
-        $modulePlugins = array_filter(\CakePlugin::loaded(), function ($value) {
-            return strpos($value, 'Module') !== false;
-        });
-        foreach ($modulePlugins as $moduleName) {
-            $pluginAclConfigFile = OLD_APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
-            if (file_exists($pluginAclConfigFile)) {
-                Configure::load($moduleName . '.acl_dependencies');
-            }
-        }
-
-        $config = Configure::read('acl_dependencies');
-        $appControllerAcoNames = $config['AppController'];
-        if (!isset($config['roles_rights'][$userGroupName]))
-            return [];
-        $thisUsergroupAcos = $config['roles_rights'][$userGroupName];
-
-        unset($config);
-
-        $result = [];
-
-        foreach ($acosAsNest as $usergroupAcos) {
-            foreach ($usergroupAcos['children'] as $controllerAcos) {
-                $controllerName = $controllerAcos['Aco']['alias'];
-                if (!strpos($controllerName, 'Module')) {
-                    //Core ACLs
-                    foreach ($controllerAcos['children'] as $actionAco) {
-                        $actionName = $actionAco['Aco']['alias'];
-                        $acoId = $actionAco['Aco']['id'];
-
-                        if (isset($result[$acoId])) continue;
-
-                        if (in_array('*', $thisUsergroupAcos)) {
-                            $result[$acoId] = $controllerName . DS . $actionName;
-                            continue;
-                        }
-
-                        if (isset($thisUsergroupAcos[$controllerName]) && in_array($actionName, $thisUsergroupAcos[$controllerName])) {
-                            $result[$acoId] = $controllerName . DS . $actionName;
-                        }
-                    }
-                } else {
-                    //Plugin ACLs
-                    $pluginName = $controllerAcos['Aco']['alias'];
-                    $pluginAcos = $controllerAcos;
-                    foreach ($pluginAcos['children'] as $controllerAcos) {
-                        $controllerName = $controllerAcos['Aco']['alias'];
-                        foreach ($controllerAcos['children'] as $actionAco) {
-                            $actionName = $actionAco['Aco']['alias'];
-                            $acoId = $actionAco['Aco']['id'];
-
-                            if (isset($result[$acoId])) continue;
-
-                            if (in_array('*', $thisUsergroupAcos)) {
-                                $result[$acoId] = $controllerName . DS . $actionName;
-                                continue;
-                            }
-
-                            if (isset($thisUsergroupAcos[$controllerName]) && in_array($actionName, $thisUsergroupAcos[$controllerName])) {
-                                $result[$acoId] = $pluginName . DS . $controllerName . DS . $actionName;
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-        return $result;
-    }
-
-
-    /**
-     * Return an array with all aco ids that depend to an other aco, to remove them from the interface
-     * @param $acoDependencies
-     * @return array
-     */
-    public function getAcoDependencyIds($acoDependencies) {
-        $result = [];
-        foreach ($acoDependencies as $dependency) {
-            foreach (array_keys($dependency) as $acoId) {
-                $result[$acoId] = $acoId;
-            }
-        }
-        return $result;
-    }
-
-
-    public function getUsergroupAcosForAddEdit($acos) {
-        $alwaysAllowedAcos = $this->getAlwaysAllowedAcos($acos);
-        $acoDependencies = $this->getAcoDependencies($acos);
-        $dependentAcoIds = $this->getAcoDependencyIds($acoDependencies);
-
-        //   debug($acos);
-
-        function walkTree($acos, $alwaysAllowedAcos, $acoDependencies, $dependentAcoIds) {
-            foreach ($acos as $key => $aco) {
-                //debug($aco);
-                if (isset($alwaysAllowedAcos[$aco['Aco']['id']]) || isset($dependentAcoIds[$aco['Aco']['id']])) {
-                    debug($alwaysAllowedAcos[$aco['Aco']['id']]);
-                    debug($dependentAcoIds[$aco['Aco']['id']]);
-                    debug($aco);
-                    debug($key);
-                    //remove all always allowed acos and dependent aco ids from the array
-                    unset($acos[$key]);
-                }
-
-                if (!empty($aco['children'])) {
-                    walkTree($aco['children'], $alwaysAllowedAcos, $acoDependencies, $dependentAcoIds);
-                } else {
-                    return;
-                }
-            }
-        }
-
-
-        walkTree($acos, $alwaysAllowedAcos, $acoDependencies, $dependentAcoIds);
-        //debug($acos);
-
-
+        return $acosAsList;
     }
 }
