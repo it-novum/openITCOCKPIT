@@ -35,6 +35,7 @@ use Cake\Controller\ComponentRegistry;
 use Cake\Controller\Exception\SecurityException;
 use Cake\Http\ServerRequest;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class RequestPolicy implements RequestPolicyInterface {
 
@@ -50,6 +51,7 @@ class RequestPolicy implements RequestPolicyInterface {
         $action = $request->getParam('action');
         $plugin = $request->getParam('plugin'); //not used
 
+        //FileDebugger::dump(sprintf('Controller: %s | Action: %s | Plugin: %s', $controller, $action, $plugin));
 
         if ($identity === null) {
             //User is not logged in!
@@ -81,9 +83,13 @@ class RequestPolicy implements RequestPolicyInterface {
         }
 
         // Uncomment to disable ACL permission checks
-        // @todo comment me!
-         return true;
+        // return true;
 
+        if ($plugin !== null) {
+            return $Acl->check(['Usergroups' => ['id' => $usergroupId]], "$plugin/$controller/$action");
+        }
+
+        //Core request
         //dd($Acl->check(['Usergroups' => ['id' => $usergroupId]], "$controller/$action"));
         return $Acl->check(['Usergroups' => ['id' => $usergroupId]], "$controller/$action");
     }

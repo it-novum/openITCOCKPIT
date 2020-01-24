@@ -126,7 +126,7 @@ class AppController extends Controller {
      * @param bool $useLevel
      * @return bool
      */
-    public function allowedByContainerId($containerIds = [], $useLevel = true) {
+    protected function allowedByContainerId($containerIds = [], $useLevel = true) {
         if ($this->hasRootPrivileges === true) {
             return true;
         }
@@ -318,7 +318,7 @@ class AppController extends Controller {
         return $this->Authentication->getIdentity();
     }
 
-    public function render403($options = []) {
+    protected function render403($options = []) {
         $_options = [
             'headline' => __('Permission denied'),
             'error'    => __('You are not permitted to access this object'),

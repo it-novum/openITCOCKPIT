@@ -41,6 +41,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
@@ -134,7 +135,7 @@ class UsergroupsController extends AppController {
         /** @var ArosTable $ArosTable */
         $ArosTable = TableRegistry::getTableLocator()->get('Acl.Aros');
         /** @var Table $ArosAcos */
-        $ArosAcos = TableRegistry::getTableLocator()->get('ArosAcos');
+        //$ArosAcos = TableRegistry::getTableLocator()->get('ArosAcos');
         $aro = $ArosTable->find()
             ->where([
                 'Aros.foreign_key' => $usergroup->get('id')
@@ -248,7 +249,7 @@ class UsergroupsController extends AppController {
                 ->where([
                     'Aros.foreign_key' => $usergroup->get('id')
                 ])
-                ->first();
+                ->firstOrFail();
 
             //Drop old permissions
             $ArosAcosTable->deleteAll([
