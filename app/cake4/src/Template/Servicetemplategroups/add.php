@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="ServicetemplategroupsIndex">
-            <i class="fafa-pencil-square-o"></i> <?php echo __('Service template group'); ?>
+            <i class="fa fa-pencil-square-o"></i> <?php echo __('Service template group'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -49,7 +49,8 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'servicetemplategroups')): ?>
-                        <a back-button fallback-state='ServicetemplategroupsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button fallback-state='ServicetemplategroupsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
