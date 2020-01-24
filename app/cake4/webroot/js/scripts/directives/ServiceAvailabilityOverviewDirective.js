@@ -13,6 +13,7 @@ angular.module('openITCOCKPIT').directive('serviceAvailabilityOverview', functio
                     $scope.color = AvailabilityColorCalculationService.getBackgroundColor(
                         $scope.data.pieChartData.availability
                     );
+                    $scope.color = 'linear-gradient(90deg, '+$scope.color+' 30%, rgba(76, 79, 83, 0.9) 40%)';
                 }
 
                 var chart = new Chart('servicePieChart-' + $scope.data.Service.id, {
@@ -20,10 +21,12 @@ angular.module('openITCOCKPIT').directive('serviceAvailabilityOverview', functio
                     data: {
                         labels: $scope.data.pieChartData.labels,
                         datasets: [{
-                            backgroundColor: ['#449D44',
+                            backgroundColor: [
+                                '#449D44',
                                 '#DF8F1D',
                                 '#C9302C',
-                                '#92A2A8'],
+                                '#92A2A8'
+                            ],
                             data: $scope.data.pieChartData.data,
                             datalabels: {
                                 display: false //<---- values in chart

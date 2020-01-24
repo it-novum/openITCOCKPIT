@@ -48,6 +48,7 @@ use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
 use itnovum\openITCOCKPIT\Core\Reports\DowntimesMerger;
 use itnovum\openITCOCKPIT\Core\Reports\StatehistoryConverter;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
@@ -59,7 +60,6 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
 use Statusengine2Module\Model\Entity\DowntimeHost;
-use Statusengine2Module\Model\Entity\Servicestatus;
 use Statusengine2Module\Model\Table\StatehistoryHostsTable;
 use Statusengine2Module\Model\Table\StatehistoryServicesTable;
 
@@ -369,7 +369,6 @@ class InstantreportsController extends AppController {
 
         $instantReportObjects['Hosts'] = Hash::sort($instantReportObjects['Hosts'], '{n}.name', 'ASC');
         foreach ($instantReportObjects['Hosts'] as $hostId => $instantReportHostData) {
-            //FileDebugger::dump('Host: ---> ' . $instantReportHostData['name']);
             if ($instantReport->get('downtimes') === 1) {
                 $DowntimeHostConditions = new DowntimeHostConditions();
                 $DowntimeHostConditions->setFrom($fromDate);
@@ -433,7 +432,7 @@ class InstantreportsController extends AppController {
             //Process conditions
             /** @var $StatehistoryHostConditions StatehistoryHostConditions */
             $StatehistoryHostConditions = new StatehistoryHostConditions();
-            $StatehistoryHostConditions->setOrder(['StatehistoryHosts.state_time' => 'desc']);
+            $StatehistoryHostConditions->setOrder(['StatehistoryHosts.state_time' => 'asc']);
             if ($instantReport->get('reflection') === 2) { // type 2 hard state only
                 $StatehistoryHostConditions->setHardStateTypeAndUpState(true); // 1 => Hard State
             }
@@ -486,12 +485,12 @@ class InstantreportsController extends AppController {
 
             foreach ($statehistoriesHost as $statehistoryHost) {
                 /** @var StatehistoryHostsTable|StatehistoryHost $statehistoryHost */
-                $StatehistoryHost = new StatehistoryHost($statehistoryHost->toArray(), $UserTime);
+                $StatehistoryHost = new StatehistoryHost($statehistoryHost->toArray());
                 $allStatehistories[] = $StatehistoryHost->toArray();
             }
 
             $hostUuid = $instantReportHostData['uuid'];
-            //FileDebugger::dump($instantReportHostData);
+
             $reportData[$hostUuid]['Host'] = [
                 'id'   => $instantReportHostData['id'],
                 'name' => $instantReportHostData['name']
@@ -503,6 +502,13 @@ class InstantreportsController extends AppController {
                 true,
                 $totalTime
             );
+
+            $reportData[$hostUuid]['Host']['reportData']['percentage'] = StatehistoryConverter::getPercentageValues(
+                $reportData[$hostUuid]['Host']['reportData'],
+                $totalTime,
+                true
+            );
+
             if (!empty($instantReportHostData['Services'])) {
                 $instantReportHostData['Services'] = Hash::sort($instantReportHostData['Services'], '{n}.name', 'ASC');
                 foreach ($instantReportHostData['Services'] as $serviceId => $service) {
@@ -570,7 +576,7 @@ class InstantreportsController extends AppController {
 
                     /** @var $StatehistoryServiceConditions StatehistoryServiceConditions */
                     $StatehistoryServiceConditions = new StatehistoryServiceConditions();
-                    $StatehistoryServiceConditions->setOrder(['StatehistoryServices.state_time' => 'desc']);
+                    $StatehistoryServiceConditions->setOrder(['StatehistoryServices.state_time' => 'asc']);
                     if ($instantReport->get('reflection') === 2) { // type 2 hard state only
                         $StatehistoryServiceConditions->setHardStateTypeAndOkState(true); // 1 => Hard State !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     }
@@ -591,39 +597,35 @@ class InstantreportsController extends AppController {
                         }
                     }
 
-                    if (empty($statehistoriesService)) {
-                        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
-                        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-                        $ServicestatusFields
-                            ->currentState()
-                            ->lastHardState()
-                            ->isHardstate()
-                            ->lastStateChange();
-                        $servicestatus = $ServicestatusTable->byUuid($serviceUuid, $ServicestatusFields);
-                        if (!empty($servicestatus)) {
-                            /** @var Servicestatus $Servicestatus */
-                            $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
-                            if ($Servicestatus->getLastStateChange() <= $fromDate) {
-                                $stateHistoryServiceTmp = [
-                                    'StatehistoryService' => [
-                                        'state_time'      => $fromDate,
-                                        'state'           => $Servicestatus->currentState(),
-                                        'last_state'      => $Servicestatus->currentState(),
-                                        'last_hard_state' => $Servicestatus->getLastHardState(),
-                                        'state_type'      => (int)$Servicestatus->isHardState()
-                                    ]
-                                ];
+                    $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+                    $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+                    $ServicestatusFields
+                        ->currentState()
+                        ->lastHardState()
+                        ->isHardstate()
+                        ->lastStateChange();
+                    $servicestatus = $ServicestatusTable->byUuid($serviceUuid, $ServicestatusFields);
+                    if (!empty($servicestatus)) {
+                        $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus']);
+                        if ($Servicestatus->getLastStateChange() <= $fromDate) {
+                            $stateHistoryServiceTmp = [
+                                'StatehistoryService' => [
+                                    'state_time'      => $fromDate,
+                                    'state'           => $Servicestatus->currentState(),
+                                    'last_state'      => $Servicestatus->currentState(),
+                                    'last_hard_state' => $Servicestatus->getLastHardState(),
+                                    'state_type'      => (int)$Servicestatus->isHardState()
+                                ]
+                            ];
 
-                                /** @var StatehistoryService $StatehistoryService */
-                                $StatehistoryService = new StatehistoryService($stateHistoryServiceTmp['StatehistoryService']);
-                                $statehistoriesService[] = $StatehistoryService;
-                            }
+                            $StateHistoryService = new StatehistoryService($stateHistoryServiceTmp['StatehistoryService']);
+                            $statehistoriesService[] = $StateHistoryService;
                         }
                     }
 
                     foreach ($statehistoriesService as $statehistoryService) {
                         /** @var StatehistoryServicesTable|StatehistoryService $statehistoryService */
-                        $StatehistoryService = new StatehistoryService($statehistoryService->toArray(), $UserTime);
+                        $StatehistoryService = new StatehistoryService($statehistoryService->toArray());
                         $allStatehistories[] = $StatehistoryService->toArray();
                     }
 
@@ -633,8 +635,12 @@ class InstantreportsController extends AppController {
                         $timeSlices,
                         $allStatehistories,
                         ($instantReport->get('reflection') === 2),
-                        false,
-                        $totalTime
+                        false
+                    );
+                    $reportData[$hostUuid]['Host']['Services'][$serviceUuid]['Service']['reportData']['percentage'] = StatehistoryConverter::getPercentageValues(
+                        $reportData[$hostUuid]['Host']['Services'][$serviceUuid]['Service']['reportData'],
+                        $totalTime,
+                        false
                     );
                 }
             }

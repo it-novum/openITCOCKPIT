@@ -253,14 +253,17 @@
         var lwh = findWH(legendLabel);
         legendLabel.style.display = 'block';
         lwh.height = lwh.height - 1;
-        var legendColor = Raphael(legendLabel, lwh.height, lwh.height);
         if(opts.legendMarker == "square"){
-            legendColor.rect(0, 0, lwh.height, lwh.height).attr(
+            var legendColor = Raphael(legendLabel, 15, 15);
+
+            legendColor.rect(0, 0, 15, 15).attr(
                 {
                     stroke: "none",
                     fill: "180-" + opts.darkColors[sliceIndex] + "-" + opts.lightColors[sliceIndex]
                 });
         }else{
+            var legendColor = Raphael(legendLabel, lwh.height, lwh.height);
+
             legendColor.circle(lwh.height / 2, lwh.height / 2, lwh.height / 2).attr(
                 {
                     stroke: "none",

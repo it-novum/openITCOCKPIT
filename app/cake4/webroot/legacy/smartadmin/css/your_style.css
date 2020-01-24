@@ -1139,6 +1139,10 @@ rect.unknown {
     margin: 1px 0px;
 }
 
+.downtime-report-service-widget {
+    border-radius: 12px 2px 2px 58px;
+}
+
 .search_list_item_active {
     background-color: rgba(69, 69, 69, 0.8);
     color: #ffffff;
@@ -2816,6 +2820,12 @@ fc-left .dropdown {
     margin: 0;
     overflow: hidden;
     padding: 3px 0px;
+    display: -webkit-flex;
+}
+
+.barchart-legend-container ul li{
+    -webkit-flex: 1 0 0px;
+    overflow: hidden;
 }
 
 .barchart-legend-label {

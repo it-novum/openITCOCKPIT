@@ -28,7 +28,7 @@ angular.module('openITCOCKPIT').directive('serviceAvailabilityBarChart', functio
                         legend: true,
                         show3d: true,
                         legendShowValues: false,
-                        legendContainerCssClass: "barchart-legend-container",
+                        legendContainerCssClass: "barchart-legend-container col-lg-6 col-md-6 col-sm-12 col-xs-12",
                         legendLabelCssClass: "barchart-legend-label",
                         legendMarker: "square",
                         size3d: 6

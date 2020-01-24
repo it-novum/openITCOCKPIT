@@ -138,7 +138,7 @@
                         <?php echo __('Analysis period: '); ?>
                         {{reportDetails.from}}
                         <i class="fa fa-long-arrow-right"></i>
-                        {{reportDetails.from}}
+                        {{reportDetails.to}}
                     </div>
                     <div class="col-md-3 text-left">
 
@@ -178,7 +178,7 @@
                                             <?php endif; ?>
                                         </div>
                                         <div class="col col-md-12 no-padding">
-                                            <div class="col col-md-3 col-xs-12 no-padding">
+                                            <div class="col col-lg-3 col-md-12 col-sm-12 col-xs-12 no-padding">
                                                 <service-availability-bar-chart
                                                     data="service.Service"></service-availability-bar-chart>
                                             </div>

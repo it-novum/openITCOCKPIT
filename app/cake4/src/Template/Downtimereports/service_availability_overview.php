@@ -1,7 +1,7 @@
-<div class="col-xs-12 col-md-6 col-lg-3 padding-2">
-    <div class="col col-md-12 padding-2"
+<div class="col-xs-12 col-md-6 col-lg-3 padding-2" >
+    <div class="col col-md-12 padding-2 downtime-report-service-widget"
          ng-style="{'background': color}">
-        <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
+        <div class="col col-xs-4 col-md-4 col-lg-4 no-padding" >
             <canvas id="servicePieChart-{{data.Service.id}}"></canvas>
         </div>
         <div class="col col-xs-8 col-md-8 col-lg-8 no-padding font-sm">

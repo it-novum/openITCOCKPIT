@@ -183,14 +183,13 @@ abstract class Statehistory {
      * @return mixed
      */
     public function getStateTime() {
-        if(!is_numeric($this->state_time)){
-            if($this->state_time instanceof FrozenTime){
-                $this->start_time = $this->state_time->timestamp;
-            }else{
-                $this->start_time = strtotime($this->state_time);
+        if (!is_numeric($this->state_time)) {
+            if ($this->state_time instanceof FrozenTime) {
+                $this->state_time = $this->state_time->timestamp;
+            } else {
+                $this->state_time = strtotime($this->state_time);
             }
         }
-
         return $this->state_time;
     }
 
@@ -209,13 +208,11 @@ abstract class Statehistory {
         if (isset($arr['UserTime'])) {
             unset($arr['UserTime']);
         }
-
         if ($this->UserTime !== null) {
             $arr['state_time'] = $this->UserTime->format($this->getStateTime());
         } else {
             $arr['state_time'] = $this->getStateTime();
         }
-
         return $arr;
     }
 
