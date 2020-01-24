@@ -33,12 +33,12 @@ class StatusmapFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'like' => [
-                'Host.name',
-                'Host.address'
+                'Hosts.name',
+                'Hosts.address'
             ],
 
             'equals' => [
-                'Host.satellite_id'
+                'Hosts.satellite_id'
             ]
         ];
 

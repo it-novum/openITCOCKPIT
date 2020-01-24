@@ -1480,10 +1480,10 @@ class HostsTable extends Table {
                 'Hosts.id' => $id
             ])
             ->contain([
-                'Contactgroups' => [
+                'Contactgroups'             => [
                     'Containers'
                 ],
-                'Contacts' => [
+                'Contacts'                  => [
                     'Containers'
                 ],
                 'Hostgroups',
@@ -2691,5 +2691,103 @@ class HostsTable extends Table {
             $hostStateSummary['total']++;
         }
         return $hostStateSummary;
+    }
+
+    /**
+     * @return array
+     */
+    public function parentHostsWithChildIds() {
+        $query = $this->find()
+            ->join([
+                [
+                    'table'      => 'hosts_to_parenthosts',
+                    'alias'      => 'Parenthosts',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Hosts.id = Parenthosts.parenthost_id',
+                    ],
+                ],
+                [
+                    'table'      => 'hosts',
+                    'alias'      => 'HostToParenthostParent',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Parenthosts.parenthost_id = HostToParenthostParent.id',
+                    ],
+                ],
+                [
+                    'table'      => 'hosts',
+                    'alias'      => 'HostToParenthostChild',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Parenthosts.host_id = HostToParenthostChild.id',
+                    ],
+                ]
+            ])
+            ->select([
+                'HostToParenthostChild.id',
+                'HostToParenthostParent.id'
+            ])
+            ->disableHydration()
+            ->all();
+
+        if (empty($query)) {
+            return [];
+        }
+        return $query->toArray();
+    }
+
+    public function getHostsForStatusmaps($conditions = [], $containerIds = [], $allHostIds = [], $count = false, $limit = null, $offset = null) {
+        $query = $this->find()
+            ->contain([
+                'Parenthosts' => function (Query $q) {
+                    return $q->select([
+                        'Parenthosts.id'
+                    ]);
+                }
+            ])
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.name',
+                'Hosts.description',
+                'Hosts.address',
+                'Hosts.disabled',
+                'Hosts.satellite_id',
+            ]);
+
+        if (!empty($containerIds)) {
+            $query->contain([
+                'HostsToContainersSharing'
+            ])->where([
+                'HostsToContainers.container_id IN' => $containerIds
+            ])->group([
+                'Host.id'
+            ]);
+        }
+        if (!empty($allHostIds)) {
+            $query->where([
+                'Hosts.id IN' => $allHostIds
+            ]);
+        }
+        if (!empty($conditions)) {
+            $query->where($conditions);
+        }
+        if($limit !== null){
+            $query->limit($limit);
+        }
+        if($offset !== null){
+            $query->offset($offset);
+        }
+        $query->disableHydration()->all();
+
+        if($count === true){
+            return $query->count();
+        }
+
+        if (empty($query)) {
+            return [];
+        }
+        return $query->toArray();
     }
 }

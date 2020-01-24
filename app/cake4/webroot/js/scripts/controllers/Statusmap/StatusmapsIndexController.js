@@ -4,9 +4,9 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         $scope.clearFilter = function(){
             $scope.filter = {
-                Host: {
-                    name: QueryStringService.getValue('filter[Host.name]', ''),
-                    address: QueryStringService.getValue('filter[Host.address]', ''),
+                Hosts: {
+                    name: QueryStringService.getValue('filter[Hosts.name]', ''),
+                    address: QueryStringService.getValue('filter[Hosts.address]', ''),
                     satellite_id: '0'
                 },
                 showAll: false
@@ -42,9 +42,9 @@ angular.module('openITCOCKPIT')
             $scope.isEmpty = false;
             var params = {
                 'angular': true,
-                'filter[Host.name]': $scope.filter.Host.name,
-                'filter[Host.address]': $scope.filter.Host.address,
-                'filter[Host.satellite_id]': $scope.filter.Host.satellite_id,
+                'filter[Hosts.name]': $scope.filter.Hosts.name,
+                'filter[Hosts.address]': $scope.filter.Hosts.address,
+                'filter[Hosts.satellite_id]': $scope.filter.Hosts.satellite_id,
                 'showAll': $scope.filter.showAll
             };
             $http.get("/statusmaps/index.json", {
@@ -312,7 +312,7 @@ angular.module('openITCOCKPIT')
                     var bigBoxIcon = $scope.getIconForHoststatus(results[0].data.hoststatus.Hoststatus);
                     var title = node.title;
                     if($scope.hasBrowserRight){
-                        title = '<a href="/hosts/browser/' + node.hostId
+                        title = '<a href="/#!/hosts/browser/' + node.hostId
                             + '" target="_blank" class="txt-color-white">' + node.title + '</a>';
                     }
                     $.bigBox({

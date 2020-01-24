@@ -32,8 +32,6 @@
  *      |__/
 */
 
-use itnovum\openITCOCKPIT\Core\RFCRouter;
-
 ?>
 <style>
 
@@ -107,97 +105,65 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
     <tr>
         <td></td>
         <?php
-        $stateLabelColors = [
-            'label-success',
-            'label-warning',
-            'label-danger',
-            'label-default',
-        ];
-
         $additionalFilters = [
             'acknowledged' => ['has_been_acknowledged' => 1],
             'in_downtime'  => ['in_downtime' => 1],
             'not_handled'  => ['has_not_been_acknowledged' => 1],
             'passive'      => ['passive' => 1]
         ];
-        foreach ([0, 1, 2, 3] as $serviceState):?>
-            <th class="text-center font-xs">
-                <?php
-                printf(
-                    '<div class="label label-table %s">%s</div>',
-                    $stateLabelColors[$serviceState],
-                    strtolower($this->Status->humanSimpleServiceStatus($serviceState))
-                );
-                ?>
-            </th>
-        <?php
-        endforeach;
         ?>
+
+        <th class="text-center font-xs">
+            <div class="label label-table label-success"><? __('ok'); ?></div>
+        </th>
+        <th class="text-center font-xs">
+            <div class="label label-table label-warning"><? __('warning'); ?></div>
+        </th>
+        <th class="text-center font-xs">
+            <div class="label label-table label-danger"><? __('critical'); ?></div>
+        </th>
+        <th class="text-center font-xs">
+            <div class="label label-table label-default"><? __('unknown'); ?></div>
+        </th>
     </tr>
-    <?php
-    foreach ($serviceStateSummary as $key => $valueArray):?>
-        <tr class="font-xs">
+
+        <tr class="font-xs" ng-repeat="(key, obj) in serviceStateSummary">
             <?php
-            if ($key !== 'total'):
-                $additionalFilter = (in_array($key, array_keys($additionalFilters), true)) ? $additionalFilters[$key] : null;
-                ?>
-                <th><?php echo str_replace('_', ' ', $key); ?></th>
-                <?php
-                foreach ($valueArray as $state => $count):
-                    $routerParam = [];
-                    ?>
-                    <td class="text-center"><?php
-                        if ($count > 0) :
-                            $filterArray['Host.id'] = $hostId;
-                            $filterArray['Servicestatus.current_state'] = [
-                                $state => 1
-                            ];
-                            $routerParam['filter'] = $filterArray;
-                            $routerParam['sort'] = 'Servicestatus.last_state_change';
-                            $routerParam['direction'] = 'desc';
-                            if ($additionalFilter !== null):
-                                foreach ($additionalFilter as $filterKey => $filterValue):
-                                    $routerParam[$filterKey] = $filterValue;
-                                endforeach;
-                            endif;
-                            if ($this->Acl->hasPermission('index', 'services')): ?>
-                                <a href="/services/index<?php echo RFCRouter::queryString($routerParam); ?>"
-                                   target="_blank">
-                                    <?php
-                                    printf(
-                                        '%s (%.0f%%)',
-                                        $count,
-                                        ($count / $serviceStateSummary['total'] * 100)
-                                    );
-                                    ?>
-                                </a>
-                            <?php
-                            else:
-                                printf(
-                                    '%s (%.0f%%)',
-                                    $count,
-                                    ($count / $serviceStateSummary['total'] * 100)
-                                );
-                            endif;
-                        else:
-                            echo '---';
-                        endif;
-                        ?></td>
-                <?php
-                endforeach;
-            else:?>
-                <th colspan="5" class="text-right th-border-top">
-                    <?php
-                    printf('%s: %s',
-                        strtoupper($key),
-                        $serviceStateSummary['total']
-                    ); ?>
-                </th>
-            <?php
-            endif;
+            $additionalFilter = null;
+            if(in_array($key, array_keys($additionalFilters), true)){
+                $additionalFilter = $additionalFilters[$key];
+            }
+
             ?>
+                <th ng-if="key == 'state'" ng-repeat-start="(state, stateCount) in obj.state">{{state}}</th>
+                <td ng-if="key == 'state'" ng-repeat-end="" class="text-center">
+
+                    <div ng-if="stateCount > 0">
+                        <?php
+                        //$filterArray['Hosts.id'] = $hostId;
+
+                        if ($this->Acl->hasPermission('index', 'services')): ?>
+                            <a ui-sref="ServicesIndex({servicestate: [{{state}}], sort: 'Servicestatus.last_state_change', direction: 'desc'})"
+                               target="_blank">
+                                {{stateCount}}&nbsp;
+                                ({{stateCount/serviceStateSummary.total*100}})
+                            </a>
+                        <?php
+                        else: ?>
+                            {{stateCount}}&nbsp;
+                            ({{stateCount/serviceStateSummary.total*100}})
+                        <?php endif; ?>
+                    </div>
+                    <div ng-if="stateCount <= 0">
+                        ---
+                    </div>
+
+                </td>
+
+                <th ng-if="key == 'total'" colspan="5" class="text-right th-border-top">
+                    <? __('TOTAL:'); ?>&nbsp;{{obj}}
+                </th>
+
         </tr>
-    <?php
-    endforeach;
-    ?>
+
 </table>

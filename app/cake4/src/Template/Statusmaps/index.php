@@ -47,12 +47,14 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
                 data-placeholder="<?php echo __('Filter by instance'); ?>"
                 class="form-control"
                 chosen="{}"
-                ng-model="filter.Host.satellite_id"
+                ng-model="filter.Hosts.satellite_id"
                 ng-model-options="{debounce: 500}">
             <?php
-            foreach ($satellites as $satelliteId => $satelliteName):
-                printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
-            endforeach;
+            if(isset($satellites) && !empty($satellites)):
+                foreach ($satellites as $satelliteId => $satelliteName):
+                    printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
+                endforeach;
+            endif;
             ?>
         </select>
     </div>
@@ -91,7 +93,7 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
                     <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                         <input type="text" class="input-sm"
                                placeholder="<?php echo __('Filter by IP address'); ?>"
-                               ng-model="filter.Host.address"
+                               ng-model="filter.Hosts.address"
                                ng-model-options="{debounce: 500}">
                     </label>
                 </div>
@@ -101,7 +103,7 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
                     <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
                         <input type="text" class="input-sm"
                                placeholder="<?php echo __('Filter by host name'); ?>"
-                               ng-model="filter.Host.name"
+                               ng-model="filter.Hosts.name"
                                ng-model-options="{debounce: 500}">
                     </label>
                 </div>
