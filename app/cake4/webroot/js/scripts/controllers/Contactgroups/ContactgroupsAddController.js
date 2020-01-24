@@ -10,7 +10,8 @@ angular.module('openITCOCKPIT')
                 Contactgroup: {
                     description: '',
                     container: {
-                        parent_id: null
+                        parent_id: null,
+                        name: null
                     },
                     contacts: {
                         _ids: []
