@@ -1,29 +1,40 @@
 <?php
-/**
- * Statusengine Worker
- * Copyright (C) 2016-2020  Daniel Ziegler
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Copyright (C) <2018>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, version 3 of the License.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// 2.
+//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//  License agreement and license key will be shipped with the order
+//  confirmation.
 
 namespace App\Lib;
 
 
+use App\itnovum\openITCOCKPIT\Core\Permissions\DefaultRolePermissionsInterface;
+use Cake\Utility\Hash;
+
 class DefaultRolePermissions {
 
+    /**
+     * @return array
+     */
     public static function getDefaultRolePermissions() {
-        return [
+        $default = [
             'Viewer' => [
                 'Acknowledgements'      => ['service', 'host'],
                 'Administrators'        => ['index'],
@@ -72,6 +83,22 @@ class DefaultRolePermissions {
                 'Instantreports'        => ['index', 'sendEmailsList']
             ]
         ];
+
+        //Load defaults defined by plugins
+        foreach (PluginManager::getAvailablePlugins() as $pluginName) {
+            $className = sprintf('\%s\Lib\DefaultRolePermissions', $pluginName);
+            if (class_exists($className)) {
+                /** @var DefaultRolePermissionsInterface $PluginDefaultRolePermissions */
+                $PluginDefaultRolePermissions = new $className();
+
+                foreach ($PluginDefaultRolePermissions->getDefaultRolePermissions() as $usergroupName => $actions) {
+                    $default[$usergroupName][$pluginName] = $actions;
+                }
+
+            }
+        }
+
+        return $default;
     }
 
 }

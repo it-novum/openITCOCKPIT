@@ -66,7 +66,7 @@ class RolesCommand extends Command {
         $parser = parent::buildOptionParser($parser);
 
         $parser->addOptions([
-            'admin'    => ['help' => 'Restore all default user role permissions for "Administrator" role', 'boolean' => true, 'default' => false],
+            'admin'           => ['help' => 'Restore all default user role permissions for "Administrator" role', 'boolean' => true, 'default' => false],
             'enable-defaults' => ['help' => 'Re-Enables all default permissions of pre defined user groups (Viewer) and keeps custom changes. (Excluding "Administrator")', 'boolean' => true, 'default' => false],
         ]);
 
@@ -436,11 +436,26 @@ class RolesCommand extends Command {
             }
 
             // Re-Enable all Acos that are defined in this user role
-            foreach($userrole as $controllerName => $actions){
-                foreach($actions as $actionName){
-                    if(isset($allAcosList[$controllerName.'/'.$actionName])){
-                        $acoId = $allAcosList[$controllerName.'/'.$actionName];
-                        $selectedAcos[$acoId] = 1;
+            foreach ($userrole as $controllerName => $actions) {
+                if (substr($controllerName, -6) === 'Module') {
+                    $pluginName = $controllerName;
+                    $pluginConrollers = $actions;
+                    foreach ($pluginConrollers as $pluginControllerName => $pluginActions) {
+                        foreach ($pluginActions as $pluginAction) {
+                            if (isset($allAcosList[$pluginName . '/' . $pluginControllerName . '/' . $pluginAction])) {
+                                $acoId = $allAcosList[$pluginName . '/' . $pluginControllerName . '/' . $pluginAction];
+                                $selectedAcos[$acoId] = 1;
+                            }
+                        }
+                    }
+
+                } else {
+                    //Core
+                    foreach ($actions as $actionName) {
+                        if (isset($allAcosList[$controllerName . '/' . $actionName])) {
+                            $acoId = $allAcosList[$controllerName . '/' . $actionName];
+                            $selectedAcos[$acoId] = 1;
+                        }
                     }
                 }
             }
