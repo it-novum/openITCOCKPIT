@@ -141,23 +141,19 @@
                                 <div class="btn-group btn-group-justified" role="group"
                                      ng-show="summaryState.ServiceSummary.total > 0">
                                     <a class="btn btn-success state-button-small font-sm"
-                                       ng-init="linkServiceOk=getObjectsHref('service', summaryState.ServiceIdsGroupByState[0])"
-                                       ng-href="{{ linkServiceOk }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[0]})">
                                         {{summaryState.ServiceSummary.state[0]}}
                                     </a>
                                     <a class="btn btn-warning state-button-small font-sm"
-                                       ng-init="linkServiceWarning=getObjectsHref('service', summaryState.ServiceIdsGroupByState[1])"
-                                       ng-href="{{ linkServiceWarning }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[1]})">
                                         {{summaryState.ServiceSummary.state[1]}}
                                     </a>
                                     <a class="btn btn-danger state-button-small font-sm"
-                                       ng-init="linkServiceCritical=getObjectsHref('service', summaryState.ServiceIdsGroupByState[2])"
-                                       ng-href="{{ linkServiceCritical }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[2]})">
                                         {{summaryState.ServiceSummary.state[2]}}
                                     </a>
                                     <a class="btn btn-default state-button-small font-sm"
-                                       ng-init="linkServiceUnknown=getObjectsHref('service', summaryState.ServiceIdsGroupByState[3])"
-                                       ng-href="{{ linkServiceUnknown }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[3]})">
                                         {{summaryState.ServiceSummary.state[3]}}
                                     </a>
                                 </div>
@@ -395,18 +391,15 @@
                             <div class="col-md-8 no-padding">
                                 <div class="btn-group btn-group-justified" role="group">
                                     <a class="btn btn-success state-button-small font-sm"
-                                       ng-init="linkHostUp=getObjectsHref('host', summaryState.HostIdsGroupByState[0])"
-                                       ng-href="{{ linkHostUp }}">
+                                       ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[0]})">
                                         {{summaryState.Hostgroup.HostSummary.state[0]}}
                                     </a>
                                     <a class="btn btn-danger state-button-small font-sm"
-                                       ng-init="linkHostDown=getObjectsHref('host', summaryState.HostIdsGroupByState[1])"
-                                       ng-href="{{ linkHostDown }}">
+                                       ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[1]})">
                                         {{summaryState.Hostgroup.HostSummary.state[1]}}
                                     </a>
                                     <a class="btn btn-default state-button-small font-sm"
-                                       ng-init="linkHostUnreachable=getObjectsHref('host', summaryState.HostIdsGroupByState[2])"
-                                       ng-href="{{ linkHostUnreachable }}">
+                                       ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[2]})">
                                         {{summaryState.Hostgroup.HostSummary.state[2]}}
                                     </a>
                                 </div>
@@ -419,23 +412,19 @@
                             <div class="col-md-8 no-padding">
                                 <div class="btn-group btn-group-justified" role="group">
                                     <a class="btn btn-success state-button-small font-sm"
-                                       ng-init="linkServiceOk=getObjectsHref('service', summaryState.ServiceIdsGroupByState[0])"
-                                       ng-href="{{ linkServiceOk }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[0]})">
                                         {{summaryState.Hostgroup.TotalServiceSummary.state[0]}}
                                     </a>
                                     <a class="btn btn-warning state-button-small font-sm"
-                                       ng-init="linkServiceWarning=getObjectsHref('service', summaryState.ServiceIdsGroupByState[1])"
-                                       ng-href="{{ linkServiceWarning }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[1]})">
                                         {{summaryState.Hostgroup.TotalServiceSummary.state[1]}}
                                     </a>
                                     <a class="btn btn-danger state-button-small font-sm"
-                                       ng-init="linkServiceCritical=getObjectsHref('service', summaryState.ServiceIdsGroupByState[2])"
-                                       ng-href="{{ linkServiceCritical }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[2]})">
                                         {{summaryState.Hostgroup.TotalServiceSummary.state[2]}}
                                     </a>
                                     <a class="btn btn-default state-button-small font-sm"
-                                       ng-init="linkServiceUnreachable=getObjectsHref('service', summaryState.ServiceIdsGroupByState[3])"
-                                       ng-href="{{ linkServiceUnreachable }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[3]})">
                                         {{summaryState.Hostgroup.TotalServiceSummary.state[3]}}
                                     </a>
                                 </div>
@@ -464,23 +453,19 @@
                             <div class="col-md-4 padding-right-0">
                                 <div class="btn-group btn-group-justified" role="group">
                                     <a class="btn btn-success state-button-small font-sm"
-                                       ng-init="linkServiceOk=getObjectsHref('service', host.ServiceIdsGroupByState[0])"
-                                       ng-href="{{ linkServiceOk }}">
+                                       ui-sref="ServicesIndex({id: host.ServiceIdsGroupByState[0]})">
                                         {{host.ServiceSummary.state[0]}}
                                     </a>
                                     <a class="btn btn-warning state-button-small font-sm"
-                                       ng-init="linkServiceWarning=getObjectsHref('service', host.ServiceIdsGroupByState[1])"
-                                       ng-href="{{ linkServiceWarning }}">
+                                       ui-sref="ServicesIndex({id: host.ServiceIdsGroupByState[1]})">
                                         {{host.ServiceSummary.state[1]}}
                                     </a>
                                     <a class="btn btn-danger state-button-small font-sm"
-                                       ng-init="linkServiceCritical=getObjectsHref('service', host.ServiceIdsGroupByState[2])"
-                                       ng-href="{{ linkServiceCritical }}">
+                                       ui-sref="ServicesIndex({id: host.ServiceIdsGroupByState[2]})">
                                         {{host.ServiceSummary.state[2]}}
                                     </a>
                                     <a class="btn btn-default state-button-small font-sm"
-                                       ng-init="linkServiceUnknown=getObjectsHref('service', host.ServiceIdsGroupByState[3])"
-                                       ng-href="{{ linkServiceUnknown }}">
+                                       ui-sref="ServicesIndex({id: host.ServiceIdsGroupByState[3]})">
                                         {{host.ServiceSummary.state[3]}}
                                     </a>
                                 </div>
@@ -552,23 +537,19 @@
                             <div class="col-md-8 no-padding">
                                 <div class="btn-group btn-group-justified" role="group">
                                     <a class="btn btn-success state-button-small font-sm"
-                                       ng-init="linkServiceOk=getObjectsHref('service', summaryState.ServiceIdsGroupByState[0])"
-                                       ng-href="{{ linkServiceOk }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[0]})">
                                         {{summaryState.ServiceSummary.state[0]}}
                                     </a>
                                     <a class="btn btn-warning state-button-small font-sm"
-                                       ng-init="linkServiceWarning=getObjectsHref('service', summaryState.ServiceIdsGroupByState[1])"
-                                       ng-href="{{ linkServiceWarning }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[1]})">
                                         {{summaryState.ServiceSummary.state[1]}}
                                     </a>
                                     <a class="btn btn-danger state-button-small font-sm"
-                                       ng-init="linkServiceCritical=getObjectsHref('service', summaryState.ServiceIdsGroupByState[2])"
-                                       ng-href="{{ linkServiceCritical }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[2]})">
                                         {{summaryState.ServiceSummary.state[2]}}
                                     </a>
                                     <a class="btn btn-default state-button-small font-sm"
-                                       ng-init="linkServiceUnknown=getObjectsHref('service', summaryState.ServiceIdsGroupByState[3])"
-                                       ng-href="{{ linkServiceUnknown }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[3]})">
                                         {{summaryState.ServiceSummary.state[3]}}
                                     </a>
                                 </div>
@@ -680,18 +661,15 @@
                             <div class="col-md-8 no-padding">
                                 <div class="btn-group btn-group-justified" role="group">
                                     <a class="btn btn-success state-button-small font-sm"
-                                       ng-init="linkHostUp=getObjectsHref('host', summaryState.HostIdsGroupByState[0])"
-                                       ng-href="{{ linkHostUp }}">
+                                       ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[0]})">
                                         {{summaryState.HostSummary.state[0]}}
                                     </a>
                                     <a class="btn btn-danger state-button-small font-sm"
-                                       ng-init="linkHostDown=getObjectsHref('host', summaryState.HostIdsGroupByState[1])"
-                                       ng-href="{{ linkHostDown }}">
+                                       ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[1]})">
                                         {{summaryState.HostSummary.state[1]}}
                                     </a>
                                     <a class="btn btn-default state-button-small font-sm"
-                                       ng-init="linkHostUnreachable=getObjectsHref('host', summaryState.HostIdsGroupByState[2])"
-                                       ng-href="{{ linkHostUnreachable }}">
+                                       ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[2]})">
                                         {{summaryState.HostSummary.state[2]}}
                                     </a>
                                 </div>
@@ -704,23 +682,19 @@
                             <div class="col-md-8 no-padding">
                                 <div class="btn-group btn-group-justified" role="group">
                                     <a class="btn btn-success state-button-small font-sm"
-                                       ng-init="linkServiceOk=getObjectsHref('service', summaryState.ServiceIdsGroupByState[0])"
-                                       ng-href="{{ linkServiceOk }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[0]})">
                                         {{summaryState.ServiceSummary.state[0]}}
                                     </a>
                                     <a class="btn btn-warning state-button-small font-sm"
-                                       ng-init="linkServiceWarning=getObjectsHref('service', summaryState.ServiceIdsGroupByState[1])"
-                                       ng-href="{{ linkServiceWarning }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[2]})">
                                         {{summaryState.ServiceSummary.state[1]}}
                                     </a>
                                     <a class="btn btn-danger state-button-small font-sm"
-                                       ng-init="linkServiceCritical=getObjectsHref('service', summaryState.ServiceIdsGroupByState[2])"
-                                       ng-href="{{ linkServiceCritical }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[2]})">
                                         {{summaryState.ServiceSummary.state[2]}}
                                     </a>
                                     <a class="btn btn-default state-button-small font-sm"
-                                       ng-init="linkServiceUnknown=getObjectsHref('service', summaryState.ServiceIdsGroupByState[3])"
-                                       ng-href="{{ linkServiceUnknown }}">
+                                       ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[3]})">
                                         {{summaryState.ServiceSummary.state[3]}}
                                     </a>
                                 </div>

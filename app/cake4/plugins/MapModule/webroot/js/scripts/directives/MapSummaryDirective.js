@@ -89,37 +89,6 @@ angular.module('openITCOCKPIT').directive('mapSummary', function($http, $interva
                 return url;
             };
 
-            $scope.getObjectsHref = function(type, objectIds){
-                var url = 'javascript:void(0);';
-                if(objectIds.length === 0){
-                    return url;
-                }
-                switch(type){
-                    case 'host':
-                        if($scope.acl.hosts.index){
-                            url = '/#!/hosts/index?' + $httpParamSerializer({
-                                'angular': true,
-                                'filter[Host.id][]': objectIds
-                            });
-                        }
-                        break;
-
-                    case 'service':
-                        if($scope.acl.services.index){
-                            url = '/#!/services/index?' + $httpParamSerializer({
-                                'angular': true,
-                                'filter[Service.id][]': objectIds
-                            });
-                        }
-                        break;
-                    default:
-                        url = 'javascript:void(0);';
-                        break;
-                }
-
-                return url;
-            };
-
         },
 
         link: function(scope, element, attr){

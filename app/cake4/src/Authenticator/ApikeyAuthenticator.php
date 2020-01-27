@@ -52,8 +52,6 @@ class ApikeyAuthenticator extends AbstractAuthenticator implements StatelessInte
             $data['apikey'] = trim($request->getQueryParams()[$this->getConfig('queryParam')]);
         }
 
-        //file_put_contents('/tmp/apikeyauth.txt', json_encode($this->getConfig('cookie'), true));
-
         $user = $this->_identifier->identify($data);
         if (empty($user) || $user === null) {
             return new Result(null, Result::FAILURE_IDENTITY_NOT_FOUND, $this->_identifier->getErrors());

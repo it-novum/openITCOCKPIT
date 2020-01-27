@@ -37,6 +37,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Exception;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\MapConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
