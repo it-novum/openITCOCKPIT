@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Core\Plugin;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -52,7 +53,7 @@ class ServicetemplatesTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('servicetemplates');
@@ -134,7 +135,7 @@ class ServicetemplatesTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -405,13 +406,13 @@ class ServicetemplatesTable extends Table {
      */
     public function getServicetemplatesIndex(ServicetemplateFilter $ServicetemplateFilter, $PaginateOMat = null, $MY_RIGHTS = [], $servicetemplatetypeId = null) {
         if ($servicetemplatetypeId === null) {
-            $servicetemplatetypeId = GENERIC_SERVICE;
+            //$servicetemplatetypeId = GENERIC_SERVICE;
         }
 
 
         $query = $this->find('all')->disableHydration();
         $where = $ServicetemplateFilter->indexFilter();
-        $where['Servicetemplates.servicetemplatetype_id'] = $servicetemplatetypeId;
+        //$where['Servicetemplates.servicetemplatetype_id'] = $servicetemplatetypeId;
         if (!empty($MY_RIGHTS)) {
             $where['Servicetemplates.container_id IN'] = $MY_RIGHTS;
         }
@@ -440,7 +441,7 @@ class ServicetemplatesTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
         return $rules;
     }
@@ -1069,10 +1070,10 @@ class ServicetemplatesTable extends Table {
                 'Servicetemplates.id' => $id
             ])
             ->contain([
-                'Contactgroups' => [
+                'Contactgroups'                             => [
                     'Containers'
                 ],
-                'Contacts' => [
+                'Contacts'                                  => [
                     'Containers'
                 ],
                 'Servicegroups',
@@ -1140,6 +1141,32 @@ class ServicetemplatesTable extends Table {
         }
 
         return false;
+    }
+
+    /**
+     * @return array
+     */
+    public function getServicetemplateTypes() {
+        $types = [
+            GENERIC_SERVICE => __('Generic templates')
+        ];
+
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            $types[EVK_SERVICE] = __('EVC templates');
+        }
+
+        if (Plugin::isLoaded('SLAModule')) {
+            $types[SLA_SERVICE] = __('SLA templates');
+        }
+
+        if (Plugin::isLoaded('MkModule')) {
+            $types[MK_SERVICE] = __('Checkmk templates');
+        }
+
+        $types[OITC_AGENT_SERVICE] = __('Agent templates');
+
+        return $types;
+
     }
 
 }

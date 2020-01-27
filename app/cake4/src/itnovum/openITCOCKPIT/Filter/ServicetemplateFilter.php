@@ -38,7 +38,8 @@ class ServicetemplateFilter extends Filter {
                 'Servicetemplates.description',
             ],
             'equals' => [
-                'Servicetemplates.id'
+                'Servicetemplates.id',
+                'Servicetemplates.servicetemplatetype_id'
             ]
         ];
 
