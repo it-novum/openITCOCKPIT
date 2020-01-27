@@ -47,6 +47,7 @@ use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\MapConditions;
@@ -1727,7 +1728,7 @@ class MapsTable extends Table {
                 ['Servicestatus' => []]
             );
         }
-        $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
+        $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['host']);
 
         return [
             'Host'          => $Host->toArray(),
