@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('StatusmapsHostAndServicesSummaryStatusDirective', function($interval){
+angular.module('openITCOCKPIT').directive('statusmapsHostAndServicesSummaryStatusDirective', function($interval){
     return {
         restrict: 'E',
         templateUrl: '/statusmaps/host_and_services_summary_status.html',
