@@ -60,6 +60,12 @@
         margin-bottom: 0px !important;
     }
 
+    .tooltipProgressBar {
+        height: 5px;
+        width: 100%;
+        background-color: #646464;
+    }
+
 </style>
 
 <div class="map-summary-state-popover col-xs-12 no-padding animated slideInRight map-popover-scrollable"
