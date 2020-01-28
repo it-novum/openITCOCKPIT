@@ -176,12 +176,12 @@
 
                                                 <?php if ($this->Acl->hasPermission('edit', 'agentchecks')): ?>
                                                     <li ng-if="agentcheck.allow_edit">
-                                                        <?php echo $this->AdditionalLinks->renderAsListItems(
+                                                        <?php /*echo $this->AdditionalLinks->renderAsListItems(
                                                             $additionalLinksList,
                                                             '{{agentcheck.id}}',
                                                             [],
                                                             true
-                                                        ); ?>
+                                                        );*/ ?>
                                                     </li>
                                                 <?php endif; ?>
 

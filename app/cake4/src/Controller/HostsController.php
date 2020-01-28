@@ -2214,7 +2214,7 @@ class HostsController extends AppController {
 
     /**
      * @param string | null $uuid
-     * @deprecated
+     * @throws MissingDbBackendException
      */
     public function hoststatus($uuid = null) {
         if (!$this->isApiRequest()) {
@@ -2224,12 +2224,15 @@ class HostsController extends AppController {
             throw new NotFoundException(__('Invalid request parameter'));
         }
 
+        /** @var HoststatusTableInterface $HoststatusTable */
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->currentState()
             ->isHardstate()
             ->scheduledDowntimeDepth()
             ->problemHasBeenAcknowledged();
-        $hoststatus = $this->Hoststatus->byUuid($uuid, $HoststatusFields);
+        $hoststatus = $HoststatusTable->byUuid($uuid, $HoststatusFields);
         if (empty($hoststatus)) {
             $hoststatus = [
                 'Hoststatus' => []

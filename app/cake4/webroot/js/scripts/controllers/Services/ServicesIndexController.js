@@ -31,7 +31,7 @@ angular.module('openITCOCKPIT')
                     not_keywords: ''
                 },
                 Hosts: {
-                    id: QueryStringService.getValue('filter[Hosts.id]', ''),
+                    id: QueryStringService.getStateValue($stateParams, 'host_id', []),
                     name: QueryStringService.getValue('filter[Hosts.name]', '')
                 }
             };
