@@ -63,7 +63,7 @@
                             <li><?php echo __('MySQL usage statistics like number of select, insert and delete statements'); ?></li>
                         </ul>
                         <p>
-                            <a href="/statistics/index">
+                            <a ui-sref="StatisticsIndex">
                                 <?php echo __('Show me all metrics you like to collect.'); ?>
                             </a>
                         </p>
@@ -89,7 +89,7 @@
                         <p><?php echo __('
                             This information influences decisions such as which openITCOCKPIT modules should
                             get new features or which operating system is used by most of the users.
-                            
+
                             In addition the data will help use to optimize the database schema and improve scalability of
                             openITCOCKPIT.
                         '); ?></p>
@@ -102,7 +102,7 @@
                 <button type="button" class="btn btn-primary pull-left" data-dismiss="modal" ng-click="save(2)">
                     <?php echo __('Ask me again'); ?>
                 </button>
-                <a href="/statistics/index" class="btn btn-default">
+                <a ui-sref="StatisticsIndex" class="btn btn-default">
                     <?php echo __('I want more information'); ?>
                 </a>
                 <button type="button" class="btn btn-success" ng-click="save(1)">
