@@ -56,15 +56,16 @@ class Menu implements MenuInterface {
         $Configuration = new MenuHeadline(\itnovum\openITCOCKPIT\Core\Menu\Menu::MENU_CONFIGURATION);
         $Configuration
             ->addCategory((new MenuCategory(
-                'settings_category'
+                'api_settings',
+                __('APIs')
             ))
                 ->addLink(new MenuLink(
-                    __('Grafana API'),
+                    __('Grafana'),
                     'GrafanaConfigurationIndex',
                     'GrafanaConfiguration',
                     'index',
                     'GrafanaModule',
-                    'fa fa-code',
+                    'fa fa-area-chart',
                     [],
                     4
                 ))
