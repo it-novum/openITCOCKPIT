@@ -432,13 +432,13 @@ class ServicegroupsTable extends Table {
 
         $query = $this->find()
             ->contain([
-                'Containers' => function (Query $q) {
+                'Containers' => function (Query $q) use ($MY_RIGHTS){
                     $q->select([
                         'Containers.id',
                         'Containers.name'
                     ]);
                     if (!empty($MY_RIGHTS)) {
-                        return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+                        return $q->where(['Containers.parent_id IN' => $MY_RIGHTS]);
                     }
                     return $q;
                 },

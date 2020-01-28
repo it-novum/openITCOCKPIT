@@ -49,8 +49,7 @@
                                 <?php echo __('Hostname'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                <a ng-init="hostLink=getObjectHref(iconType, summaryState.Host.id) "
-                                   ng-href="{{ hostLink }}">
+                                <a ui-sref="HostsBrowser({id: summaryState.Host.id})">
                                     {{summaryState.Host.hostname}}
                                 </a>
                             </div>
@@ -172,8 +171,7 @@
                         </div>
                         <div class="col-md-12 padding-top-5" ng-repeat="service in summaryState.Services">
                             <div class="col-md-4 cropText" title="{{service.Service.servicename}}">
-                                <a ng-init="linkService[service.Service.id]=getObjectHref('service', service.Service.id)"
-                                   ng-href="{{ linkService[service.Service.id] }}">
+                                <a ui-sref="ServicesBrowser({id: service.Service.id})">
                                     {{service.Service.servicename}}
                                 </a>
                             </div>
@@ -217,8 +215,7 @@
                                 <?php echo __('Hostname'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                <a ng-init="linkHost=getObjectHref('host', summaryState.Host.id)"
-                                   ng-href="{{ linkHost }}">
+                                <a ui-sref="HostsBrowser({id: summaryState.Host.id})">
                                     {{summaryState.Host.hostname}}
                                 </a>
                             </div>
@@ -245,8 +242,7 @@
                                 <?php echo __('Service'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                <a ng-init="linkService=getObjectHref('service', summaryState.Service.id)"
-                                   ng-href="{{ linkService }}">
+                                <a ui-sref="ServicesBrowser({id: summaryState.Service.id})">
                                     {{summaryState.Service.servicename}}
                                 </a>
                             </div>
@@ -347,8 +343,7 @@
                                 <?php echo __('Host group name'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                <a ng-init="linkHostgroup=getObjectHref('hostgroup', summaryState.Hostgroup.id)"
-                                   ng-href="{{ linkHostgroup }}">
+                                <a ui-sref="HostgroupsExtended({id: summaryState.Hostgroup.id})">
                                     {{summaryState.Hostgroup.name}}
                                 </a>
                             </div>
@@ -432,8 +427,7 @@
                         </div>
                         <div class="col-md-12 padding-top-10" ng-repeat="host in summaryState.Hosts">
                             <div class="col-md-4 cropText">
-                                <a ng-init="linkHost[host.Host.id]=getObjectHref('host', host.Host.id)"
-                                   ng-href="{{ linkHost[host.Host.id] }}">
+                                <a ui-sref="HostsBrowser({id: host.Host.id})">
                                     {{host.Host.hostname}}
                                 </a>
                             </div>
@@ -491,8 +485,7 @@
                                 <?php echo __('Service group name'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                <a ng-init="linkServicegroup=getObjectHref('servicegroup', summaryState.Servicegroup.id)"
-                                   ng-href="{{ linkServicegroup }}">
+                                <a ui-sref="ServicegroupsExtended({id: summaryState.Servicegroup.id})">
                                     {{summaryState.Servicegroup.name}}
                                 </a>
                             </div>
@@ -570,8 +563,7 @@
                             <div class="col-md-6 cropText"
                                  title="{{service.Host.hostname}}/{{service.Service.servicename}}">
 
-                                <a ng-init="linkService[service.Service.id]=getObjectHref('service', service.Service.id)"
-                                   ng-href="{{ linkService[service.Service.id] }}">
+                                <a ui-sref="ServicesBrowser({id: service.Service.id})">
                                     {{service.Host.hostname}}/{{service.Service.servicename}}
                                 </a>
                             </div>
@@ -610,8 +602,7 @@
                                 <?php echo __('Map name'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                <a ng-init="mapink=getObjectHref('map', summaryState.Map.object_id)"
-                                   ng-href="{{ maplink }}">
+                                <a ui-sref="MapeditorsView({id: summaryState.Map.object_id})">
                                     {{summaryState.Map.name}}
                                 </a>
                             </div>
@@ -725,8 +716,7 @@
                             </div>
                             <div class="col-md-12 padding-top-5" ng-repeat="notOkHost in summaryState.NotOkHosts">
                                 <div class="col-md-4 cropText" title="{{notOkHost.Host.hostname}}">
-                                    <a ng-init="linkHost[notOkHost.Host.id]=getObjectHref('host', notOkHost.Host.id)"
-                                       ng-href="{{ linkHost[notOkHost.Host.id] }}">
+                                    <a ui-sref="HostsBrowser({id: notOkHost.Host.id})">
                                         {{notOkHost.Host.hostname}}
                                     </a>
                                 </div>
@@ -761,8 +751,7 @@
                             <div class="col-md-12 padding-top-5" ng-repeat="notOkService in summaryState.NotOkServices">
                                 <div class="col-md-4 cropText"
                                      title="{{notOkService.Service.hostname}}/{{notOkService.Service.hostname}}">
-                                    <a ng-init="linkService[notOkService.Service.id]=getObjectHref('service', notOkService.Service.id)"
-                                       ng-href="{{ linkService[notOkService.Service.id] }}">
+                                    <a ui-sref="ServicesBrowser({id: notOkService.Service.id})">
                                         {{notOkService.Service.hostname}}/{{notOkService.Service.servicename}}
                                     </a>
                                 </div>

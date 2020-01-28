@@ -329,7 +329,7 @@ class MapeditorsController extends AppController {
                     $MapitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapitems');
 
                     //fetch all dependent map items after permissions check
-                    $mapItemToResolve = $MapitemsTable->getMapitemsForMaps($map[0]['id'], $mapId);
+                    $mapItemToResolve = $MapitemsTable->getMapitemsForMaps($map[0]->id, $mapId);
 
                     if (!empty($mapItemToResolve)) {
                         /** @var HostgroupsTable $HostgroupsTable */
@@ -337,7 +337,7 @@ class MapeditorsController extends AppController {
                         /** @var ServicegroupsTable $ServicegroupsTable */
                         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
-                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($map[0]['id'], $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
+                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($map[0]->id, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS, false);
                         $mapItemIdToResolve = $mapItemToResolve['object_id'];
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
@@ -361,7 +361,7 @@ class MapeditorsController extends AppController {
                         $hosts = [];
                         $services = [];
                         if (!empty($allDependentMapElements['hostIds'])) {
-                            $hosts = $HostsTable->getHostsWithServicesByIdsForMapeditor($allDependentMapElements['hostIds']);
+                            $hosts = $HostsTable->getHostsWithServicesByIdsForMapeditor($allDependentMapElements['hostIds'], false);
 
                             if (!empty($hosts)) {
                                 if ($this->hasRootPrivileges === false) {
@@ -391,7 +391,9 @@ class MapeditorsController extends AppController {
                                 }
                                 foreach ($dependentServices as $service) {
                                     $hosts[$service['Hosts']['id']] = ['Host' => $service['Hosts']];
-                                    $services[$service['id']] = $service;
+                                    $services[$service['id']] = [
+                                        'Service' => $service
+                                    ];
                                 }
                             }
                         }
@@ -613,11 +615,11 @@ class MapeditorsController extends AppController {
                     }
 
                     //fetch all dependent map items after permissions check
-                    $mapSummaryItemIdToResolve = $MapsummaryitemsTable->getMapsummaryitemsForMaps($map[0]->toArray()['id'], $mapId);
+                    $mapSummaryItemIdToResolve = $MapsummaryitemsTable->getMapsummaryitemsForMaps($map[0]->id, $mapId);
 
                     if (!empty($mapSummaryItemIdToResolve) && isset($mapSummaryItemIdToResolve[0])) {
                         $allVisibleItems = $MapsummaryitemsTable->allVisibleMapsummaryitems($mapId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
-                        $mapSummaryItemIdToResolve = $mapSummaryItemIdToResolve[0]->toArray()['object_id'];
+                        $mapSummaryItemIdToResolve = $mapSummaryItemIdToResolve[0]->object_id;
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
                             '{n}.object_id',
@@ -642,7 +644,7 @@ class MapeditorsController extends AppController {
                     $mapItemToResolve = $MapitemsTable->getMapitemsForMaps(null, $mapId);
 
                     if (!empty($mapItemToResolve)) {
-                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($map[0]->toArray()['id'], $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
+                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($map[0]->id, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
 
                         $mapItemIdToResolve = $mapItemToResolve['object_id'];
                         $mapIdGroupByMapId = Hash::combine(
@@ -668,7 +670,7 @@ class MapeditorsController extends AppController {
 
                     //simple item (host/hostgroup/service/servicegroup)
                     $allDependentMapElementsFromSubMaps['item'] = $MapsTable->getAllDependentMapsElements(
-                        $map[0]->toArray()['id'],
+                        $map[0]->id,
                         $HostgroupsTable,
                         $ServicegroupsTable
                     );
@@ -711,7 +713,9 @@ class MapeditorsController extends AppController {
                             }
                             foreach ($dependentServices as $service) {
                                 $hosts[$service['Hosts']['id']] = ['Host' => $service['Hosts']];
-                                $services[$service['id']] = $service;
+                                $services[$service['id']] = [
+                                    'Service' => $service
+                                ];
                             }
                         }
                     }

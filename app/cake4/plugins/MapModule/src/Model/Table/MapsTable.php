@@ -1089,8 +1089,7 @@ class MapsTable extends Table {
             ];
         }
 
-        $hostsUuids = Hash::extract($hosts, '{n}.Host.uuid');
-
+        $hostsUuids = Hash::extract($hosts, '{n}.uuid');
         $HoststatusFields = new HoststatusFields(new DbBackend());
         $HoststatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
         $hoststatusByUuids = $HoststatusTable->byUuid($hostsUuids, $HoststatusFields);
@@ -1334,7 +1333,7 @@ class MapsTable extends Table {
         $serviceUuids = Hash::extract($servicegroup['services'], '{n}.uuid');
         $hoststatus = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
         $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
-
+        
         if (empty($hoststatus) && empty($servicestatus)) {
             return [
                 'BitMaskHostState'    => $bitMaskHostState,

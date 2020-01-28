@@ -50,45 +50,6 @@ angular.module('openITCOCKPIT').directive('mapSummary', function($http, $interva
 
             };
 
-            $scope.getObjectHref = function(type, objectId){
-                var url = 'javascript:void(0);';
-                switch(type){
-                    case 'host':
-                        if($scope.acl.hosts.browser){
-                            url = '/#!/hosts/browser/' + objectId;
-                        }
-                        break;
-
-                    case 'service':
-                        if($scope.acl.services.browser){
-                            url = '/#!/services/browser/' + objectId;
-                        }
-                        break;
-
-                    case 'hostgroup':
-                        if($scope.acl.hostgroups.extended){
-                            url = '/#!/hostgroups/extended/' + objectId;
-                        }
-                        break;
-
-                    case 'servicegroup':
-                        if($scope.acl.servicegroups.extended){
-                            url = '/#!/servicegroups/extended/' + objectId;
-                        }
-                        break;
-
-                    case 'map':
-                        url = '/#!/map_module/mapeditors/view/' + objectId;
-                        break;
-
-                    default:
-                        url = 'javascript:void(0);';
-                        break;
-                }
-
-                return url;
-            };
-
         },
 
         link: function(scope, element, attr){
