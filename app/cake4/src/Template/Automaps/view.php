@@ -56,7 +56,7 @@
                     </button>
                     <?php if ($this->Acl->hasPermission('index', 'automaps')): ?>
                         <a back-button fallback-state='AutomapsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
-                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
                     <?php if ($this->Acl->hasPermission('edit', 'automaps')): ?>

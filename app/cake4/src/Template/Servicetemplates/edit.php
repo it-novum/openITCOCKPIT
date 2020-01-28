@@ -46,7 +46,7 @@
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'servicetemplates')): ?>
                 <a back-button fallback-state='ServicetemplatesIndex' class="btn btn-default btn-xs">
-                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                    <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                 </a>
             <?php endif; ?>
         </div>

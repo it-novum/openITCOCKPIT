@@ -42,7 +42,7 @@
         <h2><?php echo __('Append to host group'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <a back-button fallback-state='HostgroupsIndex' class="btn btn-default btn-xs">
-                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
             </a>
         </div>
     </header>

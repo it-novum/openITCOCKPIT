@@ -74,7 +74,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
 
                     <?php if ($this->Acl->hasPermission('index', 'commands')): ?>
                         <a back-button fallback-state='CommandsIndex' class="btn btn-xs btn-default shadow-0">
-                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
                 </div>

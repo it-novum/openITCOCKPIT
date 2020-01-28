@@ -44,10 +44,10 @@
                     <h2><?php echo __('Objects overview'); ?> "{{containerDetails.Container.name}}"</h2>
                     <div class="widget-toolbar" role="menu">
                         <a ng-if="!post.backState" ui-sref="ContainersIndex({id: post.Container.tenant})" class="btn btn-default btn-xs" iconcolor="white">
-                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back'); ?>
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                         <a ng-if="post.backState" ui-sref="{{post.backState}}" class="btn btn-default btn-xs" iconcolor="white">
-                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back'); ?>
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     </div>
                 </header>

@@ -44,13 +44,13 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Map'); ?>
-                    <span class="fw-300"><i><?php echo __('Create new Map'); ?></i></span>
+                    <?php echo __('Edit map:'); ?>
+                    <span class="fw-300"><i>{{post.Map.name}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'maps', 'mapmodule')): ?>
                         <a back-button fallback-state='MapsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
-                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
                 </div>

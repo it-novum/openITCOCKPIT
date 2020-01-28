@@ -51,7 +51,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'servicedependencies')): ?>
                         <a back-button fallback-state='ServicedependenciesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
-                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
                 </div>
@@ -478,7 +478,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
         <h2><?php echo __('Edit service dependency'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <a ui-sref="ServicedependenciesIndex" class="btn btn-default btn-xs" iconcolor="white">
-                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
             </a>
         </div>
     </header>

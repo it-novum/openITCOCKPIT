@@ -45,7 +45,7 @@
         </h2>
         <div class="widget-toolbar" role="menu">
             <a class="btn btn-xs btn-default" ng-click="leaveFullscreen();" ui-sref="MapsIndex">
-                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i>
+                <i class="fas fa-long-arrow-alt-left"></i>
                 <?php echo __('Back to list'); ?>
             </a>
             <?php if ($this->Acl->hasPermission('edit', 'mapeditors', 'mapmodule')): ?>

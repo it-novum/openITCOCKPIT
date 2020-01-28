@@ -15,7 +15,7 @@ You do not have to click on the search button, because you see the outcome right
 Just click on a [link][self] to read more about a specific topic.
 
 You can go back to the overview by clicking on
-<a class="btn btn-default btn-xs" iconcolor="white"><i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> Back to overview</a>
+<a class="btn btn-default btn-xs" iconcolor="white"><i class="fas fa-long-arrow-alt-left"></i> Back to overview</a>
 in the upper right corner.
 
 If not additional mentioned,

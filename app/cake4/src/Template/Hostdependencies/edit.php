@@ -51,7 +51,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'hostdependencies')): ?>
                         <a back-button fallback-state='HostdependenciesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
-                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
                 </div>

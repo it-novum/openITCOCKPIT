@@ -39,7 +39,7 @@
         <h2 class="hidden-mobile hidden-tablet"><?php echo __('Create new user defined Grafana dashboard'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <a ui-sref="GrafanaUserdashboardsIndex" class="btn btn-default btn-xs">
-                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
             </a>
         </div>
     </header>

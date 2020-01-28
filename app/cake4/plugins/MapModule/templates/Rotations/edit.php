@@ -51,7 +51,7 @@
                 </button>
             <?php endif; ?>
             <a ui-sref="RotationsIndex" class="btn btn-default btn-xs" iconcolor="white">
-                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
             </a>
         </div>
     </header>

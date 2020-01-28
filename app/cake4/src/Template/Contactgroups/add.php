@@ -51,7 +51,7 @@
                     <?php if ($this->Acl->hasPermission('index', 'contactgroups')): ?>
                         <a back-button fallback-state='ContactgroupsIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
-                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
                 </div>
@@ -63,7 +63,7 @@
             {objectName : '<?php echo __('Contact group'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
 
-                    <div class="form-group required" ng-class="{'has-error': errors.parent_id}">
+                        <div class="form-group required" ng-class="{'has-error': errors.parent_id}">
                             <label class="control-label" for="ContainersSelect">
                                 <?php echo __('Container'); ?>
                             </label>
