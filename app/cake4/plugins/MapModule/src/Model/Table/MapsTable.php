@@ -1239,7 +1239,7 @@ class MapsTable extends Table {
         $hoststatus = $HoststatusTable->byUuid($service['host']['uuid'], $HoststatusFields);
         $servicestatus = $ServicestatusTable->byUuid($service['uuid'], $ServicestatusFields);
 
-        $HostView = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
+        $HostView = new \itnovum\openITCOCKPIT\Core\Views\Host($service['host']);
         $ServiceView = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
 
 
@@ -1286,7 +1286,7 @@ class MapsTable extends Table {
         $ServicestatusFields = new ServicestatusFields(new DbBackend());
         $ServicestatusFields->currentState();
         $hostUuids = Hash::extract($hostgroup['hosts'], '{n}.uuid');
-        $serviceUuids = Hash::extract($hostgroup['hosts'], '{n}.Service.{n}.uuid');
+        $serviceUuids = Hash::extract($hostgroup['hosts'], '{n}.services.{n}.uuid');
 
         $hoststatus = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
         $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
@@ -1333,7 +1333,7 @@ class MapsTable extends Table {
         $serviceUuids = Hash::extract($servicegroup['services'], '{n}.uuid');
         $hoststatus = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
         $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
-        
+
         if (empty($hoststatus) && empty($servicestatus)) {
             return [
                 'BitMaskHostState'    => $bitMaskHostState,

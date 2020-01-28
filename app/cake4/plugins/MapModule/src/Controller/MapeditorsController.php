@@ -551,7 +551,7 @@ class MapeditorsController extends AppController {
 
                 if (!empty($hostgroup) && isset($hostgroup[0])) {
                     if ($this->hasRootPrivileges !== false) {
-                        if (!$this->allowedByContainerId(Hash::extract($hostgroup[0]->toArray(), 'hosts.{n}.container.id'), false)) {
+                        if (!$this->allowedByContainerId(Hash::extract($hostgroup[0]->toArray(), 'hosts.{n}.hosts_to_containers_sharing.{n}.id'), false)) {
                             $allowView = false;
                             break;
                         }
