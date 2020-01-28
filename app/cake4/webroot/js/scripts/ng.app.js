@@ -77,6 +77,11 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     return $q.reject(rejection);
                 }
 
+                if(rejection.status === 401){
+                    window.location = '/users/login';
+                    return;
+                }
+
                 //If we want to hide all loaders one day
                 /*if(rejection.config.hasOwnProperty('params')){
                     if(rejection.config.params.hasOwnProperty('disableGlobalLoader')){

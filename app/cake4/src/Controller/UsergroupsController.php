@@ -187,6 +187,7 @@ class UsergroupsController extends AppController {
      */
     public function edit($id = null) {
         if (!$this->isJsonRequest()) {
+            $this->set('systemname', $this->getSystemname());
             //Only ship html template
             return;
         }

@@ -15,7 +15,8 @@ angular.module('openITCOCKPIT')
                     id: QueryStringService.getStateValue($stateParams, 'id', []),
                     name: '',
                     template_name: '',
-                    description: ''
+                    description: '',
+                    servicetemplatetype_id: ['1']
                 }
             };
         };
@@ -45,7 +46,8 @@ angular.module('openITCOCKPIT')
                 'filter[Servicetemplates.id][]': $scope.filter.Servicetemplates.id,
                 'filter[Servicetemplates.name]': $scope.filter.Servicetemplates.name,
                 'filter[Servicetemplates.template_name]': $scope.filter.Servicetemplates.template_name,
-                'filter[Servicetemplates.description]': $scope.filter.Servicetemplates.description
+                'filter[Servicetemplates.description]': $scope.filter.Servicetemplates.description,
+                'filter[Servicetemplates.servicetemplatetype_id][]': $scope.filter.Servicetemplates.servicetemplatetype_id
             };
 
             $http.get("/servicetemplates/index.json", {

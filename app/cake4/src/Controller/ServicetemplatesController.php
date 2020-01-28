@@ -71,13 +71,15 @@ class ServicetemplatesController extends AppController {
     ];
 
     public function index() {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship HTML Template
-            return;
-        }
-
         /** @var $ServicetemplatesTable ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+
+            $this->set('types', $ServicetemplatesTable->getServicetemplateTypes());
+            return;
+        }
 
         $ServicetemplateFilter = new ServicetemplateFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServicetemplateFilter->getPage());

@@ -1,0 +1,189 @@
+.resetMargin {
+    margin: -19px;
+}
+
+.MapPlaygroundStyle {
+    min-height: 600px;
+}
+
+.thumbnailSize {
+    height: 100px;
+    margin-bottom: 2px;
+}
+
+.dragHelper {
+    height: 100%;
+}
+
+.genericFormContentRow {
+    margin: 4px 0px;
+}
+
+.popoverTable {
+    background: rgba(255, 255, 255, 1);
+    color: rgba(150, 150, 150, 1);
+}
+
+.popoverTable > tbody > tr > td {
+    font-size: 11px;
+    padding: 1px !important;
+}
+
+.popoverListTable {
+    background: rgba(255, 255, 255, 1);
+    color: rgba(150, 150, 150, 1);
+}
+
+.cropText {
+    /*width: 20px;*/
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.popoverBreakWord {
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+.popoverListTable > tbody > tr > td {
+    font-size: 11px;
+    padding: 1px !important;
+}
+
+.SmallBox {
+    box-shadow: 1px 1px 3px #888;
+    /*width: 500px !important;*/
+}
+
+.lineContainer {
+    z-index: 1;
+}
+
+.iconContainer {
+    z-index: 2;
+}
+
+.lineHoverElement {
+    z-index: 2;
+}
+
+.dragElement {
+    cursor: pointer;
+}
+
+.saveBeforeEdit {
+    border: 1px solid black;
+    background: #A90329;
+    height: 32px;
+    width: 58px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    font-size: 10px;
+    z-index: 3;
+    color: #DDD;
+}
+
+.minimizedMenuPanelIcon {
+    margin: 8px 0 0 10px;
+}
+
+.mapMenuPanelContainer {
+    width: 300px;
+    position: absolute;
+    z-index: 999;
+    top: 60px;
+    right: 19px;
+}
+
+.menuPanelBody {
+    padding-bottom: -15px
+}
+
+.backgroundThumbnailStyle {
+    max-height: 95px;
+    overflow: hidden;
+}
+
+.menuPanel {
+    height: 300px;
+    overflow-y: scroll;
+}
+
+.lineInfoBoxStyle {
+    z-index: 5;
+    position: absolute;
+    left: 265px;
+    display: none;
+}
+
+.editTextErrorBoxStyle {
+    z-index: 5;
+    position: absolute;
+    left: 265px;
+    display: none;
+}
+
+.removeBackgroundButton {
+    position: absolute !important;
+    left: 20px !important;
+    top: 70px !important;
+    z-index: 5 !important;
+}
+
+.textElement {
+    font-family: Arial;
+    white-space: nowrap;
+}
+
+.textContainerStyle {
+    position: absolute;
+    z-index: 2;
+}
+
+.thumbnailFix {
+    padding: 0px !important;
+    height: 80px !important;
+    width: 80px !important;
+    white-space: nowrap !important;
+
+    text-align: center;
+    margin: 1em 0 !important;
+}
+
+.valignHelper {
+    display: inline-block !important;
+    height: 100% !important;
+    vertical-align: middle !important;
+}
+
+.iconset {
+    margin-right: 4px !important;
+    display: unset !important;
+    vertical-align: middle !important;
+    max-height: 80px !important;
+    max-width: 80px !important;
+}
+
+.draggableIconsetHelperStyle {
+    height: 80px;
+    width: 80px;
+    border: 1px solid blue;
+    display: inline-block;
+}
+
+.deleteBackgroundBtn, .deleteIconsetBtn {
+    height: 20px;
+    width: 20px;
+    position: absolute;
+    top: 0px;
+    right: 20px;
+    color: grey;
+}
+
+.tooltipProgressBar {
+    height: 5px;
+    width: 100%;
+    background-color: #646464;
+}

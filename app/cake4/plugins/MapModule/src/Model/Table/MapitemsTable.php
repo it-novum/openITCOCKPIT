@@ -171,11 +171,12 @@ class MapitemsTable extends Table {
     }
 
     /**
-     * @param $mapId
+     * @param int $mapId
      * @param array $MY_RIGHTS
+     * @param bool $enableHydration
      * @return array
      */
-    public function allVisibleMapItems($mapId, $MY_RIGHTS = []) {
+    public function allVisibleMapItems($mapId, $MY_RIGHTS = [], $enableHydration = true) {
         if (!is_array($MY_RIGHTS)) {
             $MY_RIGHTS = [$MY_RIGHTS];
         }
@@ -202,7 +203,8 @@ class MapitemsTable extends Table {
             ->where([
                 'Mapitems.type'       => 'map',
                 'Mapitems.map_id != ' => $mapId
-            ]);
+            ])
+            ->enableHydration($enableHydration);
         if (!empty($MY_RIGHTS)) {
             $query->where(['MapsToContainers.container_id IN' => $MY_RIGHTS]);
         }

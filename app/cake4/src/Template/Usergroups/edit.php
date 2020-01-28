@@ -22,6 +22,11 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+/**
+ * @var string $systemname
+ */
+
 ?>
 
 <div class="row">
@@ -91,6 +96,15 @@
                 </div>
 
                 <hr />
+
+                    <div class="row" ng-show="post.Usergroup.name === 'Administrator'">
+                        <div class="col-xs-12">
+                            <div class="alert alert-info alert-block">
+                                <h4 class="alert-heading"><?php echo __('Notice!'); ?></h4>
+                                <?= __('Permissions of the user role <strong>Administrator</strong> will be set back to default on every update of {0}!', $systemname); ?>
+                            </div>
+                        </div>
+                    </div>
 
                 <div class="row padding-top-10">
                     <div class="col-xs-12 col-md-6 col-lg-6">

@@ -66,6 +66,8 @@ use RuntimeException;
  */
 class AngularController extends AppController {
 
+    private $state = 'unknown';
+
     public function paginator() {
         //Return HTML Template for PaginatorDirective
         return;
@@ -99,8 +101,6 @@ class AngularController extends AppController {
     public function export() {
         return;
     }
-
-    private $state = 'unknown';
 
     /**
      * @throws Exception
