@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2018>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,26 +22,14 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Filter;
+namespace App\itnovum\openITCOCKPIT\Core\Permissions;
 
 
-class StatusmapFilter extends Filter {
+interface DefaultRolePermissionsInterface {
 
     /**
      * @return array
      */
-    public function indexFilter() {
-        $filters = [
-            'like' => [
-                'Hosts.name',
-                'Hosts.address'
-            ],
+    public function getDefaultRolePermissions();
 
-            'equals' => [
-                'Hosts.satellite_id'
-            ]
-        ];
-
-        return $this->getConditionsByFilters($filters);
-    }
 }

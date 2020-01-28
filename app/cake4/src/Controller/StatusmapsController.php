@@ -27,59 +27,70 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\Interfaces\HoststatusTableInterface;
+use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostsTable;
+use App\Model\Table\ServicesTable;
+use App\Model\Table\SystemsettingsTable;
+use Cake\Core\Plugin;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use DistributeModule\Model\Table\SatellitesTable;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
-use itnovum\openITCOCKPIT\Core\ModuleManager;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
 use itnovum\openITCOCKPIT\Filter\StatusmapFilter;
 
 
 /**
  * Class StatusmapsController
- * @property HoststatusFields $HoststatusFields
- * @property StatusMapsHelper $StatusMaps
- * @property Hoststatus $Hoststatus
+ * @package App\Controller
  */
 class StatusmapsController extends AppController {
 
-    public $uses = [
-        'Host',
-        'Service',
-        'Container',
-        'Parenthost',
-        MONITORING_HOSTSTATUS,
-        MONITORING_SERVICESTATUS
-    ];
-
-    public $components = ['StatusMap'];
-
+    /**
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     */
     public function index() {
         if (!$this->isAngularJsRequest()) {
             return;
         }
 
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var HoststatusTableInterface $HoststatusTable */
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+        $this->loadComponent('StatusMap');
+
         if (!$this->isApiRequest()) {
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            /** @var SystemsettingsTable $Systemsettings */
             $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
             $masterInstanceName = $Systemsettings->getMasterInstanceName();
-            $ModuleManager = new ModuleManager('DistributeModule');
-            if ($ModuleManager->moduleExists()) {
-                $SatelliteModel = $ModuleManager->loadModel('Satellite');
-                $satellites = $SatelliteModel->find('list', [
-                    'recursive'              => -1,
-                    'fields'                 => [
-                        'Satellite.id',
-                        'Satellite.name'
-                    ],
-                    'Satellite.container_id' => $this->MY_RIGHTS,
-                    'order'                  => [
-                        'Satellite.name' => 'asc'
-                    ]
-                ]);
+            $satellites = [];
+            if (Plugin::isLoaded('DistributeModule')) {
+                /** @var SatellitesTable $SatellitesTable */
+                $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+                $MY_RIGHTS = $this->MY_RIGHTS;
+                if (!is_array($MY_RIGHTS)) {
+                    $MY_RIGHTS = [$MY_RIGHTS];
+                }
+                $satellites = $SatellitesTable->find('list')
+                    ->where([
+                        'Satellites.container_id IN' => $MY_RIGHTS,
+                    ])
+                    ->select([
+                        'Satellites.id',
+                        'Satellites.name'
+                    ])
+                    ->order([
+                        'Satellites.name' => 'asc'
+                    ])
+                    ->toArray();
             }
             $satellites[0] = $masterInstanceName;
             $this->set('satellites', $satellites);
@@ -92,7 +103,9 @@ class StatusmapsController extends AppController {
         $hasBrowserRight = $this->hasPermission('browser', 'hosts');
         if ($this->request->getQuery('showAll') === 'false') {
 
-            $parentHostWithChildIds = $this->Parenthost->find('all', [
+            $parentHostWithChildIds = $HostsTable->parentHostsWithChildIds();
+
+            /*$parentHostWithChildIds = $this->Parenthost->find('all', [
                 'recursive' => -1,
                 'joins'     => [
                     [
@@ -116,7 +129,7 @@ class StatusmapsController extends AppController {
                     'HostToParenthostParent.id',
                     'HostToParenthostChild.id'
                 ],
-            ]);
+            ]);*/
 
 
             foreach ($parentHostWithChildIds as $parentHostWithChildId) {
@@ -130,7 +143,7 @@ class StatusmapsController extends AppController {
         }
         $containerIds = [];
 
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->hasRootPrivileges === false) {
@@ -147,6 +160,7 @@ class StatusmapsController extends AppController {
         $nodes = [];
         $edges = [];
 
+        /*
         $query = [
             'recursive'  => -1,
             'contain'    => [
@@ -186,8 +200,8 @@ class StatusmapsController extends AppController {
         if (!empty($allHostIds)) {
             $query['conditions']['Host.id'] = $allHostIds;
         }
-
-        $count = $this->Host->find('count', $query);
+        */
+        $count = $HostsTable->getHostsForStatusmaps($StatusmapFilter->indexFilter(), $containerIds, $allHostIds, true);
 
         $limit = 100;
         $numberOfSelects = ceil($count / $limit);
@@ -199,36 +213,33 @@ class StatusmapsController extends AppController {
             ->problemHasBeenAcknowledged();
 
         for ($i = 0; $i < $numberOfSelects; $i++) {
-            $query['limit'] = $limit;
-            $query['offset'] = $limit * $i;
+            $tmpHostsResult = $HostsTable->getHostsForStatusmaps($StatusmapFilter->indexFilter(), $containerIds, $allHostIds, false, $limit, $limit * $i);
 
-
-            $tmpHostsResult = $this->Host->find('all', $query);
-
-            $hostUuids = Hash::extract($tmpHostsResult, '{n}.Host.uuid');
-            $hoststatus = $this->Hoststatus->byUuid($hostUuids, $HoststatusFields);
+            $hostUuids = Hash::extract($tmpHostsResult, '{n}.uuid');
+            $hoststatus = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
             foreach ($tmpHostsResult as $hostChunk) {
-                if (!isset($hoststatus[$hostChunk['Host']['uuid']]['Hoststatus'])) {
-                    $hoststatus[$hostChunk['Host']['uuid']] = [
+                if (!isset($hoststatus[$hostChunk['uuid']]['Hoststatus'])) {
+                    $hoststatus[$hostChunk['uuid']] = [
                         'Hoststatus' => []
                     ];
                 }
                 $Hoststatus = new Hoststatus(
-                    $hoststatus[$hostChunk['Host']['uuid']]['Hoststatus']
+                    $hoststatus[$hostChunk['uuid']]['Hoststatus']
                 );
 
+
                 $nodes[] = [
-                    'id'     => 'Host_' . $hostChunk['Host']['id'],
-                    'hostId' => $hostChunk['Host']['id'],
-                    'label'  => $hostChunk['Host']['name'],
-                    'title'  => $hostChunk['Host']['name'] . ' (' . $hostChunk['Host']['address'] . ')',
-                    'uuid'   => $hostChunk['Host']['uuid'],
-                    'group'  => $this->StatusMap->getNodeGroupName($hostChunk['Host']['disabled'], $Hoststatus)
+                    'id'     => 'Host_' . $hostChunk['id'],
+                    'hostId' => $hostChunk['id'],
+                    'label'  => $hostChunk['name'],
+                    'title'  => $hostChunk['name'] . ' (' . $hostChunk['address'] . ')',
+                    'uuid'   => $hostChunk['uuid'],
+                    'group'  => $this->StatusMap->getNodeGroupName($hostChunk['disabled'], $Hoststatus)
                 ];
 
-                foreach ($hostChunk['Parenthost'] as $parentHost) {
+                foreach ($hostChunk['parenthosts'] as $parentHost) {
                     $edges[] = [
-                        'from'   => 'Host_' . $hostChunk['Host']['id'],
+                        'from'   => 'Host_' . $hostChunk['id'],
                         'to'     => 'Host_' . $parentHost['id'],
                         'color'  => [
                             'inherit' => 'to',
@@ -244,44 +255,37 @@ class StatusmapsController extends AppController {
             'edges' => $edges
         ];
 
-
-        $this->set(compact(['statusMap', 'hasBrowserRight']));
+        $this->set('statusMap', $statusMap);
+        $this->set('hasBrowserRight', $hasBrowserRight);
         $this->viewBuilder()->setOption('serialize', ['statusMap', 'hasBrowserRight']);
     }
 
     /**
-     * @param int | null $hostId
-     * @property HoststatusFields $HoststatusFields
-     * @property ServicestatusFields $ServicestatusFields
-     *
+     * @param int|null $hostId
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
     public function hostAndServicesSummaryStatus($hostId = null) {
         if (!$hostId) {
             throw new NotFoundException(__('Invalid request parameters'));
         }
-        $serviceUuids = Hash::extract(
-            $this->Service->find('all', [
-                    'recursive'  => -1,
-                    'fields'     => [
-                        'Service.uuid'
-                    ],
-                    'conditions' => [
-                        'Service.host_id' => $hostId
-                    ]
-                ]
-            ),
-            '{n}.Service.uuid'
-        );
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var ServicestatusTableInterface $ServicestatusTable */
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+
+        $serviceUuids = $ServicesTable->getServiceUuidsOfHostByHostId($hostId);
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
         $ServicestatusFields->currentState()
             ->problemHasBeenAcknowledged()
             ->activeChecksEnabled()
             ->scheduledDowntimeDepth();
-        $servicestatus = $this->Servicestatus->byUuids($serviceUuids, $ServicestatusFields);
+        $servicestatus = $ServicestatusTable->byUuids($serviceUuids, $ServicestatusFields);
 
-        $serviceStateSummary = $this->Service->getServiceStateSummary($servicestatus);
+        $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatus);
+        $serviceStateSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, false);
 
-        $this->set(compact(['serviceStateSummary', 'hostId']));
+        $this->set('serviceStateSummary', $serviceStateSummary);
+        $this->set('hostId', $hostId);
         $this->viewBuilder()->setOption('serialize', ['serviceStateSummary']);
     }
 }

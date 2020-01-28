@@ -96,3 +96,5 @@ app/cake4/vendor/
 app/cake4/plugins/DistributeModule
 app/cake4/plugins/EventcorrelationModule
 app/cake4/plugins/OpenstreetmapModule
+app/cake4/plugins/AutoreportModule
+

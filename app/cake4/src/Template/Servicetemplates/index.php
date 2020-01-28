@@ -107,7 +107,31 @@
                                         </label>
                                     </div>
                                 </div>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <fieldset>
+                                        <legend><?php echo __('Service template types'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <select
+                                                id="Instance"
+                                                data-placeholder="<?php echo __('Filter by type'); ?>"
+                                                class="form-control"
+                                                chosen="{}"
+                                                multiple
+                                                ng-model="filter.Servicetemplates.servicetemplatetype_id"
+                                                ng-model-options="{debounce: 500}">
+                                                <?php
+                                                foreach ($types as $typeId => $typeName):
+                                                    printf('<option value="%s">%s</option>', h($typeId), h($typeName));
+                                                endforeach;
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
                             </div>
+
 
                             <div class="row">
                                 <div class="col-xs-12">

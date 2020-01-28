@@ -22,7 +22,6 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-$timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -92,6 +91,15 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
 
                         <hr>
+
+                        <div class="row" ng-show="post.Usergroup.name === 'Administrator'">
+                            <div class="col-lg-12">
+                                <div class="alert alert-info alert-block">
+                                    <h4 class="alert-heading"><?php echo __('Notice!'); ?></h4>
+                                    <?= __('Permissions of the user role <strong>Administrator</strong> will be set back to default on every update of {0}!', $systemname); ?>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="card margin-top-10 margin-bottom-25">
                             <div class="card-body">
