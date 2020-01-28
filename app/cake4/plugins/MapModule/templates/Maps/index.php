@@ -163,7 +163,7 @@
                                                 data-toggle="dropdown">
                                             <i class="caret"></i>
                                         </button>
-                                        <div class="dropdown-menu">
+                                        <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('edit', 'maps', 'mapmodule')): ?>
                                                 <a ui-sref="MapeditorsEdit({id: map.id})"
                                                    ng-if="map.allowEdit"
@@ -179,6 +179,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('copy', 'maps', 'mapmodule')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ui-sref="MapsCopy({ids: map.id})"
                                                    ng-if="map.allowCopy"
                                                    class="dropdown-item">
@@ -186,6 +187,7 @@
                                                     <?php echo __('Copy'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <div class="dropdown-divider"></div>
                                             <a ui-sref="MapeditorsView({id: map.id})"
                                                class="dropdown-item">
                                                 <i class="fa fa-eye"></i>
@@ -197,6 +199,7 @@
                                                 <?php echo __('View in fullscreen'); ?>
                                             </a>
                                             <?php if ($this->Acl->hasPermission('delete', 'maps', 'mapmodule')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a href="javascript:void(0);"
                                                    class="txt-color-red dropdown-item"
                                                    ng-click="confirmDelete(getObjectForDelete(map))">
