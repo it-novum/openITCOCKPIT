@@ -31,8 +31,8 @@ angular.module('openITCOCKPIT')
             getValue: function(varName, defaultReturn){
                 defaultReturn = (typeof defaultReturn === 'undefined') ? null : defaultReturn;
                 var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
-                if(sourceUrl.includes('/ng/#!/')){
-                    sourceUrl = sourceUrl.replace('/ng/#!', '');
+                if(sourceUrl.includes('/#!/')){
+                    sourceUrl = sourceUrl.replace('/#!', '');
                 }
                 var query = parseUri(sourceUrl).queryKey;
                 if(query.hasOwnProperty(varName)){
@@ -47,8 +47,8 @@ angular.module('openITCOCKPIT')
                 try{
                     //&filter[Service.id][]=861&filter[Service.id][]=53&filter[Service.id][]=860
                     var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
-                    if(sourceUrl.includes('/ng/#!/')){
-                        sourceUrl = sourceUrl.replace('/ng/#!', '');
+                    if(sourceUrl.includes('/#!/')){
+                        sourceUrl = sourceUrl.replace('/#!', '');
                     }
                     var url = new URL(sourceUrl);
                     var serviceIds = url.searchParams.getAll(varName);
@@ -62,8 +62,8 @@ angular.module('openITCOCKPIT')
 
                     ////&filter[Service.id][]=861&filter[Service.id][]=53&filter[Service.id][]=860&bert=123
                     var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
-                    if(sourceUrl.includes('/ng/#!/')){
-                        sourceUrl = sourceUrl.replace('/ng/#!', '');
+                    if(sourceUrl.includes('/#!/')){
+                        sourceUrl = sourceUrl.replace('/#!', '');
                     }
                     var urlString = sourceUrl;
                     var peaces = urlString.split(varName);
@@ -97,8 +97,8 @@ angular.module('openITCOCKPIT')
 
             hasValue: function(varName){
                 var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
-                if(sourceUrl.includes('/ng/#!/')){
-                    sourceUrl = sourceUrl.replace('/ng/#!', '');
+                if(sourceUrl.includes('/#!/')){
+                    sourceUrl = sourceUrl.replace('/#!', '');
                 }
                 var query = parseUri(sourceUrl).queryKey;
                 return query.hasOwnProperty(varName);
