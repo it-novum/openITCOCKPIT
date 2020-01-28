@@ -47,7 +47,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Locations'); ?>
+                    <?php echo __('Maps'); ?>
                     <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
@@ -171,7 +171,7 @@
                                                     <i class="fa fa-cog"></i>
                                                     <?php echo __('Edit in Map editor'); ?>
                                                 </a>
-                                                <a ui-sref="MapeditorsEdit({id: map.id})"
+                                                <a ui-sref="MapsEdit({id: map.id})"
                                                    ng-if="map.allowEdit"
                                                    class="dropdown-item">
                                                     <i class="fa fa-edit"></i>
