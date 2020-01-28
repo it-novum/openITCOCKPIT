@@ -381,12 +381,7 @@ class HostgroupsTable extends Table {
                 },
                 'Hosts' => function (Query $q) {
                     return $q->contain([
-                        'Containers' => function (Query $q) {
-                            return $q->select([
-                                'Containers.id',
-                                'Containers.name'
-                            ]);
-                        },
+                        'HostsToContainersSharing',
                         'Services' => function (Query $q) {
                             return $q->where([
                                 'Services.disabled' => 0
@@ -397,9 +392,6 @@ class HostgroupsTable extends Table {
                                     'Services.host_id'
                                 ]);
                         }
-                    ])->select([
-                        'Hosts.id',
-                        'Hosts.uuid'
                     ])->where([
                         'Hosts.disabled' => 0
                     ]);

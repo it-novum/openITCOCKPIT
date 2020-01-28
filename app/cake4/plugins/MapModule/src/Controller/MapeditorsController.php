@@ -36,9 +36,8 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Exception;
-use http\Exception\InvalidArgumentException;
-use http\Exception\RuntimeException;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\MapConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
@@ -330,7 +329,7 @@ class MapeditorsController extends AppController {
                     $MapitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapitems');
 
                     //fetch all dependent map items after permissions check
-                    $mapItemToResolve = $MapitemsTable->getMapitemsForMaps($map[0]['id'], $mapId);
+                    $mapItemToResolve = $MapitemsTable->getMapitemsForMaps($map[0]->id, $mapId);
 
                     if (!empty($mapItemToResolve)) {
                         /** @var HostgroupsTable $HostgroupsTable */
@@ -338,7 +337,7 @@ class MapeditorsController extends AppController {
                         /** @var ServicegroupsTable $ServicegroupsTable */
                         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
-                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($map[0]['id'], $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
+                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($map[0]->id, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS, false);
                         $mapItemIdToResolve = $mapItemToResolve['object_id'];
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
@@ -362,7 +361,7 @@ class MapeditorsController extends AppController {
                         $hosts = [];
                         $services = [];
                         if (!empty($allDependentMapElements['hostIds'])) {
-                            $hosts = $HostsTable->getHostsWithServicesByIdsForMapeditor($allDependentMapElements['hostIds']);
+                            $hosts = $HostsTable->getHostsWithServicesByIdsForMapeditor($allDependentMapElements['hostIds'], false);
 
                             if (!empty($hosts)) {
                                 if ($this->hasRootPrivileges === false) {
@@ -392,7 +391,9 @@ class MapeditorsController extends AppController {
                                 }
                                 foreach ($dependentServices as $service) {
                                     $hosts[$service['Hosts']['id']] = ['Host' => $service['Hosts']];
-                                    $services[$service['id']] = $service;
+                                    $services[$service['id']] = [
+                                        'Service' => $service
+                                    ];
                                 }
                             }
                         }
@@ -410,7 +411,7 @@ class MapeditorsController extends AppController {
                 $allowView = false;
                 break;
             default:
-                throw new RuntimeException('Unknown map item type');
+                throw new \RuntimeException('Unknown map item type');
                 break;
         }
 
@@ -480,11 +481,11 @@ class MapeditorsController extends AppController {
         $properties = [];
         $objectId = (int)$this->request->getQuery('objectId');
         if ($objectId <= 0) {
-            throw new RuntimeException('Invalid object id');
+            throw new \RuntimeException('Invalid object id');
         }
         $mapId = (int)$this->request->getQuery('mapId');
         if ($mapId <= 0) {
-            throw new RuntimeException('Invalid map id');
+            throw new \RuntimeException('Invalid map id');
         }
 
         /** @var MapsTable $MapsTable */
@@ -550,7 +551,7 @@ class MapeditorsController extends AppController {
 
                 if (!empty($hostgroup) && isset($hostgroup[0])) {
                     if ($this->hasRootPrivileges !== false) {
-                        if (!$this->allowedByContainerId(Hash::extract($hostgroup[0]->toArray(), 'hosts.{n}.container.id'), false)) {
+                        if (!$this->allowedByContainerId(Hash::extract($hostgroup[0]->toArray(), 'hosts.{n}.hosts_to_containers_sharing.{n}.id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -614,11 +615,11 @@ class MapeditorsController extends AppController {
                     }
 
                     //fetch all dependent map items after permissions check
-                    $mapSummaryItemIdToResolve = $MapsummaryitemsTable->getMapsummaryitemsForMaps($map[0]->toArray()['id'], $mapId);
+                    $mapSummaryItemIdToResolve = $MapsummaryitemsTable->getMapsummaryitemsForMaps($map[0]->id, $mapId);
 
                     if (!empty($mapSummaryItemIdToResolve) && isset($mapSummaryItemIdToResolve[0])) {
                         $allVisibleItems = $MapsummaryitemsTable->allVisibleMapsummaryitems($mapId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
-                        $mapSummaryItemIdToResolve = $mapSummaryItemIdToResolve[0]->toArray()['object_id'];
+                        $mapSummaryItemIdToResolve = $mapSummaryItemIdToResolve[0]->object_id;
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
                             '{n}.object_id',
@@ -643,7 +644,7 @@ class MapeditorsController extends AppController {
                     $mapItemToResolve = $MapitemsTable->getMapitemsForMaps(null, $mapId);
 
                     if (!empty($mapItemToResolve)) {
-                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($map[0]->toArray()['id'], $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
+                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($map[0]->id, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
 
                         $mapItemIdToResolve = $mapItemToResolve['object_id'];
                         $mapIdGroupByMapId = Hash::combine(
@@ -669,7 +670,7 @@ class MapeditorsController extends AppController {
 
                     //simple item (host/hostgroup/service/servicegroup)
                     $allDependentMapElementsFromSubMaps['item'] = $MapsTable->getAllDependentMapsElements(
-                        $map[0]->toArray()['id'],
+                        $map[0]->id,
                         $HostgroupsTable,
                         $ServicegroupsTable
                     );
@@ -712,7 +713,9 @@ class MapeditorsController extends AppController {
                             }
                             foreach ($dependentServices as $service) {
                                 $hosts[$service['Hosts']['id']] = ['Host' => $service['Hosts']];
-                                $services[$service['id']] = $service;
+                                $services[$service['id']] = [
+                                    'Service' => $service
+                                ];
                             }
                         }
                     }
@@ -729,7 +732,7 @@ class MapeditorsController extends AppController {
                 $allowView = false;
                 break;
             default:
-                throw new RuntimeException('Unknown map item type');
+                throw new \RuntimeException('Unknown map item type');
                 break;
         }
 
@@ -1108,7 +1111,7 @@ class MapeditorsController extends AppController {
                 return;
                 break;
             default:
-                throw new RuntimeException('Unknown map item type');
+                throw new \RuntimeException('Unknown map item type');
                 break;
         }
 
@@ -1311,7 +1314,7 @@ class MapeditorsController extends AppController {
         $MapitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapitems');
 
         if (!is_numeric($id)) {
-            throw new InvalidArgumentException('Mapitem.id needs to be numeric');
+            throw new \InvalidArgumentException('Mapitem.id needs to be numeric');
         }
 
         if (!$MapitemsTable->existsById($id)) {
@@ -1395,7 +1398,7 @@ class MapeditorsController extends AppController {
         $id = $this->request->getData('Mapline.id');
 
         if (!is_numeric($id)) {
-            throw new InvalidArgumentException('Mapline.id needs to be numeric');
+            throw new \InvalidArgumentException('Mapline.id needs to be numeric');
         }
         if (!$MaplinesTable->existsById($id)) {
             throw new NotFoundException();
@@ -1500,7 +1503,7 @@ class MapeditorsController extends AppController {
         $id = $this->request->getData('Mapgadget.id');
 
         if (!is_numeric($id)) {
-            throw new InvalidArgumentException('Mapgadget.id needs to be numeric');
+            throw new \InvalidArgumentException('Mapgadget.id needs to be numeric');
         }
         if (!$MapgadgetsTable->existsById($id)) {
             throw new NotFoundException();
@@ -1623,7 +1626,7 @@ class MapeditorsController extends AppController {
         }
 
         if (!is_numeric($id)) {
-            throw new InvalidArgumentException('Maptext.id needs to be numeric');
+            throw new \InvalidArgumentException('Maptext.id needs to be numeric');
         }
 
         if ($MaptextsTable->delete($MaptextsTable->get($id))) {
@@ -1703,7 +1706,7 @@ class MapeditorsController extends AppController {
         $MapiconsTable = TableRegistry::getTableLocator()->get('MapModule.Mapicons');
 
         if (!is_numeric($id)) {
-            throw new InvalidArgumentException('Mapicon.id needs to be numeric');
+            throw new \InvalidArgumentException('Mapicon.id needs to be numeric');
         }
         if (!$MapiconsTable->existsById($id)) {
             throw new NotFoundException();
@@ -1859,7 +1862,7 @@ class MapeditorsController extends AppController {
         $MapsummaryitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapsummaryitems');
 
         if (!is_numeric($id)) {
-            throw new InvalidArgumentException('Mapsummaryitem.id needs to be numeric');
+            throw new \InvalidArgumentException('Mapsummaryitem.id needs to be numeric');
         }
         if (!$MapsummaryitemsTable->existsById($id)) {
             throw new NotFoundException();
@@ -1926,7 +1929,7 @@ class MapeditorsController extends AppController {
         if ($this->request->is('get')) {
             $widgetId = (int)$this->request->getQuery('widgetId');
             if (!$WidgetsTable->existsById($widgetId)) {
-                throw new RuntimeException('Invalid widget id');
+                throw new \RuntimeException('Invalid widget id');
             }
 
             $widgetEntity = $WidgetsTable->get($widgetId);
@@ -1970,7 +1973,7 @@ class MapeditorsController extends AppController {
             $widgetId = (int)$this->request->getData('Widget.id');
 
             if (!$WidgetsTable->existsById($widgetId)) {
-                throw new RuntimeException('Invalid widget id');
+                throw new \RuntimeException('Invalid widget id');
             }
 
             $widgetEntity = $WidgetsTable->get($widgetId);

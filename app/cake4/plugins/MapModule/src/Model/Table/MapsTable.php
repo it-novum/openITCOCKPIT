@@ -47,6 +47,7 @@ use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\MapConditions;
@@ -1088,8 +1089,7 @@ class MapsTable extends Table {
             ];
         }
 
-        $hostsUuids = Hash::extract($hosts, '{n}.Host.uuid');
-
+        $hostsUuids = Hash::extract($hosts, '{n}.uuid');
         $HoststatusFields = new HoststatusFields(new DbBackend());
         $HoststatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
         $hoststatusByUuids = $HoststatusTable->byUuid($hostsUuids, $HoststatusFields);
@@ -1239,7 +1239,7 @@ class MapsTable extends Table {
         $hoststatus = $HoststatusTable->byUuid($service['host']['uuid'], $HoststatusFields);
         $servicestatus = $ServicestatusTable->byUuid($service['uuid'], $ServicestatusFields);
 
-        $HostView = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
+        $HostView = new \itnovum\openITCOCKPIT\Core\Views\Host($service['host']);
         $ServiceView = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
 
 
@@ -1286,7 +1286,7 @@ class MapsTable extends Table {
         $ServicestatusFields = new ServicestatusFields(new DbBackend());
         $ServicestatusFields->currentState();
         $hostUuids = Hash::extract($hostgroup['hosts'], '{n}.uuid');
-        $serviceUuids = Hash::extract($hostgroup['hosts'], '{n}.Service.{n}.uuid');
+        $serviceUuids = Hash::extract($hostgroup['hosts'], '{n}.services.{n}.uuid');
 
         $hoststatus = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
         $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
@@ -1727,7 +1727,7 @@ class MapsTable extends Table {
                 ['Servicestatus' => []]
             );
         }
-        $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
+        $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['host']);
 
         return [
             'Host'          => $Host->toArray(),

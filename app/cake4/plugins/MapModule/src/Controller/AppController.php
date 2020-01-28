@@ -27,7 +27,8 @@ declare(strict_types=1);
 
 namespace MapModule\Controller;
 
-use App\Controller\AppController as BaseController;
+use Cake\Event\EventInterface;
 
-class AppController extends BaseController {
+class AppController extends \App\Controller\AppController {
+
 }
