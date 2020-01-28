@@ -311,14 +311,15 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('ServicesIndex', {
-                url: '/services/index?servicename&servicestate&host_id&sort&direction&BrowserContainerId&has_been_acknowledged&has_not_been_acknowledged&in_downtime&passive',
+                url: '/services/index?servicename&servicestate&sort&host_id&direction&BrowserContainerId&has_been_acknowledged&has_not_been_acknowledged&in_downtime&passive',
                 params: {
                     servicename: {
                         value: null
                     },
                     servicestate: {
                         value: null,
-                        array: true
+                        array: true,
+                        squash: true
                     },
                     sort: {
                         value: null
@@ -343,7 +344,8 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     },
                     host_id: {
                         value: null,
-                        array: true
+                        array: true,
+                        squash: true
                     },
                     id: {
                         value: null,
@@ -1022,7 +1024,8 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     },
                     hoststate: {
                         value: null,
-                        array: true
+                        array: true,
+                        squash: true
                     },
                     sort: {
                         value: null
