@@ -23,15 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-/*
- *         _                    _
- *   __ _ (_) __ ___  __ __   _(_) _____      __
- *  / _` || |/ _` \ \/ / \ \ / / |/ _ \ \ /\ / /
- * | (_| || | (_| |>  <   \ V /| |  __/\ V  V /
- *  \__,_|/ |\__,_/_/\_\   \_/ |_|\___| \_/\_/
- *      |__/
-*/
-
 ?>
 <style>
 
@@ -49,121 +40,109 @@
     }
 
     th.th-border-top {
-        border-top: 1px solid #ffffff !important;
+        border-top: 1px solid #c2c2c2 !important;
+        padding: 3px;
     }
 
-    /* bigBoxes */
+    tr {
+        line-height: 18px;
+    }
 
-    .bigBox {
+    .map-popover-scrollable {
         position: fixed;
-        right: 10px;
-        bottom: 10px;
-        background-color: #004d60;
-        padding-left: 10px;
-        padding-top: 10px;
-        padding-right: 10px;
-        padding-bottom: 5px;
-        width: 390px;
-        height: 170px;
-        color: white;
-        z-index: 99999;
-        box-sizing: content-box;
-        -webkit-box-sizing: content-box;
-        -moz-box-sizing: content-box;
-        border-left: 5px solid rgba(0, 0, 0, 0.15);
-        overflow: hidden;
+        right: 0px;
+        max-height: 95%;
+        overflow-y: scroll;
+        overflow-x: hidden;
     }
 
-    .bigBox span {
-        font-size: 17px;
-        font-weight: 300;
-        letter-spacing: -1px;
-        padding: 5px 0 !important;
-        display: block;
+    .jarviswidget {
+        margin-bottom: 0px !important;
     }
 
-    .bigBox p {
-        font-size: 13px;
-        margin-top: 10px;
-    }
-
-    #divMiniIcons {
-        position: fixed;
-        width: 415px;
-        right: 10px;
-        bottom: 200px;
-        z-index: 9999;
-        float: right;
-    }
-
-    .bigBox .bigboxicon {
-        display: none;
+    .tooltipProgressBar {
+        height: 5px;
+        width: 100%;
+        background-color: #646464;
     }
 
 </style>
-<table class="table-no-bordered">
-    <tr>
-        <td></td>
-        <?php
-        $additionalFilters = [
-            'acknowledged' => ['has_been_acknowledged' => 1],
-            'in_downtime'  => ['in_downtime' => 1],
-            'not_handled'  => ['has_not_been_acknowledged' => 1],
-            'passive'      => ['passive' => 1]
-        ];
-        ?>
 
-        <th class="text-center font-xs">
-            <div class="label label-table label-success"><? __('ok'); ?></div>
-        </th>
-        <th class="text-center font-xs">
-            <div class="label label-table label-warning"><? __('warning'); ?></div>
-        </th>
-        <th class="text-center font-xs">
-            <div class="label label-table label-danger"><? __('critical'); ?></div>
-        </th>
-        <th class="text-center font-xs">
-            <div class="label label-table label-default"><? __('unknown'); ?></div>
-        </th>
-    </tr>
+<div class="map-summary-state-popover col-xs-12 no-padding animated slideInRight map-popover-scrollable"
+     ng-if="host.hostId"
+     ng-click="hideTooltip($event)"
+     ng-mouseover="stopInterval()"
+     ng-mouseleave="startInterval()">
+    <section>
+        <div class="row">
+            <article>
+                <div class="jarviswidget bg-color-white">
+                    <header>
+                        <h2 class="bold txt-color-blueDark">
+                            <i class="fa fa-location-arrow fa-lg txt-color-blueDark"></i>
+                            <a ng-show="hasBrowserRight" ui-sref="HostsBrowser({id: host.hostId})">{{host.title}}</a>
+                            <div class="display-inline" ng-hide="hasBrowserRight">{{host.title}}</div>
+                        </h2>
+                        <div class="col-md-12 no-padding">
+                            <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
+                        </div>
+                    </header>
+                    <div class="">
+                        <table class="table-no-bordered">
+                            <tr>
+                                <td></td>
 
-        <tr class="font-xs" ng-repeat="(key, obj) in serviceStateSummary">
-            <?php
-            $additionalFilter = null;
-            if(in_array($key, array_keys($additionalFilters), true)){
-                $additionalFilter = $additionalFilters[$key];
-            }
+                                <th class="text-center font-xs">
+                                    <div class="label label-table label-success"><?php echo __('ok'); ?></div>
+                                </th>
+                                <th class="text-center font-xs">
+                                    <div class="label label-table label-warning"><?php echo __('warning'); ?></div>
+                                </th>
+                                <th class="text-center font-xs">
+                                    <div class="label label-table label-danger"><?php echo __('critical'); ?></div>
+                                </th>
+                                <th class="text-center font-xs">
+                                    <div class="label label-table label-default"><?php echo __('unknown'); ?></div>
+                                </th>
+                            </tr>
 
-            ?>
-                <th ng-if="key == 'state'" ng-repeat-start="(state, stateCount) in obj.state">{{state}}</th>
-                <td ng-if="key == 'state'" ng-repeat-end="" class="text-center">
+                            <tr class="font-xs" ng-repeat="(key, state) in serviceStateSummary" ng-if="key !== 'total'">
+                                <th>
+                                    {{key}}
+                                </th>
+                                <td class="text-center" ng-repeat="counter in [0,1,2,3]">
 
-                    <div ng-if="stateCount > 0">
-                        <?php
-                        //$filterArray['Hosts.id'] = $hostId;
+                                    <div ng-show="state[counter] > 0">
+                                        <?php
+                                        if ($this->Acl->hasPermission('index', 'services')): ?>
+                                            <a class="cursor-pointer" ng-click="goToState(key, counter, host.hostId)">
+                                                {{state[counter]}}&nbsp;
+                                                ({{state[counter]/serviceStateSummary.total*100}})
+                                            </a>
+                                        <?php
+                                        else: ?>
+                                            {{state[counter]}}&nbsp;
+                                            ({{state[counter]/serviceStateSummary.total*100}})
+                                        <?php endif; ?>
+                                    </div>
+                                    <div ng-show="!state[counter] || state[counter] <= 0">
+                                        ---
+                                    </div>
 
-                        if ($this->Acl->hasPermission('index', 'services')): ?>
-                            <a ui-sref="ServicesIndex({servicestate: [{{state}}], sort: 'Servicestatus.last_state_change', direction: 'desc'})"
-                               target="_blank">
-                                {{stateCount}}&nbsp;
-                                ({{stateCount/serviceStateSummary.total*100}})
-                            </a>
-                        <?php
-                        else: ?>
-                            {{stateCount}}&nbsp;
-                            ({{stateCount/serviceStateSummary.total*100}})
-                        <?php endif; ?>
+                                </td>
+                            </tr>
+
+                            <tr class="font-xs">
+                                <th colspan="5" class="text-right th-border-top">
+                                    <?php echo __('TOTAL:'); ?>&nbsp;{{serviceStateSummary.total}}
+                                </th>
+                            </tr>
+
+                        </table>
                     </div>
-                    <div ng-if="stateCount <= 0">
-                        ---
-                    </div>
 
-                </td>
-
-                <th ng-if="key == 'total'" colspan="5" class="text-right th-border-top">
-                    <? __('TOTAL:'); ?>&nbsp;{{obj}}
-                </th>
-
-        </tr>
-
-</table>
+                </div>
+            </article>
+        </div>
+    </section>
+</div>

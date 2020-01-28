@@ -581,6 +581,33 @@ class Menu {
                     [],
                     7
                 ))
+            )
+            ->addCategory((new MenuCategory(
+                'agent_category',
+                __('openITCOCKPIT Agent'),
+                4,
+                'fa fa-user-secret'
+            ))
+                ->addLink(new MenuLink(
+                    __('Agent Servicetemp.'),
+                    'ServicetemplatesAgent',
+                    'servicetemplates',
+                    'agent',
+                    '',
+                    'fa fa-pencil-square-o',
+                    [],
+                    1
+                ))
+                ->addLink(new MenuLink(
+                    __('Agent Checks'),
+                    'AgentchecksIndex',
+                    'agentchecks',
+                    'index',
+                    '',
+                    'fa fa-cogs',
+                    [],
+                    2
+                ))
             );
         $Configuration = new MenuHeadline(self::MENU_CONFIGURATION, __('System Configuration'), 4);
         $Configuration

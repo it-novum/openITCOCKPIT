@@ -923,7 +923,7 @@ class ServicetemplatesController extends AppController {
             return;
         }
 
-        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        /** @var ServicetemplatesTable $ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
         $ServicetemplateFilter = new ServicetemplateFilter($this->request);

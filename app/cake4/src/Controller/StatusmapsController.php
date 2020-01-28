@@ -28,7 +28,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Lib\Interfaces\HoststatusTableInterface;
-use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
@@ -44,6 +43,7 @@ use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
 use itnovum\openITCOCKPIT\Filter\StatusmapFilter;
+use Statusengine2Module\Model\Table\ServicestatusTable;
 
 
 /**
@@ -56,17 +56,13 @@ class StatusmapsController extends AppController {
      * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
     public function index() {
-        if (!$this->isAngularJsRequest()) {
-            return;
-        }
-
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var HoststatusTableInterface $HoststatusTable */
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
         $this->loadComponent('StatusMap');
 
-        if (!$this->isApiRequest()) {
+        if (!$this->isAngularJsRequest()) {
             /** @var SystemsettingsTable $Systemsettings */
             $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
             $masterInstanceName = $Systemsettings->getMasterInstanceName();
@@ -94,6 +90,7 @@ class StatusmapsController extends AppController {
             }
             $satellites[0] = $masterInstanceName;
             $this->set('satellites', $satellites);
+            return;
         }
 
         $session = $this->request->getSession();
@@ -104,33 +101,6 @@ class StatusmapsController extends AppController {
         if ($this->request->getQuery('showAll') === 'false') {
 
             $parentHostWithChildIds = $HostsTable->parentHostsWithChildIds();
-
-            /*$parentHostWithChildIds = $this->Parenthost->find('all', [
-                'recursive' => -1,
-                'joins'     => [
-                    [
-                        'table'      => 'hosts',
-                        'alias'      => 'HostToParenthostParent',
-                        'type'       => 'INNER',
-                        'conditions' => [
-                            'Parenthost.parenthost_id = HostToParenthostParent.id',
-                        ],
-                    ],
-                    [
-                        'table'      => 'hosts',
-                        'alias'      => 'HostToParenthostChild',
-                        'type'       => 'INNER',
-                        'conditions' => [
-                            'Parenthost.host_id = HostToParenthostChild.id',
-                        ],
-                    ]
-                ],
-                'fields'    => [
-                    'HostToParenthostParent.id',
-                    'HostToParenthostChild.id'
-                ],
-            ]);*/
-
 
             foreach ($parentHostWithChildIds as $parentHostWithChildId) {
                 if (!in_array($parentHostWithChildId['HostToParenthostParent']['id'], $allHostIds, true)) {
@@ -160,47 +130,6 @@ class StatusmapsController extends AppController {
         $nodes = [];
         $edges = [];
 
-        /*
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Parenthost' => [
-                    'fields' => [
-                        'Parenthost.id'
-                    ]
-                ]
-            ],
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.description',
-                'Host.address',
-                'Host.disabled',
-                'Host.satellite_id'
-            ],
-            'conditions' => $StatusmapFilter->indexFilter()
-
-        ];
-
-        if (!empty($containerIds)) {
-            $query['joins'] = [
-                [
-                    'table'      => 'hosts_to_containers',
-                    'alias'      => 'HostsToContainers',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'HostsToContainers.host_id = Host.id',
-                    ],
-                ]
-            ];
-            $query['conditions']['HostsToContainers.container_id'] = $containerIds;
-            $query['group'] = ['Host.id'];
-        }
-        if (!empty($allHostIds)) {
-            $query['conditions']['Host.id'] = $allHostIds;
-        }
-        */
         $count = $HostsTable->getHostsForStatusmaps($StatusmapFilter->indexFilter(), $containerIds, $allHostIds, true);
 
         $limit = 100;
@@ -262,15 +191,19 @@ class StatusmapsController extends AppController {
 
     /**
      * @param int|null $hostId
+     * @throws \App\Lib\Exceptions\InvalidArgumentException
      * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
     public function hostAndServicesSummaryStatus($hostId = null) {
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
         if (!$hostId) {
             throw new NotFoundException(__('Invalid request parameters'));
         }
         /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-        /** @var ServicestatusTableInterface $ServicestatusTable */
+        /** @var ServicestatusTable $ServicestatusTable */
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
         $serviceUuids = $ServicesTable->getServiceUuidsOfHostByHostId($hostId);
@@ -282,7 +215,7 @@ class StatusmapsController extends AppController {
         $servicestatus = $ServicestatusTable->byUuids($serviceUuids, $ServicestatusFields);
 
         $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatus);
-        $serviceStateSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, false);
+        $serviceStateSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, true);
 
         $this->set('serviceStateSummary', $serviceStateSummary);
         $this->set('hostId', $hostId);

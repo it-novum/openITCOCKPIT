@@ -43,14 +43,14 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
 <div class="row padding-bottom-10">
     <div class="col col-xs-12 no-padding">
         <select
-                id="Instance"
-                data-placeholder="<?php echo __('Filter by instance'); ?>"
-                class="form-control"
-                chosen="{}"
-                ng-model="filter.Hosts.satellite_id"
-                ng-model-options="{debounce: 500}">
+            id="Instance"
+            data-placeholder="<?php echo __('Filter by instance'); ?>"
+            class="form-control"
+            chosen="{}"
+            ng-model="filter.Hosts.satellite_id"
+            ng-model-options="{debounce: 500}">
             <?php
-            if(isset($satellites) && !empty($satellites)):
+            if (isset($satellites) && !empty($satellites)):
                 foreach ($satellites as $satelliteId => $satelliteName):
                     printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
                 endforeach;
@@ -190,3 +190,6 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
         </div>
     </div>
 </div>
+<statusmaps-host-and-services-summary-status-directive
+    host="statusMapsSummaryHost" has-browser-right="hasBrowserRight"
+    ts="statusMapsSummaryTS"></statusmaps-host-and-services-summary-status-directive>

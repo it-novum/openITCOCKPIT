@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('StatusmapsIndexController', function($scope, $q, $http, $timeout, QueryStringService){
+    .controller('StatusmapsIndexController', function($scope, $q, $http, $sce, $timeout, QueryStringService){
 
         /*** Filter Settings ***/
         $scope.clearFilter = function(){
@@ -26,7 +26,7 @@ angular.module('openITCOCKPIT')
         $scope.timer = null;
         $scope.hasBrowserRight = false;
 
-        angular.element(document).ready(function () {
+        angular.element(document).ready(function(){
             $scope.container = document.getElementById('statusmap');
 
             var offset = $($scope.container).offset();
@@ -295,35 +295,9 @@ angular.module('openITCOCKPIT')
                 if(nodeId === 0){
                     return false;
                 }
-                var node = data.nodes.get(nodeId);
-
-                $q.all([
-                    $http.get("/hosts/hoststatus/" + node.uuid + ".json", {
-                        params: {
-                            'angular': true
-                        }
-                    }),
-                    $http.get("/statusmaps/hostAndServicesSummaryStatus/" + node.hostId, {
-                        params: {
-                            'angular': true
-                        }
-                    })
-                ]).then(function(results){
-                    var bigBoxIcon = $scope.getIconForHoststatus(results[0].data.hoststatus.Hoststatus);
-                    var title = node.title;
-                    if($scope.hasBrowserRight){
-                        title = '<a href="/#!/hosts/browser/' + node.hostId
-                            + '" target="_blank" class="txt-color-white">' + node.title + '</a>';
-                    }
-                    $.bigBox({
-                        title: title,
-                        content: results[1].data,
-                        icon: 'fa ' + bigBoxIcon + ' flash animated',
-                        timeout: 10000
-                    });
-
-                    return;
-                });
+                $scope.statusMapsSummaryHost = data.nodes.get(nodeId);
+                $scope.statusMapsSummaryTS = Math.floor(Date.now());
+                $scope.$apply();
             });
         };
 
