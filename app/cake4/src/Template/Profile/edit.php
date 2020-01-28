@@ -188,6 +188,29 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                         <hr>
 
+
+                        <div class="form-group required" ng-class="{'has-error': errors.dateformat}">
+                            <label class="control-label" for="UserLang">
+                                <?php echo __('Language'); ?>
+                            </label>
+                            <select
+                                id="UserLang"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="{}">
+                                <option>
+                                    Australia
+                                </option>
+                                <option>
+                                    Austria
+                                </option>
+                            </select>
+                            <div ng-repeat="error in errors.dateformat">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+
                         <div class="form-group required" ng-class="{'has-error': errors.dateformat}">
                             <label class="control-label" for="UserDateformat">
                                 <?php echo __('Date format'); ?>
