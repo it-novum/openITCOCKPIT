@@ -479,3 +479,7 @@ https://www.color-hex.com/color/727b84
 .notification-title, .notification-message {
     color: #212529;
 }
+
+.selectedMapItem {
+    background: #0088cc;
+}
