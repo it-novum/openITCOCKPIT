@@ -1061,25 +1061,26 @@
 </div>
 
 
-
 <!-- Change background image modal -->
 <div id="changeBackgroundModal" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
-                    <i class="fa fa-picture-o"></i>
+                <h5 class="modal-title">
+                    <i class="fa fa-desktop"></i>
                     <?php echo __('Change background image'); ?>
-                </h4>
+                </h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
             </div>
             <div class="modal-body">
-
                 <div class="row">
-                    <div class="col-xs-12">
+                    <div class="col-lg-12">
                         <?php echo __('Choose background image'); ?>
                     </div>
-                    <div class="col-xs-12">
+                    <div class="col-lg-12">
                         <div class="row" style="max-height: 400px; overflow: auto;">
                             <div class="col-xs-12 col-md-6 col-lg-3" ng-repeat="background in backgrounds">
                                 <div class="thumbnail"
@@ -1095,29 +1096,28 @@
                                          ng-src="{{background.thumbnail}}">
                                 </div>
                             </div>
-
-
                         </div>
                     </div>
 
-                    <div class="col-xs-12 padding-top-10">
+                    <div class="col-lg-12">
                         <?php echo __('Upload new background image'); ?>
                     </div>
-                    <div class="col-xs-12 text-info">
+                    <div class="col-lg-12 text-info">
                         <i class="fa fa-info-circle"></i>
                         <?php echo __('Max allowed file size: '); ?>
                         {{ maxUploadLimit.string }}
                     </div>
-                    <div class="col-xs-12">
-                        <div class="background-dropzone dropzone"
+                    <div class="col-lg-12">
+                        <div class="profileImg-dropzone dropzone dropzoneStyle"
                              action="/map_module/backgroundUploads/upload/.json">
+                            <div class="dz-message">
+                                <i class="fas fa-cloud-upload-alt fa-5x text-muted mb-3"></i> <br>
+                                <span class="text-uppercase">Drop files here or click to upload.</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-
             </div>
-
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>
@@ -1126,6 +1126,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Add/Edit stateless text modal -->
 <div id="AddEditStatelessTextModal" class="modal" role="dialog">
