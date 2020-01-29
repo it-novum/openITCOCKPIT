@@ -58,6 +58,14 @@ class AclDependencies {
     private $dependencies = [];
 
     /**
+     * Action names that should be ignored and not displayed by the frontend
+     * @var array
+     */
+    private $ignore = [
+        'initializePluginTables'
+    ];
+
+    /**
      * AclDependencies constructor.
      */
     public function __construct() {
@@ -803,6 +811,11 @@ class AclDependencies {
                         if (isset($allDependenciesSimplified[$pluginName][$pluginControllerName][$pluginActionName])) {
                             unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$pluginControllerIndex]['children'][$pluginActionIndex]);
                         }
+
+                        // Remove ACOs that shoud be ignored like public functions form AppController that exists in all controllers due to class FooController extends AppController and so on
+                        if (in_array($pluginActionName, $this->ignore, true)) {
+                            unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$pluginControllerIndex]['children'][$pluginActionIndex]);
+                        }
                     }
                 }
 
@@ -819,6 +832,11 @@ class AclDependencies {
 
                     // Remove ACOs if they are dependencies of other ACOs (the user cannot untick them!)
                     if (isset($allDependenciesSimplified[$controllerName][$actionName])) {
+                        unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$actionIndex]);
+                    }
+
+                    // Remove ACOs that shoud be ignored like public functions form AppController that exists in all controllers due to class FooController extends AppController and so on
+                    if (in_array($actionName, $this->ignore, true)) {
                         unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$actionIndex]);
                     }
                 }

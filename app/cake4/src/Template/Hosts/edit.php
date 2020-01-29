@@ -316,32 +316,34 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group" ng-class="{'has-error': errors.satellite_id}">
-                                                <label class="col-xs-12 col-lg-2 control-label">
-                                                    <?php if ($this->Acl->hasPermission('edit', 'satellites', 'DistributeModule')): ?>
-                                                        <a ui-sref="SatellitesEdit({id:post.Host.satellite_id})"
-                                                           ng-if="post.Host.satellite_id > 0">
+                                            <?php if (\Cake\Core\Plugin::isLoaded('DistributeModule')): ?>
+                                                <div class="form-group" ng-class="{'has-error': errors.satellite_id}">
+                                                    <label class="col-xs-12 col-lg-2 control-label">
+                                                        <?php if ($this->Acl->hasPermission('edit', 'satellites', 'DistributeModule')): ?>
+                                                            <a ui-sref="SatellitesEdit({id:post.Host.satellite_id})"
+                                                               ng-if="post.Host.satellite_id > 0">
+                                                                <?php echo __('Satellite'); ?>
+                                                            </a>
+                                                            <span ng-if="post.Host.satellite_id == 0"><?php echo __('Satellite'); ?></span>
+                                                        <?php else: ?>
                                                             <?php echo __('Satellite'); ?>
-                                                        </a>
-                                                        <span ng-if="post.Host.satellite_id == 0"><?php echo __('Satellite'); ?></span>
-                                                    <?php else: ?>
-                                                        <?php echo __('Satellite'); ?>
-                                                    <?php endif; ?>
-                                                </label>
-                                                <div class="col-xs-12 col-lg-10">
-                                                    <select
-                                                            id="SatellitesSelect"
-                                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                                            class="form-control"
-                                                            chosen="satellites"
-                                                            ng-options="satellite.key as satellite.value for satellite in satellites"
-                                                            ng-model="post.Host.satellite_id">
-                                                    </select>
-                                                    <div ng-repeat="error in errors.satellite_id">
-                                                        <div class="help-block text-danger">{{ error }}</div>
+                                                        <?php endif; ?>
+                                                    </label>
+                                                    <div class="col-xs-12 col-lg-10">
+                                                        <select
+                                                                id="SatellitesSelect"
+                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                class="form-control"
+                                                                chosen="satellites"
+                                                                ng-options="satellite.key as satellite.value for satellite in satellites"
+                                                                ng-model="post.Host.satellite_id">
+                                                        </select>
+                                                        <div ng-repeat="error in errors.satellite_id">
+                                                            <div class="help-block text-danger">{{ error }}</div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            <?php endif; ?>
 
                                         </div>
 
