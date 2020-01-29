@@ -580,61 +580,56 @@
     </div>
 </div>
 
-
-<!-- Add/Edit map item modal OLD!!!!!!! -->
-
 <!-- Add/Edit map line modal -->
 <div id="addEditMapLineModal" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
-                    <i class="fa fa-pencil"></i>
+                <h5 class="modal-title">
+                    <i class="fa fa-desktop"></i>
                     <?php echo __('Add or edit line'); ?>
-                </h4>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
             </div>
             <div class="modal-body">
-
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="form-group smart-form" ng-class="{'has-error': errors.type}">
-                            <span class="hintmark_red">
+                    <div class="row">
+                        <div class="form-group col-lg-12" ng-class="{'has-error': errors.type}">
+                            <label class="control-label">
                                 <?php echo __('Select object type'); ?>
-                            </span>
-                            <label class="select">
-                                <select ng-model="currentItem.type">
-                                    <?php if ($this->Acl->hasPermission('index', 'hosts', '')): ?>
-                                        <option value="host"><?php echo __('Host'); ?></option>
-                                    <?php endif; ?>
-                                    <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
-                                        <option value="service"><?php echo __('Service'); ?></option>
-                                    <?php endif; ?>
-                                    <?php if ($this->Acl->hasPermission('index', 'hostgroups', '')): ?>
-                                        <option value="hostgroup"><?php echo __('Hostgroup'); ?></option>
-                                    <?php endif; ?>
-                                    <?php if ($this->Acl->hasPermission('index', 'servicegroups', '')): ?>
-                                        <option value="servicegroup"><?php echo __('Servicegroup'); ?></option>
-                                    <?php endif; ?>
-                                    <option value="map"><?php echo __('Map'); ?></option>
-                                    <option value="stateless"><?php echo __('Stateless line'); ?></option>
-                                </select> <i></i>
                             </label>
+                            <select
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="{}"
+                                ng-model="currentItem.type">
+                                <?php if ($this->Acl->hasPermission('index', 'hosts', '')): ?>
+                                    <option value="host"><?php echo __('Host'); ?></option>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
+                                    <option value="service"><?php echo __('Service'); ?></option>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('index', 'hostgroups', '')): ?>
+                                    <option value="hostgroup"><?php echo __('Hostgroup'); ?></option>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('index', 'servicegroups', '')): ?>
+                                    <option value="servicegroup"><?php echo __('Servicegroup'); ?></option>
+                                <?php endif; ?>
+                                <option value="map"><?php echo __('Map'); ?></option>
+                                <option value="stateless"><?php echo __('Stateless line'); ?></option>
+                            </select>
                             <div ng-repeat="error in errors.type">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-xs-12" ng-show="currentItem.type !== 'stateless'">
-                        <div class="form-group smart-form hintmark_red">
-                            <?php echo __('Select object'); ?>
-                        </div>
-                    </div>
-                    <div class="col-xs-12" ng-show="currentItem.type !== 'stateless'">
-                        <div class="form-group" ng-class="{'has-error': errors.object_id}">
+                    <div class="row">
+                        <div class="form-group col-lg-12 margin-top-10" ng-class="{'has-error': errors.object_id}">
+                            <label class="control-label">
+                                <?php echo __('Select object'); ?>
+                            </label>
                             <select
-                                id="AddEditLineObjectSelect"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="itemObjects"
@@ -647,78 +642,93 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <br/>
 
-                <div class="row">
-                    <div class="col-xs-12 col-lg-6 smart-form">
-                        <div class="form-group smart-form" ng-class="{'has-error': errors.startX}">
-                            <label class="label hintmark_red"><?php echo __('Start X'); ?></label>
-                            <label class="input"> <b class="icon-prepend">X</b>
-                                <input type="number" min="0" class="input-sm"
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label class="control-label" for="addEditLinePosStartX">
+                                <?php echo __('Start X'); ?>
+                            </label>
+                            <div class="input-group" ng-class="{'has-error': errors.startX}">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i
+                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                </div>
+                                <input type="text"
+                                       class="form-control"
+                                       id="addEditLinePosStartX"
                                        placeholder="<?php echo __('0'); ?>"
                                        ng-model="currentItem.startX">
-                            </label>
+                            </div>
                             <div ng-repeat="error in errors.startX">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-xs-12 col-lg-6 smart-form" ng-class="{'has-error': errors.startY}">
-                        <div class="form-group smart-form">
-                            <label class="label hintmark_red"><?php echo __('Start Y'); ?></label>
-                            <label class="input"> <b class="icon-prepend">Y</b>
-                                <input type="number" min="0" class="input-sm"
+                        <div class="col-lg-6">
+                            <label class="control-label" for="addEditLinePosStartY">
+                                <?php echo __('Start Y'); ?>
+                            </label>
+                            <div class="input-group" ng-class="{'has-error': errors.startY}">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i
+                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                </div>
+                                <input type="text"
+                                       class="form-control"
+                                       id="addEditLinePosStartY"
                                        placeholder="<?php echo __('0'); ?>"
                                        ng-model="currentItem.startY">
-                            </label>
-                        </div>
-                        <div ng-repeat="error in errors.startY">
-                            <div class="help-block text-danger">{{ error }}</div>
-                        </div>
-                    </div>
-                </div>
-                <br/>
-                <div class="row">
-                    <div class="col-xs-12 col-lg-6 smart-form">
-                        <div class="form-group smart-form" ng-class="{'has-error': errors.endX}">
-                            <label class="label hintmark_red"><?php echo __('End X'); ?></label>
-                            <label class="input"> <b class="icon-prepend">X</b>
-                                <input type="number" min="0" class="input-sm"
-                                       placeholder="<?php echo __('0'); ?>"
-                                       ng-model="currentItem.endX">
-                            </label>
-                            <div ng-repeat="error in errors.endX">
+                            </div>
+                            <div ng-repeat="error in errors.startY">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-lg-6 smart-form" ng-class="{'has-error': errors.endY}">
-                        <div class="form-group smart-form">
-                            <label class="label hintmark_red"><?php echo __('End Y'); ?></label>
-                            <label class="input"> <b class="icon-prepend">Y</b>
-                                <input type="number" min="0" class="input-sm"
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label class="control-label" for="addEditLinePosEndX">
+                                <?php echo __('End X'); ?>
+                            </label>
+                            <div class="input-group" ng-class="{'has-error': errors.endX}">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i
+                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                </div>
+                                <input type="text"
+                                       class="form-control"
+                                       id="addEditLinePosEndX"
+                                       placeholder="<?php echo __('0'); ?>"
+                                       ng-model="currentItem.endX">
+                            </div>
+                            <div ng-repeat="error in errors.endX">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="control-label" for="addEditLinePosEndY">
+                                <?php echo __('End Y'); ?>
+                            </label>
+                            <div class="input-group" ng-class="{'has-error': errors.endY}">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i
+                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                </div>
+                                <input type="text"
+                                       class="form-control"
+                                       id="addEditLinePosEndY"
                                        placeholder="<?php echo __('0'); ?>"
                                        ng-model="currentItem.endY">
+                            </div>
+                            <div ng-repeat="error in errors.endY">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-10 margin-top-10" ng-class="{'has-error': errors.z_index}">
+                            <label class="control-label">
+                                <?php echo __('Select layer'); ?>
                             </label>
-                        </div>
-                        <div ng-repeat="error in errors.endY">
-                            <div class="help-block text-danger">{{ error }}</div>
-                        </div>
-                    </div>
-                </div>
-                <br/>
-
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="form-group smart-form hintmark_red">
-                            <?php echo __('Select layer'); ?>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-md-6 col-lg-10">
-                        <div class="form-group required" ng-class="{'has-error': errors.z_index}">
                             <select
-                                id="selectItemLayerSelect"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="layers"
@@ -729,55 +739,49 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                             <span class="help-block">
-                                <?php echo __('Layers could be used to stack items on a map. Empty layers will be deleted automatically.'); ?>
-                            </span>
+                            <?php echo __('Layers could be used to stack items on a map. Empty layers will be deleted automatically.'); ?>
+                        </span>
+                        </div>
+                        <div class="col-lg-2">
+                            <button class="btn btn-block btn-default margin-top-30" ng-click="addNewLayer()">
+                                <?php echo __('Add new layer'); ?>
+                            </button>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-md-6 col-lg-2">
-                        <button class="btn btn-block btn-default" ng-click="addNewLayer()">
-                            <?php echo __('Add new layer'); ?>
-                        </button>
-                    </div>
-                </div>
-                <br/>
 
-                <div class="row" ng-show="currentItem.type !== 'stateless'">
-                    <div class="col-xs-12">
-                        <div class="form-group smart-form">
-                            <?php echo __('Label options'); ?>
-                        </div>
-                    </div>
-                    <div class="col-xs-12">
-                        <div class="form-group smart-form no-padding">
-                            <label class="checkbox small-checkbox-label">
-                                <input type="checkbox" name="checkbox"
+                    <div class="row">
+                        <div class="form-group col-lg-4" ng-class="{'has-error': errors.show_label}">
+                            <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                                 ng-class="{'has-error': errors.show_label}">
+
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="addEditElShowLabel"
                                        ng-model="currentItem.show_label">
-                                <i class="checkbox-primary"></i>
-                                <?php echo __('Show label'); ?>
-                            </label>
+                                <label class="custom-control-label" for="addEditElShowLabel">
+                                    <?php echo __('Show Label'); ?>
+                                </label>
+                            </div>
                         </div>
                     </div>
-
-                </div>
             </div>
-
             <div class="modal-footer">
-
-                <button type="button" class="btn btn-danger pull-left" ng-click="deleteLine()">
+                <button type="button" class="btn btn-danger mr-auto" ng-click="deleteItem()">
                     <?php echo __('Delete'); ?>
                 </button>
-
+                <button type="button" class="btn btn-success" ng-click="saveItem()">
+                    <?php echo __('Save'); ?>
+                </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>
-                </button>
-
-                <button type="button" class="btn btn-primary" ng-click="saveLine()">
-                    <?php echo __('Save'); ?>
                 </button>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- Add/Edit map gadget modal -->
 <div id="addEditMapGadgetModal" class="modal" role="dialog">
