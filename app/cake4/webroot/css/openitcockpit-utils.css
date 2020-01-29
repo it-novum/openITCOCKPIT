@@ -229,8 +229,16 @@ openITCOCKPIT v4 Utilities
     margin-top: 25px;
 }
 
+.margin-top-30 {
+    margin-top: 30px;
+}
+
 .margin-left-10 {
     margin-left: 10px;
+}
+
+.margin-left-12 {
+    margin-left: 12px;
 }
 
 .margin-left-15 {

@@ -517,7 +517,7 @@
                 <div class="row">
 
                     <div class="col-xs-12">
-                        <div class="form-group" ng-class="{'has-error': ack.error}">
+                        <div class="form-group">
                             <label class="input"> <i class="icon-prepend fa fa-pencil"></i>
                                 <input type="text" class="input-sm"
                                        placeholder="<?php echo __('New title of widget'); ?>"

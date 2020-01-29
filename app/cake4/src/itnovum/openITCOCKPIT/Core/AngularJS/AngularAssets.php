@@ -158,7 +158,7 @@ class AngularAssets implements AngularAssetsInterface {
         //'my_vis.css',
         '/node_modules/noty/lib/noty.css',
         '/node_modules/angular-flippy/dist/css/angular-flippy.min.css',
-        //'vendor/image-picker.css',
+        'legacy/css/vendor/image-picker.css',
         '/node_modules/angular-gridster/dist/angular-gridster.min.css',
         //'vendor/radio_buttons.css',
 

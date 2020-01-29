@@ -48,6 +48,25 @@
                     <span class="fw-300"><i>{{map.Map.name}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
+                    <label class="checkbox small-checkbox-label">
+                        <input type="checkbox" name="checkbox" checked="checked"
+                               ng-model="grid.enabled">
+                        <i class="checkbox-primary"></i>
+                        <?php echo __('Enable grid'); ?>
+                    </label>
+                    <button class="btn dropdown-toggle btn-default btn-xs mr-1 shadow-0" data-toggle="dropdown">
+                        <i class="fas fa-th"></i>
+                        <?php echo __('Grid size'); ?>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <?php
+                        $gridSizes = [5, 10, 15, 20, 25, 30, 50, 80];
+                        foreach ($gridSizes as $size): ?>
+                            <button class="dropdown-item" ng-click="changeGridSize(<?php echo $size; ?>)">
+                                <?php printf('%sx%spx', $size, $size); ?>
+                            </button>
+                        <?php endforeach; ?>
+                    </ul>
                     <?php if ($this->Acl->hasPermission('index', 'maps', 'mapmodule')): ?>
                         <a back-button fallback-state='MapsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
@@ -62,359 +81,318 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
+                    <!-- start map-editor -->
+                    <div id="map-editor">
+                        <!-- start mainMapContainer -->
+                        <div style="overflow: auto; min-height:600px; " ng-click="addNewObjectFunc($event)"
+                             id="mainMapContainer">
+                            <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}"
+                                 ng-if="map.Map.background"/>
+                            <div ng-repeat="item in map.Mapitems" class="draggable" ng-dblclick="editItem(item)"
+                                 style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}}; cursor: move;"
+                                 data-id="{{item.id}}" data-type="item" ng-show="item.display">
+                                <map-item item="item" refresh-interval="0"></map-item>
+                            </div>
 
+                            <div ng-repeat="textItem in map.Maptexts" class="draggable"
+                                 style="position:absolute; top: {{textItem.y}}px; left: {{textItem.x}}px;  z-index: {{textItem.z_index}}; cursor: move;"
+                                 data-id="{{textItem.id}}" data-type="text" ng-dblclick="editText(textItem)"
+                                 ng-show="textItem.display">
+                                <map-text item="textItem"></map-text>
+                            </div>
 
+                            <div ng-repeat="lineItem in map.Maplines" ng-dblclick="editLine(lineItem)"
+                                 style="position: absolute; top: {{lineItem.startY}}px; left: {{lineItem.startX}}px; cursor: move;"
+                                 data-id="{{lineItem.id}}" data-type="line"
+                                 data-oldstartx="{{lineItem.startX}}" data-oldstarty="{{lineItem.startY}}"
+                                 data-oldendx="{{lineItem.endX}}" data-oldendy="{{lineItem.endY}}"
+                                 class="draggable" ng-show="lineItem.display">
+                                <map-line item="lineItem" refresh-interval="0"></map-line>
+                            </div>
 
+                            <div ng-repeat="iconItem in map.Mapicons"
+                                 style="position:absolute; top: {{iconItem.y}}px; left: {{iconItem.x}}px;  z-index: {{iconItem.z_index}}; cursor: move;"
+                                 class="draggable"
+                                 data-id="{{iconItem.id}}" data-type="icon" ng-dblclick="editIcon(iconItem)"
+                                 ng-show="iconItem.display">
+                                <map-icon item="iconItem"></map-icon>
+                            </div>
 
+                            <div ng-repeat="gadgetItem in map.Mapgadgets" class="draggable resizable"
+                                 style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;"
+                                 data-id="{{gadgetItem.id}}" data-type="gadget" ng-dblclick="editGadget(gadgetItem)"
+                                 ng-show="gadgetItem.display" ng-if="gadgetItem.gadget !== 'ServiceOutput'">
+                                <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"
+                                            refresh-interval="0"></graph-item>
 
+                                <perfdata-text-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Text'"
+                                                    refresh-interval="0"></perfdata-text-item>
+                                <tacho-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Tacho'"
+                                            refresh-interval="0"></tacho-item>
 
+                                <cylinder-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Cylinder'"
+                                               refresh-interval="0"></cylinder-item>
 
+                                <trafficlight-item item="gadgetItem"
+                                                   ng-if="gadgetItem.gadget === 'TrafficLight'"
+                                                   refresh-interval="0"></trafficlight-item>
 
+                                <temperature-item item="gadgetItem"
+                                                  ng-if="gadgetItem.gadget === 'Temperature'"
+                                                  refresh-interval="0"></temperature-item>
+                            </div>
 
+                            <div ng-repeat="gadgetItem in map.Mapgadgets" class="draggable resizable-no-aspect-ratio"
+                                 style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;"
+                                 data-id="{{gadgetItem.id}}" data-type="gadget" ng-dblclick="editGadget(gadgetItem)"
+                                 ng-show="gadgetItem.display" ng-if="gadgetItem.gadget === 'ServiceOutput'">
 
+                                <service-output-item item="gadgetItem"
+                                                     ng-if="gadgetItem.gadget === 'ServiceOutput'"
+                                                     refresh-interval="0"></service-output-item>
+                            </div>
 
+                            <div ng-repeat="summaryItem in map.Mapsummaryitems"
+                                 style="position:absolute; top: {{summaryItem.y}}px; left: {{summaryItem.x}}px;  z-index: {{summaryItem.z_index}};"
+                                 class="draggable resizable"
+                                 data-id="{{summaryItem.id}}" data-type="summaryItem"
+                                 ng-dblclick="editSummaryItem(summaryItem)"
+                                 ng-show="summaryItem.display">
+                                <map-summary-item item="summaryItem" refresh-interval="0"></map-summary-item>
+                            </div>
 
+                            <div id="graph_data_tooltip"></div>
+                        </div>
+                        <!-- end mainMapContainer -->
+                        <!-- start mapToolbar -->
+                        <div id="mapToolbar">
+                            <div id="mapToolsDragger"></div>
 
+                            <div class="mapToolbarTool" title="<?php echo __('Add item'); ?>" ng-click="addItem()">
+                                <i class="fa fa-lg fa-desktop"></i>
+                            </div>
 
+                            <div class="mapToolbarTool" title="<?php echo __('Add line'); ?>" ng-click="addLine()">
+                                <i class="fas fa-lg fa-pencil-alt"></i>
+                            </div>
 
+                            <div class="mapToolbarTool" title="<?php echo __('Add summary status item'); ?>"
+                                 ng-click="addSummaryItem()">
+                                <i class="fa fa-lg fa-circle"></i>
+                            </div>
 
+                            <div class="mapToolbarLine"></div>
 
+                            <div class="mapToolbarTool" title="<?php echo __('Add gadget'); ?>" ng-click="addGadget()">
+                                <i class="fas fa-lg fa-tachometer-alt"></i>
+                            </div>
 
+                            <div class="mapToolbarLine"></div>
 
+                            <div class="mapToolbarTool" title="<?php echo __('Change background image'); ?>"
+                                 ng-click="openChangeMapBackgroundModal()">
+                                <i class="fa fa-lg fa-picture-o"></i>
+                            </div>
 
+                            <div class="mapToolbarLine"></div>
 
+                            <div class="mapToolbarTool" title="<?php echo __('Add stateless text'); ?>"
+                                 ng-click="addText()">
+                                <i class="fa fa-lg fa-font"></i>
+                            </div>
 
-
-
-<?php
-// Copyright (C) <2015>  <it-novum GmbH>
-//
-// This file is dual licensed
-//
-// 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
-//
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
-//
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-
-// 2.
-//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//	License agreement and license key will be shipped with the order
-//	confirmation.
-
-?>
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-map-marker fa-fw "></i>
-            <?php echo __('Map'); ?>
-            <span>>
-                <?php echo __('Edit'); ?>
-            </span>
-        </h1>
+                            <div class="mapToolbarTool" title="<?php echo __('Add stateless icon'); ?>"
+                                 ng-click="addIcon()">
+                                <i class="fa fa-lg fa-object-ungroup"></i>
+                            </div>
+                        </div>
+                        <!-- end mapToolbar -->
+                        <!-- start layersBox -->
+                        <div id="layersBox">
+                            <div id="layersBoxDragger"></div>
+                            <div class="layersContainer" style="overflow-y: auto;">
+                                <div class="mapLayer" ng-repeat="(key, value) in layers"
+                                     ng-class="{ 'selectedLayer': key == defaultLayer }">
+                                    <span class="cursor-pointer"
+                                          ng-click="setDefaultLayer(key)">
+                                        {{value}}
+                                    </span>
+                                    <i class="fa fa-eye pull-right padding-right-5 cursor-pointer"
+                                       ng-show="visableLayers['layer_'+key]"
+                                       ng-click="hideLayer(key)"
+                                       title="<?php echo __('Click to hide layer'); ?>"></i>
+                                    <i class="fa fa-eye-slash pull-right padding-right-5 cursor-pointer"
+                                       ng-hide="visableLayers['layer_'+key]"
+                                       ng-click="showLayer(key)"
+                                       title="<?php echo __('Click to show layer'); ?>"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end layersBox -->
+                    </div>
+                    <!-- end map-editor -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="jarviswidget bg-color-white" id="wid-id-0">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-map-marker"></i> </span>
-        <h2>
-            <?php echo __('Edit map:'); ?>
-            {{map.Map.name}}
-        </h2>
-
-        <div class="widget-toolbar" role="menu">
-            <a class="btn btn-xs btn-default" ui-sref="MapsIndex">
-                <i class="fas fa-long-arrow-alt-left"></i>
-                <?php echo __('Back to list'); ?>
-            </a>
-            <?php if ($this->Acl->hasPermission('view', 'mapeditors', 'mapmodule')): ?>
-                <a class="btn btn-xs btn-default" ui-sref="MapeditorsView({id: map.Map.id})">
-                    <i class="fa fa-eye"></i>
-                    <?php echo __('View'); ?>
-                </a>
-            <?php endif; ?>
-        </div>
-
-        <div class="widget-toolbar" role="menu">
-            <div class="btn-group">
-                <button class="btn dropdown-toggle btn-xs btn-default" data-toggle="dropdown">
-                    <?php echo __('Grid size'); ?>
-                    <i class="fa fa-caret-down"></i>
+<!-- Example modal -->
+<div id="exampleModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-plus"></i>
+                    <?php echo __('Example Heading'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
                 </button>
-                <ul class="dropdown-menu pull-right">
-                    <?php
-                    $gridSizes = [5, 10, 15, 20, 25, 30, 50, 80];
-                    foreach ($gridSizes as $size): ?>
-                        <li>
-                            <a href="javascript:void(0)" ng-click="changeGridSize(<?php echo $size; ?>)">
-                                <?php printf('%sx%spx', $size, $size); ?>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
             </div>
-        </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
 
-        <div class="widget-toolbar" role="menu">
-            <div class="form-group smart-form no-padding">
-                <label class="checkbox small-checkbox-label">
-                    <input type="checkbox" name="checkbox" checked="checked"
-                           ng-model="grid.enabled">
-                    <i class="checkbox-primary"></i>
-                    <?php echo __('Enable grid'); ?>
-                </label>
-            </div>
-        </div>
+                        <div class="form-group padding-bottom-10">
+                            <label class="control-label">
+                                <?php echo __('Tab name'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                ng-model="data.newTabName">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary float-right" ng-click="addNewTab()">
+                    <?php echo __('Create new tab'); ?>
+                </button>
+                <hr/>
+                <div class="row">
+                    <h5 class="modal-title">
+                        <i class="fa fa-plus"></i>
+                        <?php echo __('Create from shared tab'); ?>
+                    </h5>
+                </div>
+                <div class="row">
+                    <div class="form-group col-lg-12 margin-top-20">
+                        <label class="control-label">
+                            <?php echo __('Select shared tab'); ?>
+                        </label>
+                        <select
+                            data-placeholder="<?php echo __('Please choose'); ?>"
+                            class="form-control"
+                            chosen="sharedTabs"
+                            ng-options="sharedTab.id as sharedTab.name for sharedTab in sharedTabs"
+                            ng-model="data.createTabFromSharedTabId">
+                        </select>
+                    </div>
 
-
-    </header>
-    <div id="map-editor">
-        <div class="widget-body" style="overflow: auto; min-height:600px; " ng-click="addNewObjectFunc($event)"
-             id="mainMapContainer">
-            <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}" ng-if="map.Map.background"/>
-
-
-            <div ng-repeat="item in map.Mapitems" class="draggable" ng-dblclick="editItem(item)"
-                 style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}}; cursor: move;"
-                 data-id="{{item.id}}" data-type="item" ng-show="item.display">
-                <map-item item="item" refresh-interval="0"></map-item>
-            </div>
-
-            <div ng-repeat="textItem in map.Maptexts" class="draggable"
-                 style="position:absolute; top: {{textItem.y}}px; left: {{textItem.x}}px;  z-index: {{textItem.z_index}}; cursor: move;"
-                 data-id="{{textItem.id}}" data-type="text" ng-dblclick="editText(textItem)" ng-show="textItem.display">
-                <map-text item="textItem"></map-text>
-            </div>
-
-            <div ng-repeat="lineItem in map.Maplines" ng-dblclick="editLine(lineItem)"
-                 style="position: absolute; top: {{lineItem.startY}}px; left: {{lineItem.startX}}px; cursor: move;"
-                 data-id="{{lineItem.id}}" data-type="line"
-                 data-oldstartx="{{lineItem.startX}}" data-oldstarty="{{lineItem.startY}}"
-                 data-oldendx="{{lineItem.endX}}" data-oldendy="{{lineItem.endY}}"
-                 class="draggable" ng-show="lineItem.display">
-                <map-line item="lineItem" refresh-interval="0"></map-line>
-            </div>
-
-            <div ng-repeat="iconItem in map.Mapicons"
-                 style="position:absolute; top: {{iconItem.y}}px; left: {{iconItem.x}}px;  z-index: {{iconItem.z_index}}; cursor: move;"
-                 class="draggable"
-                 data-id="{{iconItem.id}}" data-type="icon" ng-dblclick="editIcon(iconItem)" ng-show="iconItem.display">
-                <map-icon item="iconItem"></map-icon>
-            </div>
-
-            <div ng-repeat="gadgetItem in map.Mapgadgets" class="draggable resizable"
-                 style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;"
-                 data-id="{{gadgetItem.id}}" data-type="gadget" ng-dblclick="editGadget(gadgetItem)"
-                 ng-show="gadgetItem.display" ng-if="gadgetItem.gadget !== 'ServiceOutput'">
-                <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"
-                            refresh-interval="0"></graph-item>
-
-                <perfdata-text-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Text'"
-                                    refresh-interval="0"></perfdata-text-item>
-                <tacho-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Tacho'"
-                            refresh-interval="0"></tacho-item>
-
-                <cylinder-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Cylinder'"
-                               refresh-interval="0"></cylinder-item>
-
-                <trafficlight-item item="gadgetItem"
-                                   ng-if="gadgetItem.gadget === 'TrafficLight'"
-                                   refresh-interval="0"></trafficlight-item>
-
-                <temperature-item item="gadgetItem"
-                                  ng-if="gadgetItem.gadget === 'Temperature'" refresh-interval="0"></temperature-item>
-            </div>
-
-            <div ng-repeat="gadgetItem in map.Mapgadgets" class="draggable resizable-no-aspect-ratio"
-                 style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;"
-                 data-id="{{gadgetItem.id}}" data-type="gadget" ng-dblclick="editGadget(gadgetItem)"
-                 ng-show="gadgetItem.display" ng-if="gadgetItem.gadget === 'ServiceOutput'">
-
-                <service-output-item item="gadgetItem"
-                                     ng-if="gadgetItem.gadget === 'ServiceOutput'"
-                                     refresh-interval="0"></service-output-item>
-            </div>
-
-            <div ng-repeat="summaryItem in map.Mapsummaryitems"
-                 style="position:absolute; top: {{summaryItem.y}}px; left: {{summaryItem.x}}px;  z-index: {{summaryItem.z_index}};"
-                 class="draggable resizable"
-                 data-id="{{summaryItem.id}}" data-type="summaryItem" ng-dblclick="editSummaryItem(summaryItem)"
-                 ng-show="summaryItem.display">
-                <map-summary-item item="summaryItem" refresh-interval="0"></map-summary-item>
-            </div>
-
-
-            <div id="graph_data_tooltip"></div>
-
-
-        </div>
-
-        <div id="mapToolbar">
-            <div id="mapToolsDragger"></div>
-
-            <div class="mapToolbarTool" title="<?php echo __('Add item'); ?>" ng-click="addItem()">
-                <i class="fa fa-lg fa-desktop"></i>
-            </div>
-
-            <div class="mapToolbarTool" title="<?php echo __('Add line'); ?>" ng-click="addLine()">
-                <i class="fa fa-lg fa-pencil"></i>
-            </div>
-
-            <div class="mapToolbarTool" title="<?php echo __('Add summary status item'); ?>"
-                 ng-click="addSummaryItem()">
-                <i class="fa fa-lg fa-circle"></i>
-            </div>
-
-            <div class="mapToolbarLine"></div>
-
-            <div class="mapToolbarTool" title="<?php echo __('Add gadget'); ?>" ng-click="addGadget()">
-                <i class="fa fa-lg fa-dashboard"></i>
-            </div>
-
-            <div class="mapToolbarLine"></div>
-
-            <div class="mapToolbarTool" title="<?php echo __('Change background image'); ?>"
-                 ng-click="openChangeMapBackgroundModal()">
-                <i class="fa fa-lg fa-picture-o"></i>
-            </div>
-
-            <div class="mapToolbarLine"></div>
-
-            <div class="mapToolbarTool" title="<?php echo __('Add stateless text'); ?>" ng-click="addText()">
-                <i class="fa fa-lg fa-font"></i>
-            </div>
-
-            <div class="mapToolbarTool" title="<?php echo __('Add stateless icon'); ?>" ng-click="addIcon()">
-                <i class="fa fa-lg fa-object-ungroup"></i>
-            </div>
-        </div>
-
-        <div id="layersBox">
-            <div id="layersBoxDragger"></div>
-
-            <div class="layersContainer" style="overflow-y: auto;">
-
-                <div class="mapLayer" ng-repeat="(key, value) in layers"
-                     ng-class="{ 'selectedLayer': key == defaultLayer }">
-                    <span class="cursor-pointer"
-                          ng-click="setDefaultLayer(key)">
-                        {{value}}
-                    </span>
-                    <i class="fa fa-eye pull-right padding-right-5 cursor-pointer"
-                       ng-show="visableLayers['layer_'+key]"
-                       ng-click="hideLayer(key)"
-                       title="<?php echo __('Click to hide layer'); ?>"></i>
-                    <i class="fa fa-eye-slash pull-right padding-right-5 cursor-pointer"
-                       ng-hide="visableLayers['layer_'+key]"
-                       ng-click="showLayer(key)"
-                       title="<?php echo __('Click to show layer'); ?>"></i>
 
                 </div>
-
+                <div class="col-lg-12 padding-top-10">
+                    <button type="button" class="btn btn-primary float-right" ng-click="addFromSharedTab()">
+                        <?php echo __('Create from shared tab'); ?>
+                    </button>
+                </div>
             </div>
-
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" ng-click="renameWidget()">
+                    <?php echo __('Save widget Title'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
         </div>
-
     </div>
 </div>
+<!-- END Example modal -->
 
 <!-- Add/Edit map item modal -->
 <div id="addEditMapItemModal" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
+                <h5 class="modal-title">
                     <i class="fa fa-desktop"></i>
                     <?php echo __('Add or edit map item'); ?>
-
-                    <button class="btn btn-default pull-right margin-right-10" ng-click="uploadIconSet = true">
+                </h5>
+                <div class="ml-auto">
+                    <button class="btn btn-default btn-xs" ng-click="uploadIconSet = true">
                         <i class="fa fa-upload"></i>
                         <?php echo __('Upload iconset'); ?>
                     </button>
-                </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                    </button>
+                </div>
             </div>
             <div class="modal-body">
-
                 <div ng-hide="uploadIconSet">
                     <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group smart-form" ng-class="{'has-error': errors.type}">
-                            <span class="hintmark_red">
+                        <div class="form-group col-lg-12" ng-class="{'has-error': errors.type}">
+                            <label class="control-label">
                                 <?php echo __('Select object type'); ?>
-                            </span>
-                                <label class="select">
-                                    <select ng-model="currentItem.type">
-                                        <?php if ($this->Acl->hasPermission('index', 'hosts', '')): ?>
-                                            <option value="host"><?php echo __('Host'); ?></option>
-                                        <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
-                                            <option value="service"><?php echo __('Service'); ?></option>
-                                        <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('index', 'hostgroups', '')): ?>
-                                            <option value="hostgroup"><?php echo __('Hostgroup'); ?></option>
-                                        <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('index', 'servicegroups', '')): ?>
-                                            <option value="servicegroup"><?php echo __('Servicegroup'); ?></option>
-                                        <?php endif; ?>
-                                        <option value="map"><?php echo __('Map'); ?></option>
-                                    </select> <i></i>
-                                </label>
-                                <div ng-repeat="error in errors.type">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xs-12">
-                            <div class="form-group smart-form hintmark_red">
-                                <?php echo __('Select object'); ?>
-                            </div>
-                        </div>
-                        <div class="col-xs-12">
-                            <div class="form-group" ng-class="{'has-error': errors.object_id}">
-                                <select
-                                    id="AddEditItemObjectSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="itemObjects"
-                                    callback="loadMoreItemObjects"
-                                    ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
-                                    ng-model="currentItem.object_id">
-                                </select>
-                                <div ng-repeat="error in errors.object_id">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
+                            </label>
+                            <select
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="{}"
+                                ng-model="currentItem.type">
+                                <?php if ($this->Acl->hasPermission('index', 'hosts', '')): ?>
+                                    <option value="host"><?php echo __('Host'); ?></option>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
+                                    <option value="service"><?php echo __('Service'); ?></option>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('index', 'hostgroups', '')): ?>
+                                    <option value="hostgroup"><?php echo __('Hostgroup'); ?></option>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('index', 'servicegroups', '')): ?>
+                                    <option value="servicegroup"><?php echo __('Servicegroup'); ?></option>
+                                <?php endif; ?>
+                                <option value="map"><?php echo __('Map'); ?></option>
+                            </select>
+                            <div ng-repeat="error in errors.type">
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
-                    <br/>
-
                     <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group smart-form hintmark_red">
+                        <div class="form-group col-lg-12 margin-top-10" ng-class="{'has-error': errors.object_id}">
+                            <label class="control-label">
+                                <?php echo __('Select object'); ?>
+                            </label>
+                            <select
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="itemObjects"
+                                callback="loadMoreItemObjects"
+                                ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
+                                ng-model="currentItem.object_id">
+                            </select>
+                            <div ng-repeat="error in errors.object_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 margin-top-10">
+                            <div class="form-group hintmark_red">
                                 <?php echo __('Select iconset'); ?>
                             </div>
                         </div>
-                        <div class="col-xs-12" ng-if="iconsets">
+                        <div class="col-lg-12" ng-if="iconsets">
                             <div class="row" style="max-height: 200px; overflow: auto;"
                                  ng-class="{'has-error-border': errors.iconset}">
-                                <div class="col-xs-12 col-md-6 col-lg-3" ng-repeat="iconset in iconsets">
-                                    <div class="thumbnail"
-                                         style="height: 175px; width: 175px;display: flex; align-items: center; overflow: hidden;"
+                                <div class="col-xs-12 col-md-6 col-lg-2" ng-repeat="iconset in iconsets">
+                                    <div class="card"
+                                         style="height: 175px; width: 175px;margin-bottom:20px;"
                                          ng-click="setCurrentIconset(iconset.MapUpload.saved_name)"
                                          ng-class="{ 'selectedMapItem': iconset.MapUpload.saved_name === currentItem.iconset }">
-                                        <img class="image_picker_selector"
+                                        <img class="mx-auto my-auto"
                                              ng-src="/map_module/img/items/{{iconset.MapUpload.saved_name}}/ok.png">
                                     </div>
                                 </div>
@@ -426,94 +404,97 @@
                             </div>
                         </div>
                     </div>
-                    <br/>
 
                     <div class="row">
-                        <div class="col-xs-12 col-lg-6 smart-form">
-                            <div class="form-group smart-form" ng-class="{'has-error': errors.x}">
-                                <label class="label hintmark_red"><?php echo __('Position X'); ?></label>
-                                <label class="input"> <b class="icon-prepend">X</b>
-                                    <input type="number" min="0" class="input-sm"
-                                           placeholder="<?php echo __('0'); ?>"
-                                           ng-model="currentItem.x">
-                                </label>
-                                <div ng-repeat="error in errors.x">
-                                    <div class="help-block text-danger">{{ error }}</div>
+                        <div class="col-lg-6">
+                            <label class="control-label" for="addEditElPosX">
+                                <?php echo __('Position X'); ?>
+                            </label>
+                            <div class="input-group" ng-class="{'has-error': errors.x}">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i
+                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
                                 </div>
+                                <input type="text"
+                                       class="form-control"
+                                       id="addEditElPosX"
+                                       placeholder="<?php echo __('0'); ?>"
+                                       ng-model="currentItem.x">
+                            </div>
+                            <div ng-repeat="error in errors.x">
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                        <div class="col-xs-12 col-lg-6 smart-form" ng-class="{'has-error': errors.y}">
-                            <div class="form-group smart-form">
-                                <label class="label hintmark_red"><?php echo __('Position Y'); ?></label>
-                                <label class="input"> <b class="icon-prepend">Y</b>
-                                    <input type="number" min="0" class="input-sm"
-                                           placeholder="<?php echo __('0'); ?>"
-                                           ng-model="currentItem.y">
-                                </label>
+                        <div class="col-lg-6">
+                            <label class="control-label" for="addEditElPosY">
+                                <?php echo __('Position Y'); ?>
+                            </label>
+                            <div class="input-group" ng-class="{'has-error': errors.y}">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i
+                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                </div>
+                                <input type="text"
+                                       class="form-control"
+                                       id="addEditElPosY"
+                                       placeholder="<?php echo __('0'); ?>"
+                                       ng-model="currentItem.y">
                             </div>
                             <div ng-repeat="error in errors.y">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
-                    <br/>
-
                     <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group smart-form hintmark_red">
+                        <div class="form-group col-lg-10 margin-top-10" ng-class="{'has-error': errors.z_index}">
+                            <label class="control-label">
                                 <?php echo __('Select layer'); ?>
+                            </label>
+                            <select
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="layers"
+                                ng-options="key as layerNo for (key , layerNo) in layers"
+                                ng-model="currentItem.z_index">
+                            </select>
+                            <div ng-repeat="error in errors.z_index">
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                            <span class="help-block">
+                            <?php echo __('Layers could be used to stack items on a map. Empty layers will be deleted automatically.'); ?>
+                        </span>
                         </div>
-                        <div class="col-xs-12 col-md-6 col-lg-10">
-                            <div class="form-group required" ng-class="{'has-error': errors.z_index}">
-                                <select
-                                    id="selectItemLayerSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="layers"
-                                    ng-options="key as layerNo for (key , layerNo) in layers"
-                                    ng-model="currentItem.z_index">
-                                </select>
-                                <div ng-repeat="error in errors.z_index">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                                <span class="help-block">
-                                <?php echo __('Layers could be used to stack items on a map. Empty layers will be deleted automatically.'); ?>
-                            </span>
-                            </div>
-                        </div>
-                        <div class="col-xs-12 col-md-6 col-lg-2">
-                            <button class="btn btn-block btn-default" ng-click="addNewLayer()">
+                        <div class="col-lg-2">
+                            <button class="btn btn-block btn-default margin-top-30" ng-click="addNewLayer()">
                                 <?php echo __('Add new layer'); ?>
                             </button>
                         </div>
                     </div>
-                    <br/>
 
                     <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group smart-form">
-                                <?php echo __('Label options'); ?>
-                            </div>
-                        </div>
-                        <div class="col-xs-12">
-                            <div class="form-group smart-form no-padding">
-                                <label class="checkbox small-checkbox-label">
-                                    <input type="checkbox" name="checkbox"
-                                           ng-model="currentItem.show_label">
-                                    <i class="checkbox-primary"></i>
-                                    <?php echo __('Show label'); ?>
+                        <div class="form-group col-lg-4" ng-class="{'has-error': errors.show_label}">
+                            <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                                 ng-class="{'has-error': errors.show_label}">
+
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       id="addEditElShowLabel"
+                                       ng-model="currentItem.show_label">
+                                <label class="custom-control-label" for="addEditElShowLabel">
+                                    <?php echo __('Show Label'); ?>
                                 </label>
                             </div>
                         </div>
 
-                        <div class="col-xs-12">
-                            <div class="form-group smart-form">
-                                <?php echo __('Label possition'); ?>
-                            </div>
-                        </div>
-                        <div class="col-xs-12">
-                            <div class="btn-toolbar" role="toolbar">
+                    </div>
+                    <div class="row">
+                        <label class="control-label margin-left-12" for="addEditElLabelPos">
+                            <?php echo __('Label position'); ?>
+                        </label>
+                        <div class="btn-toolbar col-lg-12">
+                            <div class="btn-group mr-2" role="group" id="addEditElLabelPos">
                                 <button type="button" class="btn btn-default"
                                         ng-class="{ 'btn-primary': currentItem.label_possition === 4 }"
                                         ng-click="currentItem.label_possition = 4">
@@ -540,75 +521,67 @@
                                 </button>
                             </div>
                         </div>
-
                     </div>
                 </div>
-
                 <div ng-show="uploadIconSet">
-                    <!-- Iconset Upload dropzone -->
-                    <div class="row">
-                        <div class="col-xs-12">
+                    <div class="col col-lg-12 no-padding padding-top-10">
+                        <div class="col-lg-12">
                             <?php echo __('Upload new iconset (as .zip package)'); ?>
                         </div>
-                        <div class="col-xs-12 text-info">
+                        <div class="col-lg-12 text-info">
                             <i class="fa fa-info-circle"></i>
                             <?php echo __('Max allowed file size: '); ?>
                             {{ maxUploadLimit.string }}
                         </div>
-                        <div class="col-xs-12">
-                            <div class="iconset-dropzone dropzone"
+                        <div class="col-lg-12">
+                            <div class="profileImg-dropzone dropzone dropzoneStyle"
                                  action="/map_module/backgroundUploads/iconset/.json">
+                                <div class="dz-message">
+                                    <i class="fas fa-cloud-upload-alt fa-5x text-muted mb-3"></i> <br>
+                                    <span class="text-uppercase">Drop files here or click to upload.</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="row">
-                        <div class="col-xs-12 padding-top-10 text-info">
-                            <i class="fa fa-info-circle"></i>
-                            <?php echo __('To upload a own iconset, you need to compress all required icons into a .zip archive.'); ?>
-                            <br/>
-                            <?php echo __('All icons needs to be PNG images. In addition you should follow the'); ?>
-                            <a href="/map_module/img/Map_Status_Colors_Guidelines.svg">
-                                <?php echo __('openITCOCKPIT color guidelines.'); ?>
-                            </a>
-                            <br/>
-                            <?php
-                            echo __('Required icons: ');
-                            echo implode(', ', $requiredIcons);
-                            ?>
-                        </div>
+                    <div class="col-lg-12 padding-top-10 text-info">
+                        <i class="fa fa-info-circle"></i>
+                        <?php echo __('To upload a own iconset, you need to compress all required icons into a .zip archive.'); ?>
+                        <br/>
+                        <?php echo __('All icons needs to be PNG images. In addition you should follow the'); ?>
+                        <a href="/map_module/img/Map_Status_Colors_Guidelines.svg">
+                            <?php echo __('openITCOCKPIT color guidelines.'); ?>
+                        </a>
+                        <br/>
+                        <?php
+                        echo __('Required icons: ');
+                        echo implode(', ', $requiredIcons);
+                        ?>
                     </div>
-
-                    <div class="row">
-                        <div class="col-xs-12 padding-top-10">
-                            <button class="btn btn-primary pull-right" ng-click="uploadIconSet = false">
-                                <i class="fa fa-arrow-left"></i>
-                                <?php echo __('Go back to settings'); ?>
-                            </button>
-                        </div>
+                    <div class="col-lg-12 padding-top-10">
+                        <button class="btn btn-primary pull-right" ng-click="uploadIconSet = false">
+                            <i class="fa fa-arrow-left"></i>
+                            <?php echo __('Go back to settings'); ?>
+                        </button>
                     </div>
                 </div>
-
-
             </div>
-
             <div class="modal-footer">
-
-                <button type="button" class="btn btn-danger pull-left" ng-click="deleteItem()">
+                <button type="button" class="btn btn-danger mr-auto" ng-click="deleteItem()">
                     <?php echo __('Delete'); ?>
                 </button>
-
+                <button type="button" class="btn btn-success" ng-click="saveItem()">
+                    <?php echo __('Save'); ?>
+                </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>
-                </button>
-
-                <button type="button" class="btn btn-primary" ng-click="saveItem()">
-                    <?php echo __('Save'); ?>
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+
+<!-- Add/Edit map item modal OLD!!!!!!! -->
 
 <!-- Add/Edit map line modal -->
 <div id="addEditMapLineModal" class="modal" role="dialog">
