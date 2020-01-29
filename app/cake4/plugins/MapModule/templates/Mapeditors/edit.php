@@ -1420,503 +1420,118 @@
 </div>
 
 
-<!-- Add/Edit stateless text modal -->
-<div id="AddEditStatelessTextModal" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
-                    <i class="fa fa-font"></i>
-                    <?php echo __('Add or edit stateless text'); ?>
-                </h4>
-            </div>
-            <div class="modal-body">
-
-                <div ng-show="addLink">
-                    <div class="row">
-                        <div class="col-xs-12 smart-form">
-                            <div class="form-group smart-form">
-                                <label class="label hintmark_red"><?php echo __('URL'); ?></label>
-                                <label class="input"> <b class="icon-prepend">
-                                        <i class="fa fa-external-link-square"></i>
-                                    </b>
-                                    <input type="text" class="input-sm"
-                                           placeholder="https://openitcockpit.io"
-                                           id="modalLinkUrl">
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-xs-12 smart-form">
-                            <div class="form-group smart-form">
-                                <label class="label hintmark_red"><?php echo __('URL'); ?></label>
-                                <label class="input"> <b class="icon-prepend">
-                                        <i class="fa fa-tag"></i>
-                                    </b>
-                                    <input type="text" class="input-sm"
-                                           placeholder="<?php echo __('Official page for openITCOCKPIT'); ?>"
-                                           id="modalLinkDescription">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <br/>
-
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group smart-form no-padding">
-                                <label class="checkbox small-checkbox-label">
-                                    <input type="checkbox" name="checkbox"
-                                           id="modalLinkNewTab">
-                                    <i class="checkbox-primary"></i>
-                                    <?php echo __('Open in new tab'); ?>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-lg-12 text-right margin-top-5">
-                            <button id="cancel-insert-link" type="button" class="btn btn-default"
-                                    ng-click="addLink = false">
-                                <?php echo __('Cancel'); ?>
-                            </button>
-                            <button id="perform-insert-link" type="button" class="btn btn-primary">
-                                <?php echo __('Insert link'); ?>
-                            </button>
-                        </div>
-                    </div>
-                    <br/>
-                    <br/>
-                </div>
-
-
-                <div class="row" ng-hide="addLink">
-                    <div class="col-xs-12">
-                        <div class="form-horizontal clear jarviswidget">
-                            <header>
-                                <div class="widget-toolbar pull-left" role="menu">
-                                    <div class="btn-group">
-                                        <a href="javascript:void(0);"
-                                           class="btn btn-xs btn-default">
-                                            <i class="fa fa-font"></i>
-                                            <?php echo __('Font size'); ?>
-                                        </a>
-                                        <a href="javascript:void(0);" data-toggle="dropdown"
-                                           class="btn btn-xs btn-default dropdown-toggle"><span
-                                                class="caret"></span></a>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a href="javascript:void(0);" select-fsize="true"
-                                                   fsize="xx-small"><?php echo __('Smallest'); ?></a>
-                                            </li>
-                                            <li>
-                                                <a href="javascript:void(0);" select-fsize="true"
-                                                   fsize="x-small"><?php echo __('Smaller'); ?></a>
-                                            </li>
-                                            <li>
-                                                <a href="javascript:void(0);" select-fsize="true"
-                                                   fsize="small"><?php echo __('Small'); ?></a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="javascript:void(0);" select-fsize="true"
-                                                   fsize="large"><?php echo __('Big'); ?></a>
-                                            </li>
-                                            <li>
-                                                <a href="javascript:void(0);" select-fsize="true"
-                                                   fsize="x-large"><?php echo __('Bigger'); ?></a>
-                                            </li>
-                                            <li>
-                                                <a href="javascript:void(0);" select-fsize="true"
-                                                   fsize="xx-large"><?php echo __('Biggest'); ?></a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="widget-toolbar pull-left" style="border:0px;"
-                                         role="menu">
-                                        <a href="javascript:void(0);"
-                                           class="dropdown-toggle color-box selector bg-color-darken"
-                                           id="currentColor" color="#404040"
-                                           data-toggle="dropdown"></a>
-                                        <ul class="dropdown-menu arrow-box-up-right pull-right color-select">
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span
-                                                                    data-original-title="<?php echo __('Green Grass'); ?>"
-                                                                    data-placement="left" rel="tooltip"
-                                                                    data-widget-setstyle="jarviswidget-color-green"
-                                                                    select-color="true" color="#356E35"
-                                                                    class="bg-color-green"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span
-                                                                    data-original-title="<?php echo __('Dark Green'); ?>"
-                                                                    data-placement="top" rel="tooltip"
-                                                                    data-widget-setstyle="jarviswidget-color-greenDark"
-                                                                    select-color="true" color="#496949"
-                                                                    class="bg-color-greenDark"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span
-                                                                    data-original-title="<?php echo __('Light Green'); ?>"
-                                                                    data-placement="top" rel="tooltip"
-                                                                    data-widget-setstyle="jarviswidget-color-greenLight"
-                                                                    select-color="true" color="#71843F"
-                                                                    class="bg-color-greenLight"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Purple'); ?>"
-                                                                      data-placement="top" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-purple"
-                                                                      select-color="true" color="#6E587A"
-                                                                      class="bg-color-purple"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Magenta'); ?>"
-                                                                      data-placement="top" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-magenta"
-                                                                      select-color="true" color="#6E3671"
-                                                                      class="bg-color-magenta"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Pink'); ?>"
-                                                                      data-placement="right" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-pink"
-                                                                      select-color="true" color="#AC5287"
-                                                                      class="bg-color-pink"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span
-                                                                    data-original-title="<?php echo __('Fade Pink'); ?>"
-                                                                    data-placement="left" rel="tooltip"
-                                                                    data-widget-setstyle="jarviswidget-color-pinkDark"
-                                                                    select-color="true" color="#A8829F"
-                                                                    class="bg-color-pinkDark"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span
-                                                                    data-original-title="<?php echo __('Light Blue'); ?>"
-                                                                    data-placement="top" rel="tooltip"
-                                                                    data-widget-setstyle="jarviswidget-color-blueLight"
-                                                                    select-color="true" color="#92A2A8"
-                                                                    class="bg-color-blueLight"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Teal'); ?>"
-                                                                      data-placement="top" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-teal"
-                                                                      select-color="true" color="#568A89"
-                                                                      class="bg-color-teal"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span
-                                                                    data-original-title="<?php echo __('Ocean Blue'); ?>"
-                                                                    data-placement="top" rel="tooltip"
-                                                                    data-widget-setstyle="jarviswidget-color-blue"
-                                                                    select-color="true" color="#57889C"
-                                                                    class="bg-color-blue"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span
-                                                                    data-original-title="<?php echo __('Night Sky'); ?>"
-                                                                    data-placement="top" rel="tooltip"
-                                                                    data-widget-setstyle="jarviswidget-color-blueDark"
-                                                                    select-color="true" color="#4C4F53"
-                                                                    class="bg-color-blueDark"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Night'); ?>"
-                                                                      data-placement="right" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-darken"
-                                                                      select-color="true" color="#404040"
-                                                                      class="bg-color-darken"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span
-                                                                    data-original-title="<?php echo __('Day Light'); ?>"
-                                                                    data-placement="left" rel="tooltip"
-                                                                    data-widget-setstyle="jarviswidget-color-yellow"
-                                                                    select-color="true" color="#B09B5B"
-                                                                    class="bg-color-yellow"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Orange'); ?>"
-                                                                      data-placement="bottom" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-orange"
-                                                                      select-color="true" color="#C79121"
-                                                                      class="bg-color-orange"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span
-                                                                    data-original-title="<?php echo __('Dark Orange'); ?>"
-                                                                    data-placement="bottom" rel="tooltip"
-                                                                    data-widget-setstyle="jarviswidget-color-orangeDark"
-                                                                    select-color="true" color="#A57225"
-                                                                    class="bg-color-orangeDark"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span
-                                                                    data-original-title="<?php echo __('Red Rose'); ?>"
-                                                                    data-placement="bottom" rel="tooltip"
-                                                                    data-widget-setstyle="jarviswidget-color-red"
-                                                                    select-color="true" color="#A90329"
-                                                                    class="bg-color-red"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span
-                                                                    data-original-title="<?php echo __('Light Red'); ?>"
-                                                                    data-placement="bottom" rel="tooltip"
-                                                                    data-widget-setstyle="jarviswidget-color-redLight"
-                                                                    select-color="true" color="#A65858"
-                                                                    class="bg-color-redLight"></span></li>
-                                            <li style="display: inline-block; margin:0; float: none;">
-                                                                <span data-original-title="<?php echo __('Purity'); ?>"
-                                                                      data-placement="right" rel="tooltip"
-                                                                      data-widget-setstyle="jarviswidget-color-white"
-                                                                      select-color="true" color="#FFFFFF"
-                                                                      class="bg-color-white"></span></li>
-                                        </ul>
-                                    </div>
-                                    <span class="padding-left-10"></span>
-                                    <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
-                                       task="bold"><i class="fa fa-bold"></i></a>
-                                    <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
-                                       task="italic"><i class="fa fa-italic"></i></a>
-                                    <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
-                                       task="underline"><i class="fa fa-underline"></i></a>
-                                    <span class="padding-left-10"></span>
-                                    <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
-                                       task="left"><i class="fa fa-align-left"></i></a>
-                                    <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
-                                       task="center"><i class="fa fa-align-center"></i></a>
-                                    <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
-                                       task="right"><i class="fa fa-align-right"></i></a>
-                                    <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
-                                       task="justify"><i class="fa fa-align-justify"></i></a>
-                                    <span class="padding-left-10"></span>
-                                    <a href="javascript:void(0);" class="btn btn-default" ng-click="addLink = true"
-                                       id="insert-link"><i class="fa fa-link"></i></a>
-                                </div>
-                                <div class="widget-toolbar pull-right" role="menu"></div>
-                            </header>
-                            <div>
-                                <div class="widget-body" ng-class="{'has-error': errors.text}">
-                                        <textarea class="form-control"
-                                                  style="width: 100%; height: 200px;"
-                                                  id="docuText"></textarea>
-                                </div>
-                                <div ng-repeat="error in errors.text">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-xs-12 col-lg-6 smart-form">
-                            <div class="form-group smart-form" ng-class="{'has-error': errors.x}">
-                                <label class="label hintmark_red"><?php echo __('Position X'); ?></label>
-                                <label class="input"> <b class="icon-prepend">X</b>
-                                    <input type="number" min="0" class="input-sm"
-                                           placeholder="<?php echo __('0'); ?>"
-                                           ng-model="currentItem.x">
-                                </label>
-                                <div ng-repeat="error in errors.x">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xs-12 col-lg-6 smart-form" ng-class="{'has-error': errors.y}">
-                            <div class="form-group smart-form">
-                                <label class="label hintmark_red"><?php echo __('Position Y'); ?></label>
-                                <label class="input"> <b class="icon-prepend">Y</b>
-                                    <input type="number" min="0" class="input-sm"
-                                           placeholder="<?php echo __('0'); ?>"
-                                           ng-model="currentItem.y">
-                                </label>
-                            </div>
-                            <div ng-repeat="error in errors.y">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <br/>
-
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group smart-form hintmark_red">
-                                <?php echo __('Select layer'); ?>
-                            </div>
-                        </div>
-                        <div class="col-xs-12 col-md-6 col-lg-10">
-                            <div class="form-group required" ng-class="{'has-error': errors.z_index}">
-                                <select
-                                    id="selectItemLayerSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="layers"
-                                    ng-options="key as layerNo for (key , layerNo) in layers"
-                                    ng-model="currentItem.z_index">
-                                </select>
-                                <div ng-repeat="error in errors.z_index">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                                <span class="help-block">
-                                <?php echo __('Layers could be used to stack items on a map. Empty layers will be deleted automatically.'); ?>
-                            </span>
-                            </div>
-                        </div>
-                        <div class="col-xs-12 col-md-6 col-lg-2">
-                            <button class="btn btn-block btn-default" ng-click="addNewLayer()">
-                                <?php echo __('Add new layer'); ?>
-                            </button>
-                        </div>
-                    </div>
-                    <br/>
-
-                </div>
-
-                <div class="modal-footer">
-
-                    <button type="button" class="btn btn-danger pull-left" ng-click="deleteText()">
-                        <?php echo __('Delete'); ?>
-                    </button>
-
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        <?php echo __('Close'); ?>
-                    </button>
-
-                    <button type="button" class="btn btn-primary" ng-click="saveText()">
-                        <?php echo __('Save'); ?>
-                    </button>
-                </div>
-
-
-            </div>
-        </div>
-    </div>
-</div>
-
-
 <!-- Add/Edit stateless icon modal -->
 <div id="AddEditStatelessIconModal" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
+                <h5 class="modal-title">
                     <i class="fa fa-object-ungroup"></i>
                     <?php echo __('Add or edit stateless icon'); ?>
-                </h4>
+                </h5>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                    </button>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="form-group smart-form hintmark_red">
-                            <?php echo __('Select icon'); ?>
-                        </div>
-                    </div>
-                    <div class="col-xs-12" ng-if="icons">
-                        <div class="row" style="max-height: 200px; overflow: auto;"
-                             ng-class="{'has-error-border': errors.icon}">
-                            <div class="col-xs-12 col-md-6 col-lg-3" ng-repeat="icon in icons">
-                                <div class="thumbnail"
-                                     style="height: 155px; width: 175px;display: flex; align-items: center; overflow: hidden;"
-                                     ng-click="currentItem.icon = icon"
-                                     ng-class="{ 'selectedMapItem': currentItem.icon === icon}">
-                                    <button class="btn btn-xs btn-danger"
-                                            style="position: absolute; top: 11px; left: 158px;"
-                                            ng-click="deleteIconImage(icon)">
-                                        <i class="fa fa-trash-o"></i>
-                                    </button>
-                                    <img class="image_picker_selector"
-                                         ng-src="/map_module/img/icons/{{icon}}">
-                                </div>
-                            </div>
-                        </div>
-                        <div ng-repeat="error in errors.icon" class="row">
-                            <div class="col-xs-12">
-                                <div class="help-block text-danger" style="color: #a94442;">{{ error }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <br/>
 
                     <div class="row">
-                        <div class="col-xs-12 col-lg-6 smart-form">
-                            <div class="form-group smart-form" ng-class="{'has-error': errors.x}">
-                                <label class="label hintmark_red"><?php echo __('Position X'); ?></label>
-                                <label class="input"> <b class="icon-prepend">X</b>
-                                    <input type="number" min="0" class="input-sm"
-                                           placeholder="<?php echo __('0'); ?>"
-                                           ng-model="currentItem.x">
-                                </label>
-                                <div ng-repeat="error in errors.x">
-                                    <div class="help-block text-danger">{{ error }}</div>
+                        <div class="col-lg-6">
+                            <label class="control-label" for="addEditStatelessIconPosX">
+                                <?php echo __('Position X'); ?>
+                            </label>
+                            <div class="input-group" ng-class="{'has-error': errors.x}">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i
+                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
                                 </div>
+                                <input type="text"
+                                       class="form-control"
+                                       id="addEditStatelessIconPosX"
+                                       placeholder="<?php echo __('0'); ?>"
+                                       ng-model="currentItem.x">
+                            </div>
+                            <div ng-repeat="error in errors.x">
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                        <div class="col-xs-12 col-lg-6 smart-form" ng-class="{'has-error': errors.y}">
-                            <div class="form-group smart-form">
-                                <label class="label hintmark_red"><?php echo __('Position Y'); ?></label>
-                                <label class="input"> <b class="icon-prepend">Y</b>
-                                    <input type="number" min="0" class="input-sm"
-                                           placeholder="<?php echo __('0'); ?>"
-                                           ng-model="currentItem.y">
-                                </label>
+                        <div class="col-lg-6">
+                            <label class="control-label" for="addEditStatelessIconPosY">
+                                <?php echo __('Position Y'); ?>
+                            </label>
+                            <div class="input-group" ng-class="{'has-error': errors.y}">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i
+                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                                </div>
+                                <input type="text"
+                                       class="form-control"
+                                       id="addEditStatelessIconPosY"
+                                       placeholder="<?php echo __('0'); ?>"
+                                       ng-model="currentItem.y">
                             </div>
                             <div ng-repeat="error in errors.y">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
-                    <br/>
-
                     <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group smart-form hintmark_red">
+                        <div class="form-group col-lg-10 margin-top-10" ng-class="{'has-error': errors.z_index}">
+                            <label class="control-label">
                                 <?php echo __('Select layer'); ?>
+                            </label>
+                            <select
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="layers"
+                                ng-options="key as layerNo for (key , layerNo) in layers"
+                                ng-model="currentItem.z_index">
+                            </select>
+                            <div ng-repeat="error in errors.z_index">
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                            <span class="help-block">
+                            <?php echo __('Layers could be used to stack items on a map. Empty layers will be deleted automatically.'); ?>
+                        </span>
                         </div>
-                        <div class="col-xs-12 col-md-6 col-lg-10">
-                            <div class="form-group required" ng-class="{'has-error': errors.z_index}">
-                                <select
-                                    id="selectItemLayerSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="layers"
-                                    ng-options="key as layerNo for (key , layerNo) in layers"
-                                    ng-model="currentItem.z_index">
-                                </select>
-                                <div ng-repeat="error in errors.z_index">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                                <span class="help-block">
-                                <?php echo __('Layers could be used to stack items on a map. Empty layers will be deleted automatically.'); ?>
-                            </span>
-                            </div>
-                        </div>
-                        <div class="col-xs-12 col-md-6 col-lg-2">
-                            <button class="btn btn-block btn-default" ng-click="addNewLayer()">
+                        <div class="col-lg-2">
+                            <button class="btn btn-block btn-default margin-top-30" ng-click="addNewLayer()">
                                 <?php echo __('Add new layer'); ?>
                             </button>
                         </div>
                     </div>
-                    <br/>
-
-                    <div class="col-xs-12 padding-top-10">
-                        <?php echo __('Upload new icon'); ?>
-                    </div>
-                    <div class="col-xs-12 text-info">
-                        <i class="fa fa-info-circle"></i>
-                        <?php echo __('Max allowed file size: '); ?>
-                        {{ maxUploadLimit.string }}
-                    </div>
-                    <div class="col-xs-12">
-                        <div class="icon-dropzone dropzone"
-                             action="/map_module/backgroundUploads/icon/.json">
+<div class="row">
+                    <div class="col-lg-12 no-padding padding-top-10">
+                        <div class="col-lg-12">
+                            <?php echo __('Upload new icon'); ?>
+                        </div>
+                        <div class="col-lg-12 text-info">
+                            <i class="fa fa-info-circle"></i>
+                            <?php echo __('Max allowed file size: '); ?>
+                            {{ maxUploadLimit.string }}
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="profileImg-dropzone dropzone dropzoneStyle icon-dropzone"
+                                 action="/map_module/backgroundUploads/icon/.json">
+                                <div class="dz-message">
+                                    <i class="fas fa-cloud-upload-alt fa-5x text-muted mb-3"></i> <br>
+                                    <span class="text-uppercase">Drop files here or click to upload.</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-
+</div>
             </div>
-
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger pull-left" ng-click="deleteIcon()">
+                <button type="button" class="btn btn-danger mr-auto" ng-click="deleteIcon()">
                     <?php echo __('Delete'); ?>
                 </button>
-
+                <button type="button" class="btn btn-success" ng-click="saveIcon()">
+                    <?php echo __('Save'); ?>
+                </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>
-                </button>
-
-                <button type="button" class="btn btn-primary" ng-click="saveIcon()">
-                    <?php echo __('Save'); ?>
                 </button>
             </div>
         </div>
