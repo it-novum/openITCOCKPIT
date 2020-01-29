@@ -73,9 +73,9 @@ class AngularAssets implements AngularAssetsInterface {
         'legacy/js/lib/jquery.svg.min.js',
         'legacy/js/lib/jquery.svgfilter.min.js',
         'node_modules/dropzone/dist/min/dropzone.min.js',
-        /*'smartadmin/js/notification/SmartNotification.js',
-        'vendor/node_modules/rangyinputs/rangyinputs-jquery.js',
-        'vendor/node_modules/javascript-detect-element-resize/jquery.resize.js',*/
+        //'smartadmin/js/notification/SmartNotification.js',
+        'node_modules/rangyinputs/rangyinputs-jquery.js',
+        //'vendor/node_modules/javascript-detect-element-resize/jquery.resize.js',
         //'node_modules/javascript-detect-element-resize/jquery.resize.js',
         'node_modules/angular-gridster/dist/angular-gridster.min.js',
         'legacy/js/lib/GraphDefaults.js',

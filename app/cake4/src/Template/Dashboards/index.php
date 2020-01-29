@@ -179,7 +179,7 @@
                                            ng-hide="dashboardIsLocked">
                                             <i class="fa fa-pencil-alt"></i>
                                         </a>
-                                        <div class="">
+                                        <div>
                                             <button type="button" ng-hide="dashboardIsLocked"
                                                     class="btn btn-sm btn-icon waves-effect waves-themed"
                                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

@@ -1130,6 +1130,298 @@
 
 <!-- Add/Edit stateless text modal -->
 <div id="AddEditStatelessTextModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-font"></i>
+                    <?php echo __('Add or edit stateless text'); ?>
+                </h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div ng-show="addLink">
+                    <div class="row">
+
+
+                        <div class="col-lg-12">
+                            <label class="control-label hintmark_red" for="modalLinkUrl">
+                                <?php echo __('URL'); ?>
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="icon-prepend fas fa-external-link-alt"></i>
+                                    </span>
+                                </div>
+                                <input type="text"
+                                       class="form-control"
+                                       id="modalLinkUrl"
+                                       placeholder="https://openitcockpit.io">
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <label class="control-label hintmark_red" for="modalLinkDescription">
+                                <?php echo __('Description Text'); ?>
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="icon-prepend fa fa-tag"></i>
+                                    </span>
+                                </div>
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="<?php echo __('Official page for openITCOCKPIT'); ?>"
+                                       id="modalLinkDescription">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-lg-12">
+                            <div class="custom-control custom-checkbox custom-control-down margin-bottom-10">
+
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       name="checkbox"
+                                       id="modalLinkNewTab">
+                                <label class="custom-control-label" for="modalLinkNewTab">
+                                    <?php echo __('Open in new tab'); ?>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-lg-12 text-right margin-top-5">
+                            <button id="cancel-insert-link" type="button" class="btn btn-default"
+                                    ng-click="addLink = false">
+                                <?php echo __('Cancel'); ?>
+                            </button>
+                            <button id="perform-insert-link" type="button" class="btn btn-primary">
+                                <?php echo __('Insert link'); ?>
+                            </button>
+                        </div>
+                    </div>
+                    <br/>
+                    <br/>
+                </div>
+                <div class="row" ng-hide="addLink">
+                    <div class="col-lg-12">
+                        <div class="form-horizontal card">
+                            <div class="card-header d-flex">
+                                <div class="dropdown">
+                                    <button type="button"
+                                            class="btn btn-xs btn-default"
+                                            id="currentColor"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            color="#404040">
+                                        <i class="fas fa-palette"></i>
+                                    </button>
+                                    <div class="dropdown-menu flex-wrap" style="width: 10.2rem; padding: 0.5rem"
+                                         aria-labelledby="currentColor">
+                                        <button type="button"
+                                                class="btn d-inline-block bg-widget-statusGreen-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                data-panel-setstyle="bg-widget-statusGreen-gradient"
+                                                ng-click="widget.color='widget-statusGreen'"
+                                                select-color="true" color="#356E35"
+                                                style="margin:1px;"></button>
+                                        <button type="button"
+                                                class="btn d-inline-block bg-widget-statusYellow-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                data-panel-setstyle="bg-widget-statusYellow-gradient"
+                                                ng-click="widget.color='widget-statusYellow'"
+                                                style="margin:1px;"></button>
+                                        <button type="button"
+                                                class="btn d-inline-block bg-widget-statusRed-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                data-panel-setstyle="bg-widget-statusRed-gradient"
+                                                ng-click="widget.color='widget-statusRed'"
+                                                style="margin:1px;"></button>
+                                        <button type="button"
+                                                class="btn d-inline-block bg-widget-statusGrey-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                data-panel-setstyle="bg-widget-statusGrey-gradient"
+                                                ng-click="widget.color='widget-statusGrey'"
+                                                style="margin:1px;"></button>
+                                        <button type="button"
+                                                class="btn d-inline-block bg-widget-default width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                data-panel-setstyle="bg-widget-default"
+                                                ng-click="widget.color='widget-default'"
+                                                style="margin:1px;"></button>
+                                        <button type="button"
+                                                class="btn d-inline-block bg-widget-white width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                data-panel-setstyle="bg-widget-white"
+                                                ng-click="widget.color='widget-white'"
+                                                style="margin:1px;"></button>
+                                        <button type="button"
+                                                class="btn d-inline-block bg-widget-black-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                data-panel-setstyle="bg-widget-black-gradient"
+                                                ng-click="widget.color='widget-black'"
+                                                style="margin:1px;"></button>
+                                        <button type="button"
+                                                class="btn d-inline-block bg-widget-anthracite-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                data-panel-setstyle="bg-widget-anthracite-gradient"
+                                                ng-click="widget.color='widget-anthracite'"
+                                                style="margin:1px;"></button>
+                                        <button type="button"
+                                                class="btn d-inline-block bg-widget-colorbomb-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                data-panel-setstyle="bg-widget-colorbomb-gradient"
+                                                ng-click="widget.color='widget-colorbomb'"
+                                                style="margin:1px;"></button>
+                                        <button type="button"
+                                                class="btn d-inline-block bg-widget-colorbomb2-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
+                                                data-panel-setstyle="bg-widget-colorbomb2-gradient"
+                                                ng-click="widget.color='widget-colorbomb2'"
+                                                style="margin:1px;"></button>
+                                    </div>
+                                </div>
+
+                                <div class="dropdown">
+                                    <button class="btn btn-xs btn-default dropdown-toggle" type="button"
+                                            id="statelessTextFontSize" data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="false">
+                                        <i class="fa fa-font"></i>
+                                        <?php echo __('Font size'); ?>
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="statelessTextFontSize">
+                                        <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
+                                           fsize="xx-small"><?php echo __('Smallest'); ?></a>
+                                        <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
+                                           fsize="x-small"><?php echo __('Smaller'); ?></a>
+                                        <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
+                                           fsize="small"><?php echo __('Small'); ?></a>
+                                        <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
+                                           fsize="large"><?php echo __('Big'); ?></a>
+                                        <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
+                                           fsize="x-large"><?php echo __('Bigger'); ?></a>
+                                        <a class="dropdown-item" href="javascript:void(0);" select-fsize="true"
+                                           fsize="xx-large"><?php echo __('Biggest'); ?></a>
+                                    </div>
+                                </div>
+
+                                <span class="padding-left-10"></span>
+                                <button class="btn btn-default btn-xs" wysiwyg="true"
+                                        task="bold"><i class="fa fa-bold"></i></button>
+                                <button class="btn btn-default btn-xs" wysiwyg="true"
+                                        task="italic"><i class="fa fa-italic"></i></button>
+                                <button class="btn btn-default btn-xs" wysiwyg="true"
+                                        task="underline"><i class="fa fa-underline"></i></button>
+                                <span class="padding-left-10"></span>
+                                <button class="btn btn-default btn-xs" wysiwyg="true"
+                                        task="left"><i class="fa fa-align-left"></i></button>
+                                <button class="btn btn-default btn-xs" wysiwyg="true"
+                                        task="center"><i class="fa fa-align-center"></i></button>
+                                <button class="btn btn-default btn-xs" wysiwyg="true"
+                                        task="right"><i class="fa fa-align-right"></i></button>
+                                <button class="btn btn-default btn-xs" wysiwyg="true"
+                                        task="justify"><i class="fa fa-align-justify"></i></button>
+                                <span class="padding-left-10"></span>
+                                <button class="btn btn-default btn-xs mr-auto" ng-click="addLink = true"
+                                        id="insert-link"><i class="fa fa-link"></i></button>
+                            </div>
+                            <div class="card-body" ng-class="{'has-error': errors.text}">
+                                <textarea class="form-control"
+                                          style="width: 100%; height: 200px;"
+                                          id="docuText"></textarea>
+                                <div ng-repeat="error in errors.text">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row margin-top-10">
+                    <div class="col-lg-6">
+                        <label class="control-label hintmark_red" for="addEditStatelessPosX">
+                            <?php echo __('Position X'); ?>
+                        </label>
+                        <div class="input-group" ng-class="{'has-error': errors.x}">
+                            <div class="input-group-prepend">
+                                    <span class="input-group-text"><i
+                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                            </div>
+                            <input type="number"
+                                   class="form-control"
+                                   min="0"
+                                   id="addEditStatelessPosX"
+                                   placeholder="<?php echo __('0'); ?>"
+                                   ng-model="currentItem.x">
+                        </div>
+                        <div ng-repeat="error in errors.x">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <label class="control-label hintmark_red" for="addEditStatelessPosY">
+                            <?php echo __('Position Y'); ?>
+                        </label>
+                        <div class="input-group" ng-class="{'has-error': errors.y}">
+                            <div class="input-group-prepend">
+                                    <span class="input-group-text"><i
+                                            class="icon-prepend fas fa-map-marked-alt"></i></span>
+                            </div>
+                            <input type="number"
+                                   class="form-control"
+                                   min="0"
+                                   id="addEditStatelessPosY"
+                                   placeholder="<?php echo __('0'); ?>"
+                                   ng-model="currentItem.y">
+                        </div>
+                        <div ng-repeat="error in errors.y">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-lg-10 margin-top-10" ng-class="{'has-error': errors.z_index}">
+                        <label class="control-label">
+                            <?php echo __('Select layer'); ?>
+                        </label>
+                        <select
+                            data-placeholder="<?php echo __('Please choose'); ?>"
+                            class="form-control"
+                            chosen="layers"
+                            ng-options="key as layerNo for (key , layerNo) in layers"
+                            ng-model="currentItem.z_index">
+                        </select>
+                        <div ng-repeat="error in errors.z_index">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                        <span class="help-block">
+                            <?php echo __('Layers could be used to stack items on a map. Empty layers will be deleted automatically.'); ?>
+                        </span>
+                    </div>
+                    <div class="col-lg-2">
+                        <button class="btn btn-block btn-default margin-top-30" ng-click="addNewLayer()">
+                            <?php echo __('Add new layer'); ?>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger pull-left" ng-click="deleteText()">
+                    <?php echo __('Delete'); ?>
+                </button>
+                <button type="button" class="btn btn-success" ng-click="saveText()">
+                    <?php echo __('Save'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add/Edit stateless text modal -->
+<div id="AddEditStatelessTextModal" class="modal" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
