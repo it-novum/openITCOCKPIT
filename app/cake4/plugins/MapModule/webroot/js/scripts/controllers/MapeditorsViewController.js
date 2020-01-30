@@ -48,15 +48,17 @@ angular.module('openITCOCKPIT')
         $scope.enterFullscreen = function(){
             document.getElementById('pageSidebar').style.display = 'none';
             document.getElementById('header').style.display = 'none';
-            document.getElementById('js-page-content').style.marginLeft = '0px';
+          //  document.getElementById('js-page-content').style.marginLeft = '0px';
+            document.getElementById('js-page-content').classList.add('margin-left-0');
             $('#content > .ng-scope > .breadcrumb').css('display', 'none');
         };
 
         $scope.leaveFullscreen = function(){
-            document.getElementById('pageSidebar').style.display = 'block';
-            document.getElementById('header').style.display = 'block';
-            document.getElementById('js-page-content').style.marginLeft = '220px';
-            $('#content > .ng-scope > .breadcrumb').css('display', 'block');
+            document.getElementById('pageSidebar').style.display = 'flex';
+            document.getElementById('header').style.display = 'flex';
+            //document.getElementById('js-page-content').style.marginLeft = '220px';
+            document.getElementById('js-page-content').classList.remove('margin-left-0');
+            $('#content > .ng-scope > .breadcrumb').css('display', 'flex');
         };
 
         //Disable interval if object gets removed from DOM.
