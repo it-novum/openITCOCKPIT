@@ -73,7 +73,7 @@
                         </a>
                     <?php endif; ?>
                     <?php if ($this->Acl->hasPermission('view', 'mapeditors', 'mapmodule')): ?>
-                        <button class="btn btn-default btn-xs mr-1 shadow-0" ui-sref="MapeditorsView">
+                        <button class="btn btn-default btn-xs mr-1 shadow-0" ui-sref="MapeditorsView({id: map.Map.id})">
                             <i class="fa fa-eye"></i> <?php echo __('View'); ?>
                         </button>
                     <?php endif; ?>
