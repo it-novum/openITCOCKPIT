@@ -30,6 +30,9 @@
         </a>
     </li>
     <li class="breadcrumb-item">
+        <i class="fas fa-puzzle-piece"></i> <?php echo __('Map Module'); ?>
+    </li>
+    <li class="breadcrumb-item">
         <a ui-sref="MapsIndex">
             <i class="fa fa-map-marker"></i> <?php echo __('Maps'); ?>
         </a>
