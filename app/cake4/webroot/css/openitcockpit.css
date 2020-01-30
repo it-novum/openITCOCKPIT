@@ -449,6 +449,7 @@ pre {
     top: 10px;
     left: 10px;
     background-color: #3a3633;
+    z-index: 900;
 }
 
 .mapToolbarTool {
@@ -480,6 +481,7 @@ pre {
     bottom: 10px;
     right: 10px;
     background-color: #3a3633;
+    z-index: 900;
 }
 
 #layersBoxDragger {

@@ -84,7 +84,8 @@
                     <!-- start map-editor -->
                     <div id="map-editor">
                         <!-- start mainMapContainer -->
-                        <div style="overflow: auto; min-height:600px; " ng-click="addNewObjectFunc($event)"
+                        <div style="overflow: auto; min-height: 600px;position: relative;"
+                             ng-click="addNewObjectFunc($event)"
                              id="mainMapContainer">
                             <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}"
                                  ng-if="map.Map.background"/>
