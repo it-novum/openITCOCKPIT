@@ -178,7 +178,7 @@
 
                             <div class="mapToolbarTool" title="<?php echo __('Add summary status item'); ?>"
                                  ng-click="addSummaryItem()">
-                                <i class="fa fa-lg fa-circle"></i>
+                                <i class="fa fa-lg fa-dot-circle"></i>
                             </div>
 
                             <div class="mapToolbarLine"></div>
@@ -415,8 +415,9 @@
                                     <span class="input-group-text"><i
                                             class="icon-prepend fas fa-map-marked-alt"></i></span>
                                 </div>
-                                <input type="text"
+                                <input type="number"
                                        class="form-control"
+                                       min="0"
                                        id="addEditElPosX"
                                        placeholder="<?php echo __('0'); ?>"
                                        ng-model="currentItem.x">
@@ -434,8 +435,9 @@
                                     <span class="input-group-text"><i
                                             class="icon-prepend fas fa-map-marked-alt"></i></span>
                                 </div>
-                                <input type="text"
+                                <input type="number"
                                        class="form-control"
+                                       min="0"
                                        id="addEditElPosY"
                                        placeholder="<?php echo __('0'); ?>"
                                        ng-model="currentItem.y">
@@ -586,7 +588,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fa fa-desktop"></i>
+                    <i class="fas fa-pencil-alt"></i>
                     <?php echo __('Add or edit line'); ?>
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -653,8 +655,9 @@
                                     <span class="input-group-text"><i
                                             class="icon-prepend fas fa-map-marked-alt"></i></span>
                             </div>
-                            <input type="text"
+                            <input type="number"
                                    class="form-control"
+                                   min="0"
                                    id="addEditLinePosStartX"
                                    placeholder="<?php echo __('0'); ?>"
                                    ng-model="currentItem.startX">
@@ -672,8 +675,9 @@
                                     <span class="input-group-text"><i
                                             class="icon-prepend fas fa-map-marked-alt"></i></span>
                             </div>
-                            <input type="text"
+                            <input type="number"
                                    class="form-control"
+                                   min="0"
                                    id="addEditLinePosStartY"
                                    placeholder="<?php echo __('0'); ?>"
                                    ng-model="currentItem.startY">
@@ -693,8 +697,9 @@
                                     <span class="input-group-text"><i
                                             class="icon-prepend fas fa-map-marked-alt"></i></span>
                             </div>
-                            <input type="text"
+                            <input type="number"
                                    class="form-control"
+                                   min="0"
                                    id="addEditLinePosEndX"
                                    placeholder="<?php echo __('0'); ?>"
                                    ng-model="currentItem.endX">
@@ -712,8 +717,9 @@
                                     <span class="input-group-text"><i
                                             class="icon-prepend fas fa-map-marked-alt"></i></span>
                             </div>
-                            <input type="text"
+                            <input type="number"
                                    class="form-control"
+                                   min="0"
                                    id="addEditLinePosEndY"
                                    placeholder="<?php echo __('0'); ?>"
                                    ng-model="currentItem.endY">
@@ -788,7 +794,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fa fa-desktop"></i>
+                    <i class="fas fa-tachometer-alt"></i>
                     <?php echo __('Add or edit gadget'); ?>
                 </h5>
 
@@ -1067,7 +1073,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fa fa-desktop"></i>
+                    <i class="fa fa-picture-o"></i>
                     <?php echo __('Change background image'); ?>
                 </h5>
 
@@ -1462,8 +1468,9 @@
                                     <span class="input-group-text"><i
                                             class="icon-prepend fas fa-map-marked-alt"></i></span>
                             </div>
-                            <input type="text"
+                            <input type="number"
                                    class="form-control"
+                                   min="0"
                                    id="addEditStatelessIconPosX"
                                    placeholder="<?php echo __('0'); ?>"
                                    ng-model="currentItem.x">
@@ -1481,8 +1488,9 @@
                                     <span class="input-group-text"><i
                                             class="icon-prepend fas fa-map-marked-alt"></i></span>
                             </div>
-                            <input type="text"
+                            <input type="number"
                                    class="form-control"
+                                   min="0"
                                    id="addEditStatelessIconPosY"
                                    placeholder="<?php echo __('0'); ?>"
                                    ng-model="currentItem.y">
@@ -1561,7 +1569,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fa fa-desktop"></i>
+                    <i class="far fa-dot-circle"></i>
                     <?php echo __('Add or edit summary state item'); ?>
                 </h5>
 
