@@ -48,7 +48,7 @@
                     <span class="fw-300"><i>{{map.Map.name}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
-                    <label class="checkbox small-checkbox-label">
+                    <label class="checkbox small-checkbox-label margin-right-10 margin-top-5">
                         <input type="checkbox" name="checkbox" checked="checked"
                                ng-model="grid.enabled">
                         <i class="checkbox-primary"></i>
