@@ -28,7 +28,7 @@
  */
 
 ?>
-<aside class="page-sidebar">
+<aside id="pageSidebar" class="page-sidebar">
     <div class="page-logo">
         <a href="javascript:void(0);" class="page-logo-link press-scale-down d-flex align-items-center position-relative"
            data-toggle="modal" data-target="#modal-shortcut">

@@ -63,6 +63,11 @@
                         <i class="fa fa-expand"></i>
                         <?php echo __('Fullscreen'); ?>
                     </a>
+                    <a class="btn btn-xs btn-default" ui-sref="MapeditorsView({id: map.Map.id, fullscreen: 'false'})"
+                       ng-show="fullscreen">
+                        <i class="fa fa-compress "></i>
+                        <?php echo __('Leave fullscreen'); ?>
+                    </a>
                 </div>
             </div>
             <div class="panel-container show">
