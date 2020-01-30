@@ -59,6 +59,13 @@ angular.module('openITCOCKPIT')
             $('#content > .ng-scope > .breadcrumb').css('display', 'flex');
         };
 
+        $scope.checkFullscreen = function(){
+            //leave fullscreen if nesscesary
+            if($scope.fullscreen){
+                $scope.leaveFullscreen();
+            }
+        };
+
         //Disable interval if object gets removed from DOM.
         $scope.$on('$destroy', function(){
             if($scope.interval !== null){
