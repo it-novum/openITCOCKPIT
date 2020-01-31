@@ -389,48 +389,51 @@
                     </div>
 
                     <div class="row padding-top-10">
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <?php echo __('Hosts overview'); ?>
                         </div>
                         <div class="col-lg-8 no-padding">
-                            <div class="btn-group btn-group-justified" role="group">
-                                <a class="btn btn-success state-button-small font-sm"
-                                   ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[0]})">
+                            <div class="btn-group btn-group-xs" style="width: 100%;"
+                                 ng-show="summaryState.ServiceSummary.total > 0">
+                                <button type="button" class="btn btn-success "
+                                        ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[0]})">
                                     {{summaryState.Hostgroup.HostSummary.state[0]}}
-                                </a>
-                                <a class="btn btn-danger state-button-small font-sm"
-                                   ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[1]})">
+                                </button>
+                                <button type="button" class="btn btn-danger "
+                                        ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[1]})">
                                     {{summaryState.Hostgroup.HostSummary.state[1]}}
-                                </a>
-                                <a class="btn btn-default state-button-small font-sm"
-                                   ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[2]})">
+                                </button>
+                                <button type="button" class="btn btn-secondary "
+                                        ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[2]})">
                                     {{summaryState.Hostgroup.HostSummary.state[2]}}
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
+
                     <div class="row padding-top-10">
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <?php echo __('Services overview'); ?>
                         </div>
                         <div class="col-lg-8 no-padding">
-                            <div class="btn-group btn-group-justified" role="group">
-                                <a class="btn btn-success state-button-small font-sm"
-                                   ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[0]})">
+                            <div class="btn-group btn-group-xs" style="width: 100%;"
+                                 ng-show="summaryState.ServiceSummary.total > 0">
+                                <button type="button" class="btn btn-success "
+                                        ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[0]})">
                                     {{summaryState.Hostgroup.TotalServiceSummary.state[0]}}
-                                </a>
-                                <a class="btn btn-warning state-button-small font-sm"
-                                   ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[1]})">
+                                </button>
+                                <button type="button" class="btn btn-warning "
+                                        ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[1]})">
                                     {{summaryState.Hostgroup.TotalServiceSummary.state[1]}}
-                                </a>
-                                <a class="btn btn-danger state-button-small font-sm"
-                                   ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[2]})">
+                                </button>
+                                <button type="button" class="btn btn-danger "
+                                        ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[2]})">
                                     {{summaryState.Hostgroup.TotalServiceSummary.state[2]}}
-                                </a>
-                                <a class="btn btn-default state-button-small font-sm"
-                                   ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[3]})">
+                                </button>
+                                <button type="button" class="btn btn-secondary "
+                                        ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[3]})">
                                     {{summaryState.Hostgroup.TotalServiceSummary.state[3]}}
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -531,9 +534,6 @@
                             <?php echo __('Services: '); ?>{{summaryState.ServiceSummary.total}}
                         </div>
                     </div>
-
-
-
                     <div class="row padding-top-10">
                         <div class="col-lg-3">
                             <?php echo __('Services overview'); ?>
