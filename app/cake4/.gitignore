@@ -58,6 +58,7 @@ webroot/img/charts
 
 # Plugins #
 #######################
+plugins/config
 plugins/DistributeModule
 plugins/EventcorrelationModule
 plugins/OpenstreetmapModule

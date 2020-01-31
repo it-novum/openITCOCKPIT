@@ -41,6 +41,12 @@ use Symfony\Component\Filesystem\Filesystem;
  * Rights command.
  */
 class RightsCommand extends Command {
+
+    /**
+     * @var bool
+     */
+    private $modulesOnly = false;
+
     /**
      * Hook method for defining this command's option parser.
      *
@@ -51,6 +57,11 @@ class RightsCommand extends Command {
      */
     public function buildOptionParser(ConsoleOptionParser $parser): ConsoleOptionParser {
         $parser = parent::buildOptionParser($parser);
+        $parser->addOption('modules', [
+            'help'    => 'Only set permissions to the modules folder',
+            'default' => false,
+            'boolean' => true
+        ]);
 
         return $parser;
     }
@@ -63,6 +74,8 @@ class RightsCommand extends Command {
      * @return null|void|int The exit code or null for success
      */
     public function execute(Arguments $args, ConsoleIo $io) {
+        $this->modulesOnly = $args->getOption('modules');
+
         $directories = [
             '/usr/share/openitcockpit/',
             '/usr/share/openitcockpit-modules/',
@@ -85,6 +98,13 @@ class RightsCommand extends Command {
 
             $fs = new Filesystem();
             foreach ($dirs as $dir) {
+                if ($this->modulesOnly) {
+                    if (!preg_match('/modules/', $dir)) {
+                        $io->info('Skipping ' . $dir);
+                        continue;
+                    }
+                }
+
                 if ($fs->exists($dir)) {
                     $io->out(sprintf(
                         '<info>Set filesystem permissions for user %s to %s...    </info>',
