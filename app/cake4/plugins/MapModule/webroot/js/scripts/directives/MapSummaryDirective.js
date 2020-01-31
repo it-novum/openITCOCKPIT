@@ -21,7 +21,7 @@ angular.module('openITCOCKPIT').directive('mapSummary', function($http, $interva
                 });
             };
             $scope.hideTooltip = function($event){
-              //  $($event.currentTarget).switchClass('slideInRight', 'slideOutRight');
+                $($event.currentTarget).switchClass('slideInRight', 'slideOutRight');
                 $scope.stopInterval();
             };
 
@@ -36,7 +36,7 @@ angular.module('openITCOCKPIT').directive('mapSummary', function($http, $interva
                     showFor = showFor - intervalSpeed;
                     if(showFor === 0){
                         $scope.stopInterval();
-                      //  $('.map-summary-state-popover').switchClass('slideInRight', 'slideOutRight');
+                        $('.map-summary-state-popover').switchClass('slideInRight', 'slideOutRight');
                     }
 
                     $scope.percentValue = showFor / 5000 * 100;
