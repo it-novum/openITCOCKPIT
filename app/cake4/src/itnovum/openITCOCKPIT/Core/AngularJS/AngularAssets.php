@@ -144,6 +144,7 @@ class AngularAssets implements AngularAssetsInterface {
         '/node_modules/flag-icon-css/css/flag-icon.css',
         //'/smartadmin/css/your_style.css',                             //check if we need this anymore
         //'/smartadmin/css/animate.css',
+        '/node_modules/animate.css/animate.min.css',
 
         /*'lockscreen.css',
         'base',

@@ -39,6 +39,7 @@
         "jquery-blockui": "^2.7.0",
         "highlight-within-textarea": "^2.0.5",
         "flag-icon-css": "^3.4.5",
+        "animate.css": "^3.7.2"
     },
     "devDependencies": {},
     "scripts": {

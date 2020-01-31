@@ -507,4 +507,15 @@ pre {
     color: #FFF;
 }
 
+.map-summary-state-popover {
+    position: fixed;
+    top: 50px;
+    right: 0;
+    width: 30%;
+    z-index: 99999;
+}
 
+.state-button-small {
+    padding: 0 2px;
+    font-size: 12px;
+}
