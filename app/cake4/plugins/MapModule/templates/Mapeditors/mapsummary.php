@@ -336,7 +336,7 @@
             </div>
         </article>
         <article ng-if="iconType == 'hostgroup'">
-            <div class=" bg-color-white">
+            <div class="bg-color-white padding-top-10 padding-left-10 padding-bottom-10">
                 <header>
                     <h2 class="bold txt-color-blueDark">
                         <i class="fa fa-sitemap fa-lg txt-color-blueDark"></i>
@@ -478,7 +478,7 @@
             </div>
         </article>
         <article ng-if="iconType == 'servicegroup'">
-            <div class=" bg-color-white">
+            <div class="bg-color-white  padding-top-10 padding-left-10 padding-bottom-10">
                 <header>
                     <h2 class="bold txt-color-blueDark">
                         <i class="fa fa-cogs fa-lg txt-color-blueDark"></i>
@@ -595,10 +595,10 @@
             </div>
         </article>
         <article ng-if="iconType == 'map'">
-            <div class=" bg-color-white">
+            <div class="bg-color-white padding-top-10 padding-left-10 padding-bottom-10">
                 <header>
                     <h2 class="bold txt-color-blueDark">
-                        <i class="fa fa-image fa-lg txt-color-blueDark"></i>
+                        <i class="fas fa-map-marked-alt fa-lg txt-color-blueDark"></i>
                         <?php echo __('Map'); ?>
                     </h2>
                     <div class="col-lg-12 no-padding">
@@ -625,7 +625,7 @@
                         </div>
                     </div>
                     <div class="row padding-top-10">
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <?php echo __('Summary state'); ?>
                         </div>
                         <div class="col-lg-8 no-padding"
@@ -643,7 +643,7 @@
                         </div>
                     </div>
                     <div class="row padding-top-10">
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <?php echo __('Summary output'); ?>
                         </div>
                         <div class="col-lg-4 no-padding">
@@ -653,50 +653,52 @@
                             <?php echo __('Services: '); ?>{{summaryState.ServiceSummary.total}}
                         </div>
                     </div>
-
                     <div class="row padding-top-10">
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <?php echo __('Hosts overview'); ?>
                         </div>
                         <div class="col-lg-8 no-padding">
-                            <div class="btn-group btn-group-justified" role="group">
-                                <a class="btn btn-success state-button-small font-sm"
-                                   ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[0]})">
+                            <div class="btn-group btn-group-xs" style="width: 100%;"
+                                 ng-show="summaryState.ServiceSummary.total > 0">
+                                <button type="button" class="btn btn-success "
+                                        ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[0]})">
                                     {{summaryState.HostSummary.state[0]}}
-                                </a>
-                                <a class="btn btn-danger state-button-small font-sm"
-                                   ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[1]})">
+                                </button>
+                                <button type="button" class="btn btn-danger "
+                                        ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[1]})">
                                     {{summaryState.HostSummary.state[1]}}
-                                </a>
-                                <a class="btn btn-default state-button-small font-sm"
-                                   ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[2]})">
+                                </button>
+                                <button type="button" class="btn btn-secondary "
+                                        ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[2]})">
                                     {{summaryState.HostSummary.state[2]}}
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
+
                     <div class="row padding-top-10">
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <?php echo __('Services overview'); ?>
                         </div>
                         <div class="col-lg-8 no-padding">
-                            <div class="btn-group btn-group-justified" role="group">
-                                <a class="btn btn-success state-button-small font-sm"
-                                   ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[0]})">
+                            <div class="btn-group btn-group-xs" style="width: 100%;"
+                                 ng-show="summaryState.ServiceSummary.total > 0">
+                                <button type="button" class="btn btn-success "
+                                        ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[0]})">
                                     {{summaryState.ServiceSummary.state[0]}}
-                                </a>
-                                <a class="btn btn-warning state-button-small font-sm"
-                                   ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[2]})">
+                                </button>
+                                <button type="button" class="btn btn-warning "
+                                        ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[2]})">
                                     {{summaryState.ServiceSummary.state[1]}}
-                                </a>
-                                <a class="btn btn-danger state-button-small font-sm"
-                                   ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[2]})">
+                                </button>
+                                <button type="button" class="btn btn-danger "
+                                        ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[2]})">
                                     {{summaryState.ServiceSummary.state[2]}}
-                                </a>
-                                <a class="btn btn-default state-button-small font-sm"
-                                   ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[3]})">
+                                </button>
+                                <button type="button" class="btn btn-secondary "
+                                        i-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[3]})">
                                     {{summaryState.ServiceSummary.state[3]}}
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -707,30 +709,30 @@
                                 </span>
                             <span class="text-info">(
                                     <i class="fa fa-info-circle"></i>
-                                    <?php echo __(' maximal 20'); ?>
+                                    <?php echo __(' maximum 20'); ?>
                                 </span>)
                         </div>
                     </div>
                     <div ng-if="summaryState.NotOkHosts.length > 0 || summaryState.NotOkServices.length">
-                        <div class="col-lg-12 padding-top-10" ng-show="summaryState.NotOkHosts.length > 0">
+                        <div class="row padding-top-20" ng-show="summaryState.NotOkHosts.length > 0">
                             <div class="col-lg-4">
                                 <?php echo __('Host'); ?>
                             </div>
-                            <div class="col-lg-4 no-padding">
+                            <div class="col-lg-3 no-padding">
                                 <?php echo __('State'); ?>
                             </div>
                             <div class="col-lg-4">
                                 <?php echo __('Output'); ?>
                             </div>
                         </div>
-                        <div class="col-lg-12 padding-top-5" ng-repeat="notOkHost in summaryState.NotOkHosts">
+                        <div class="row padding-top-5" ng-repeat="notOkHost in summaryState.NotOkHosts">
                             <div class="col-lg-4 cropText" title="{{notOkHost.Host.hostname}}">
                                 <a ui-sref="HostsBrowser({id: notOkHost.Host.id})">
                                     {{notOkHost.Host.hostname}}
                                 </a>
                             </div>
                             <div ng-show="notOkHost.Hoststatus.isInMonitoring"
-                                 class="col-lg-4 text-center txt-color-white text-capitalize bg-{{(notOkHost.Hoststatus.isHardstate)?notOkHost.Hoststatus.humanState:notOkHost.Hoststatus.humanState+'-soft'}}">
+                                 class="col-lg-3 text-center txt-color-white text-capitalize bg-{{(notOkHost.Hoststatus.isHardstate)?notOkHost.Hoststatus.humanState:notOkHost.Hoststatus.humanState+'-soft'}}">
                                 {{notOkHost.Hoststatus.humanState}}
                                 <i ng-show="notOkHost.Hoststatus.problemHasBeenAcknowledged"
                                    class="fa fa-user"></i>
@@ -738,7 +740,7 @@
                                    class="fa fa-power-off"></i>
                             </div>
                             <div ng-hide="notOkHost.Hoststatus.isInMonitoring"
-                                 class="col-lg-4 text-center txt-color-white bg-primary">
+                                 class="col-lg-3 text-center txt-color-white bg-primary">
                                 <?php echo __('Not in monitoring'); ?>
                                 <i class="fa fa-eye-slash"></i>
                             </div>
@@ -746,18 +748,18 @@
                                 {{notOkHost.Hoststatus.output}}
                             </div>
                         </div>
-                        <div class="col-lg-12 padding-top-10" ng-show="summaryState.NotOkServices.length > 0">
+                        <div class="row padding-top-10" ng-show="summaryState.NotOkServices.length > 0">
                             <div class="col-lg-4">
                                 <?php echo __('Service'); ?>
                             </div>
-                            <div class="col-lg-4 no-padding">
+                            <div class="col-lg-3 no-padding">
                                 <?php echo __('State'); ?>
                             </div>
                             <div class="col-lg-4">
                                 <?php echo __('Output'); ?>
                             </div>
                         </div>
-                        <div class="col-lg-12 padding-top-5" ng-repeat="notOkService in summaryState.NotOkServices">
+                        <div class="row padding-top-5" ng-repeat="notOkService in summaryState.NotOkServices">
                             <div class="col-lg-4 cropText"
                                  title="{{notOkService.Service.hostname}}/{{notOkService.Service.hostname}}">
                                 <a ui-sref="ServicesBrowser({id: notOkService.Service.id})">
@@ -765,7 +767,7 @@
                                 </a>
                             </div>
                             <div ng-show="notOkService.Servicestatus.isInMonitoring"
-                                 class="col-lg-4 text-center txt-color-white text-capitalize bg-{{(notOkService.Servicestatus.isHardstate)?notOkService.Servicestatus.humanState:notOkService.Servicestatus.humanState+'-soft'}}">
+                                 class="col-lg-3 text-center txt-color-white text-capitalize bg-{{(notOkService.Servicestatus.isHardstate)?notOkService.Servicestatus.humanState:notOkService.Servicestatus.humanState+'-soft'}}">
                                 {{notOkService.Servicestatus.humanState}}
                                 <i ng-show="notOkService.Servicestatus.problemHasBeenAcknowledged"
                                    class="fa fa-user"></i>
@@ -773,7 +775,7 @@
                                    class="fa fa-power-off"></i>
                             </div>
                             <div ng-hide="notOkService.Servicestatus.isInMonitoring"
-                                 class="col-lg-4 text-center txt-color-white bg-primary">
+                                 class="col-lg-3 text-center txt-color-white bg-primary">
                                 <?php echo __('Not in monitoring'); ?>
                                 <i class="fa fa-eye-slash"></i>
                             </div>
