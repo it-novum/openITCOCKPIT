@@ -478,7 +478,7 @@
             </div>
         </article>
         <article ng-if="iconType == 'servicegroup'">
-            <div class="bg-color-white  padding-top-10 padding-left-10 padding-bottom-10">
+            <div class="bg-color-white padding-top-10 padding-left-10 padding-bottom-10">
                 <header>
                     <h2 class="bold txt-color-blueDark">
                         <i class="fa fa-cogs fa-lg txt-color-blueDark"></i>
@@ -507,8 +507,8 @@
                             {{summaryState.Servicegroup.description}}
                         </div>
                     </div>
-                    <div class="col-lg-12  padding-top-10">
-                        <div class="col-lg-4">
+                    <div class="row padding-top-10">
+                        <div class="col-lg-3">
                             <?php echo __('Summary state'); ?>
                         </div>
                         <div class="col-lg-8 no-padding" ng-show="summaryState.ServiceSummary.total > 0">
@@ -524,7 +524,7 @@
                         </div>
                     </div>
                     <div class="row padding-top-10">
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <?php echo __('Summary output'); ?>
                         </div>
                         <div class="col-lg-4 no-padding">
@@ -532,33 +532,36 @@
                         </div>
                     </div>
 
+
+
                     <div class="row padding-top-10">
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <?php echo __('Services overview'); ?>
                         </div>
                         <div class="col-lg-8 no-padding">
-                            <div class="btn-group btn-group-justified" role="group">
-                                <a class="btn btn-success state-button-small font-sm"
-                                   ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[0]})">
+                            <div class="btn-group btn-group-xs" style="width: 100%;"
+                                 ng-show="summaryState.ServiceSummary.total > 0">
+                                <button type="button" class="btn btn-success "
+                                        ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[0]})">
                                     {{summaryState.ServiceSummary.state[0]}}
-                                </a>
-                                <a class="btn btn-warning state-button-small font-sm"
-                                   ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[1]})">
+                                </button>
+                                <button type="button" class="btn btn-warning "
+                                        ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[1]})">
                                     {{summaryState.ServiceSummary.state[1]}}
-                                </a>
-                                <a class="btn btn-danger state-button-small font-sm"
-                                   ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[2]})">
+                                </button>
+                                <button type="button" class="btn btn-danger "
+                                        ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[2]})">
                                     {{summaryState.ServiceSummary.state[2]}}
-                                </a>
-                                <a class="btn btn-default state-button-small font-sm"
-                                   ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[3]})">
+                                </button>
+                                <button type="button" class="btn btn-secondary "
+                                        ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[3]})">
                                     {{summaryState.ServiceSummary.state[3]}}
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-12 padding-top-20" ng-show="summaryState.Services.length > 0">
-                        <div class="col-lg-6">
+                    <div class="row padding-top-20" ng-show="summaryState.Services.length > 0">
+                        <div class="col-lg-5">
                             <?php echo __('Service'); ?>
                         </div>
                         <div class="col-lg-2 no-padding">
@@ -568,8 +571,8 @@
                             <?php echo __('Output'); ?>
                         </div>
                     </div>
-                    <div class="col-lg-12 padding-top-10" ng-repeat="service in summaryState.Services">
-                        <div class="col-lg-6 cropText"
+                    <div class="row padding-top-10" ng-repeat="service in summaryState.Services">
+                        <div class="col-lg-5 cropText"
                              title="{{service.Host.hostname}}/{{service.Service.servicename}}">
 
                             <a ui-sref="ServicesBrowser({id: service.Service.id})">
@@ -578,6 +581,7 @@
                         </div>
                         <div ng-show="service.Servicestatus.isInMonitoring"
                              class="col-lg-2 text-center txt-color-white text-capitalize bg-{{(service.Servicestatus.isHardstate)?service.Servicestatus.humanState:service.Servicestatus.humanState+'-soft'}}">
+                            {{service.Servicestatus.humanState}}
                             <i ng-show="service.Servicestatus.problemHasBeenAcknowledged"
                                class="fa fa-user"></i>
                             <i ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"
@@ -688,7 +692,7 @@
                                     {{summaryState.ServiceSummary.state[0]}}
                                 </button>
                                 <button type="button" class="btn btn-warning "
-                                        ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[2]})">
+                                        ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[1]})">
                                     {{summaryState.ServiceSummary.state[1]}}
                                 </button>
                                 <button type="button" class="btn btn-danger "
@@ -696,7 +700,7 @@
                                     {{summaryState.ServiceSummary.state[2]}}
                                 </button>
                                 <button type="button" class="btn btn-secondary "
-                                        i-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[3]})">
+                                        ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[3]})">
                                     {{summaryState.ServiceSummary.state[3]}}
                                 </button>
                             </div>
