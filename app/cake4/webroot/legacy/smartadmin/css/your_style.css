@@ -2504,6 +2504,12 @@ input[type=text]:focus + .input-group-addon-no-focus {
     border-radius: 7px;
 }
 
+.bordered-vertical-on-right {
+    border-right: 5px inset #428bca;
+    border-radius: 7px;
+}
+
+
 .dropzoneStyle {
     min-height: 175px;
     padding: 15px;
