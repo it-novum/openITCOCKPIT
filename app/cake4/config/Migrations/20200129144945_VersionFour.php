@@ -26,6 +26,14 @@ declare(strict_types=1);
 
 use Migrations\AbstractMigration;
 
+/**
+ * Class VersionFour
+ * Update an openITCOCKPIT 3.7.2 database to 4.0
+ * https://github.com/it-novum/openITCOCKPIT/releases/tag/openITCOCKPIT-3.7.2
+ *
+ * Run migration:
+ * oitc4 migrations migrate
+ */
 class VersionFour extends AbstractMigration {
 
     /**

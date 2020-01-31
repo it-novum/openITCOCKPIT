@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Service;
 use App\Model\Entity\Servicedependency;
 use App\Model\Entity\Serviceescalation;
@@ -63,6 +64,7 @@ class ServicesTable extends Table {
 
     use CustomValidationTrait;
     use PaginationAndScrollIndexTrait;
+    use PluginManagerTableTrait;
 
 
     /**

@@ -14,7 +14,7 @@ APPDIR="/usr/share/openitcockpit/app/cake4"
 INIFILE=/etc/openitcockpit/mysql.cnf
 
 echo "Create mysqldump of your current database"
-BACKUP_TIMESTAMP=`date '+%Y-%m-%d_%H-%M-%S'`
+BACKUP_TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')
 BACKUP_DIR='/opt/openitc/nagios/backup'
 mkdir -p $BACKUP_DIR
 #If you have mysql binlog enabled uses this command:
@@ -79,18 +79,32 @@ mysqldump --defaults-extra-file=/etc/mysql/debian.cnf --databases $dbc_dbname --
     --ignore-table=$dbc_dbname.nagios_timedevents \
     --ignore-table=$dbc_dbname.nagios_timeperiod_timeranges \
     --ignore-table=$dbc_dbname.nagios_timeperiods \
-> $BACKUP_DIR/openitcockpit_dump_$BACKUP_TIMESTAMP.sql
+    >$BACKUP_DIR/openitcockpit_dump_$BACKUP_TIMESTAMP.sql
 
-#sudo -g www-data "${APPDIR}/Console/cake" schema update -y --connection default --file schema_itcockpit.php -s 26
-#
-#for PLUGIN in $(ls -1 "${APPDIR}/Plugin"); do
-#    if [ -f "${APPDIR}/Plugin/${PLUGIN}/Config/Schema/schema.php" ]; then
-#        sudo -g www-data "${APPDIR}/Console/cake" schema update -y --connection default --plugin "$PLUGIN" --file schema.php
-#    fi
-#done
+echo "Running openITCOCKPIT Core database migration"
+oitc4 migrations migrate
 
-#Update Containertype from Devicegroup to Node
-#oitc api --model Containers --action update_container_type --data ""
+echo "Running openITCOCKPIT Module database migration/s"
+for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do
+    if [[ "$PLUGIN" == *Module ]]; then
+        if [[ -d "${APPDIR}/plugins/${PLUGIN}/config/Migrations" ]]; then
+            echo "Running openITCOCKPIT ${PLUGIN} database migration"
+            oitc4 migrations migrate -p "${PLUGIN}"
+        fi
+
+        if [[ -d "${APPDIR}/plugins/${PLUGIN}/config/Seeds" ]]; then
+            num_files=$(find "${APPDIR}/plugins/${PLUGIN}/config/Seeds" -mindepth 1 -iname "*.php" -type f | wc -l)
+            if [[ "$num_files" -gt 0 ]]; then
+                echo "Importing default records for ${PLUGIN} into database"
+                oitc4 migrations seed -p "${PLUGIN}"
+            fi
+        fi
+
+    fi
+done
+
+echo "Update Containertype from Devicegroup to Node"
+mysql "--defaults-extra-file=$INIFILE" -e "UPDATE containers SET containertype_id=5 WHERE containertype_id=4"
 
 #Check and create missing cronjobs
 #oitc api --model Cronjob --action create_missing_cronjobs --data ""
@@ -111,7 +125,6 @@ echo "Check for browser push notification commands"
 #oitc api --model Commands --action addByUuid --ignore-errors 1 --data 'host-notify-by-browser-notification' '/usr/share/openitcockpit/app/Console/cake send_push_notification --type Host --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --state "$HOSTSTATEID$" --output "$HOSTOUTPUT$"  --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$" --user-id $_CONTACTOITCUSERID$' '3' 'cd13d22e-acd4-4a67-997b-6e120e0d3153' 'Send a host notification to the browser window'
 #oitc api --model Commands --action addByUuid --ignore-errors 1 --data 'service-notify-by-browser-notification' '/usr/share/openitcockpit/app/Console/cake send_push_notification --type Service --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --serviceuuid "$SERVICEDESC$" --state "$SERVICESTATEID$" --output "$SERVICEOUTPUT$" --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$" --user-id $_CONTACTOITCUSERID$' '3' 'c23255b7-5b1a-40b4-b614-17837dc376af ' 'Send a service notification to the browser window'
 
-
 #Generate documentation
 #oitc docu_generator
 #oitc systemsettings_import
@@ -119,41 +132,40 @@ echo "Check for browser push notification commands"
 NORESTART=false
 for i in "$@"; do
     case $i in
-        --cc)
-            echo "Clear out Model Cache /usr/share/openitcockpit/app/cake4/tmp/cache/models/"
-            rm -rf /usr/share/openitcockpit/app/cake4/tmp/cache/models/*
+    --cc)
+        echo "Clear out Model Cache /usr/share/openitcockpit/app/cake4/tmp/cache/models/"
+        rm -rf /usr/share/openitcockpit/app/cake4/tmp/cache/models/*
         ;;
 
-        --rights)
-            oitc4 rights
+    --rights)
+        oitc4 rights
         ;;
 
-        --no-restart)
-            NORESTART=true
+    --no-restart)
+        NORESTART=true
         ;;
 
-        *)
-            #No default at the moment
+    *)
+        #No default at the moment
         ;;
     esac
 done
-
 
 echo "Flush redis cache"
 redis-cli FLUSHALL
 echo ""
 
-if [[ "$NORESTART" = "true" ]]; then
+if [[ "$NORESTART" == "true" ]]; then
     echo "#########################################"
     echo "# RESTART OF SERVICES MANUALLY DISABLED #"
     echo "#########################################"
     echo ""
     echo "Update successfully finished"
-    exit 0;
+    exit 0
 fi
 
 CODENAME=$(lsb_release -sc)
-if [[ "$1" = "install" ]]; then
+if [[ "$1" == "install" ]]; then
     if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "bionic" ] || [ $CODENAME = "stretch" ]; then
         systemctl restart gearman_worker
     fi

@@ -51,6 +51,7 @@ webroot/node_modules
 
 # openITCOCKPIT files #
 #######################
+config/Migrations/schema-dump-default.lock
 config/graphite.php
 src/Lib/openITCOCKPIT_AvailableVersion.php
 webroot/img/userimages
