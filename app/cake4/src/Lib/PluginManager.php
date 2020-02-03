@@ -88,13 +88,12 @@ class PluginManager {
             );
             $this->application->addPlugin($moduleName);
 
-            /*
+
             $pluginAssociationsFile = PLUGIN . $moduleName . DS . 'config' . DS . 'associations.php';
             if (file_exists($pluginAssociationsFile)) {
                 $mapping = require_once $pluginAssociationsFile;
                 self::$associations = Hash::merge(self::$associations, $mapping);
             }
-            */
 
         }
 

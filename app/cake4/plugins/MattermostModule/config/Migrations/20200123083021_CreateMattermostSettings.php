@@ -38,11 +38,12 @@ use Migrations\AbstractMigration;
  *
  */
 class CreateMattermostSettings extends AbstractMigration {
+
     /**
      * Change Method.
      *
      * More information on this method is available here:
-     * http://docs.phinx.org/en/latest/migrations.html#the-change-method
+     * https://book.cakephp.org/phinx/0/en/migrations.html#the-change-method
      * @return void
      */
     public function change() {
