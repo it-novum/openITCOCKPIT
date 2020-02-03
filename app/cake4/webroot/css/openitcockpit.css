@@ -424,7 +424,7 @@ pre {
     background-color: #f5f5f5;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
     overflow: auto;
 }
 
@@ -518,75 +518,4 @@ pre {
 .state-button-small {
     padding: 0 2px;
     font-size: 12px;
-}
-
-/* CURRENTSTATESREPORT */
-.prog-container {
-    height: 20px;
-}
-
-.prog-bar-cont {
-    background: gainsboro;
-    height: 1.4em;
-    padding: 0.1em;
-    border-radius: 5px;
-}
-
-.prog-bar-cont .prog-bar {
-    background: #000;
-    width: 100%;
-    height: 100%;
-    border-radius: 5px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset, 0 0 1px 5px rgba(255, 255, 255, 0.75) inset;
-    background: transparent;
-}
-
-.prog-bar-cont .prog-bar:before {
-    border-radius: 5px;
-    content: '';
-    display: block;
-    width: 100%;
-    height: 100%;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3) inset, 0 0 5px 2px rgba(255, 255, 255, 0.8) inset;
-    background: transparent;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 3;
-}
-
-.prog-bar-cont .prog-bar:after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 2px;
-    width: 96%;
-    left: 50%;
-    margin-left: -48%;
-    border-radius: 20px;
-    height: 10px;
-}
-
-.prog-bar-cont .prog-bar .background {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    -webkit-clip-path: inset(0 0% 0 0);
-    clip-path: inset(0 0% 0 0);
-    transition: all 3s;
-    -webkit-transition: all 3s;
-}
-
-.prog-text {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    text-align: center;
-    color: black;
-    font-size: 11px;
-    z-index: 20;
 }

@@ -51,7 +51,6 @@ webroot/node_modules
 
 # openITCOCKPIT files #
 #######################
-config/Migrations/schema-dump-default.lock
 config/graphite.php
 src/Lib/openITCOCKPIT_AvailableVersion.php
 webroot/img/userimages
@@ -59,10 +58,8 @@ webroot/img/charts
 
 # Plugins #
 #######################
-plugins/config
 plugins/DistributeModule
 plugins/EventcorrelationModule
-plugins/MkModule
 plugins/OpenstreetmapModule
 plugins/SlackModule
 plugins/ServicenowModule
