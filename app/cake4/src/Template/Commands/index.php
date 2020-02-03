@@ -196,7 +196,7 @@
                                                 data-toggle="dropdown">
                                             <i class="caret"></i>
                                         </button>
-                                        <div class="dropdown-menu">
+                                        <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
                                                 <a ui-sref="CommandsEdit({id:command.Command.id})"
                                                    class="dropdown-item">
