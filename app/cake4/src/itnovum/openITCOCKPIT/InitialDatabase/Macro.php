@@ -25,10 +25,14 @@
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 
+use App\Model\Table\MacrosTable;
+
+/**
+ * Class Macro
+ * @package itnovum\openITCOCKPIT\InitialDatabase
+ * @property MacrosTable $Table
+ */
 class Macro extends Importer {
-    /**
-     * @property \Macro $Model
-     */
 
     /**
      * @return bool
@@ -37,8 +41,8 @@ class Macro extends Importer {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
-                $this->Model->create();
-                $this->Model->saveAll($record);
+                $entity = $this->Table->newEntity($record);
+                $this->Table->save($entity);
             }
         }
 
@@ -50,19 +54,15 @@ class Macro extends Importer {
      */
     public function getData() {
         $data = [
-            0 =>
-                [
-                    'Macro' =>
-                        [
-                            'id'          => '1',
-                            'name'        => '$USER1$',
-                            'value'       => '/opt/openitc/nagios/libexec',
-                            'description' => 'Path to monitoring plugins',
-                            'password'    => '0',
-                            'created'     => '2015-01-05 15:17:23',
-                            'modified'    => '2015-01-05 15:17:23',
-                        ],
-                ],
+            (int)0 => [
+                'id'          => '1',
+                'name'        => '$USER1$',
+                'value'       => '/opt/openitc/nagios/libexec',
+                'description' => 'Path to monitoring plugins',
+                'password'    => '0',
+                'created'     => '2015-01-05 15:17:23',
+                'modified'    => '2015-01-05 15:17:23'
+            ]
         ];
 
         return $data;

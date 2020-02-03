@@ -24,11 +24,14 @@
 
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
+use App\Model\Table\CronjobsTable;
 
+/**
+ * Class Cronjob
+ * @package itnovum\openITCOCKPIT\InitialDatabase
+ * @property CronjobsTable $Table
+ */
 class Cronjob extends Importer {
-    /**
-     * @property \Cronjob $Model
-     */
 
     /**
      * @return bool
@@ -37,8 +40,8 @@ class Cronjob extends Importer {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
-                $this->Model->create();
-                $this->Model->saveAll($record);
+                $entity = $this->Table->newEntity($record);
+                $this->Table->save($entity);
             }
         }
 
@@ -50,78 +53,132 @@ class Cronjob extends Importer {
      */
     public function getData() {
         $data = [
-            0 =>
-                [
-                    'Cronjob'      =>
-                        [
-                            'id'       => '1',
-                            'task'     => 'CleanupTemp',
-                            'plugin'   => 'Core',
-                            'interval' => '10',
-                        ],
-                    'Cronschedule' =>
-                        [
-                            'id'         => '1',
-                            'cronjob_id' => '1',
-                            'is_running' => '0',
-                            'start_time' => '2016-09-27 11:07:02',
-                            'end_time'   => '2016-09-27 11:07:02',
-                        ],
-                ],
-            1 =>
-                [
-                    'Cronjob'      =>
-                        [
-                            'id'       => '2',
-                            'task'     => 'DatabaseCleanup',
-                            'plugin'   => 'Core',
-                            'interval' => '1440',
-                        ],
-                    'Cronschedule' =>
-                        [
-                            'id'         => '2',
-                            'cronjob_id' => '2',
-                            'is_running' => '0',
-                            'start_time' => '2015-01-16 00:43:01',
-                            'end_time'   => '2015-01-16 00:43:02',
-                        ],
-                ],
-            2 =>
-                [
-                    'Cronjob'      =>
-                        [
-                            'id'       => '3',
-                            'task'     => 'RecurringDowntimes',
-                            'plugin'   => 'Core',
-                            'interval' => '10',
-                        ],
-                    'Cronschedule' =>
-                        [
-                            'id'         => '3',
-                            'cronjob_id' => '3',
-                            'is_running' => '0',
-                            'start_time' => '2015-01-16 00:43:02',
-                            'end_time'   => '2015-01-16 00:43:02',
-                        ],
-                ],
-            3 =>
-                [
-                    'Cronjob'      =>
-                        [
-                            'id'       => '4',
-                            'task'     => 'InstantReport',
-                            'plugin'   => 'Core',
-                            'interval' => '1440',
-                        ],
-                    'Cronschedule' =>
-                        [
-                            'id'         => '4',
-                            'cronjob_id' => '4',
-                            'is_running' => '0',
-                            'start_time' => '2015-01-16 00:43:02',
-                            'end_time'   => '2015-01-16 00:43:02',
-                        ],
-                ],
+            (int)0 => [
+                'id'           => '1',
+                'task'         => 'CleanupTemp',
+                'plugin'       => 'Core',
+                'interval'     => '10',
+                'enabled'      => '1',
+                'cronschedule' => [
+                    'id'         => '1',
+                    'cronjob_id' => '1',
+                    'is_running' => '0',
+                    'start_time' => '2020-01-29 09:49:02',
+                    'end_time'   => '2020-01-29 09:49:02'
+                ]
+            ],
+            (int)1 => [
+                'id'           => '2',
+                'task'         => 'DatabaseCleanup',
+                'plugin'       => 'Core',
+                'interval'     => '1440',
+                'enabled'      => '1',
+                'cronschedule' => [
+                    'id'         => '2',
+                    'cronjob_id' => '2',
+                    'is_running' => '0',
+                    'start_time' => '2020-01-29 09:29:01',
+                    'end_time'   => '2020-01-29 09:29:02'
+                ]
+            ],
+            (int)2 => [
+                'id'           => '3',
+                'task'         => 'RecurringDowntimes',
+                'plugin'       => 'Core',
+                'interval'     => '10',
+                'enabled'      => '1',
+                'cronschedule' => [
+                    'id'         => '3',
+                    'cronjob_id' => '3',
+                    'is_running' => '0',
+                    'start_time' => '2020-01-29 09:50:01',
+                    'end_time'   => '2020-01-29 09:50:01'
+                ]
+            ],
+            (int)3 => [
+                'id'           => '4',
+                'task'         => 'InstantReport',
+                'plugin'       => 'Core',
+                'interval'     => '1440',
+                'enabled'      => '1',
+                'cronschedule' => [
+                    'id'         => '4',
+                    'cronjob_id' => '4',
+                    'is_running' => '0',
+                    'start_time' => '2020-01-29 09:29:02',
+                    'end_time'   => '2020-01-29 09:29:02'
+                ]
+            ],
+            (int)5 => [
+                'id'           => '6',
+                'task'         => 'CpuLoad',
+                'plugin'       => 'Core',
+                'interval'     => '15',
+                'enabled'      => '1',
+                'cronschedule' => [
+                    'id'         => '6',
+                    'cronjob_id' => '6',
+                    'is_running' => '0',
+                    'start_time' => '2020-01-29 09:45:02',
+                    'end_time'   => '2020-01-29 09:45:02'
+                ]
+            ],
+            (int)6 => [
+                'id'           => '7',
+                'task'         => 'VersionCheck',
+                'plugin'       => 'Core',
+                'interval'     => '1440',
+                'enabled'      => '1',
+                'cronschedule' => [
+                    'id'         => '7',
+                    'cronjob_id' => '7',
+                    'is_running' => '0',
+                    'start_time' => '2020-01-29 09:29:03',
+                    'end_time'   => '2020-01-29 09:29:03'
+                ]
+            ],
+            (int)7 => [
+                'id'           => '8',
+                'task'         => 'SystemHealth',
+                'plugin'       => 'Core',
+                'interval'     => '1',
+                'enabled'      => '1',
+                'cronschedule' => [
+                    'id'         => '8',
+                    'cronjob_id' => '8',
+                    'is_running' => '0',
+                    'start_time' => '2020-01-29 09:58:01',
+                    'end_time'   => '2020-01-29 09:58:02'
+                ]
+            ],
+            (int)8 => [
+                'id'           => '9',
+                'task'         => 'SystemMetrics',
+                'plugin'       => 'Core',
+                'interval'     => '240',
+                'enabled'      => '1',
+                'cronschedule' => [
+                    'id'         => '9',
+                    'cronjob_id' => '9',
+                    'is_running' => '0',
+                    'start_time' => '2020-01-29 09:29:04',
+                    'end_time'   => '2020-01-29 09:29:04'
+                ]
+            ],
+            (int)9 => [
+                'id'           => '10',
+                'task'         => 'ConfigGenerator',
+                'plugin'       => 'Core',
+                'interval'     => '1',
+                'enabled'      => '1',
+                'cronschedule' => [
+                    'id'         => '10',
+                    'cronjob_id' => '10',
+                    'is_running' => '0',
+                    'start_time' => '2020-01-29 09:58:02',
+                    'end_time'   => '2020-01-29 09:58:02'
+                ]
+            ]
         ];
 
         return $data;

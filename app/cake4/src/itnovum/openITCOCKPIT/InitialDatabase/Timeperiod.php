@@ -24,11 +24,14 @@
 
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
+use App\Model\Table\TimeperiodsTable;
 
+/**
+ * Class Timeperiod
+ * @package itnovum\openITCOCKPIT\InitialDatabase
+ * @property TimeperiodsTable $Table
+ */
 class Timeperiod extends Importer {
-    /**
-     * @property \Timeperiod $Model
-     */
 
     /**
      * @return bool
@@ -37,8 +40,8 @@ class Timeperiod extends Importer {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
-                $this->Model->create();
-                $this->Model->saveAll($record);
+                $entity = $this->Table->newEntity($record);
+                $this->Table->save($entity);
             }
         }
 
@@ -50,93 +53,78 @@ class Timeperiod extends Importer {
      */
     public function getData() {
         $data = [
-            0 =>
-                [
-                    'Timeperiod' =>
-                        [
-                            'id'           => '1',
-                            'uuid'         => '41012866-6114-4853-9caf-6ffd19954e50',
-                            'container_id' => '1',
-                            'name'         => '24x7',
-                            'description'  => '24x7',
-                            'created'      => '2015-01-05 15:11:46',
-                            'modified'     => '2015-01-05 15:11:46',
-                        ],
-                    'Timerange'  =>
-                        [
-                            0 =>
-                                [
-                                    'id'            => '1',
-                                    'timeperiod_id' => '1',
-                                    'day'           => '1',
-                                    'start'         => '00:00',
-                                    'end'           => '24:00',
-                                ],
-                            1 =>
-                                [
-                                    'id'            => '2',
-                                    'timeperiod_id' => '1',
-                                    'day'           => '2',
-                                    'start'         => '00:00',
-                                    'end'           => '24:00',
-                                ],
-                            2 =>
-                                [
-                                    'id'            => '3',
-                                    'timeperiod_id' => '1',
-                                    'day'           => '3',
-                                    'start'         => '00:00',
-                                    'end'           => '24:00',
-                                ],
-                            3 =>
-                                [
-                                    'id'            => '4',
-                                    'timeperiod_id' => '1',
-                                    'day'           => '4',
-                                    'start'         => '00:00',
-                                    'end'           => '24:00',
-                                ],
-                            4 =>
-                                [
-                                    'id'            => '5',
-                                    'timeperiod_id' => '1',
-                                    'day'           => '5',
-                                    'start'         => '00:00',
-                                    'end'           => '24:00',
-                                ],
-                            5 =>
-                                [
-                                    'id'            => '6',
-                                    'timeperiod_id' => '1',
-                                    'day'           => '6',
-                                    'start'         => '00:00',
-                                    'end'           => '24:00',
-                                ],
-                            6 =>
-                                [
-                                    'id'            => '7',
-                                    'timeperiod_id' => '1',
-                                    'day'           => '7',
-                                    'start'         => '00:00',
-                                    'end'           => '24:00',
-                                ],
-                        ],
-                ],
-            1 =>
-                [
-                    'Timeperiod' =>
-                        [
-                            'id'           => '2',
-                            'uuid'         => 'c5251a5e-37f1-4841-b0bd-f801ee8969d4',
-                            'container_id' => '1',
-                            'name'         => 'none',
-                            'description'  => 'none',
-                            'created'      => '2015-01-05 15:11:56',
-                            'modified'     => '2015-01-05 15:11:56',
-                        ],
-                    'Timerange'  =>
-                        [],
-                ],
+            (int)0 => [
+                'id'                    => '1',
+                'uuid'                  => '41012866-6114-4853-9caf-6ffd19954e50',
+                'container_id'          => '1',
+                'name'                  => '24x7',
+                'description'           => '24x7',
+                'calendar_id'           => '0',
+                'created'               => '2015-01-05 15:11:46',
+                'modified'              => '2015-01-05 15:11:46',
+                'timeperiod_timeranges' => [
+                    (int)0 => [
+                        'id'            => '1',
+                        'timeperiod_id' => '1',
+                        'day'           => '1',
+                        'start'         => '00:00',
+                        'end'           => '24:00'
+                    ],
+                    (int)1 => [
+                        'id'            => '2',
+                        'timeperiod_id' => '1',
+                        'day'           => '2',
+                        'start'         => '00:00',
+                        'end'           => '24:00'
+                    ],
+                    (int)2 => [
+                        'id'            => '3',
+                        'timeperiod_id' => '1',
+                        'day'           => '3',
+                        'start'         => '00:00',
+                        'end'           => '24:00'
+                    ],
+                    (int)3 => [
+                        'id'            => '4',
+                        'timeperiod_id' => '1',
+                        'day'           => '4',
+                        'start'         => '00:00',
+                        'end'           => '24:00'
+                    ],
+                    (int)4 => [
+                        'id'            => '5',
+                        'timeperiod_id' => '1',
+                        'day'           => '5',
+                        'start'         => '00:00',
+                        'end'           => '24:00'
+                    ],
+                    (int)5 => [
+                        'id'            => '6',
+                        'timeperiod_id' => '1',
+                        'day'           => '6',
+                        'start'         => '00:00',
+                        'end'           => '24:00'
+                    ],
+                    (int)6 => [
+                        'id'            => '7',
+                        'timeperiod_id' => '1',
+                        'day'           => '7',
+                        'start'         => '00:00',
+                        'end'           => '24:00'
+                    ]
+                ]
+            ],
+            (int)1 => [
+                'id'                    => '2',
+                'uuid'                  => 'c5251a5e-37f1-4841-b0bd-f801ee8969d4',
+                'container_id'          => '1',
+                'name'                  => 'none',
+                'description'           => 'none',
+                'calendar_id'           => '0',
+                'created'               => '2015-01-05 15:11:56',
+                'modified'              => '2015-01-05 15:11:56',
+                'timeperiod_timeranges' => []
+            ]
         ];
 
         return $data;

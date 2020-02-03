@@ -24,11 +24,14 @@
 
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
+use App\Model\Table\ContactsTable;
 
+/**
+ * Class Contact
+ * @package itnovum\openITCOCKPIT\InitialDatabase
+ * @property ContactsTable $Table
+ */
 class Contact extends Importer {
-    /**
-     * @property \Contact $Model
-     */
 
     /**
      * @return bool
@@ -37,8 +40,8 @@ class Contact extends Importer {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
-                $this->Model->create();
-                $this->Model->saveAll($record);
+                $entity = $this->Table->newEntity($record);
+                $this->Table->save($entity);
             }
         }
 
@@ -50,53 +53,48 @@ class Contact extends Importer {
      */
     public function getData() {
         $data = [
-            0 =>
-                [
-                    'Contact'   =>
-                        [
-                            'id'                            => '1',
-                            'uuid'                          => '152aecaf-e981-4b0b-8e05-86972868547d',
-                            'name'                          => 'info',
-                            'description'                   => 'info contact',
-                            'email'                         => 'openitcockpit@localhost.local',
-                            'phone'                         => '',
-                            'host_timeperiod_id'            => '1',
-                            'service_timeperiod_id'         => '1',
-                            'host_notifications_enabled'    => '1',
-                            'service_notifications_enabled' => '1',
-                            'notify_service_recovery'       => '1',
-                            'notify_service_warning'        => '1',
-                            'notify_service_unknown'        => '1',
-                            'notify_service_critical'       => '1',
-                            'notify_service_flapping'       => '0',
-                            'notify_service_downtime'       => '0',
-                            'notify_host_recovery'          => '1',
-                            'notify_host_down'              => '1',
-                            'notify_host_unreachable'       => '1',
-                            'notify_host_flapping'          => '0',
-                            'notify_host_downtime'          => '0',
-                            'HostCommands'                  => [1],
-                            'ServiceCommands'               => [2],
-                        ],
-                    'Container' =>
-                        [
-                            0 =>
-                                [
-                                    'id'                  => '1',
-                                    'containertype_id'    => '1',
-                                    'name'                => 'root',
-                                    'parent_id'           => null,
-                                    'lft'                 => '1',
-                                    'rght'                => '2',
-                                    'ContactsToContainer' =>
-                                        [
-                                            'id'           => '2',
-                                            'contact_id'   => '1',
-                                            'container_id' => '1',
-                                        ],
-                                ],
-                        ],
-                ],
+            (int)0 => [
+                'id'                                 => '1',
+                'uuid'                               => '152aecaf-e981-4b0b-8e05-86972868547d',
+                'name'                               => 'info',
+                'description'                        => 'info contact',
+                'email'                              => 'openitcockpit@localhost.local',
+                'phone'                              => '',
+                'user_id'                            => null,
+                'host_timeperiod_id'                 => '1',
+                'service_timeperiod_id'              => '1',
+                'host_notifications_enabled'         => '1',
+                'service_notifications_enabled'      => '1',
+                'notify_service_recovery'            => '1',
+                'notify_service_warning'             => '1',
+                'notify_service_unknown'             => '1',
+                'notify_service_critical'            => '1',
+                'notify_service_flapping'            => '0',
+                'notify_service_downtime'            => '0',
+                'notify_host_recovery'               => '1',
+                'notify_host_down'                   => '1',
+                'notify_host_unreachable'            => '1',
+                'notify_host_flapping'               => '0',
+                'notify_host_downtime'               => '0',
+                'host_push_notifications_enabled'    => '0',
+                'service_push_notifications_enabled' => '0',
+                'customvariables'                    => [],
+                'containers'                         => [
+                    (int)0 => [
+                        'id'               => '1',
+                        'containertype_id' => '1',
+                        'name'             => 'root',
+                        'parent_id'        => null,
+                        'lft'              => '1',
+                        'rght'             => '2',
+                        '_joinData'        => [
+                            'id'           => '2',
+                            'contact_id'   => '1',
+                            'container_id' => '1'
+                        ]
+                    ]
+                ]
+            ]
         ];
 
         return $data;

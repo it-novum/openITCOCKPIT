@@ -44,7 +44,7 @@ return [
             /*
              * The following keys are used in SMTP transports:
              */
-            'host'      => '127.0.0.1',
+            'host'      => "127.0.0.1",
             'port'      => 25,
             'timeout'   => 30,
             'username'  => null,
