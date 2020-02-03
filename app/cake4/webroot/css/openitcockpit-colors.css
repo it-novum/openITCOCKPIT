@@ -45,7 +45,7 @@ SECONDARY:                          #727b84;
     color: #4285F4 !important;
 }
 
-.slightBorder{
+.slightBorder {
     border: 1px solid #e3e3e3
 }
 
@@ -170,7 +170,6 @@ SECONDARY:                          #727b84;
     border-color: #3c00ff !important;
     z-index: 2 !important;
 }
-
 
 
 /* TEXT COLOR */
@@ -495,60 +494,89 @@ https://www.color-hex.com/color/727b84
 .bg-color-blue {
     background-color: #57889c !important;
 }
+
 .bg-color-blueLight {
     background-color: #92a2a8 !important;
 }
+
 .bg-color-blueDark {
     background-color: #4c4f53 !important;
 }
+
 .bg-color-green {
     background-color: #356e35 !important;
 }
+
 .bg-color-greenLight {
     background-color: #71843f !important;
 }
+
 .bg-color-greenDark {
     background-color: #496949 !important;
 }
+
 .bg-color-red {
     background-color: #a90329 !important;
 }
+
 .bg-color-yellow {
     background-color: #b09b5b !important;
 }
+
 .bg-color-orange {
     background-color: #c79121 !important;
 }
+
 .bg-color-orangeDark {
     background-color: #a57225 !important;
 }
+
 .bg-color-pink {
     background-color: #ac5287 !important;
 }
+
 .bg-color-pinkDark {
     background-color: #a8829f !important;
 }
+
 .bg-color-purple {
     background-color: #6e587a !important;
 }
+
 .bg-color-darken {
     background-color: #404040 !important;
 }
+
 .bg-color-lighten {
     background-color: #d5e7ec !important;
 }
+
 .bg-color-white {
     background-color: #ffffff !important;
 }
+
 .bg-color-grayDark {
     background-color: #525252 !important;
 }
+
 .bg-color-magenta {
     background-color: #6e3671 !important;
 }
+
 .bg-color-teal {
     background-color: #568a89 !important;
 }
+
 .bg-color-redLight {
     background-color: #a65858 !important;
+}
+
+/* Currentstate report */
+
+.greenTable tbody tr:nth-of-type(odd) {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.greenTable tbody tr:nth-of-type(even) {
+    background: rgba(255, 255, 255, 0.3)
 }
