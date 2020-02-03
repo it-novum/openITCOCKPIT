@@ -24,11 +24,17 @@
 
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
+use App\Model\Table\CommandsTable;
 
+/**
+ * Class Skeleton
+ *
+ * Example class of how to seed default data into the database
+ *
+ * @package itnovum\openITCOCKPIT\InitialDatabase
+ * @property CommandsTable $Table
+ */
 class Skeleton extends Importer {
-    /**
-     * @property \Command $Model
-     */
 
     /**
      * @return bool
@@ -36,9 +42,9 @@ class Skeleton extends Importer {
     public function import() {
         $data = $this->getData();
         foreach ($data as $record) {
-            if (!$this->Model->exists($record['foo']['id'])) {
-                $this->Model->create();
-                $this->Model->saveAll($record);
+            if (!$this->Table->existsById($record['id'])) {
+                $entity = $this->Table->newEntity($record);
+                $this->Table->save($entity);
             }
         }
 

@@ -24,11 +24,14 @@
 
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
+use App\Model\Table\UsergroupsTable;
 
+/**
+ * Class Usergroup
+ * @package itnovum\openITCOCKPIT\InitialDatabase
+ * @property UsergroupsTable $Table
+ */
 class Usergroup extends Importer {
-    /**
-     * @property \Usergroup $Model
-     */
 
     /**
      * @return bool
@@ -37,8 +40,8 @@ class Usergroup extends Importer {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
-                $this->Model->create();
-                $this->Model->saveAll($record);
+                $entity = $this->Table->newEntity($record);
+                $this->Table->save($entity);
             }
         }
 
@@ -50,32 +53,20 @@ class Usergroup extends Importer {
      */
     public function getData() {
         $data = [
-            0 =>
-                [
-                    'Usergroup' =>
-                        [
-                            'id'          => '1',
-                            'name'        => 'Administrator',
-                            'description' => '',
-                            'created'     => '2015-08-19 14:57:42',
-                            'modified'    => '2015-08-19 14:57:42',
-                        ],
-                    'User'      =>
-                        [],
-                ],
-            1 =>
-                [
-                    'Usergroup' =>
-                        [
-                            'id'          => '2',
-                            'name'        => 'Viewer',
-                            'description' => '',
-                            'created'     => '2015-08-19 15:00:36',
-                            'modified'    => '2015-08-19 15:00:36',
-                        ],
-                    'User'      =>
-                        [],
-                ],
+            (int)0 => [
+                'id'          => '1',
+                'name'        => 'Administrator',
+                'description' => '',
+                'created'     => '2015-08-19 14:57:42',
+                'modified'    => '2015-08-19 14:57:42'
+            ],
+            (int)1 => [
+                'id'          => '2',
+                'name'        => 'Viewer',
+                'description' => '',
+                'created'     => '2015-08-19 15:00:36',
+                'modified'    => '2015-08-19 15:00:36'
+            ]
         ];
 
         return $data;

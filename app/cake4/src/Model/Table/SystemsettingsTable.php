@@ -34,7 +34,7 @@ class SystemsettingsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('systemsettings');
@@ -50,7 +50,7 @@ class SystemsettingsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -212,14 +212,23 @@ class SystemsettingsTable extends Table {
     /**
      * @return bool
      */
-    public function isLoginAnimationDisabled(){
-        try{
+    public function isLoginAnimationDisabled() {
+        try {
             $result = $this->getSystemsettingByKey('FRONTEND.DISABLE_LOGIN_ANIMATION');
 
             $value = (int)$result->get('value');
             return $value === 1;
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return true;
         }
+    }
+
+    /**
+     * @param string $key
+     * @return bool
+     */
+    public function existsByKey($key) {
+        return $this->exists(['key' => $key]);
+
     }
 }

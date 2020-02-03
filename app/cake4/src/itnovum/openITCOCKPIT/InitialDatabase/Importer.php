@@ -24,27 +24,28 @@
 
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
-class Importer implements ImporterInterface {
-    /**
-     * @var \Model
-     */
-    protected $Model;
+use Cake\ORM\Table;
 
-    public function __construct(\Model $Model) {
-        $this->Model = $Model;
+class Importer implements ImporterInterface {
+
+    /**
+     * @var Table
+     */
+    protected $Table;
+
+    public function __construct(Table $Table) {
+        $this->Table = $Table;
     }
 
     /**
      * @return bool
      */
     public function isTableEmpty() {
-        $this->unbindAllAssociations();
-        $result = $this->Model->find('all', [
-            'recursive' => -1
-        ]);
+        // SELECT COUNT(*) count FROM <TABLE>
+        $result = $this->Table->find()->count();
+        $result = (int)$result;
 
-        return empty($result);
-
+        return $result === 0;
     }
 
     /**
@@ -52,16 +53,6 @@ class Importer implements ImporterInterface {
      */
     public function getData() {
         return [];
-    }
-
-    public function unbindAllAssociations() {
-        foreach (['hasOne', 'hasMany', 'belongsTo', 'hasAndBelongsToMany'] as $association) {
-            if (!empty($this->Model->{$association})) {
-                foreach ($this->Model->{$association} as $accociatedModel) {
-                    $this->Model->unbindModel([$association => [$accociatedModel['className']]]);
-                }
-            }
-        }
     }
 
 }

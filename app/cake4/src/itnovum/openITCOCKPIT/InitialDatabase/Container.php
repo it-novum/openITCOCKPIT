@@ -25,20 +25,26 @@
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 
+use App\Model\Table\ContainersTable;
+
+/**
+ * Class Container
+ * @package itnovum\openITCOCKPIT\InitialDatabase
+ * @property ContainersTable $Table
+ */
 class Container extends Importer {
+
     /**
-     * @property \Container $Model
-     * /**
-     * @return mixed
+     * @return bool
      */
     public function import() {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
-                $this->Model->create();
-                $this->Model->saveAll($record, [
-                    'validate' => false,
+                $entity = $this->Table->newEntity($record, [
+                    'validate' => false
                 ]);
+                $this->Table->save($entity);
             }
         }
 
@@ -49,21 +55,17 @@ class Container extends Importer {
      * @return array
      */
     public function getData() {
-        $data =
-            [
-                0 =>
-                    [
-                        'Container' =>
-                            [
-                                'id'               => '1',
-                                'containertype_id' => '1',
-                                'name'             => 'root',
-                                'parent_id'        => null,
-                                'lft'              => '1',
-                                'rght'             => '2',
-                            ],
-                    ],
-            ];
+
+        $data = [
+            (int)0 => [
+                'id'               => '1',
+                'containertype_id' => '1',
+                'name'             => 'root',
+                'parent_id'        => null,
+                'lft'              => '1',
+                'rght'             => '2'
+            ]
+        ];
 
         return $data;
     }
