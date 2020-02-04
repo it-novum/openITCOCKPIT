@@ -458,7 +458,7 @@ html body {
   color: #859891; }
 
 .nav-menu li > ul {
-  background-color: rgba(0, 0, 0, 0.1); }
+  background-color: rgba(0, 0, 0, 0.2); }
 .nav-menu li > ul li a {
   color: #a4a6a6; }
 .nav-menu li > ul li a > [class*='fa-'],

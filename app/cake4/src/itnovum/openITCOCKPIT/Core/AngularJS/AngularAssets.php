@@ -89,6 +89,7 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/@fullcalendar/timegrid/main.js',
         'node_modules/@fullcalendar/list/main.js',
         'node_modules/@fullcalendar/bootstrap/main.js',
+        'node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js',
         /*'js/vendor/Chart.min.js',
         'js/vendor/chartjs-plugin-piechart-center-element.min.js', */
         'node_modules/highlight-within-textarea/jquery.highlight-within-textarea.js',
@@ -146,6 +147,7 @@ class AngularAssets implements AngularAssetsInterface {
         //'/smartadmin/css/animate.css',
         '/node_modules/animate.css/animate.min.css',
         '/legacy/css/ansi.css',
+        '/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.css',
         /*'lockscreen.css',
         'base',
         'app',
