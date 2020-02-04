@@ -421,7 +421,7 @@ class Agent extends Importer {
                 'uuid'             => '577da91f-e70d-4218-bef1-c8b3b72d2ad5',
                 'description'      => "Return the state of a docker container (ok/critical).\n" .
                     "Identifier Type: Values: name or id - Determines if the name of the id should be used to identify the container.\n" .
-                    "Identifier:  Name or id of the container\n",
+                    "Identifier:  Name or id of the container.\n",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
@@ -435,6 +435,66 @@ class Agent extends Importer {
             ],
 
             [
+                'name'             => 'check_oitc_agent_docker_cpu',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '577da91f-e70d-4218-bef1-c8b3b72d2ad5',
+                'description'      => "Return the cpu usage of a docker container.\n" .
+                    "Identifier Type: Values: name or id - Determines if the name of the id should be used to identify the container.\n" .
+                    "Identifier:  Name or id of the container.\n" .
+                    "Warning and Critical thresholds are percentage values from 0-100.\n",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Identifier Type'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Identifier'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Warning %'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Critical %'
+                    ],
+                ]
+            ],
+
+            [
+                'name'             => 'check_oitc_agent_docker_memory',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'ba2b3392-a769-4b20-8ea2-10b60f2c74e8',
+                'description'      => "Return the memory usage of a docker container.\n" .
+                    "Identifier Type: Values: name or id - Determines if the name of the id should be used to identify the container.\n" .
+                    "Identifier:  Name or id of the container.\n" .
+                    "Warning and Critical thresholds are percentage values from 0-100.\n",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Identifier Type'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Identifier'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Warning %'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Critical %'
+                    ],
+                ]
+            ],
+
+            [
                 'name'             => 'check_oitc_agent_qemu_vm_running',
                 'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
                 'command_type'     => CHECK_COMMAND,
@@ -442,7 +502,7 @@ class Agent extends Importer {
                 'uuid'             => '67ca5f1d-cc94-4bf1-8397-fc6e4abdbf92',
                 'description'      => "Return the state of a qemu virtual machine (ok/critical).\n" .
                     "Identifier Type: Values: name or id - Determines if the name of the id should be used to identify the virtual machine.\n" .
-                    "Identifier:  Name or id of the virtual machine\n",
+                    "Identifier:  Name or id of the virtual machine.\n",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
@@ -461,8 +521,8 @@ class Agent extends Importer {
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'fbd23c8c-453d-4107-ae27-2cfafe63fef5',
-                'description'      => "Commands that should be executed by the openITCOCKPIT Agent to replace check_by_ssh or check_nrpe.\n"
-                    . "Name: Unique name of the command (e.g. check_users)\n" .
+                'description'      => "Commands that should be executed by the openITCOCKPIT Agent to replace check_by_ssh or check_nrpe.\n" .
+                    "Name: Unique name of the command (e.g. check_users)\n" .
                     "CMD_Line: Command line that will be executed by the agent (e.g. /usr/lib/nagios/plugins/check_users -w 5 -c 10)\n" .
                     "Interval: Execution interval in seconds\n" .
                     "Timeout: Check timeout in seconds\n",
