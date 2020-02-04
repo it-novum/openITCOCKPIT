@@ -72,7 +72,7 @@
                 <div class="panel-content">
                     <form ng-submit="submit();">
                         <div class="frame-wrap">
-                            <table class="table table-striped m-0 table-bordered table-hover">
+                            <table class="table table-striped m-0 table-bordered table-hover table-sm">
                                 <thead>
                                 <tr>
                                     <th><?php echo __('Key'); ?></th>

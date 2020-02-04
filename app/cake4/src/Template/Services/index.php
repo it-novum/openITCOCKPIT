@@ -347,7 +347,7 @@
                     <!-- End Filter -->
 
                     <div class="frame-wrap">
-                        <table class="table table-striped m-0 table-bordered table-hover">
+                        <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
                                 <th colspan="2" class="no-sort" ng-click="orderBy('Servicestatus.current_state')">
@@ -356,17 +356,17 @@
                                 </th>
 
                                 <th class="no-sort text-center">
-                                    <i class="fa fa-user fa-lg" title="<?php echo __('is acknowledged'); ?>"></i>
+                                    <i class="fa fa-user" title="<?php echo __('is acknowledged'); ?>"></i>
                                 </th>
 
                                 <th class="no-sort text-center">
-                                    <i class="fa fa-power-off fa-lg"
+                                    <i class="fa fa-power-off"
                                        title="<?php echo __('is in downtime'); ?>"></i>
                                 </th>
 
 
                                 <th class="no-sort text-center">
-                                    <i class="fa fa fa-area-chart fa-lg" title="<?php echo __('Grapher'); ?>"></i>
+                                    <i class="fa fa fa-area-chart" title="<?php echo __('Grapher'); ?>"></i>
                                 </th>
 
                                 <th class="no-sort text-center">
@@ -401,7 +401,7 @@
                                 </th>
 
                                 <th class="no-sort text-center editItemWidth">
-                                    <i class="fa fa-gear fa-lg"></i>
+                                    <i class="fa fa-gear"></i>
                                 </th>
                             </tr>
                             </thead>
@@ -444,18 +444,18 @@
                                 </td>
 
                                 <td class="text-center">
-                                    <i class="fa fa-lg fa-user"
+                                    <i class="fa fa-user"
                                        ng-show="service.Servicestatus.problemHasBeenAcknowledged"
                                        ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
 
-                                    <i class="fa fa-lg fa-user-o"
+                                    <i class="fa fa-user-o"
                                        ng-show="service.Servicestatus.problemHasBeenAcknowledged"
                                        ng-if="service.Servicestatus.acknowledgement_type == 2"
                                        title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
                                 </td>
 
                                 <td class="text-center">
-                                    <i class="fa fa-lg fa-power-off"
+                                    <i class="fa fa-power-off"
                                        ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
 
@@ -463,7 +463,7 @@
                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                         <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                            class="txt-color-blueDark">
-                                            <i class="fa fa-lg fa-area-chart"
+                                            <i class="fa fa-area-chart"
                                                ng-mouseenter="mouseenter($event, host, service)"
                                                ng-mouseleave="mouseleave()"
                                                ng-if="service.Service.has_graph">

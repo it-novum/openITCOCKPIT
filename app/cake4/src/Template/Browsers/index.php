@@ -402,7 +402,7 @@
                     </div>
                     <!-- End Filter -->
                     <div class="frame-wrap">
-                        <table class="table table-striped m-0 table-bordered table-hover">
+                        <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
                                 <th colspan="2" class="no-sort width-95" ng-click="orderBy('Hoststatus.current_state')">

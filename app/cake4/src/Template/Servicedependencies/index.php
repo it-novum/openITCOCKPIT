@@ -375,7 +375,7 @@
                     </div>
                     <!-- End Filter -->
                     <div class="frame-wrap">
-                        <table class="table table-striped m-0 table-bordered table-hover">
+                        <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
                                 <th class="text-align-center"><i class="fa fa-check-square"

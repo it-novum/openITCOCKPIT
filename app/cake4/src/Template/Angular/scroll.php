@@ -34,7 +34,7 @@
             <div class="dataTables_paginate paging_bootstrap float-right">
                 <ul class="pagination">
                     <li ng-show="scroll.hasPrevPage" class="page-item">
-                        <a href="javascript:void(0)" ng-click="changePage(1)">
+                        <a href="javascript:void(0)" ng-click="changePage(1)" class="page-link">
                             <span aria-hidden="true"><<</span>
                         </a>
                     </li>

@@ -156,7 +156,7 @@
                         </div>
                     </div>
                     <div class="frame-wrap">
-                        <table class="table table-striped m-0 table-bordered table-hover">
+                        <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr ng-if="servicegroup.Services.length > 0">
                                 <td colspan="8" class="no-padding">

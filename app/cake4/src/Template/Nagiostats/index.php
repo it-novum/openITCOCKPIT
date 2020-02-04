@@ -67,7 +67,7 @@
                                 <div class="panel-container show">
                                     <div class="panel-content">
                                         <div class="frame-wrap">
-                                            <table class="table table-striped m-0 table-bordered table-hover">
+                                            <table class="table table-striped m-0 table-bordered table-hover table-sm">
                                                 <thead>
                                                 <tr>
                                                     <th><?php echo __('Timeframe'); ?></th>
@@ -128,7 +128,7 @@
                                 <div class="panel-container show">
                                     <div class="panel-content">
                                         <div class="frame-wrap">
-                                            <table class="table table-striped m-0 table-bordered table-hover">
+                                            <table class="table table-striped m-0 table-bordered table-hover table-sm">
                                                 <thead>
                                                 <tr>
                                                     <th><?php echo __('Key'); ?></th>
@@ -182,7 +182,7 @@
                                 <div class="panel-container show">
                                     <div class="panel-content">
                                         <div class="frame-wrap">
-                                            <table class="table table-striped m-0 table-bordered table-hover">
+                                            <table class="table table-striped m-0 table-bordered table-hover table-sm">
                                                 <thead>
                                                 <tr>
                                                     <th><?php echo __('Key'); ?></th>
@@ -230,7 +230,7 @@
                                 <div class="panel-container show">
                                     <div class="panel-content">
                                         <div class="frame-wrap">
-                                            <table class="table table-striped m-0 table-bordered table-hover">
+                                            <table class="table table-striped m-0 table-bordered table-hover table-sm">
                                                 <thead>
                                                 <tr>
                                                     <th><?php echo __('Timeframe'); ?></th>
@@ -284,7 +284,7 @@
                                 <div class="panel-container show">
                                     <div class="panel-content">
                                         <div class="frame-wrap">
-                                            <table class="table table-striped m-0 table-bordered table-hover">
+                                            <table class="table table-striped m-0 table-bordered table-hover table-sm">
                                                 <thead>
                                                 <tr>
                                                     <th><?php echo __('Key'); ?></th>
@@ -320,7 +320,7 @@
                                 <div class="panel-container show">
                                     <div class="panel-content">
                                         <div class="frame-wrap">
-                                            <table class="table table-striped m-0 table-bordered table-hover">
+                                            <table class="table table-striped m-0 table-bordered table-hover table-sm">
                                                 <thead>
                                                 <tr>
                                                     <th><?php echo __('Timeframe'); ?></th>
@@ -380,7 +380,7 @@
                                 <div class="panel-container show">
                                     <div class="panel-content">
                                         <div class="frame-wrap">
-                                            <table class="table table-striped m-0 table-bordered table-hover">
+                                            <table class="table table-striped m-0 table-bordered table-hover table-sm">
                                                 <thead>
                                                 <tr>
                                                     <th><?php echo __('Key'); ?></th>
@@ -440,7 +440,7 @@
                                 <div class="panel-container show">
                                     <div class="panel-content">
                                         <div class="frame-wrap">
-                                            <table class="table table-striped m-0 table-bordered table-hover">
+                                            <table class="table table-striped m-0 table-bordered table-hover table-sm">
                                                 <thead>
                                                 <tr>
                                                     <th><?php echo __('Timeframe'); ?></th>
@@ -494,7 +494,7 @@
                                 <div class="panel-container show">
                                     <div class="panel-content">
                                         <div class="frame-wrap">
-                                            <table class="table table-striped m-0 table-bordered table-hover">
+                                            <table class="table table-striped m-0 table-bordered table-hover table-sm">
                                                 <thead>
                                                 <tr>
                                                     <th><?php echo __('Key'); ?></th>

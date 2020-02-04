@@ -64,7 +64,7 @@
             <div class="panel-container show">
                 <div class="panel-content">
                     <div class="frame-wrap">
-                        <table class="table table-striped m-0 table-bordered table-hover">
+                        <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
                                 <th class="no-sort"><?php echo __('Task') ?></th>

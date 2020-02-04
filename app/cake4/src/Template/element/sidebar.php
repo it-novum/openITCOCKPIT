@@ -103,18 +103,23 @@
         </a>
         <ul class="list-table m-auto nav-footer-buttons">
             <li>
-                <a ui-sref="StatisticsIndex" data-toggle="tooltip" data-placement="top" title="Anonymous statistics">
+                <a ui-sref="StatisticsIndex" data-toggle="tooltip" data-placement="top" title="<?php echo __('Anonymous statistics'); ?>">
                     <i class="fa fa-line-chart"></i>
                 </a>
             </li>
             <li>
-                <a ui-sref="SupportsIssue" data-toggle="tooltip" data-placement="top" title="Report a Bug">
+                <a ui-sref="SupportsIssue" data-toggle="tooltip" data-placement="top" title="<?php echo __('Report a Bug'); ?>">
                     <i class="fas fa-bug"></i>
                 </a>
             </li>
             <li>
-                <a href="https://openitcockpit.io/#Subscription" data-toggle="tooltip" data-placement="top" title="Support">
+                <a href="https://openitcockpit.io/#Subscription" data-toggle="tooltip" data-placement="top" title="<?php echo __('Support'); ?>">
                     <i class="fa fa-life-ring"></i>
+                </a>
+            </li>
+            <li>
+                <a href="https://docs.it-novum.com/display/ODE" data-toggle="tooltip" data-placement="top" title="<?php echo __('Documentation'); ?>">
+                    <i class="fa fa-book"></i>
                 </a>
             </li>
         </ul>

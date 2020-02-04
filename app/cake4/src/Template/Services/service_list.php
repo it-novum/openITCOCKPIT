@@ -162,7 +162,7 @@
 
                         <!-- ACTIVE TAB START -->
                         <div ng-if="activeTab === 'active'">
-                            <table class="table table-striped m-0 table-bordered table-hover">
+                            <table class="table table-striped m-0 table-bordered table-hover table-sm">
                                 <thead>
                                 <tr>
                                     <th class="no-sort text-center">
