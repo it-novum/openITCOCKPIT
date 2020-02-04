@@ -54,7 +54,7 @@
     <li class="nav-title">
         {{headline.alias}}
     </li>
-    <li class="" ng-repeat="item in headline.items">
+    <li ng-repeat="item in headline.items">
         <a ng-if="!item.items" ui-sref="{{item.state}}" class=" waves-effect waves-themed"
            title="{{item.name}}" data-filter-tags="{{item.tags}}">
             <i class="{{item.icon}}"></i>

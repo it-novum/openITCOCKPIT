@@ -4,10 +4,10 @@
 /* #BOOTSTRAP AND MIXINS - Base Unmodified Bootstrap file with theme mixins
 ========================================================================== */
 /*---------------------------------------------------
-    SASS ELements (based on LESS Elements 0.9 http://lesselements.com) 
+    SASS ELements (based on LESS Elements 0.9 http://lesselements.com)
   -------------------------------- -------------------
     LESS ELEMENTS made by Dmitry Fadeyev (http://fadeyev.net)
-    SASS port by Samuel Beek (http://samuelbeek.com) 
+    SASS port by Samuel Beek (http://samuelbeek.com)
   ---------------------------------------------------*/
 /*------------------------
     Usage
@@ -34,12 +34,12 @@ From this W3C document: http://www.webmasterworld.com/r.cgi?f=88&d=9769&url=http
 
 usage:
 @include text-contrast($bgcolor)
-      
-Color brightness is determined by the following formula: 
+
+Color brightness is determined by the following formula:
 ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000
 ------------------------*/
 /*------------------------
- color factory 
+ color factory
   eg: @include paint($blue-grey-50, bg-blue-grey-50);
 ------------------------*/
 /* backface visibility */
@@ -310,8 +310,8 @@ h6 small,
   text-shadow: none; }
 
 /* looking for font size? Check _helpers.scss */
-/* PLACEHOLDER 
-============================================= 
+/* PLACEHOLDER
+=============================================
 
 EXAMPLE:
 
@@ -516,7 +516,7 @@ RESULT:
 			left: 0;
 			top: 0;
 			border-radius: 50%;
-		} 
+		}
 	}*/
 .saving #saving {
   margin: 5px;
@@ -918,7 +918,7 @@ html body {
   display: block;
   opacity: 1;
   /*
-			 * n = number of buttons minus 1 
+			 * n = number of buttons minus 1
 			 *     eg. $header-btn-height * 2n
 			 */
   height: 7.75rem; }
@@ -1139,7 +1139,6 @@ html body {
   margin: 0;
   color: #3b7eec;
   padding: 1rem 2rem;
-  margin-top: 1.5rem;
   font-size: 0.7rem;
   letter-spacing: 1px;
   font-weight: 500; }
@@ -1216,7 +1215,7 @@ html body {
               align-items: center;
       /*new*/
       outline: 0;
-      padding: 0.8125rem 2rem;
+      padding: 0.5rem 2rem;
       font-size: 0.875rem;
       color: #a1c1f6;
       font-weight: 400;
@@ -1317,7 +1316,7 @@ html body {
       padding-bottom: 10px; }
       .nav-menu li > ul li a {
         color: #8ab2f3;
-        padding: 0.8125rem 2rem 0.8125rem 4rem; }
+        padding: 0.5rem 2rem 0.5rem 4rem; }
         .nav-menu li > ul li a b.collapse-sign > [class*='fa-'],
         .nav-menu li > ul li a b.collapse-sign > .ni {
           font-size: inherit-2; }
@@ -1376,7 +1375,7 @@ html body {
   .nav-menu:last-child {
     margin-bottom: 0; }
 
-/* nav hover elements 
+/* nav hover elements
 .nav-menu-hover {
 
 	li > ul {
@@ -1389,7 +1388,7 @@ html body {
 			span {
 				color: rgba(255,255,255,0.90);
 			}
-			
+
 
 			&:hover {
 				background:rgba(255,255,255,0.09) !important;
@@ -1397,7 +1396,7 @@ html body {
 				span {
 					color: $white;
 				}
-				
+
 			}
 		}
 	}
@@ -1454,7 +1453,7 @@ html body {
 			a:focus {
 
 				.badge-detached {
-					
+
 					display: inline-block;
 					font-family: 'helvetica neue', helvetica, arial, sans-serif;
 					font-size: rem($fs-nano);
@@ -2031,7 +2030,7 @@ html body {
 		 * top navigation fixed for larger screens with nav on TOP
 		 */
     /*
-		 * center for left nav fixed with boxed layout 
+		 * center for left nav fixed with boxed layout
 		 */ }
     .nav-function-fixed:not(.nav-function-top).mod-main-boxed .page-sidebar {
       position: fixed !important; }
@@ -2276,7 +2275,7 @@ html body {
 /* app navigation footer */
 .nav-footer {
   /*background-image: -webkit-linear-gradient(270deg, $nav-background-shade, transparent);
-	background-image: linear-gradient(270deg, $nav-background-shade, transparent); 
+	background-image: linear-gradient(270deg, $nav-background-shade, transparent);
 	background-color: $nav-background;*/
   height: 2.8125rem;
   bottom: 0;
@@ -2570,9 +2569,9 @@ html body {
   color: #fff;
   background-color: #4285F4; }
 
-/* 	DEV NOTE: The reason why we had to add this layer for alert colors is because BS4 
-	does not allow you to add your own alert colors via variable control rather 
-	through a systemetic agent that changes the theme colors. 
+/* 	DEV NOTE: The reason why we had to add this layer for alert colors is because BS4
+	does not allow you to add your own alert colors via variable control rather
+	through a systemetic agent that changes the theme colors.
 
 	REF: https://github.com/twbs/bootstrap/issues/24341#issuecomment-337457218
 */
@@ -3070,7 +3069,7 @@ html body {
   background: linear-gradient(to right, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0) 45%); }
 
 .carousel-control-next:hover {
-  /*background: -moz-linear-gradient(right, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0) 45%); 
+  /*background: -moz-linear-gradient(right, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0) 45%);
 	background: -webkit-linear-gradient(right, rgba(0,0,0,0.25) 0%,rgba(0,0,0,0) 45%);*/
   background: -webkit-gradient(linear, right top, left top, from(rgba(0, 0, 0, 0.25)), color-stop(45%, rgba(0, 0, 0, 0)));
   background: linear-gradient(to left, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0) 45%); }
@@ -3709,7 +3708,7 @@ html body {
     -webkit-box-shadow: 0 5px 16px 0 rgba(0, 0, 0, 0.05), 0 5px 20px 0 rgba(0, 0, 0, 0.09);
             box-shadow: 0 5px 16px 0 rgba(0, 0, 0, 0.05), 0 5px 20px 0 rgba(0, 0, 0, 0.09);
     /*.panel-toolbar {
-			-webkit-filter: grayscale(100%);  Safari 6.0 - 9.0 
+			-webkit-filter: grayscale(100%);  Safari 6.0 - 9.0
 			filter: grayscale(100%);
 		}*/ }
 
@@ -4448,7 +4447,7 @@ th {
 a.text-blur {
   text-shadow: 0 0 5px rgba(66, 133, 244, 0.5); }
 
-/* positions usage: 
+/* positions usage:
    .position-absolute|relative|static|fixed .pos-top|left|right|bottom */
 .pos-top {
   top: 0; }
@@ -4806,7 +4805,7 @@ a.text-blur {
 .z-index-water {
   z-index: -99; }
 
-/* cursor 
+/* cursor
 	usage: cursor-default;
 */
 .cursor-auto {
@@ -5393,7 +5392,7 @@ code {
 
 /*
 
-	DOC: In Bootstrap there is a small snippet added by the team for IE10 in windows 8 the 
+	DOC: In Bootstrap there is a small snippet added by the team for IE10 in windows 8 the
 	following comments by the author states:
 
 		IE10 in Windows (Phone) 8
@@ -5415,7 +5414,7 @@ code {
 		width: device-width;
 		}
 
-	Solution: 
+	Solution:
 	http://msdn.microsoft.com/en-us/library/ie/hh771902(v=vs.85).aspx
 	We add the following instead:
 
@@ -5431,7 +5430,7 @@ body.desktop-detected {
     z-index: 0;
 }*/
 /*.btn {
-	box-shadow: 0 1px 10px rgba(0, 0, 0, 0.05), 
+	box-shadow: 0 1px 10px rgba(0, 0, 0, 0.05),
 				0 1px 2px rgba(0, 0, 0, 0.1);
 
 	&:hover,
@@ -5484,7 +5483,7 @@ a[target]:not(.btn) {
   text-decoration: underline !important; }
 
 /* btn active */
-/*.btn.active, 
+/*.btn.active,
 .btn:active {
     background-image: none;
     outline: 0;
@@ -5559,7 +5558,7 @@ body:not(.mobile-view-activated).mod-main-boxed.modal-open {
             box-shadow: none;
     background-color: #fff5e0; }
   /*  Counters IE bug
-		DOC: If you've ever used CSS transitions on structural elements on your page, 
+		DOC: If you've ever used CSS transitions on structural elements on your page,
 		you may have noticed a case where a transition occur immideately after page load.
 		As a result the user may experience the illusion of "broken page elements"
 
@@ -5892,12 +5891,12 @@ $grid-breakpoints: (
 
 /* changes content colors based on ambience light source of the user (experimental) */
 /* DOCS : https://developer.mozilla.org/en-US/docs/Web/CSS/%40media/light-level */
-/* The device is used in a environment with a light level in the ideal range for the screen, 
+/* The device is used in a environment with a light level in the ideal range for the screen,
  * and which does not necessitate any particular adjustment.. */
-/* The device is used in a dim environment, where excessive contrast and brightness would be 
- * distracting or uncomfortable to the reader. For example: night time, or a dimly 
+/* The device is used in a dim environment, where excessive contrast and brightness would be
+ * distracting or uncomfortable to the reader. For example: night time, or a dimly
  * illuminated indoor environment. */
-/* The device is used in an exceptionally bright environment, causing the screen to be washed 
+/* The device is used in an exceptionally bright environment, causing the screen to be washed
  * out and difficult to read. For example: bright daylight. */
 /* #FORMS (customized bootstrap form elems)
 ========================================================================== */
@@ -6455,10 +6454,10 @@ body:not(.no-slimscroll) .custom-scroll {
 
 /*!
  * Waves v0.7.6
- * http://fian.my.id/Waves 
- * 
- * Copyright 2014-2018 Alfiana E. Sibuea and other contributors 
- * Released under the MIT license 
+ * http://fian.my.id/Waves
+ *
+ * Copyright 2014-2018 Alfiana E. Sibuea and other contributors
+ * Released under the MIT license
  * https://github.com/fians/Waves/blob/master/LICENSE */
 .waves-effect {
   position: relative;
@@ -7634,8 +7633,8 @@ body:not(.mobile-detected)::-webkit-scrollbar-thumb:vertical:hover,
 body:not(.mobile-detected).modal-open .modal::-webkit-scrollbar-thumb:vertical:hover {
   background-color: #6a707f; }
 
-/* 
- * Left Panel custom scroll 
+/*
+ * Left Panel custom scroll
  */
 .page-sidebar .primary-nav::-webkit-scrollbar-track-piece {
   background-color: #efefef; }
