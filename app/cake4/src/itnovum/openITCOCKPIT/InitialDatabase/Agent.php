@@ -25,9 +25,7 @@
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 use App\Model\Table\CommandsTable;
-use App\Model\Table\CronjobsTable;
 use App\Model\Table\ServicetemplatesTable;
-use Cake\ORM\Table;
 
 /**
  * Class Cronjob
@@ -83,25 +81,6 @@ class Agent extends Importer {
             ],
 
             [
-                'name'             => 'check_oitc_agent_battery',
-                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
-                'command_type'     => CHECK_COMMAND,
-                'human_args'       => null,
-                'uuid'             => '02289d0e-0a3c-46e5-94f1-b18e57be4e70',
-                'description'      => "Check battery power left in percentage. \nWarning and Critical thresholds are percentage values from 0-100",
-                'commandarguments' => [
-                    [
-                        'name'       => '$ARG1$',
-                        'human_name' => 'Warning %'
-                    ],
-                    [
-                        'name'       => '$ARG2$',
-                        'human_name' => 'Critical %'
-                    ]
-                ]
-            ],
-
-            [
                 'name'             => 'check_oitc_agent_cpu_total_percentage',
                 'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
                 'command_type'     => CHECK_COMMAND,
@@ -125,35 +104,70 @@ class Agent extends Importer {
             ],
 
             [
-                'name'             => 'check_oitc_agent_customcheck',
+                'name'             => 'check_oitc_agent_system_load',
                 'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
-                'uuid'             => 'fbd23c8c-453d-4107-ae27-2cfafe63fef5',
-                'description'      => "Commands that should be executed by the openITCOCKPIT Agent to replace check_by_ssh or check_nrpe.\n"
-                    . "Name: Unique name of the command (e.g. check_users)\n" .
-                    "CMD_Line: Command line that will be executed by the agent (e.g. /usr/lib/nagios/plugins/check_users -w 5 -c 10)\n" .
-                    "Interval: Execution interval in seconds\n" .
-                    "Timeout: Check timeout in seconds\n",
+                'uuid'             => 'd4e55865-5cbc-4f01-a4e3-896074a1d7d1',
+                'description'      => "Check system load.\n" .
+                    "Warning and Critical thresholds are integer values (e.g. 2 or 4).\n" .
+                    "Timerange: Integer value that decides if thresholds will be used for load1, load5 or load15. (Value: 1 / 5 / 15)",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
-                        'human_name' => 'Name'
+                        'human_name' => 'Warning'
                     ],
                     [
                         'name'       => '$ARG2$',
-                        'human_name' => 'CMD_LINE'
+                        'human_name' => 'Critical'
                     ],
                     [
                         'name'       => '$ARG3$',
-                        'human_name' => 'Interval'
-                    ],
-                    [
-                        'name'       => '$ARG4$',
-                        'human_name' => 'Timeout'
+                        'human_name' => 'Timerange'
                     ]
                 ]
             ],
+
+            [
+                'name'             => 'check_oitc_agent_memory_usage',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'ab3fe6f2-b5c6-4ba0-9d72-123696d42277',
+                'description'      => "Return memory usage as percentage\n" .
+                    "Warning and Critical thresholds are percentage values from 0-100",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical'
+                    ]
+                ]
+            ],
+
+            [
+                'name'             => 'check_oitc_agent_swap_usage',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'ebff0db2-e5de-4430-8799-3c6662422646',
+                'description'      => "Return swap usage as percentage\n" .
+                    "Warning and Critical thresholds are percentage values from 0-100",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical'
+                    ]
+                ]
+            ],
+
 
             [
                 'name'             => 'check_oitc_agent_disk_io',
@@ -234,12 +248,178 @@ class Agent extends Importer {
             ],
 
             [
+                'name'             => 'check_oitc_agent_temperature',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '42e3e6c9-a989-4044-a993-193558ad7964',
+                'description'      => "Return the temperature of a given sensor.\n" .
+                    "Warning: Temperature as integer\n" .
+                    "Critical: Temperature as integer\n" .
+                    "Average: Use average value of all temperatures, if a device has multiple temperature values (eg. for each core of one cpu device) \n" .
+                    "Device: Sensor name (e.g. coretemp / acpitz / pch_skylake) \n" .
+                    "Only available on Linux.\n",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Average 1/0'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Device'
+                    ]
+                ]
+            ],
+
+            [
+                'name'             => 'check_oitc_agent_battery',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '02289d0e-0a3c-46e5-94f1-b18e57be4e70',
+                'description'      => "Check battery power left in percentage. \nWarning and Critical thresholds are percentage values from 0-100",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning %'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical %'
+                    ]
+                ]
+            ],
+
+            [
+                'name'             => 'check_oitc_agent_net_io',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '4186bc96-0081-48fc-bee6-0ff163c9f4a2',
+                'description'      => "Fetch network io statistics and returns the specific nagios status, if at least one value exceeds the given (warning or critical) edge.\n" .
+                    "Total average bytes: Average bytes sent and received per second\n" .
+                    "Total average bytes (warning/critical) as integer (e.g. 1073741824 = 1GB)\n" .
+                    "Total average errors: Average value of packages send and received with errors\n" .
+                    "Total average errors (warning/critical) as integer (e.g. 5 or 10)\n" .
+                    "Total average drops: Average value of (input and output) packages which were dropped\n" .
+                    "Total average drops (warning/critical) as integer (e.g. 5 or 10)\n" .
+                    "Device: Network device name (e.g. eth0) \n",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Total average bytes warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Total average bytes critical'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Total average errors warning'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Total average errors critical'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Total average drops warning'
+                    ],
+                    [
+                        'name'       => '$ARG6$',
+                        'human_name' => 'Total average drops critical'
+                    ],
+                    [
+                        'name'       => '$ARG7$',
+                        'human_name' => 'Device'
+                    ]
+                ]
+            ],
+
+            [
+                'name'             => 'check_oitc_agent_net_stats',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '2c96d1c9-de93-4bfa-ab69-2b45bf40d2e3',
+                'description'      => "Checks if the link of the device / interface is down and returns a custom nagios state\n" .
+                    "Link Down State: The service state for nagios if link is down (warning/critical/unknown)" .
+                    "Device: Network device name (e.g. eth0) \n",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Link Down State'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Device'
+                    ]
+                ]
+            ],
+
+            [
+                'name'             => 'check_oitc_agent_process',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '629050dd-1359-4c8d-9f13-fc49fdab84dc',
+                'description'      => "Checks if a custom process or many matching process(es) exceeds the given values for cpu, memory or amount.\n" .
+                    "CPU: Warning and critical percentage values (0-100) of cpu usage for the matching process(es)\n" .
+                    "Memory: Warning and critical percentage values (0-100) of memory usage for the matching process(es)\n" .
+                    "Amount: Warning and critical values (e.g. 5 or 10) as amount of matching processes\n" .
+                    "Match: String that must match with the process command line (use process 'cmdline' > 'exec' > 'name')\n" .
+                    "Strict: Decides if the match must be completely or just in a part (1/0)\n",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'CPU warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'CPU critical'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Memory warning'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Memory critical'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Amount warning'
+                    ],
+                    [
+                        'name'       => '$ARG6$',
+                        'human_name' => 'Amount critical'
+                    ],
+                    [
+                        'name'       => '$ARG7$',
+                        'human_name' => 'Match'
+                    ],
+                    [
+                        'name'       => '$ARG8$',
+                        'human_name' => 'Strict'
+                    ]
+                ]
+            ],
+
+            [
                 'name'             => 'check_oitc_agent_docker_running',
                 'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '577da91f-e70d-4218-bef1-c8b3b72d2ad5',
-                'description'      => "Return fan speed of a given device.\n" .
+                'description'      => "Return the state of a docker container (ok/critical).\n" .
                     "Identifier Type: Values: name or id - Determines if the name of the id should be used to identify the container.\n" .
                     "Identifier:  Name or id of the container\n",
                 'commandarguments' => [
@@ -255,41 +435,53 @@ class Agent extends Importer {
             ],
 
             [
-                'name'             => 'check_oitc_agent_memory_usage',
+                'name'             => 'check_oitc_agent_qemu_vm_running',
                 'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
-                'uuid'             => 'ab3fe6f2-b5c6-4ba0-9d72-123696d42277',
-                'description'      => "Return memory usage as percentage\n" .
-                    "Warning and Critical thresholds are percentage values from 0-100",
+                'uuid'             => '67ca5f1d-cc94-4bf1-8397-fc6e4abdbf92',
+                'description'      => "Return the state of a qemu virtual machine (ok/critical).\n" .
+                    "Identifier Type: Values: name or id - Determines if the name of the id should be used to identify the virtual machine.\n" .
+                    "Identifier:  Name or id of the virtual machine\n",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
-                        'human_name' => 'Warning'
+                        'human_name' => 'Identifier Type'
                     ],
                     [
                         'name'       => '$ARG2$',
-                        'human_name' => 'Critical'
+                        'human_name' => 'Identifier'
                     ]
                 ]
             ],
 
             [
-                'name'             => 'check_oitc_agent_net_io',
+                'name'             => 'check_oitc_agent_customcheck',
                 'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
-                'uuid'             => '4186bc96-0081-48fc-bee6-0ff163c9f4a2',
-                'description'      => "Return memory usage as percentage\n" .
-                    "Warning and Critical thresholds are percentage values from 0-100",
+                'uuid'             => 'fbd23c8c-453d-4107-ae27-2cfafe63fef5',
+                'description'      => "Commands that should be executed by the openITCOCKPIT Agent to replace check_by_ssh or check_nrpe.\n"
+                    . "Name: Unique name of the command (e.g. check_users)\n" .
+                    "CMD_Line: Command line that will be executed by the agent (e.g. /usr/lib/nagios/plugins/check_users -w 5 -c 10)\n" .
+                    "Interval: Execution interval in seconds\n" .
+                    "Timeout: Check timeout in seconds\n",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
-                        'human_name' => 'Warning'
+                        'human_name' => 'Name'
                     ],
                     [
                         'name'       => '$ARG2$',
-                        'human_name' => 'Critical'
+                        'human_name' => 'CMD_LINE'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Interval'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Timeout'
                     ]
                 ]
             ],
