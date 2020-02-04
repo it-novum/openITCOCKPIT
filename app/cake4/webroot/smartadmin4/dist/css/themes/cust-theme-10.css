@@ -272,7 +272,7 @@ RESULT:
 .page-logo, .page-sidebar, .nav-footer, .bg-brand-gradient {
   background-image: -webkit-gradient(linear, right top, left top, from(rgba(70, 138, 240, 0.18)), to(transparent));
   background-image: linear-gradient(270deg, rgba(70, 138, 240, 0.18), transparent);
-  background-color: #4d504f; }
+  background-color: #1c2421; }
 
 /*
 %shadow-hover {
