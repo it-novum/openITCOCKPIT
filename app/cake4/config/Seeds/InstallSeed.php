@@ -114,5 +114,11 @@ class InstallSeed extends AbstractSeed {
         );
         $ServicesImporter->import();
 
+        //Check for openITCOCKPIT Agent commands and service templates
+        //$AgentImporter = new \itnovum\openITCOCKPIT\InitialDatabase\Agent(
+        //    TableRegistry::getTableLocator()->get('Commands'),
+        //    TableRegistry::getTableLocator()->get('Servicetemplates')
+        //);
+        //$AgentImporter->import();
     }
 }
