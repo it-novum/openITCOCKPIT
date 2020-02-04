@@ -30,7 +30,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="AdministratorsQuerylog">
+        <a ui-sref="StatisticsIndex">
             <i class="fa fa-line-chart"></i> <?php echo __('Anonymous statistics'); ?>
         </a>
     </li>

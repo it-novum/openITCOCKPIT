@@ -30,7 +30,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="AutomapsIndex">
+        <a ui-sref="ProxyIndex">
             <i class="fa fa-bolt"></i> <?php echo __('HTTP-Proxy'); ?>
         </a>
     </li>

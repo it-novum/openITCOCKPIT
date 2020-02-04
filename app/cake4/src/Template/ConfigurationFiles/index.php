@@ -30,7 +30,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="AdministratorsQuerylog">
+        <a ui-sref="ConfigurationFilesIndex">
             <i class="fa fa-file-text"></i> <?php echo __('Configuration file editor'); ?>
         </a>
     </li>
