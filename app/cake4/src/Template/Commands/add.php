@@ -234,7 +234,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                             <div class="card-body">
                                 <div class="float-right">
                                     <button class="btn btn-primary"
-                                            type="submit"><?php echo __('Create command'); ?></button>
+                                            type="button" ng-click="checkForMisingArguments()"><?php echo __('Create command'); ?></button>
                                     <a back-button fallback-state='CommandsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
