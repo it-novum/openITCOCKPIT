@@ -581,6 +581,7 @@ https://www.color-hex.com/color/727b84
     background: rgba(255, 255, 255, 0.3)
 }
 
+ /* Command line highlight colors */
 .highlight-blue {
     background-color: rgba(0, 192, 239, 0.2);
 }

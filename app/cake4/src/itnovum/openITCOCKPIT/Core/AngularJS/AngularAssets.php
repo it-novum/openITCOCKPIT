@@ -145,13 +145,12 @@ class AngularAssets implements AngularAssetsInterface {
         //'/smartadmin/css/your_style.css',                             //check if we need this anymore
         //'/smartadmin/css/animate.css',
         '/node_modules/animate.css/animate.min.css',
-
+        '/legacy/css/ansi.css',
         /*'lockscreen.css',
         'base',
         'app',
         'status',
         'lists',
-        'ansi',
         'animate_new',
         'vendor/prism.css',
         'vendor/gridstack/gridstack.min.css',*/
