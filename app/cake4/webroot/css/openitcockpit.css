@@ -528,3 +528,17 @@ pre {
     margin: 0px !important;
 }
 
+.server-clock {
+    font-weight: normal !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    color: #778c85;
+    font-size: 16px;
+}
+
+.server-clock:hover {
+    color: #777;
+}
+
+
+
