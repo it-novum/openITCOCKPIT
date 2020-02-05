@@ -170,7 +170,7 @@
                                                     <?php echo __('Documentation'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('delete', 'locations')): ?>
+                                            <?php if ($this->Acl->hasPermission('delete', 'hosttemplates')): ?>
                                                 <a  ng-click="confirmDelete(getObjectForDelete(hosttemplate))"
                                                     ng-if="hosttemplate.Hosttemplate.allow_edit"
                                                    href="javascript:void(0);"
@@ -185,7 +185,7 @@
                             </tr>
                             </tbody>
                         </table>
-                        <div class="margin-top-10" ng-show="locations.length == 0">
+                        <div class="margin-top-10" ng-show="hosttemplates.length == 0">
                             <div class="text-center text-danger italic">
                                 <?php echo __('No entries match the selection'); ?>
                             </div>
