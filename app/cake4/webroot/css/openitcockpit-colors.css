@@ -589,3 +589,28 @@ https://www.color-hex.com/color/727b84
 .highlight-purple {
     background-color: rgba(155, 102, 160, 0.2);
 }
+
+/* Host / Service browser status colors */
+.browser-state-green {
+    background-color: #5cb85c;
+}
+
+.browser-state-yellow {
+    background-color: #de8201;
+}
+
+.browser-state-red {
+    background-color: #D9534F;
+}
+
+.browser-state-gray {
+    background-color: #92a2a8;
+}
+
+.browser-state-blue {
+    background-color: #3276B1;
+}
+
+.browser-border {
+    border: 1px solid #ddd;
+}
