@@ -70,7 +70,7 @@ class Menu {
                 'index',
                 '',
                 'fa fa-list',
-                [''],
+                ['browser'],
                 2
             ))
             ->addCategory(
@@ -319,7 +319,7 @@ class Menu {
                     'hostgroups',
                     'index',
                     '',
-                    'fa fa-sitemap',
+                    'fas fa-server',
                     [],
                     1
                 ))
