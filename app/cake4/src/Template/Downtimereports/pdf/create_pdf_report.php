@@ -36,21 +36,9 @@ use itnovum\openITCOCKPIT\Core\Views\MultipleBarChart;
  */
 
 $Logo = new Logo();
+$css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
 ?>
 <head>
-    <?php
-    $css = [
-        '/legacy/css/vendor/bootstrap/css/bootstrap.css',
-        '/legacy/css/vendor/bootstrap/css/bootstrap-theme.css',
-        '/legacy/smartadmin/css/font-awesome.css',
-        '/legacy/smartadmin/css/smartadmin-production.css',
-        '/legacy/smartadmin/css/your_style.css',
-        '/legacy/css/app.css',
-        '/legacy/css/pdf_list_style.css',
-        '/legacy/css/bootstrap_pdf.css',
-    ];
-    ?>
-
     <?php
     foreach ($css as $cssFile): ?>
         <link rel="stylesheet" type="text/css" href="<?= WWW_ROOT . $cssFile; ?>"/>
