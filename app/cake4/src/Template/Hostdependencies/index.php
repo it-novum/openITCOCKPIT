@@ -265,12 +265,25 @@
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Hostdependencies.inherits_parent"
+                                                       ng-model="filter.Hostdependencies.inherits_parent[0]"
                                                        ng-model-options="{debounce: 500}"
                                                        ng-true-value="1"
                                                        ng-false-value="0">
                                                 <i class="checkbox-primary"></i>
-                                                <?php echo __('Inherits parent'); ?>
+                                                <?php echo __('Inherits parents'); ?>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-md-12 padding-left-0">
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Hostdependencies.inherits_parent[1]"
+                                                       ng-model-options="{debounce: 500}"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Not inherits parents'); ?>
                                             </label>
                                         </div>
                                     </div>
