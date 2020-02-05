@@ -45,7 +45,6 @@ angular.module('openITCOCKPIT')
             ).then(function(result){
                 NotyService.genericSuccess();
                 console.log('Data saved successfully');
-                RedirectService.redirectWithFallback('SystemsettingsIndex');
                 $scope.showPageReloadRequired(); // defined in ReloadRequiredDirective
             }, function errorCallback(result){
                 NotyService.genericError();
