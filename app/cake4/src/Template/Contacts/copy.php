@@ -65,7 +65,7 @@
                         <div class="card-body">
                             <div class="form-group required" ng-class="{'has-error': sourceContact.Error.name}">
                                 <label for="Contact{{$index}}Name" class="control-label">
-                                    <?php echo('Contact name'); ?>
+                                    <?php echo __('Contact name'); ?>
                                 </label>
                                 <input
                                     class="form-control"
@@ -81,7 +81,7 @@
                             </div>
                             <div class="form-group" ng-class="{'has-error': sourceContact.Error.description}">
                                 <label for="Contact{{$index}}Description" class="control-label">
-                                    <?php echo('Description'); ?>
+                                    <?php echo __('Description'); ?>
                                 </label>
                                 <input
                                     class="form-control"
@@ -95,7 +95,7 @@
 
                             <div class="form-group required" ng-class="{'has-error': sourceContact.Error.email}">
                                 <label for="Contact{{$index}}Email" class="control-label">
-                                    <?php echo('Email'); ?>
+                                    <?php echo __('Email'); ?>
                                 </label>
                                 <input
                                     class="form-control"
@@ -109,7 +109,7 @@
 
                             <div class="form-group required" ng-class="{'has-error': sourceContact.Error.phone}">
                                 <label for="Contact{{$index}}Phone" class="control-label">
-                                    <?php echo('Phone'); ?>
+                                    <?php echo __('Phone'); ?>
                                 </label>
                                 <input
                                     class="form-control"

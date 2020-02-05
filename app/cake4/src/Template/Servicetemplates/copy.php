@@ -62,7 +62,7 @@
 
                         <div class="form-group required" ng-class="{'has-error': sourceServicetemplate.Error.template_name}">
                             <label for="Servicetemplate{{$index}}Name" class="col col-md-2 control-label">
-                                <?php echo('Template name'); ?>
+                                <?php echo __('Template name'); ?>
                             </label>
                             <div class="col col-xs-10 required">
                                 <input
@@ -81,7 +81,7 @@
 
                         <div class="form-group required" ng-class="{'has-error': sourceServicetemplate.Error.name}">
                             <label for="Servicetemplate{{$index}}Name" class="col col-md-2 control-label">
-                                <?php echo('Service name'); ?>
+                                <?php echo __('Service name'); ?>
                             </label>
                             <div class="col col-xs-10 required">
                                 <input
@@ -100,7 +100,7 @@
 
                         <div class="form-group" ng-class="{'has-error': sourceServicetemplate.Error.description}">
                             <label for="Servicetemplate{{$index}}Description" class="col col-md-2 control-label">
-                                <?php echo('Description'); ?>
+                                <?php echo __('Description'); ?>
                             </label>
                             <div class="col col-xs-10">
                                 <input

@@ -66,7 +66,7 @@
 
                             <div class="form-group required" ng-class="{'has-error': sourceContactgroup.Error.name}">
                                 <label for="Contactgroup{{$index}}Name" class="control-label">
-                                    <?php echo('Contact group name'); ?>
+                                    <?php echo __('Contact group name'); ?>
                                 </label>
                                 <input
                                     class="form-control"
@@ -82,7 +82,7 @@
                             </div>
                             <div class="form-group" ng-class="{'has-error': sourceContactgroup.Error.description}">
                                 <label for="Contactgroup{{$index}}Description" class="control-label">
-                                    <?php echo('Description'); ?>
+                                    <?php echo __('Description'); ?>
                                 </label>
                                 <input
                                     class="form-control"

@@ -66,7 +66,7 @@
                             <div class="card-body">
                                 <div class="form-group required" ng-class="{'has-error': sourceTimeperiod.Error.name}">
                                     <label for="Timeperiod{{$index}}Name" class="control-label">
-                                        <?php echo('Time period name'); ?>
+                                        <?php echo __('Time period name'); ?>
                                     </label>
                                     <input
                                         class="form-control"
@@ -83,7 +83,7 @@
 
                                 <div class="form-group required" ng-class="{'has-error': sourceTimeperiod.Error.description}">
                                     <label for="Timeperiod{{$index}}Description" class="control-label">
-                                        <?php echo('Description'); ?>
+                                        <?php echo __('Description'); ?>
                                     </label>
                                     <input
                                         class="form-control"

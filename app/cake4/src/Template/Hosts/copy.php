@@ -64,7 +64,7 @@
 
                         <div class="form-group required" ng-class="{'has-error': sourceHost.Error.name}">
                             <label for="Host{{$index}}Name" class="col col-md-2 control-label">
-                                <?php echo('Host name'); ?>
+                                <?php echo __('Host name'); ?>
                             </label>
                             <div class="col col-xs-10 required">
                                 <input
@@ -82,7 +82,7 @@
                         </div>
                         <div class="form-group">
                             <label for="Host{{$index}}Description" class="col col-md-2 control-label">
-                                <?php echo('Description'); ?>
+                                <?php echo __('Description'); ?>
                             </label>
                             <div class="col col-xs-10">
                                 <input
@@ -94,7 +94,7 @@
                         </div>
                         <div class="form-group required" ng-class="{'has-error': sourceHost.Error.address}">
                             <label for="Host{{$index}}Address" class="col col-md-2 control-label">
-                                <?php echo('Address'); ?>
+                                <?php echo __('Address'); ?>
                             </label>
                             <div class="col col-xs-10 required">
                                 <input
@@ -112,7 +112,7 @@
                         </div>
                         <div class="form-group">
                             <label for="Host{{$index}}Url" class="col col-md-2 control-label">
-                                <?php echo('Host URL'); ?>
+                                <?php echo __('Host URL'); ?>
                             </label>
                             <div class="col col-xs-10">
                                 <input

@@ -62,7 +62,7 @@
 
                         <div class="form-group required">
                             <label for="ServiceHosts" class="col col-md-2 control-label">
-                                <?php echo('Host'); ?>
+                                <?php echo __('Host'); ?>
                             </label>
                             <div class="col col-xs-10 required">
                                 <select
@@ -109,7 +109,7 @@
 
                         <div class="form-group required" ng-class="{'has-error': sourceService.Error.name}">
                             <label for="Service{{$index}}Name" class="col col-md-2 control-label">
-                                <?php echo('Service name'); ?>
+                                <?php echo __('Service name'); ?>
                             </label>
                             <div class="col col-xs-10 required">
                                 <input
@@ -125,7 +125,7 @@
 
                         <div class="form-group" ng-class="{'has-error': sourceService.Error.description}">
                             <label for="Service{{$index}}Description" class="col col-md-2 control-label">
-                                <?php echo('Description'); ?>
+                                <?php echo __('Description'); ?>
                             </label>
                             <div class="col col-xs-10">
                                 <input

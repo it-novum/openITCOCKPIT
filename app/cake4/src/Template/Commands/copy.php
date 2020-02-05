@@ -66,7 +66,7 @@
                         <div class="card-body">
                             <div class="form-group required" ng-class="{'has-error': sourceCommand.Error.name}">
                                 <label for="Command{{$index}}Name" class="control-label required">
-                                    <?php echo('Command name'); ?>
+                                    <?php echo __('Command name'); ?>
                                 </label>
                                 <input
                                     class="form-control"
