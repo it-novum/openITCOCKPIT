@@ -100,12 +100,22 @@
                                ng-show="userdashboard.grafana_url !== ''">
                                 {{ userdashboard.name }}
                             </a>
-                            <span ng-show="userdashboard.grafana_url == ''">{{ userdashboard.name }}
+                            <span ng-show="userdashboard.grafana_url == ''">
+                                {{ userdashboard.name }}
                             </span>
-                            <span ng-show="userdashboard.grafana_url == ''"
-                                  class="label label-primary font-xs">
-                                <?php echo __('Not synchronized'); ?>
-                            </span>
+
+                            <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
+                                <span ng-show="userdashboard.grafana_url == ''"
+                                      class="label label-primary font-xs pointer"
+                                      ng-click="synchronizeWithGrafana(userdashboard.id)">
+                                    <?php echo __('Not synchronized'); ?>
+                                </span>
+                            <?php else: ?>
+                                <span ng-show="userdashboard.grafana_url == ''"
+                                      class="label label-primary font-xs">
+                                    <?php echo __('Not synchronized'); ?>
+                                </span>
+                            <?php endif; ?>
                         <?php else: ?>
                             {{ userdashboard.name }}
                         <?php endif; ?>
@@ -140,11 +150,18 @@
                                 <?php endif; ?>
                                 <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                     <li ng-if="userdashboard.allowEdit">
+                                        <a href="javascript:void(0);"
+                                           ng-click="synchronizeWithGrafana(userdashboard.id)">
+                                            <i class="fa fa-refresh"></i> <?php echo __('Synchronize'); ?>
+                                        </a>
+                                    </li>
+                                    <li ng-if="userdashboard.allowEdit">
                                         <a ui-sref="GrafanaUserdashboardsEdit({id: userdashboard.id})">
                                             <i class="fa fa-edit"></i> <?php echo __('Edit settings'); ?>
                                         </a>
                                     </li>
                                     <li class="divider" ng-if="userdashboard.allowEdit"></li>
+
                                 <?php endif; ?>
 
                                 <?php if ($this->Acl->hasPermission('view', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
@@ -201,6 +218,46 @@
             <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
             <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
             <?php echo $this->element('paginator_or_scroll'); ?>
+        </div>
+    </div>
+</div>
+
+<!-- Synchronize with Grafana Modal -->
+<div id="synchronizeWithGrafanaModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-refresh"></i>
+                    <?php echo __('Synchronize with Grafana Modal'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-xs-12 smart-form">
+                        <div class="progress progress-sm progress-striped active">
+                            <div class="progress-bar bg-color-blue" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" ng-show="syncError">
+                    <div class="col-xs-12">
+                        <div class="alert alert-danger">
+                            <i class="fa-fw fa fa-times"></i>
+                            {{syncError}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
         </div>
     </div>
 </div>

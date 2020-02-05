@@ -325,10 +325,10 @@
                                                        class="custom-control-input"
                                                        name="checkbox"
                                                        checked="checked"
-                                                       ng-model="filter.Hostdependencies.inherits_parent[0]"
+                                                       ng-model="filter.Hostdependencies.inherits_parent[1]"
                                                        ng-model-options="{debounce: 500}"
-                                                       ng-true-value="1"
-                                                       ng-false-value="0">
+                                                       ng-true-value="true"
+                                                       ng-false-value="false">
                                                 <label class="custom-control-label"
                                                        for="FilterInheritsParent"><?php echo __('Inherits parent'); ?></label>
                                             </div>
@@ -338,10 +338,10 @@
                                                        class="custom-control-input"
                                                        name="checkbox"
                                                        checked="checked"
-                                                       ng-model="filter.Hostdependencies.inherits_parent[1]"
+                                                       ng-model="filter.Hostdependencies.inherits_parent[0]"
                                                        ng-model-options="{debounce: 500}"
-                                                       ng-true-value="1"
-                                                       ng-false-value="0">
+                                                       ng-true-value="true"
+                                                       ng-false-value="false">
                                                 <label class="custom-control-label"
                                                        for="FilterNotInheritsParent"><?php echo __('Not inherits parent'); ?></label>
                                             </div>
@@ -370,6 +370,7 @@
                                 <th><?php echo __('Host groups'); ?></th>
                                 <th><?php echo __('Dependent host groups'); ?></th>
                                 <th><?php echo __('Timeperiod'); ?></th>
+                                <th><?php echo __('Inherits parent'); ?></th>
                                 <th class="no-sort"><?php echo __('Execution failure criteria'); ?></th>
                                 <th class="no-sort"><?php echo __('Notification failure criteria'); ?></th>
                                 <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
@@ -485,6 +486,18 @@
                                     <?php else: ?>
                                         {{ hostdependency.timeperiod.name }}
                                     <?php endif; ?>
+                                </td>
+                                <td class="text-center">
+                                    <span class="label-forced badge-success margin-right-5"
+                                          title="<?php echo __('Yes'); ?>"
+                                          ng-show="hostdependency.inherits_parent === 1">
+                                            <?php echo __('Yes'); ?>
+                                    </span>
+                                    <span class="label-forced badge-danger margin-right-5"
+                                          title="<?php echo __('No'); ?>"
+                                          ng-show="hostdependency.inherits_parent === 0">
+                                            <?php echo __('No'); ?>
+                                    </span>
                                 </td>
                                 <td class="text-align-center">
                                     <div>

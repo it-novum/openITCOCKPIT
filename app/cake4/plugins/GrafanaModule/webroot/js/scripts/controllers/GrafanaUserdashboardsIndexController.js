@@ -111,6 +111,36 @@ angular.module('openITCOCKPIT')
             $scope.load();
         };
 
+        $scope.synchronizeWithGrafana = function(id){
+            $('#synchronizeWithGrafanaModal').modal('show');
+
+            $scope.syncError = false;
+            var data = {
+                id: id
+            };
+
+            $http.post("/grafana_module/grafana_userdashboards/synchronizeWithGrafana.json?angular=true", data).then(function(result){
+
+
+                if(result.data.success){
+                    new Noty({
+                        theme: 'metroui',
+                        type: 'success',
+                        text: 'Synchronization successfully',
+                        timeout: 3500
+                    }).show();
+                    $('#synchronizeWithGrafanaModal').modal('hide');
+                    $scope.load();
+                    return;
+                }
+
+                $scope.syncError = result.data.message;
+            }, function errorCallback(result){
+                $scope.syncError = result.data.message;
+            });
+
+        };
+
         $scope.$watch('filter', function(){
             $scope.currentPage = 1;
             $scope.undoSelection();
