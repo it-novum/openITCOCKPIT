@@ -192,7 +192,7 @@
                                 <div class="row padding-bottom-15" ng-repeat="controller in aco.children"
                                      ng-if="controller.children.length > 0 && controller.alias.substr(-6) !== 'Module'"
                                      ng-show="ctrlFilter === '' || controller.alias.toLowerCase().includes(ctrlFilter)">
-                                    <div class="col-xs-12">
+                                    <div class="col-lg-12">
                                         <h5 ng-class="{'ok': controller.alias.substr(-6) == 'Module'}">
                                             {{controller.alias}}
                                         </h5>
@@ -221,16 +221,16 @@
                                     </div>
                                 </div>
 
-                                <div class="row padding-bottom-15" ng-repeat="plugin in aco.children"
+                                <div class="row padding-bottom-15 border-top-1" ng-repeat="plugin in aco.children"
                                      ng-if="plugin.children.length > 0 && plugin.alias.substr(-6) === 'Module'">
-                                    <div class="col-xs-12">
+                                    <div class="col-lg-12">
                                         <h5 class="ok">
                                             <i class="fa fa-puzzle-piece"></i>
                                             {{plugin.alias}}
                                         </h5>
                                     </div>
 
-                                    <div class="col-xs-12" ng-repeat="controller in plugin.children">
+                                    <div class="col-xs-12 col-md-4 col-lg-2" ng-repeat="controller in plugin.children">
                                         <h5>
                                             {{controller.alias}}
                                         </h5>

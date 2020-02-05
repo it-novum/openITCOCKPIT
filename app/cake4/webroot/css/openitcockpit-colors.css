@@ -45,10 +45,6 @@ SECONDARY:                          #727b84;
     color: #4285F4 !important;
 }
 
-.slightBorder {
-    border: 1px solid #e3e3e3
-}
-
 .custom-control-input:checked ~ .custom-control-label-primary::before {
     color: #fff;
     border-color: #4285F4;

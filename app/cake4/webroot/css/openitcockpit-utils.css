@@ -424,3 +424,10 @@ openITCOCKPIT v4 Utilities
     margin: 0 !important;
 }
 
+.border-top-1 {
+    border-top: 1px solid #e3e3e3;
+}
+
+.slightBorder {
+    border: 1px solid #e3e3e3;
+}
