@@ -65,8 +65,7 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-                    <table id="usedby_list" class="table table-striped m-0 table-bordered table-hover"
-                           style="">
+                    <table id="usedby_list" class="table table-striped m-0 table-bordered table-hover table-sm">
                         <tbody>
                         <tr ng-if="objects.Contacts.length > 0">
                             <th class="bg-color-lightGray">

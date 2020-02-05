@@ -127,8 +127,6 @@
                                 </td>
                                 <td>{{hosttemplate.Hosttemplate.name}}</td>
                                 <td class="width-50">
-
-
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
                                             <a ui-sref="HosttemplatesEdit({id: hosttemplate.Hosttemplate.id})"
