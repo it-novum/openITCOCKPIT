@@ -390,7 +390,7 @@
 
                         <div class="card margin-bottom-10" ng-show="post.Service.servicetemplate_id">
                             <div class="card-header">
-                                <i class="fa fa-wrench"></i> <?php echo __('Misc. configuration'); ?>
+                                <i class="fa fa-wrench"></i> <?php echo __('Notification configuration'); ?>
                             </div>
                             <div class="card-body">
                                 <div class="form-group required"
@@ -599,7 +599,7 @@
                                                        id="<?php echo $serviceOption['field']; ?>"
                                                        ng-model="post.Service.<?php echo $serviceOption['field']; ?>">
                                                 <label for="<?php echo $serviceOption['field']; ?>"
-                                                       class="col col-md-7 custom-control-label custom-control-label-<?php echo $serviceOption['class']; ?> padding-top-0 margin-right-10 ">
+                                                       class="col col-md-6 custom-control-label custom-control-label-<?php echo $serviceOption['class']; ?> padding-top-0 margin-right-10 ">
                                                         <span class="badge badge-<?php echo $serviceOption['class']; ?> notify-label-small">
                                                             <?php echo $serviceOption['text']; ?>
                                                         </span>
@@ -860,7 +860,6 @@
                         <!-- EVENT HANDLER CONFIGURATION END -->
 
                         <!-- SERVICE MACRO CONFIGURATION START -->
-
                         <div class="card margin-bottom-10" ng-show="post.Service.servicetemplate_id">
                             <div class="card-header">
                                 <i class="fa fa-dollar"></i> <?php echo __('Service macro configuration'); ?>
