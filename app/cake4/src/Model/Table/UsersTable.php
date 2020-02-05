@@ -291,20 +291,18 @@ class UsersTable extends Table {
      */
     public function beforeSave(Event $event, EntityInterface $entity, \ArrayObject $options) {
         if ($entity->isDirty('password')) {
-            $entity->password = $this->getPasswordHash($entity->password);
+            $Hasher = $this->getDefaultPasswordHasher();
+            $entity->password = $Hasher->hash($entity->password);
         }
         return true;
     }
 
     /**
-     * @param $str
-     * @return string
+     * @return DefaultPasswordHasher
      */
-    public function getPasswordHash($str) {
-        $Hasher = new DefaultPasswordHasher();
-        return $Hasher->hash($str);
+    public function getDefaultPasswordHasher(){
+        return new DefaultPasswordHasher();
     }
-
 
     /**
      * @param array $rights

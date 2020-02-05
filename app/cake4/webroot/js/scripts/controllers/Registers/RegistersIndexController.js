@@ -29,9 +29,14 @@ angular.module('openITCOCKPIT')
             }
         });
 
-        var handleLicenseResponse = function(licenseResponse, showNotyMsg){
+        var handleLicenseResponse = function(licenseResponse, showNotyMsg, isCommunityLicense){
             if(licenseResponse === null){
                 return;
+            }
+
+            var msg = 'Valid openITCOCKPIT Enterprise license.';
+            if(isCommunityLicense){
+                msg = 'Valid openITCOCKPIT Community license.';
             }
 
             $scope.hasLicense = false;
@@ -39,7 +44,7 @@ angular.module('openITCOCKPIT')
                 $scope.hasLicense = true;
                 if(showNotyMsg){
                     NotyService.genericSuccess({
-                        message: 'Valid openITCOCKPIT Enterprise license.',
+                        message: msg,
                         timeout: 5500
                     });
                 }
@@ -76,7 +81,7 @@ angular.module('openITCOCKPIT')
                     $scope.post.Registers = result.data.license;
                 }
                 var licenseResponse = result.data.licenseResponse;
-                handleLicenseResponse(licenseResponse, false);
+                handleLicenseResponse(licenseResponse, false, isCommunityLicense);
 
                 $scope.certImage = 'license-certificate-enterprise.svg';
                 if(isCommunityLicense === true){
@@ -91,10 +96,10 @@ angular.module('openITCOCKPIT')
             $http.post("/registers/index.json?angular=true",
                 $scope.post
             ).then(function(result){
-                var licenseResponse = result.data.licenseResponse;
-                handleLicenseResponse(licenseResponse, true);
-
                 var isCommunityLicense = result.data.isCommunityLicense;
+                var licenseResponse = result.data.licenseResponse;
+                handleLicenseResponse(licenseResponse, true, isCommunityLicense);
+
                 $scope.certImage = 'license-certificate-enterprise.svg';
                 if(isCommunityLicense === true){
                     $scope.certImage = 'license-certificate-community.svg';

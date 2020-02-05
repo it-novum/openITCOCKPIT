@@ -103,16 +103,6 @@
                                     </a>
                                 </li>
                             <?php endif; ?>
-                            <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                <li ng-if="host.Host.allow_edit">
-                                    <?php echo $this->AdditionalLinks->renderAsListItems(
-                                        $additionalLinksList,
-                                        '{{host.Host.id}}',
-                                        [],
-                                        true
-                                    ); ?>
-                                </li>
-                            <?php endif; ?>
                         </ul>
                     </div>
                 </div>

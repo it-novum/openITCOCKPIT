@@ -483,6 +483,11 @@ class GearmanWorkerCommand extends Command {
                 }
                 $file = fopen('/etc/apt/sources.list.d/openitcockpit.list', 'w+');
                 if ($usesAuthConfig) {
+
+                    if(!is_dir('/etc/apt/auth.conf.d')){
+                        mkdir('/etc/apt/auth.conf.d');
+                    }
+
                     //bionic and newer
                     fwrite($file, 'deb https://' . $repo . '  main' . PHP_EOL);
 

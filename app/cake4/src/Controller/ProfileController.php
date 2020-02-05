@@ -125,11 +125,13 @@ class ProfileController extends AppController {
 
         /** @var $UsersTable UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        $Hasher = $UsersTable->getDefaultPasswordHasher();
 
         $user = $UsersTable->get($User->getId());
 
         $data = $this->request->getData('Password');
-        if ($UsersTable->getPasswordHash($data['current_password']) !== $user->get('password')) {
+
+        if (!$Hasher->check($data['current_password'], $user->get('password'))) {
             $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'current_password' => [

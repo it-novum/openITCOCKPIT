@@ -90,6 +90,7 @@ class HostComparisonForSave {
         $data['address'] = $this->host['address'];
         $data['container_id'] = $this->host['container_id'];
         $data['hosts_to_containers_sharing'] = isset($this->host['hosts_to_containers_sharing']) ? $this->host['hosts_to_containers_sharing'] : [];
+        $data['satellite_id'] = isset($this->host['satellite_id']) ? $this->host['satellite_id'] : 0;
 
         if (isset($data['hosts_to_containers_sharing']['_ids'])) {
             $data['hosts_to_containers_sharing']['_ids'][] = $data['container_id'];
@@ -127,8 +128,7 @@ class HostComparisonForSave {
             'notify_period_id',
             'tags',
             'active_checks_enabled',
-            'host_url',
-            'satellite_id'
+            'host_url'
         ];
 
         $data = [];
