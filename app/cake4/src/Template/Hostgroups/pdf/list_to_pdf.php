@@ -26,9 +26,17 @@
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
-$Logo = new Logo();
+/**
+ * @var \App\View\AppView $this
+ * @var array $all_hostgroups
+ * @var int $numberOfHostgroups
+ * @var int $numberOfHosts
+ * @var \itnovum\openITCOCKPIT\Core\ValueObjects\User $User
+ */
 
-/** @var \itnovum\openITCOCKPIT\Core\ValueObjects\User $User */
+$Logo = new Logo();
+$css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
+
 
 $UserTime = $User->getUserTime();
 
@@ -36,26 +44,13 @@ $UserTime = $User->getUserTime();
 <head>
 
     <?php
-    //PDF Output
-    $css = [
-        'css/vendor/bootstrap/css/bootstrap.css',
-        //'css/vendor/bootstrap/css/bootstrap-theme.css',
-        'smartadmin/css/font-awesome.css',
-        'smartadmin/css/smartadmin-production.css',
-        'smartadmin/css/your_style.css',
-        'css/app.css',
-        'css/bootstrap_pdf.css',
-        'css/pdf_list_style.css',
-    ];
-    ?>
-
-    <?php
     foreach ($css as $cssFile): ?>
         <link rel="stylesheet" type="text/css" href="<?php echo WWW_ROOT . $cssFile; ?>"/>
     <?php endforeach; ?>
 
 </head>
-<body>
+<body style="background: #FFF;">
+
 <div class="well">
     <div class="row margin-top-10 font-lg no-padding">
         <div class="col-md-9 text-left padding-left-10">
