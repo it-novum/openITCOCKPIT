@@ -813,7 +813,7 @@
                                                        id="<?php echo $serviceFlapOption['field']; ?>"
                                                        ng-model="post.Service.<?php echo $serviceFlapOption['field']; ?>">
                                                 <label for="<?php echo $serviceFlapOption['field']; ?>"
-                                                       class="col col-md-7 custom-control-label custom-control-label-<?php echo $serviceFlapOption['class']; ?> padding-top-0 margin-right-10">
+                                                       class="col col-md-6 custom-control-label custom-control-label-<?php echo $serviceFlapOption['class']; ?> padding-top-0 margin-right-10">
                                                         <span class="badge badge-<?php echo $serviceFlapOption['class']; ?> notify-label-small">
                                                             <?php echo $serviceFlapOption['text']; ?>
                                                         </span>

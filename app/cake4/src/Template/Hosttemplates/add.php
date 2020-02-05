@@ -568,7 +568,7 @@
                                                        id="<?php echo $hostFlapOption['field']; ?>"
                                                        ng-model="post.Hosttemplate.<?php echo $hostFlapOption['field']; ?>">
                                                 <label for="<?php echo $hostFlapOption['field']; ?>"
-                                                       class="col col-md-7 custom-control-label custom-control-label-<?php echo $hostFlapOption['class']; ?> padding-top-0 margin-right-10">
+                                                       class="col col-md-9 custom-control-label custom-control-label-<?php echo $hostFlapOption['class']; ?> padding-top-0 margin-right-10">
                                                         <span
                                                             class="badge badge-<?php echo $hostFlapOption['class']; ?> notify-label-small">
                                                             <?php echo $hostFlapOption['text']; ?>
