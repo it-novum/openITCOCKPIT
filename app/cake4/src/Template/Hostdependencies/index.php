@@ -108,7 +108,7 @@
                                     <div class="col-xs-12 no-padding">
                                         <div class="form-group smart-form">
                                             <label class="input">
-                                                <i class="icon-prepend fa fa-sitemap"></i>
+                                                <i class="icon-prepend fa fa-server"></i>
                                                 <input type="text" class="input-sm"
                                                        placeholder="<?php echo __('Filter by host group'); ?>"
                                                        ng-model="filter.Hostgroups.name"
@@ -129,7 +129,7 @@
                                         <div class="form-group smart-form">
                                             <label class="input">
                                         <span class="icon-prepend fa-stack">
-                                            <i class="fa fa-sitemap fa-stack-1x"></i>
+                                            <i class="fa fa-server fa-stack-1x"></i>
                                             <i class="fa fa-sitemap fa-stack-1x fa-xs cornered cornered-lr text-primary"></i>
                                         </span>
                                                 <input type="text" class="input-sm"
@@ -265,12 +265,12 @@
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Hostdependencies.inherits_parent[0]"
+                                                       ng-model="filter.Hostdependencies.inherits_parent[1]"
                                                        ng-model-options="{debounce: 500}"
-                                                       ng-true-value="1"
-                                                       ng-false-value="0">
+                                                       ng-true-value="true"
+                                                       ng-false-value="false">
                                                 <i class="checkbox-primary"></i>
-                                                <?php echo __('Inherits parents'); ?>
+                                                <?php echo __('Inherits parent'); ?>
                                             </label>
                                         </div>
                                     </div>
@@ -278,12 +278,12 @@
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Hostdependencies.inherits_parent[1]"
+                                                       ng-model="filter.Hostdependencies.inherits_parent[0]"
                                                        ng-model-options="{debounce: 500}"
-                                                       ng-true-value="1"
-                                                       ng-false-value="0">
+                                                       ng-true-value="true"
+                                                       ng-false-value="false">
                                                 <i class="checkbox-primary"></i>
-                                                <?php echo __('Not inherits parents'); ?>
+                                                <?php echo __('Not inherits parent'); ?>
                                             </label>
                                         </div>
                                     </div>
@@ -317,6 +317,7 @@
                                     <th><?php echo __('Host groups'); ?></th>
                                     <th><?php echo __('Dependent host groups'); ?></th>
                                     <th><?php echo __('Timeperiod'); ?></th>
+                                    <th><?php echo __('Inherits parent'); ?></th>
                                     <th class="no-sort"><?php echo __('Execution failure criteria'); ?></th>
                                     <th class="no-sort"><?php echo __('Notification failure criteria'); ?></th>
                                     <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
@@ -429,6 +430,18 @@
                                                 {{ hostdependency.timeperiod.name }}
                                             <?php endif; ?>
                                         </td>
+                                        <td class="text-center">
+                                            <span class="label-forced label-success margin-right-5"
+                                                  title="<?php echo __('Yes'); ?>"
+                                                  ng-show="hostdependency.inherits_parent === 1">
+                                                    <?php echo __('Yes'); ?>
+                                            </span>
+                                            <span class="label-forced label-danger margin-right-5"
+                                                  title="<?php echo __('No'); ?>"
+                                                  ng-show="hostdependency.inherits_parent === 0">
+                                                    <?php echo __('No'); ?>
+                                            </span>
+                                        </td>
                                         <td class="text-align-center">
                                             <div>
                                             <span class="label-forced label-success margin-right-5"
@@ -460,11 +473,11 @@
                                         </td>
                                         <td class="text-align-center">
                                             <div>
-                                            <span class="label-forced label-success margin-right-5"
-                                                  title="<?php echo __('Up'); ?>"
-                                                  ng-show="hostdependency.notification_fail_on_up">
-                                                <?php echo __('O'); ?>
-                                            </span>
+                                                <span class="label-forced label-success margin-right-5"
+                                                      title="<?php echo __('Up'); ?>"
+                                                      ng-show="hostdependency.notification_fail_on_up">
+                                                    <?php echo __('O'); ?>
+                                                </span>
                                                 <span class="label-forced label-danger margin-right-5"
                                                       title="<?php echo __('Down'); ?>"
                                                       ng-show="hostdependency.notification_fail_on_down">
@@ -487,7 +500,7 @@
                                                 </span>
                                             </div>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center text-center no-padding padding-top-10">
                                             <div class="btn-group smart-form">
                                                 <?php if ($this->Acl->hasPermission('edit', 'hostdependencies')): ?>
                                                     <a ui-sref="HostdependenciesEdit({id: hostdependency.id})"
