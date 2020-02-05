@@ -84,7 +84,7 @@ angular.module('openITCOCKPIT')
                     params: {
                         'angular': true,
                         'containerId': $scope.post.Serviceescalation.container_id,
-                        'filter[Services.servicename]': searchString,
+                        'filter[servicename]': searchString,
                         'selected[]': $scope.post.Serviceescalation.services_excluded._ids
                     }
                 }).then(function(result){

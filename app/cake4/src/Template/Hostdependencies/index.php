@@ -325,12 +325,25 @@
                                                        class="custom-control-input"
                                                        name="checkbox"
                                                        checked="checked"
-                                                       ng-model="filter.Hostdependencies.inherits_parent"
+                                                       ng-model="filter.Hostdependencies.inherits_parent[0]"
                                                        ng-model-options="{debounce: 500}"
                                                        ng-true-value="1"
                                                        ng-false-value="0">
                                                 <label class="custom-control-label"
                                                        for="FilterInheritsParent"><?php echo __('Inherits parent'); ?></label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="FilterNotInheritsParent"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Hostdependencies.inherits_parent[1]"
+                                                       ng-model-options="{debounce: 500}"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0">
+                                                <label class="custom-control-label"
+                                                       for="FilterNotInheritsParent"><?php echo __('Not inherits parent'); ?></label>
                                             </div>
                                         </div>
                                     </fieldset>

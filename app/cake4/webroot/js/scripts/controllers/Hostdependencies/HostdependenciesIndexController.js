@@ -17,7 +17,7 @@ angular.module('openITCOCKPIT')
             $scope.filter = {
                 Hostdependencies: {
                     id: QueryStringService.getStateValue($stateParams, 'id', []),
-                    inherits_parent: '',
+                    inherits_parent: [],
                     execution_fail_on_up: '',
                     execution_fail_on_down: '',
                     execution_fail_on_unreachable: '',
@@ -58,7 +58,8 @@ angular.module('openITCOCKPIT')
                     'scroll': $scope.useScroll,
                     'page': $scope.currentPage,
                     'filter[Hostdependencies.id][]': $scope.filter.Hostdependencies.id,
-                    'filter[Hostdependencies.inherits_parent]': $scope.filter.Hostdependencies.inherits_parent,
+                    'filter[Hostdependencies.inherits_parent][]': $scope.filter.Hostdependencies.inherits_parent,
+                    'filter[Hostdependencies.not_inherits_parent]': $scope.filter.Hostdependencies.not_inherits_parent,
                     'filter[Hostdependencies.execution_fail_on_up]': $scope.filter.Hostdependencies.execution_fail_on_up,
                     'filter[Hostdependencies.execution_fail_on_down]': $scope.filter.Hostdependencies.execution_fail_on_down,
                     'filter[Hostdependencies.execution_fail_on_unreachable]': $scope.filter.Hostdependencies.execution_fail_on_unreachable,

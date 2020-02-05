@@ -90,16 +90,6 @@
                             <?php echo __('Allocate Service Template Group'); ?>
                         </a>
                     <?php endif; ?>
-                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                        <span class="dropdown-item" ng-if="host.Host.allow_edit">
-                            <?php echo $this->AdditionalLinks->renderAsListItems(
-                                $additionalLinksList,
-                                '{{host.Host.id}}',
-                                [],
-                                true
-                            ); ?>
-                        </span>
-                    <?php endif; ?>
                 </div>
             </div>
         </div>
