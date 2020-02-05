@@ -65,20 +65,20 @@
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" data-toggle="tab" ui-sref="ServicesIndex" role="tab">
-                                <i class="fa fa-stethoscope"></i> <?php echo __('Monitored'); ?>
+                                <i class="fa fa-stethoscope">&nbsp;</i> <?php echo __('Monitored'); ?>
                             </a>
                         </li>
                         <?php if ($this->Acl->hasPermission('notMonitored', 'services')): ?>
                             <li class="nav-item">
                                 <a class="nav-link" data-toggle="tab" ui-sref="ServicesNotMonitored" role="tab">
-                                    <i class="fa fa-user-md"></i> <?php echo __('Not monitored'); ?>
+                                    <i class="fa fa-user-md">&nbsp;</i> <?php echo __('Not monitored'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('disabled', 'services')): ?>
                             <li class="nav-item">
                                 <a class="nav-link" data-toggle="tab" ui-sref="ServicesDisabled" role="tab">
-                                    <i class="fa fa-plug"></i> <?php echo __('Disabled'); ?>
+                                    <i class="fa fa-plug">&nbsp;</i> <?php echo __('Disabled'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
