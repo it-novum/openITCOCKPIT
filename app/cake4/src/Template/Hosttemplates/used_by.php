@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="HosttemplatesIndex">
-            <i class="fa fa-terminal"></i> <?php echo __('Host templates'); ?>
+            <i class="fa fa-pencil-square-o"></i> <?php echo __('Host templates'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
