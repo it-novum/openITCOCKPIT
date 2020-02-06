@@ -75,7 +75,7 @@
                             <i class="fas fa-plus"></i> <?php echo __('New'); ?>
                         </button>
                     <?php endif; ?>
-                    <?php if ($this->Acl->hasPermission('index', 'servicetemplategroups')): ?>
+                    <?php if ($this->Acl->hasPermission('index', 'servicegroups')): ?>
                         <a back-button fallback-state='ServicegroupsIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
@@ -247,31 +247,31 @@
                                     <servicestatusicon service="service"></servicestatusicon>
                                 </td>
                                 <td class="text-center">
-                                    <i class="fa fa-lg fa-user"
+                                    <i class="fa fa-user"
                                        ng-show="service.Servicestatus.problemHasBeenAcknowledged"
                                        ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
 
-                                    <i class="fa fa-lg fa-user-o"
+                                    <i class="fa fa-user"
                                        ng-show="service.Servicestatus.problemHasBeenAcknowledged"
                                        ng-if="service.Servicestatus.acknowledgement_type == 2"
                                        title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
                                 </td>
                                 <td class="text-center">
-                                    <i class="fa fa-lg fa-power-off"
+                                    <i class="fa fa-power-off"
                                        ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
                                 <td class="text-center">
                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                         <a ui-sref="ServicesBrowser({id: service.Service.id})"
                                            class="txt-color-blueDark">
-                                            <i class="fa fa-lg fa-area-chart"
+                                            <i class="fa fa-area-chart"
                                                ng-mouseenter="mouseenter($event, service.Host, service)"
                                                ng-mouseleave="mouseleave()"
                                                ng-if="service.Service.has_graph">
                                             </i>
                                         </a>
                                     <?php else: ?>
-                                        <i class="fa fa-lg fa-area-chart"
+                                        <i class="fa fa-area-chart"
                                            ng-mouseenter="mouseenter($event, service.Host, service)"
                                            ng-mouseleave="mouseleave()"
                                            ng-if="service.Service.has_graph">
@@ -361,7 +361,7 @@
                                                 </a>
                                             <?php endif; ?>
 
-                                            <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
+                                            <?php if ($this->Acl->hasPermission('enable', 'services')): ?>
                                                 <a ng-click="confirmActivate(getObjectForDelete(service.Host, service))"
                                                    ng-if="service.Service.allow_edit && service.Service.disabled"
                                                    href="javascript:void(0);"
