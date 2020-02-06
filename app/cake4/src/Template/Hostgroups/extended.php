@@ -52,7 +52,7 @@
 
 <div class="alert alert-success alert-block" ng-show="showFlashSuccess">
     <a href="#" data-dismiss="alert" class="close">×</a>
-    <h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
+    <h4 class="alert-heading"><i class="far fa-check-circle"></i> <?php echo __('Command sent successfully'); ?></h4>
     <?php echo __('Data refresh in'); ?> {{ autoRefreshCounter }} <?php echo __('seconds...'); ?>
 </div>
 
@@ -252,17 +252,17 @@
                                     </servicecumulatedstatusicon>
                                 </td>
                                 <td class="text-center">
-                                    <i class="fa fa-lg fa-user"
+                                    <i class="far fa-user"
                                        ng-show="host.Hoststatus.problemHasBeenAcknowledged"
                                        ng-if="host.Hoststatus.acknowledgement_type == 1"></i>
 
-                                    <i class="fa fa-lg fa-user-o"
+                                    <i class="fas fa-user"
                                        ng-show="host.Hoststatus.problemHasBeenAcknowledged"
                                        ng-if="host.Hoststatus.acknowledgement_type == 2"
                                        title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
                                 </td>
                                 <td class="text-center">
-                                    <i class="fa fa-lg fa-power-off"
+                                    <i class="fa fa-power-off"
                                        ng-show="host.Hoststatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
                                 <td class="text-center">
