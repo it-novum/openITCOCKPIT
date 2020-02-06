@@ -42,7 +42,7 @@
         <span class="widget-icon"> <i class="fa fa-bomb"></i> </span>
         <h2><?php echo __('Add service escalation'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <a ui-sref="HostescalationsIndex" class="btn btn-default btn-xs" iconcolor="white">
+            <a ui-sref="ServiceescalationsIndex" class="btn btn-default btn-xs" iconcolor="white">
                 <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
             </a>
         </div>
