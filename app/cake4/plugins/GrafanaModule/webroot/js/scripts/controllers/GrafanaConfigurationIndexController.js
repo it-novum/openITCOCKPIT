@@ -61,6 +61,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.hostgroups = result.data.hostgroups;
+                $scope.hostgroups_excluded = JSON.parse(JSON.stringify(result.data.hostgroups)); //WO DONT WANT A REFERENCE!!
             });
         };
 
@@ -105,6 +106,40 @@ angular.module('openITCOCKPIT')
             });
 
         };
+
+        $scope.processChosenHostgroups = function(){
+            for(var key in $scope.hostgroups){
+                if(in_array($scope.hostgroups[key].key, $scope.post.Hostgroup_excluded)){
+                    $scope.hostgroups[key].disabled = true;
+                }else{
+                    $scope.hostgroups[key].disabled = false;
+                }
+            }
+        };
+
+        $scope.processChosenExcludedHostgroups = function(){
+            for(var key in $scope.hostgroups_excluded){
+                if(in_array($scope.hostgroups_excluded[key].key, $scope.post.Hostgroup)){
+                    $scope.hostgroups_excluded[key].disabled = true;
+                }else{
+                    $scope.hostgroups_excluded[key].disabled = false;
+                }
+            }
+        };
+
+        $scope.$watch('post.Hostgroup', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.processChosenExcludedHostgroups();
+        }, true);
+
+        $scope.$watch('post.Hostgroup_excluded', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.processChosenHostgroups();
+        }, true);
 
         $scope.load();
         $scope.loadHostgroups();

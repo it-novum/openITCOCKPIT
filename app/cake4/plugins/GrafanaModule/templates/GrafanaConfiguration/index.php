@@ -171,11 +171,10 @@
                         </label>
                         <div class="col col-xs-10">
                             <select
-                                id="dashboard_style"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="hostgroups"
-                                ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+                                ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups"
                                 ng-model="post.Hostgroup"
                                 multiple>
                             </select>
@@ -195,11 +194,10 @@
                         </label>
                         <div class="col col-xs-10">
                             <select
-                                id="MapContainer"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
-                                chosen="hostgroups"
-                                ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+                                chosen="hostgroups_excluded"
+                                ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups_excluded"
                                 ng-model="post.Hostgroup_excluded"
                                 multiple>
                             </select>
