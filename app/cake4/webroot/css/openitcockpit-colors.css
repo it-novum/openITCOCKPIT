@@ -577,7 +577,7 @@ https://www.color-hex.com/color/727b84
     background: rgba(255, 255, 255, 0.3)
 }
 
- /* Command line highlight colors */
+/* Command line highlight colors */
 .highlight-blue {
     background-color: rgba(0, 192, 239, 0.2);
 }
@@ -613,4 +613,24 @@ https://www.color-hex.com/color/727b84
 
 .browser-border {
     border: 1px solid #ddd;
+}
+
+.reportIssueCardChatHeader {
+    background-color: #337ab7;
+    color: #fff;
+}
+
+.reportIssueCardCommunityHeader {
+    background-color: #6e587a;
+    color: #fff;
+}
+
+.reportIssueCardCommercialSupportHeader {
+    background-color: #404040;
+    color: #fff;
+}
+
+.reportIssueCardSubheader {
+    background-color: #333;
+    color: #999;
 }
