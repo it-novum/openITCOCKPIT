@@ -13,22 +13,23 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-lg-12">
-                    <div class="form-group required">
-                        <label class="control-label" for="downtimeForType">
-                            <?php echo __('Maintenance period for'); ?>
-                        </label>
-                        <select
-                            id="downtimeForType"
-                            data-placeholder="<?php echo __('Please choose'); ?>"
-                            class="form-control"
-                            chosen="{}"
-                            ng-model="downtimeModal.hostDowntimeType">
-                            <option value="0"><?php echo __('Individual hosts'); ?></option>
-                            <option value="1"><?php echo __('Hosts including services'); ?></option>
-                            <option value="2"><?php echo __('Hosts and dependent Hosts (triggered)'); ?></option>
-                            <option value="3"><?php echo __('Hosts and dependent Hosts (non-triggered)'); ?></option>
-                        </select>
-                    </div>
+                        <div class="form-group required">
+                            <label class="control-label" for="downtimeForType">
+                                <?php echo __('Maintenance period for'); ?>
+                            </label>
+                            <select
+                                id="downtimeForType"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="{}"
+                                ng-model="downtimeModal.hostDowntimeType">
+                                <option value="0"><?php echo __('Individual hosts'); ?></option>
+                                <option value="1"><?php echo __('Hosts including services'); ?></option>
+                                <option value="2"><?php echo __('Hosts and dependent Hosts (triggered)'); ?></option>
+                                <option
+                                    value="3"><?php echo __('Hosts and dependent Hosts (non-triggered)'); ?></option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
