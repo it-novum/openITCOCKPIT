@@ -1173,36 +1173,43 @@
                                                 class="btn d-inline-block bg-widget-statusYellow-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                 data-panel-setstyle="bg-widget-statusYellow-gradient"
                                                 ng-click="widget.color='widget-statusYellow'"
+                                                select-color="true" color="#ffbb33"
                                                 style="margin:1px;"></button>
                                         <button type="button"
                                                 class="btn d-inline-block bg-widget-statusRed-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                 data-panel-setstyle="bg-widget-statusRed-gradient"
                                                 ng-click="widget.color='widget-statusRed'"
+                                                select-color="true" color="#CC0000"
                                                 style="margin:1px;"></button>
                                         <button type="button"
                                                 class="btn d-inline-block bg-widget-statusGrey-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                 data-panel-setstyle="bg-widget-statusGrey-gradient"
                                                 ng-click="widget.color='widget-statusGrey'"
+                                                select-color="true" color="#727b84"
                                                 style="margin:1px;"></button>
                                         <button type="button"
                                                 class="btn d-inline-block bg-widget-default width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                 data-panel-setstyle="bg-widget-default"
                                                 ng-click="widget.color='widget-default'"
+                                                select-color="true" color="#f7f9fa"
                                                 style="margin:1px;"></button>
                                         <button type="button"
                                                 class="btn d-inline-block bg-widget-white width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                 data-panel-setstyle="bg-widget-white"
                                                 ng-click="widget.color='widget-white'"
+                                                select-color="true" color="#ffffff"
                                                 style="margin:1px;"></button>
                                         <button type="button"
                                                 class="btn d-inline-block bg-widget-black-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                 data-panel-setstyle="bg-widget-black-gradient"
                                                 ng-click="widget.color='widget-black'"
+                                                select-color="true" color="#000000"
                                                 style="margin:1px;"></button>
                                         <button type="button"
                                                 class="btn d-inline-block bg-widget-anthracite-gradient width-2 height-2 p-0 rounded-0 js-panel-color hover-effect-dot waves-effect waves-themed dropdown-item dashboardColorPickerBorder"
                                                 data-panel-setstyle="bg-widget-anthracite-gradient"
                                                 ng-click="widget.color='widget-anthracite'"
+                                                select-color="true" color="#383e42"
                                                 style="margin:1px;"></button>
 
                                     </div>
