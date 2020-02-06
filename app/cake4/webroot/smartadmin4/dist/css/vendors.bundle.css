@@ -202,7 +202,6 @@ aside.page-sidebar ($nav-width, $nav-background)
  * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900");
 :root {
   --blue: #4285F4;
   --indigo: #6610f2;
@@ -230,7 +229,7 @@ aside.page-sidebar ($nav-width, $nav-background)
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1399px;
-  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI",  "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 
 *,
@@ -250,7 +249,7 @@ article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",  "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-size: 0.8125rem;
   font-weight: 400;
   line-height: 1.47;
@@ -5010,7 +5009,7 @@ a.close.disabled {
   z-index: 2070;
   display: block;
   margin: 2px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",  "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-style: normal;
   font-weight: 400;
   line-height: 1.47;
@@ -5095,7 +5094,7 @@ a.close.disabled {
   z-index: 2060;
   display: block;
   max-width: 276px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",  "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-style: normal;
   font-weight: 400;
   line-height: 1.47;
@@ -8442,10 +8441,10 @@ a.text-dark:hover, a.text-dark:focus {
 /* #BOOTSTRAP AND MIXINS - Base Unmodified Bootstrap file with theme mixins
 ========================================================================== */
 /*---------------------------------------------------
-    SASS ELements (based on LESS Elements 0.9 http://lesselements.com) 
+    SASS ELements (based on LESS Elements 0.9 http://lesselements.com)
   -------------------------------- -------------------
     LESS ELEMENTS made by Dmitry Fadeyev (http://fadeyev.net)
-    SASS port by Samuel Beek (http://samuelbeek.com) 
+    SASS port by Samuel Beek (http://samuelbeek.com)
   ---------------------------------------------------*/
 /*------------------------
     Usage
@@ -8472,12 +8471,12 @@ From this W3C document: http://www.webmasterworld.com/r.cgi?f=88&d=9769&url=http
 
 usage:
 @include text-contrast($bgcolor)
-      
-Color brightness is determined by the following formula: 
+
+Color brightness is determined by the following formula:
 ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000
 ------------------------*/
 /*------------------------
- color factory 
+ color factory
   eg: @include paint($blue-grey-50, bg-blue-grey-50);
 ------------------------*/
 /* backface visibility */
@@ -8683,7 +8682,7 @@ aside.page-sidebar ($nav-width, $nav-background)
 /* ACCESSIBILITIES */
 /* SHORTCUT BUTTON (appears on bottom right of the page) */
 body {
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial;
+  font-family: "Helvetica Neue", Helvetica, Arial;
   font-size: 0.8125rem;
   letter-spacing: 0.1px; }
 
@@ -8747,8 +8746,8 @@ h6 small,
   text-shadow: none; }
 
 /* looking for font size? Check _helpers.scss */
-/* PLACEHOLDER 
-============================================= 
+/* PLACEHOLDER
+=============================================
 
 EXAMPLE:
 
@@ -8810,7 +8809,7 @@ RESULT:
 			left: 0;
 			top: 0;
 			border-radius: 50%;
-		} 
+		}
 	}*/
 /* patterns */
 /* #WEBFONT ICONS IMPORTS

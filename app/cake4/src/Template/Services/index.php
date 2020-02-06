@@ -444,11 +444,11 @@
                                 </td>
 
                                 <td class="text-center">
-                                    <i class="fa fa-user"
+                                    <i class="far fa-user"
                                        ng-show="service.Servicestatus.problemHasBeenAcknowledged"
                                        ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
 
-                                    <i class="fa fa-user-o"
+                                    <i class="fas fa-user"
                                        ng-show="service.Servicestatus.problemHasBeenAcknowledged"
                                        ng-if="service.Servicestatus.acknowledgement_type == 2"
                                        title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>

@@ -86,7 +86,7 @@
                                                 <span class="input-group-text"><i class="fa fa-desktop"></i></span>
                                             </div>
                                             <select
-                                                id="UserRoles"
+                                                id="hostFilter"
                                                 data-placeholder="<?php echo __('Filter by host'); ?>"
                                                 class="form-control"
                                                 chosen="hosts"
@@ -105,7 +105,7 @@
                                                 <span class="input-group-text"><i class="far fa-file-alt"></i></span>
                                             </div>
                                             <select
-                                                id="UserRoles"
+                                                id="entryTypeFilter"
                                                 data-placeholder="<?php echo __('Filter by entry type'); ?>"
                                                 class="form-control"
                                                 chosen="{}"

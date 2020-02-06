@@ -244,9 +244,8 @@ aside.page-sidebar ($nav-width, $nav-background)
 ========================================================================== */
 /* ACCESSIBILITIES */
 /* SHORTCUT BUTTON (appears on bottom right of the page) */
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900");
 body {
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial;
+  font-family: "Helvetica Neue", Helvetica, Arial;
   font-size: 0.8125rem;
   letter-spacing: 0.1px; }
 
@@ -4272,7 +4271,7 @@ th {
   color: #4285F4; }
 
 .tooltip-inner {
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial;
+  font-family: "Helvetica Neue", Helvetica, Arial;
   font-weight: 500;
   -webkit-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
           box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); }
