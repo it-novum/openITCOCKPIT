@@ -51,7 +51,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'serviceescalations')): ?>
-                        <a back-button fallback-state='ServiceescalationsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button fallback-state='ServiceescalationsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -346,7 +347,8 @@ Once a service escalated, contacts, contact group and notification options will 
                             <div class="card-body">
                                 <div class="float-right">
                                     <button class="btn btn-primary"
-                                            type="submit" ng-click="submit()"><?php echo __('Create service escalation'); ?></button>
+                                            type="submit"
+                                            ng-click="submit()"><?php echo __('Create service escalation'); ?></button>
                                     <a back-button fallback-state='ServiceescalationsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
