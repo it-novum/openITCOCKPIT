@@ -1,31 +1,37 @@
 <div id="angularDisableHostNotificationsModal" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
-                    <i class="fa fa-envelope-o"></i>
-                    <?php echo __('Disable host notifications'); ?>
-                </h4>
+                <h5 class="modal-title">
+                    <i class="far fa-envelope"></i>
+                    <?php echo __('Disable host notification'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
             </div>
             <div class="modal-body">
 
                 <div class="row">
-                    <section class="smart-form">
-                        <label class="label"><?php echo __('Select method'); ?></label>
-                        <label class="select">
-                            <select ng-model="disableHostNotificationsType">
-                                <option value="hostOnly"><?php echo __('Only host'); ?></option>
-                                <option value="hostAndServices"><?php echo __('Host and services'); ?></option>
-                            </select> <i></i> </label>
-                    </section>
-                </div>
+                    <div class="col-lg-12">
+                        <div class="form-group required">
+                            <label class="control-label" for="ackHostmethod">
+                                <?php echo __('Select method'); ?>
+                            </label>
+                            <select
+                                id="ackHostmethod"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="{}"
+                                ng-model="hostAckType">
+                                <option value="hostOnly"><?php echo __('Individual hosts'); ?></option>
+                                <option value="hostAndServices"><?php echo __('Hosts including services'); ?></option>
+                            </select>
+                        </div>
+                    </div>
 
-                <br/>
-                <div class="row">
-
-                    <div class="col-xs-12 text-center">
-                        <div class="well">
+                    <div class="col-lg-12 text-center">
+                        <div class="card">
                             <span class="hintmark">
                                 <?php echo __('Yes, I would like to temporarily <strong>disable</strong> notifications.'); ?>
                             </span>
@@ -40,12 +46,11 @@
                 </div>
 
                 <div class="row" ng-show="isDisableingHostNotifications">
-                    <div class="col-xs-12 margin-top-10">
+                    <div class="col-lg-12 margin-top-10">
                         <div class="progress progress-striped active">
                             <div class="progress-bar bg-primary" style="width: {{percentage}}%"></div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
