@@ -20,7 +20,10 @@ angular.module('openITCOCKPIT').directive('statusmapsHostAndServicesSummaryStatu
             $scope.additionalFilters = {
                 acknowledged: 'has_been_acknowledged',
                 in_downtime: 'in_downtime',
-                not_handled: 'has_not_been_acknowledged',
+                not_handled: [
+                    'has_not_been_acknowledged',
+                    'not_in_downtime'
+                ],
                 passive: 'passive'
             };
 
@@ -77,7 +80,13 @@ angular.module('openITCOCKPIT').directive('statusmapsHostAndServicesSummaryStatu
                 };
 
                 if($scope.additionalFilterKeys.indexOf(key) >= 0){
-                    params[$scope.additionalFilters[key]] = 1;
+                    if(Array.isArray($scope.additionalFilters[key])){
+                        for(var filterArrayKey in $scope.additionalFilters[key]){
+                            params[$scope.additionalFilters[key][filterArrayKey]] = 1;
+                        }
+                    } else {
+                        params[$scope.additionalFilters[key]] = 1;
+                    }
                 }
 
                 if(asString){

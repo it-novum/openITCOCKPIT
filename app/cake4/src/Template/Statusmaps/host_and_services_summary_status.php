@@ -93,22 +93,22 @@
                                 <td></td>
 
                                 <th class="text-center font-xs">
-                                    <div class="label label-table label-success"><?php echo __('ok'); ?></div>
+                                    <div class="label label-table label-success"><?php echo __('Ok'); ?></div>
                                 </th>
                                 <th class="text-center font-xs">
-                                    <div class="label label-table label-warning"><?php echo __('warning'); ?></div>
+                                    <div class="label label-table label-warning"><?php echo __('Warning'); ?></div>
                                 </th>
                                 <th class="text-center font-xs">
-                                    <div class="label label-table label-danger"><?php echo __('critical'); ?></div>
+                                    <div class="label label-table label-danger"><?php echo __('Critical'); ?></div>
                                 </th>
                                 <th class="text-center font-xs">
-                                    <div class="label label-table label-default"><?php echo __('unknown'); ?></div>
+                                    <div class="label label-table label-default"><?php echo __('Unknown'); ?></div>
                                 </th>
                             </tr>
 
                             <tr class="font-xs" ng-repeat="(key, state) in serviceStateSummary" ng-if="key !== 'total'">
                                 <th>
-                                    {{key}}
+                                    {{key | underscoreless | capitalizeFirstLetter}}
                                 </th>
                                 <td class="text-center" ng-repeat="counter in [0,1,2,3]">
 
@@ -117,12 +117,12 @@
                                         if ($this->Acl->hasPermission('index', 'services')): ?>
                                             <a class="cursor-pointer" ng-click="goToState(key, counter, host.hostId)">
                                                 {{state[counter]}}&nbsp;
-                                                ({{state[counter]/serviceStateSummary.total*100}})
+                                                ({{state[counter]/serviceStateSummary.total*100|number : 1}}%)
                                             </a>
                                         <?php
                                         else: ?>
                                             {{state[counter]}}&nbsp;
-                                            ({{state[counter]/serviceStateSummary.total*100}})
+                                            ({{state[counter]/serviceStateSummary.total*100|number : 1}}%)
                                         <?php endif; ?>
                                     </div>
                                     <div ng-show="!state[counter] || state[counter] <= 0">
