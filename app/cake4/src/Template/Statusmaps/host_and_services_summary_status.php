@@ -117,12 +117,12 @@
                                         if ($this->Acl->hasPermission('index', 'services')): ?>
                                             <a class="cursor-pointer" ng-click="goToState(key, counter, host.hostId)">
                                                 {{state[counter]}}&nbsp;
-                                                ({{state[counter]/serviceStateSummary.total*100}})
+                                                ({{state[counter]/serviceStateSummary.total*100|number : 1}}%)
                                             </a>
                                         <?php
                                         else: ?>
                                             {{state[counter]}}&nbsp;
-                                            ({{state[counter]/serviceStateSummary.total*100}})
+                                            ({{state[counter]/serviceStateSummary.total*100|number : 1}}%)
                                         <?php endif; ?>
                                     </div>
                                     <div ng-show="!state[counter] || state[counter] <= 0">
