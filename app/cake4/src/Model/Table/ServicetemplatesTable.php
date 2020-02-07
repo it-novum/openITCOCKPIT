@@ -398,6 +398,14 @@ class ServicetemplatesTable extends Table {
     }
 
     /**
+     * @param string $uuid
+     * @return bool
+     */
+    public function existsByUuid(string $uuid) {
+        return $this->exists(['Servicetemplates.uuid' => $uuid]);
+    }
+
+    /**
      * @param ServicetemplateFilter $ServicetemplateFilter
      * @param null|PaginateOMat $PaginateOMat
      * @param array $MY_RIGHTS
