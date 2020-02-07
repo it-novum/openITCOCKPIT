@@ -51,7 +51,6 @@ use itnovum\openITCOCKPIT\Core\Reports\StatehistoryConverter;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
-use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Downtime;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
@@ -227,7 +226,6 @@ class InstantreportsController extends AppController {
         $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
         $reportData = [];
-        $reportDetails = [];
         /** @var $InstantreportsTable InstantreportsTable */
         $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
         $MY_RIGHTS = [];
@@ -282,6 +280,7 @@ class InstantreportsController extends AppController {
             'name'       => $instantReport->get('name'),
             'evaluation' => $instantReport->get('evaluation'),
             'type'       => $instantReport->get('type'),
+            'summary'    => $instantReport->get('summary'),
             'totalTime'  => $totalTime,
             'from'       => $UserTime->format($fromDate),
             'to'         => $UserTime->format($toDate)
@@ -583,335 +582,68 @@ class InstantreportsController extends AppController {
                 }
             }
         }
-        $reportData = [
-            'hosts'         => $reportData,
-            'reportDetails' => $reportDetails
-        ];
+        $reportData['hosts'] = $reportData;
+        if ($instantReport->get('summary') === 1) {
+            $hostsReportData = [];
+            $servicesReportData = [];
+            $reportSummaryData = [
+                'summary_hosts'    => null,
+                'summary_services' => null
 
+            ];
 
-        return $reportData;
-
-        return;
-        $instantReportDetails['onlyHosts'] = ($instantReport['Instantreport']['evaluation'] == 1);
-        $instantReportDetails['onlyServices'] = ($instantReport['Instantreport']['evaluation'] == 3);
-        $instantReportDetails['summary'] = $instantReport['Instantreport']['summary'];
-        $instantReportDetails['name'] = $instantReport['Instantreport']['name'];
-        $instantReportData = [];
-        $allHostsServices = $this->getAllHostsServices($instantReport);
-        if (!empty($allHostsServices['Hosts']) || !empty($allHostsServices['Services'])) {
-            $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-            $timeperiod = $TimeperiodsTable->find()
-                ->where(['id' => $instantReport['Instantreport']['timeperiod_id']])
-                ->contain('TimeperiodTimeranges')
-                ->first()
-                ->toArray();
-            $timeSlicesGlobal = Hash::insert(
-                $this->Instantreport->createDateRanges(
-                    $baseStartDate,
-                    $baseEndDate,
-                    $timeperiod['timeperiod_timeranges']),
-                '{n}.is_downtime', false
-            );
-
-            //Default time slices (no downtimes in report)
-            if ($instantReport['Instantreport']['downtimes'] !== '1') {
-                $timeSlices = $timeSlicesGlobal;
-            }
-
-
-            $startDateSqlFormat = date('Y-m-d H:i:s', strtotime($startDate));
-            $endDateSqlFormat = date('Y-m-d H:i:s', strtotime($endDate));
-
-            $globalDowntimes = [];
-
-            if ($instantReport['Instantreport']['downtimes'] === '1') {
-                /** @var $SystemfailuresTable SystemfailuresTable */
-                $SystemfailuresTable = TableRegistry::getTableLocator()->get('Systemfailures');
-
-                $globalDowntimes = $SystemfailuresTable->getSystemfailuresForReporting(
-                    strtotime($startDate),
-                    strtotime($endDate)
-                );
-
-                $globalDowntimes = ['Systemfailure' => Hash::extract($globalDowntimes, '{n}.Systemfailure')];
-            }
-
-            $totalTime = Hash::apply(Hash::map($timeSlicesGlobal, '{n}', ['Instantreport', 'calculateTotalTime']), '{n}', 'array_sum');
-            $instantReportDetails['totalTime'] = $totalTime;
-
-            foreach ($allHostsServices['Hosts'] as $hostUuid => $name) {
-                //Process conditions
-                $Conditions = new StatehistoryHostConditions();
-                $Conditions->setOrder(['StatehistoryHost.state_time' => 'asc']);
-
-                if ($instantReport['Instantreport']['reflection'] == Instantreport::STATE_HARD_ONLY) {
-                    $StateTypes = new StateTypes();
-                    $StateTypes->setStateType(1, true);
-                    $Conditions->setStateTypes($StateTypes);
+            foreach ($reportData['hosts'] as $reportHostData) {
+                if (!empty($reportHostData['Host']['reportData'])) {
+                    $hostsReportData[] = [
+                        $reportHostData['Host']['reportData'][0],
+                        $reportHostData['Host']['reportData'][1],
+                        $reportHostData['Host']['reportData'][2]
+                    ];
                 }
-                $Conditions->setFrom(strtotime($startDate));
-                $Conditions->setTo(strtotime($endDate));
-                $Conditions->setHostUuid($hostUuid);
-                $Conditions->setUseLimit(false);
-
-                //Query state history records for hosts
-                $query = $this->StatehistoryHost->getQuery($Conditions);
-                $statehistories = $this->StatehistoryHost->find('all', $query);
-                $all_statehistories[$hostUuid] = [];
-                foreach ($statehistories as $statehistory) {
-                    $StatehistoryHost = new StatehistoryHost($statehistory['StatehistoryHost']);
-                    $all_statehistories[$hostUuid]['Statehistory'][] = $StatehistoryHost->toArray();
-                }
-
-                if (empty($all_statehistories[$hostUuid]['Statehistory'])) {
-                    //Host has no state history record for selected time range
-                    //Get last available state history record for this host
-                    $query = $this->StatehistoryHost->getLastRecord($Conditions);
-                    $record = $this->StatehistoryHost->find('first', $query);
-                    if (!empty($record)) {
-                        $record['StatehistoryHost']['state_time'] = $startDateSqlFormat;
-                        $StatehistoryHost = new StatehistoryHost($record['StatehistoryHost']);
-                        $all_statehistories[$hostUuid]['Statehistory'][] = $StatehistoryHost->toArray();
-                    }
-                }
-
-
-                if ($instantReport['Instantreport']['downtimes'] == '1') {
-                    //Query downtime records for hosts
-                    $DowntimeHostConditions = new DowntimeHostConditions();
-                    $DowntimeHostConditions->setOrder(['DowntimeHost.scheduled_start_time' => 'asc']);
-                    $DowntimeHostConditions->setFrom(strtotime($startDate));
-                    $DowntimeHostConditions->setTo(strtotime($endDate));
-                    $DowntimeHostConditions->setHostUuid($hostUuid);
-
-
-                    $query = $this->DowntimeHost->getQueryForReporting($DowntimeHostConditions);
-                    $downtimes = $this->DowntimeHost->find('all', $query);
-
-                    //Merge monitoring downtimes with openITCOCKPIT system failures
-                    $downtimes = $this->Instantreport->mergeDowntimesWithSystemfailures(
-                        'DowntimeHost',
-                        $downtimes,
-                        $globalDowntimes['Systemfailure']
-                    );
-
-
-                    $downtimesAndSystemfailures = [];
-                    foreach ($downtimes as $downtime) {
-                        $DowntimeHost = new Downtime($downtime['DowntimeHost']);
-                        $downtimesAndSystemfailures[] = [
-                            'DowntimeHost' => $DowntimeHost->toArray()
-                        ];
-                    }
-
-                    $timeSlices = $timeSlicesGlobal; //Default time slice if no downtime will be found
-                    if (!empty($downtimesAndSystemfailures)) {
-                        $downtimesFiltered = $this->Instantreport->mergeTimeOverlapping(
-                            array_map(
-                                function ($downtime) {
-                                    return [
-                                        'start_time' => $downtime['DowntimeHost']['scheduledStartTime'],
-                                        'end_time'   => $downtime['DowntimeHost']['scheduledEndTime'],
-                                    ];
-                                },
-                                $downtimesAndSystemfailures
-                            )
-                        );
-                        $timeSlices = $this->Instantreport->setDowntimesInTimeslices(
-                            $timeSlicesGlobal,
-                            $downtimesFiltered
-                        );
-                        unset($downtimesFiltered);
-                    }
-                }
-                $stateHistoryWithObject[$hostUuid] = $all_statehistories[$hostUuid];
-
-                if (!empty($stateHistoryWithObject)) {
-                    $instantReportData['Hosts'][$hostUuid] = $this->Instantreport->generateInstantreportData(
-                        $timeSlices,
-                        $stateHistoryWithObject,
-                        $instantReport['Instantreport']['reflection'] == Instantreport::STATE_HARD_ONLY,
-                        true
-                    );
-                    $instantReportData['Hosts'][$hostUuid]['Host']['name'] = $name;
-
-                    unset($stateHistoryWithObject);
-                } else {
-                    $instantReportData['Hosts'][$hostUuid]['HostsNotMonitored'] = $this->Host->find('list', [
-                        'conditions' => [
-                            'Host.uuid' => $hostUuid,
-                        ],
-                    ]);
-                }
-            }
-            foreach ($allHostsServices['Services'] as $hostUuid => $services) {
-                foreach ($services as $serviceUuid => $name) {
-                    //Process conditions
-                    $Conditions = new StatehistoryServiceConditions();
-                    $Conditions->setOrder(['StatehistoryService.state_time' => 'asc']);
-
-                    if ($instantReport['Instantreport']['reflection'] == Instantreport::STATE_HARD_ONLY) {
-                        $StateTypes = new StateTypes();
-                        $StateTypes->setStateType(1, true);
-                        $Conditions->setStateTypes($StateTypes);
-                    }
-                    $Conditions->setFrom(strtotime($startDate));
-                    $Conditions->setTo(strtotime($endDate));
-                    $Conditions->setServiceUuid($serviceUuid);
-                    $Conditions->setUseLimit(false);
-
-                    //Query state history records for services
-                    $query = $this->StatehistoryService->getQuery($Conditions);
-                    $statehistories = $this->StatehistoryService->find('all', $query);
-
-                    $all_statehistories[$serviceUuid] = [];
-                    foreach ($statehistories as $statehistory) {
-                        $StatehistoryService = new StatehistoryService($statehistory['StatehistoryService']);
-                        $all_statehistories[$serviceUuid]['Statehistory'][] = $StatehistoryService->toArray();
-                    }
-
-                    if (empty($all_statehistories[$serviceUuid]['Statehistory'])) {
-                        //Service has no state history record for selected time range
-                        //Get last available state history record for this service
-                        $query = $this->StatehistoryService->getLastRecord($Conditions);
-                        $record = $this->StatehistoryService->find('first', $query);
-                        if (!empty($record)) {
-                            $record['StatehistoryService']['state_time'] = $startDateSqlFormat;
-                            $StatehistoryService = new StatehistoryService($record['StatehistoryService']);
-                            $all_statehistories[$serviceUuid]['Statehistory'][] = $StatehistoryService->toArray();
-                        }
-                    }
-
-
-                    if ($instantReport['Instantreport']['downtimes'] == '1') {
-                        //Query downtime records for hosts
-                        $DowntimeServiceConditions = new DowntimeServiceConditions();
-                        $DowntimeServiceConditions->setOrder(['DowntimeService.scheduled_start_time' => 'asc']);
-                        $DowntimeServiceConditions->setFrom(strtotime($startDate));
-                        $DowntimeServiceConditions->setTo(strtotime($endDate));
-                        $DowntimeServiceConditions->setServiceUuid($serviceUuid);
-
-
-                        $query = $this->DowntimeService->getQueryForReporting($DowntimeServiceConditions);
-                        $downtimes = $this->DowntimeService->find('all', $query);
-
-                        //Merge monitoring downtimes with openITCOCKPIT system failures
-                        $downtimes = $this->Instantreport->mergeDowntimesWithSystemfailures(
-                            'DowntimeService',
-                            $downtimes,
-                            $globalDowntimes['Systemfailure']
-                        );
-
-
-                        $downtimesAndSystemfailures = [];
-                        foreach ($downtimes as $downtime) {
-                            $DowntimeService = new Downtime($downtime['DowntimeService']);
-                            $downtimesAndSystemfailures[] = [
-                                'DowntimeService' => $DowntimeService->toArray()
+                if (!empty($reportHostData['Host']['Services'])) {
+                    foreach ($reportHostData['Host']['Services'] as $serviceData) {
+                        if (!empty($serviceData['Service']['reportData'])) {
+                            $servicesReportData[] = [
+                                $serviceData['Service']['reportData'][0],
+                                $serviceData['Service']['reportData'][1],
+                                $serviceData['Service']['reportData'][2],
+                                $serviceData['Service']['reportData'][3],
                             ];
                         }
-
-                        $timeSlices = $timeSlicesGlobal;
-                        if (!empty($downtimesAndSystemfailures)) {
-                            $downtimesFiltered = $this->Instantreport->mergeTimeOverlapping(
-                                array_map(
-                                    function ($downtime) {
-                                        return [
-                                            'start_time' => $downtime['DowntimeService']['scheduledStartTime'],
-                                            'end_time'   => $downtime['DowntimeService']['scheduledEndTime'],
-                                        ];
-                                    },
-                                    $downtimesAndSystemfailures
-                                )
-                            );
-                            $timeSlices = $this->Instantreport->setDowntimesInTimeslices(
-                                $timeSlicesGlobal,
-                                $downtimesFiltered
-                            );
-                            unset($downtimesFiltered);
-                        }
                     }
-                    $stateHistoryWithObject[$serviceUuid] = $all_statehistories[$serviceUuid];
-
-                    if (!empty($stateHistoryWithObject)) {
-                        $instantReportData['Hosts'][$hostUuid]['Services'][$serviceUuid] = $this->Instantreport->generateInstantreportData(
-                            $timeSlices,
-                            $stateHistoryWithObject,
-                            $instantReport['Instantreport']['reflection'] == Instantreport::STATE_HARD_ONLY,
+                }
+            }
+            if (!empty($hostsReportData)) {
+                $stateSummary = StatehistoryConverter::hostStateSummary($hostsReportData);
+                $reportSummaryData['summary_hosts'] = [
+                    'reportData' => [
+                        $stateSummary,
+                        'percentage' => StatehistoryConverter::getPercentageValues(
+                            $stateSummary,
+                            array_sum($stateSummary),
+                            true
+                        )
+                    ]
+                ];
+            }
+            if (!empty($servicesReportData)) {
+                $stateSummary = StatehistoryConverter::serviceStateSummary($servicesReportData);
+                $reportSummaryData['summary_services'] = [
+                    'reportData' => [
+                        $stateSummary,
+                        'percentage' => StatehistoryConverter::getPercentageValues(
+                            $stateSummary,
+                            array_sum($stateSummary),
                             false
-                        );
-                        $instantReportData['Hosts'][$hostUuid]['Services'][$serviceUuid]['Service']['name'] = $name;
-
-                        unset($stateHistoryWithObject);
-                    } else {
-                        $instantReportService = $this->Service->find('first', [
-                            'recursive'  => -1,
-                            'contain'    => [
-                                'Host'            => [
-                                    'fields' => [
-                                        'Host.uuid',
-                                        'Host.name'
-                                    ]
-                                ],
-                                'Servicetemplate' => [
-                                    'fields' => 'Servicetemplate.name',
-                                ],
-                            ],
-                            'conditions' => [
-                                'Service.uuid' => $serviceUuid,
-                            ],
-                            'fields'     => [
-                                'Service.name',
-                            ],
-                        ]);
-                        $instantReportData['Hosts'][$instantReportService['Host']['uuid']]['Services']['ServicesNotMonitored'][$serviceUuid] = $instantReportService;
-                    }
-                }
+                        )
+                    ]
+                ];
             }
+            $reportData = [];
         }
 
-        if ($reportFormat == Instantreport::FORMAT_PDF) {
-            if (empty($this->cronFromDate)) {
-                $this->Session->write('instantReportData', $instantReportData);
-                $this->Session->write('instantReportDetails', $instantReportDetails);
-                $this->redirect([
-                    'action' => 'createPdfReport',
-                    'ext'    => 'pdf',
-                ]);
-            } else {
-                $binary_path = '/usr/bin/wkhtmltopdf';
-                if (file_exists('/usr/local/bin/wkhtmltopdf')) {
-                    $binary_path = '/usr/local/bin/wkhtmltopdf';
-                }
-                $CakePdf = new CakePdf([
-                    'engine'             => 'CakePdf.WkHtmlToPdf',
-                    'margin'             => [
-                        'bottom' => 15,
-                        'left'   => 0,
-                        'right'  => 0,
-                        'top'    => 15,
-                    ],
-                    'encoding'           => 'UTF-8',
-                    'download'           => false,
-                    'binary'             => $binary_path,
-                    'orientation'        => 'portrait',
-                    'filename'           => sprintf('InstantReport_%s.pdf', $instantReport['Instantreport']['name']),
-                    'no-pdf-compression' => '*',
-                    'image-dpi'          => '900',
-                    'background'         => true,
-                    'no-background'      => false,
-                ]);
-
-                $CakePdf->_engineClass->binary = $binary_path;
-                $CakePdf->viewVars(['instantReportData' => $instantReportData, 'instantReportDetails' => $instantReportDetails]);
-                $CakePdf->template('create_pdf_report');
-                $pdf = $CakePdf->write($this->cronPdfName);
-
-            }
-        } else {
-            $this->set(compact(['instantReportData', 'instantReportDetails']));
-            $this->render('/Elements/load_instant_report_data');
-        }
+        $reportData['reportDetails'] = array_merge($reportDetails, $reportSummaryData);
+        return $reportData;
     }
 
 

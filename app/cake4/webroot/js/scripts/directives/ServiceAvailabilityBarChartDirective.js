@@ -3,11 +3,14 @@ angular.module('openITCOCKPIT').directive('serviceAvailabilityBarChart', functio
         restrict: 'E',
         templateUrl: '/instantreports/serviceAvailabilityBarChart.html',
         scope: {
-            'data': '='
+            'data': '=',
+            'chartId': '='
         },
         controller: function($scope){
+            console.log('Host');
+            console.log($scope);
             $timeout(function(){
-                var paper = Raphael('serviceBarChart-' + $scope.data.id)
+                var paper = Raphael('serviceBarChart-' + $scope.chartId)
                     .hbarchart(3, 4, 350, 26, [
                         [$scope.data.reportData[0]],
                         [$scope.data.reportData[1]],
