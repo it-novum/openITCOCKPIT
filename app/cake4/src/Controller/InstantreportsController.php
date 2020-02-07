@@ -295,149 +295,158 @@ class InstantreportsController extends AppController {
                 $toDate
             );
         }
+        $evalutionTypes = [
+            'only_hosts'        => 1,
+            'host_and_services' => 2,
+            'only_services'     => 3
+        ];
 
         $instantReportObjects['Hosts'] = Hash::sort($instantReportObjects['Hosts'], '{n}.name', 'ASC');
         foreach ($instantReportObjects['Hosts'] as $hostId => $instantReportHostData) {
-            if ($instantReport->get('downtimes') === 1) {
-                $DowntimeHostConditions = new DowntimeHostConditions();
-                $DowntimeHostConditions->setFrom($fromDate);
-                $DowntimeHostConditions->setTo($toDate);
-                $DowntimeHostConditions->setContainerIds($this->MY_RIGHTS);
-                $DowntimeHostConditions->includeCancelledDowntimes(false);
-                $DowntimeHostConditions->setOrder(['DowntimeHosts.scheduled_start_time' => 'ASC']);
-                $DowntimeHostConditions->setHostUuid($instantReportHostData['uuid']);
-                /** @var DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable */
-                $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
-                $instantReportObjects['Hosts'][$hostId]['downtimes'] = $DowntimehistoryHostsTable->getDowntimesForReporting(
-                    $DowntimeHostConditions
-                );
-                $hostDowntimeFormatted = [];
-                /** @var  $hostDowntimeObject DowntimeHost */
-                foreach ($instantReportObjects['Hosts'][$hostId]['downtimes'] as $hostDowntimeObject) {
-                    $hostDowntimeFormatted[] = [
-                        'DowntimeHost' => [
-                            'id'                   => $hostDowntimeObject->get('downtimehistory_id'),
-                            'author_name'          => $hostDowntimeObject->get('author_name'),
-                            'scheduled_start_time' => $hostDowntimeObject->get('scheduled_start_time')->i18nFormat(Time::UNIX_TIMESTAMP_FORMAT),
-                            'scheduled_end_time'   => $hostDowntimeObject->get('scheduled_end_time')->i18nFormat(Time::UNIX_TIMESTAMP_FORMAT),
-                            'comment_data'         => $hostDowntimeObject->get('comment_data'),
-                            'was_started'          => true,
-                            'was_cancelled'        => false
-                        ]
-                    ];
-                }
-                /** @var  $downtimes DowntimesMerger */
-                $downtimes = DowntimesMerger::mergeDowntimesWithSystemfailures(
-                    'DowntimeHost',
-                    $hostDowntimeFormatted,
-                    $globalDowntimes
-                );
-                $downtimesAndSystemfailures = [];
-                foreach ($downtimes as $downtime) {
-                    $DowntimeHost = new Downtime($downtime['DowntimeHost']);
-                    $downtimesAndSystemfailures[] = [
-                        'DowntimeHost' => $DowntimeHost->toArray()
-                    ];
-                }
-
-                $downtimesFiltered = DaterangesCreator::mergeTimeOverlapping(
-                    array_map(
-                        function ($downtime) {
-                            return [
-                                'start_time' => $downtime['DowntimeHost']['scheduledStartTime'],
-                                'end_time'   => $downtime['DowntimeHost']['scheduledEndTime'],
-                            ];
-                        },
-                        $downtimesAndSystemfailures
-                    )
-                );
-
-
-                $timeSlices = DaterangesCreator::setDowntimesInTimeslices(
-                    $timeSlices,
-                    $downtimesFiltered
-                );
-            }
-            //Process conditions
-            /** @var $StatehistoryHostConditions StatehistoryHostConditions */
-            $StatehistoryHostConditions = new StatehistoryHostConditions();
-            $StatehistoryHostConditions->setOrder(['StatehistoryHosts.state_time' => 'asc']);
-            if ($instantReport->get('reflection') === 2) { // type 2 hard state only
-                $StatehistoryHostConditions->setHardStateTypeAndUpState(true); // 1 => Hard State
-            }
-            $StatehistoryHostConditions->setFrom($fromDate);
-            $StatehistoryHostConditions->setTo($toDate);
-            $StatehistoryHostConditions->setHostUuid($instantReportHostData['uuid']);
-
-            /** @var StatehistoryHostsTable $StatehistoryHostsTable */
-            $StatehistoryHostsTable = $this->DbBackend->getStatehistoryHostsTable();
-
-            /** @var \Statusengine2Module\Model\Entity\StatehistoryHost[] $statehistoriesHost */
-            $statehistoriesHost = $StatehistoryHostsTable->getStatehistoryIndex($StatehistoryHostConditions);
-
-            if (empty($statehistoriesHost)) {
-                $record = $StatehistoryHostsTable->getLastRecord($StatehistoryHostConditions);
-                if (!empty($record)) {
-                    $statehistoriesHost[] = $record->set('state_time', $fromDate);
-                }
-            }
-
-            if (empty($statehistoriesHost)) {
-                $HoststatusTable = $this->DbBackend->getHoststatusTable();
-                $HoststatusFields = new HoststatusFields($this->DbBackend);
-                $HoststatusFields
-                    ->currentState()
-                    ->lastHardState()
-                    ->isHardstate()
-                    ->lastStateChange();
-                $hoststatus = $HoststatusTable->byUuid($instantReportHostData['uuid'], $HoststatusFields);
-                if (!empty($hoststatus)) {
-                    /** @var Hoststatus $Hoststatus */
-                    $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
-                    if ($Hoststatus->getLastStateChange() <= $fromDate) {
-                        $stateHistoryHostTmp = [
-                            'StatehistoryHost' => [
-                                'state_time'      => $fromDate,
-                                'state'           => $Hoststatus->currentState(),
-                                'last_state'      => $Hoststatus->currentState(),
-                                'last_hard_state' => $Hoststatus->getLastHardState(),
-                                'state_type'      => (int)$Hoststatus->isHardState()
-                            ]
-                        ];
-
-                        /** @var StatehistoryHost $StatehistoryHost */
-                        $StatehistoryHost = new StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
-                        $statehistoriesHost[] = $StatehistoryHost;
-                    }
-                }
-            }
-
-            foreach ($statehistoriesHost as $statehistoryHost) {
-                /** @var StatehistoryHostsTable|StatehistoryHost $statehistoryHost */
-                $StatehistoryHost = new StatehistoryHost($statehistoryHost->toArray());
-                $allStatehistories[] = $StatehistoryHost->toArray();
-            }
-
             $hostUuid = $instantReportHostData['uuid'];
 
-            $reportData[$hostUuid]['Host'] = [
-                'id'   => $instantReportHostData['id'],
-                'name' => $instantReportHostData['name']
-            ];
-            $reportData[$hostUuid]['Host']['reportData'] = StatehistoryConverter::generateReportData(
-                $timeSlices,
-                $allStatehistories,
-                ($instantReport->get('reflection') === 2),
-                true,
-                $totalTime
-            );
+            if ($reportDetails['evaluation'] !== $evalutionTypes['only_services'] ||
+                ($reportDetails['evaluation'] === $evalutionTypes['only_services'] && !empty($instantReportHostData['Services']))) {
+                $reportData[$hostUuid]['Host'] = [
+                    'id'   => $instantReportHostData['id'],
+                    'name' => $instantReportHostData['name']
+                ];
+            }
+            if ($reportDetails['evaluation'] !== $evalutionTypes['only_services']) {
+                if ($instantReport->get('downtimes') === 1) {
+                    $DowntimeHostConditions = new DowntimeHostConditions();
+                    $DowntimeHostConditions->setFrom($fromDate);
+                    $DowntimeHostConditions->setTo($toDate);
+                    $DowntimeHostConditions->setContainerIds($this->MY_RIGHTS);
+                    $DowntimeHostConditions->includeCancelledDowntimes(false);
+                    $DowntimeHostConditions->setOrder(['DowntimeHosts.scheduled_start_time' => 'ASC']);
+                    $DowntimeHostConditions->setHostUuid($instantReportHostData['uuid']);
+                    /** @var DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable */
+                    $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
+                    $instantReportObjects['Hosts'][$hostId]['downtimes'] = $DowntimehistoryHostsTable->getDowntimesForReporting(
+                        $DowntimeHostConditions
+                    );
+                    $hostDowntimeFormatted = [];
+                    /** @var  $hostDowntimeObject DowntimeHost */
+                    foreach ($instantReportObjects['Hosts'][$hostId]['downtimes'] as $hostDowntimeObject) {
+                        $hostDowntimeFormatted[] = [
+                            'DowntimeHost' => [
+                                'id'                   => $hostDowntimeObject->get('downtimehistory_id'),
+                                'author_name'          => $hostDowntimeObject->get('author_name'),
+                                'scheduled_start_time' => $hostDowntimeObject->get('scheduled_start_time')->i18nFormat(Time::UNIX_TIMESTAMP_FORMAT),
+                                'scheduled_end_time'   => $hostDowntimeObject->get('scheduled_end_time')->i18nFormat(Time::UNIX_TIMESTAMP_FORMAT),
+                                'comment_data'         => $hostDowntimeObject->get('comment_data'),
+                                'was_started'          => true,
+                                'was_cancelled'        => false
+                            ]
+                        ];
+                    }
+                    /** @var  $downtimes DowntimesMerger */
+                    $downtimes = DowntimesMerger::mergeDowntimesWithSystemfailures(
+                        'DowntimeHost',
+                        $hostDowntimeFormatted,
+                        $globalDowntimes
+                    );
+                    $downtimesAndSystemfailures = [];
+                    foreach ($downtimes as $downtime) {
+                        $DowntimeHost = new Downtime($downtime['DowntimeHost']);
+                        $downtimesAndSystemfailures[] = [
+                            'DowntimeHost' => $DowntimeHost->toArray()
+                        ];
+                    }
 
-            $reportData[$hostUuid]['Host']['reportData']['percentage'] = StatehistoryConverter::getPercentageValues(
-                $reportData[$hostUuid]['Host']['reportData'],
-                $totalTime,
-                true
-            );
+                    $downtimesFiltered = DaterangesCreator::mergeTimeOverlapping(
+                        array_map(
+                            function ($downtime) {
+                                return [
+                                    'start_time' => $downtime['DowntimeHost']['scheduledStartTime'],
+                                    'end_time'   => $downtime['DowntimeHost']['scheduledEndTime'],
+                                ];
+                            },
+                            $downtimesAndSystemfailures
+                        )
+                    );
 
+
+                    $timeSlices = DaterangesCreator::setDowntimesInTimeslices(
+                        $timeSlices,
+                        $downtimesFiltered
+                    );
+                }
+                //Process conditions
+                /** @var $StatehistoryHostConditions StatehistoryHostConditions */
+                $StatehistoryHostConditions = new StatehistoryHostConditions();
+                $StatehistoryHostConditions->setOrder(['StatehistoryHosts.state_time' => 'asc']);
+                if ($instantReport->get('reflection') === 2) { // type 2 hard state only
+                    $StatehistoryHostConditions->setHardStateTypeAndUpState(true); // 1 => Hard State
+                }
+                $StatehistoryHostConditions->setFrom($fromDate);
+                $StatehistoryHostConditions->setTo($toDate);
+                $StatehistoryHostConditions->setHostUuid($instantReportHostData['uuid']);
+
+                /** @var StatehistoryHostsTable $StatehistoryHostsTable */
+                $StatehistoryHostsTable = $this->DbBackend->getStatehistoryHostsTable();
+
+                /** @var \Statusengine2Module\Model\Entity\StatehistoryHost[] $statehistoriesHost */
+                $statehistoriesHost = $StatehistoryHostsTable->getStatehistoryIndex($StatehistoryHostConditions);
+
+                if (empty($statehistoriesHost)) {
+                    $record = $StatehistoryHostsTable->getLastRecord($StatehistoryHostConditions);
+                    if (!empty($record)) {
+                        $statehistoriesHost[] = $record->set('state_time', $fromDate);
+                    }
+                }
+
+                if (empty($statehistoriesHost)) {
+                    $HoststatusTable = $this->DbBackend->getHoststatusTable();
+                    $HoststatusFields = new HoststatusFields($this->DbBackend);
+                    $HoststatusFields
+                        ->currentState()
+                        ->lastHardState()
+                        ->isHardstate()
+                        ->lastStateChange();
+                    $hoststatus = $HoststatusTable->byUuid($instantReportHostData['uuid'], $HoststatusFields);
+                    if (!empty($hoststatus)) {
+                        /** @var Hoststatus $Hoststatus */
+                        $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
+                        if ($Hoststatus->getLastStateChange() <= $fromDate) {
+                            $stateHistoryHostTmp = [
+                                'StatehistoryHost' => [
+                                    'state_time'      => $fromDate,
+                                    'state'           => $Hoststatus->currentState(),
+                                    'last_state'      => $Hoststatus->currentState(),
+                                    'last_hard_state' => $Hoststatus->getLastHardState(),
+                                    'state_type'      => (int)$Hoststatus->isHardState()
+                                ]
+                            ];
+
+                            /** @var StatehistoryHost $StatehistoryHost */
+                            $StatehistoryHost = new StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
+                            $statehistoriesHost[] = $StatehistoryHost;
+                        }
+                    }
+                }
+
+                foreach ($statehistoriesHost as $statehistoryHost) {
+                    /** @var StatehistoryHostsTable|StatehistoryHost $statehistoryHost */
+                    $StatehistoryHost = new StatehistoryHost($statehistoryHost->toArray());
+                    $allStatehistories[] = $StatehistoryHost->toArray();
+                }
+
+
+                $reportData[$hostUuid]['Host']['reportData'] = StatehistoryConverter::generateReportData(
+                    $timeSlices,
+                    $allStatehistories,
+                    ($instantReport->get('reflection') === 2),
+                    true
+                );
+
+                $reportData[$hostUuid]['Host']['reportData']['percentage'] = StatehistoryConverter::getPercentageValues(
+                    $reportData[$hostUuid]['Host']['reportData'],
+                    $totalTime,
+                    true
+                );
+            }
             if (!empty($instantReportHostData['Services'])) {
                 $instantReportHostData['Services'] = Hash::sort($instantReportHostData['Services'], '{n}.name', 'ASC');
                 foreach ($instantReportHostData['Services'] as $serviceId => $service) {

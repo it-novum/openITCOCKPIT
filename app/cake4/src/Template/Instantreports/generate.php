@@ -161,7 +161,7 @@
                                     </h2>
                                 </header>
                                 <div class="widget-body">
-                                    <div class="row">
+                                    <div class="row" ng-if="report.Host.reportData">
                                         <div class="col col-md-12 padding-2">
                                             <host-availability-pie-chart data="report"></host-availability-pie-chart>
                                         </div>
@@ -177,7 +177,7 @@
                                                 {{service.Service.name}}
                                             <?php endif; ?>
                                         </div>
-                                        <div class="col col-md-12 no-padding">
+                                        <div class="col col-md-12 no-padding" ng-if="service.Service.reportData">
                                             <div class="col col-lg-3 col-md-12 col-sm-12 col-xs-12 no-padding">
                                                 <service-availability-bar-chart
                                                     data="service.Service"></service-availability-bar-chart>
