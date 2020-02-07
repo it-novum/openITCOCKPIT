@@ -63,7 +63,7 @@
                           ng-init="successMessage=
                         {objectName : '<?php echo __('Downtime'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
-                        <div class="form-group required" ng-class="{'has-error': errors.Systemdowntime}">
+                        <div class="form-group required" ng-class="{'has-error': errors.object_id}">
                             <label class="control-label" for="HostSelect">
                                 <?php echo __('Hosts'); ?>
                             </label>
@@ -76,7 +76,7 @@
                                 ng-options="host.key as host.value for host in hosts"
                                 ng-model="post.Systemdowntime.object_id">
                             </select>
-                            <div ng-repeat="error in errors.Systemdowntime">
+                            <div ng-repeat="error in errors.object_id">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>

@@ -30,7 +30,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="SystemdowntimesHost">
+        <a ui-sref="SystemdowntimesHostgroup">
             <i class="fa fa-history fa-flip-horizontal"></i> <?php echo __('Recurring downtimes'); ?>
         </a>
     </li>
