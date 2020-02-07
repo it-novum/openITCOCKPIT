@@ -87,27 +87,29 @@ $duration = [
 ?>
 
 
-<div class="col-xs-12 col-lg-7">
-    <div class="btn-group">
-        <?php foreach ($duration as $idurationArray): ?>
-            <button
+<div class="row">
+    <div class="col-xs-12 col-lg-6">
+        <div class="btn-group flex-wrap">
+            <?php foreach ($duration as $idurationArray): ?>
+                <button
                     type="button"
                     class="btn btn-default"
                     title="<?php echo h($idurationArray['long']); ?>"
                     ng-click="changeDuration(<?php echo h($idurationArray['duration']); ?>)"
                     ng-class="{'active': duration == <?php echo h($idurationArray['duration']); ?>}" )>
-                <?php echo h($idurationArray['short']); ?>
-            </button>
-        <?php endforeach; ?>
+                    <?php echo h($idurationArray['short']); ?>
+                </button>
+            <?php endforeach; ?>
+        </div>
     </div>
-</div>
-<div class="col-xs-12 col-lg-3">
-    <input
+    <div class="col-xs-12 col-lg-3">
+        <input
             class="form-control"
             type="number"
             placeholder="<?php echo __('Duration in minutes'); ?>"
             ng-model="duration">
-    <div class="help-block margin-bottom-0">
-        <human-time-directive seconds="duration*60"></human-time-directive>
+        <div class="help-block margin-bottom-0">
+            <human-time-directive seconds="duration*60"></human-time-directive>
+        </div>
     </div>
 </div>
