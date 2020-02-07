@@ -882,13 +882,27 @@ use Cake\Core\Plugin;
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td><?php echo __('UUID'); ?></td>
+                                                    <td><?php echo __('Host UUID'); ?></td>
+                                                    <td>
+                                                        <code>{{ host.Host.uuid }}</code>
+                                                        <span
+                                                                class="btn btn-default btn-xs"
+                                                                onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"
+                                                                title="<?php echo __('Copy to clipboard'); ?>">
+                                                            <i class="fa fa-copy"></i>
+                                                        </span>
+                                                        <input type="text" style="display:none;" id="host-uuid-copy"
+                                                               value="{{ host.Host.uuid }}"
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><?php echo __('Service UUID'); ?></td>
                                                     <td>
                                                         <code>{{ mergedService.uuid }}</code>
                                                         <span
-                                                                class="btn btn-default btn-xs"
-                                                                onclick="$('#service-uuid-copy').show().select();document.execCommand('copy');$('#service-uuid-copy').hide();"
-                                                                title="<?php echo __('Copy to clipboard'); ?>">
+                                                            class="btn btn-default btn-xs"
+                                                            onclick="$('#service-uuid-copy').show().select();document.execCommand('copy');$('#service-uuid-copy').hide();"
+                                                            title="<?php echo __('Copy to clipboard'); ?>">
                                                             <i class="fa fa-copy"></i>
                                                         </span>
                                                         <input type="text" style="display:none;" id="service-uuid-copy"

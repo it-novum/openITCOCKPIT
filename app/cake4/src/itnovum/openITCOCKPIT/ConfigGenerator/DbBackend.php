@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use Cake\Core\Configure;
+
 class DbBackend extends ConfigGenerator implements ConfigInterface {
 
     protected $templateDir = 'config';
@@ -137,8 +139,8 @@ class DbBackend extends ConfigGenerator implements ConfigInterface {
         }
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
 
-        \Configure::load('dbbackend');
-        $configFromFile = \Configure::read('dbbackend');
+        Configure::load('dbbackend');
+        $configFromFile = Configure::read('dbbackend');
 
         if ($config['string']['dbbackend'] != $configFromFile) {
             $config['string']['dbbackend'] = $configFromFile;

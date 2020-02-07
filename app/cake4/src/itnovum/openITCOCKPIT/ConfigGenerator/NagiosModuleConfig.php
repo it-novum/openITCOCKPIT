@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use Cake\Core\Configure;
+
 class NagiosModuleConfig extends ConfigGenerator implements ConfigInterface {
 
     protected $templateDir = 'config';
@@ -114,8 +116,8 @@ class NagiosModuleConfig extends ConfigGenerator implements ConfigInterface {
         }
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
 
-        \Configure::load('NagiosModule.config');
-        $configFromFile = \Configure::read('NagiosModule');
+        Configure::load('NagiosModule.config');
+        $configFromFile = Configure::read('NagiosModule');
 
         foreach ($config['int'] as $field => $value) {
             if (isset($configFromFile[$field])) {
