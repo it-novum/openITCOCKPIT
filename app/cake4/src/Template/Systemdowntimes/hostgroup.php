@@ -42,7 +42,7 @@
     </li>
 </ol>
 
-<div class="alert alert-info fade in">
+<div class="alert alert-info">
     <button data-dismiss="alert" class="close">×</button>
     <i class="fa fa-info-circle"></i>
     <strong>
