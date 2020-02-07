@@ -566,7 +566,7 @@ class MattermostNotificationCommand extends Command {
 
         if ($this->mattermostSettings['use_proxy']) {
             /** @var ProxiesTable $ProxiesTable */
-            $ProxiesTable = TableRegistry::getTableLocator()->get('ProxiesTable');
+            $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
             $proxy = $ProxiesTable->getSettings();
 
             $options['proxy'] = [
