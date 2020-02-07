@@ -284,7 +284,7 @@
                                     </label>
                                     <button class="btn btn-primary"
                                             type="submit"><?php echo __('Create host downtime'); ?></button>
-                                    <a back-button fallback-state='SystemdowntimesHost'
+                                    <a back-button fallback-state='DowntimesHost'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
                             </div>

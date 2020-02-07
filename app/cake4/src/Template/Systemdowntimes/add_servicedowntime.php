@@ -51,7 +51,7 @@
                     <span class="fw-300"><i><?php echo __('Create new service downtime'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
-                    <a back-button fallback-state='SystemdowntimesService'
+                    <a back-button fallback-state='DowntimesService'
                        class="btn btn-default btn-xs mr-1 shadow-0">
                         <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                     </a>
@@ -262,7 +262,7 @@
                                     </label>
                                     <button class="btn btn-primary"
                                             type="submit"><?php echo __('Create service downtime'); ?></button>
-                                    <a back-button fallback-state='SystemdowntimesService'
+                                    <a back-button fallback-state='DowntimesService'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
                             </div>
