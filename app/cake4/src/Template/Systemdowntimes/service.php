@@ -319,7 +319,7 @@
                                             class="btn btn-xs btn-danger"
                                             ng-if="downtime.Host.allow_edit"
                                             ng-click="confirmDelete(getObjectForDelete(downtime))">
-                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                            <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
                                         </button>
                                     <?php endif; ?>
                                 </td>
