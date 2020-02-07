@@ -3,11 +3,15 @@ angular.module('openITCOCKPIT').directive('hostAvailabilityPieChart', function($
         restrict: 'E',
         templateUrl: '/instantreports/hostAvailabilityPieChart.html',
         scope: {
-            'data': '='
+            'data': '=',
+            'chartId': '='
         },
         controller: function($scope){
+            console.log('Host');
+            console.log($scope);
+            return;
             $timeout(function(){
-                var paper = new Raphael(document.getElementById('hostPieChart-' + $scope.data.Host.id), 400, 130)
+                var paper = new Raphael(document.getElementById('hostPieChart-' + $scope.chartId), 400, 130)
                     .pielicious(100, 50, 100, {
                         data: [
                             $scope.data.Host.reportData[0],
