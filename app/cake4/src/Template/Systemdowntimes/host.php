@@ -35,7 +35,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fa fa-host"></i> <?php echo __('Host'); ?>
+        <i class="fa fa-desktop"></i> <?php echo __('Host'); ?>
     </li>
     <li class="breadcrumb-item">
         <i class="fa fa-list"></i> <?php echo __('Overview'); ?>
@@ -63,10 +63,11 @@
                     <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
-                <!-- Tabs start -->
+                    <!-- Tabs start -->
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
                         <?php if ($this->Acl->hasPermission('host', 'systemdowntimes')): ?>
-                            <li ng-class="{'active': $resolve.$$controller === 'SystemdowntimesHostController'}" class="nav-item">
+                            <li ng-class="{'active': $resolve.$$controller === 'SystemdowntimesHostController'}"
+                                class="nav-item">
                                 <a ui-sref="SystemdowntimesHost" class="nav-link active">
                                     <i class="fa fa-desktop">&nbsp;</i>
                                     <span class="hidden-mobile hidden-tablet"> <?php echo __('Host'); ?></span>
@@ -74,7 +75,8 @@
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('service', 'systemdowntimes')): ?>
-                            <li ng-class="{'active': $resolve.$$controller === 'SystemdowntimesServiceController'}" class="nav-item">
+                            <li ng-class="{'active': $resolve.$$controller === 'SystemdowntimesServiceController'}"
+                                class="nav-item">
                                 <a ui-sref="SystemdowntimesService" class="nav-link">
                                     <i class="fa fa-cog">&nbsp;</i>
                                     <span class="hidden-mobile hidden-tablet"> <?php echo __('Service'); ?></span>
@@ -82,7 +84,8 @@
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('hostgroup', 'systemdowntimes')): ?>
-                            <li ng-class="{'active': $resolve.$$controller === 'SystemdowntimesHostgroupController'}" class="nav-item">
+                            <li ng-class="{'active': $resolve.$$controller === 'SystemdowntimesHostgroupController'}"
+                                class="nav-item">
                                 <a ui-sref="SystemdowntimesHostgroup" class="nav-link">
                                     <i class="fas fa-server">&nbsp;</i>
                                     <span class="hidden-mobile hidden-tablet"> <?php echo __('Host group'); ?></span>
@@ -90,7 +93,8 @@
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('node', 'systemdowntimes')): ?>
-                            <li ng-class="{'active': $resolve.$$controller === 'SystemdowntimesNodeController'}" class="nav-item">
+                            <li ng-class="{'active': $resolve.$$controller === 'SystemdowntimesNodeController'}"
+                                class="nav-item">
                                 <a ui-sref="SystemdowntimesNode" class="nav-link">
                                     <i class="fa fa-chain">&nbsp;</i>
                                     <span class="hidden-mobile hidden-tablet"> <?php echo __('Container'); ?></span>
@@ -104,33 +108,34 @@
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
                     <div class="btn-group margin-right-5">
-                        <button class="btn btn-success btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button class="btn btn-success btn-xs dropdown-toggle" type="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-plus"></i> <?php echo __('Create downtime'); ?>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
                             <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
-                                    <a ui-sref="SystemdowntimesAddHostdowntime" class="dropdown-item">
-                                        <i class="fa fa-desktop"></i>
-                                        <?php echo __('Create host downtime'); ?>
-                                    </a>
+                                <a ui-sref="SystemdowntimesAddHostdowntime" class="dropdown-item">
+                                    <i class="fa fa-desktop"></i>
+                                    <?php echo __('Create host downtime'); ?>
+                                </a>
                             <?php endif; ?>
                             <?php if ($this->Acl->hasPermission('addServicedowntime', 'systemdowntimes')): ?>
-                                    <a ui-sref="SystemdowntimesAddServicedowntime" class="dropdown-item">
-                                        <i class="fa fa-cog"></i>
-                                        <?php echo __('Create service downtime'); ?>
-                                    </a>
+                                <a ui-sref="SystemdowntimesAddServicedowntime" class="dropdown-item">
+                                    <i class="fa fa-cog"></i>
+                                    <?php echo __('Create service downtime'); ?>
+                                </a>
                             <?php endif; ?>
                             <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
-                                    <a ui-sref="SystemdowntimesAddHostgroupdowntime" class="dropdown-item">
-                                        <i class="fa fa-sitemap"></i>
-                                        <?php echo __('Create host group downtime'); ?>
-                                    </a>
+                                <a ui-sref="SystemdowntimesAddHostgroupdowntime" class="dropdown-item">
+                                    <i class="fa fa-sitemap"></i>
+                                    <?php echo __('Create host group downtime'); ?>
+                                </a>
                             <?php endif; ?>
                             <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
-                                    <a ui-sref="SystemdowntimesAddContainerdowntime" class="dropdown-item">
-                                        <i class="fa fa-link"></i>
-                                        <?php echo __('Create container downtime'); ?>
-                                    </a>
+                                <a ui-sref="SystemdowntimesAddContainerdowntime" class="dropdown-item">
+                                    <i class="fa fa-link"></i>
+                                    <?php echo __('Create container downtime'); ?>
+                                </a>
                             <?php endif; ?>
                         </div>
                     </div>
