@@ -63,7 +63,7 @@ class Plugin extends BasePlugin
     {
         $routes->plugin(
             'NagiosModule',
-            ['path' => '/nagios-module'],
+            ['path' => '/nagios_module'],
             function (RouteBuilder $builder) {
                 // Add custom routes here
 
