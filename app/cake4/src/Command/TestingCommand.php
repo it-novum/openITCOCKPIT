@@ -41,6 +41,7 @@ use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use Cake\Core\Configure;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
@@ -87,6 +88,11 @@ class TestingCommand extends Command {
         //debug($this->Services->find()->contain(['Mkservicedata', 'Servicecommandargumentvalues'])->where([
         //    'Services.id' => 2
         //])->toArray());//, 'NewModule.Servicecommandargumentvalues']));
+
+        Configure::load('NagiosModule.config');
+        $configFromFile = Configure::read('NagiosModule');
+
+        debug($configFromFile);
 
         /**
          * Lof of space for your experimental code

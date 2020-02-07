@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use Cake\Core\Configure;
+
 class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
 
     protected $templateDir = 'config';
@@ -138,8 +140,8 @@ class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
         }
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
 
-        \Configure::load('perfdatabackend');
-        $configFromFile = \Configure::read('perfdatabackend');
+        Configure::load('perfdatabackend');
+        $configFromFile = Configure::read('perfdatabackend');
 
         if ($config['string']['perfdatabackend'] != $configFromFile) {
             $config['string']['perfdatabackend'] = $configFromFile;
