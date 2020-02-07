@@ -566,3 +566,8 @@ pre {
     border-color: #E5E5E5;
     box-shadow: none;
 }
+
+.filter-text{
+    padding-top: 4px;
+    padding-bottom: 4px;
+}

@@ -90,9 +90,9 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text"><?php echo __('From'); ?></span>
+                                                <span class="input-group-text filter-text"><?php echo __('From'); ?></span>
                                             </div>
-                                            <input type="text" class="form-control" style="padding:0.5rem 0.875rem;"
+                                            <input type="text" class="form-control form-control-sm" style="padding:0.5rem 0.875rem;"
                                                    placeholder="<?php echo __('From date'); ?>"
                                                    ng-model="filter.from"
                                                    ng-model-options="{debounce: 500}">
@@ -105,7 +105,7 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fa fa-filter"></i></span>
                                             </div>
-                                            <input type="text" class="form-control"
+                                            <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by output'); ?>"
                                                    ng-model="filter.NotificationHosts.output"
                                                    ng-model-options="{debounce: 500}">
@@ -116,9 +116,9 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text"><?php echo __('To'); ?></span>
+                                                <span class="input-group-text filter-text"><?php echo __('To'); ?></span>
                                             </div>
-                                            <input type="text" class="form-control" style="padding:0.5rem 0.875rem;"
+                                            <input type="text" class="form-control form-control-sm" style="padding:0.5rem 0.875rem;"
                                                    placeholder="<?php echo __('To date'); ?>"
                                                    ng-model="filter.to"
                                                    ng-model-options="{debounce: 500}">
@@ -131,7 +131,7 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fa fa-terminal"></i></span>
                                             </div>
-                                            <input type="text" class="form-control"
+                                            <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by notification method'); ?>"
                                                    ng-model="filter.Commands.name"
                                                    ng-model-options="{debounce: 500}">
@@ -144,7 +144,7 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fa fa-desktop"></i></span>
                                             </div>
-                                            <input type="text" class="form-control"
+                                            <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
                                                    ng-model="filter.Hosts.name"
                                                    ng-model-options="{debounce: 500}">
@@ -157,7 +157,7 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fa fa-user"></i></span>
                                             </div>
-                                            <input type="text" class="form-control"
+                                            <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by contact name'); ?>"
                                                    ng-model="filter.Contacts.name"
                                                    ng-model-options="{debounce: 500}">
