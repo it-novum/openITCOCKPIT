@@ -87,7 +87,7 @@
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': errors.enabled}">
-                            <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                            <div class="custom-control custom-checkbox  margin-bottom-10"
                                  ng-class="{'has-error': errors.enabled}">
 
                                 <input type="checkbox"

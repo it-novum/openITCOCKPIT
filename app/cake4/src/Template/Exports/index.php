@@ -68,7 +68,7 @@
             <div class="panel-container show" ng-if="gearmanReachable">
                 <div class="panel-content">
                     <div class="form-group" ng-class="{'has-error': errors.create_backup}">
-                        <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                        <div class="custom-control custom-checkbox  margin-bottom-10"
                              ng-class="{'has-error': errors.create_backup}">
 
                             <input type="checkbox"

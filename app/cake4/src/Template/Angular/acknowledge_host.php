@@ -45,7 +45,7 @@
                 <div class="row">
                     <div class="col-lg-12 margin-top-10">
 
-                        <div class="custom-control custom-checkbox custom-control-down margin-bottom-10">
+                        <div class="custom-control custom-checkbox  margin-bottom-10">
                             <input type="checkbox"
                                    name="checkbox"
                                    class="custom-control-input"

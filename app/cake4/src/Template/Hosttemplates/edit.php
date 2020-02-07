@@ -507,7 +507,7 @@
                                 </div>
 
                                 <div class="form-group" ng-class="{'has-error': errors.flap_detection_enabled}">
-                                    <div class="custom-control custom-checkbox margin-bottom-10 custom-control-down"
+                                    <div class="custom-control custom-checkbox margin-bottom-10 "
                                          ng-class="{'has-error': errors.flap_detection_enabled}">
                                         <input type="checkbox"
                                                id="flapDetectionEnabled"

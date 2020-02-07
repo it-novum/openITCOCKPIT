@@ -96,7 +96,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster;
         <legend><?php echo __('SSH configuration'); ?></legend>
 
         <div class="form-group" ng-class="{'has-error': errors.Configfile.use_ssh_tunnel}">
-            <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+            <div class="custom-control custom-checkbox  margin-bottom-10"
                  ng-class="{'has-error': errors.Configfile.use_ssh_tunnel}">
 
                 <input type="checkbox"
@@ -132,7 +132,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster;
         </div>
 
         <div class="form-group" ng-class="{'has-error': errors.Configfile.ssh_port}">
-            <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+            <div class="custom-control custom-checkbox  margin-bottom-10"
                  ng-class="{'has-error': errors.Configfile.ssh_port}">
 
                 <input type="checkbox"
@@ -326,7 +326,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster;
         <legend><?php echo __('Time synchronisation'); ?></legend>
 
         <div class="form-group" ng-class="{'has-error': errors.Configfile.synchronize_time}">
-            <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+            <div class="custom-control custom-checkbox  margin-bottom-10"
                  ng-class="{'has-error': errors.Configfile.synchronize_time}">
 
                 <input type="checkbox"

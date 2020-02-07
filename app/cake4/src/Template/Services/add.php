@@ -253,7 +253,7 @@
                                 </div>
 
                                 <div class="form-group" ng-class="{'has-error': errors.active_checks_enabled}">
-                                    <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                                    <div class="custom-control custom-checkbox  margin-bottom-10"
                                          ng-class="{'has-error': errors.active_checks_enabled}">
 
                                         <input type="checkbox"
@@ -697,7 +697,7 @@
 
 
                                 <div class="form-group" ng-class="{'has-error': errors.flap_detection_enabled}">
-                                    <div class="custom-control custom-checkbox margin-bottom-10 custom-control-down"
+                                    <div class="custom-control custom-checkbox margin-bottom-10 "
                                          ng-class="{'has-error': errors.flap_detection_enabled}">
                                         <input type="checkbox"
                                                class="custom-control-input"
@@ -759,7 +759,7 @@
 
 
                                 <div class="form-group" ng-class="{'has-error': errors.is_volatile}">
-                                    <div class="custom-control custom-checkbox margin-bottom-10 custom-control-down"
+                                    <div class="custom-control custom-checkbox margin-bottom-10 "
                                          ng-class="{'has-error': errors.is_volatile}">
                                         <input type="checkbox"
                                                class="custom-control-input"

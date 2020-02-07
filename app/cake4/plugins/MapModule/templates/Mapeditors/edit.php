@@ -406,7 +406,7 @@
 
                     <div class="row">
                         <div class="form-group col-lg-4" ng-class="{'has-error': errors.show_label}">
-                            <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                            <div class="custom-control custom-checkbox  margin-bottom-10"
                                  ng-class="{'has-error': errors.show_label}">
 
                                 <input type="checkbox"
@@ -688,7 +688,7 @@
 
                 <div class="row">
                     <div class="form-group col-lg-4" ng-class="{'has-error': errors.show_label}">
-                        <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                        <div class="custom-control custom-checkbox  margin-bottom-10"
                              ng-class="{'has-error': errors.show_label}">
 
                             <input type="checkbox"
@@ -964,7 +964,7 @@
 
                 <div class="row">
                     <div class="form-group col-lg-4" ng-class="{'has-error': errors.show_label}">
-                        <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                        <div class="custom-control custom-checkbox  margin-bottom-10"
                              ng-class="{'has-error': errors.show_label}">
 
                             <input type="checkbox"
@@ -1121,7 +1121,7 @@
 
                     <div class="row">
                         <div class="form-group col-lg-12">
-                            <div class="custom-control custom-checkbox custom-control-down margin-bottom-10">
+                            <div class="custom-control custom-checkbox  margin-bottom-10">
 
                                 <input type="checkbox"
                                        class="custom-control-input"
@@ -1659,7 +1659,7 @@
 
                 <div class="row">
                     <div class="form-group col-lg-4" ng-class="{'has-error': errors.show_label}">
-                        <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                        <div class="custom-control custom-checkbox  margin-bottom-10"
                              ng-class="{'has-error': errors.show_label}">
                             <input type="checkbox"
                                    class="custom-control-input"

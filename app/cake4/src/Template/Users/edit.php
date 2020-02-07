@@ -172,7 +172,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': errors.is_active}">
-                            <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                            <div class="custom-control custom-checkbox  margin-bottom-10"
                                  ng-class="{'has-error': errors.is_active}">
 
                                 <input type="checkbox"
@@ -279,7 +279,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': errors.showstatsinmenu}">
-                            <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                            <div class="custom-control custom-checkbox  margin-bottom-10"
                                  ng-class="{'has-error': errors.showstatsinmenu}">
 
                                 <input type="checkbox"
@@ -295,7 +295,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': errors.recursive_browser}">
-                            <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                            <div class="custom-control custom-checkbox  margin-bottom-10"
                                  ng-class="{'has-error': errors.recursive_browser}">
 
                                 <input type="checkbox"

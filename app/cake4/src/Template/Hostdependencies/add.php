@@ -188,7 +188,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': errors.inherits_parent}">
-                            <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                            <div class="custom-control custom-checkbox  margin-bottom-10"
                                  ng-class="{'has-error': errors.inherits_parent}">
 
                                 <input type="checkbox"

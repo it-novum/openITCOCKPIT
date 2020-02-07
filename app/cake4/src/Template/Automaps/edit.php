@@ -85,7 +85,7 @@
 
 
                         <div class="form-group" ng-class="{'has-error': errors.recursive}">
-                            <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                            <div class="custom-control custom-checkbox  margin-bottom-10"
                                  ng-class="{'has-error': errors.recursive}">
 
                                 <input type="checkbox"
@@ -266,7 +266,7 @@
 
                                         <div class="form-group" ng-class="{'has-error': errors.show_label}">
                                             <div
-                                                class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                                                class="custom-control custom-checkbox  margin-bottom-10"
                                                 ng-class="{'has-error': errors.show_label}">
 
                                                 <input type="checkbox"
@@ -283,7 +283,7 @@
 
                                         <div class="form-group" ng-class="{'has-error': errors.group_by_host}">
                                             <div
-                                                class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                                                class="custom-control custom-checkbox  margin-bottom-10"
                                                 ng-class="{'has-error': errors.group_by_host}">
 
                                                 <input type="checkbox"
@@ -300,7 +300,7 @@
 
                                         <div class="form-group" ng-class="{'has-error': errors.use_paginator}">
                                             <div
-                                                class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+                                                class="custom-control custom-checkbox  margin-bottom-10"
                                                 ng-class="{'has-error': errors.use_paginator}">
 
                                                 <input type="checkbox"

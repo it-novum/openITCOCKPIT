@@ -49,7 +49,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
     </div>
 
     <div class="form-group" ng-class="{'has-error': errors.Configfile.WHISPER_FALLOCATE_CREATE}">
-        <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
+        <div class="custom-control custom-checkbox  margin-bottom-10"
              ng-class="{'has-error': errors.Configfile.WHISPER_FALLOCATE_CREATE}">
 
             <input type="checkbox"
