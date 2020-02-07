@@ -89,11 +89,6 @@ class TestingCommand extends Command {
         //    'Services.id' => 2
         //])->toArray());//, 'NewModule.Servicecommandargumentvalues']));
 
-        Configure::load('NagiosModule.config');
-        $configFromFile = Configure::read('NagiosModule');
-
-        debug($configFromFile);
-
         /**
          * Lof of space for your experimental code
          * Have fun :)
