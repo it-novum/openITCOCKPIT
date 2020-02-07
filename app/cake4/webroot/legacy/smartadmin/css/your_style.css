@@ -2839,3 +2839,9 @@ fc-left .dropdown {
     float: left;
     margin-right: 15px;
 }
+
+.input-group-flex{
+    position: relative;
+    display: flex;
+    border-collapse: separate;
+}

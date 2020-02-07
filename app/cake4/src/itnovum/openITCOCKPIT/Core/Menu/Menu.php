@@ -296,16 +296,6 @@ class Menu {
                     [],
                     9
                 ))
-                ->addLink(new MenuLink(
-                    __('External Commands API'),
-                    'ServicedependenciesIndex',
-                    'cmd',
-                    'index',
-                    'NagiosModule',
-                    'fa fa-terminal',
-                    [],
-                    10
-                ))
             )
             ->addCategory((new MenuCategory(
                 'groups_category',
@@ -611,6 +601,12 @@ class Menu {
             );
         $Configuration = new MenuHeadline(self::MENU_CONFIGURATION, __('System Configuration'), 4);
         $Configuration
+            ->addCategory(new MenuCategory(
+                'api_settings',
+                __('APIs'),
+                1,
+                'fa fa-code'
+            ))
             ->addLink(new MenuLink(
                 __('System Settings'),
                 'SystemsettingsIndex',
@@ -619,12 +615,12 @@ class Menu {
                 '',
                 'fa fa-wrench',
                 [],
-                1
+                2
             ))
             ->addCategory((new MenuCategory(
                 'settings_category',
                 __('Settings ???'),
-                2,
+                3,
                 'fa fa-wrench'
             ))
                 ->addLink(new MenuLink(

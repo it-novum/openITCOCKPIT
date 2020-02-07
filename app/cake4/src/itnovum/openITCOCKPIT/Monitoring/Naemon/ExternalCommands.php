@@ -865,7 +865,6 @@ class ExternalCommands {
      *                    Info: Check Plugins/NagiosModule/CmdController.php function __externalCommands
      *
      * @param array $$payload with the options
-     * @deprecated
      */
     public function runCmdCommand($payload) {
         $payload['parameters'] = (array)$payload['parameters'];
