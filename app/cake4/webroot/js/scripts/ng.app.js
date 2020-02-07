@@ -311,7 +311,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('ServicesIndex', {
-                url: '/services/index?servicename&servicestate&sort&host_id&direction&BrowserContainerId&has_been_acknowledged&has_not_been_acknowledged&in_downtime&passive',
+                url: '/services/index?servicename&servicestate&sort&host_id&direction&BrowserContainerId&has_been_acknowledged&has_not_been_acknowledged&in_downtime&not_in_downtime&passive',
                 params: {
                     servicename: {
                         value: null
@@ -334,6 +334,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                         value: null
                     },
                     in_downtime: {
+                        value: null
+                    },
+                    not_in_downtime: {
                         value: null
                     },
                     passive: {
@@ -1417,6 +1420,18 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
     .filter('trustAsHtml', function($sce){
         return function(text){
             return $sce.trustAsHtml(text);
+        };
+    })
+
+    .filter('underscoreless', function () {
+        return function (input) {
+            return input.replace(/_/g, ' ');
+        };
+    })
+
+    .filter('capitalizeFirstLetter', function () {
+        return function (input) {
+            return input.charAt(0).toUpperCase() + input.slice(1);
         };
     })
 
