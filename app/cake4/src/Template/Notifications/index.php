@@ -167,7 +167,6 @@
                             </div>
 
                             <div class="row">
-
                                 <div class="col-xs-12 col-lg-3">
                                     <fieldset>
                                         <h5><?php echo __('States'); ?></h5>
