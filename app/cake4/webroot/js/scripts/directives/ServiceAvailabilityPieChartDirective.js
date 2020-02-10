@@ -31,7 +31,7 @@ angular.module('openITCOCKPIT').directive('serviceAvailabilityPieChart', functio
                                 $scope.data.reportData.percentage[3]
                             ],
                             x: 220,
-                            y: 15,
+                            y: 5,
                             fontSize: 12,
                             events: false
                         },
