@@ -105,7 +105,7 @@
                     <div class="form-group required" ng-class="{'has-error': errors.hostgroups}"
                          ng-switch-when="1">
                         <label class="col col-md-2 control-label">
-                            <i class="fa fa-sitemap"></i>
+                            <i class="fa fa-server"></i>
                             <?php echo __('Host groups'); ?>
                         </label>
                         <div class="col col-xs-10">
