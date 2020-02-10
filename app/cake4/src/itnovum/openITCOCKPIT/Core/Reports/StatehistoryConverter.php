@@ -258,4 +258,33 @@ class StatehistoryConverter {
         }
         return $values;
     }
+
+    public static function hostStateSummary($hostsStatesHistoryEntries){
+        $totalHostsData = [
+            0 => 0,
+            1 => 0,
+            2 => 0
+        ];
+        foreach($hostsStatesHistoryEntries as $hostStatesHistoryEntries){
+            foreach($hostStatesHistoryEntries as $state => $hostStatesHistoryEntry){
+                $totalHostsData[$state] += $hostStatesHistoryEntry;
+            }
+        }
+        return $totalHostsData;
+    }
+
+    public static function serviceStateSummary($servicesStatesHistoryEntries){
+        $totalServicesData = [
+            0 => 0,
+            1 => 0,
+            2 => 0,
+            3 => 0
+        ];
+        foreach($servicesStatesHistoryEntries as $serviceStatesHistoryEntries){
+            foreach($serviceStatesHistoryEntries as $state => $serviceStatesHistoryEntry){
+                $totalServicesData[$state] += $serviceStatesHistoryEntry;
+            }
+        }
+        return $totalServicesData;
+    }
 }
