@@ -7,16 +7,13 @@ angular.module('openITCOCKPIT').directive('hostAvailabilityPieChart', function($
             'chartId': '='
         },
         controller: function($scope){
-            console.log('Host');
-            console.log($scope);
-            return;
             $timeout(function(){
                 var paper = new Raphael(document.getElementById('hostPieChart-' + $scope.chartId), 400, 130)
                     .pielicious(100, 50, 100, {
                         data: [
-                            $scope.data.Host.reportData[0],
-                            $scope.data.Host.reportData[1],
-                            $scope.data.Host.reportData[2]
+                            $scope.data.reportData[0],
+                            $scope.data.reportData[1],
+                            $scope.data.reportData[2]
                         ],
                         colors: ["#3FC837", "#C9302C", "#92A2A8"],
                         gradient: {darkness: 14, lightness: 6, degrees: 180},
@@ -27,9 +24,9 @@ angular.module('openITCOCKPIT').directive('hostAvailabilityPieChart', function($
                         },
                         legend: {
                             labels: [
-                                $scope.data.Host.reportData.percentage[0],
-                                $scope.data.Host.reportData.percentage[1],
-                                $scope.data.Host.reportData.percentage[2]
+                                $scope.data.reportData.percentage[0],
+                                $scope.data.reportData.percentage[1],
+                                $scope.data.reportData.percentage[2]
                             ],
                             x: 220,
                             y: 15,
