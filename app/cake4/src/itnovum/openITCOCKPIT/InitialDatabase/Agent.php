@@ -57,15 +57,48 @@ class Agent extends Importer {
      * @return bool
      */
     public function import() {
-        if ($this->isTableEmpty()) {
-            $data = $this->getData();
-            foreach ($data as $record) {
-                $entity = $this->Table->newEntity($record);
-                $this->Table->save($entity);
+        $data = $this->getData();
+
+        foreach ($data['Commands'] as $command) {
+            if (isset($command['uuid']) && !$this->CommandsTable->existsByUuid($command['uuid'])) {
+                $entity = $this->CommandsTable->newEntity($command);
+                $this->CommandsTable->save($entity);
             }
         }
 
+        foreach ($data['Servicetemplates'] as $servicetemplate) {
+            if (isset($servicetemplate['uuid']) && !$this->ServicetemplatesTable->existsByUuid($servicetemplate['uuid']))
+                if (isset($servicetemplate['command_id']) && $this->CommandsTable->existsByUuid($servicetemplate['command_id'])) {
+                    $command = $this->CommandsTable->getCommandByUuid($servicetemplate['command_id'], true, false)[0];
+                    $servicetemplate['command_id'] = $command['id'];
+                    if (!empty($servicetemplate['servicetemplatecommandargumentvalues']) && !empty($command['commandarguments'])) {
+                        foreach ($servicetemplate['servicetemplatecommandargumentvalues'] as $templateArgumentKey => $templateArgumentValue) {
+                            $servicetemplate['servicetemplatecommandargumentvalues'][$templateArgumentKey] = [
+                                'commandargument_id' => $this->getCommandArgumentIdByName($templateArgumentValue['commandargument_id'], $command['commandarguments']),
+                                'value'              => $templateArgumentValue['value'],
+                            ];
+                        }
+                    }
+                    $entity = $this->ServicetemplatesTable->newEntity($servicetemplate);
+                    $this->ServicetemplatesTable->save($entity);
+                }
+        }
+
         return true;
+    }
+
+    /**
+     * @param string $name
+     * @param array $commandarguments
+     * @return bool|mixed
+     */
+    public function getCommandArgumentIdByName(string $name, array $commandarguments) {
+        foreach ($commandarguments as $commandargument) {
+            if (isset($commandargument['name']) && $commandargument['name'] === $name) {
+                return $commandargument['id'];
+            }
+        }
+        return false;
     }
 
     public function getCommandsData() {
@@ -439,7 +472,7 @@ class Agent extends Importer {
                 'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
-                'uuid'             => '577da91f-e70d-4218-bef1-c8b3b72d2ad5',
+                'uuid'             => '198c52aa-28c0-45d8-a22d-7df3dad0f716',
                 'description'      => "Return the cpu usage of a docker container.\n" .
                     "Identifier Type: Values: name or id - Determines if the name of the id should be used to identify the container.\n" .
                     "Identifier:  Name or id of the container.\n" .
@@ -473,7 +506,8 @@ class Agent extends Importer {
                 'description'      => "Return the memory usage of a docker container.\n" .
                     "Identifier Type: Values: name or id - Determines if the name of the id should be used to identify the container.\n" .
                     "Identifier:  Name or id of the container.\n" .
-                    "Warning and Critical thresholds are percentage values from 0-100.\n",
+                    "Warning and Critical thresholds are percentage values from 0-100 or float values depending on the chosen unit.\n" .
+                    "Unit: Determines if warning and critical is defined as percentage (%) or amount of ('B', 'kB', 'KiB', 'MB', 'MiB', 'GB', 'GiB', 'TB', 'TiB', 'PB', 'PiB', 'EB', 'EiB')",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
@@ -485,11 +519,15 @@ class Agent extends Importer {
                     ],
                     [
                         'name'       => '$ARG3$',
-                        'human_name' => 'Warning %'
+                        'human_name' => 'Warning'
                     ],
                     [
                         'name'       => '$ARG4$',
-                        'human_name' => 'Critical %'
+                        'human_name' => 'Critical'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Unit'
                     ],
                 ]
             ],
@@ -522,7 +560,7 @@ class Agent extends Importer {
                 'human_args'       => null,
                 'uuid'             => 'fbd23c8c-453d-4107-ae27-2cfafe63fef5',
                 'description'      => "Commands that should be executed by the openITCOCKPIT Agent to replace check_by_ssh or check_nrpe.\n" .
-                    "Name: Unique name of the command (e.g. check_users)\n" .
+                    "Name: Unique name of the command (e.g. username)\n" .
                     "CMD_Line: Command line that will be executed by the agent (e.g. /usr/lib/nagios/plugins/check_users -w 5 -c 10)\n" .
                     "Interval: Execution interval in seconds\n" .
                     "Timeout: Check timeout in seconds\n",
@@ -550,10 +588,1401 @@ class Agent extends Importer {
         return $data;
     }
 
+    public function getServicetemplatesData() {
+        $data = [
+            [
+                'uuid'                                      => 'c475f1c8-fd28-493d-aad0-7861e418170d',
+                'template_name'                             => 'OITC_AGENT_ACTIVE',
+                'name'                                      => 'OITC_AGENT_ACTIVE',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => 'be116ff1-f797-4ccb-993c-b80ccb337de8',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '60',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '1',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [],
+                'customvariables'                           => [],
+                'servicegroups'                             => [],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => 'be4c9649-8771-4704-b409-c56b5f67abc8',
+                'template_name'                             => 'OITC_AGENT_CPU_TOTAL_PERCENTAGE',
+                'name'                                      => 'Total CPU Percentage',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '27551d06-610d-4331-af2d-aab77c45bd36',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '20',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '30',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '0',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => '566a710f-a554-4fa6-b2a2-e46b1d937a64',
+                'template_name'                             => 'OITC_AGENT_SYSTEM_LOAD',
+                'name'                                      => 'System Load',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => 'd4e55865-5cbc-4f01-a4e3-896074a1d7d1',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '2',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '3',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '5',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => '4052fe4f-50b1-443a-8be1-9dbca8d43ebd',
+                'template_name'                             => 'OITC_AGENT_MEMORY_USAGE',
+                'name'                                      => 'Memory Usage',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => 'ab3fe6f2-b5c6-4ba0-9d72-123696d42277',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '75',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '90',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => 'f9d5e18a-8894-4324-b54a-497db87b6f4f',
+                'template_name'                             => 'OITC_AGENT_SWAP_USAGE',
+                'name'                                      => 'SWAP Usage',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => 'ebff0db2-e5de-4430-8799-3c6662422646',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '40',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '80',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => '68fb72a3-5bf5-4d97-8690-91242628659b',
+                'template_name'                             => 'OITC_AGENT_DISK_IO',
+                'name'                                      => 'Disk Load',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => 'ffd0a58f-01e0-4a4d-8db9-a3107a9e765f',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '60',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '80',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => '24851d0d-32fa-4048-bd67-6a30d710bba1',
+                'template_name'                             => 'OITC_AGENT_DISK_USAGE',
+                'name'                                      => 'Disk Usage',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '3830078a-ccc5-41fd-ae33-8369bca1a6b7',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '80',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '90',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '/',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG4$',
+                        'value'              => '1',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => '3e0bd59e-822d-47ed-a5b2-15f1e53fe043',
+                'template_name'                             => 'OITC_AGENT_FAN_SPEED',
+                'name'                                      => 'Fan Speed',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '7bee1594-b029-4db1-8059-694a75b4f83e',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '2900',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '3300',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => 'f73dc076-bdb0-4302-9776-88ca1ba79364',
+                'template_name'                             => 'OITC_AGENT_DEVICE_TEMPERATURE',
+                'name'                                      => 'Device Temperature',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '42e3e6c9-a989-4044-a993-193558ad7964',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '70',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '80',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '1',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG4$',
+                        'value'              => 'coretemp',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => '21057a75-57a1-4972-8f2f-073c8a6000b0',
+                'template_name'                             => 'OITC_AGENT_BATTERY_LEVEL',
+                'name'                                      => 'Battery Level',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '02289d0e-0a3c-46e5-94f1-b18e57be4e7',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '35',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '20',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => 'e5d848f5-a323-4bfe-9ec5-1c5cdf138abf',
+                'template_name'                             => 'OITC_AGENT_NET_IO',
+                'name'                                      => 'Network Stats',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '4186bc96-0081-48fc-bee6-0ff163c9f4a2',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '20000',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '80000',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '5',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG4$',
+                        'value'              => '10',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG5$',
+                        'value'              => '5',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG6$',
+                        'value'              => '10',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG7$',
+                        'value'              => '',
+                    ],
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => 'f6f64207-ef75-4a3d-b9f2-2eaab398a6f1',
+                'template_name'                             => 'OITC_AGENT_NET_DEVICE_STATS',
+                'name'                                      => 'Network Device Status',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '2c96d1c9-de93-4bfa-ab69-2b45bf40d2e3',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => 'critical',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => '37a78eca-4a58-46cd-9fb1-6029724cab35',
+                'template_name'                             => 'OITC_AGENT_PROCESSES',
+                'name'                                      => 'Check Process',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '629050dd-1359-4c8d-9f13-fc49fdab84dc',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '50',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '60',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '50',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG4$',
+                        'value'              => '60',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG5$',
+                        'value'              => '2',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG6$',
+                        'value'              => '4',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG7$',
+                        'value'              => '',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG8$',
+                        'value'              => '0',
+                    ],
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => 'ca73653f-2bba-4542-b11b-0bbd0ecc8b7a',
+                'template_name'                             => 'OITC_AGENT_DOCKER_RUNNING',
+                'name'                                      => 'Docker Container Running',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '577da91f-e70d-4218-bef1-c8b3b72d2ad5',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => 'id',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '44e1d03c....',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => 'a9f7757e-34b0-4df9-8fca-ab8b594c2c26',
+                'template_name'                             => 'OITC_AGENT_DOCKER_CPU',
+                'name'                                      => 'Docker Container CPU Percentage',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '198c52aa-28c0-45d8-a22d-7df3dad0f716',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => 'id',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '44e1d03c....',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '20',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG4$',
+                        'value'              => '40',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => 'aef4c1a8-ed71-4799-a164-3ad469baadc5',
+                'template_name'                             => 'OITC_AGENT_DOCKER_MEMORY',
+                'name'                                      => 'Docker Container Memory Usage',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => 'ba2b3392-a769-4b20-8ea2-10b60f2c74e8',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => 'id',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '44e1d03c....',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '50.0',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG4$',
+                        'value'              => '80.5',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG5$',
+                        'value'              => 'MiB',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => 'c1c8c77a-cecf-4a94-8418-a69081946ba0',
+                'template_name'                             => 'OITC_AGENT_QEMU_VM_RUNNING',
+                'name'                                      => 'QEMU VM Running',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '67ca5f1d-cc94-4bf1-8397-fc6e4abdbf92',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => 'id',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '100',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => '03b32b83-df7b-4204-a8bb-138a4939c554',
+                'template_name'                             => 'OITC_AGENT_CUSTOMCHECK',
+                'name'                                      => 'Custom check',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => 'fbd23c8c-453d-4107-ae27-2cfafe63fef5',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => 'username',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => 'whoami',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '30',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG4$',
+                        'value'              => '5',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+        ];
+        return $data;
+    }
+
     /**
      * @return array
      */
     public function getData() {
-        return [];
+        return [
+            'Commands'         => $this->getCommandsData(),
+            'Servicetemplates' => $this->getServicetemplatesData()
+        ];
     }
 }
