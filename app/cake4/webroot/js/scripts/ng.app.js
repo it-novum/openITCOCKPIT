@@ -1319,6 +1319,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "SearchIndexController"
             })
 
+            .state('PackageManagerIndex', {
+                url: '/packetmanager/index',
+                templateUrl: "/packetmanager/index.html",
+                controller: "PackagemanagerIndexController"
+            })
+
     })
 
     /*

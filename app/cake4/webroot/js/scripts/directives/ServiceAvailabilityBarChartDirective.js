@@ -7,8 +7,6 @@ angular.module('openITCOCKPIT').directive('serviceAvailabilityBarChart', functio
             'chartId': '='
         },
         controller: function($scope){
-            console.log('Host');
-            console.log($scope);
             $timeout(function(){
                 var paper = Raphael('serviceBarChart-' + $scope.chartId)
                     .hbarchart(3, 4, 350, 26, [

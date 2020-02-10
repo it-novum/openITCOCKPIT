@@ -583,6 +583,7 @@ class InstantreportsController extends AppController {
             }
         }
         $reportData['hosts'] = $reportData;
+        $reportSummaryData = [];
         if ($instantReport->get('summary') === 1) {
             $hostsReportData = [];
             $servicesReportData = [];
@@ -615,31 +616,24 @@ class InstantreportsController extends AppController {
             }
             if (!empty($hostsReportData)) {
                 $stateSummary = StatehistoryConverter::hostStateSummary($hostsReportData);
-                $reportSummaryData['summary_hosts'] = [
-                    'reportData' => [
-                        $stateSummary,
-                        'percentage' => StatehistoryConverter::getPercentageValues(
-                            $stateSummary,
-                            array_sum($stateSummary),
-                            true
-                        )
-                    ]
-                ];
+                $reportSummaryData['summary_hosts']['reportData'] = $stateSummary;
+                $reportSummaryData['summary_hosts']['reportData']['percentage'] = StatehistoryConverter::getPercentageValues(
+                    $stateSummary,
+                    array_sum($stateSummary),
+                    true
+                );
             }
             if (!empty($servicesReportData)) {
                 $stateSummary = StatehistoryConverter::serviceStateSummary($servicesReportData);
-                $reportSummaryData['summary_services'] = [
-                    'reportData' => [
-                        $stateSummary,
-                        'percentage' => StatehistoryConverter::getPercentageValues(
-                            $stateSummary,
-                            array_sum($stateSummary),
-                            false
-                        )
-                    ]
-                ];
+                $reportSummaryData['summary_services']['reportData'] = $stateSummary;
+                $reportSummaryData['summary_services']['reportData']['percentage'] = StatehistoryConverter::getPercentageValues(
+                    $stateSummary,
+                    array_sum($stateSummary),
+                    false
+                );
             }
             $reportData = [];
+            $reportData['hosts'] = [];
         }
 
         $reportData['reportDetails'] = array_merge($reportDetails, $reportSummaryData);
@@ -735,6 +729,11 @@ class InstantreportsController extends AppController {
     }
 
     public function hostAvailabilityPieChart() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function serviceAvailabilityPieChart() {
         //Only ship HTML template
         return;
     }
