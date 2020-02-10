@@ -223,8 +223,8 @@
                                         <div class="col col-md-12 no-padding"
                                              ng-if="reportDetails.summary_services.reportData">
                                             <div class="col col-lg-3 col-md-12 col-sm-12 col-xs-12 no-padding">
-                                                <service-availability-bar-chart chart-id="'serviceSummary'"
-                                                    data="reportDetails.summary_services"></service-availability-bar-chart>
+                                                <service-availability-pie-chart chart-id="'serviceSummary'"
+                                                    data="reportDetails.summary_services"></service-availability-pie-chart>
                                             </div>
                                         </div>
                                     </div>

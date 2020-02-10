@@ -733,6 +733,11 @@ class InstantreportsController extends AppController {
         return;
     }
 
+    public function serviceAvailabilityPieChart() {
+        //Only ship HTML template
+        return;
+    }
+
     public function serviceAvailabilityBarChart() {
         //Only ship HTML template
         return;
