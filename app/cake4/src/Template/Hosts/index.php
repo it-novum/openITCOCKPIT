@@ -71,11 +71,11 @@
                 <div class="panel-toolbar">
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
                         <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
-                        <li class="nav-item">
-                            <a class="nav-link active" data-toggle="tab" ui-sref="HostsIndex" role="tab">
-                                <i class="fa fa-stethoscope">&nbsp;</i> <?php echo __('Monitored'); ?>
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" ui-sref="HostsIndex" role="tab">
+                                    <i class="fa fa-stethoscope">&nbsp;</i> <?php echo __('Monitored'); ?>
+                                </a>
+                            </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('notMonitored', 'hosts')): ?>
                             <li class="nav-item">
@@ -92,11 +92,11 @@
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('index', 'DeletedHosts')): ?>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" ui-sref="DeletedHostsIndex" role="tab">
-                                <i class="fa fa-trash">&nbsp;</i> <?php echo __('Deleted'); ?>
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" ui-sref="DeletedHostsIndex" role="tab">
+                                    <i class="fa fa-trash">&nbsp;</i> <?php echo __('Deleted'); ?>
+                                </a>
+                            </li>
                         <?php endif; ?>
                     </ul>
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
@@ -134,6 +134,19 @@
                                             <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
                                                    ng-model="filter.Hosts.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   placeholder="<?php echo __('Filter by IP address'); ?>"
+                                                   ng-model="filter.Host.address"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
                                     </div>
@@ -297,6 +310,29 @@
                                         </div>
                                     </fieldset>
                                 </div>
+                                <?php if (sizeof($satellites) > 1): ?>
+                                    <div class="col-xs-12 col-md-3">
+                                        <fieldset>
+                                            <legend><?php echo __('Instance'); ?></legend>
+                                            <div class="form-group smart-form">
+                                                <select
+                                                    id="Instance"
+                                                    data-placeholder="<?php echo __('Filter by instance'); ?>"
+                                                    class="form-control"
+                                                    chosen="{}"
+                                                    multiple
+                                                    ng-model="filter.Host.satellite_id"
+                                                    ng-model-options="{debounce: 500}">
+                                                    <?php
+                                                    foreach ($satellites as $satelliteId => $satelliteName):
+                                                        printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
+                                                    endforeach;
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                             <div class="float-right">
                                 <button type="button" ng-click="resetFilter()"
@@ -542,7 +578,6 @@
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                                 <a ui-sref="ServicesServiceList({id: host.Host.id})"
-                                                   ng-if="host.Host.allow_sharing"
                                                    class="dropdown-item">
                                                     <i class="fa fa-sitemap fa-rotate-270"></i>
                                                     <?php echo __('Service list'); ?>
@@ -571,8 +606,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
-                                                <a ng-click="confirmDelete(getObjectForDelete(host, service))"
-                                                   ng-if="service.Service.allow_edit"
+                                                <a g-click="confirmDelete(getObjectForDelete(host))"
                                                    class="dropdown-item txt-color-red">
                                                     <i class="fa fa-trash"></i>
                                                     <?php echo __('Delete'); ?>
