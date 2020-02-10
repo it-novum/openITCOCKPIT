@@ -90,6 +90,47 @@
         </div>
     </div>
 
+    <div class="col-xs-12 col-mg-6 col-lg-4" ng-show="!newVersion">
+        <div class="panel panel-default">
+            <div class="panel-body" style="min-height: 200px;">
+                <div>
+                    <h4>
+                        <?= \Spatie\Emoji\Emoji::partyingFace(); ?>
+                        <?= __('Your system is on the latest version!'); ?>
+                    </h4>
+                    <div class="pull-right italic unknown">
+                        <?= h(OPENITCOCKPIT_VERSION); ?>
+                    </div>
+                    <hr/>
+                </div>
+                <div class="text">
+
+                </div>
+            </div>
+
+            <div class="panel-footer">
+                <div class="row">
+                    <div class="col-xs-12 padding-right-0">
+
+                        <div class="pull-right">
+
+                            <a href="javascript:void(0);"
+                               class="btn btn-labeled btn-default"
+                               data-toggle="modal"
+                               data-target="#changelogModal">
+                                <span class="btn-label">
+                                    <i class="fa fa-code-fork"></i>
+                                </span>
+                                <?= __('Changelog'); ?>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="col-xs-12 col-mg-6 col-lg-4" ng-show="newVersion">
         <div class="panel panel-default">
             <div class="panel-body" style="min-height: 200px;">
@@ -127,7 +168,7 @@
                                class="btn btn-labeled btn-default"
                                data-toggle="modal"
                                data-target="#changelogModal">
-                                                                <span class="btn-label">
+                                <span class="btn-label">
                                     <i class="fa fa-code-fork"></i>
                                 </span>
                                 <?= __('Changelog'); ?>
@@ -146,7 +187,7 @@
 
             <div title="<?= __('Enterprise') ?>"
                  class="enterprise-module"
-                 ng-show="!module.Module.enterprise">
+                 ng-show="module.Module.enterprise">
                 <i class="fa fa-certificate"></i>
             </div>
 
