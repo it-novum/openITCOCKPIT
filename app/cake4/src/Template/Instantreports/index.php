@@ -73,49 +73,8 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-xs-12">
-                                    <div class="pull-right margin-top-10">
-                                        <button type="button" ng-click="resetFilter()"
-                                                class="btn btn-xs btn-danger">
-                                            <?php echo __('Reset Filter'); ?>
-                                        </button>
-                                    </div>
-                                </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-12 col-md-3">
-                                    <fieldset>
-                                        <legend><?php echo __('Evaluation'); ?></legend>
-                                        <div class="form-group smart-form">
-                                            <label class="checkbox small-checkbox-label">
-                                                <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.instantreport.evaluation.hosts"
-                                                       ng-true-value="1"
-                                                       ng-model-options="{debounce: 500}">
-                                                <i class="checkbox-primary"></i>
-                                                <?php echo __('Hosts'); ?>
-                                            </label>
-
-                                            <label class="checkbox small-checkbox-label">
-                                                <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.instantreport.evaluation.hostsandservices"
-                                                       ng-true-value="2"
-                                                       ng-model-options="{debounce: 500}">
-                                                <i class="checkbox-primary"></i>
-                                                <?php echo __('Hosts and Services'); ?>
-                                            </label>
-
-                                            <label class="checkbox small-checkbox-label">
-                                                <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.instantreport.evaluation.services"
-                                                       ng-true-value="3"
-                                                       ng-model-options="{debounce: 500}">
-                                                <i class="checkbox-primary"></i>
-                                                <?php echo __('Services'); ?>
-                                            </label>
-                                        </div>
-                                    </fieldset>
-                                </div>
                                 <div class="col-xs-12 col-md-3">
                                     <fieldset>
                                         <legend><?php echo __('Type'); ?></legend>
@@ -156,8 +115,50 @@
                                         </div>
                                     </fieldset>
                                 </div>
-                            </div>
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <legend><?php echo __('Evaluation'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.evaluation.hosts"
+                                                       ng-true-value="1"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Hosts'); ?>
+                                            </label>
 
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.evaluation.hostsandservices"
+                                                       ng-true-value="2"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Hosts and Services'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.evaluation.services"
+                                                       ng-true-value="3"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Services'); ?>
+                                            </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="mobile_table">
                             <table id="intantreport_list"
