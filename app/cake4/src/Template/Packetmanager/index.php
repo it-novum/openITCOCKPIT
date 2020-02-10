@@ -143,9 +143,19 @@
 
     <div class="col-xs-12 col-mg-6 col-lg-4" ng-repeat="module in modules">
         <div class="panel panel-default">
+
+            <div title="<?= __('Enterprise') ?>"
+                 class="enterprise-module"
+                 ng-show="!module.Module.enterprise">
+                <i class="fa fa-certificate"></i>
+            </div>
+
             <div class="panel-body" style="min-height: 200px;">
+
                 <div class="">
-                    <h4>{{module.Module.name}}</h4>
+                    <h4>
+                        {{module.Module.name}}
+                    </h4>
                     <div class="pull-right italic unknown">
                         {{module.Module.author}}
                     </div>

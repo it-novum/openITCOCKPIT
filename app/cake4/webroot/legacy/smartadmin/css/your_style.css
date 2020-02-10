@@ -2845,3 +2845,11 @@ fc-left .dropdown {
     display: flex;
     border-collapse: separate;
 }
+
+.enterprise-module{
+    position: absolute;
+    top: -21px;
+    left: 4px;
+    font-size: 36px;
+    color: #dc0a2e;
+}
