@@ -29,7 +29,7 @@ class PackagemanagerRequestBuilder {
     /**
      * @var string
      */
-    private $internalAddress = 'http://172.16.2.87';
+    private $internalAddress = 'http://packagemanager.it-novum.com';
 
     /**
      * @var array
@@ -57,7 +57,7 @@ class PackagemanagerRequestBuilder {
     /**
      * @var string
      */
-    private $checkLicenseUrl = '%s/licences/check/%s.json';
+    private $checkLicenseUrl = '%s/licenses/check/%s.json';
 
     /**
      * @var string

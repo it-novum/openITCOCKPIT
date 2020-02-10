@@ -109,14 +109,14 @@ class RegistersTable extends Table {
         $response = json_decode($http->data);
 
         if (is_object($response)) {
-            //wrong spelled "licence" comes from license server
-            if (property_exists($response, 'licence')) {
-                if (!empty($response->licence) && property_exists($response->licence, 'Licence')) {
-                    if (!empty($response->licence->Licence) && strtotime($response->licence->Licence->expire) > time()) {
+            //wrong spelled "license" comes from license server
+            if (property_exists($response, 'license')) {
+                if (!empty($response->license) && property_exists($response->license, 'License')) {
+                    if (!empty($response->license->License) && strtotime($response->license->License->expire) > time()) {
                         return [
                             'success' => true,
                             'error' => null,
-                            'license' => $response->licence->Licence
+                            'license' => $response->license->License
                         ];
                     }
                 }

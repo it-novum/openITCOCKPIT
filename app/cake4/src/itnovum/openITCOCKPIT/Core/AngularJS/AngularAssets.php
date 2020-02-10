@@ -144,7 +144,8 @@ class AngularAssets implements AngularAssetsInterface {
         '/legacy/css/vendor/image-picker.css',
         '/legacy/vendor/angular-gridster/dist/angular-gridster.css',
         '/legacy/css/vendor/radio_buttons.css',
-        '/legacy/css/vendor/highlight-within-textarea/jquery.highlight-within-textarea.css'
+        '/legacy/css/vendor/highlight-within-textarea/jquery.highlight-within-textarea.css',
+        '/css/timeline.css'
     ];
 
     /**
