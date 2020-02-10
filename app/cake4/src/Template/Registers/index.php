@@ -104,7 +104,7 @@
                                 <dd class="code-font text-info">{{license.expire}}</dd>
 
                                 <dt><?php echo __('License key'); ?>:</dt>
-                                <dd class="code-font text-info">{{license.licence}}</dd>
+                                <dd class="code-font text-info">{{license.license}}</dd>
                             </dl>
 
                         </div>

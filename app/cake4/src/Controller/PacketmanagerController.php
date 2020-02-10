@@ -27,7 +27,11 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Table\ProxiesTable;
+use App\Model\Table\RegistersTable;
+use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
@@ -35,124 +39,89 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 use itnovum\openITCOCKPIT\Core\ValueObjects\License;
 
 class PacketmanagerController extends AppController {
-    public $components = ['Session'];
-    public $uses = ['Register'];
 
     public function index() {
-        $this->Frontend->setJson('username', $this->Auth->user('full_name'));
-
-        Configure::load('version');
-
-        $openITCVersion = Configure::read('version');
-        $this->set('openITCVersion', $openITCVersion);
-
-        $installedModules = glob(OLD_APP . 'Plugin/*', GLOB_ONLYDIR);
-        $installedModules = array_map(function ($file) {
-            return basename($file);
-        }, $installedModules);
-        $this->set('installedModules', $installedModules);
-
-        /** @var $Proxy App\Model\Table\ProxiesTable */
-        $Proxy = TableRegistry::getTableLocator()->get('Proxies');
-        $Registers = TableRegistry::getTableLocator()->get('Registers');
-        $License = $Registers->getLicense();
-        $License = new License($License);
-
-        $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
-        $http = new Http(
-            $packagemanagerRequestBuilder->getUrl(),
-            $packagemanagerRequestBuilder->getOptions(),
-            $Proxy->getSettings()
-        );
-
-        $this->set('RepositoryChecker', new RepositoryChecker());
-        $this->set('LsbRelease', new LsbRelease());
+        if ($this->isHtmlRequest()) {
+            $this->set('systemname', $this->getSystemname());
+            $this->set('RepositoryChecker', new RepositoryChecker());
+            $this->set('LsbRelease', new LsbRelease());
+            //Only ship HTML Template
+            return;
+        }
 
 
-        $http->sendRequest();
-        if (!$http->error) {
-            if (strlen($http->data) > 0) {
-                //Es wurden Daten empfangen. Hoffen wir das es unser Array ist
-                $data = json_decode($http->data);
-                $this->set('data', $data);
+        if ($this->request->is('get')) {
+            /** @var ProxiesTable $ProxiesTable */
+            $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
+            /** @var RegistersTable $RegistersTable */
+            $RegistersTable = TableRegistry::getTableLocator()->get('Registers');
+
+            $License = $RegistersTable->getLicense();
+            $License = new License($License);
+
+            $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
+            $http = new Http(
+                $packagemanagerRequestBuilder->getUrl(),
+                $packagemanagerRequestBuilder->getOptions(),
+                $ProxiesTable->getSettings()
+            );
+
+            $http->sendRequest();
+
+            $result = [
+                'error'     => false,
+                'error_msg' => '',
+                'data'      => []
+            ];
+
+            if (!$http->error) {
+                if (strlen($http->data) > 0) {
+                    $result['data'] = json_decode($http->data, true);
+                }
+            } else {
+                $result['error'] = true;
+                $result['error_msg'] = $http->getLastError()['error'];
             }
-        } else {
-            $this->setFlash('Error: ' . $http->getLastError()['error'], false);
+
+            $installedModules = [];
+            $output = [];
+            exec('dpkg -l |grep openitcockpit-module', $output, $rc);
+            $output = $this->getTestDpkgOutput();
+            foreach ($output as $line) {
+                $line = explode('  ', $line);
+                if (isset($line[1]) && preg_match('/openitcockpit-module-/', $line[1])) {
+                    $module = trim($line[1]);
+                    $installedModules[$module] = true;
+                }
+            }
+
+
+            $this->set('result', $result);
+            $this->set('installedModules', $installedModules);
+            $this->set('OPENITCOCKPIT_VERSION', OPENITCOCKPIT_VERSION);
+            $this->viewBuilder()->setOption('serialize', ['result', 'installedModules', 'OPENITCOCKPIT_VERSION']);
         }
     }
 
     /**
-     * Fake repository for the packages. The purpose of this action is development and/or testing.
+     * @return array
      */
-    public function getPackets() {
-        $this->response->type('json');
-        $fixedContent =
-            '{
-			   "current_version":"1.2",
-			   "changelog":"<h1>Version: 1.2<\/h1><br \/><ul><li><span class=\"label label-danger\">New:<\/span> Graphtool implemented in JavaScript<\/li><li><span class=\"label label-danger\">New:<\/span> Host- and Servicebrowser<\/li><li>Bugfix: Problem while creating commands<\/li><\/ul><br \/><h1>Version: 0.1<\/h1><br \/><ul><li>openITCOCKPIT V3 first alpha version<\/li><\/ul>",
-			   "modules":[
-				  {
-					 "name":"Autoreports",
-					 "description":"Mit Hilfe dieses Modules k\u00f6nnen Sie automatische Reports erstellen und diese per E-Mail als PDF oder XLS versenden",
-					 "author":"it-novum GmbH",
-					 "licence":"IT-Novum Licence",
-					 "version":"1.6",
-					 "requires":"1.0",
-					 "path":"autoreports\/download.php",
-					 "tags":"autoreports, reports, reporting, pdf",
-					 "url": "https://127.0.0.1/files/autoreports_v1.0.0_example.zip",
-					 "check_for_update": false
-				  },
-				  {
-					 "name":"Check_MK",
-					 "description":"Erweitert openITCOCKPIT um Check_MK",
-					 "author":"it-novum GmbH",
-					 "licence":"IT-Novum Licence",
-					 "version":"1.5",
-					 "requires":"1.2",
-					 "path":"check_mk\/download.php",
-					 "tags":"check_mk, passive, mk, nagios",
-					 "url": "https://127.0.0.1/files/autoreports_v0.0.1_example.zip",
-					 "check_for_update": false
-				  },
-				  {
-					 "name":"NagVis",
-					 "description":"Ein Tool zur visuellen Darstellung der IT Landschaft in openITCOCKPIT",
-					 "author":"it-novum GmbH",
-					 "licence":"GPLv3 + Exception",
-					 "version":"1.5",
-					 "requires":"1.0",
-					 "path":"nagvis\/download.php",
-					 "tags":"nagvis, maps, visual, dashboard",
-					 "url": "https://127.0.0.1/files/NagVis_v0.1.9_example.zip",
-					 "check_for_update": false
-				  },
-				  {
-					 "name":"Grapher",
-					 "description":"Erlaubt die Darstellung von Graphen mit Hilfe von JavaScript",
-					 "author":"it-novum GmbH",
-					 "licence":"MIT",
-					 "version":"1.5",
-					 "requires":"1.0",
-					 "path":"grapher\/download.php",
-					 "tags":"grapher, graph",
-					 "url": "https://127.0.0.1/files/grapher_example.zip",
-					 "check_for_update": false
-				  },
-				  {
-					 "name":"check_nrpe",
-					 "description":"Nagios Remote Plugin Executor Plugin",
-					 "author":"Debian Nagios Maintainer Group <pkg-nagios-devel@lists.alioth.debian.org>",
-					 "licence":"GPLv2",
-					 "version":"2.15-0ubuntu1",
-					 "requires":"1.0",
-					 "path":"grapher\/download.php",
-					 "tags":"nrpe, check_nrpe",
-					 "url": "https://127.0.0.1/files/check_nrpe.zip",
-					 "check_for_update": false
-				  }
-			   ]
-			}';
-        $this->set('json', $fixedContent);
+    private function getTestDpkgOutput(){
+        $output = [
+            'ii  openitcockpit-module-autoreport       3.7.3-4ubuntu16.04~201912170227                 amd64        Auto Reporting module for openITCOCKPIT',
+            'ii  openitcockpit-module-design           3.7.3-4ubuntu16.04~201912170227                 amd64        Change design of openITCOCKPIT',
+            'ii  openitcockpit-module-discovery        3.7.3-4ubuntu16.04~201912170227                 amd64        Discovery module for openITCOCKPIT',
+            'ii  openitcockpit-module-distribute       3.7.3-4ubuntu16.04~201912170227                 amd64        Distributed Monitoring module for openITCOCKPIT',
+            'ii  openitcockpit-module-evc              3.7.3-4ubuntu16.04~201912170227                 amd64        Event correlation module for openITCOCKPIT',
+            'ii  openitcockpit-module-grafana          3.7.3-4ubuntu16.04~201912170227                 amd64        Grafana module for openITCOCKPIT',
+            'ii  openitcockpit-module-map              3.7.3-4ubuntu16.04~201912170227                 amd64        Map module for openITCOCKPIT',
+            'ii  openitcockpit-module-mk               3.7.3-4ubuntu16.04~201912170227                 amd64        CheckMK module for openITCOCKPIT',
+            'ii  openitcockpit-module-openstreetmap    3.7.3-4ubuntu16.04~201912170227                 amd64        OpenStreetMap Module for openITCOCKPIT',
+            'ii  openitcockpit-module-slack            3.7.3-4ubuntu16.04~201912170227                 amd64        Slack module for openITCOCKPIT',
+            'ii  openitcockpit-module-wmi              3.7.3-4ubuntu16.04~201912170227                 amd64        WMI module for openITCOCKPIT',
+            'ii  openitcockpit-module-wmi-plugins      1.3.15-0ubuntu16.04~201912170224                amd64        plugins for wmi module.'
+        ];
+        return $output;
     }
+
 }
