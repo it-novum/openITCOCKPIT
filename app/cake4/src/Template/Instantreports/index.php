@@ -173,10 +173,10 @@
                                         <?php echo __('Name'); ?>
                                     </th>
                                     <th class="no-sort">
-                                        <?php echo __('Evaluation'); ?>
+                                        <?php echo __('Type'); ?>
                                     </th>
                                     <th class="no-sort">
-                                        <?php echo __('Type'); ?>
+                                        <?php echo __('Evaluation'); ?>
                                     </th>
                                     <th class="no-sort" ng-click="orderBy('Timeperiod.name')">
                                         <i class="fa" ng-class="getSortClass('Timeperiod.name')"></i>
@@ -213,6 +213,24 @@
                                         {{ instantreport.Instantreport.name }}
                                     </td>
                                     <td>
+                                        <span ng-show="instantreport.Instantreport.type === 1">
+                                            <i class="fa fa-server"></i>
+                                            <?php echo __('Host groups'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.type === 2">
+                                            <i class="fa fa-desktop"></i>
+                                            <?php echo __('Hosts'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.type === 3">
+                                            <i class="fa fa-cogs"></i>
+                                            <?php echo __('Service groups'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.type === 4">
+                                            <i class="fa fa-cog"></i>
+                                            <?php echo __('Services'); ?>
+                                        </span>
+                                    </td>
+                                    <td>
                                         <span ng-show="instantreport.Instantreport.evaluation === 1">
                                             <i class="fa fa-desktop"></i>
                                             <?php echo __('Hosts'); ?>
@@ -222,24 +240,6 @@
                                             <?php echo __('Hosts and services'); ?>
                                         </span>
                                         <span ng-show="instantreport.Instantreport.evaluation === 3">
-                                            <i class="fa fa-cog"></i>
-                                            <?php echo __('Services'); ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span ng-show="instantreport.Instantreport.type === 1">
-                                            <i class="fa fa-desktop"></i>
-                                            <?php echo __('Host groups'); ?>
-                                        </span>
-                                        <span ng-show="instantreport.Instantreport.type === 2">
-                                            <i class="fa fa-cogs"></i>
-                                            <?php echo __('Hosts'); ?>
-                                        </span>
-                                        <span ng-show="instantreport.Instantreport.type === 3">
-                                            <i class="fa fa-cog"></i>
-                                            <?php echo __('Service groups'); ?>
-                                        </span>
-                                        <span ng-show="instantreport.Instantreport.type === 4">
                                             <i class="fa fa-cog"></i>
                                             <?php echo __('Services'); ?>
                                         </span>
