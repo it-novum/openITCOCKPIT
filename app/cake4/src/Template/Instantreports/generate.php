@@ -144,7 +144,7 @@
 
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" ng-if="!reportDetails.summary">
                     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-repeat="report in reportData">
                         <div class="col-xs-12 col-md-12 col-lg-12 padding-5">
                             <div class="jarviswidget jarviswidget-sortable" role="widget">
@@ -163,7 +163,8 @@
                                 <div class="widget-body">
                                     <div class="row" ng-if="report.Host.reportData">
                                         <div class="col col-md-12 padding-2">
-                                            <host-availability-pie-chart data="report"></host-availability-pie-chart>
+                                            <host-availability-pie-chart chart-id="report.Host.id"
+                                                data="report.Host"></host-availability-pie-chart>
                                         </div>
                                     </div>
                                     <div class="row" ng-repeat="service in report.Host.Services">
@@ -179,8 +180,51 @@
                                         </div>
                                         <div class="col col-md-12 no-padding" ng-if="service.Service.reportData">
                                             <div class="col col-lg-3 col-md-12 col-sm-12 col-xs-12 no-padding">
-                                                <service-availability-bar-chart
+                                                <service-availability-bar-chart chart-id="service.Service.id"
                                                     data="service.Service"></service-availability-bar-chart>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                <div class="row" ng-if="reportDetails.summary">
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="col-xs-12 col-md-12 col-lg-12 padding-5" ng-if="reportDetails.summary_hosts">
+                            <div class="jarviswidget jarviswidget-sortable" role="widget">
+                                <header role="heading">
+                                    <h2>
+                                        <i class="fa fa-desktop"></i>
+                                        <?php echo __('Hosts summary'); ?>
+                                    </h2>
+                                </header>
+                                <div class="widget-body">
+                                    <div class="row" ng-if="reportDetails.summary_hosts.reportData">
+                                        <div class="col col-md-12 padding-2">
+                                            <host-availability-pie-chart chart-id="'hostSummary'"
+                                                data="reportDetails.summary_hosts"></host-availability-pie-chart>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-12 col-lg-12 padding-5" ng-if="reportDetails.summary_services">
+                            <div class="jarviswidget jarviswidget-sortable" role="widget">
+                                <header role="heading">
+                                    <h2>
+                                        <i class="fa fa-cog"></i>
+                                        <?php echo __('Services summary'); ?>
+                                    </h2>
+                                </header>
+                                <div class="widget-body">
+                                    <div class="row" ng-if="reportDetails.summary_services.reportData">
+                                        <div class="col col-md-12 no-padding"
+                                             ng-if="reportDetails.summary_services.reportData">
+                                            <div class="col col-lg-3 col-md-12 col-sm-12 col-xs-12 no-padding">
+                                                <service-availability-pie-chart chart-id="'serviceSummary'"
+                                                    data="reportDetails.summary_services"></service-availability-pie-chart>
                                             </div>
                                         </div>
                                     </div>
@@ -193,5 +237,6 @@
         </div>
     </div>
 </div>
+
 
 

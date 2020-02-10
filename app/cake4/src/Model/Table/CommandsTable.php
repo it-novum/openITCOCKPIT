@@ -41,7 +41,7 @@ class CommandsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('commands');
@@ -67,7 +67,7 @@ class CommandsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -116,7 +116,7 @@ class CommandsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
 
         return $rules;
@@ -304,7 +304,7 @@ class CommandsTable extends Table {
      * @param bool $contain
      * @return array
      */
-    public function getCommandByUuid($uuid, $contain = false) {
+    public function getCommandByUuid($uuid, $contain = false, $formatResultAsCake2 = true) {
         $command = $this->find('all')
             ->where(['Commands.uuid' => $uuid])
             ->disableHydration();
@@ -314,7 +314,10 @@ class CommandsTable extends Table {
         }
         $command->first();
 
-        return $this->formatFirstResultAsCake2($command->toArray());
+        if ($formatResultAsCake2) {
+            return $this->formatFirstResultAsCake2($command->toArray());
+        }
+        return $command->toArray();
     }
 
     /**
@@ -351,6 +354,14 @@ class CommandsTable extends Table {
      */
     public function existsById($id) {
         return $this->exists(['Commands.id' => $id]);
+    }
+
+    /**
+     * @param string $uuid
+     * @return bool
+     */
+    public function existsByUuid(string $uuid) {
+        return $this->exists(['Commands.uuid' => $uuid]);
     }
 
     /**
