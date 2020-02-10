@@ -35,7 +35,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fa fa-trash"></i> <?php echo __('Disabled'); ?>
+        <i class="fa fa-power-off"></i> <?php echo __('Disabled'); ?>
     </li>
 </ol>
 
@@ -334,10 +334,10 @@
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
-                                <a ng-click="confirmActivate(getObjectsForDelete())" class="pointer">
+                                <span ng-click="confirmActivate(getObjectsForDelete())" class="pointer">
                                     <i class="fa fa-lg fa-plug"></i>
                                     <?php echo __('Enable'); ?>
-                                </a>
+                                </span>
                             </div>
                             <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
