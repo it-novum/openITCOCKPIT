@@ -73,7 +73,7 @@
                         <?php if ($this->Acl->hasPermission('disabled', 'hosts')): ?>
                             <li class="nav-item">
                                 <a class="nav-link" data-toggle="tab" ui-sref="HostsDisabled" role="tab">
-                                    <i class="fa fa-plug">&nbsp;</i> <?php echo __('Disabled'); ?>
+                                    <i class="fa fa-power-off">&nbsp;</i> <?php echo __('Disabled'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
