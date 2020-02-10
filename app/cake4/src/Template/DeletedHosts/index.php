@@ -50,11 +50,11 @@
                 <div class="panel-toolbar">
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
                         <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" ui-sref="HostsIndex" role="tab">
-                                <i class="fa fa-stethoscope">&nbsp;</i> <?php echo __('Monitored'); ?>
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" ui-sref="HostsIndex" role="tab">
+                                    <i class="fa fa-stethoscope">&nbsp;</i> <?php echo __('Monitored'); ?>
+                                </a>
+                            </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('notMonitored', 'hosts')): ?>
                             <li class="nav-item">
