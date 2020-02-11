@@ -847,7 +847,7 @@ use Cake\Core\Plugin;
                     </div>
                     <!-- Device information end -->
                     <!-- Timeline start -->
-                    <div class="" ng-show="showTimelineTab && selectedTab == 'tab3'">
+                    <div ng-show="showTimelineTab && selectedTab == 'tab3'">
                         <div class="row">
                             <div class="col-lg-12 padding-10">
                                 <div class="row">
@@ -932,6 +932,32 @@ use Cake\Core\Plugin;
                         </div>
                     </div>
                     <!-- Timeline end -->
+                    <!-- Servicenow Module start -->
+                    <div class="" ng-show="selectedTab == 'tab4'">
+                        <div class="jarviswidget margin-bottom-0 padding-10" id="wid-id-0">
+                            <?php if ($this->Acl->hasPermission('host_configuration', 'elements', 'servicenowModule') && Plugin::isLoaded('ServicenowModule')): ?>
+                                <servicenow-host-element last-load="{{ lastLoadDate }}"
+                                                         host-uuid="{{ mergedHost.uuid }}"
+                                                         editable="<?php echo $this->Acl->hasPermission('edit', 'hosts'); ?>">
+                                </servicenow-host-element>
+                            <?php else: ?>
+                                <label class="text-danger">
+                                    <?php echo __('No permissions'); ?>
+                                </label>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <!-- Servicenow Module end -->
+                    <!-- Grafana Module start -->
+                    <div ng-show="GrafanaDashboardExists && selectedTab == 'tab5'">
+                        <div class="widget-toolbar">
+                            <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
+                        </div>
+                        <iframe-directive url="GrafanaIframeUrl"
+                                          ng-if="GrafanaDashboardExists && selectedTab == 'tab5'"></iframe-directive>
+                    </div>
+                    <!-- Grafana Module end -->
+
                 </div>
             </div>
         </div>
