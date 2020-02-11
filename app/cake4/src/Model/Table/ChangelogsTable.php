@@ -2,12 +2,16 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\CakePHP\Set;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\ChangelogsFilter;
 
 /**
  * Changelogs Model
@@ -29,6 +33,9 @@ use itnovum\openITCOCKPIT\CakePHP\Set;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class ChangelogsTable extends Table {
+
+    use PaginationAndScrollIndexTrait;
+
     /**
      * Initialize method
      *
@@ -47,6 +54,7 @@ class ChangelogsTable extends Table {
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id'
         ]);
+
         $this->belongsToMany('Containers', [
             'joinTable' => 'changelogs_to_containers'
         ]);
@@ -100,14 +108,60 @@ class ChangelogsTable extends Table {
         return $rules;
     }
 
-
     /**
-     * @param $changelog_data
-     * @return bool
-     * @deprecated
+     * @param ChangelogsFilter $ChangelogsFilter
+     * @param PaginateOMat|null $PaginateOMat
+     * @param array $MY_RIGHTS
+     * @param bool $includeUser
+     * @return array
      */
-    public function write($changelog_data) {
-        return \CakeLog::write('log', serialize($changelog_data));
+    public function getChangelogIndex(ChangelogsFilter $ChangelogsFilter, $PaginateOMat = null, $MY_RIGHTS = [], $includeUser = false) {
+        $contain = ['Containers'];
+        $select = [
+            'id',
+            'model',
+            'action',
+            'object_id',
+            'objecttype_id',
+            'data',
+            'name',
+            'created'
+        ];
+        if($includeUser === true){
+            $select[] = 'user_id';
+            $select[] = 'Users.id';
+            $select[] = 'Users.firstname';
+            $select[] = 'Users.lastname';
+            $select[] = 'Users.email';
+            $contain[] = 'Users';
+        }
+
+        $query = $this->find()
+            ->select($select)
+            ->innerJoinWith('Containers')
+            ->contain($contain);
+
+        $where = $ChangelogsFilter->indexFilter();
+        if (!empty($MY_RIGHTS)) {
+            $where['Containers.id IN'] = $MY_RIGHTS;
+        }
+
+        $query->where($where);
+
+        $query->order($ChangelogsFilter->getOrderForPaginator('Changelogs.created', 'desc'));
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
     }
 
     /**

@@ -584,11 +584,14 @@ class InstantreportsController extends AppController {
                 }
             }
         }
-        $reportData['hosts'] = $reportData;
+
+        $instantReportData = $reportData;
+        unset($reportData);
+        $reportData['hosts'] = $instantReportData;
         $reportSummaryData = [];
         if ($instantReport->get('summary') === 1) {
-            $hostsReportData = [];
-            $servicesReportData = [];
+            $hostsData = [];
+            $servicesData = [];
             $reportSummaryData = [
                 'summary_hosts'    => null,
                 'summary_services' => null
@@ -597,7 +600,7 @@ class InstantreportsController extends AppController {
 
             foreach ($reportData['hosts'] as $reportHostData) {
                 if (!empty($reportHostData['Host']['reportData'])) {
-                    $hostsReportData[] = [
+                    $hostsData[] = [
                         $reportHostData['Host']['reportData'][0],
                         $reportHostData['Host']['reportData'][1],
                         $reportHostData['Host']['reportData'][2]
@@ -606,7 +609,7 @@ class InstantreportsController extends AppController {
                 if (!empty($reportHostData['Host']['Services'])) {
                     foreach ($reportHostData['Host']['Services'] as $serviceData) {
                         if (!empty($serviceData['Service']['reportData'])) {
-                            $servicesReportData[] = [
+                            $servicesData[] = [
                                 $serviceData['Service']['reportData'][0],
                                 $serviceData['Service']['reportData'][1],
                                 $serviceData['Service']['reportData'][2],
@@ -616,8 +619,8 @@ class InstantreportsController extends AppController {
                     }
                 }
             }
-            if (!empty($hostsReportData)) {
-                $stateSummary = StatehistoryConverter::hostStateSummary($hostsReportData);
+            if (!empty($hostsData)) {
+                $stateSummary = StatehistoryConverter::hostStateSummary($hostsData);
                 $reportSummaryData['summary_hosts']['reportData'] = $stateSummary;
                 $reportSummaryData['summary_hosts']['reportData']['percentage'] = StatehistoryConverter::getPercentageValues(
                     $stateSummary,
@@ -625,8 +628,8 @@ class InstantreportsController extends AppController {
                     true
                 );
             }
-            if (!empty($servicesReportData)) {
-                $stateSummary = StatehistoryConverter::serviceStateSummary($servicesReportData);
+            if (!empty($servicesData)) {
+                $stateSummary = StatehistoryConverter::serviceStateSummary($servicesData);
                 $reportSummaryData['summary_services']['reportData'] = $stateSummary;
                 $reportSummaryData['summary_services']['reportData']['percentage'] = StatehistoryConverter::getPercentageValues(
                     $stateSummary,
@@ -634,7 +637,6 @@ class InstantreportsController extends AppController {
                     false
                 );
             }
-            $reportData = [];
             $reportData['hosts'] = [];
         }
 
@@ -673,43 +675,76 @@ class InstantreportsController extends AppController {
         return;
     }
 
+    /**
+     * @throws MissingDbBackendException
+     */
     public function createPdfReport() {
-        $instantReportDetails = $this->Session->read('instantReportDetails');
-        $reportName = '';
-        if (isset($instantReportDetails['name'])) {
-            $reportName = $instantReportDetails['name'];
-        }
-        $this->set('instantReportData', $this->Session->read('instantReportData'));
-        $this->set('instantReportDetails', $instantReportDetails);
-        if ($this->Session->check('instantReportData')) {
-            $this->Session->delete('instantReportData');
-        }
-        if ($this->Session->check('instantReportDetails')) {
-            $this->Session->delete('instantReportDetails');
+        $User = new User($this->getUser());
+        $UserTime = UserTime::fromUser($User);
+        $offset = $UserTime->getUserTimeToServerOffset();
+
+
+        $requestData = $this->request->getQuery('data', []);
+        $instantreportForm = new InstantreportForm();
+
+        $instantreportForm->execute($requestData);
+        $instantreportId = $requestData['instantreport_id'];
+
+        if (!empty($instantreportForm->getErrors())) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $instantreportForm->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
         }
 
-        $binary_path = '/usr/bin/wkhtmltopdf';
-        if (file_exists('/usr/local/bin/wkhtmltopdf')) {
-            $binary_path = '/usr/local/bin/wkhtmltopdf';
+        if ($this->isJsonRequest()) {
+            //Only validate parameters
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
         }
-        $this->pdfConfig = [
-            'engine'             => 'CakePdf.WkHtmlToPdf',
-            'margin'             => [
-                'bottom' => 5,
-                'left'   => 0,
-                'right'  => 0,
-                'top'    => 5,
-            ],
-            'encoding'           => 'UTF-8',
-            'download'           => true,
-            'binary'             => $binary_path,
-            'orientation'        => 'portrait',
-            'filename'           => sprintf('Instantreport_%s.pdf', $reportName),
-            'no-pdf-compression' => '*',
-            'image-dpi'          => '900',
-            'background'         => true,
-            'no-background'      => false,
-        ];
+
+        $fromDate = strtotime($this->request->getQuery('data.from_date', date('d.m.Y')) . ' 00:00:00');
+        $toDate = strtotime($this->request->getQuery('data.to_date', date('d.m.Y')) . ' 23:59:59');
+        $instantreportId = $this->request->getQuery('data.instantreport_id', 0);
+
+
+        /** @var $InstantreportsTable InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        if (!$InstantreportsTable->existsById($instantreportId)) {
+            throw new NotFoundException('Instant report not found!');
+        }
+
+        $instantReport = $this->createReport(
+            $instantreportId,
+            $fromDate,
+            $toDate
+        );
+
+        if ($instantReport === null) {
+            $this->set('error', [
+                'no_data' => [
+                    'empty' => __('! No data within specified time found (%s - %s) !',
+                        date('d.m.Y', $fromDate),
+                        date('d.m.Y', $toDate)
+                    )
+                ]
+            ]);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+        }
+
+        $this->set('fromDate', $fromDate - $offset);
+        $this->set('toDate', $toDate - $offset);
+
+
+        $this->set('instantReport', $instantReport);
+        $this->set('UserTime', $UserTime);
+
+        $this->viewBuilder()->setOption('pdfConfig', [
+                'download' => false,
+                'filename' => sprintf('InstantReport_%s.pdf', $instantReport['reportDetails']['name']) . date('dmY_his') . '.pdf'
+            ]
+        );
     }
 
     public function loadContainers() {
