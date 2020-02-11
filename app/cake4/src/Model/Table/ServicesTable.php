@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Lib\Traits\PluginManagerTableTrait;
+use App\Model\Entity\Changelog;
 use App\Model\Entity\Service;
 use App\Model\Entity\Servicedependency;
 use App\Model\Entity\Serviceescalation;
@@ -1341,7 +1342,9 @@ class ServicesTable extends Table {
         );
 
         if ($changelog_data) {
-            $ChangelogsTable->write($changelog_data);
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
         }
 
         if ($DocumentationsTable->existsByUuid($service->get('uuid'))) {

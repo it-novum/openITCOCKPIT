@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Entity\Agentcheck;
+use App\Model\Entity\Changelog;
 use App\Model\Entity\Host;
 use App\Model\Table\AgentchecksTable;
 use App\Model\Table\AgentconfigsTable;
@@ -432,7 +433,9 @@ class AgentconfigsController extends AppController {
                 );
 
                 if ($changelog_data) {
-                    $ChangelogsTable->write($changelog_data);
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
 
