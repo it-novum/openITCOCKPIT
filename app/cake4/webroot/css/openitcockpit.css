@@ -585,3 +585,9 @@ pre {
     background-color: rgba(255, 255, 255, 0.5);
     cursor: pointer;
 }
+
+.not-edit-area {
+    -webkit-filter: opacity(.5);
+    filter: opacity(.5);
+    pointer-events:none;
+}

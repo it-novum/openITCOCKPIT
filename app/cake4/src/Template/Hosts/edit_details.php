@@ -23,136 +23,182 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="HostsIndex">
+            <i class="fa fa-desktop"></i> <?php echo __('Hosts'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-edit"></i> <?php echo __('Edit host detail'); ?>
+    </li>
+</ol>
+
+
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-pencil-square-o fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
-            <span>>
-                <?php echo __('Edit host details'); ?>
-            </span>
-        </h1>
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Edit host detail'); ?>
+                </h2>
+                <div class="panel-toolbar">
+                    <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
+                        <a back-button fallback-state='HostsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <div class="card margin-bottom-10">
+                        <div class="card-header">
+                            <i class="fa fa-magic"></i>
+                            <?php echo __('Basic configuration'); ?>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="form-group col-lg-12" ng-class="{'has-error': errors.hosts_to_containers_sharing}">
+                                    <label class="control-label" for="HostContainer">
+                                        <button class="btn btn-xs btn-icon width-25"
+                                                ng-class="{ 'btn-primary': !post.editSharedContainers, 'btn-success': post.editSharedContainers }"
+                                                ng-click="post.editSharedContainers = !post.editSharedContainers"
+                                                name="post.editSharedContainers"
+                                                title="<?php echo __('Unlock for edit'); ?>">
+                                            <i class="fa fa-lock fa-lock"
+                                               ng-class="{ 'fa-lock': !post.editSharedContainers, 'fa-unlock': post.editSharedContainers }"></i>
+                                        </button>
+                                        <?php echo __('Shared containers'); ?>
+                                    </label>
+                                    <select
+                                        id="HostContainer"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        multiple
+                                        chosen="sharingContainers"
+                                        ng-disabled="!post.editSharedContainers"
+                                        ng-options="container.key as container.value for container in sharingContainers"
+                                        ng-model="post.Host.hosts_to_containers_sharing._ids">
+                                    </select>
+                                    <div class="form-group">
+                                        <div class="col-xs-12 col-lg-10 smart-form">
+                                            <label
+                                                class="checkbox small-checkbox-label display-inline margin-right-5 padding-top-0">
+                                                <input type="checkbox" name="checkbox"
+                                                       id="keepExistingSharedContainers"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       ng-disabled="!post.editSharedContainers"
+                                                       ng-model="post.keepSharedContainers">
+                                                <i class="checkbox-primary disabled"></i>
+                                                <?php echo __('Keep existing'); ?>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="form-group col-lg-12">
+                                    <label for="HostDetailDescription" class="control-label">
+                                        <button class="btn btn-xs btn-icon"
+                                                ng-class="{ 'btn-primary': !post.editDescription, 'btn-success': post.editDescription }"
+                                                ng-click="post.editDescription = !post.editDescription"
+                                                title="<?php echo __('Unlock for edit'); ?>">
+                                            <i class="fa fa-lock fa-lock"
+                                               ng-class="{ 'fa-lock': !post.editDescription, 'fa-unlock': post.editDescription }"></i>
+                                        </button>
+                                        <?php echo __('Description'); ?>
+                                    </label>
+                                    <input
+                                        ng-class="{ 'not-edit-area': !post.editDescription}"
+                                        class="form-control"
+                                        type="text"
+                                        ng-disabled="!post.editDescription"
+                                        ng-model="post.Host.description"
+                                        id="HostDetailDescription">
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="form-group col-lg-12">
+                                    <label class="control-label">
+                                        <button class="btn btn-xs btn-icon"
+                                                name="post.editTags"
+                                                ng-class="{ 'btn-primary': !post.editTags, 'btn-success': post.editTags }"
+                                                ng-click="post.editTags = !post.editTags"
+                                                title="<?php echo __('Unlock for edit'); ?>">
+                                            <i class="fa fa-lock fa-lock"
+                                               ng-class="{ 'fa-lock': !post.editTags, 'fa-unlock': post.editTags }"></i>
+                                        </button>
+                                        <?php echo __('Tags'); ?>
+                                    </label>
+                                    <div class="input-group" ng-class="{ 'not-edit-area': !post.editTags}">
+                                        <input class="form-control tagsinput"
+                                               data-role="tagsinput"
+                                               type="text"
+                                               id="HostTagsInput"
+                                               ng-disabled="!post.editTags"
+                                               ng-model="post.Host.tags">
+                                    </div>
+                                    <div class="help-block">
+                                        <?php echo __('Press return to separate tags'); ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="form-group col-lg-12">
+                                    <label class="control-label">
+                                        <button class="btn btn-xs btn-icon"
+                                                name="editPriority"
+                                                ng-class="{ 'btn-primary': !post.editPriority, 'btn-success': post.editPriority }"
+                                                ng-click="post.editPriority = !post.editPriority"
+                                                title="<?php echo __('Unlock for edit'); ?>">
+                                            <i class="fa fa-lock fa-lock"
+                                               ng-class="{ 'fa-lock': !post.editPriority, 'fa-unlock': post.editPriority }"></i>
+                                        </button>
+                                        <?php echo __('Priority'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-2" ng-class="{ 'not-edit-area': !post.editPriority}">
+                                        <priority-directive priority="post.Host.priority"
+                                                            callback="setPriority"></priority-directive>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<div class="jarviswidget" id="wid-id-0">
-    <header>
-        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet">
-            <?php echo __('Edit host detail'); ?>
-        </h2>
-        <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
-            <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
-                <a class="btn btn-default" ui-sref="HostsIndex">
-                    <i class="fa fa-arrow-left"></i>
-                    <?php echo __('Back to list'); ?>
-                </a>
-            <?php endif; ?>
-        </div>
-    </header>
-    <div>
-        <div class="widget-body">
-            <form class="form-horizontal">
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
-                        <div class="jarviswidget">
-                            <header>
-                                <span class="widget-icon">
-                                    <i class="fa fa-magic"></i>
-                                </span>
-                                <h2><?php echo __('Basic configuration'); ?></h2>
-                            </header>
-                            <div>
-                                <div class="widget-body">
-                                    <div class="row">
-                                        <div>
-                                            <div class="form-group">
-                                                <label class="col-xs-12 col-lg-2 control-label">
-                                                    <button class="btn btn-xs width-25"
-                                                            ng-class="{ 'btn-primary': !post.editSharedContainers, 'btn-success': post.editSharedContainers }"
-                                                            ng-click="post.editSharedContainers = !post.editSharedContainers"
-                                                            name="post.editSharedContainers"
-                                                            title="<?php echo __('Unlock for edit'); ?>">
-                                                        <i class="fa fa-lock fa-lock"
-                                                           ng-class="{ 'fa-lock': !post.editSharedContainers, 'fa-unlock': post.editSharedContainers }"></i>
-                                                    </button>
-                                                    <?php echo __('Shared containers'); ?>
-                                                </label>
-                                                <div class="col-xs-12 col-lg-10"
-                                                     ng-class="{ 'not-edit-area': !post.editSharedContainers}">
-                                                    <select
-                                                        id="SharedContainers"
-                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                        class="form-control"
-                                                        multiple
-                                                        chosen="sharingContainers"
-                                                        ng-disabled="!post.editSharedContainers"
-                                                        ng-options="container.key as container.value for container in sharingContainers"
-                                                        ng-model="post.Host.hosts_to_containers_sharing._ids">
-                                                    </select>
-                                                    <div class="help-block">
-                                                        <div class="form-group">
-                                                            <div class="col-xs-12 col-lg-10 smart-form">
-                                                                <label
-                                                                    class="checkbox small-checkbox-label display-inline margin-right-5 padding-top-0">
-                                                                    <input type="checkbox" name="checkbox"
-                                                                           id="keepExistingSharedContainers"
-                                                                           ng-true-value="1"
-                                                                           ng-false-value="0"
-                                                                           ng-disabled="!post.editSharedContainers"
-                                                                           ng-model="post.keepSharedContainers">
-                                                                    <i class="checkbox-primary disabled"></i>
-                                                                    <?php echo __('Keep existing'); ?>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-xs-12 col-lg-2 control-label">
-                                                <button class="btn btn-xs width-25"
-                                                        ng-class="{ 'btn-primary': !post.editDescription, 'btn-success': post.editDescription }"
-                                                        ng-click="post.editDescription = !post.editDescription"
-                                                        title="<?php echo __('Unlock for edit'); ?>">
-                                                    <i class="fa fa-lock fa-lock"
-                                                       ng-class="{ 'fa-lock': !post.editDescription, 'fa-unlock': post.editDescription }"></i>
-                                                </button>
-                                                <?php echo __('Description'); ?>
-                                            </label>
-                                            <div class="col-xs-12 col-lg-10"
-                                                 ng-class="{ 'not-edit-area': !post.editDescription}">
-                                                <input
-                                                    class="form-control"
-                                                    type="text"
-                                                    ng-disabled="!post.editDescription"
-                                                    ng-model="post.Host.description">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-xs-12 col-lg-2 control-label">
-                                                <button class="btn btn-xs width-25"
-                                                        name="post.editTags"
-                                                        ng-class="{ 'btn-primary': !post.editTags, 'btn-success': post.editTags }"
-                                                        ng-click="post.editTags = !post.editTags"
-                                                        title="<?php echo __('Unlock for edit'); ?>">
-                                                    <i class="fa fa-lock fa-lock"
-                                                       ng-class="{ 'fa-lock': !post.editTags, 'fa-unlock': post.editTags }"></i>
-                                                </button>
-                                                <?php echo __('Tags'); ?>
-                                            </label>
-                                            <div class="col-xs-12 col-lg-10"
-                                                 ng-class="{ 'not-edit-area': !post.editTags}">
-                                                <input class="form-control tagsinput"
-                                                       type="text"
-                                                       ng-disabled="!post.editTags"
-                                                       ng-model="post.Host.tags">
-                                                <div class="help-block">
-                                                    <?php echo __('Press return to separate tags'); ?>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                        <div class="form-group col-lg-12">
                                             <label class="col-xs-12 col-lg-2 control-label">
                                                 <button class="btn btn-xs width-25"
                                                         name="editPriority"
