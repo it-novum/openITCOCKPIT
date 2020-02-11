@@ -44,4 +44,12 @@ class Changelog extends Entity {
         'user'          => true,
         'containers'    => true
     ];
+
+    public function jsonSerialize(): array {
+        $data = $this->extract($this->getVisible());
+        if (isset($data['data'])) {
+            $data['data_unserialized'] = unserialize($data['data']);
+        }
+        return $data;
+    }
 }

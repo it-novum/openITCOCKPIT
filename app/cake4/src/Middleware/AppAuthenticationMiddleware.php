@@ -28,6 +28,7 @@ namespace App\Middleware;
 use Authentication\Authenticator\UnauthenticatedException;
 use Authentication\Middleware\AuthenticationMiddleware;
 use Cake\Http\Response;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -59,9 +60,12 @@ class AppAuthenticationMiddleware extends AuthenticationMiddleware implements Mi
             $response = parent::process($request, $handler);
         } catch (UnauthenticatedException $e) {
             $header = $request->getHeader('Accept');
-            if (is_array($header)) {
+            if (is_array($header) && isset($header[0])) {
                 $header = $header[0];
+            }else{
+                $header = '';
             }
+
             $isJson = $header === 'application/json';
             if (!$isJson) {
                 //Search URL for .json

@@ -27,184 +27,37 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-class ChangelogsController extends AppController {
-    public $helpers = [
-        'Form',
-        'Html',
-        'Time',
-        'ListFilter.ListFilter',
-        'Changelog',
-    ];
-    public $components = [
-        'ListFilter.ListFilter',
-        'RequestHandler',
-    ];
-    public $uses = ['Changelog'];
+use App\Model\Table\ChangelogsTable;
+use App\Model\Table\SystemsettingsTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\ChangelogsFilter;
 
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Changelog.name'   => [
-                    'label'        => 'Name',
-                    'searchType'   => 'wildcard',
-                    'inputOptions' => [
-                        'class' => 'form-control',
-                        'style' => 'width:80%;'
-                    ]
-                ],
-                'Changelog.model'  => [
-                    'label'      => 'Object type',
-                    'type'       => 'checkbox',
-                    'searchType' => 'nix',
-                    'options'    => [
-                        'Command'         => [
-                            'name'  => 'Command',
-                            'value' => 1,
-                            'label' => 'Command',
-                            'data'  => 'Filter.Changelog.model',
-                        ],
-                        'Contact'         => [
-                            'name'  => 'Contact',
-                            'value' => 1,
-                            'label' => 'Contact',
-                            'data'  => 'Filter.Changelog.model',
-                        ],
-                        'Contactgroup'    => [
-                            'name'  => 'Contactgroup',
-                            'value' => 1,
-                            'label' => 'Contactgroup',
-                            'data'  => 'Filter.Changelog.model',
-                        ],
-                        'Host'            => [
-                            'name'  => 'Host',
-                            'value' => 1,
-                            'label' => 'Host',
-                            'data'  => 'Filter.Changelog.model',
-                        ],
-                        'Hostgroup'       => [
-                            'name'  => 'Hostgroup',
-                            'value' => 1,
-                            'label' => 'Hostgroup',
-                            'data'  => 'Filter.Changelog.model',
-                        ],
-                        'Hosttemplate'    => [
-                            'name'  => 'Hosttemplate',
-                            'value' => 1,
-                            'label' => 'Hosttemplate',
-                            'data'  => 'Filter.Changelog.model',
-                        ],
-                        'Service'         => [
-                            'name'  => 'Service',
-                            'value' => 1,
-                            'label' => 'Service',
-                            'data'  => 'Filter.Changelog.model',
-                        ],
-                        'Servicegroup'    => [
-                            'name'  => 'Servicegroup',
-                            'value' => 1,
-                            'label' => 'Servicegroup',
-                            'data'  => 'Filter.Changelog.model',
-                        ],
-                        'Servicetemplate' => [
-                            'name'  => 'Servicetemplate',
-                            'value' => 1,
-                            'label' => 'Servicetemplate',
-                            'data'  => 'Filter.Changelog.model',
-                        ],
-                        'Timeperiod'      => [
-                            'name'  => 'Timeperiod',
-                            'value' => 1,
-                            'label' => 'Timeperiod',
-                            'data'  => 'Filter.Changelog.model',
-                        ],
-                    ],
-                ],
-                'Changelog.action' => [
-                    'label'      => 'Object type',
-                    'type'       => 'checkbox',
-                    'searchType' => 'nix',
-                    'options'    => [
-                        'add'    => [
-                            'name'  => 'add',
-                            'value' => 1,
-                            'label' => '<i class="fa fa-plus txt-color-greenLight"></i> add',
-                            'data'  => 'Filter.Changelog.action',
-                        ],
-                        'copy'   => [
-                            'name'  => 'copy',
-                            'value' => 1,
-                            'label' => '<i class="fa fa-copy txt-color-blue"></i> copy',
-                            'data'  => 'Filter.Changelog.action',
-                        ],
-                        'delete' => [
-                            'name'  => 'delete',
-                            'value' => 1,
-                            'label' => '<i class="fa fa-trash-o txt-color-red"></i> delete',
-                            'data'  => 'Filter.Changelog.action',
-                        ],
-                        'edit'   => [
-                            'name'  => 'edit',
-                            'value' => 1,
-                            'label' => '<i class="fa fa-pencil txt-color-blue"></i> edit',
-                            'data'  => 'Filter.Changelog.action',
-                        ],
-                    ],
-                ],
-            ],
-        ],
-    ];
+class ChangelogsController extends AppController {
 
     public function index() {
-        $conditions = [
-            'ChangelogsToContainers.container_id' => $this->MY_RIGHTS,
-        ];
-        $conditions = $this->ListFilter->buildConditions([], $conditions);
-        $query = [
-            'recursive'  => -1,
-            'fields'     => [
-                'DISTINCT Changelog.*', 'User.id', 'User.lastname', 'User.firstname',
-            ],
-            'joins'      => [
-                [
-                    'table'      => 'users',
-                    'alias'      => 'User',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'User.id = Changelog.user_id',
-                    ],
-                ],
-                [
-                    'table'      => 'changelogs_to_containers',
-                    'alias'      => 'ChangelogsToContainers',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'ChangelogsToContainers.changelog_id = Changelog.id',
-                    ],
-
-                ],
-            ],
-            'conditions' => [
-                $conditions,
-            ],
-            'order'      => [
-                'Changelog.created' => 'DESC',
-            ],
-        ];
-
-        $result = $this->Systemsetting->findByKey('FRONTEND.HIDDEN_USER_IN_CHANGELOG');
-        $showUser = !(bool)$result['Systemsetting']['value'];
-
-        $this->Paginator->settings = $query;
-        if ($this->isApiRequest()) {
-            $this->Paginator->settings['limit'] = 250;
-            $all_changes = $this->Paginator->paginate();
-        } else {
-            $all_changes = $this->Paginator->paginate();
+        if (!$this->isApiRequest()) {
+            //Only ship HTML Template
+            return;
         }
 
-        $this->viewBuilder()->setOption('serialize', ['all_changes']);
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-        $this->set(compact(['all_changes']));
-        $this->set('showUser', $showUser);
+        $result = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.HIDDEN_USER_IN_CHANGELOG');
+        $includeUser = $result->get('value') === '0';
+
+        $ChangelogsFilter = new ChangelogsFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ChangelogsFilter->getPage());
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges === true) {
+            $MY_RIGHTS = [];
+        }
+        $all_changes = $ChangelogsTable->getChangelogIndex($ChangelogsFilter, $PaginateOMat, $MY_RIGHTS, $includeUser);
+
+        $this->set('all_changes', $all_changes);
+        $this->viewBuilder()->setOption('serialize', ['all_changes']);
     }
 }
