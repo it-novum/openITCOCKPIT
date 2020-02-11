@@ -567,7 +567,21 @@ pre {
     box-shadow: none;
 }
 
-.filter-text{
+.filter-text {
     padding-top: 4px;
     padding-bottom: 4px;
+}
+
+.browser-action {
+    background-color: rgba(255, 255, 255, 0.3);
+    width: 100%;
+    min-height: 40px;
+    font-size: 16px;
+    text-align: center;
+    padding-top: 7px;
+}
+
+.browser-action:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
 }

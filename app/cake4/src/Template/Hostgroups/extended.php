@@ -162,7 +162,7 @@
                             <tr ng-if="hostgroup.Hosts.length > 0">
                                 <td colspan="8" class="no-padding">
                                     <div class="form-group">
-                                        <div class="input-group">
+                                        <div class="input-group input-group-sm">
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fa fa-desktop"></i></span>
                                             </div>
