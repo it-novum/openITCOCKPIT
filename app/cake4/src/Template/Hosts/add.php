@@ -39,6 +39,24 @@
     </li>
 </ol>
 
+<div class="alert alert-warning alert-dismissible fade show ng-hide" role="alert" ng-show="showRootAlert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true"><i class="fal fa-times"></i></span>
+    </button>
+    <div class="d-flex align-items-center">
+        <div class="alert-icon width-3">
+            <div class='icon-stack  icon-stack-sm'>
+                <i class="base base-9 icon-stack-3x opacity-100 color-warning-600"></i>
+                <i class="fas fa-exclamation-circle icon-stack-1x opacity-100 color-white"></i>
+            </div>
+        </div>
+        <div class="flex-1">
+            <span class="h5 m-0 fw-700"><?php echo __('/root container selected!'); ?></span>
+            <?php echo __('Choosing a tenant container is recommended for later permission purposes'); ?>
+        </div>
+    </div>
+</div>
+
 
 <div class="row">
     <div class="col-xl-12">
