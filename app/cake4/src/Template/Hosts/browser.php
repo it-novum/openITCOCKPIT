@@ -535,12 +535,12 @@ use Cake\Core\Plugin;
                                             <tr>
                                                 <td><?php echo __('Notifications enabled'); ?></td>
                                                 <td>
-                                                        <span class="label label-success"
+                                                        <span class="badge badge-success"
                                                               ng-show="hoststatus.notifications_enabled">
                                                             <?php echo __('Yes'); ?>
                                                         </span>
 
-                                                    <span class="label label-danger"
+                                                    <span class="badge badge-danger"
                                                           ng-show="!hoststatus.notifications_enabled">
                                                             <?php echo __('No'); ?>
                                                         </span>
@@ -550,31 +550,31 @@ use Cake\Core\Plugin;
                                             <tr>
                                                 <td><?php echo __('Notify on'); ?></td>
                                                 <td>
-                                                        <span class="label label-success"
+                                                        <span class="badge badge-success"
                                                               ng-show="mergedHost.notify_on_recovery"
                                                               style="margin-right: 2px;">
                                                             <?php echo __('Recover'); ?>
                                                         </span>
 
-                                                    <span class="label label-danger"
+                                                    <span class="badge badge-danger"
                                                           ng-show="mergedHost.notify_on_down"
                                                           style="margin-right: 2px;">
                                                             <?php echo __('Down'); ?>
                                                         </span>
 
-                                                    <span class="label label-default"
+                                                    <span class="badge badge-secondary"
                                                           ng-show="mergedHost.notify_on_unreachable"
                                                           style="margin-right: 2px;">
                                                             <?php echo __('Unreachable'); ?>
                                                         </span>
 
-                                                    <span class="label label-primary"
+                                                    <span class="badge badge-primary"
                                                           ng-show="mergedHost.notify_on_flapping"
                                                           style="margin-right: 2px;">
                                                             <?php echo __('Flapping'); ?>
                                                         </span>
 
-                                                    <span class="label label-primary"
+                                                    <span class="badge badge-primary"
                                                           ng-show="mergedHost.notify_on_downtime"
                                                           style="margin-right: 2px;">
                                                             <?php echo __('Downtime'); ?>
@@ -709,6 +709,7 @@ use Cake\Core\Plugin;
     </div>
 </div>
 
+<!-- Service list -->
 <div class="row">
     <div class="col-xl-12">
         <div id="panel-2" class="panel">
@@ -1017,6 +1018,17 @@ use Cake\Core\Plugin;
                                 <?php echo __('No entries match the selection'); ?>
                             </div>
                         </div>
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
+
+                        <div id="serviceGraphContainer" class="popup-graph-container">
+                            <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;"
+                                 ng-show="isLoadingGraph">
+                                <i class="fa fa-refresh fa-4x fa-spin"></i>
+                            </div>
+                            <div id="serviceGraphFlot"></div>
+                        </div>
                     </div>
 
                     <div id="serviceTab2" class="tab-pane" ng-if="activeTab === 'notMonitored'">
@@ -1108,6 +1120,10 @@ use Cake\Core\Plugin;
                                 <?php echo __('No entries match the selection'); ?>
                             </div>
                         </div>
+
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
 
                     <div id="serviceTab3" class="tab-pane" ng-if="activeTab === 'disabled'">
@@ -1199,6 +1215,9 @@ use Cake\Core\Plugin;
                                 <?php echo __('No entries match the selection'); ?>
                             </div>
                         </div>
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>
