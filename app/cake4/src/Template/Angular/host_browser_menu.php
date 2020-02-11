@@ -87,7 +87,7 @@
                 <a ui-sref="HostchecksIndex({id:config.hostId})"
                    title="<?php echo __('Check history'); ?>"
                    class="btn btn-default btn-sm">
-                    <i class="fa fa-check-square-o fa-lg"></i>
+                    <i class="fa fa-check-square fa-lg"></i>
                 </a>
             <?php endif; ?>
 
@@ -123,31 +123,29 @@
                 </a>
             <?php endif; ?>
 
-            <div class="btn-group">
-                <a href="javascript:void(0);" class="btn btn-default btn-sm"><?php echo __('More'); ?></a>
-                <a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle btn-sm">
-                    <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-right">
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-default dropdown-toggle waves-effect waves-themed" type="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <?php echo __('More actions'); ?>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-start"
+                     style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
                     <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                        <li>
-                            <a ui-sref="ServicesServiceList({id: config.hostId})">
-                                <i class="fa fa-list"></i>
-                                <?php echo __('Service list'); ?>
-                            </a>
-                        </li>
+                        <a class="dropdown-item"
+                           ui-sref="ServicesServiceList({id: config.hostId})">
+                            <i class="fa fa-cog"></i>
+                            <?php echo __('Service list'); ?>
+                        </a>
                     <?php endif; ?>
                     <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
-                        <li>
-                            <a ui-sref="ServicetemplategroupsAllocateToHost({id: 0, hostId: config.hostId})">
-                                <i class="fa fa-external-link"></i>
-                                <?php echo __('Allocate service template group'); ?>
-                            </a>
-                        </li>
+                        <a class="dropdown-item"
+                           ui-sref="ServicetemplategroupsAllocateToHost({id: 0, hostId: config.hostId})">
+                            <i class="fas fa-external-link-alt"></i>
+                            <?php echo __('Allocate service template group'); ?>
+                        </a>
                     <?php endif; ?>
-                </ul>
+                </div>
             </div>
-
         </div>
     </div>
 </div>
