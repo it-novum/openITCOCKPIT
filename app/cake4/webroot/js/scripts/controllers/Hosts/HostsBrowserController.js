@@ -69,6 +69,14 @@ angular.module('openITCOCKPIT')
         var graphEnd = 0;
 
         $scope.showFlashMsg = function(){
+            new Noty({
+                theme: 'metroui',
+                type: 'success',
+                layout: 'topCenter',
+                text: $scope.flashMshStr,
+                timeout: 4000
+            }).show();
+
             $scope.showFlashSuccess = true;
             $scope.autoRefreshCounter = 5;
             var interval = $interval(function(){
