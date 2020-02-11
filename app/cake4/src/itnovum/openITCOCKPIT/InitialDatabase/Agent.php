@@ -168,7 +168,8 @@ class Agent extends Importer {
                 'human_args'       => null,
                 'uuid'             => 'ab3fe6f2-b5c6-4ba0-9d72-123696d42277',
                 'description'      => "Return memory usage as percentage\n" .
-                    "Warning and Critical thresholds are percentage values from 0-100",
+                    "Warning and Critical thresholds are percentage values from 0-100 or float values depending on the chosen unit." .
+                    "Unit: Determines if warning and critical is defined as percentage (%) or amount of ('B', 'kB', 'KiB', 'MB', 'MiB', 'GB', 'GiB', 'TB', 'TiB', 'PB', 'PiB', 'EB', 'EiB')",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
@@ -177,6 +178,10 @@ class Agent extends Importer {
                     [
                         'name'       => '$ARG2$',
                         'human_name' => 'Critical'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Unit'
                     ]
                 ]
             ],
@@ -700,11 +705,11 @@ class Agent extends Importer {
                 'servicetemplatecommandargumentvalues'      => [
                     [
                         'commandargument_id' => '$ARG1$',
-                        'value'              => '20',
+                        'value'              => '90',
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => '30',
+                        'value'              => '95',
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
@@ -776,11 +781,11 @@ class Agent extends Importer {
                 'servicetemplatecommandargumentvalues'      => [
                     [
                         'commandargument_id' => '$ARG1$',
-                        'value'              => '2',
+                        'value'              => '24',
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => '3',
+                        'value'              => '32',
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
@@ -852,11 +857,15 @@ class Agent extends Importer {
                 'servicetemplatecommandargumentvalues'      => [
                     [
                         'commandargument_id' => '$ARG1$',
-                        'value'              => '75',
+                        'value'              => '80',
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
                         'value'              => '90',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG5$',
+                        'value'              => '%',
                     ]
                 ],
                 'customvariables'                           => [],
@@ -1156,7 +1165,7 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
-                        'value'              => '',
+                        'value'              => 'thinkpad',
                     ]
                 ],
                 'customvariables'                           => [],
@@ -1224,11 +1233,11 @@ class Agent extends Importer {
                 'servicetemplatecommandargumentvalues'      => [
                     [
                         'commandargument_id' => '$ARG1$',
-                        'value'              => '70',
+                        'value'              => '100',
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => '80',
+                        'value'              => '110',
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
@@ -1304,11 +1313,11 @@ class Agent extends Importer {
                 'servicetemplatecommandargumentvalues'      => [
                     [
                         'commandargument_id' => '$ARG1$',
-                        'value'              => '35',
+                        'value'              => '@35',
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => '20',
+                        'value'              => '@20',
                     ]
                 ],
                 'customvariables'                           => [],
@@ -1376,11 +1385,11 @@ class Agent extends Importer {
                 'servicetemplatecommandargumentvalues'      => [
                     [
                         'commandargument_id' => '$ARG1$',
-                        'value'              => '20000',
+                        'value'              => '',
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => '80000',
+                        'value'              => '',
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
@@ -1472,7 +1481,7 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => '',
+                        'value'              => 'eth0',
                     ]
                 ],
                 'customvariables'                           => [],
@@ -1556,11 +1565,11 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG5$',
-                        'value'              => '2',
+                        'value'              => '',
                     ],
                     [
                         'commandargument_id' => '$ARG6$',
-                        'value'              => '4',
+                        'value'              => '1:1',
                     ],
                     [
                         'commandargument_id' => '$ARG7$',
@@ -1716,11 +1725,11 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
-                        'value'              => '20',
+                        'value'              => '80',
                     ],
                     [
                         'commandargument_id' => '$ARG4$',
-                        'value'              => '40',
+                        'value'              => '90',
                     ]
                 ],
                 'customvariables'                           => [],
