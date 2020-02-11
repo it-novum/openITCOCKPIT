@@ -33,10 +33,10 @@ angular.module('openITCOCKPIT')
                 //PDF Report
                 var GETParams = {
                     'angular': true,
+                    'data[instantreport_id]': $scope.post.instantreport_id,
                     'data[from_date]': $scope.post.from_date,
                     'data[to_date]': $scope.post.to_date
                 };
-
                 $http.get("/instantreports/createPdfReport.json", {
                         params: GETParams
                     }
@@ -47,7 +47,6 @@ angular.module('openITCOCKPIT')
                         $scope.errors = result.data.error;
                     }
                 });
-
             }else{
                 //HTML Report
                 $http.post("/instantreports/generate/" + $scope.post.instantreport_id + ".json", $scope.post
