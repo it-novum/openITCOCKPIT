@@ -224,7 +224,9 @@ class InstantreportsController extends AppController {
      */
     private function createReport($instantReportId, $fromDate, $toDate) {
         $User = new User($this->getUser());
-        $UserTime = UserTime::fromUser($User);
+        $UserTime = new UserTime($User->getTimezone(), $User->getDateformat());
+        $offset = $UserTime->getUserTimeToServerOffset();
+
         $reportData = [];
         /** @var $InstantreportsTable InstantreportsTable */
         $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
@@ -282,8 +284,8 @@ class InstantreportsController extends AppController {
             'type'       => $instantReport->get('type'),
             'summary'    => $instantReport->get('summary'),
             'totalTime'  => $totalTime,
-            'from'       => $UserTime->format($fromDate),
-            'to'         => $UserTime->format($toDate)
+            'from'       => $UserTime->format($fromDate - $offset),
+            'to'         => $UserTime->format($toDate - $offset)
         ];
         $globalDowntimes = [];
         if ($instantReport->get('downtimes') === 1) {
