@@ -92,6 +92,7 @@ use Cake\Core\Plugin;
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
+                    <!-- Status information start -->
                     <div ng-show="selectedTab == 'tab1'" class="tab-pane">
                         <!-- status overview for small resolutions -->
                         <div class="d-sm-none"
@@ -703,6 +704,234 @@ use Cake\Core\Plugin;
                         </div>
 
                     </div>
+                    <!-- Status information end -->
+                    <!-- Device information start -->
+                    <div ng-show="selectedTab == 'tab2'" class="tab-pane">
+                        <div class="row">
+                            <div class="col-lg-12 padding-10">
+                                <div class="row">
+
+                                    <div class="col-lg-12">
+                                        <h3 class="margin-top-0"><?php echo __('Host overview'); ?></h3>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-12 col-md-6">
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <td><?php echo __('IP address'); ?></td>
+                                                <td>{{ mergedHost.address }}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td><?php echo __('Flap detection enabled'); ?></td>
+                                                <td>
+                                                        <span class="badge badge-danger"
+                                                              ng-show="hoststatus.flap_detection_enabled">
+                                                            <?php echo __('Yes'); ?>
+                                                        </span>
+
+                                                    <span class="badge badge-success"
+                                                          ng-show="!hoststatus.flap_detection_enabled">
+                                                            <?php echo __('No'); ?>
+                                                        </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <div class="col-xs-12 col-sm-12 col-md-6">
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <td><?php echo __('Priority'); ?></td>
+                                                <td>
+                                                    <i class="fa fa-fire ma"
+                                                       ng-repeat="priority in priorities"
+                                                       ng-class="{'text-primary': priority, 'text-lightGray': !priority}"
+                                                       style="font-size:17px;margin-left:2px;">
+                                                    </i>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><?php echo __('UUID'); ?></td>
+                                                <td>
+                                                    <code>{{ mergedHost.uuid }}</code>
+                                                    <span
+                                                        class="btn btn-default btn-xs"
+                                                        onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"
+                                                        title="<?php echo __('Copy to clipboard'); ?>">
+                                                            <i class="fa fa-copy"></i>
+                                                        </span>
+                                                    <input type="text" style="display:none;" id="host-uuid-copy"
+                                                           value="{{ mergedHost.uuid }}"
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                        <table class="table table-striped m-0 table-bordered table-hover table-sm">
+                                            <tr>
+                                                <td><?php echo __('Container'); ?></td>
+
+                                                <td>
+                                                    <?php if ($this->Acl->hasPermission('index', 'browsers')): ?>
+                                                        <a ui-sref="BrowsersIndex({containerId: mergedHost.container_id})">
+                                                            /{{mainContainer}}
+                                                        </a>
+                                                    <?php else: ?>
+                                                        /{{mainContainer}}
+                                                    <?php endif; ?>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td><?php echo __('Shared containers'); ?></td>
+                                                <td>
+
+                                                    <?php if ($this->Acl->hasPermission('index', 'browsers')): ?>
+                                                        <div ng-repeat="(key, value) in sharedContainers">
+                                                            <a ui-sref="BrowsersIndex({containerId: key})">
+                                                                /{{value}}
+                                                            </a>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <div ng-repeat="(key, value) in sharedContainers">
+                                                            /{{value}}
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+
+                                            <tr ng-show="tags.length">
+                                                <td><?php echo __('Tags'); ?></td>
+                                                <td>
+                                                        <span class="label label-primary"
+                                                              ng-repeat="tag in tags"
+                                                              style="margin-right: 2px;">{{tag}}</span>
+                                                </td>
+                                            </tr>
+
+                                            <tr ng-show="mergedHost.is_satellite_host">
+                                                <td><?php echo __('Satellite'); ?></td>
+                                                <td>
+                                                    <satellite-name
+                                                        satellite-id="mergedHost.satellite_id"
+                                                        ng-if="mergedHost.is_satellite_host"
+                                                    ></satellite-name>
+                                                </td>
+                                            </tr>
+
+                                            <tr ng-show="mergedHost.is_satellite_host === false">
+                                                <td><?php echo __('Instance'); ?></td>
+                                                <td>
+                                                    <?php if (isset($masterInstanceName)) echo h($masterInstanceName); ?>
+                                                </td>
+                                            </tr>
+
+                                            <tr ng-show="mergedHost.notes">
+                                                <td><?php echo __('Notes'); ?></td>
+                                                <td>
+                                                    {{mergedHost.notes}}
+                                                </td>
+                                            </tr>
+                                            <tr ng-show="mergedHost.description">
+                                                <td><?php echo __('Description'); ?></td>
+                                                <td>
+                                                    {{mergedHost.description}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Device information end -->
+                    <!-- Timeline start -->
+                    <div class="" ng-show="showTimelineTab && selectedTab == 'tab3'">
+                        <div class="row">
+                            <div class="col-lg-12 padding-10">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <h3 class="margin-top-0">
+                                            <?php echo __('Outages: '); ?>
+                                            <span ng-hide="failureDurationInPercent">
+                                                    <i class="fa fa-refresh fa-spin txt-primary"></i>
+                                                </span>
+                                            <span ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ? failureDurationInPercent+' %' :
+                                                    '<?php echo __('No data available !'); ?>'}}
+                                                </span>
+                                        </h3></div>
+                                    <div class="col-12">
+                                        <div id="visualization"></div>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                        <div class="row">
+                                            <div class="col-lg-12 bold"><?php echo __('Legend'); ?></div>
+                                            <div class="col-lg-12">
+                                                <?php echo __('State types'); ?>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-lg-3">
+                                                <i class="fa fa-square up-soft"></i>
+                                                <?php echo __('Up soft'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square down-soft"></i>
+                                                <?php echo __('Down soft'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square unreachable-soft"></i>
+                                                <?php echo __('Unreachable soft'); ?>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-lg-3">
+                                                <i class="fa fa-square up"></i>
+                                                <?php echo __('Up hard'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square down"></i>
+                                                <?php echo __('Down hard'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square unreachable"></i>
+                                                <?php echo __('Unreachable hard'); ?>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-xs-12 col-lg-3">
+                                                <i class="fa fa-square text-primary"></i>
+                                                <?php echo __('Downtime'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square txt-ack"></i>
+                                                <?php echo __('Acknowledged'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square txt-notification"></i>
+                                                <?php echo __('Notification'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square txt-timerange"></i>
+                                                <?php echo __('Check period'); ?>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-xs-12 col-lg-3">
+                                                <i class="fa fa-square txt-downtime-cancelled"></i>
+                                                <?php echo __('Downtime cancelled'); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Timeline end -->
                 </div>
             </div>
         </div>
