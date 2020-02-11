@@ -893,7 +893,7 @@
                                         </div>
                                     </div>
 
-                                    <a back-button fallback-state='ServicesIndex' class="btn btn-default">
+                                    <a back-button fallback-state='HostsIndex' class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

@@ -65,7 +65,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Deleted hosts'); ?>
+                    <?php echo __('Hosts'); ?>
                     <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
@@ -641,7 +641,7 @@
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
-                                <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
+                                <a ui-sref="HostsCopy({ids: linkForCopy()})" class="a-clean">
                                     <i class="fas fa-lg fa-files-o"></i>
                                     <?php echo __('Copy'); ?>
                                 </a>
