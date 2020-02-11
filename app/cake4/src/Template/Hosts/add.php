@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="HostsIndex">
-            <i class="fa fa-cog"></i> <?php echo __('Services'); ?>
+            <i class="fa fa-cog"></i> <?php echo __('Hosts'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -182,39 +182,46 @@
                                         <label class="control-label">
                                             <?php echo __('Description'); ?>
                                         </label>
-                                        <input
-                                            id="HostDescription"
-                                            class="form-control"
-                                            type="text"
-                                            ng-model="post.Host.description">
-                                        <template-diff ng-show="post.Host.hosttemplate_id"
-                                                       value="post.Host.description"
-                                                       template-value="hosttemplate.Hosttemplate.description"></template-diff>
+                                        <div class="input-group">
+                                            <input
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="post.Host.description">
+
+                                            <template-diff ng-show="post.Host.hosttemplate_id"
+                                                           value="post.Host.description"
+                                                           template-value="hosttemplate.Hosttemplate.description"></template-diff>
+                                        </div>
                                         <div ng-repeat="error in errors.description">
-                                            <div class="help-block text-danger">{{ description }}</div>
+                                            <div class="help-block text-danger">{{ error }}</div>
                                         </div>
                                     </div>
 
-                                    <div class="form-group required" ng-class="{'has-error': errors.hostgroups}">
-                                        <label class="control-label" for="HostgroupsSelect">
+
+                                    <div class="form-group required"
+                                         ng-class="{'has-error': errors.hostgroups}">
+                                        <label class="control-label">
                                             <?php echo __('Host groups'); ?>
                                         </label>
-                                        <select
-                                            id="HostgroupsSelect"
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="hostgroups"
-                                            multiple
-                                            ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
-                                            ng-model="post.Host.hostgroups._ids">
-                                        </select>
-                                        <template-diff ng-show="post.Host.hosttemplate_id"
-                                                       value="post.Host.hostgroups._ids"
-                                                       template-value="hosttemplate.Hosttemplate.hostgroups._ids"></template-diff>
+                                        <div class="input-group" style="width: 100%;">
+                                            <select
+                                                id="HostgroupsSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="hostgroups"
+                                                multiple
+                                                ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+                                                ng-model="post.Host.hostgroups._ids">
+                                            </select>
+                                            <template-diff ng-show="post.Host.hosttemplate_id"
+                                                           value="post.Host.hostgroups._ids"
+                                                           template-value="hosttemplate.Hosttemplate.hostgroups._ids"></template-diff>
+                                        </div>
                                         <div ng-repeat="error in errors.hostgroups">
                                             <div class="help-block text-danger">{{ error }}</div>
                                         </div>
                                     </div>
+
 
                                     <div class="form-group required" ng-class="{'has-error': errors.parenthosts}">
                                         <label class="control-label" for="ParentHostsSelect">
@@ -240,15 +247,13 @@
                                             <?php echo __('Tags'); ?>
                                         </label>
                                         <div class="input-group">
-                                            <div class="col">
-                                                <div class="col">
-                                                    <input class="form-control tagsinput"
-                                                           data-role="tagsinput"
-                                                           type="text"
-                                                           id="HostTagsInput"
-                                                           ng-model="post.Host.tags">
+                                            <div class="col-lg padding-left-0 padding-right-23">
+                                                <input class="form-control tagsinput"
+                                                       data-role="tagsinput"
+                                                       type="text"
+                                                       id="HostTagsInput"
+                                                       ng-model="post.Host.tags">
 
-                                                </div>
                                             </div>
                                             <div style="margin-left: -23px;">
                                                 <template-diff ng-show="post.Host.hosttemplate_id"
@@ -677,46 +682,43 @@
                             <div class="card-body">
 
                                 <div class="form-group" ng-class="{'has-error': errors.host_url}">
-                                    <label class="col-xs-12 col-lg-2 control-label">
+                                    <label class="control-label">
                                         <?php echo __('Host URL'); ?>
                                     </label>
-                                    <div class="col-xs-12 col-lg-10">
-                                        <div class="input-group" style="width: 100%;">
-                                            <input
-                                                class="form-control"
-                                                type="text"
-                                                placeholder="https://issues.example.org?host=$HOSTNAME$"
-                                                ng-model="post.Host.host_url">
-                                            <template-diff ng-show="post.Host.hosttemplate_id"
-                                                           value="post.Host.host_url"
-                                                           template-value="hosttemplate.Hosttemplate.host_url"></template-diff>
-                                        </div>
-                                        <div ng-repeat="error in errors.host_url">
-                                            <div class="help-block text-danger">{{ error }}</div>
-                                        </div>
-                                        <div class="help-block">
-                                            <?php echo __('The macros $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$ and $HOSTADDRESS$ will be replaced'); ?>
-                                        </div>
+                                    <div class="input-group">
+                                        <input
+                                            class="form-control"
+                                            type="text"
+                                            placeholder="https://issues.example.org?host=$HOSTNAME$"
+                                            ng-model="post.Host.host_url">
+
+                                        <template-diff ng-show="post.Host.hosttemplate_id"
+                                                       value="post.Host.host_url"
+                                                       template-value="hosttemplate.Hosttemplate.host_url"></template-diff>
+                                    </div>
+                                    <div class="help-block">
+                                        <?php echo __('The macros $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$ and $HOSTADDRESS$ will be replaced'); ?>
+                                    </div>
+                                    <div ng-repeat="error in errors.host_url">
+                                        <div class="help-block text-danger">{{ error }}</div>
                                     </div>
                                 </div>
 
                                 <div class="form-group" ng-class="{'has-error': errors.notes}">
-                                    <label class="col-xs-12 col-lg-2 control-label">
+                                    <label class="control-label">
                                         <?php echo __('Notes'); ?>
                                     </label>
-                                    <div class="col-xs-12 col-lg-10">
-                                        <div class="input-group" style="width: 100%;">
-                                            <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.Host.notes">
-                                            <template-diff ng-show="post.Host.hosttemplate_id"
-                                                           value="post.Host.notes"
-                                                           template-value="hosttemplate.Hosttemplate.notes"></template-diff>
-                                        </div>
-                                        <div ng-repeat="error in errors.notes">
-                                            <div class="help-block text-danger">{{ error }}</div>
-                                        </div>
+                                    <div class="input-group">
+                                        <input
+                                            class="form-control"
+                                            type="text"
+                                            ng-model="post.Host.notes">
+                                        <template-diff ng-show="post.Host.hosttemplate_id"
+                                                       value="post.Host.notes"
+                                                       template-value="hosttemplate.Hosttemplate.notes"></template-diff>
+                                    </div>
+                                    <div ng-repeat="error in errors.notes">
+                                        <div class="help-block text-danger">{{ error }}</div>
                                     </div>
                                 </div>
 
@@ -822,6 +824,7 @@
                                                       index="$index"
                                                       callback="deleteMacroCallback"
                                                       errors="getMacroErrors($index)"
+                                                      class="col-lg-12"
                                     ></macros-directive>
                                 </div>
 

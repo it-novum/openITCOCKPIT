@@ -177,14 +177,12 @@
                                             <?php echo __('Tags'); ?>
                                         </label>
                                         <div class="input-group">
-                                            <div class="col">
-                                                <div class="col">
-                                                    <input class="form-control tagsinput"
-                                                           data-role="tagsinput"
-                                                           type="text"
-                                                           ng-model="post.Service.tags"
-                                                           id="ServiceTagsInput">
-                                                </div>
+                                            <div class="col-lg padding-left-0 padding-right-23">
+                                                <input class="form-control tagsinput"
+                                                       data-role="tagsinput"
+                                                       type="text"
+                                                       ng-model="post.Service.tags"
+                                                       id="ServiceTagsInput">
                                             </div>
                                             <div style="margin-left: -23px;">
                                                 <template-diff ng-show="post.Service.servicetemplate_id"
@@ -303,6 +301,38 @@
                                     </div>
                                 </div>
 
+                                <div class="form-group"
+                                     ng-class="{'has-error': errors.servicecommandargumentvalues}"
+                                     ng-repeat="servicecommandargumentvalue in post.Service.servicecommandargumentvalues">
+                                    <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-primary">
+                                        {{servicecommandargumentvalue.commandargument.human_name}}
+                                    </label>
+                                    <div class="col-xs-12 col-lg-8">
+                                        <div class="input-group">
+                                            <input
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="servicecommandargumentvalue.value">
+                                            <template-diff
+                                                value="servicecommandargumentvalue.value"
+                                                template-value="servicetemplate.Servicetemplate.servicetemplatecommandargumentvalues[$index].value"></template-diff>
+                                        </div>
+                                        <div ng-repeat="error in errors.servicecommandargumentvalues">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                        <div class="help-block">
+                                            {{servicecommandargumentvalue.commandargument.name}}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group"
+                                     ng-show="post.Service.command_id > 0 && post.Service.servicecommandargumentvalues.length == 0">
+                                    <div class="col-xs-12 col-lg-offset-2 text-info">
+                                        <i class="fa fa-info-circle"></i>
+                                        <?php echo __('This command does not have any parameters.'); ?>
+                                    </div>
+                                </div>
 
                                 <div class="form-group required" ng-class="{'has-error': errors.check_interval}">
                                     <label class="col-xs-12 col-lg-2 control-label">
@@ -318,6 +348,7 @@
                                         </div>
                                     </div>
                                 </div>
+
 
                                 <div class="form-group required" ng-class="{'has-error': errors.retry_interval}">
                                     <label class="col-xs-12 col-lg-2 control-label">
