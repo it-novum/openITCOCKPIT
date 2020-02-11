@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="HostsIndex">
-            <i class="fa fa-cog"></i> <?php echo __('Hosts'); ?>
+            <i class="fa fa-desktop"></i> <?php echo __('Hosts'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">

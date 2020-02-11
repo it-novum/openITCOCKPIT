@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="HostsIndex">
-            <i class="fa fa-cog"></i> <?php echo __('Hosts'); ?>
+            <i class="fa fa-desktop"></i> <?php echo __('Hosts'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -82,10 +82,14 @@
                                         class="form-control"
                                         chosen="containers"
                                         ng-options="container.key as container.value for container in containers"
+                                        ng-disabled="!data.isPrimaryContainerChangeable"
                                         ng-model="post.Host.container_id">
                                     </select>
                                     <div ng-show="post.Host.container_id < 1" class="warning-glow">
                                         <?php echo __('Please select a container.'); ?>
+                                    </div>
+                                    <div ng-show="post.Host.container_id === 1" class="help-block">
+                                        <?php echo __('Objects in /root can\'t be moved to other containers'); ?>
                                     </div>
                                     <div ng-repeat="error in errors.container_id">
                                         <div class="help-block text-danger">{{ error }}</div>
