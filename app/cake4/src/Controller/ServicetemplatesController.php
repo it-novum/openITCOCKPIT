@@ -144,8 +144,18 @@ class ServicetemplatesController extends AppController {
             return;
         }
 
+        if ($this->request->is('get')) {
+            /** @var ServicetemplatesTable $ServicetemplatesTable */
+            $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+            $this->set('types', Api::makeItJavaScriptAble(
+                $ServicetemplatesTable->getServicetemplateTypes()
+            ));
+            $this->viewBuilder()->setOption('serialize', ['types']);
+        }
+
         if ($this->request->is('post')) {
-            /** @var $ServicetemplatesTable ServicetemplatesTable */
+            /** @var ServicetemplatesTable $ServicetemplatesTable */
             $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
             $request = $this->request->getData('Servicetemplate', []);
@@ -195,8 +205,11 @@ class ServicetemplatesController extends AppController {
                     return;
                 }
             }
+            $this->set('types', Api::makeItJavaScriptAble(
+                $ServicetemplatesTable->getServicetemplateTypes()
+            ));
             $this->set('servicetemplate', $servicetemplate);
-            $this->viewBuilder()->setOption('serialize', ['servicetemplate']);
+            $this->viewBuilder()->setOption('serialize', ['servicetemplate', 'types']);
         }
     }
 
@@ -243,7 +256,10 @@ class ServicetemplatesController extends AppController {
             $this->set('commands', Api::makeItJavaScriptAble($commands));
             $this->set('eventhandlerCommands', Api::makeItJavaScriptAble($eventhandlerCommands));
             $this->set('servicetemplate', $servicetemplate);
-            $this->viewBuilder()->setOption('serialize', ['servicetemplate', 'commands', 'eventhandlerCommands']);
+            $this->set('types', Api::makeItJavaScriptAble(
+                $ServicetemplatesTable->getServicetemplateTypes()
+            ));
+            $this->viewBuilder()->setOption('serialize', ['servicetemplate', 'commands', 'eventhandlerCommands', 'types']);
             return;
         }
 
