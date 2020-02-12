@@ -1021,8 +1021,22 @@ use Cake\Core\Plugin;
                         </div>
                     </div>
                     <!-- Timeline tab end -->
-
-
+                    <!-- ServiceNow tab start -->
+                    <div ng-show="selectedTab == 'tab4'">
+                        <div class="jarviswidget margin-bottom-0 padding-10" id="wid-id-0">
+                            <?php if ($this->Acl->hasPermission('service_configuration', 'elements', 'servicenowModule') && Plugin::isLoaded('ServicenowModule')): ?>
+                                <servicenow-service-element last-load="{{ lastLoadDate }}"
+                                                            service-uuid="{{ mergedService.uuid }}"
+                                                            editable="<?php echo $this->Acl->hasPermission('edit', 'services'); ?>">
+                                </servicenow-service-element>
+                            <?php else: ?>
+                                <label class="text-danger">
+                                    <?php echo __('No permissions'); ?>
+                                </label>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <!-- ServiceNow tab end -->
                 </div>
             </div>
         </div>
@@ -1039,12 +1053,70 @@ use Cake\Core\Plugin;
                     <span class="fw-300"><i><?php echo __('graphs'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
+                    <div class="panel-toolbar">
+                        <div class="form-group panelToolbarInput">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="ServiceGraphShowDatapoints"
+                                       ng-model="graph.showDatapoints">
+                                <label class="custom-control-label no-margin" for="ServiceGraphShowDatapoints">
+                                    <?php echo __('Show data points'); ?>
+                                </label>
+                            </div>
+                        </div>
 
+                        <div class="form-group panelToolbarInput">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="ServiceGraphAutoreferesh"
+                                       ng-model="graph.graphAutoRefresh">
+                                <label class="custom-control-label no-margin" for="ServiceGraphAutoreferesh">
+                                    <?php echo __('Auto refresh'); ?>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="btn-group btn-group-xs panelToolbarInput">
+                            <button class="btn btn-default dropdown-toggle waves-effect waves-themed" type="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <?php echo __('Timerange: '); ?>{{availableTimeranges[currentSelectedTimerange]}}
+                            </button>
+                            <div class="dropdown-menu" x-placement="bottom-start"
+                                 style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
+
+                                <a class="dropdown-item dropdown-item-xs" ng-repeat="(timerange, timerangeName) in availableTimeranges"
+                                   href="javascript:void(0);" ng-click="changeGraphTimespan(timerange)">
+                                    {{timerangeName}}
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="btn-group btn-group-xs panelToolbarInput">
+                            <button class="btn btn-default dropdown-toggle waves-effect waves-themed" type="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <?php echo __('Datasource: '); ?>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-start"
+                                 style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
+
+                                <a class="dropdown-item dropdown-item-xs" ng-repeat="dsName in dataSources"
+                                   ng-click="changeDataSource(dsName)" href="javascript:void(0);">
+                                    {{dsName}}
+                                </a>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
+                            <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-
+                    <div id="graph_data_tooltip"></div>
+                    <div id="graphCanvas" style="height: 300px;"></div>
                 </div>
             </div>
         </div>

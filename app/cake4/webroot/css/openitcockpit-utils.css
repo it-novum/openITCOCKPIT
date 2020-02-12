@@ -435,3 +435,8 @@ openITCOCKPIT v4 Utilities
 .slightBorder {
     border: 1px solid #e3e3e3;
 }
+
+.dropdown-item-xs{
+    padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
+}

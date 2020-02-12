@@ -589,5 +589,11 @@ pre {
 .not-edit-area {
     -webkit-filter: opacity(.5);
     filter: opacity(.5);
-    pointer-events:none;
+    pointer-events: none;
 }
+
+.panelToolbarInput {
+    margin: 0px 5px 0px 3px;
+}
+
+

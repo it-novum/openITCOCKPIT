@@ -396,15 +396,21 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
                     <?php echo __('CPU load'); ?>
                 </h2>
                 <div class="panel-toolbar">
-                    <label>
-                        <input type="checkbox" ng-model="graph.keepHistory">
-                        <?php echo _('Keep history'); ?>
-                    </label>
+                    <div class="form-group panelToolbarInput">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox"
+                                   class="custom-control-input"
+                                   id="debuggingKeepHistory"
+                                   ng-model="graph.keepHistory">
+                            <label class="custom-control-label no-margin" for="debuggingKeepHistory">
+                                <?php echo _('Keep history'); ?>
+                            </label>
+                        </div>
+                    </div>
 
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
-
 
                     <?php echo __('Current load:'); ?> {{currentCpuLoad['1']}}, {{currentCpuLoad['5']}},
                     {{currentCpuLoad['15']}}
