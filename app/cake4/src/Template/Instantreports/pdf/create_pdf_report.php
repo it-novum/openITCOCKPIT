@@ -47,7 +47,7 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
     <?php
     endforeach; ?>
 </head>
-<body class="">
+<body>
 <div class="jarviswidget no-bordered">
     <div class="well no-bordered">
         <div class="row no-padding">
@@ -74,7 +74,7 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
         <?php
         if (!$instantReport['reportDetails']['summary'] && !empty($instantReport['hosts'])):
             foreach ($instantReport['hosts'] as $hostUuid => $hostData):
-                $reportData = $hostData['Host']['reportData'];
+                $reportData = isset($hostData['Host']['reportData']) ? $hostData['Host']['reportData'] : [];
                 ?>
                 <section id="widget-grid" class="">
                     <div class="row">
@@ -98,25 +98,33 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
                                             ]
                                         ) > 0): ?>
                                         <div class="row margin-top-10 font-md padding-bottom-20">
-                                            <div class="col-md-12 text-left">
-                                                <?php
-                                                $overview_chart = PieChart::createPieChartOnDisk([
-                                                    $reportData[0],
-                                                    $reportData[1],
-                                                    $reportData[2]
-                                                ]);
-                                                ?>
-                                                <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
-                                                     width="100"/>
-                                            </div>
-                                            <div class="col-md-12 text-left font-md">
-                                                <?php
-                                                for ($i = 0; $i <= 2; $i++):?>
-
-
-                                                <?php
-                                                endfor;
-                                                ?>
+                                            <div class="col-md-12 font-md padding-bottom-5">
+                                                <div class="col-md-3 text-left no-padding">
+                                                    <?php
+                                                    $overview_chart = PieChart::createPieChartOnDisk([
+                                                        $reportData[0],
+                                                        $reportData[1],
+                                                        $reportData[2]
+                                                    ]);
+                                                    ?>
+                                                    <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
+                                                         width="100"/>
+                                                </div>
+                                                <div class="col-md-8 text-left no-padding padding-top-10">
+                                                    <?php
+                                                    foreach ($reportData['percentage'] as $state => $info):?>
+                                                        <div class="col-md-12 text-left no-padding margin-bottom-5">
+                                                            <?php
+                                                            $HoststatusIcon = new HoststatusIcon($state);
+                                                            echo $HoststatusIcon->getPdfIcon();
+                                                            ?>
+                                                            <span>
+                                                                <?php echo $info; ?>
+                                                            </span>
+                                                        </div>
+                                                    <?php endforeach;
+                                                    ?>
+                                                </div>
                                             </div>
                                         </div>
                                     <?php
@@ -129,29 +137,50 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
                                     endif; ?>
                                     <div>
                                         <?php
-                                        if (isset($hostData['Services'])):
-                                            foreach ($hostData['Services'] as $serviceUuid => $serviceData):
-                                                $reportData = $serviceData['reportData'];
+                                        if (isset($hostData['Host']['Services'])):
+                                            foreach ($hostData['Host']['Services'] as $serviceUuid => $serviceData):
+                                                $reportData = isset($serviceData['Service']['reportData']) ? $serviceData['Service']['reportData'] : [];
                                                 if (isset($reportData[0], $reportData[1], $reportData[2], $reportData[3]) &&
                                                     array_sum(
                                                         [$reportData[0], $reportData[1], $reportData[2], $reportData[3]]
                                                     ) > 0
                                                 ):?>
-                                                    <div
-                                                        class="padding-top-10 padding-bottom-5 font-md txt-color-blueDark">
-                                                        <i class="fa fa-gear txt-color-blueDark"></i> <?php echo h($serviceData['Service']['name']); ?>
-                                                    </div>
-                                                    <div class="padding-left-20 text-left font-md txt-color-blueDark">
-                                                        <?php
-                                                        $overview_chart = BarChart::createBarChartOnDisk([
-                                                            $reportData[0],
-                                                            $reportData[1],
-                                                            $reportData[2],
-                                                            $reportData[3]
-                                                        ]);
-                                                        ?>
-                                                        <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
-                                                             width="100"/>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="font-md txt-color-blueDark">
+                                                                <i class="fa fa-gear txt-color-blueDark"></i>
+                                                                <?php echo h($serviceData['Service']['name']); ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-12 font-md padding-bottom-5">
+                                                            <div class="col-md-3 text-left no-padding">
+                                                                <?php
+                                                                $overview_chart = BarChart::createBarChartOnDisk([
+                                                                    $reportData[0],
+                                                                    $reportData[1],
+                                                                    $reportData[2],
+                                                                    $reportData[3]
+                                                                ]);
+                                                                ?>
+                                                                <img
+                                                                    src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
+                                                                    width="120"/>
+                                                            </div>
+                                                            <?php
+                                                            foreach ($reportData['percentage'] as $state => $info):?>
+                                                                <div
+                                                                    class="col-md-2 text-left font-md no-padding padding-top-3">
+                                                                    <?php
+                                                                    $ServicestatusIcon = new ServicestatusIcon($state);
+                                                                    echo $ServicestatusIcon->getPdfIcon();
+                                                                    ?>
+                                                                    <span>
+                                                                        <?php echo $info; ?>
+                                                                    </span>
+                                                                </div>
+                                                            <?php endforeach;
+                                                            ?>
+                                                        </div>
                                                     </div>
                                                 <?php endif;
                                             endforeach;
@@ -194,7 +223,7 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
                                             <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
                                                  width="100"/>
                                         </div>
-                                        <div class="col-md-10 text-left font-md padding-top-15">
+                                        <div class="col-md-10 text-left font-md padding-top-10">
                                             <?php
                                             foreach ($reportData['percentage'] as $state => $info):?>
                                                 <div class="col-md-12 text-left font-md padding-bottom-7">
@@ -202,9 +231,9 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
                                                     $HoststatusIcon = new HoststatusIcon($state);
                                                     echo $HoststatusIcon->getPdfIcon();
                                                     ?>
-                                                    <span class="padding-5">
+                                                    <span class="">
                                                         <?php
-                                                            echo $info;
+                                                        echo $info;
                                                         ?>
                                                     </span>
                                                 </div>
