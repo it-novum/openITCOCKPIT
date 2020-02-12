@@ -815,7 +815,113 @@ use Cake\Core\Plugin;
                     <!-- Status information tab end -->
                     <!-- Service information tab start -->
                     <div ng-show="selectedTab == 'tab2'" class="tab-pane">
+                        <div class="row">
+                            <div class="col-lg-12 padding-10">
+                                <div class="row">
 
+                                    <div class="col-lg-12">
+                                        <h3 class="margin-top-0"><?php echo __('Service overview'); ?></h3>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-12 col-md-6">
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <td><?php echo __('Host ip address'); ?></td>
+                                                <td>{{ host.Host.address }}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td><?php echo __('Flap detection enabled'); ?></td>
+                                                <td>
+                                                        <span class="badge badge-danger"
+                                                              ng-show="servicestatus.flap_detection_enabled">
+                                                            <?php echo __('Yes'); ?>
+                                                        </span>
+
+                                                    <span class="badge badge-success"
+                                                          ng-show="!servicestatus.flap_detection_enabled">
+                                                            <?php echo __('No'); ?>
+                                                        </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <div class="col-xs-12 col-sm-12 col-md-6">
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <td><?php echo __('Priority'); ?></td>
+                                                <td>
+                                                    <i class="fa fa-fire fa-lg pointer text-muted"
+                                                       ng-class="{'ok-soft': mergedService.priority == 1, 'ok': mergedService.priority == 2, 'warning': mergedService.priority == 3, 'critical-soft': mergedService.priority == 4, 'critical': mergedService.priority == 5}"></i>
+                                                    <i class="fa fa-fire fa-lg pointer text-muted"
+                                                       ng-class="{'ok': mergedService.priority == 2, 'warning': mergedService.priority == 3, 'critical-soft': mergedService.priority == 4, 'critical': mergedService.priority == 5}"></i>
+                                                    <i class="fa fa-fire fa-lg pointer text-muted"
+                                                       ng-class="{'warning': mergedService.priority == 3, 'critical-soft': mergedService.priority == 4, 'critical': mergedService.priority == 5}"></i>
+                                                    <i class="fa fa-fire fa-lg pointer text-muted"
+                                                       ng-class="{'critical-soft': mergedService.priority == 4, 'critical': mergedService.priority == 5}"></i>
+                                                    <i class="fa fa-fire fa-lg pointer text-muted"
+                                                       ng-class="{'critical': mergedService.priority == 5}"></i>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><?php echo __('Host UUID'); ?></td>
+                                                <td>
+                                                    <code>{{ host.Host.uuid }}</code>
+                                                    <span
+                                                        class="btn btn-default btn-xs"
+                                                        onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"
+                                                        title="<?php echo __('Copy to clipboard'); ?>">
+                                                            <i class="fa fa-copy"></i>
+                                                        </span>
+                                                    <input type="text" style="display:none;" id="host-uuid-copy"
+                                                           value="{{ host.Host.uuid }}"
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><?php echo __('Service UUID'); ?></td>
+                                                <td>
+                                                    <code>{{ mergedService.uuid }}</code>
+                                                    <span
+                                                        class="btn btn-default btn-xs"
+                                                        onclick="$('#service-uuid-copy').show().select();document.execCommand('copy');$('#service-uuid-copy').hide();"
+                                                        title="<?php echo __('Copy to clipboard'); ?>">
+                                                            <i class="fa fa-copy"></i>
+                                                        </span>
+                                                    <input type="text" style="display:none;" id="service-uuid-copy"
+                                                           value="{{ mergedService.uuid }}"
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                        <table class="table table-bordered">
+                                            <tr ng-show="tags.length">
+                                                <td><?php echo __('Tags'); ?></td>
+                                                <td>
+                                                        <span class="badge badge-primary"
+                                                              ng-repeat="tag in tags"
+                                                              style="margin-right: 2px;">{{tag}}</span>
+                                                </td>
+                                            </tr>
+
+                                            <tr ng-show="mergedService.notes">
+                                                <td><?php echo __('Notes'); ?></td>
+                                                <td>
+                                                    {{mergedService.notes}}
+                                                </td>
+                                            </tr>
+                                            <tr ng-show="mergedService.description">
+                                                <td><?php echo __('Description'); ?></td>
+                                                <td>
+                                                    {{mergedService.description}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <!-- Service information tab end -->
 
