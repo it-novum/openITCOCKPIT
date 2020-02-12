@@ -175,7 +175,6 @@
                                     <?php echo __('This command does not have any parameters.'); ?>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                     <div class="card margin-top-10">
