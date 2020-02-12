@@ -338,7 +338,7 @@ use Cake\Core\Plugin;
                                 </div>
 
                                 <div class="row" ng-show="hoststatus.currentState > 0">
-                                    <div class="col-xs-12 margin-bottom-10">
+                                    <div class="col-lg-12 margin-bottom-10">
                                         <div class="browser-border padding-10 bg-info" style="width: 100%;">
                                             <div>
                                                 <h4 class="no-padding text-info">
@@ -360,11 +360,11 @@ use Cake\Core\Plugin;
                                 </div>
 
                                 <div class="row" ng-show="hoststatus.scheduledDowntimeDepth > 0">
-                                    <div class="col-xs-12 margin-bottom-10">
+                                    <div class="col-lg-12 margin-bottom-10">
                                         <div class="browser-border padding-10" style="width: 100%;">
 
                                             <div class="row">
-                                                <div class="col-xs-12 col-sm-11 no-padding">
+                                                <div class="col-lg-12 no-padding">
                                                     <div>
                                                         <h4 class="no-padding">
                                                             <i class="fa fa-power-off"></i>
@@ -407,13 +407,13 @@ use Cake\Core\Plugin;
                                 </div>
 
                                 <div class="row" ng-show="hoststatus.problemHasBeenAcknowledged">
-                                    <div class="col-xs-12 margin-bottom-10">
+                                    <div class="col-lg-12 margin-bottom-10">
                                         <div class="browser-border padding-10" style="width: 100%;">
                                             <div>
                                                 <h4 class="no-padding">
-                                                    <i class="fa fa-user"
+                                                    <i class="far fa-user"
                                                        ng-show="!hostAcknowledgement.is_sticky"></i>
-                                                    <i class="fa fa-user-o"
+                                                    <i class="fas fa-user"
                                                        ng-show="hostAcknowledgement.is_sticky"></i>
                                                     <?php echo __('State of host is acknowledged'); ?>
                                                     <span ng-show="hostAcknowledgement.is_sticky">
