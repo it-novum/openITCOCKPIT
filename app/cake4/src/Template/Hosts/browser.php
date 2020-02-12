@@ -295,12 +295,12 @@ use Cake\Core\Plugin;
                                 </div>
 
                                 <div class="row" ng-show="hoststatus.problemHasBeenAcknowledged">
-                                    <div class="col-xs-12 margin-bottom-10">
+                                    <div class="col-lg-12 margin-bottom-10">
                                         <div class="browser-border padding-10" style="width: 100%;">
                                             <div>
                                                 <h4 class="no-padding">
-                                                    <i class="fa fa-user" ng-show="!acknowledgement.is_sticky"></i>
-                                                    <i class="fa fa-user-o" ng-show="acknowledgement.is_sticky"></i>
+                                                    <i class="far fa-user" ng-show="!acknowledgement.is_sticky"></i>
+                                                    <i class="fas fa-user" ng-show="acknowledgement.is_sticky"></i>
                                                     <?php echo __('State of host is acknowledged'); ?>
                                                     <span ng-show="acknowledgement.is_sticky">
                                                             (<?php echo __('Sticky'); ?>)
@@ -322,9 +322,8 @@ use Cake\Core\Plugin;
                                     </div>
                                 </div>
 
-
                                 <div class="row" ng-show="hoststatus.isFlapping">
-                                    <div class="col-xs-12 margin-bottom-10">
+                                    <div class="col-lg-12 margin-bottom-10">
                                         <div class="browser-border padding-10" style="width: 100%;">
                                             <div>
                                                 <h4 class="no-padding txt-color-orangeDark">
@@ -337,7 +336,7 @@ use Cake\Core\Plugin;
                                 </div>
 
                                 <div class="row" ng-show="hasParentHostProblems">
-                                    <div class="col-xs-12 margin-bottom-10">
+                                    <div class="col-lg-12 margin-bottom-10">
                                         <div class="browser-border padding-10" style="width: 100%;">
                                             <div>
                                                 <h4 class="no-padding text-info">
@@ -357,7 +356,6 @@ use Cake\Core\Plugin;
                                         </div>
                                     </div>
                                 </div>
-
 
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-9">
