@@ -19,7 +19,7 @@
                     <input type="text"
                            class="form-control"
                            placeholder="<?php echo __('Comment'); ?>"
-                           ng-model="sendServiceNotification.force">
+                           ng-model="sendServiceNotification.comment">
                 </div>
 
                 <div class="custom-control custom-checkbox margin-top-20">
