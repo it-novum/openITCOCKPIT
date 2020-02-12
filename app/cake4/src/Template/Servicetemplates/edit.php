@@ -118,6 +118,28 @@
                                             </div>
                                         </div>
 
+                                        <div class="form-group required" ng-class="{'has-error': errors.servicetemplatetype_id}">
+                                            <label class="col-xs-12 col-lg-2 control-label">
+                                                <?php echo __('Template Type'); ?>
+                                            </label>
+                                            <div class="col-xs-12 col-lg-10">
+                                                <select
+                                                    id="TemplateTypeSelect"
+                                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                                    class="form-control"
+                                                    chosen="servicetemplatetypes"
+                                                    ng-options="templatetype.key as templatetype.value for templatetype in servicetemplatetypes"
+                                                    ng-model="post.Servicetemplate.servicetemplatetype_id">
+                                                </select>
+                                                <div ng-repeat="error in errors.container_id">
+                                                    <div class="help-block text-danger">{{ error }}</div>
+                                                </div>
+                                                <div class="help-block">
+                                                    <?= __('Defines the type of the template. Use "Generic template" if you are not sure.') ?>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="form-group required" ng-class="{'has-error': errors.name}">
                                             <label class="col-xs-12 col-lg-2 control-label">
                                                 <?php echo __('Service name'); ?>

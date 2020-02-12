@@ -855,9 +855,6 @@ class HostsController extends AppController {
         }
     }
 
-    /**
-     * @deprecated
-     */
     public function edit_details($host_id = null) {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
@@ -1347,6 +1344,7 @@ class HostsController extends AppController {
 
     /**
      * @deprecated
+     * @todo insert data to delete hosts table
      */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
