@@ -73,7 +73,7 @@
                 </button>
                 <div class="dropdown-menu">
                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                        <a class="dropdown-item" ui-sref="HostsBrowser({id: host.Host.id})">
+                        <a class="dropdown-item" ui-sref="HostsBrowser({id: host.Host.id})" href="javascript:void(0);">
                             <i class="fa fa-desktop"></i> <?php echo __('Browser'); ?>
                         </a>
                     <?php endif; ?>
@@ -109,22 +109,22 @@
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" data-toggle="tab" ng-click="changeTab('active')" role="tab">
-                                <i class="fa fa-stethoscope"></i> <?php echo __('Active'); ?>
+                                <i class="fa fa-stethoscope">&nbsp;</i> <?php echo __('Active'); ?>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-toggle="tab" ng-click="changeTab('notMonitored')" role="tab">
-                                <i class="fa fa-user-md"></i> <?php echo __('Not monitored'); ?>
+                                <i class="fa fa-user-md">&nbsp;</i> <?php echo __('Not monitored'); ?>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-toggle="tab" ng-click="changeTab('disabled')" role="tab">
-                                <i class="fa fa-plug"></i> <?php echo __('Disabled'); ?>
+                                <i class="fa fa-plug">&nbsp;</i> <?php echo __('Disabled'); ?>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-toggle="tab" ng-click="changeTab('deleted')" role="tab">
-                                <i class="fa fa-trash"></i> <?php echo __('Deleted'); ?>
+                                <i class="fa fa-trash">&nbsp;</i> <?php echo __('Deleted'); ?>
                             </a>
                         </li>
                     </ul>
@@ -156,7 +156,7 @@
                                 <thead>
                                 <tr>
                                     <th class="no-sort text-center">
-                                        <i class="fa fa-check-square fa-lg"></i>
+                                        <i class="fa fa-check-square"></i>
                                     </th>
 
                                     <th class="no-sort" ng-click="orderBy('Servicestatus.current_state')">
@@ -165,17 +165,17 @@
                                     </th>
 
                                     <th class="no-sort text-center">
-                                        <i class="fa fa-user fa-lg" title="<?php echo __('is acknowledged'); ?>"></i>
+                                        <i class="fa fa-user" title="<?php echo __('is acknowledged'); ?>"></i>
                                     </th>
 
                                     <th class="no-sort text-center">
-                                        <i class="fa fa-power-off fa-lg"
+                                        <i class="fa fa-power-off"
                                            title="<?php echo __('is in downtime'); ?>"></i>
                                     </th>
 
 
                                     <th class="no-sort text-center">
-                                        <i class="fa fa fa-area-chart fa-lg" title="<?php echo __('Grapher'); ?>"></i>
+                                        <i class="fa fa fa-area-chart" title="<?php echo __('Grapher'); ?>"></i>
                                     </th>
 
                                     <th class="no-sort text-center">
@@ -229,18 +229,18 @@
                                     </td>
 
                                     <td class="text-center">
-                                        <i class="fa fa-lg fa-user"
+                                        <i class="far fa-user"
                                            ng-show="service.Servicestatus.problemHasBeenAcknowledged"
                                            ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
 
-                                        <i class="fa fa-lg fa-user-o"
+                                        <i class="fas fa-user"
                                            ng-show="service.Servicestatus.problemHasBeenAcknowledged"
                                            ng-if="service.Servicestatus.acknowledgement_type == 2"
                                            title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
                                     </td>
 
                                     <td class="text-center">
-                                        <i class="fa fa-lg fa-power-off"
+                                        <i class="fa fa-power-off"
                                            ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                     </td>
 
@@ -248,14 +248,14 @@
                                         <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                             <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                                class="txt-color-blueDark">
-                                                <i class="fa fa-lg fa-area-chart"
+                                                <i class="fa fa-area-chart"
                                                    ng-mouseenter="mouseenter($event, host, service)"
                                                    ng-mouseleave="mouseleave()"
                                                    ng-if="service.Service.has_graph">
                                                 </i>
                                             </a>
                                         <?php else: ?>
-                                            <i class="fa fa-lg fa-area-chart"
+                                            <i class="fa fa-area-chart"
                                                ng-mouseenter="mouseenter($event, host, service)"
                                                ng-mouseleave="mouseleave()"
                                                ng-if="service.Service.has_graph">
@@ -320,8 +320,7 @@
                                                     data-toggle="dropdown">
                                                 <i class="caret"></i>
                                             </button>
-                                            <!-- <ul class="dropdown-menu" id="menuHack-{{service.Service.uuid}}" > -->
-                                            <div class="dropdown-menu">
+                                            <div class="dropdown-menu dropdown-menu-right">
                                                 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                     <a ui-sref="ServicesEdit({id: service.Service.id})"
                                                        ng-if="service.Service.allow_edit"
