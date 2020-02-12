@@ -42,9 +42,9 @@
                            name="checkbox"
                            class="custom-control-input"
                            checked="checked"
-                           g-model="sendServiceNotification.broadcast"
-                           id="forceSend">
-                    <label class="custom-control-label" for="forceSend">
+                           ng-model="sendServiceNotification.broadcast"
+                           id="broadcastSend">
+                    <label class="custom-control-label" for="broadcastSend">
                         <?php echo __('Broadcast'); ?>
                     </label>
                     <div class="helptext">
