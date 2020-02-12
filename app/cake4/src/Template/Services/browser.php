@@ -924,6 +924,104 @@ use Cake\Core\Plugin;
                         </div>
                     </div>
                     <!-- Service information tab end -->
+                    <!-- Timeline tab start -->
+                    <div ng-show="showTimelineTab && selectedTab == 'tab3'">
+                        <div class="row">
+                            <div class="col-lg-12 padding-10">
+                                <div class="row">
+
+                                    <div class="col-lg-12">
+
+                                        <h3 class="margin-top-0">
+                                            <?php echo __('Outages: '); ?>
+                                            <span ng-hide="failureDurationInPercent">
+                                                    <i class="fa fa-refresh fa-spin txt-primary"></i>
+                                                </span>
+                                            <span ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ? failureDurationInPercent+' %' :
+                                                    '<?php echo __('No data available !'); ?>'}}
+                                                </span>
+                                        </h3>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-12 col-md-12">
+                                        <div id="visualization"></div>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                        <div class="row">
+                                            <div class="col-lg-12 bold"><?php echo __('Legend'); ?></div>
+                                            <div class="col-lg-12">
+                                                <?php echo __('State types'); ?>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-lg-3">
+                                                <i class="fa fa-square ok-soft"></i>
+                                                <?php echo __('Ok soft'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square warning-soft"></i>
+                                                <?php echo __('Warning soft'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square critical-soft"></i>
+                                                <?php echo __('Critical soft'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square unknown-soft"></i>
+                                                <?php echo __('Unknown soft'); ?>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-lg-3">
+                                                <i class="fa fa-square ok"></i>
+                                                <?php echo __('Ok'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square warning"></i>
+                                                <?php echo __('Warning'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square critical"></i>
+                                                <?php echo __('Critical'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square unknown"></i>
+                                                <?php echo __('Unknown'); ?>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-xs-12 col-lg-3">
+                                                <i class="fa fa-square text-primary"></i>
+                                                <?php echo __('Downtime'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square txt-ack"></i>
+                                                <?php echo __('Acknowledged'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square txt-notification"></i>
+                                                <?php echo __('Notification'); ?>
+                                            </div>
+                                            <div class="col-xs-12 col-lg-3 ">
+                                                <i class="fa fa-square txt-timerange"></i>
+                                                <?php echo __('Check period'); ?>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-xs-12 col-lg-3">
+                                                <i class="fa fa-square txt-downtime-cancelled"></i>
+                                                <?php echo __('Downtime cancelled'); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Timeline tab end -->
+
 
                 </div>
             </div>
