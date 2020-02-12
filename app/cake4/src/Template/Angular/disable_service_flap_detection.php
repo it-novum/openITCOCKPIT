@@ -1,11 +1,10 @@
-<!-- Rename widget modal -->
 <div id="angularDisableServiceFlapDetectionModal" class="modal" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
                     <i class="fa fa-adjust"></i>
-                    <?php echo __('Disable host flap detection'); ?>
+                    <?php echo __('Disable service flap detection'); ?>
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true"><i class="fa fa-times"></i></span>

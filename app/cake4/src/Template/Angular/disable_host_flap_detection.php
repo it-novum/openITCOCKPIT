@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="far fa-envelope"></i>
+                    <i class="fa fa-adjust"></i>
                     <?php echo __('Disable host flap detection'); ?>
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
