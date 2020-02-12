@@ -47,7 +47,7 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
     <?php
     endforeach; ?>
 </head>
-<body class="">
+<body>
 <div class="jarviswidget no-bordered">
     <div class="well no-bordered">
         <div class="row no-padding">
@@ -113,7 +113,7 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
                                                 <div class="col-md-8 text-left no-padding padding-top-10">
                                                     <?php
                                                     foreach ($reportData['percentage'] as $state => $info):?>
-                                                    <div class="col-md-12 text-left no-padding margin-bottom-5">
+                                                        <div class="col-md-12 text-left no-padding margin-bottom-5">
                                                             <?php
                                                             $HoststatusIcon = new HoststatusIcon($state);
                                                             echo $HoststatusIcon->getPdfIcon();
@@ -168,7 +168,8 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
                                                             </div>
                                                             <?php
                                                             foreach ($reportData['percentage'] as $state => $info):?>
-                                                                <div class="col-md-2 text-left font-md no-padding padding-top-3">
+                                                                <div
+                                                                    class="col-md-2 text-left font-md no-padding padding-top-3">
                                                                     <?php
                                                                     $ServicestatusIcon = new ServicestatusIcon($state);
                                                                     echo $ServicestatusIcon->getPdfIcon();
