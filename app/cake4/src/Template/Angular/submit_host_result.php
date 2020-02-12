@@ -28,19 +28,17 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label class="control-label">
-                        <?php echo __('Comment'); ?>
-                    </label>
-                    <input
-                        id="Comment"
-                        class="form-control"
-                        type="text"
-                        placeholder="<?php echo __('Output'); ?>"
-                        ng-model="passiveHostResult.output">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="icon-prepend fa fa-pencil-alt"></i></span>
+                    </div>
+                    <input type="text"
+                           class="form-control"
+                           placeholder="<?php echo __('Output'); ?>"
+                           ng-model="passiveHostResult.output">
                 </div>
 
-                <div class="custom-control custom-checkbox  margin-bottom-10">
+                <div class="custom-control custom-checkbox margin-top-20">
                     <input type="checkbox"
                            name="checkbox"
                            class="custom-control-input"

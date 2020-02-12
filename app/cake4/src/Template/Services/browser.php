@@ -87,6 +87,7 @@ use Cake\Core\Plugin;
                 <div class="panel-content">
                     <!-- Status information tab start -->
                     <div ng-show="selectedTab == 'tab1'" class="tab-panel">
+                        <!-- status overview for small resolutions -->
                         <div class="d-sm-none"
                              ng-class="{'browser-state-green': stateIsOk(), 'browser-state-yellow': stateIsWarning(), 'browser-state-red': stateIsCritical(), 'browser-state-gray': stateIsUnknown(), 'browser-state-blue': stateIsNotInMonitoring()}"
                              ng-if="servicestatus">
@@ -208,27 +209,19 @@ use Cake\Core\Plugin;
 
 
                         <div class="row" style="display: flex;">
-                            <div class="col-xs-12 col-sm-6 col-md-7 col-lg-9  padding-10">
+                            <div class="col-xs-12 col-sm-6 col-md-7 col-lg-9 padding-bottom-10 padding-left-10 padding-right-10">
 
                                 <div class="row" ng-show="mergedService.disabled">
-                                    <div class="col-xs-12 margin-bottom-10">
-                                        <div class="browser-border padding-10 bg-warning" style="width: 100%;">
-                                            <div class="row">
-                                                <div class="col-xs-12 col-sm-11 no-padding">
-                                                    <div>
-                                                        <h4 class="no-padding">
-                                                            <i class="fa fa-plug"></i>
-                                                            <?php echo __('This service is currently disabled!'); ?>
-                                                        </h4>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="col-lg-12 bg-warning browser-border margin-bottom-10 margin-left-10 padding-5">
+                                        <h4>
+                                            <i class="fa fa-plug"></i>
+                                            <?php echo __('This service is currently disabled!'); ?>
+                                        </h4>
                                     </div>
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-xs-12">
+                                    <div class="col-lg-12">
                                         <h3 class="margin-top-5"><?php echo __('Status overview'); ?></h3>
                                     </div>
                                 </div>
@@ -307,7 +300,6 @@ use Cake\Core\Plugin;
                                         </div>
                                     </div>
                                 </div>
-
 
                                 <div class="row" ng-show="servicestatus.isFlapping">
                                     <div class="col-lg-12 margin-bottom-10">
@@ -420,8 +412,7 @@ use Cake\Core\Plugin;
                                         </div>
                                     </div>
                                 </div>
-
-
+                                <!-- status overview table -->
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-9">
                                         <table class="table table-bordered">
@@ -503,9 +494,9 @@ use Cake\Core\Plugin;
                                         </div>
                                     </div>
                                 </div>
-
+                                <!-- Host state overview table -->
                                 <div class="row">
-                                    <div class="col-xs-12">
+                                    <div class="col-lg-12">
                                         <h3 class="margin-top-5"><?php echo __('Host state overview'); ?></h3>
                                     </div>
 
@@ -542,7 +533,7 @@ use Cake\Core\Plugin;
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-xs-12">
+                                    <div class="col-lg-12">
                                         <h3 class="margin-top-5"><?php echo __('Notification overview'); ?></h3>
                                     </div>
 
@@ -592,7 +583,7 @@ use Cake\Core\Plugin;
                                         .
                                     </div>
                                 </div>
-
+                                <!-- Notification overview table -->
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-6">
                                         <table class="table table-bordered">
@@ -649,12 +640,12 @@ use Cake\Core\Plugin;
                                             <tr>
                                                 <td><?php echo __('Notifications enabled'); ?></td>
                                                 <td>
-                                                        <span class="label label-success"
+                                                        <span class="badge badge-success"
                                                               ng-show="servicestatus.notifications_enabled">
                                                             <?php echo __('Yes'); ?>
                                                         </span>
 
-                                                    <span class="label label-danger"
+                                                    <span class="badge badge-danger"
                                                           ng-show="!servicestatus.notifications_enabled">
                                                             <?php echo __('No'); ?>
                                                         </span>
@@ -664,37 +655,37 @@ use Cake\Core\Plugin;
                                             <tr>
                                                 <td><?php echo __('Notify on'); ?></td>
                                                 <td>
-                                                        <span class="label label-success"
+                                                        <span class="badge badge-success"
                                                               ng-show="mergedService.notify_on_recovery"
                                                               style="margin-right: 2px;">
                                                             <?php echo __('Recover'); ?>
                                                         </span>
 
-                                                    <span class="label label-warning"
+                                                    <span class="badge badge-warning"
                                                           ng-show="mergedService.notify_on_warning"
                                                           style="margin-right: 2px;">
                                                             <?php echo __('Warning'); ?>
                                                         </span>
 
-                                                    <span class="label label-danger"
+                                                    <span class="badge badge-danger"
                                                           ng-show="mergedService.notify_on_critical"
                                                           style="margin-right: 2px;">
                                                             <?php echo __('Critical'); ?>
                                                         </span>
 
-                                                    <span class="label label-default"
+                                                    <span class="badge badge-default"
                                                           ng-show="mergedService.notify_on_unknown"
                                                           style="margin-right: 2px;">
                                                             <?php echo __('Unknown'); ?>
                                                         </span>
 
-                                                    <span class="label label-primary"
+                                                    <span class="badge badge-primary"
                                                           ng-show="mergedService.notify_on_flapping"
                                                           style="margin-right: 2px;">
                                                             <?php echo __('Flapping'); ?>
                                                         </span>
 
-                                                    <span class="label label-primary"
+                                                    <span class="badge badge-primary"
                                                           ng-show="mergedService.notify_on_downtime"
                                                           style="margin-right: 2px;">
                                                             <?php echo __('Downtime'); ?>
@@ -806,7 +797,7 @@ use Cake\Core\Plugin;
                                         <div class="browser-action margin-top-10"
                                              ng-click="disableServiceNotifications(getObjectsForExternalCommand())"
                                              ng-show="servicestatus.notifications_enabled">
-                                            <i class="fa fa-envelope-o"></i>
+                                            <i class="fa fa-envelope"></i>
                                             <?php echo __('Disable notifications'); ?>
                                         </div>
 
@@ -1537,12 +1528,12 @@ use Cake\Core\Plugin;
                                                 <tr>
                                                     <td><?php echo __('Notifications enabled'); ?></td>
                                                     <td>
-                                                        <span class="label label-success"
+                                                        <span class="badge badge-success"
                                                               ng-show="servicestatus.notifications_enabled">
                                                             <?php echo __('Yes'); ?>
                                                         </span>
 
-                                                        <span class="label label-danger"
+                                                        <span class="badge badge-danger"
                                                               ng-show="!servicestatus.notifications_enabled">
                                                             <?php echo __('No'); ?>
                                                         </span>
@@ -1552,37 +1543,37 @@ use Cake\Core\Plugin;
                                                 <tr>
                                                     <td><?php echo __('Notify on'); ?></td>
                                                     <td>
-                                                        <span class="label label-success"
+                                                        <span class="badge badge-success"
                                                               ng-show="mergedService.notify_on_recovery"
                                                               style="margin-right: 2px;">
                                                             <?php echo __('Recover'); ?>
                                                         </span>
 
-                                                        <span class="label label-warning"
+                                                        <span class="badge badge-warning"
                                                               ng-show="mergedService.notify_on_warning"
                                                               style="margin-right: 2px;">
                                                             <?php echo __('Warning'); ?>
                                                         </span>
 
-                                                        <span class="label label-danger"
+                                                        <span class="badge badge-danger"
                                                               ng-show="mergedService.notify_on_critical"
                                                               style="margin-right: 2px;">
                                                             <?php echo __('Critical'); ?>
                                                         </span>
 
-                                                        <span class="label label-default"
+                                                        <span class="badge badge-default"
                                                               ng-show="mergedService.notify_on_unknown"
                                                               style="margin-right: 2px;">
                                                             <?php echo __('Unknown'); ?>
                                                         </span>
 
-                                                        <span class="label label-primary"
+                                                        <span class="badge badge-primary"
                                                               ng-show="mergedService.notify_on_flapping"
                                                               style="margin-right: 2px;">
                                                             <?php echo __('Flapping'); ?>
                                                         </span>
 
-                                                        <span class="label label-primary"
+                                                        <span class="badge badge-primary"
                                                               ng-show="mergedService.notify_on_downtime"
                                                               style="margin-right: 2px;">
                                                             <?php echo __('Downtime'); ?>
@@ -1729,12 +1720,12 @@ use Cake\Core\Plugin;
                                                 <tr>
                                                     <td><?php echo __('Flap detection enabled'); ?></td>
                                                     <td>
-                                                        <span class="label label-danger"
+                                                        <span class="badge badge-danger"
                                                               ng-show="servicestatus.flap_detection_enabled">
                                                             <?php echo __('Yes'); ?>
                                                         </span>
 
-                                                        <span class="label label-success"
+                                                        <span class="badge badge-success"
                                                               ng-show="!servicestatus.flap_detection_enabled">
                                                             <?php echo __('No'); ?>
                                                         </span>
@@ -1796,7 +1787,7 @@ use Cake\Core\Plugin;
                                                 <tr ng-show="tags.length">
                                                     <td><?php echo __('Tags'); ?></td>
                                                     <td>
-                                                        <span class="label label-primary"
+                                                        <span class="badge badge-primary"
                                                               ng-repeat="tag in tags"
                                                               style="margin-right: 2px;">{{tag}}</span>
                                                     </td>
