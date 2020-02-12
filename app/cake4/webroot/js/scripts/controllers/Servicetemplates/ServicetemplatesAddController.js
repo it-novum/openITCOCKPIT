@@ -160,6 +160,19 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadServicetemplateTypes = function(){
+            var params = {
+                'angular': true
+            };
+
+            $http.get("/servicetemplates/add.json", {
+                params: params
+            }).then(function(result){
+                $scope.servicetemplatetypes = result.data.types;
+            });
+        };
+
+
         $scope.setPriority = function(priority){
             $scope.post.Servicetemplate.priority = parseInt(priority, 10);
         };
@@ -227,8 +240,11 @@ angular.module('openITCOCKPIT')
 
         };
 
+        //Fire on page load
+
         $scope.loadContainers();
         $scope.loadCommands();
+        $scope.loadServicetemplateTypes();
 
         jQuery(function(){
             $('.tagsinput').tagsinput();

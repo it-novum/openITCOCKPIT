@@ -20,6 +20,7 @@ angular.module('openITCOCKPIT')
                 $scope.post.Servicetemplate = result.data.servicetemplate.Servicetemplate;
                 $scope.commands = result.data.commands;
                 $scope.eventhandlerCommands = result.data.eventhandlerCommands;
+                $scope.servicetemplatetypes = result.data.types;
 
                 jQuery(function(){
                     $('.tagsinput').tagsinput();
