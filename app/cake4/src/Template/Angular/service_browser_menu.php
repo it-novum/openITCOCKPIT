@@ -71,12 +71,12 @@
                         ui-sref="DocumentationsView({uuid:config.serviceUuid, type:'service'})"
                         title="<?php echo __('Object documentation'); ?>"
                         class="btn btn-default btn-sm">
-                        <i class="fa fa-book fa-lg"></i>
+                        <i class="fa fa-book fa-lg">
+                            <span ng-show="config.docuExists" class="badge bg-up badge-icon">
+                                <i class="fa fa-check"></i>
+                            </span>
+                        </i>
                     </a>
-
-                    <span ng-show="config.docuExists" class="badge bg-ok docu-badge">
-            <i class="fa fa-check"></i>
-        </span>
                 </div>
             <?php endif; ?>
 
