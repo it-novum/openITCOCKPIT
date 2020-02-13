@@ -727,11 +727,10 @@ html body {
 
 /* buttons used in the header section of the page */
 .header-btn[data-class='mobile-nav-on'] {
-  border-color: #9b04ff;
-  background-color: #a51eff;
-  background-image: -webkit-gradient(linear, left bottom, left top, from(#a51eff), to(#8c00ea));
-  background-image: linear-gradient(to top, #a51eff, #8c00ea);
-  color: #fff; }
+  border-color: #cecece;
+  background-color: #fff;
+  background-image: none;
+  color: #a6a6a6; }
 
 /* dropdown btn */
 /* used on info card pulldown filter */
