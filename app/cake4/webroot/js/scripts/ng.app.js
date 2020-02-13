@@ -179,6 +179,23 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AgentconfigsScanController"
             })
 
+            .state('AgentconnectorsAdd', {
+                url: '/agentconnector/add',
+                params: {
+                    hostId: {
+                        value: null
+                    }
+                },
+                templateUrl: "/agentconnector/add.html",
+                controller: "AgentconnectorsAddController"
+            })
+
+            .state('AgentconnectorsAgent', {
+                url: '/agentconnector/agents',
+                templateUrl: "/agentconnector/agents.html",
+                controller: "AgentconnectorsAgentController"
+            })
+
             .state('BrowsersIndex', {
                 url: '/browsers/index?containerId',
                 params: {
