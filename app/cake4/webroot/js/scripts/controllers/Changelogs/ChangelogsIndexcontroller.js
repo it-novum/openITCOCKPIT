@@ -1,6 +1,9 @@
 angular.module('openITCOCKPIT')
     .controller('ChangelogsIndexController', function($scope, $http, SortService){
 
+        $scope.useScroll = true;
+        $scope.currentPage = 1;
+
         /*** Filter Settings ***/
         var defaultFilter = function(){
             var now = new Date();
@@ -51,7 +54,9 @@ angular.module('openITCOCKPIT')
             $http.get("/changelogs/index.json", {
                 params: params
             }).then(function(result){
-                console.log(result.data);
+                $scope.changes = result.data.all_changes;
+                $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -62,6 +67,18 @@ angular.module('openITCOCKPIT')
 
         $scope.resetFilter = function(){
             defaultFilter();
+        };
+
+        $scope.changepage = function(page){
+            if(page !== $scope.currentPage){
+                $scope.currentPage = page;
+                $scope.load();
+            }
+        };
+
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
         };
 
 

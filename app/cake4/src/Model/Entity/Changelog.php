@@ -17,10 +17,7 @@ use Cake\ORM\Entity;
  * @property string $name
  * @property \Cake\I18n\FrozenTime $created
  *
- * @property \App\Model\Entity\Object $object
- * @property \App\Model\Entity\Objecttype $objecttype
  * @property \App\Model\Entity\User $user
- * @property \App\Model\Entity\ChangelogsToContainer[] $changelogs_to_containers
  */
 class Changelog extends Entity {
     /**

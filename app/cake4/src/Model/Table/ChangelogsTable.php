@@ -3,9 +3,12 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Database\Exception;
+use Cake\Log\Log;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
@@ -113,9 +116,10 @@ class ChangelogsTable extends Table {
      * @param PaginateOMat|null $PaginateOMat
      * @param array $MY_RIGHTS
      * @param bool $includeUser
+     * @param bool $enableHydration
      * @return array
      */
-    public function getChangelogIndex(ChangelogsFilter $ChangelogsFilter, $PaginateOMat = null, $MY_RIGHTS = [], $includeUser = false) {
+    public function getChangelogIndex(ChangelogsFilter $ChangelogsFilter, $PaginateOMat = null, $MY_RIGHTS = [], $includeUser = false, $enableHydration = true) {
         $contain = ['Containers'];
         $select = [
             'id',
@@ -127,7 +131,7 @@ class ChangelogsTable extends Table {
             'name',
             'created'
         ];
-        if($includeUser === true){
+        if ($includeUser === true) {
             $select[] = 'user_id';
             $select[] = 'Users.id';
             $select[] = 'Users.firstname';
@@ -139,7 +143,8 @@ class ChangelogsTable extends Table {
         $query = $this->find()
             ->select($select)
             ->innerJoinWith('Containers')
-            ->contain($contain);
+            ->contain($contain)
+            ->enableHydration($enableHydration);
 
         $where = $ChangelogsFilter->indexFilter();
         if (!empty($MY_RIGHTS)) {
@@ -148,7 +153,7 @@ class ChangelogsTable extends Table {
 
         $query->where($where);
 
-        $query->order($ChangelogsFilter->getOrderForPaginator('Changelogs.created', 'desc'));
+        $query->order($ChangelogsFilter->getOrderForPaginator('Changelogs.id', 'desc'));
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -221,15 +226,15 @@ class ChangelogsTable extends Table {
                 'Servicegroup'                                              => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
             ],
             'servicegroup'         => [
-                'Servicegroup'    => '{(description|servicegroup_url)}',
-                'Container'       => '{(name)}',
-                'Service'         => '{n}.{(id|name)}',
-                'Servicetemplate' => '{n}.{(id|name)}',
+                'Servicegroup'           => '{(description|servicegroup_url)}',
+                'Servicegroup.container' => '{(name)}',
+                'Service'                => '{n}.{(id|name)}',
+                'Servicetemplate'        => '{n}.{(id|name)}',
             ],
             'servicetemplategroup' => [
-                'Servicetemplategroup' => '{(description)}',
-                'Container'            => '{(name)}',
-                'Servicetemplate'      => '{n}.{(id|template_name)}',
+                'Servicetemplategroup'           => '{(description)}',
+                'Servicetemplategroup.container' => '{(name)}',
+                'Servicetemplate'                => '{n}.{(id|template_name)}',
             ],
             'host'                 => [
                 'Host'                           => '{(name|address|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
@@ -290,6 +295,9 @@ class ChangelogsTable extends Table {
      */
     public function parseDataForChangelog($action, $controller, $object_id, $objecttype_id, $container_ids, $user_id, $name, $requestData, $currentSavedData = []) {
         $data_array_keys = ['action', 'controller', 'object_id', 'objecttype_id', 'container_id', 'user_id', 'name', 'data'];
+        if (!is_array($container_ids)) {
+            $container_ids = [$container_ids];
+        }
         $changes = [];
         $compareRules = $this->getCompareRules();
         switch ($action) {
@@ -454,5 +462,185 @@ class ChangelogsTable extends Table {
         }
 
         return false;
+    }
+
+    /**
+     * @param string $modelName
+     * @param int $objectId
+     * @return bool
+     */
+    public function recordExists(string $modelName, $objectId) {
+        $tableName = Inflector::pluralize($modelName);
+
+        /** @var Table $Table */
+        $Table = TableRegistry::getTableLocator()->get($tableName);
+
+        try {
+            return $Table->exists(['id' => $objectId]);
+        } catch (Exception $e) {
+            Log::error(sprintf('Changelog: Table %s not found!', $tableName));
+            Log::error($e->getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * @param string $action
+     * @return string
+     */
+    public function getIconByAction(string $action) {
+        switch ($action) {
+            case 'add':
+                return 'fa fa-plus';
+
+            case 'delete':
+                return 'fa fa-trash-o ';
+            case 'copy':
+                return 'fa fa-files-o';
+            default:
+                return 'fa fa-pencil';
+        }
+    }
+
+    /**
+     * @param string $action
+     * @return string
+     */
+    public function getColorByAction(string $action) {
+        switch ($action) {
+            case 'add':
+                return 'bg-up';
+
+            case 'delete':
+                return 'bg-down';
+
+            case 'deactivate':
+                return 'bg-warning';
+
+            default:
+                return 'bg-primary';
+        }
+    }
+
+    public function replaceFieldValues($dataUnserialized) {
+        $newDataUnserialized = [];
+
+        /** @var CommandsTable $CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        $commandTypes = $CommandsTable->getCommandTypes();
+
+        $days = [
+            1 => __('Monday'),
+            2 => __('Tuesday'),
+            3 => __('Wednesday'),
+            4 => __('Thursday'),
+            5 => __('Friday'),
+            6 => __('Saturday'),
+            7 => __('Sunday')
+        ];
+
+        foreach ($dataUnserialized as $index => $record) {
+            foreach ($record as $tableName => $changes) {
+
+                switch ($tableName) {
+                    case 'Command':
+                        foreach ($changes as $changeState => $stateData) {
+                            //Replace command_type id with type name
+                            if (isset($stateData['command_type'])) {
+                                $dataUnserialized[$index][$tableName][$changeState]['command_type'] = $commandTypes[$stateData['command_type']];
+                            }
+                        }
+                        break;
+
+                    case 'Timeperiod.timeperiod_timeranges':
+                        foreach ($changes as $changeState => $stateData) {
+                            foreach ($stateData as $dayIndex => $day) {
+                                //Replace day id with day name
+                                if (isset($day['day'])) {
+                                    $dataUnserialized[$index][$tableName][$changeState][$dayIndex]['day'] = $days[$day['day']];
+                                }
+                            }
+
+                        }
+                        break;
+                }
+            }
+        }
+
+        return $dataUnserialized;
+    }
+
+    /**
+     * @param array $dataUnserialized
+     * @return array
+     */
+    public function replaceTableNames($dataUnserialized) {
+        $tablesToReplace = [
+            'Command.commandarguments' => __('Command arguments'),
+
+            'Timeperiod.timeperiod_timeranges' => __('Time ranges'),
+
+            'Contact.customvariables' => __('Custom variables'),
+            'Contactgroup.container'  => __('Container'),
+
+            'Hostgroup.container' => __('Container'),
+
+            'Hosttemplate.customvariables'                   => __('Custom variables'),
+            'Hosttemplate.hosttemplatecommandargumentvalues' => __('Command arguments'),
+
+            'Servicetemplate.customvariables'                           => __('Custom variables'),
+            'Servicetemplate.servicetemplatecommandargumentvalues'      => __('Command arguments'),
+            'Servicetemplate.servicetemplateeventcommandargumentvalues' => __('Event handler command arguments'),
+
+            'Servicegroup.container' => __('Container'),
+
+            'Servicetemplategroup.container' => __('Container'),
+
+            'Host.customvariables'           => __('Custom variables'),
+            'Host.hostcommandargumentvalues' => __('Command arguments'),
+
+
+            'Service.customvariables'                   => __('Custom variables'),
+            'Service.servicecommandargumentvalues'      => __('Command arguments'),
+            'Service.serviceeventcommandargumentvalues' => __('Event handler command arguments'),
+
+            'tenant.container' => __('Container'),
+
+            'location.container' => __('Container'),
+        ];
+
+        $newDataUnserialized = [];
+        foreach ($dataUnserialized as $index => $record) {
+            foreach ($record as $tableName => $changes) {
+                //Replace table name with better name for humans?
+                if (isset($tablesToReplace[$tableName])) {
+                    $newTableName = $tablesToReplace[$tableName];
+                    $newDataUnserialized[$newTableName] = $changes;
+                } else {
+                    //Keep table name
+                    $newDataUnserialized[$tableName] = $changes;
+                }
+
+            }
+        }
+        return $newDataUnserialized;
+
+    }
+
+    /**
+     * @param array $dataUnserialized
+     * @return array
+     */
+    public function formatDataForView($dataUnserialized) {
+        foreach ($dataUnserialized as $index => $record) {
+            foreach ($record as $tableName => $changes) {
+                $dataUnserialized[$index][$tableName] = [
+                    'data' => $changes['current_data'] ?? [],
+                    'isArray' =>Hash::dimensions($changes) === 3
+                ];
+            }
+        }
+        return $dataUnserialized;
+
     }
 }
