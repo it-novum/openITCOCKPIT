@@ -146,10 +146,43 @@ class UserTime {
     }
 
     /**
+     *
+     * ### Options:
+     *
+     * - `from` => another Time object representing the "now" time
+     * - `format` => a fall back format if the relative time is longer than the duration specified by end
+     * - `accuracy` => Specifies how accurate the date should be described (array)
+     *
+     *    - year =>   The format if years > 0   (default "day")
+     *    - month =>  The format if months > 0  (default "day")
+     *    - week =>   The format if weeks > 0   (default "day")
+     *    - day =>    The format if weeks > 0   (default "hour")
+     *    - hour =>   The format if hours > 0   (default "minute")
+     *    - minute => The format if minutes > 0 (default "minute")
+     *    - second => The format if seconds > 0 (default "second")
+     *
+     * - `end` => The end of relative time telling
+     * - `relativeString` => The `printf` compatible string when outputting relative time
+     * - `absoluteString` => The `printf` compatible string when outputting absolute time
+     * - `timezone` => The user timezone the timestamp should be formatted in.
+     *
+     * Relative dates look something like this:
+     *
+     * - 3 weeks, 4 days ago
+     * - 15 seconds ago
+     *
+     * Default date formatting is d/M/YY e.g: on 18/2/09. Formatting is done internally using
+     * `i18nFormat`, see the method for the valid formatting strings
+     *
+     * The returned string includes 'ago' or 'on' and assumes you'll properly add a word
+     * like 'Posted ' before the function output.
+     *
+     * NOTE: If the difference is one week or more, the lowest level of accuracy is day
+     *
      * @param int $t_time
      * @return string
      */
-    public function timeAgoInWords($t_time) {
+    public function timeAgoInWords($t_time, $options = []) {
         if (!is_numeric($t_time)) {
             $t_time = strtotime($t_time);
         }
@@ -160,7 +193,7 @@ class UserTime {
         $Time = new Time($t_time);
         $Time->setTimezone(new \DateTimeZone($this->timezone));
 
-        return $Time->timeAgoInWords();
+        return $Time->timeAgoInWords($options);
     }
 
     /**

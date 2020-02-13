@@ -415,4 +415,11 @@ class CommandsTable extends Table {
 
         return true;
     }
+
+    /**
+     * @return array
+     */
+    public function getCommandTypes() {
+        return $this->commandTypes;
+    }
 }

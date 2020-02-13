@@ -43,6 +43,11 @@ class BarChart {
     /**
      * @var int
      */
+    private $padding = 10;
+
+    /**
+     * @var int
+     */
     private $height;
 
     /**
@@ -71,7 +76,7 @@ class BarChart {
      * @param int $width
      * @param int $height
      */
-    public function __construct($width = 240, $height = 20) {
+    public function __construct($width = 300, $height = 20) {
         $this->width = $width;
         $this->height = $height;
     }
@@ -81,10 +86,10 @@ class BarChart {
      * @param bool $vertical
      */
     public function createBarChart($chart_data, $vertical = false) {
-        $this->chartDepth3d = 5;
+        $this->chartDepth3d = 10;
         $this->x = 0;
         $this->y = 5;
-        $this->image = imagecreatetruecolor(260, 25);
+        $this->image = imagecreatetruecolor($this->width + $this->padding*2, $this->height + $this->padding);
         $this->setImageLayout(); //set transparence, colors, fonts, ...
         $this->create($chart_data);
     }
@@ -102,9 +107,9 @@ class BarChart {
     }
 
     private function setImageLayout() {
-        imagesavealpha($this->img, true);
+        imagesavealpha($this->image, true);
         $transparent = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
-        imagefill($this->img, 0, 0, $transparent);
+        imagefill($this->image, 0, 0, $transparent);
     }
 
     /**
@@ -142,8 +147,8 @@ class BarChart {
      */
     private function barHorizontal($chartDataArray) {
         foreach ($chartDataArray as $key => $dataArr) {
-            $background = imagecolorallocatealpha($this->img, $dataArr['color'][0], $dataArr['color'][1], $dataArr['color'][2], $dataArr['color'][3]);
-            imagefilledrectangle($this->img, $dataArr['start'], $this->y, $dataArr['end'], $this->y + $this->height, $background);
+            $background = imagecolorallocatealpha($this->image, $dataArr['color'][0], $dataArr['color'][1], $dataArr['color'][2], $dataArr['color'][3]);
+            imagefilledrectangle($this->image, $dataArr['start'], $this->y, $dataArr['end'], $this->y + $this->height, $background);
         }
     }
 
@@ -152,16 +157,16 @@ class BarChart {
      */
     private function bar3dHorizontal($chartDataArray) {
         foreach ($chartDataArray as $key => $dataArr) {
-            $background = imagecolorallocatealpha($this->img, $dataArr['color'][0] * 0.75, $dataArr['color'][1] * 0.75, $dataArr['color'][2] * 0.75, $dataArr['color'][3]);
+            $background = imagecolorallocatealpha($this->image, $dataArr['color'][0] * 0.75, $dataArr['color'][1] * 0.75, $dataArr['color'][2] * 0.75, $dataArr['color'][3]);
             //top 3d
-            imagefilledpolygon($this->img, [
+            imagefilledpolygon($this->image, [
                 $dataArr['start'], $this->y,
                 $dataArr['start'] + $this->chartDepth3d, $this->y - $this->chartDepth3d,
                 $dataArr['end'] + $this->chartDepth3d, $this->y - $this->chartDepth3d,
                 $dataArr['end'], $this->y,
             ], 4, $background);
             //left 3d
-            imagefilledpolygon($this->img, [
+            imagefilledpolygon($this->image, [
                 $dataArr['end'], $this->y + $this->height,
                 $dataArr['end'], $this->y,
                 $dataArr['end'] + $this->chartDepth3d, $this->y - $this->chartDepth3d,

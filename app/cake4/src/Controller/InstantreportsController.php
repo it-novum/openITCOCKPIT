@@ -742,7 +742,7 @@ class InstantreportsController extends AppController {
 
         $this->viewBuilder()->setOption('pdfConfig', [
                 'download' => false,
-                'filename' => sprintf('InstantReport_%s.pdf', $instantReport['reportDetails']['name']) . date('dmY_his') . '.pdf'
+                'filename' => sprintf('InstantReport_%s', $instantReport['reportDetails']['name']) . date('dmY_his') . '.pdf'
             ]
         );
     }
