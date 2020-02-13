@@ -228,7 +228,7 @@
                                 <span>{{change.time}}</span>
                                 <span>{{change.timeAgoInWords}}</span>
                             </time>
-                            <div class="cbp_tmicon txt-color-white {{change.color}}">
+                            <div class="cbp_tmicon txt-color-white {{change.color}}" title="{{change.action}}">
                                 <i class="{{change.icon}}"></i>
                             </div>
                             <div class="cbp_tmlabel">
