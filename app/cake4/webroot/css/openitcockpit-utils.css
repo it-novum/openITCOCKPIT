@@ -441,11 +441,6 @@ openITCOCKPIT v4 Utilities
     padding-bottom: 0.1rem;
 }
 
-/* marquee for long system health messages */
-.moveme:hover > a > span > span.notification-message {
-    animation: moveme 4s linear infinite alternate;
-}
-
 @keyframes moveme {
     0% {
         transform: translateX(0%);

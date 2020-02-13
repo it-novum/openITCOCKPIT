@@ -1,11 +1,16 @@
 /*
-STD COLORS
 
-$color-primary:						#4285F4;
-$color-success:						#00C851;
-$color-info:						#33b5e5;
-$color-warning:						#ffbb33;
-$color-danger:						#CC0000;
+openITCOCKPIT v4 CSS
+
+overriding styles, special settings and everything else that is not a utility class or generic color definition
+
+STD COLORS
+$color-primary:						#4285F4; blue
+$color-success:						#00C851; green
+$color-info:						#33b5e5; light blue
+$color-warning:						#ffbb33; yellow
+$color-danger:						#CC0000; red
+SECONDARY:                          #727b84; grey
  */
 
 a:not([href]):not([tabindex]) {
@@ -596,4 +601,11 @@ pre {
     margin: 0px 5px 0px 3px;
 }
 
+.shortcut-menu {
+    bottom: 1.5rem;
+}
 
+/* marquee for long system health messages */
+.moveme:hover > a > span > span.notification-message {
+    animation: moveme 4s linear infinite alternate;
+}

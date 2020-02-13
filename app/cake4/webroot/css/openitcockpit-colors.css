@@ -1,12 +1,14 @@
 /*
+openITCOCKPIT v4 Color definition classes
+
 STD COLORS
 
-$color-primary:                     #4285F4;
-$color-success:                     #00C851;
-$color-info:                        #33b5e5;
-$color-warning:                     #ffbb33;
-$color-danger:                      #CC0000;
-SECONDARY:                          #727b84;
+$color-primary:                     #4285F4; blue
+$color-success:                     #00C851; green
+$color-info:                        #33b5e5; light blue
+$color-warning:                     #ffbb33; yellow
+$color-danger:                      #CC0000; red
+SECONDARY:                          #727b84; grey
  */
 
 .ok, .up {

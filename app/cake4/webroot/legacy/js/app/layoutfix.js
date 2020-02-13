@@ -87,7 +87,7 @@ $(document).ready(function(){
     });
 
     //Scroll back to top
-    var scrollTopVisable = false; //Avoid millions of fadeIn actions
+  /*  var scrollTopVisable = false; //Avoid millions of fadeIn actions
     $(window).scroll(function(){
         if($(document).scrollTop() > 150){
             if(scrollTopVisable === false){
@@ -101,7 +101,7 @@ $(document).ready(function(){
             }
         }
     });
-
+*/
     $('#scroll-top-container').click(function(){
         $('body,html').animate({
             scrollTop: 0
