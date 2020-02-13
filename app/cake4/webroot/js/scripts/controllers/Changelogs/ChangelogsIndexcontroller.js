@@ -37,6 +37,17 @@ angular.module('openITCOCKPIT')
 
         $scope.showFilter = false;
 
+        var getActionsFilter = function(){
+            var selectedActions = [];
+            for(var actionName in $scope.filter.Actions){
+                if($scope.filter.Actions[actionName] === 1){
+                    selectedActions.push(actionName);
+                }
+            }
+
+            return selectedActions;
+        };
+
         $scope.load = function(){
             var params = {
                 'angular': true,
@@ -44,10 +55,10 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                //'filter[full_name]': $scope.filter.full_name,
+                'filter[Changelogs.name]': $scope.filter.Changelogs.name,
                 //'filter[Users.email]': $scope.filter.Users.email,
                 //'filter[Users.phone]': $scope.filter.Users.phone,
-                //'filter[Users.usergroup_id][]': $scope.filter.Users.usergroup_id,
+                'filter[Changelogs.action][]': getActionsFilter(),
                 //'filter[Users.company]': $scope.filter.Users.company
             };
 
@@ -86,5 +97,11 @@ angular.module('openITCOCKPIT')
         defaultFilter();
         SortService.setCallback($scope.load);
         $scope.load();
+
+        //Watch on filter change
+        $scope.$watch('filter', function(){
+            $scope.currentPage = 1;
+            $scope.load();
+        }, true);
     });
 

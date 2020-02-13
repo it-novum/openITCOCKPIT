@@ -105,6 +105,10 @@
     border-left: 3px solid #449D44;
 }
 
+.changelog-blockquote-warning {
+    border-left: 3px solid #DF8F1D;
+}
+
 .changelog-blockquote-danger {
     border-left: 3px solid #C9302C;
 }

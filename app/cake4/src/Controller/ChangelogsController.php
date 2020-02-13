@@ -66,7 +66,7 @@ class ChangelogsController extends AppController {
         foreach ($all_changes as $index => $change) {
             $controllerName = ucfirst(Inflector::pluralize($change['model']));
             $ngState = '';
-            if ($this->hasPermission('edit', $controllerName)) {
+            if ($this->hasPermission('edit', $controllerName) && $change['action'] !== 'delete') {
                 $ngState = sprintf(
                     '%sEdit',
                     $controllerName
@@ -82,7 +82,7 @@ class ChangelogsController extends AppController {
 
             $dataUnserialized = unserialize($change['data']);
             $dataUnserialized = $ChangelogsTable->replaceFieldValues($dataUnserialized);
-            $dataUnserialized = $ChangelogsTable->formatDataForView($dataUnserialized);
+            $dataUnserialized = $ChangelogsTable->formatDataForView($dataUnserialized, $change['action']);
             $dataUnserialized = $ChangelogsTable->replaceTableNames($dataUnserialized);
 
             $all_changes[$index]['isToday'] = $isToday;
