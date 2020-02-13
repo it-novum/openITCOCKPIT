@@ -14,6 +14,22 @@
             </h4>
         </div>
 
+        <div class="dropdown-item" ng-if="systemHealth.state === 'unknown'">
+            <a ui-sref="AdministratorsDebug" class="d-flex align-items-center" href="javascript:void();">
+                <span class="mr-2">
+                    <i class="d-inline-block fas fa-question-circle fa-3x text-primary"></i>
+                </span>
+                <span class="d-flex flex-column flex-1 ml-1">
+                    <span class="notification-title">
+                        <?php echo __('Critical'); ?>
+                    </span>
+                    <span class="notification-message fs-sm">
+                        <?php echo __('Cannot retrieve system health data'); ?>
+                    </span>
+                </span>
+            </a>
+        </div>
+
         <div class="dropdown-item" ng-if="!systemHealth.isNagiosRunning">
             <a ui-sref="AdministratorsDebug" class="d-flex align-items-center" href="javascript:void();">
                 <span class="mr-2">
@@ -59,7 +75,7 @@
                 </span>
             </a>
         </div>
-        <div class="dropdown-item" ng-if="systemHealth.isNdoInstalled && !systemHealth.isNdoRunning">
+        <div class="dropdown-item moveme" ng-if="systemHealth.isNdoInstalled && !systemHealth.isNdoRunning">
             <a ui-sref="AdministratorsDebug" class="d-flex align-items-center" href="javascript:void();">
                 <span class="mr-2">
                     <i class="d-inline-block fas fa-warning fa-3x down"></i>
@@ -74,7 +90,7 @@
                 </span>
             </a>
         </div>
-        <div class="dropdown-item" ng-if="systemHealth.isStatusengineInstalled && !systemHealth.isStatusengineRunning">
+        <div class="dropdown-item moveme" ng-if="systemHealth.isStatusengineInstalled && !systemHealth.isStatusengineRunning">
             <a ui-sref="AdministratorsDebug" class="d-flex align-items-center" href="javascript:void();">
                 <span class="mr-2">
                     <i class="d-inline-block fas fa-warning fa-3x down"></i>
@@ -89,7 +105,7 @@
                 </span>
             </a>
         </div>
-        <div class="dropdown-item"
+        <div class="dropdown-item moveme"
              ng-if="systemHealth.isStatusenginePerfdataProcessor && !systemHealth.isStatusengineRunning">
             <a ui-sref="AdministratorsDebug" class="d-flex align-items-center" href="javascript:void();">
                 <span class="mr-2">
@@ -105,17 +121,17 @@
                 </span>
             </a>
         </div>
-        <div class="dropdown-item" ng-if="!systemHealth.isStatusenginePerfdataProcessor && !systemHealth.isNpcdRunning">
+        <div class="dropdown-item moveme" ng-if="!systemHealth.isStatusenginePerfdataProcessor && !systemHealth.isNpcdRunning">
             <a ui-sref="AdministratorsDebug" class="d-flex align-items-center" href="javascript:void();">
                 <span class="mr-2">
                     <i class="d-inline-block fas fa-warning fa-3x warning"></i>
                 </span>
-                <span class="d-flex flex-column flex-1 ml-1">
+                <span class="d-flex flex-column flex-1 ml-1 overflow-hidden">
                     <span class="notification-title">
                         <?php echo __('Warning'); ?>
                     </span>
                     <span class="notification-message fs-sm">
-                        <?php echo __('Performance data processer NPCD is not running!'); ?>
+                        <?php  echo __('Performance data processer NPCD is not running!'); ?>
                     </span>
                 </span>
             </a>

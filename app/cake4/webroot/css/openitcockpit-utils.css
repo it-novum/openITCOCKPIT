@@ -440,3 +440,42 @@ openITCOCKPIT v4 Utilities
     padding-top: 0.1rem;
     padding-bottom: 0.1rem;
 }
+
+/* marquee for long system health messages */
+.moveme:hover > a > span > span.notification-message {
+    animation: moveme 4s linear infinite alternate;
+}
+
+@keyframes moveme {
+    0% {
+        transform: translateX(0%);
+    }
+    11.1% {
+        transform: translateX(-10%);
+    }
+    22.2% {
+        transform: translateX(-20%);
+    }
+    33.3% {
+        transform: translateX(-30%);
+    }
+    44.4% {
+        transform: translateX(-40%);
+    }
+    55.5% {
+        transform: translateX(-30%);
+    }
+    66.6% {
+        transform: translateX(-20%);
+    }
+    77.7% {
+        transform: translateX(-10%);
+    }
+    88.8% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(10%);
+    }
+}
+
