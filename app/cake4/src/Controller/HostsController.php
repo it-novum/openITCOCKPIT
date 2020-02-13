@@ -595,7 +595,12 @@ class HostsController extends AppController {
         }
 
         $host = $HostsTable->getHostForEdit($id);
-        $hostForChangelog = $host;
+        $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($host['Host']['hosttemplate_id']);
+
+        $HostMergerForView = new HostMergerForView($host, $hosttemplate);
+        $mergedHost = $HostMergerForView->getDataForView();
+
+        $hostForChangelog = $mergedHost;
 
         if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
             $this->render403();
@@ -605,10 +610,6 @@ class HostsController extends AppController {
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return host information
             $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
-            $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($host['Host']['hosttemplate_id']);
-
-            $HostMergerForView = new HostMergerForView($host, $hosttemplate);
-            $mergedHost = $HostMergerForView->getDataForView();
 
             $HostContainersPermissions = new HostContainersPermissions(
                 $host['Host']['container_id'],

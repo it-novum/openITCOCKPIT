@@ -13,16 +13,15 @@ use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\CakePHP\Set;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ChangelogsFilter;
 
 /**
  * Changelogs Model
  *
- * @property \App\Model\Table\ObjectsTable|\Cake\ORM\Association\BelongsTo $Objects
- * @property \App\Model\Table\ObjecttypesTable|\Cake\ORM\Association\BelongsTo $Objecttypes
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
- * @property \App\Model\Table\ChangelogsToContainersTable|\Cake\ORM\Association\HasMany $ChangelogsToContainers
+ * @property \App\Model\Table\ContainersTable|\Cake\ORM\Association\HasMany $containers
  *
  * @method \App\Model\Entity\Changelog get($primaryKey, $options = [])
  * @method \App\Model\Entity\Changelog newEntity($data = null, array $options = [])

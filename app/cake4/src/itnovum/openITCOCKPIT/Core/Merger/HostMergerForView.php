@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core\Merger;
 
 use itnovum\openITCOCKPIT\Core\CustomVariableMerger;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 /**
  * Class HostMergerForView
@@ -243,11 +244,12 @@ class HostMergerForView {
      */
     public function getDataForCommandarguments() {
         if (empty($this->host['hostcommandargumentvalues'])) {
-            return $this->hosttemplate['hosttemplatecommandargumentvalues'];
+            if (($this->host['command_id'] === $this->hosttemplate['command_id'] || $this->host['command_id'] === null)) {
+                return $this->hosttemplate['hosttemplatecommandargumentvalues'];
+            }
         }
 
         return $this->host['hostcommandargumentvalues'];
-
     }
 
     /**
