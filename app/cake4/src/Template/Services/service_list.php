@@ -64,21 +64,19 @@
 
 
             <div class="input-group-append">
-                <button type="button" class="btn btn-default btn-sm waves-effect waves-themed"><i class="fa fa-cog"></i>
-                </button>
-                <button type="button"
-                        class="btn btn-default btn-sm dropdown-toggle dropdown-toggle-split waves-effect waves-themed"
+                <button class="btn btn-default btn-sm dropdown-toggle waves-effect waves-themed" type="button"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="sr-only">Toggle Dropdown</span>
+                    <?php echo __('Actions'); ?>
                 </button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu" x-placement="bottom-start"
+                     style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                        <a class="dropdown-item" ui-sref="HostsBrowser({id: host.Host.id})" href="javascript:void(0);">
+                        <a class="dropdown-item" ui-sref="HostsBrowser({id:data.hostId})">
                             <i class="fa fa-desktop"></i> <?php echo __('Browser'); ?>
                         </a>
                     <?php endif; ?>
                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                        <a class="dropdown-item" ui-sref="HostsEdit({id:host.Host.id})"
+                        <a class="dropdown-item" ui-sref="HostsEdit({id:data.hostId})"
                            ng-show="host.Host.allow_edit">
                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                         </a>
