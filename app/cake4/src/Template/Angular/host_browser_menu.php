@@ -63,15 +63,15 @@
             <?php if ($this->Acl->hasPermission('view', 'documentations')): ?>
                 <div style="display: inline; position:relative;">
                     <a
-                            ui-sref="DocumentationsView({uuid:config.hostUuid, type:'host'})"
-                            title="<?php echo __('Object documentation'); ?>"
-                            class="btn btn-default btn-sm">
-                        <i class="fa fa-book fa-lg"></i>
+                        ui-sref="DocumentationsView({uuid:config.hostUuid, type:'host'})"
+                        title="<?php echo __('Object documentation'); ?>"
+                        class="btn btn-default btn-sm">
+                        <i class="fa fa-book fa-lg">
+                            <span ng-show="config.docuExists" class="badge bg-up badge-icon">
+                                <i class="fa fa-check"></i>
+                            </span>
+                        </i>
                     </a>
-
-                    <span ng-show="config.docuExists" class="badge bg-up docu-badge">
-            <i class="fa fa-check"></i>
-        </span>
                 </div>
             <?php endif; ?>
 
