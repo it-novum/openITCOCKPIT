@@ -57,7 +57,7 @@
                         </div>
                         <div class="col-lg-12">
                             <?php echo __('We recommend every new user to read our'); ?>
-                            <a href="https://openitcockpit.io/beginners/" target="'_blank">
+                            <a href="https://openitcockpit.io/beginners/" target="_blank">
                                 <?php echo __('beginners guide.'); ?>
                             </a>
                             <?php echo __('This guide provides information about the basic concept of openITCOCKPIT and how to monitor your first host.'); ?>
