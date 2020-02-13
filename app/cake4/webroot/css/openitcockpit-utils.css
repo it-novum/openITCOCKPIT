@@ -436,11 +436,13 @@ openITCOCKPIT v4 Utilities
     border: 1px solid #e3e3e3;
 }
 
+/* dropdown list sizing */
 .dropdown-item-xs {
     padding-top: 0.1rem;
     padding-bottom: 0.1rem;
 }
 
+/* marquee-like animation */
 @keyframes moveme {
     0% {
         transform: translateX(0%);
