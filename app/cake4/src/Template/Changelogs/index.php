@@ -245,7 +245,7 @@
                                 <blockquote
                                     ng-class="{'changelog-blockquote-success': change.action ==='add', 'changelog-blockquote-primary': change.action ==='copy'}"
                                     ng-if="change.action === 'add' || change.action === 'copy'">
-                                    <p class="blockquote"
+                                    <div class="blockquote"
                                        ng-repeat="(tableName, tableChanges) in change.data_unserialized">
                                         {{tableName}}
 
@@ -262,15 +262,15 @@
                                                    class="padding-left-10">
                                                 {{subFieldName}}: <span class="text-primary">{{subFieldValue}}</span>
                                             </small>
-                                            <br/>
+                                            <div class="padding-top-5"></div>
                                         </span>
-                                    </p>
+                                    </div>
                                 </blockquote>
 
                                 <!-- Edit changes -->
                                 <blockquote class="changelog-blockquote-warning"
                                             ng-if="change.action === 'edit'">
-                                    <p class="blockquote"
+                                    <div class="blockquote"
                                        ng-repeat="(tableName, tableChanges) in change.data_unserialized">
                                         {{tableName}}
 
@@ -312,10 +312,9 @@
                                                 </span>
                                             </small>
 
-
-                                            <br/>
+                                            <div class="padding-top-5"></div>
                                         </span>
-                                    </p>
+                                    </div>
                                 </blockquote>
                             </div>
                         </li>

@@ -653,7 +653,7 @@ class ChangelogsTable extends Table {
                         foreach ($changes['after'] as $fieldName => $fieldValue) {
                             $diffs[$fieldName] = [
                                 'old' => '',
-                                'new' => $fieldValue
+                                'new' => is_array($fieldValue) ? Hash::remove($fieldValue, 'id') : $fieldValue,
                             ];
                         }
                     }
@@ -662,7 +662,7 @@ class ChangelogsTable extends Table {
                         //All data got removed from fields (fields where filled before)
                         foreach ($changes['before'] as $fieldName => $fieldValue) {
                             $diffs[$fieldName] = [
-                                'old' => $fieldValue,
+                                'old' => is_array($fieldValue) ? Hash::remove($fieldValue, 'id') : $fieldValue,
                                 'new' => null
                             ];
                         }
@@ -673,6 +673,9 @@ class ChangelogsTable extends Table {
 
                         if (!$isArray) {
                             foreach (Hash::diff($changes['after'], $changes['before']) as $fieldName => $fieldValue) {
+                                if ($fieldName === 'id') {
+                                    continue;
+                                }
                                 $diffs[$fieldName] = [
                                     'old' => $changes['before'][$fieldName] ?? '',
                                     'new' => $fieldValue
