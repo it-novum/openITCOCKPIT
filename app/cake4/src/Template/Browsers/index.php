@@ -55,7 +55,7 @@
             <div class="panel-container show">
                 <div class="panel-content">
                     <!-- Filter  -->
-                    <div class="col-xs-12 col-md-12 margin-bottom-10">
+                    <div class="col-lg-12 margin-bottom-10">
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-prepend">
@@ -100,7 +100,7 @@
                         <?php echo __('No hosts associated with this node'); ?>
                     </div>
 
-                    <div ng-show="hoststatusSum > 0">
+                    <div class="text-center" ng-show="hoststatusSum > 0">
                         <img
                             ng-src="/angular/getPieChart/{{hoststatusCountHash[0]}}/{{hoststatusCountHash[1]}}/{{hoststatusCountHash[2]}}.png">
 
@@ -142,7 +142,7 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-                    <div ng-show="servicestatusSum > 0">
+                    <div class="text-center" ng-show="servicestatusSum > 0">
                         <img
                             ng-src="/angular/getPieChart/{{servicestatusCountHash[0]}}/{{servicestatusCountHash[1]}}/{{servicestatusCountHash[2]}}/{{servicestatusCountHash[3]}}/.png">
 
