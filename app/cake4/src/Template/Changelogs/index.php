@@ -107,20 +107,20 @@
                             <div class="form-group smart-form">
                                 <?php
                                 $models = [
-                                    'Commands',
-                                    'Contacts',
-                                    'Contactgroups',
-                                    'Hosts',
-                                    'Hostgroups',
-                                    'Hosttemplates',
-                                    'Services',
-                                    'Servicegroups',
-                                    'Servicetemplates',
-                                    'Timeperiods'
+                                    'Command'         => __('Commands'),
+                                    'Contact'         => __('Contacts'),
+                                    'Contactgroup'    => __('Contact groups'),
+                                    'Host'            => __('Hosts'),
+                                    'Hostgroup'       => __('Host groups'),
+                                    'Hosttemplate'    => __('Host templates'),
+                                    'Service'         => __('Services'),
+                                    'Servicegroup'    => __('Service groups'),
+                                    'Servicetemplate' => __('Service templates'),
+                                    'Timeperiod'      => __('Time periods')
                                 ];
                                 ?>
 
-                                <?php foreach ($models as $model): ?>
+                                <?php foreach ($models as $model => $name): ?>
                                     <label class="checkbox small-checkbox-label">
                                         <input type="checkbox" name="checkbox" checked="checked"
                                                ng-model="filter.Models.<?= $model ?>"
@@ -128,7 +128,7 @@
                                                ng-true-value="1"
                                                ng-model-options="{debounce: 500}">
                                         <i class="checkbox-primary"></i>
-                                        <?php echo __($model); ?>
+                                        <?php echo h($name); ?>
                                     </label>
                                 <?php endforeach; ?>
                             </div>
@@ -266,7 +266,7 @@
                                     ng-class="{'changelog-blockquote-success': change.action ==='add', 'changelog-blockquote-primary': change.action ==='copy'}"
                                     ng-if="change.action === 'add' || change.action === 'copy'">
                                     <div class="blockquote"
-                                       ng-repeat="(tableName, tableChanges) in change.data_unserialized">
+                                         ng-repeat="(tableName, tableChanges) in change.data_unserialized">
                                         {{tableName}}
 
                                         <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
@@ -291,7 +291,7 @@
                                 <blockquote class="changelog-blockquote-warning"
                                             ng-if="change.action === 'edit'">
                                     <div class="blockquote"
-                                       ng-repeat="(tableName, tableChanges) in change.data_unserialized">
+                                         ng-repeat="(tableName, tableChanges) in change.data_unserialized">
                                         {{tableName}}
 
                                         <span ng-repeat="(fieldName, fieldValueChanges) in tableChanges.data"

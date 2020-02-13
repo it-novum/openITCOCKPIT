@@ -43,4 +43,30 @@ class ChangelogsFilter extends Filter {
 
         return $this->getConditionsByFilters($filters);
     }
+
+    /**
+     * @return false|float|int
+     */
+    public function getFrom() {
+        if ($this->queryHasField('from')) {
+            $value = strtotime($this->getQueryFieldValue('from'));
+            if ($value) {
+                return $value;
+            }
+        }
+        return time() - (3600 * 24 * 30);
+    }
+
+    /**
+     * @return false|float|int
+     */
+    public function getTo() {
+        if ($this->queryHasField('to')) {
+            $value = strtotime($this->getQueryFieldValue('to'));
+            if ($value) {
+                return $value;
+            }
+        }
+        return time() + (3600 * 24 * 30 * 2);
+    }
 }

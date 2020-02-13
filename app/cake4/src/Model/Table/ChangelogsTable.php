@@ -150,6 +150,9 @@ class ChangelogsTable extends Table {
             $where['Containers.id IN'] = $MY_RIGHTS;
         }
 
+        $where['Changelogs.created >='] = date('Y-m-d H:i:s', $ChangelogsFilter->getFrom());
+        $where['Changelogs.created <='] = date('Y-m-d H:i:s', $ChangelogsFilter->getTo());
+
         $query->where($where);
 
         $query->order($ChangelogsFilter->getOrderForPaginator('Changelogs.id', 'desc'));

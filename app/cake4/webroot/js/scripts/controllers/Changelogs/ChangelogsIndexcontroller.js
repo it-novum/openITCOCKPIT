@@ -13,16 +13,16 @@ angular.module('openITCOCKPIT')
                     name: ''
                 },
                 Models: {
-                    Commands: 1,
-                    Contacts: 1,
-                    Contactgroups: 1,
-                    Hosts: 1,
-                    Hostgroups: 1,
-                    Hosttemplates: 1,
-                    Services: 1,
-                    Servicegroups: 1,
-                    Servicetemplates: 1,
-                    Timeperiods: 1
+                    Command: 1,
+                    Contact: 1,
+                    Contactgroup: 1,
+                    Host: 1,
+                    Hostgroup: 1,
+                    Hosttemplate: 1,
+                    Service: 1,
+                    Servicegroup: 1,
+                    Servicetemplate: 1,
+                    Timeperiod: 1
                 },
                 Actions: {
                     add: 1,
@@ -38,6 +38,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.showFilter = false;
+        $scope.init = true;
 
         var getActionsFilter = function(){
             var selectedActions = [];
@@ -50,6 +51,17 @@ angular.module('openITCOCKPIT')
             return selectedActions;
         };
 
+        var getModelsFilter = function(){
+            var selectedModels = [];
+            for(var modelName in $scope.filter.Models){
+                if($scope.filter.Models[modelName] === 1){
+                    selectedModels.push(modelName);
+                }
+            }
+
+            return selectedModels;
+        };
+
         $scope.load = function(){
             var params = {
                 'angular': true,
@@ -58,10 +70,10 @@ angular.module('openITCOCKPIT')
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
                 'filter[Changelogs.name]': $scope.filter.Changelogs.name,
-                //'filter[Users.email]': $scope.filter.Users.email,
-                //'filter[Users.phone]': $scope.filter.Users.phone,
                 'filter[Changelogs.action][]': getActionsFilter(),
-                //'filter[Users.company]': $scope.filter.Users.company
+                'filter[Changelogs.model][]': getModelsFilter(),
+                'filter[from]': $scope.filter.from,
+                'filter[to]': $scope.filter.to
             };
 
             $http.get("/changelogs/index.json", {
@@ -98,7 +110,6 @@ angular.module('openITCOCKPIT')
         //Fire on page load
         defaultFilter();
         SortService.setCallback($scope.load);
-        $scope.load();
 
         //Watch on filter change
         $scope.$watch('filter', function(){
