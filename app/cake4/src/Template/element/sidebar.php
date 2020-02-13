@@ -118,7 +118,7 @@
                 </a>
             </li>
             <li>
-                <a href="https://docs.it-novum.com/display/ODE" data-toggle="tooltip" data-placement="top" title="<?php echo __('Documentation'); ?>">
+                <a ui-sref="DocumentationsWiki" data-toggle="tooltip" data-placement="top" title="<?php echo __('Documentation'); ?>">
                     <i class="fa fa-book"></i>
                 </a>
             </li>
