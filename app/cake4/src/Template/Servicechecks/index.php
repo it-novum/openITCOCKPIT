@@ -34,8 +34,8 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Service check'); ?>
-                    <span class="fw-300"><i><?php echo __('history'); ?></i></span>
+                    <?php echo __('Service'); ?>
+                    <span class="fw-300"><i><?php echo __('check history'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
