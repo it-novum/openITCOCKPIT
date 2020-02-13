@@ -286,22 +286,41 @@
 
                                         <span ng-repeat="(fieldIndex, fieldValueChanges) in tableChanges.data"
                                               ng-if="tableChanges.isArray" class="padding-top-5">
-
-                                            <small class="padding-left-10" ng-repeat-start="(oldFieldName, oldFieldValue) in fieldValueChanges">
-                                                {{oldFieldName}}
-                                                {{oldFieldValue}}
+                                            <small ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
+                                                   ng-if="fieldValueChanges.old === null">
+                                                {{newFieldName}}:
+                                                <span class="up">{{newFieldValue}}</span>
                                             </small>
-                                            <br ng-repeat-end="" />
+
+                                            <small ng-repeat="(oldFieldName, oldFieldValue) in fieldValueChanges.old"
+                                                   ng-if="fieldValueChanges.new === null">
+                                                {{oldFieldName}}:
+                                                <span class="down changelog_delete">{{oldFieldValue}}</span>
+                                            </small>
+
+                                            <small ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
+                                                   ng-if="fieldValueChanges.old !== null && fieldValueChanges.new !== null">
+                                                {{newFieldName}}:
+                                                <span
+                                                    ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'down': fieldValueChanges.old[newFieldName] !== newFieldValue}">
+                                                    {{fieldValueChanges.old[newFieldName]}}
+                                                </span>
+                                                <i class="fa fa-caret-right"></i>
+                                                <span
+                                                    ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'up': fieldValueChanges.old[newFieldName] !== newFieldValue}">
+                                                    {{newFieldValue}}
+                                                </span>
+                                            </small>
+
+
+                                            <br/>
                                         </span>
                                     </p>
                                 </blockquote>
-
                             </div>
-
                         </li>
-
-
                     </ul>
+
                 </div>
                 <div class="col-xs-12">
                     <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>

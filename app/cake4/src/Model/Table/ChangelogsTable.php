@@ -664,7 +664,7 @@ class ChangelogsTable extends Table {
                         foreach ($changes['before'] as $fieldName => $fieldValue) {
                             $diffs[$fieldName] = [
                                 'old' => $fieldValue,
-                                'new' => ''
+                                'new' => null
                             ];
                         }
                     }
@@ -687,14 +687,14 @@ class ChangelogsTable extends Table {
                                 if (!in_array($id, $idsAfterSave, true)) {
                                     //Object got deleted
                                     $diffs[] = [
-                                        'old' => Hash::extract($changes['before'], '{n}[id=' . $id . ']')[0],
-                                        'new' => []
+                                        'old' => Hash::remove(Hash::extract($changes['before'], '{n}[id=' . $id . ']')[0], 'id'),
+                                        'new' => null
                                     ];
                                 } else {
                                     //Object got edited
                                     $diffs[] = [
-                                        'old' => Hash::extract($changes['before'], '{n}[id=' . $id . ']')[0],
-                                        'new' => Hash::extract($changes['after'], '{n}[id=' . $id . ']')[0],
+                                        'old' => Hash::remove(Hash::extract($changes['before'], '{n}[id=' . $id . ']')[0], 'id'),
+                                        'new' => Hash::remove(Hash::extract($changes['after'], '{n}[id=' . $id . ']')[0], 'id'),
                                     ];
                                 }
                             }
@@ -703,7 +703,7 @@ class ChangelogsTable extends Table {
                                 if (!isset($after['id'])) {
                                     //New created object
                                     $diffs[] = [
-                                        'old' => [],
+                                        'old' => null,
                                         'new' => $after
                                     ];
                                 }
