@@ -1165,7 +1165,11 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $service = $ServicesTable->get($id);
+        $service = $ServicesTable->get($id, [
+            'contain' => [
+                'Servicetemplates'
+            ]
+        ]);
         $host = $HostsTable->getHostForServiceEdit($service->get('host_id'));
         if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
             $this->render403();
@@ -1182,6 +1186,27 @@ class ServicesController extends AppController {
             $this->set('error', $service->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error', 'success', 'message']);
             return;
+        }
+
+        $User = new User($this->getUser());
+        /** @var  ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+        $serviceName = !empty($service->get('name'))?$service->get('name'):$service->get('servicetemplate')->get('name');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'deactivate',
+            'services',
+            $id,
+            OBJECT_SERVICE,
+            $host['Host']['container_id'],
+            $User->getId(),
+            $host['Host']['name'] . '/' .$serviceName,
+            []
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
         }
 
         $this->set('success', true);
@@ -1207,7 +1232,11 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $service = $ServicesTable->get($id);
+        $service = $ServicesTable->get($id, [
+            'contain' => [
+                'Servicetemplates'
+            ]
+        ]);
         $host = $HostsTable->getHostForServiceEdit($service->get('host_id'));
         if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
             $this->render403();
@@ -1233,6 +1262,27 @@ class ServicesController extends AppController {
             $this->set('error', $service->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error', 'success', 'message']);
             return;
+        }
+
+        $User = new User($this->getUser());
+        /** @var  ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+        $serviceName = !empty($service->get('name'))?$service->get('name'):$service->get('servicetemplate')->get('name');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'activate',
+            'services',
+            $id,
+            OBJECT_SERVICE,
+            $host['Host']['container_id'],
+            $User->getId(),
+            $host['Host']['name'] . '/' .$serviceName,
+            []
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
         }
 
         $this->set('success', true);

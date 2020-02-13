@@ -179,6 +179,26 @@
                                     <i class="checkbox-critical critical"></i>
                                     <?php echo __('Delete'); ?>
                                 </label>
+
+                                <label class="checkbox small-checkbox-label">
+                                    <input type="checkbox" name="checkbox" checked="checked"
+                                           ng-model="filter.Actions.activate"
+                                           ng-false-value="0"
+                                           ng-true-value="1"
+                                           ng-model-options="{debounce: 500}">
+                                    <i class="checkbox-primary"></i>
+                                    <?php echo __('Activate'); ?>
+                                </label>
+
+                                <label class="checkbox small-checkbox-label">
+                                    <input type="checkbox" name="checkbox" checked="checked"
+                                           ng-model="filter.Actions.deactivate"
+                                           ng-false-value="0"
+                                           ng-true-value="1"
+                                           ng-model-options="{debounce: 500}">
+                                    <i class="checkbox-primary"></i>
+                                    <?php echo __('Deactivate'); ?>
+                                </label>
                             </div>
                         </fieldset>
                     </div>

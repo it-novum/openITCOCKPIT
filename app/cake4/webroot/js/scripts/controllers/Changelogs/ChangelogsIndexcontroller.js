@@ -28,7 +28,9 @@ angular.module('openITCOCKPIT')
                     add: 1,
                     edit: 1,
                     copy: 1,
-                    delete: 1
+                    delete: 1,
+                    deactivate: 1,
+                    activate: 1
                 },
                 from: date('d.m.Y H:i', now.getTime() / 1000 - (3600 * 24 * 30 * 4)),
                 to: date('d.m.Y H:i', now.getTime() / 1000 + (3600 * 24 * 5)),

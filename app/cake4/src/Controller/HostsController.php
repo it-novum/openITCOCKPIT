@@ -1277,6 +1277,26 @@ class HostsController extends AppController {
         $host->disabled = 1;
 
         if ($HostsTable->save($host)) {
+            $User = new User($this->getUser());
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                'deactivate',
+                'hosts',
+                $id,
+                OBJECT_HOST,
+                $host->get('container_id'),
+                $User->getId(),
+                $host->get('name'),
+                []
+            );
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
+
             /** @var $ServicesTable ServicesTable */
             $ServicesTable = TableRegistry::getTableLocator()->get('Services');
             $ServicesTable->updateAll([
@@ -1322,6 +1342,26 @@ class HostsController extends AppController {
         $host->disabled = 0;
 
         if ($HostsTable->save($host)) {
+            $User = new User($this->getUser());
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                'activate',
+                'hosts',
+                $id,
+                OBJECT_HOST,
+                $host->get('container_id'),
+                $User->getId(),
+                $host->get('name'),
+                []
+            );
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
+
             /** @var $ServicesTable ServicesTable */
             $ServicesTable = TableRegistry::getTableLocator()->get('Services');
             $ServicesTable->updateAll([

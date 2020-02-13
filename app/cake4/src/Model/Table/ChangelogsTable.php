@@ -364,6 +364,8 @@ class ChangelogsTable extends Table {
                 break;
             case 'delete':
             case 'mass_delete':
+            case 'deactivate':
+            case 'activate':
                 return [
                     'action'        => $action,
                     'model'         => ucwords(Inflector::singularize($controller)),
@@ -491,9 +493,12 @@ class ChangelogsTable extends Table {
         switch ($action) {
             case 'add':
                 return 'fa fa-plus';
-
             case 'delete':
                 return 'fa fa-trash-o ';
+            case 'activate':
+                return 'fa fa-asterisk';
+            case 'deactivate':
+                return 'fa fa-plug';
             case 'copy':
                 return 'fa fa-files-o';
             default:
@@ -513,8 +518,11 @@ class ChangelogsTable extends Table {
             case 'delete':
                 return 'bg-down';
 
-            //case 'deactivate':
-            //    return 'bg-warning';
+            case 'activate':
+                return 'bg-up-soft';
+
+            case 'deactivate':
+                return 'bg-critical-soft';
 
             case 'edit':
                 return 'bg-warning';
