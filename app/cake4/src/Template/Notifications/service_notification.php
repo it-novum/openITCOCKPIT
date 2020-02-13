@@ -230,7 +230,7 @@
 
                             </tbody>
                         </table>
-                        <div class="margin-top-10" ng-show="servicechecks.length == 0">
+                        <div class="margin-top-10" ng-show="notifications.length == 0">
                             <div class="text-center text-danger italic">
                                 <?php echo __('No entries match the selection'); ?>
                             </div>
