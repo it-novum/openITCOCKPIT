@@ -28,8 +28,6 @@ angular.module('openITCOCKPIT').directive('systemHealth', function($http, $inter
 
                     $scope.class = $scope.getHealthClass();
                 });
-
-                console.log($scope.systemHealth);
             };
 
             $scope.getHealthClass = function(){
