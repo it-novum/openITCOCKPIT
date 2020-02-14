@@ -35,6 +35,7 @@ use Cake\Cache\Cache;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
@@ -311,8 +312,22 @@ class TenantsController extends AppController {
             $this->set('message', __('Could not delete tenant'));
             $this->viewBuilder()->setOption('serialize', ['message']);
         }
+
+
+        //both types must be host, otherwise the serviceUsedBy site with the host id will be displayed which results in an error
+        $usedBy = [
+            [
+                'baseUrl' => '#',
+                'state'   => 'ContainersShowDetails',
+                'message' => __('Used by other objects'),
+                'module'  => 'Core'
+            ]
+        ];
         $this->response = $this->response->withStatus(400);
-        $this->set('message', __('Could not delete tenant'));
-        $this->viewBuilder()->setOption('serialize', ['message']);
+        $this->set('success', false);
+        $this->set('id', $id);
+        $this->set('message', __('Issue while deleting tenant'));
+        $this->set('usedBy', $usedBy);
+        $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
     }
 }

@@ -54,8 +54,6 @@ class ContainersController extends AppController {
 
     /**
      * @param null $id
-     * @todo Remove me
-     * @deprecated
      */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
@@ -68,8 +66,8 @@ class ContainersController extends AppController {
         if (!$ContainersTable->existsById($id)) {
             throw new NotFoundException(__('Invalid container'));
         }
-        $container = $this->Container->findById($id);
-        if (!$this->allowedByContainerId($container['Container']['id'])) {
+        $container = $ContainersTable->get($id);
+        if (!$this->allowedByContainerId($container->get('id'))) {
             throw new ForbiddenException('403 Forbidden');
         }
 

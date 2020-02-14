@@ -11,6 +11,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use EventcorrelationModule\Model\Table\EventcorrelationsTable;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
@@ -166,18 +167,49 @@ class TenantsTable extends Table {
         if (Plugin::isLoaded('EventcorrelationModule') && !empty($hostIds)) {
             /** @var EventcorrelationsTable $EventcorrelationTable */
             $EventcorrelationTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
-            $query = $EventcorrelationTable->find()
-                ->where([
-                    'OR' => [
-                        'Eventcorrelations.host_id IN'    => $hostIds,
-                        'Eventcorrelations.service_id IN' => $serviceIds,
-                    ]
-                ])
-                ->count();
 
-            if (!empty($query) && $query > 0) {
-                return false;
+            if (!empty($hostIds) && !empty($serviceIds)) {
+                $query = $EventcorrelationTable->find()
+                    ->where([
+                        'OR' => [
+                            'Eventcorrelations.host_id IN'    => $hostIds,
+                            'Eventcorrelations.service_id IN' => $serviceIds,
+                        ]
+                    ])
+                    ->count();
+
+                if (!empty($query) && $query > 0) {
+                    return false;
+                }
             }
+
+            if (!empty($hostIds)) {
+                $query = $EventcorrelationTable->find()
+                    ->where([
+                        'Eventcorrelations.host_id IN' => $hostIds,
+                    ])
+                    ->count();
+
+                if (!empty($query) && $query > 0) {
+                    return false;
+                }
+            }
+
+            if (!empty($serviceIds)) {
+                $query = $EventcorrelationTable->find()
+                    ->where([
+                        'Eventcorrelations.service_id IN' => $serviceIds,
+                    ])
+                    ->count();
+
+                if (!empty($query) && $query > 0) {
+                    return false;
+                }
+            }
+        }
+
+        if(!empty($hostIds) || !empty($serviceIds)){
+            return false;
         }
 
         return true;
