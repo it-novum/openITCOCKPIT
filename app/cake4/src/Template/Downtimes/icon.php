@@ -24,25 +24,25 @@
 ?>
 
 <i
-        ng-if="downtime.isRunning"
-        title="<?php echo __('Downtime currently running') ?>"
-        class="fa fa-power-off fa-lg txt-color-green"
+    ng-if="downtime.isRunning"
+    title="<?php echo __('Downtime currently running') ?>"
+    class="fa fa-power-off txt-color-green"
 ></i>
 
 <i
-        ng-if="downtime.isExpired"
-        title="<?php echo __('Downtime is expired') ?>"
-        class="fa fa-power-off fa-lg txt-color-red"
+    ng-if="downtime.isExpired"
+    title="<?php echo __('Downtime is expired') ?>"
+    class="fa fa-power-off txt-color-red"
 ></i>
 
 <i
-        ng-if="downtime.wasCancelled"
-        title="<?php echo __('Downtime was cancelled') ?>"
-        class="fa fa-power-off fa-lg txt-color-red"
+    ng-if="downtime.wasCancelled"
+    title="<?php echo __('Downtime was cancelled') ?>"
+    class="fa fa-power-off txt-color-red"
 ></i>
 
 <i
-        ng-if="!downtime.wasCancelled && !downtime.wasStarted && !downtime.isExpired"
-        title="<?php echo __('Downtime not started yet') ?>"
-        class="fa fa-power-off fa-lg text-primary"
+    ng-if="!downtime.wasCancelled && !downtime.wasStarted && !downtime.isExpired"
+    title="<?php echo __('Downtime not started yet') ?>"
+    class="fa fa-power-off text-primary"
 ></i>
