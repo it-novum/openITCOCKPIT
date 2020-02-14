@@ -45,7 +45,7 @@ class DowntimeServiceListJson extends DashboardJsonStandardizer {
         ],
         'isRunning'       => true,
         'hideExpired'     => true,
-        'sort'            => 'DowntimeService.scheduled_start_time',
+        'sort'            => 'DowntimeServices.scheduled_start_time',
         'direction'       => 'desc',
         'useScroll'       => true,
         'scroll_interval' => 30000

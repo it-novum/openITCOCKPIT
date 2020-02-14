@@ -20,7 +20,7 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
 
             $scope.serviceListTimeout = null;
 
-            $scope.sort = 'DowntimeService.scheduled_start_time';
+            $scope.sort = 'DowntimeServices.scheduled_start_time';
             $scope.direction = 'desc';
             $scope.currentPage = 1;
 
