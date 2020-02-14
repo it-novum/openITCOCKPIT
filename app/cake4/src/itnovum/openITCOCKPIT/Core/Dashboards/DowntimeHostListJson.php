@@ -42,7 +42,7 @@ class DowntimeHostListJson extends DashboardJsonStandardizer {
         ],
         'isRunning'       => true,
         'hideExpired'     => true,
-        'sort'            => 'DowntimeHost.scheduled_start_time',
+        'sort'            => 'DowntimeHosts.scheduled_start_time',
         'direction'       => 'desc',
         'useScroll'       => true,
         'scroll_interval' => 30000

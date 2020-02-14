@@ -20,7 +20,7 @@ angular.module('openITCOCKPIT').directive('hostsDowntimeWidget', function($http,
 
             $scope.hostListTimeout = null;
 
-            $scope.sort = 'DowntimeHost.scheduled_start_time';
+            $scope.sort = 'DowntimeHosts.scheduled_start_time';
             $scope.direction = 'desc';
             $scope.currentPage = 1;
 
