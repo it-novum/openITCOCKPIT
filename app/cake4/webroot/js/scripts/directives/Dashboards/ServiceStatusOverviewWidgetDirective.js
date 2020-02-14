@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', function($http, $rootScope, $interval, $httpParamSerializer){
+angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', function($http, $state){
     return {
         restrict: 'E',
         templateUrl: '/dashboards/serviceStatusOverviewWidget.html',
@@ -43,7 +43,6 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', functio
                     $scope.filter.Servicestatus.not_in_downtime = !result.data.config.Servicestatus.scheduled_downtime_depth;
                     $scope.statusCount = result.data.statusCount;
                     $scope.init = false;
-                    $scope.widgetHref = $scope.linkForServiceList();
                 });
             };
 
@@ -102,21 +101,21 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', functio
                 });
             };
 
-            $scope.linkForServiceList = function(){
-                if($scope.init){
-                    return;
-                }
-
-                var options = {
-                    'angular': true,
-                    'filter[Host.name]': $scope.filter.Host.name,
-                    'filter[Service.servicename]': $scope.filter.Service.name,
-                    'has_not_been_acknowledged': ($scope.filter.Servicestatus.not_acknowledged) ? '1' : '0',
-                    'not_in_downtime': ($scope.filter.Servicestatus.not_in_downtime) ? '1' : '0'
+            $scope.goToState = function(){
+                var params = {
+                    servicename: $scope.filter.Service.name,
+                    hostname: $scope.filter.Host.name,
+                    servicestate: [$scope.filter.Servicestatus.current_state]
                 };
-                var currentState = 'filter[Servicestatus.current_state][' + $scope.filter.Servicestatus.current_state + ']';
-                options[currentState] = 1;
-                return '/ng/#!/services/index/?' + $httpParamSerializer(options);
+
+                if($scope.filter.Servicestatus.not_acknowledged && $scope.filter.Servicestatus.current_state > 0){
+                    params.has_not_been_acknowledged = 1;
+                    'not_in_downtime'
+                }
+                if($scope.filter.Servicestatus.not_in_downtime && $scope.filter.Servicestatus.current_state > 0){
+                    params.not_in_downtime = 1;
+                }
+                $state.go('ServicesIndex', params);
             };
         },
 

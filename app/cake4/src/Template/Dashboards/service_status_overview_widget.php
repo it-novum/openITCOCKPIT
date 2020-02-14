@@ -37,7 +37,7 @@
             </a>
             <div class="padding-5" style="font-size:{{fontSize}}px;">
                 <?php if ($this->Acl->hasPermission('index', 'services')): ?>
-                    <a ng-href="{{widgetHref}}">
+                    <a href="javascript:void(0);" ng-click="goToState()">
                         <div class="row text-center">
                             <div class="col col-lg-12 txt-color-white">
                                 {{ statusCount | number }}
