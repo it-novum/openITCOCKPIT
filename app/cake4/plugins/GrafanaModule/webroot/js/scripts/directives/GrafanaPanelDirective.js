@@ -127,7 +127,8 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
                         'filter[Hostx.name]': searchString,
                         'filter[servicename]': searchString,
                         'selected[]': selected,
-                        'containerId': $scope.containerId
+                        'containerId': $scope.containerId,
+                        'recursive': true
                     }
                 }).then(function(result){
 

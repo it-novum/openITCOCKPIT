@@ -25,6 +25,7 @@
 
 /**
  * @var \App\View\AppView $this
+ * @var \App\View\Helper\AclHelper $Acl
  */
 
 ?>
@@ -106,29 +107,29 @@
                             <div class="form-group smart-form">
                                 <?php
                                 $models = [
-                                    'Commands',
-                                    'Contacts',
-                                    'Contactgroups',
-                                    'Hosts',
-                                    'Hostgroups',
-                                    'Hosttemplates',
-                                    'Services',
-                                    'Servicegroups',
-                                    'Servicetemplates',
-                                    'Timeperiods'
+                                    'Command'         => __('Commands'),
+                                    'Contact'         => __('Contacts'),
+                                    'Contactgroup'    => __('Contact groups'),
+                                    'Host'            => __('Hosts'),
+                                    'Hostgroup'       => __('Host groups'),
+                                    'Hosttemplate'    => __('Host templates'),
+                                    'Service'         => __('Services'),
+                                    'Servicegroup'    => __('Service groups'),
+                                    'Servicetemplate' => __('Service templates'),
+                                    'Timeperiod'      => __('Time periods')
                                 ];
                                 ?>
 
-                                <?php foreach($models as $model): ?>
-                                <label class="checkbox small-checkbox-label">
-                                    <input type="checkbox" name="checkbox" checked="checked"
-                                           ng-model="filter.Models.<?= $model ?>"
-                                           ng-false-value="0"
-                                           ng-true-value="1"
-                                           ng-model-options="{debounce: 500}">
-                                    <i class="checkbox-primary"></i>
-                                    <?php echo __($model); ?>
-                                </label>
+                                <?php foreach ($models as $model => $name): ?>
+                                    <label class="checkbox small-checkbox-label">
+                                        <input type="checkbox" name="checkbox" checked="checked"
+                                               ng-model="filter.Models.<?= $model ?>"
+                                               ng-false-value="0"
+                                               ng-true-value="1"
+                                               ng-model-options="{debounce: 500}">
+                                        <i class="checkbox-primary"></i>
+                                        <?php echo h($name); ?>
+                                    </label>
                                 <?php endforeach; ?>
                             </div>
                         </fieldset>
@@ -178,6 +179,26 @@
                                     <i class="checkbox-critical critical"></i>
                                     <?php echo __('Delete'); ?>
                                 </label>
+
+                                <label class="checkbox small-checkbox-label">
+                                    <input type="checkbox" name="checkbox" checked="checked"
+                                           ng-model="filter.Actions.activate"
+                                           ng-false-value="0"
+                                           ng-true-value="1"
+                                           ng-model-options="{debounce: 500}">
+                                    <i class="checkbox-primary"></i>
+                                    <?php echo __('Activate'); ?>
+                                </label>
+
+                                <label class="checkbox small-checkbox-label">
+                                    <input type="checkbox" name="checkbox" checked="checked"
+                                           ng-model="filter.Actions.deactivate"
+                                           ng-false-value="0"
+                                           ng-true-value="1"
+                                           ng-model-options="{debounce: 500}">
+                                    <i class="checkbox-primary"></i>
+                                    <?php echo __('Deactivate'); ?>
+                                </label>
                             </div>
                         </fieldset>
                     </div>
@@ -198,24 +219,132 @@
 
             </div>
 
-            widget body dinge hier
 
-            <div class="container mt-5 mb-5">
-                <div class="row">
-                    <div class="col-md-6 offset-md-3">
-                        <h4>
-                            <?= __('Latest version') ?>
-                            {{changelog[0].Changelog.version}}
-                        </h4>
-                        <ul class="timeline">
-                            <li ng-repeat="record in changelog">
-                                <span class="text-primary">{{record.Changelog.version}}</span>
-                                <p>
-                                    {{record.Changelog.changes | trustAsHtml}}
-                                </p>
-                            </li>
-                        </ul>
-                    </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <ul class="cbp_tmtimeline">
+                        <li ng-repeat="change in changes">
+                            <time class="cbp_tmtime" datetime="{{change.time}}">
+                                <span>{{change.time}}</span>
+                                <span>{{change.timeAgoInWords}}</span>
+                            </time>
+                            <div class="cbp_tmicon txt-color-white {{change.color}}" title="{{change.action}}">
+                                <i class="{{change.icon}}"></i>
+                            </div>
+                            <div class="cbp_tmlabel">
+                                <h2 class="font-md">
+                                    {{change.model}}:
+                                    <strong>
+                                        <a ui-sref="{{change.ngState}}({id: change.object_id})" ng-if="change.ngState">
+                                            {{change.name}}
+                                        </a>
+                                        <span ng-if="!change.ngState"
+                                              ng-class="{'changelog_delete': change.action ==='delete'}">
+                                            {{change.name}}
+                                        </span>
+
+                                    </strong>
+                                    <span class="font-xs" ng-if="change.includeUser && change.user.id > 0">
+                                        <?= __('by') ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
+                                            <a ui-sref="UsersEdit({id: change.user.id})">
+                                                    {{change.user.firstname}}
+                                                    {{change.user.lastname}}
+                                                </a>
+                                        <?php else: ?>
+                                            {{change.user.firstname}}
+                                            {{change.user.lastname}}
+                                        <?php endif; ?>
+                                    </span>
+                                    <span class="font-xs" ng-if="change.includeUser && change.user === null">
+                                        <?= __('by Cronjob') ?>
+                                    </span>
+                                </h2>
+
+                                <!-- Add and copy changes -->
+                                <blockquote
+                                    ng-class="{'changelog-blockquote-success': change.action ==='add', 'changelog-blockquote-primary': change.action ==='copy'}"
+                                    ng-if="change.action === 'add' || change.action === 'copy'">
+                                    <div class="blockquote"
+                                         ng-repeat="(tableName, tableChanges) in change.data_unserialized">
+                                        {{tableName}}
+
+                                        <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
+                                              ng-if="!tableChanges.isArray">
+                                            <small class="padding-left-10">
+                                                {{fieldName}}: <span class="text-primary">{{fieldValue}}</span>
+                                            </small>
+                                        </span>
+
+                                        <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
+                                              ng-if="tableChanges.isArray" class="padding-top-5">
+                                            <small ng-repeat="(subFieldName, subFieldValue) in fieldValue"
+                                                   class="padding-left-10">
+                                                {{subFieldName}}: <span class="text-primary">{{subFieldValue}}</span>
+                                            </small>
+                                            <div class="padding-top-5"></div>
+                                        </span>
+                                    </div>
+                                </blockquote>
+
+                                <!-- Edit changes -->
+                                <blockquote class="changelog-blockquote-warning"
+                                            ng-if="change.action === 'edit'">
+                                    <div class="blockquote"
+                                         ng-repeat="(tableName, tableChanges) in change.data_unserialized">
+                                        {{tableName}}
+
+                                        <span ng-repeat="(fieldName, fieldValueChanges) in tableChanges.data"
+                                              ng-if="!tableChanges.isArray">
+                                            <small class="padding-left-10">
+                                                {{fieldName}}:
+                                                <span class="down">{{fieldValueChanges.old}}</span>
+                                                <i class="fa fa-caret-right"></i>
+                                                <span class="up">{{fieldValueChanges.new}}</span>
+                                            </small>
+                                        </span>
+
+                                        <span ng-repeat="(fieldIndex, fieldValueChanges) in tableChanges.data"
+                                              ng-if="tableChanges.isArray" class="padding-top-5">
+                                            <small ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
+                                                   ng-if="fieldValueChanges.old === null">
+                                                {{newFieldName}}:
+                                                <span class="up">{{newFieldValue}}</span>
+                                            </small>
+
+                                            <small ng-repeat="(oldFieldName, oldFieldValue) in fieldValueChanges.old"
+                                                   ng-if="fieldValueChanges.new === null">
+                                                {{oldFieldName}}:
+                                                <span class="down changelog_delete">{{oldFieldValue}}</span>
+                                            </small>
+
+                                            <small ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
+                                                   ng-if="fieldValueChanges.old !== null && fieldValueChanges.new !== null">
+                                                {{newFieldName}}:
+                                                <span
+                                                    ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'down': fieldValueChanges.old[newFieldName] !== newFieldValue}">
+                                                    {{fieldValueChanges.old[newFieldName]}}
+                                                </span>
+                                                <i class="fa fa-caret-right"></i>
+                                                <span
+                                                    ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'up': fieldValueChanges.old[newFieldName] !== newFieldValue}">
+                                                    {{newFieldValue}}
+                                                </span>
+                                            </small>
+
+                                            <div class="padding-top-5"></div>
+                                        </span>
+                                    </div>
+                                </blockquote>
+                            </div>
+                        </li>
+                    </ul>
+
+                </div>
+                <div class="col-xs-12">
+                    <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                    <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                    <?php echo $this->element('paginator_or_scroll'); ?>
                 </div>
             </div>
 

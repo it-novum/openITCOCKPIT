@@ -63,7 +63,12 @@ $routes->scope('/', function (RouteBuilder $builder) {
      * Apply a middleware to the current route scope.
      * Requires middleware to be registered through `Application::routes()` with `registerMiddleware()`
      */
-    $builder->applyMiddleware('csrf');
+    if (
+        (!isset($_SERVER['HTTP_AUTHORIZATION']) || (isset($_SERVER['HTTP_AUTHORIZATION']) && strpos($_SERVER['HTTP_AUTHORIZATION'], 'X-OITC-API') === false)) &&
+        (!isset($_SERVER['QUERY_STRING']) || (isset($_SERVER['QUERY_STRING']) && strpos($_SERVER['QUERY_STRING'], 'apikey') === false))) {
+
+        $builder->applyMiddleware('csrf');
+    }
 
     /*
      * Fireup the AngularJS application

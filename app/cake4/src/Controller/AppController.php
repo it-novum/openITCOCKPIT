@@ -110,7 +110,7 @@ class AppController extends Controller {
             'logoutRedirect' => '/users/login'  // Default is false
         ]);
 
-        if(isset($this->getUser()->i18n) && strlen($this->getUser()->i18n) >= 3){
+        if (isset($this->getUser()->i18n) && strlen($this->getUser()->i18n) >= 3) {
             I18n::setLocale($this->getUser()->i18n);
         }
 
@@ -200,6 +200,12 @@ class AppController extends Controller {
      * @return bool
      */
     protected function hasPermission($action = null, $controller = null, $plugin = null) {
+        $controller = strtolower($controller);
+        $action = strtolower($action);
+        if ($plugin !== null) {
+            $plugin = strtolower($plugin);
+        }
+
         //return false;
         if ($plugin === null) {
             $plugin = Inflector::classify($this->getRequest()->getParam('plugin', ''));

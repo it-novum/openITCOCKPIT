@@ -123,6 +123,7 @@ class AngularAssets implements AngularAssetsInterface {
         '/node_modules/bootstrap4c-chosen/dist/css/component-chosen.css',
         '/node_modules/highlight-within-textarea/jquery.highlight-within-textarea.css',
         '/css/timeline.css',
+        '/css/changelog.css',
         '/node_modules/dropzone/dist/min/dropzone.min.css',
         //  '/vendor/node_modules/jquery-tageditor/jquery.tag-editor.css',
         /*'/smartadmin4/dist/css/fa-brands.css',

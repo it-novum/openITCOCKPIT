@@ -307,11 +307,12 @@ class ServiceMergerForBrowser {
      */
     public function getDataForCommandarguments() {
         if (empty($this->service['servicecommandargumentvalues'])) {
-            return $this->servicetemplate['servicetemplatecommandargumentvalues'];
+            if (($this->service['command_id'] === $this->servicetemplate['command_id'] || $this->service['command_id'] === null)) {
+                return $this->servicetemplate['servicetemplatecommandargumentvalues'];
+            }
         }
 
         return $this->service['servicecommandargumentvalues'];
-
     }
 
     /**

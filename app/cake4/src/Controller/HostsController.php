@@ -595,7 +595,12 @@ class HostsController extends AppController {
         }
 
         $host = $HostsTable->getHostForEdit($id);
-        $hostForChangelog = $host;
+        $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($host['Host']['hosttemplate_id']);
+
+        $HostMergerForView = new HostMergerForView($host, $hosttemplate);
+        $mergedHost = $HostMergerForView->getDataForView();
+
+        $hostForChangelog = $mergedHost;
 
         if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
             $this->render403();
@@ -605,10 +610,6 @@ class HostsController extends AppController {
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return host information
             $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
-            $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($host['Host']['hosttemplate_id']);
-
-            $HostMergerForView = new HostMergerForView($host, $hosttemplate);
-            $mergedHost = $HostMergerForView->getDataForView();
 
             $HostContainersPermissions = new HostContainersPermissions(
                 $host['Host']['container_id'],
@@ -1276,6 +1277,26 @@ class HostsController extends AppController {
         $host->disabled = 1;
 
         if ($HostsTable->save($host)) {
+            $User = new User($this->getUser());
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                'deactivate',
+                'hosts',
+                $id,
+                OBJECT_HOST,
+                $host->get('container_id'),
+                $User->getId(),
+                $host->get('name'),
+                []
+            );
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
+
             /** @var $ServicesTable ServicesTable */
             $ServicesTable = TableRegistry::getTableLocator()->get('Services');
             $ServicesTable->updateAll([
@@ -1321,6 +1342,26 @@ class HostsController extends AppController {
         $host->disabled = 0;
 
         if ($HostsTable->save($host)) {
+            $User = new User($this->getUser());
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                'activate',
+                'hosts',
+                $id,
+                OBJECT_HOST,
+                $host->get('container_id'),
+                $User->getId(),
+                $host->get('name'),
+                []
+            );
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
+
             /** @var $ServicesTable ServicesTable */
             $ServicesTable = TableRegistry::getTableLocator()->get('Services');
             $ServicesTable->updateAll([
