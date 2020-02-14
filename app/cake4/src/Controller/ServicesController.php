@@ -66,6 +66,7 @@ use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
@@ -1807,14 +1808,23 @@ class ServicesController extends AppController {
         $containerId = $this->request->getQuery('containerId', 0);
         $selected = $this->request->getQuery('selected');
         $ServiceFilter = new ServiceFilter($this->request);
+        $recursive = $this->request->getQuery('recursive', false) === 'true';
         $containerIds = [ROOT_CONTAINER, $containerId];
 
         /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        if ($containerId == ROOT_CONTAINER) {
-            //Don't panic! Only root users can edit /root objects ;)
-            //So no loss of selected hosts/host templates
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+
+        if($recursive === false) {
+            if ($containerId == ROOT_CONTAINER) {
+                //Don't panic! Only root users can edit /root objects ;)
+                //So no loss of selected hosts/host templates
+                $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            }
+        }else{
+            //Also include child containers
+            if ($containerId != ROOT_CONTAINER) {
+                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false);
+            }
         }
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
