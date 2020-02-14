@@ -284,7 +284,7 @@ use Cake\Core\Plugin;
                                                 <div class="col-lg-12">
                                                     <?php if ($this->Acl->hasPermission('delete', 'downtimes')): ?>
                                                         <button
-                                                            class="btn btn-xs btn-danger"
+                                                            class="btn btn-xs btn-danger float-right"
                                                             ng-if="downtime.allowEdit && downtime.isCancellable"
                                                             ng-click="confirmServiceDowntimeDelete(getObjectForDowntimeDelete())">
                                                             <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
@@ -394,7 +394,7 @@ use Cake\Core\Plugin;
                                                 <div class="col-lg-12">
                                                     <?php if ($this->Acl->hasPermission('delete', 'downtimes')): ?>
                                                         <button
-                                                            class="btn btn-xs btn-danger"
+                                                            class="btn btn-xs btn-danger float-right"
                                                             ng-if="hostDowntime.allowEdit && hostDowntime.isCancellable"
                                                             ng-click="confirmHostDowntimeDelete(getObjectForHostDowntimeDelete())">
                                                             <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
