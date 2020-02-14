@@ -422,4 +422,21 @@ class CommandsTable extends Table {
     public function getCommandTypes() {
         return $this->commandTypes;
     }
+
+    public function getSourceCommandForCopy($sourceCommandId){
+        $sourceCommand = $this->get($sourceCommandId, [
+            'contain' => [
+                'Commandarguments'
+            ]
+        ])->toArray();
+
+        //Remove all source ids so the new copied command will not use the original command arguments...
+        $commandarguments = [];
+        foreach($sourceCommand['commandarguments'] as $commandargument){
+            unset($commandargument['id'], $commandargument['command_id']);
+            $commandarguments[] = $commandargument;
+        }
+        $sourceCommand['commandarguments'] = $commandarguments;
+        return $sourceCommand;
+    }
 }
