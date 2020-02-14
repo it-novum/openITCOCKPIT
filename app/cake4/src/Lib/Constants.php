@@ -235,7 +235,7 @@ class Constants {
 
     public function defineAjaxLimit() {
         $this->define([
-            'ITN_AJAX_LIMIT' => 50
+            'ITN_AJAX_LIMIT' => 150
         ]);
     }
 
