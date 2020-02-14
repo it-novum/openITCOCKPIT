@@ -254,7 +254,7 @@ use Cake\Core\Plugin;
                                         <div class="browser-border padding-10" style="width: 100%;">
 
                                             <div class="row">
-                                                <div class="col-lg-12 no-padding">
+                                                <div class="col-lg-12">
                                                     <div>
                                                         <h4 class="no-padding">
                                                             <i class="fa fa-power-off"></i>
@@ -281,13 +281,13 @@ use Cake\Core\Plugin;
                                                     </div>
                                                 </div>
 
-                                                <div class="col-xs-12 col-sm-1 no-padding">
+                                                <div class="col-lg-12">
                                                     <?php if ($this->Acl->hasPermission('delete', 'downtimes')): ?>
                                                         <button
                                                             class="btn btn-xs btn-danger"
                                                             ng-if="downtime.allowEdit && downtime.isCancellable"
                                                             ng-click="confirmServiceDowntimeDelete(getObjectForDowntimeDelete())">
-                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                            <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
                                                         </button>
                                                     <?php endif; ?>
                                                 </div>
