@@ -592,13 +592,17 @@ class MapsTable extends Table {
         //Check services for cumulated state (only if host is up)
 
         $services = $Service->getActiveServicesByHostId($host->get('id'), false);
-        $serviceUuids = Hash::extract($services->toArray(), '{n}.uuid');
+        $services = $services->toArray();
+        $serviceUuids = Hash::extract($services, '{n}.uuid');
+        $servicestatus = [];
 
-        $ServicestatusFieds = new ServicestatusFields(new DbBackend());
-        $ServicestatusFieds->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
-        $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
-        $ServicestatusConditions->servicesWarningCriticalAndUnknown();
-        $servicestatus = $Servicestatus->byUuid($serviceUuids, $ServicestatusFieds, $ServicestatusConditions);
+        if (!empty($serviceUuids)) {
+            $ServicestatusFieds = new ServicestatusFields(new DbBackend());
+            $ServicestatusFieds->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
+            $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
+            $ServicestatusConditions->servicesWarningCriticalAndUnknown();
+            $servicestatus = $Servicestatus->byUuid($serviceUuids, $ServicestatusFieds, $ServicestatusConditions);
+        }
 
         if (!empty($servicestatus)) {
             $worstServiceState = array_values(
@@ -789,12 +793,15 @@ class MapsTable extends Table {
         //Check services for cumulated state (only if host is up)
         $services = $Service->getActiveServicesByHostIds($hostIds, false);
         $services = $services->toArray();
+        $servicestatus = [];
 
-        $ServicestatusFieds = new ServicestatusFields(new DbBackend());
-        $ServicestatusFieds->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
-        $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
-        $ServicestatusConditions->servicesWarningCriticalAndUnknown();
-        $servicestatus = $ServicestatusTable->byUuid(Hash::extract($services, '{n}.uuid'), $ServicestatusFieds, $ServicestatusConditions);
+        if (!empty($services)) {
+            $ServicestatusFieds = new ServicestatusFields(new DbBackend());
+            $ServicestatusFieds->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
+            $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
+            $ServicestatusConditions->servicesWarningCriticalAndUnknown();
+            $servicestatus = $ServicestatusTable->byUuid(Hash::extract($services, '{n}.uuid'), $ServicestatusFieds, $ServicestatusConditions);
+        }
 
         if (!empty($servicestatus)) {
             $worstServiceState = array_values(
@@ -843,7 +850,10 @@ class MapsTable extends Table {
 
         $serviceUuids = Hash::extract($servicegroup['services'], '{n}.uuid');
 
-        $servicestatusByUuids = $Servicestatus->byUuid($serviceUuids, $ServicestatusFields);
+        $servicestatusByUuids = [];
+        if (!empty($serviceUuids)) {
+            $servicestatusByUuids = $Servicestatus->byUuid($serviceUuids, $ServicestatusFields);
+        }
 
         $servicegroupLight = [
             'id'          => (int)$servicegroup['id'],
