@@ -788,12 +788,13 @@ class MapsTable extends Table {
 
         //Check services for cumulated state (only if host is up)
         $services = $Service->getActiveServicesByHostIds($hostIds, false);
+        $services = $services->toArray();
 
         $ServicestatusFieds = new ServicestatusFields(new DbBackend());
         $ServicestatusFieds->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
         $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
         $ServicestatusConditions->servicesWarningCriticalAndUnknown();
-        $servicestatus = $ServicestatusTable->byUuid($services, $ServicestatusFieds, $ServicestatusConditions);
+        $servicestatus = $ServicestatusTable->byUuid(Hash::extract($services, '{n}.uuid'), $ServicestatusFieds, $ServicestatusConditions);
 
         if (!empty($servicestatus)) {
             $worstServiceState = array_values(

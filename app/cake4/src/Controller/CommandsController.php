@@ -38,6 +38,8 @@ use App\Model\Table\ServicetemplatesTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -411,11 +413,7 @@ class CommandsController extends AppController {
                     //Create/clone command
                     $sourceCommandId = $commandData['Source']['id'];
                     if (!$Cache->has($sourceCommandId)) {
-                        $sourceCommand = $CommandsTable->get($sourceCommandId, [
-                            'contain' => [
-                                'Commandarguments'
-                            ]
-                        ])->toArray();
+                        $sourceCommand = $CommandsTable->getSourceCommandForCopy($sourceCommandId);
                         $Cache->set($sourceCommand['id'], $sourceCommand);
                     }
 
