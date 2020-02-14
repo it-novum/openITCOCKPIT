@@ -1,6 +1,8 @@
 angular.module('openITCOCKPIT')
-    .controller('ChangelogsIndexController', function($scope, $http, SortService){
+    .controller('ChangelogsIndexController', function($scope, $http, SortService, QueryStringService, $stateParams){
 
+        SortService.setSort(QueryStringService.getStateValue($stateParams, 'sort', 'Changelogs.id'));
+        SortService.setDirection(QueryStringService.getStateValue($stateParams, 'direction', 'desc'));
         $scope.useScroll = true;
         $scope.currentPage = 1;
 
