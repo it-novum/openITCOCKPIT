@@ -48,13 +48,13 @@
             <div class="panel-hdr">
                 <h2>
                     <?php echo __('Dashboard'); ?>
-                    <span class="fw-300"><i>{{ dashboards.name }}</i></span>
+                    <span class="fw-300"><i>{{ dashboard.name }}</i></span>
                 </h2>
                 <div class="panel-toolbar">
                     <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
                     <?php if ($this->Acl->hasPermission('editor', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                         <button class="btn btn-xs btn-default mr-1 shadow-0 margin-left-5"
-                                ui-sref="GrafanaUserdashboardsEditor({id: dashboard.GrafanaUserdashboard.id})">
+                                ui-sref="GrafanaUserdashboardsEditor({id: dashboard.id})">
                             <i class="fa fa-cog"></i> <?php echo __('Open in Editor'); ?>
                         </button>
                     <?php endif; ?>
