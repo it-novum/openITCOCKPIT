@@ -75,7 +75,7 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
-                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="GrafanaUserdashboardsEdit({id: id})">
+                        <button class="btn btn-xs btn-default mr-1 shadow-0" ui-sref="GrafanaUserdashboardsEdit({id: id})">
                             <i class="fas fa-edit"></i> <?php echo __('Edit settings'); ?>
                         </button>
                     <?php endif; ?>
@@ -99,7 +99,7 @@
                                          grafana-units="grafanaUnits" container-id="containerId"></grafana-row>
                         </div>
                     </div>
-
+                    <hr>
                     <div class="row">
                         <div class="col-lg-12">
                             <button class="btn btn-success btn-xs" ng-click="addRow()">
@@ -108,9 +108,6 @@
                             </button>
                         </div>
                     </div>
-
-
-
                 </div>
             </div>
         </div>

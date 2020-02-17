@@ -30,7 +30,7 @@ $allGrafanaUnits = $GrafanaUnits->getUnits();
         </div>
     </div>
 
-    <div class="padding-2 row margin-5" ng-repeat="metric in panel.metrics">
+    <div class="padding-2 row margin-5 slightBorder" ng-repeat="metric in panel.metrics">
         <ol class="breadcrumb breadcrumb-seperator-1 noWordBreak col-11" style="padding-top: 0px; padding-bottom: 0px; margin-bottom: 0px;">
             <li class="breadcrumb-item">
                 <?php if ($this->Acl->hasPermission('browser', 'hosts', '')): ?>
@@ -50,16 +50,10 @@ $allGrafanaUnits = $GrafanaUnits->getUnits();
                 {{metric.metric}}
             </li>
         </ol>
-        <div class="actions col-1">
+        <div class="actions col-1" style="padding-top: 4px;">
             <i class="fa fa-trash text-danger float-right pointer"
                ng-click="removeMetric(metric)"></i>
         </div>
-
-
-
-
-
-
     </div>
 
     <div class="row" ng-show="panel.metrics.length == 0">
