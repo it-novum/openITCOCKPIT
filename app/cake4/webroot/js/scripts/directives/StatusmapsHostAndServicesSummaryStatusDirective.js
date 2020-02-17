@@ -96,6 +96,7 @@ angular.module('openITCOCKPIT').directive('statusmapsHostAndServicesSummaryStatu
             };
 
             $scope.goToState = function(key, servicestate, host_id){
+                console.log($scope.buildSrefParams(key, servicestate, host_id));
                 $state.go('ServicesIndex', $scope.buildSrefParams(key, servicestate, host_id));
             };
 

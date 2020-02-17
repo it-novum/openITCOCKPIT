@@ -16,11 +16,11 @@ angular.module('openITCOCKPIT')
             $scope.filter = {
                 Servicestatus: {
                     current_state: QueryStringService.servicestate($stateParams),
-                    acknowledged: QueryStringService.getStateValue($stateParams, 'has_been_acknowledged', false) === '1',
-                    not_acknowledged: QueryStringService.getStateValue($stateParams, 'has_not_been_acknowledged', false) === '1',
-                    in_downtime: QueryStringService.getStateValue($stateParams, 'in_downtime', false) === '1',
-                    not_in_downtime: QueryStringService.getStateValue($stateParams, 'not_in_downtime', false) === '1',
-                    passive: QueryStringService.getStateValue($stateParams, 'passive', false) === '1',
+                    acknowledged: QueryStringService.getStateValue($stateParams, 'has_been_acknowledged', false) == '1',
+                    not_acknowledged: QueryStringService.getStateValue($stateParams, 'has_not_been_acknowledged', false) == '1',
+                    in_downtime: QueryStringService.getStateValue($stateParams, 'in_downtime', false) == '1',
+                    not_in_downtime: QueryStringService.getStateValue($stateParams, 'not_in_downtime', false) == '1',
+                    passive: QueryStringService.getStateValue($stateParams, 'passive', false) == '1',
                     active: QueryStringService.getValue('active', false) === '1',
                     output: ''
                 },
@@ -32,7 +32,7 @@ angular.module('openITCOCKPIT')
                 },
                 Hosts: {
                     id: QueryStringService.getStateValue($stateParams, 'host_id', []),
-                    name: QueryStringService.getValue('filter[Hosts.name]', '')
+                    name: QueryStringService.getStateValue($stateParams, 'hostname', '')
                 }
             };
         };

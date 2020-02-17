@@ -18,7 +18,7 @@ angular.module('openITCOCKPIT').directive('parentOutagesWidget', function($http)
                 $http.get("/dashboards/parentOutagesWidget.json", {
                     params: {
                         'angular': true,
-                        'filter[Host.name]': $scope.filter.Host.name
+                        'filter[Hosts.name]': $scope.filter.Host.name
                     }
                 }).then(function(result){
                     $scope.parentOutages = result.data.parent_outages;

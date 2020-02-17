@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($http, $rootScope, $interval, $httpParamSerializer){
+angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($http, $state){
     return {
         restrict: 'E',
         templateUrl: '/dashboards/hostStatusOverviewWidget.html',
@@ -40,7 +40,6 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                     $scope.filter.Hoststatus.not_in_downtime = !result.data.config.Hoststatus.scheduled_downtime_depth;
                     $scope.statusCount = result.data.statusCount;
                     $scope.init = false;
-                    $scope.widgetHref = $scope.linkForHostList();
                 });
             };
 
@@ -96,20 +95,20 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                 });
             };
 
-            $scope.linkForHostList = function(){
-                if($scope.init){
-                    return;
-                }
-
-                var options = {
-                    'angular': true,
-                    'filter[Host.name]': $scope.filter.Host.name,
-                    'has_not_been_acknowledged': ($scope.filter.Hoststatus.not_acknowledged) ? '1' : '0',
-                    'not_in_downtime': ($scope.filter.Hoststatus.not_in_downtime) ? '1' : '0'
+            $scope.goToState = function(){
+                var params = {
+                    hostname: $scope.filter.Host.name,
+                    hoststate: [$scope.filter.Hoststatus.current_state]
                 };
-                var currentState = 'filter[Hoststatus.current_state][' + $scope.filter.Hoststatus.current_state + ']';
-                options[currentState] = 1;
-                return '/ng/#!/hosts/index/?' + $httpParamSerializer(options);
+
+                if($scope.filter.Hoststatus.not_acknowledged && $scope.filter.Hoststatus.current_state > 0){
+                    params.has_not_been_acknowledged = 1;
+                    'not_in_downtime'
+                }
+                if($scope.filter.Hoststatus.not_in_downtime && $scope.filter.Hoststatus.current_state > 0){
+                    params.not_in_downtime = 1;
+                }
+                $state.go('HostsIndex', params);
             };
 
         },

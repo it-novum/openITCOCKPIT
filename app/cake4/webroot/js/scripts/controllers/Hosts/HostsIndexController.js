@@ -15,10 +15,10 @@ angular.module('openITCOCKPIT')
             $scope.filter = {
                 Hoststatus: {
                     current_state: QueryStringService.hoststate($stateParams),
-                    acknowledged: QueryStringService.getValue('has_been_acknowledged', false) === '1',
-                    not_acknowledged: QueryStringService.getValue('has_not_been_acknowledged', false) === '1',
-                    in_downtime: QueryStringService.getValue('in_downtime', false) === '1',
-                    not_in_downtime: QueryStringService.getValue('not_in_downtime', false) === '1',
+                    acknowledged: QueryStringService.getStateValue($stateParams,'has_been_acknowledged', false) == '1',
+                    not_acknowledged: QueryStringService.getStateValue($stateParams,'has_not_been_acknowledged', false) == '1',
+                    in_downtime: QueryStringService.getStateValue($stateParams,'in_downtime', false) == '1',
+                    not_in_downtime: QueryStringService.getStateValue($stateParams,'not_in_downtime', false) == '1',
                     output: ''
                 },
                 Host: {

@@ -47,14 +47,17 @@
     <div class="col-xs-12 padding-0">
         <table class="table table-striped table-hover table-bordered">
             <tbody>
-            <tr ng-repeat="outage in parentOutages">
+            <tr ng-repeat="host in parentOutages">
+                <td class="text-center">
+                    <hoststatusicon host="host"></hoststatusicon>
+                </td>
                 <td class="padding-5">
                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                        <a href="/ng/#!/hosts/browser/{{ outage.Host.id }}">
-                            {{ outage.Host.name }}
+                        <a ui-sref="HostsBrowser({id: host.Hosts.id})">
+                            {{host.Hosts.name}}
                         </a>
                     <?php else: ?>
-                        {{ outage.Host.name }}
+                        {{host.Hosts.name}}
                     <?php endif; ?>
                 </td>
             </tr>

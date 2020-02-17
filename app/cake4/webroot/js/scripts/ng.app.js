@@ -370,7 +370,10 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     id: {
                         value: null,
                         array: true
-                    }
+                    },
+                    hostname: {
+                        value: null
+                    },
                 },
                 templateUrl: "/services/index.html",
                 controller: "ServicesIndexController"
@@ -1059,6 +1062,18 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     id: {
                         value: null,
                         array: true
+                    },
+                    has_been_acknowledged: {
+                        value: null
+                    },
+                    has_not_been_acknowledged: {
+                        value: null
+                    },
+                    in_downtime: {
+                        value: null
+                    },
+                    not_in_downtime: {
+                        value: null
                     }
                 },
                 controller: "HostsIndexController"

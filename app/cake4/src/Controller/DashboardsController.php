@@ -31,6 +31,7 @@ use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\HostsTable;
+use App\Model\Table\ParenthostsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
@@ -51,6 +52,7 @@ use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
@@ -875,6 +877,9 @@ class DashboardsController extends AppController {
             return;
         }
 
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
@@ -883,57 +888,49 @@ class DashboardsController extends AppController {
             $containerIds = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
 
-        $query = [
-            'recursive' => -1,
-            'fields'    => [
-                'DISTINCT Host.uuid',
-                'Host.id',
-                'Host.name'
-            ],
 
-            'joins' => [
-                [
-                    'table'      => 'hosts',
-                    'type'       => 'INNER',
-                    'alias'      => 'Host',
-                    'conditions' => 'Parenthost.parenthost_id = Host.id'
+        /** @var ParenthostsTable $ParenthostsTable */
+        $ParenthostsTable = TableRegistry::getTableLocator()->get('Parenthosts');
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
 
-                ]
-            ],
-            'order' => [
-                'Host.name' => 'asc'
-            ],
-            'group' => 'Parenthost.parenthost_id'
-        ];
+        $parentHosts = $ParenthostsTable->getParenthostsForDashboard($containerIds);
+        $hostUuids = Hash::extract($parentHosts, '{n}.Hosts.uuid');
 
-        if (!empty($containerIds)) {
-            $query['joins'][] = [
-                'table'      => 'hosts_to_containers',
-                'alias'      => 'HostsToContainers',
-                'type'       => 'LEFT',
-                'conditions' => [
-                    'HostsToContainers.host_id = Host.id',
-                ],
-            ];
-            $query['conditions']['HostsToContainers.container_id'] = $containerIds;
-        }
-
-        $parentHosts = $this->Parenthost->find('all', $query);
-        $hostUuids = Hash::extract($parentHosts, '{n}.Host.uuid');
         $HoststatusFields = new HoststatusFields($this->DbBackend);
-        $HoststatusFields->currentState();
+        $HoststatusFields->wildcard();
         $HoststatusConditions = new HoststatusConditions($this->DbBackend);
         $HoststatusConditions->hostsDownAndUnreachable();
-        $hoststatus = $this->Hoststatus->byUuid($hostUuids, $HoststatusFields, $HoststatusConditions);
-        $query['conditions']['Host.uuid'] = array_keys($hoststatus);
+        $hoststatus = $HoststatusTable->byUuid($hostUuids, $HoststatusFields, $HoststatusConditions);
 
-        if (isset($this->request->query['filter']['Host.name']) && strlen($this->request->query['filter']['Host.name']) > 0) {
-            $query['conditions']['Host.name LIKE'] = sprintf('%%%s%%', $this->request->query['filter']['Host.name']);
+        $nonUpParentHostUuids = array_keys($hoststatus);
+        if (empty($nonUpParentHostUuids)) {
+            $this->set('parent_outages', []);
+            $this->viewBuilder()->setOption('serialize', ['parent_outages']);
+            return;
         }
 
-        $parent_outages = $this->Parenthost->find('all', $query);
+        $query = $this->request->getQuery();
+        $where = [
+            'Hosts.uuid IN' => $nonUpParentHostUuids
+        ];
 
-        $this->set(compact(['parent_outages']));
+        if (isset($query['filter']['Hosts.name']) && strlen($query['filter']['Hosts.name']) > 0) {
+            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $query['filter']['Hosts.name']);
+        }
+
+        $parent_outages = [];
+        foreach ($ParenthostsTable->getParenthostsForDashboard($containerIds, $where) as $parentHost) {
+            $Hoststatus = new Hoststatus([], $UserTime);
+
+            if (isset($hoststatus[$parentHost['Hosts']['uuid']])) {
+                $Hoststatus = new Hoststatus($hoststatus[$parentHost['Hosts']['uuid']]['Hoststatus'], $UserTime);
+            }
+            $parentHost['Hoststatus'] = $Hoststatus->toArray();
+            $parent_outages[] = $parentHost;
+        }
+
+
+        $this->set('parent_outages', $parent_outages);
         $this->viewBuilder()->setOption('serialize', ['parent_outages']);
     }
 
