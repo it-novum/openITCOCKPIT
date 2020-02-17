@@ -612,6 +612,7 @@ pre {
 .rootCrown > i {
     font-size: 28px;
 }
+
 .rootCrown {
     position: absolute;
     left: -58px;
@@ -643,4 +644,30 @@ pre {
     border-color: #dde4ed #dde4ed #dde4ed #394556;
     position: relative;
     border-radius: 7px 3px 3px 7px;
+}
+
+.enterprise-module {
+    position: absolute;
+    top: -21px;
+    left: 4px;
+    font-size: 36px;
+    color: #dc0a2e;
+}
+
+.packagemanagerCardBody {
+
+    padding: 5px 5px 5px 5px;
+    border-radius: 10px;
+    height: 150px;
+    /*width: 22%; */
+    margin: 5px 1% 5px 1%;
+    float: left;
+    position: relative;
+    transition: height 0.5s;
+    -webkit-transition: height 0.5s;
+    overflow: scroll;
+}
+
+.packagemanagerCardBody:hover {
+    height: 400px;
 }
