@@ -245,6 +245,10 @@ openITCOCKPIT v4 Utilities
     margin-left: 0px;
 }
 
+.margin-left-5 {
+    margin-left: 5px;
+}
+
 .margin-left-10 {
     margin-left: 10px;
 }
@@ -476,3 +480,8 @@ openITCOCKPIT v4 Utilities
     }
 }
 
+.noWordBreak > li.breadcrumb-item {
+    max-width: none;
+    text-overflow: unset;
+    overflow: unset;
+}

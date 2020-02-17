@@ -618,3 +618,29 @@ pre {
     top: -52px;
     font-size: 0.8rem;
 }
+
+.grafana-row {
+    border-style: solid;
+    border-width: 1px 1px 1px 7px;
+    border-color: #dde4ed #dde4ed #dde4ed #667896;
+    position: relative;
+    border-radius: 7px 3px 3px 7px;
+    background: #f5f6f9;
+    /*
+    background: repeating-linear-gradient(
+            45deg,
+            #fff,
+            #fff 10px,
+            #f5f6f9 10px,
+            #f5f6f9 20px
+    );*/
+}
+
+.grafana-panel {
+    background-color: #fff;
+    border-style: solid;
+    border-width: 1px 1px 1px 7px;
+    border-color: #dde4ed #dde4ed #dde4ed #394556;
+    position: relative;
+    border-radius: 7px 3px 3px 7px;
+}
