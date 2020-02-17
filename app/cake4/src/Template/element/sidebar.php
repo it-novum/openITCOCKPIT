@@ -54,19 +54,19 @@
             <img class="profile-image rounded-circle" alt="me" src="<?= h($userImage) ?>">
             <div class="info-card-text">
                 <a class="d-flex align-items-center text-white" ui-sref="ProfileEdit">
-                            <span class="text-truncate text-truncate-sm d-inline-block">
-                                <?= h($userFullName) ?>
-                            </span>
+                    <span class="text-truncate text-truncate-sm d-inline-block">
+                        <?= h($userFullName) ?>
+                    </span>
                 </a>
                 <?php if ($hasRootPrivileges === true): ?>
-                    <span class="d-inline-block text-truncate text-truncate-sm">
-                                <i class="fa fa-trophy"
-                                   style="color:#FFD700; text-shadow: 0px 0px 9px rgba(255, 255, 0, 0.50)"
-                                   id="userRootIcon"
-                                   data-html="true"
-                                   data-original-title="<?php echo __('Administrator privileges'); ?>"
-                                   data-placement="right" rel="tooltip"></i>
-                            </span>
+                    <span class="d-inline-block text-truncate text-truncate-sm rootCrown">
+                        <i class="fas fa-crown"
+                           style="color:#FFD700; text-shadow: 0px 0px 9px rgba(255, 255, 0, 0.50); "
+                           id="userRootIcon"
+                           data-html="true"
+                           data-original-title="<?php echo __('Administrator privileges'); ?>"
+                           data-placement="right" rel="tooltip"></i>
+                    </span>
                 <?php endif; ?>
             </div>
             <img src="/smartadmin4/dist/img/card-backgrounds/cover-6-lg.png" class="cover" alt="cover">
@@ -75,14 +75,6 @@
                 <i class="fa fa-angle-down"></i>
             </a>
         </div>
-        <!--
-        <nav
-            menu
-            phpplugin="<?= $this->getRequest()->getParam('plugin', '') ?>"
-            phpcontroller="<?= $this->getRequest()->getParam('controller', '') ?>"
-            phpaction="<?= $this->getRequest()->getParam('action', '') ?>">
-        </nav>
-         -->
 
         <ul menu
             id="js-nav-menu"

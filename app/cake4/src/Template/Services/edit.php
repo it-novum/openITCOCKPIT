@@ -453,7 +453,7 @@
                                                 <?php endfor; ?>
                                             </div>
                                         </div>
-                                        <div class="col-xs-12 col-lg-3">
+                                        <div class="col-xs-12 col-lg-6">
                                             <div class="input-group" style="width: 100%;">
                                                 <input
                                                     class="form-control"

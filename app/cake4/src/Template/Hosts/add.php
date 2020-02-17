@@ -303,22 +303,20 @@
                                     </div>
 
                                     <?php if (\Cake\Core\Plugin::isLoaded('DistributeModule')): ?>
-                                        <div class="form-group" ng-class="{'has-error': errors.satellite_id}">
-                                            <label class="col-xs-12 col-lg-2 control-label">
+                                        <div class="form-group required" ng-class="{'has-error': errors.satellite_id}">
+                                            <label class="control-label" for="SatellitesSelect">
                                                 <?php echo __('Satellite'); ?>
                                             </label>
-                                            <div class="col-xs-12 col-lg-10">
-                                                <select
-                                                    id="SatellitesSelect"
-                                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                                    class="form-control"
-                                                    chosen="satellites"
-                                                    ng-options="satellite.key as satellite.value for satellite in satellites"
-                                                    ng-model="post.Host.satellite_id">
-                                                </select>
-                                                <div ng-repeat="error in errors.satellite_id">
-                                                    <div class="help-block text-danger">{{ error }}</div>
-                                                </div>
+                                            <select
+                                                id="SatellitesSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="satellites"
+                                                ng-options="satellite.key as satellite.value for satellite in satellites"
+                                                ng-model="post.Host.satellite_id">
+                                            </select>
+                                            <div ng-repeat="error in errors.satellite_id">
+                                                <div class="help-block text-danger">{{ error }}</div>
                                             </div>
                                         </div>
                                     <?php endif; ?>
@@ -494,7 +492,7 @@
                                                 <?php endfor; ?>
                                             </div>
                                         </div>
-                                        <div class="col-xs-12 col-lg-3">
+                                        <div class="col-xs-12 col-lg-6">
                                             <div class="input-group" style="width: 100%;">
                                                 <input
                                                     class="form-control"

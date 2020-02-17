@@ -608,3 +608,13 @@ pre {
 .moveme:hover > a > span > span.notification-message {
     animation: moveme 4s linear infinite alternate;
 }
+
+.rootCrown > i {
+    font-size: 28px;
+}
+.rootCrown {
+    position: absolute;
+    left: -58px;
+    top: -52px;
+    font-size: 0.8rem;
+}
