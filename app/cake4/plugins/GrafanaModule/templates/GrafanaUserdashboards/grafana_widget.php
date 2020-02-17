@@ -24,7 +24,7 @@
 ?>
 <div>
     <flippy vertical
-            class="fancy"
+            class="col-lg-12"
             flip="['custom:FLIP_EVENT_OUT']"
             flip-back="['custom:FLIP_EVENT_IN']"
             duration="800"
@@ -48,10 +48,10 @@
             <div class="padding-top-10">
                 <div class="form-group">
                     <div class="row">
-                        <label class="col-xs-12 control-label">
+                        <label class="col-lg-12 control-label">
                             <?php echo __('Select user defined Grafana dashboard'); ?>
                         </label>
-                        <div class="col-xs-12">
+                        <div class="col-lg-12">
                             <select data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="availableGrafanaUserdefeinedDashboards"
@@ -67,7 +67,7 @@
                     <br/>
 
                     <div class="row">
-                        <div class="col-xs-12">
+                        <div class="col-lg-12">
                             <button class="btn btn-primary pull-right"
                                     ng-click="saveGrafana()">
                                 <?php echo __('Save'); ?>

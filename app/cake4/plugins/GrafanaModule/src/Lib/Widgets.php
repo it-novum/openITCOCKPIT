@@ -50,7 +50,7 @@ class Widgets implements ModuleWidgetsInterface {
             [
                 'type_id'   => 200,
                 'title'     => __('Grafana (auto generated)'),
-                'icon'      => 'fa-area-chart',
+                'icon'      => 'fas fa-chart-area',
                 'directive' => 'grafana-widget',
                 'width'     => 12,
                 'height'    => 25
@@ -61,7 +61,7 @@ class Widgets implements ModuleWidgetsInterface {
             $widgets[] = [
                 'type_id'   => 201,
                 'title'     => __('Grafana (user defined)'),
-                'icon'      => 'fa-dashboard',
+                'icon'      => 'fas fa-tachometer-alt',
                 'directive' => 'grafana-widget-userdefined',
                 'width'     => 12,
                 'height'    => 25

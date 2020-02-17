@@ -19,7 +19,7 @@
 
 <div class="jarviswidget">
     <header>
-        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-dashboard"></i> </span>
+        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fas fa-tachometer-alt"></i> </span>
         <h2 class="hidden-mobile hidden-tablet">
             <?php
             echo __('Dashboard:');

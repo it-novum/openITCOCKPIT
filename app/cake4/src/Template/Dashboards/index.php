@@ -170,7 +170,7 @@
                                          class="ui-sortable-handle card-header d-flex"
                                          style="cursor: move;">
                                         <div class="card-title mr-auto">
-                                            <i class="fa {{widget.icon}}"></i>
+                                            <i class="{{widget.icon}}"></i>
                                             {{widget.title}}
                                         </div>
                                         <a class="btn btn-sm btn-icon waves-effect waves-themed"
