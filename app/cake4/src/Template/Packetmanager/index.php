@@ -256,6 +256,50 @@
     </div>
 </div>
 
+<!-- Install packages modal -->
+<div id="changelogModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-code-fork"></i>
+                    <?php echo __('Changelog'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container mt-5 mb-5">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>
+                                <?= __('Latest version') ?>
+                                {{changelog[0].Changelog.version}}
+                            </h4>
+                            <ul class="timeline">
+                                <li ng-repeat="record in changelog">
+                                    <span class="text-primary">{{record.Changelog.version}}</span>
+                                    <p>
+                                        {{record.Changelog.changes | trustAsHtml}}
+                                    </p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <!-- Changelog modal -->
 <div class="modal fade" id="changelogModal" tabindex="-1" role="dialog"
      aria-hidden="true">
@@ -301,29 +345,27 @@
 </div>
 
 <!-- Install packages modal -->
-<div class="modal fade" id="installPackageModal" tabindex="-1" role="dialog"
-     aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<div id="installPackageModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                    &times;
-                </button>
-                <h4 class="modal-title">
+                <h5 class="modal-title">
                     <i class="fa fa-code-fork"></i>
                     <?php echo __('Install packages'); ?>
-                </h4>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
             </div>
             <div class="modal-body">
-
                 <div class="row">
-                    <div class="col-xs-12">
+                    <div class="col-lg-12">
                         <?= __('To install the selected packages, please execute the following command on your {0} system.', $systemname) ?>
                     </div>
                 </div>
 
                 <div class="row padding-top-5">
-                    <div class="col-xs-12">
+                    <div class="col-lg-12">
                         <div class="bg-color-black txt-color-white code-font padding-7">
                             sudo apt-get install <span ng-bind-html="getCliCommand() | trustAsHtml"></span>
                             \ <br>
@@ -334,11 +376,10 @@
                 </div>
 
                 <div class="row padding-top-5">
-                    <div class="col-xs-12">
+                    <div class="col-lg-12">
                         <?= __('To install two or more packages at once, close this window and select the next module you like to install. All selected modules will be added to the installation command.') ?>
                     </div>
                 </div>
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">

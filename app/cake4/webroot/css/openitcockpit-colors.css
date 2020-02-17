@@ -169,6 +169,10 @@ SECONDARY:                          #727b84; grey
     z-index: 2 !important;
 }
 
+.bg-color-black {
+    background: #000000;
+}
+
 
 /* TEXT COLOR */
 
