@@ -33,7 +33,7 @@
         <i class="fas fa-puzzle-piece"></i> <?php echo __('Grafana Module'); ?>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="MapsIndex">
+        <a ui-sref="GrafanaUserdashboardsIndex">
             <i class="fas fa-chart-area"></i> <?php echo __('User dashboards'); ?>
         </a>
     </li>
