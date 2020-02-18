@@ -39,7 +39,7 @@
     </li>
 </ol>
 <massdelete></massdelete>
-<massdeactivate></massdeactivate>
+<massactivate></massactivate>
 
 <div class="row">
     <div class="col-xl-12">
@@ -215,8 +215,7 @@
                                             data-toggle="dropdown">
                                         <i class="caret"></i>
                                     </button>
-                                    <!-- <ul class="dropdown-menu" id="menuHack-{{service.Service.uuid}}" > -->
-                                    <div class="dropdown-menu">
+                                    <div class="dropdown-menu dropdown-menu-right">
                                         <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                             <a ui-sref="ServicesEdit({id: service.id})"
                                                ng-if="service.allow_edit"
