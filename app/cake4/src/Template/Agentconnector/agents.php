@@ -50,7 +50,7 @@
                         </button>
 
                         <?php if ($this->Acl->hasPermission('add', 'agentconnector')): ?>
-                            <a class="btn btn-xs btn-success" ui-sref="AgentconnectorsAdd({hostId: 6})">
+                            <a class="btn btn-xs btn-success" ui-sref="AgentconnectorsAdd">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
                             </a>
@@ -76,8 +76,8 @@
                                     <div class="form-group smart-form">
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
-                                                   placeholder="<?php echo __('Filter by agent check name'); ?>"
-                                                   ng-model="filter.Agentchecks.name"
+                                                   placeholder="<?php echo __('Filter by host uuid'); ?>"
+                                                   ng-model="filter.hostuuid"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -87,8 +87,8 @@
                                     <div class="form-group smart-form">
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
-                                                   placeholder="<?php echo __('Filter by service template name'); ?>"
-                                                   ng-model="filter.Servicetemplates.template_name"
+                                                   placeholder="<?php echo __('Filter by agent ip'); ?>"
+                                                   ng-model="filter.remote_addr"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -106,16 +106,16 @@
                                     <th class="no-sort text-center">
                                         <i class="fa fa-user-secret fa-lg" title="<?php echo __('Is trusted'); ?>"></i>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Agentchecks.name')">
-                                        <i class="fa" ng-class="getSortClass('Agentchecks.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Agentconnector.hostuuid')">
+                                        <i class="fa" ng-class="getSortClass('Agentconnector.hostuuid')"></i>
                                         <?php echo __('Host'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Agentchecks.plugin_name')">
-                                        <i class="fa" ng-class="getSortClass('Agentchecks.plugin_name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Agentconnector.remote_addr')">
+                                        <i class="fa" ng-class="getSortClass('Agentconnector.remote_addr')"></i>
                                         <?php echo __('Agent IP Address'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Servicetemplates.template_name')">
-                                        <i class="fa" ng-class="getSortClass('Servicetemplates.template_name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Agentconnector.generation_date')">
+                                        <i class="fa" ng-class="getSortClass('Agentconnector.generation_date')"></i>
                                         <?php echo __('Certificate generation date'); ?>
                                     </th>
                                     <th class="no-sort text-center">

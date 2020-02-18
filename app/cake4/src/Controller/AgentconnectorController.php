@@ -32,9 +32,14 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Agent\AgentCertificateData;
 use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\AgentconnectorAgentsFilter;
 
 class AgentconnectorController extends AppController {
+
+    private $hostsCacheFolder = '/opt/openitc/agent/hostscache/';
+    //public $autoRender = false;
 
     /* TODO:
      *
@@ -118,9 +123,10 @@ class AgentconnectorController extends AppController {
         /** @var AgentconnectorTable $AgentconnectorTable */
         $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
 
-        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest());
+        $AgentconnectorAgentsFilter = new AgentconnectorAgentsFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AgentconnectorAgentsFilter->getPage());
 
-        $agents = $AgentconnectorTable->getAgentsIndex($PaginateOMat);
+        $agents = $AgentconnectorTable->getAgentsIndex($AgentconnectorAgentsFilter, $PaginateOMat);
 
         $this->set('agents', $agents);
         $toJson = ['agents', 'paging'];
@@ -189,6 +195,8 @@ class AgentconnectorController extends AppController {
         }
         $this->autoRender = false;
 
+        //require_once '/opt/openitcockpit-receiver/vendor/autoload.php';
+
         /** @var AgentconnectorTable $AgentconnectorTable */
         $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
         /** @var AgentCertificateData $AgentCertificateData */
@@ -196,19 +204,26 @@ class AgentconnectorController extends AppController {
 
         if (!empty($this->request->getData('checkdata')) && !empty($this->request->getData('hostuuid'))) {
             if ($AgentconnectorTable->isTrustedFromUser($this->request->getData('hostuuid'))) {
-                if($AgentconnectorTable->certificateNotYetGenerated($this->request->getData('hostuuid'))){  //do not have a certificate
-                    //process checkdata
-                } else if (!empty($this->request->getData('checksum'))){    //should have a certificate, check it!
+                $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata'));
+                if (!$AgentconnectorTable->certificateNotYetGenerated($this->request->getData('hostuuid')) && !empty($this->request->getData('checksum'))) {  //should have a certificate!
                     if ($AgentconnectorTable->trustIsValid($this->request->getData('checksum'), $this->request->getData('hostuuid'))) {
-                        //process checkdata
-
-
 
                         //if new ca ws generated, echo new_ca with old ca checksum
                     }
+                } else {    //does not have a certificate or autossl option was disabled after creation
+                    //$this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata'));
                 }
+            } else {
+                $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata'));
             }
         }
+    }
+
+    private function processUpdateCheckdata($hostuuid, $checkdata) {
+        //FileDebugger::dump(json_decode($checkdata, true)['agent']);
+
+        //if no host check config (poller host config) is available, store data to process later
+        file_put_contents('/opt/openitc/agent/hostscache/' . $hostuuid, $checkdata);
     }
 
     public function add() {
@@ -220,5 +235,26 @@ class AgentconnectorController extends AppController {
         $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
 
 
+    }
+
+    public function getLatestCheckDataByHostUuid($uuid = null) {
+        if (!$this->isJsonRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        if ($uuid === null) {
+            throw new MissingParameterExceptions('Host uuid is missing!');
+        }
+
+        if (is_readable($this->hostsCacheFolder . $uuid)) {
+            $fileContents = trim(file_get_contents($this->hostsCacheFolder . $uuid));
+            if ($fileContents !== '') {
+                $this->set('fileContents', json_decode($fileContents, true));
+                $this->viewBuilder()->setOption('serialize', ['fileContents']);
+            }
+        } else {
+            echo "nr: " . $this->hostsCacheFolder . $uuid;
+        }
     }
 }

@@ -1,10 +1,18 @@
 angular.module('openITCOCKPIT')
-    .controller('AgentconnectorsAgentController', function($scope, $http, QueryStringService, $state, $stateParams, NotyService, MassChangeService){
+    .controller('AgentconnectorsAgentController', function($scope, $http, QueryStringService, $state, $stateParams, NotyService, MassChangeService, SortService){
 
         $scope.hostId = $stateParams.hostId;
 
+        SortService.setSort(QueryStringService.getValue('sort', 'Agentconnector.id'));
+        SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
+
+        $scope.filter = {
+            hostuuid: '',
+            remote_addr: ''
+        };
         $scope.currentPage = 1;
         $scope.useScroll = true;
+        $scope.showFilter = false;
         $scope.agents = {};
         $scope.massChange = {};
         $scope.selectedElements = 0;
@@ -14,6 +22,11 @@ angular.module('openITCOCKPIT')
             var params = {
                 'angular': true,
                 'scroll': $scope.useScroll,
+                'page': $scope.currentPage,
+                'sort': SortService.getSort(),
+                'direction': SortService.getDirection(),
+                'filter[Agentconnector.hostuuid]': $scope.filter.hostuuid,
+                'filter[Agentconnector.remote_addr]': $scope.filter.remote_addr,
             };
 
             $http.get('/agentconnector/agents.json', {
@@ -114,7 +127,8 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.undoSelection();
-        $scope.load();
+        //$scope.load();
+        SortService.setCallback($scope.load);
 
         $scope.changepage = function(page){
             $scope.undoSelection();
@@ -128,6 +142,16 @@ angular.module('openITCOCKPIT')
             $scope.useScroll = val;
             $scope.load();
         };
+
+        $scope.triggerFilter = function(){
+            $scope.showFilter = $scope.showFilter !== true;
+        };
+
+        $scope.$watch('filter', function(){
+            $scope.currentPage = 1;
+            $scope.undoSelection();
+            $scope.load();
+        }, true);
 
         $scope.$watch('massChange', function(){
             MassChangeService.setSelected($scope.massChange);

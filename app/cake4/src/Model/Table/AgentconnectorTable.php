@@ -9,6 +9,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\AgentconnectorAgentsFilter;
 
 /**
  * Agentconnector Model
@@ -94,11 +95,15 @@ class AgentconnectorTable extends Table {
     }
 
     /**
+     * @param AgentconnectorAgentsFilter $AgentconnectorAgentsFilter
      * @param PaginateOMat|null $PaginateOMat
      * @return array
      */
-    public function getAgentsIndex(PaginateOMat $PaginateOMat = null) {
-        $query = $this->find('all')->disableHydration();
+    public function getAgentsIndex(AgentconnectorAgentsFilter $AgentconnectorAgentsFilter, PaginateOMat $PaginateOMat = null) {
+        $query = $this->find('all')
+            ->where($AgentconnectorAgentsFilter->indexFilter())
+            ->order($AgentconnectorAgentsFilter->getOrderForPaginator('Agentconnector.id', 'desc'))
+            ->disableHydration();
 
         if ($PaginateOMat === null) {
             //Just execute query
