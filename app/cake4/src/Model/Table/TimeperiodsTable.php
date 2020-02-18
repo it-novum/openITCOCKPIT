@@ -43,7 +43,7 @@ class TimeperiodsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('timeperiods');
@@ -69,7 +69,7 @@ class TimeperiodsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -109,7 +109,7 @@ class TimeperiodsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
         $rules->add($rules->existsIn(['container_id'], 'Containers'));
         /** @var $entity Entity */
@@ -508,8 +508,6 @@ class TimeperiodsTable extends Table {
     /**
      * @param $timeperiod
      * @return bool
-     * @todo V4 Module Check
-     * @deprecated
      */
     public function allowDelete($timeperiod) {
         if (is_numeric($timeperiod)) {
@@ -517,22 +515,23 @@ class TimeperiodsTable extends Table {
         } else {
             $timeperiodId = $timeperiod['Timeperiod']['id'];
         }
+
         //Check contacts
-        /** @var $ContactsTable ContactsTable */
+        /** @var ContactsTable $ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
         if ($ContactsTable->isTimeperiodUsedByContacts($timeperiodId)) {
             return false;
         }
 
         //Check host templates
-        /** @var $HosttemplatesTable HosttemplatesTable */
+        /** @var HosttemplatesTable $HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
         if ($HosttemplatesTable->isTimeperiodUsedByHosttemplate($timeperiodId)) {
             return false;
         }
 
         //Check hosts
-        /** @var $HostsTable HostsTable */
+        /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         if ($HostsTable->isTimeperiodUsedByHost($timeperiodId)) {
             return false;
@@ -540,29 +539,50 @@ class TimeperiodsTable extends Table {
 
 
         //Check service templates
-        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        /** @var ServicetemplatesTable $ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
         if ($ServicetemplatesTable->isTimeperiodUsedByServicetemplate($timeperiodId)) {
             return false;
         }
 
         //Check services
-        /** @var $ServicesTable ServicesTable */
+        /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
         if ($ServicesTable->isTimeperiodUsedByService($timeperiodId)) {
             return false;
         }
 
+        //Check host and service dependencies
+        /** @var HostdependenciesTable $HostdependenciesTable */
+        $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+        if ($HostdependenciesTable->isTimeperiodUsedByHostdependencies($timeperiodId)) {
+            return false;
+        }
+
+        /** @var ServicedependenciesTable $ServicedependenciesTable */
+        $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+        if ($ServicedependenciesTable->isTimeperiodUsedByServicedependencies($timeperiodId)) {
+            return false;
+        }
+
+        //Check host and service escalations
+        /** @var HostescalationsTable $HostescalationsTable */
+        $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
+        if ($HostescalationsTable->isTimeperiodUsedByHostescalations($timeperiodId)) {
+            return false;
+        }
+
+        /** @var ServicedependenciesTable $ServicedependenciesTable */
+        $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+        if ($ServicedependenciesTable->isTimeperiodUsedByServicedependencies($timeperiodId)) {
+            return false;
+        }
+
         //Check autoreports
         if (Plugin::isLoaded('AutoreportModule')) {
-            $this->loadModel('AutoreportModule.Autoreport');
-            $autoreportCount = $this->Autoreport->find('count', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'timeperiod_id' => $timeperiodId,
-                ],
-            ]);
-            if ($autoreportCount > 0) {
+            /** @var \AutoreportModule\Model\Table\AutoreportsTable $AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+            if ($AutoreportsTable->isTimeperiodUsedByAutoreports($timeperiodId)) {
                 return false;
             }
         }

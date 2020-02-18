@@ -168,7 +168,6 @@ class TimeperiodsController extends AppController {
     /**
      * @param null $id
      * @throws \Exception
-     * @todo refactor me
      */
     public function edit($id = null) {
         if (!$this->isApiRequest()) {
@@ -262,6 +261,7 @@ class TimeperiodsController extends AppController {
             $usedBy = [
                 [
                     'baseUrl' => '#',
+                    'state'   => 'TimeperiodsUsedBy',
                     'message' => __('Used by other objects'),
                     'module'  => 'Core'
                 ]
@@ -418,6 +418,14 @@ class TimeperiodsController extends AppController {
         $this->set('result', $postData);
         $this->viewBuilder()->setOption('serialize', ['result']);
     }
+
+    public function usedBy($id){
+        
+    }
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
 
     public function loadTimeperiodsByContainerId() {
         if (!$this->isAngularJsRequest()) {

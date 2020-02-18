@@ -779,6 +779,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "TimeperiodsCopyController"
             })
 
+            .state('TimeperiodsUsedBy', {
+                url: '/timeperiods/usedBy/:id',
+                templateUrl: "/timeperiods/usedBy.html",
+                controller: "TimeperiodsUsedByController"
+            })
+
             .state('DocumentationsView', {
                 url: '/documentations/view/:uuid/:type',
                 templateUrl: "/documentations/view.html",
