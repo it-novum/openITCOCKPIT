@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Host;
 use Cake\Database\Expression\Comparison;
 use Cake\ORM\Query;
@@ -49,6 +50,7 @@ class HostsTable extends Table {
     use PaginationAndScrollIndexTrait;
     use Cake2ResultTableTrait;
     use CustomValidationTrait;
+    use PluginManagerTableTrait;
 
     /**
      * Initialize method
