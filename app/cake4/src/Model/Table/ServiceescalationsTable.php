@@ -601,4 +601,21 @@ class ServiceescalationsTable extends Table {
             ->first();
         return $this->formatFirstResultAsCake2($query->toArray(), false);
     }
+
+    /**
+     * @param int $timeperiodId
+     * @return bool
+     */
+    public function isTimeperiodUsedByServiceescalations($timeperiodId) {
+        $count = $this->find()
+            ->where([
+                'timeperiod_id' => $timeperiodId,
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        return false;
+    }
 }
