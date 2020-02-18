@@ -63,7 +63,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" 
+                            <a class="nav-link" data-toggle="tab"
                                ng-class="{'active': tabName=='hostsServicesOverview'}"
                                ng-click="tabName='hostsServicesOverview'"
                                ng-show="reportData.downtimes" role="tab">
@@ -76,7 +76,6 @@
             <div class="panel-container show">
                 <div class="panel-content">
                     <div class="frame-wrap">
-
                         <div ng-show="tabName == 'reportConfig'" id="reportConfig">
                             <form ng-submit="submit();" class="form-horizontal"
                                   ng-init="reportMessage={successMessage : '<?php echo __('Report created successfully'); ?>' , errorMessage: '<?php echo __('Report could not be created'); ?>'}">
@@ -227,6 +226,7 @@
                                 </div>
                             </form>
                         </div>
+
                         <div ng-if="tabName == 'calendarOverview'" id="calendarOverview">
                             <downtimecalendar downtimes="reportData.downtimes" from-date="post.from_date"
                                               to-date="post.to_date"></downtimecalendar>
@@ -254,7 +254,8 @@
                                                 <div class="row" ng-repeat="host in hostsWithOutages.hosts">
                                                     <host-availability-overview data="host"
                                                                                 evaluation-type="post.evaluation_type"
-                                                                                dynamic-color="setColorDynamically"></host-availability-overview>
+                                                                                dynamic-color="setColorDynamically"
+                                                                                class="col-lg-12"></host-availability-overview>
                                                 </div>
                                             </div>
                                         </div>

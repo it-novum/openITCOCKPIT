@@ -93,6 +93,7 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js',
         /*'js/vendor/Chart.min.js',
         'js/vendor/chartjs-plugin-piechart-center-element.min.js', */
+        'node_modules/chart.js/dist/Chart.min.js',
         'node_modules/highlight-within-textarea/jquery.highlight-within-textarea.js',
         'node_modules/jquery-sparkline/jquery.sparkline.min.js',
         'js/lib/raphael-charts-cust/raphael.js',

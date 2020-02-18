@@ -691,3 +691,14 @@ pre {
     -o-user-select: none;
     user-select: none;
 }
+
+.downtime-report-state-overview {
+    border: 1px solid #fff;
+    /*text-shadow: 2px 4px 3px rgba(0, 0, 0, 0.3);*/
+    color: #fff;
+    margin: 1px 0px;
+}
+
+.downtime-report-service-widget {
+    border-radius: 12px 2px 2px 58px;
+}
