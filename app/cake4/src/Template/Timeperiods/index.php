@@ -167,6 +167,14 @@
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('usedBy', 'timeperiods')): ?>
+                                                    <li>
+                                                        <a ui-sref="TimeperiodsUsedBy({id:timeperiod.Timeperiod.id})">
+                                                            <i class="fa fa-reply-all fa-flip-horizontal"></i>
+                                                            <?php echo __('Used by'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'timeperiods')): ?>
                                                     <li class="divider" ng-if="timeperiod.Timeperiod.allow_edit"></li>
                                                     <li ng-if="timeperiod.Timeperiod.allow_edit">

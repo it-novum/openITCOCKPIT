@@ -2773,15 +2773,15 @@ class HostsTable extends Table {
         if (!empty($conditions)) {
             $query->where($conditions);
         }
-        if($limit !== null){
+        if ($limit !== null) {
             $query->limit($limit);
         }
-        if($offset !== null){
+        if ($offset !== null) {
             $query->offset($offset);
         }
         $query->disableHydration()->all();
 
-        if($count === true){
+        if ($count === true) {
             return $query->count();
         }
 
@@ -2789,5 +2789,40 @@ class HostsTable extends Table {
             return [];
         }
         return $query->toArray();
+    }
+
+    /**
+     * @param $timeperiodId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getHostsByTimeperiodId($timeperiodId, $MY_RIGHTS = [], $enableHydration = true) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.name'
+            ])
+            ->where([
+                'OR' => [
+                    'Hosts.check_period_id'  => $timeperiodId,
+                    'Hosts.notify_period_id' => $timeperiodId
+                ]
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->contain([
+                'HostsToContainersSharing'
+            ])->where([
+                'HostsToContainers.container_id IN' => $MY_RIGHTS
+            ])->group([
+                'Host.id'
+            ]);
+        }
+
+        $query->enableHydration($enableHydration);
+
+        $result = $query->all();
+        return $this->emptyArrayIfNull($result->toArray());
     }
 }

@@ -196,7 +196,7 @@
                         <div class="noMatch" ng-if="total == 0">
                             <div class="row">
                                 <div class="col-xs-12 text-center txt-color-red italic">
-                                    <?php echo __('This command is not used by any object'); ?>
+                                    <?php echo __('This contact is not used by any object'); ?>
                                 </div>
                             </div>
                         </div>

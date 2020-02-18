@@ -499,4 +499,29 @@ class ServicedependenciesTable extends Table {
 
         return false;
     }
+
+    /**
+     * @param $timeperiodId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getServicedependenciesByTimeperiodId($timeperiodId, $MY_RIGHTS = [], $enableHydration = true) {
+        $query = $this->find()
+            ->select([
+                'Servicedependencies.id'
+            ])
+            ->where([
+                'timeperiod_id' => $timeperiodId,
+
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where(['Servicedependencies.container_id IN' => $MY_RIGHTS]);
+        }
+        $query->enableHydration($enableHydration);
+
+        $result = $query->all();
+        return $this->emptyArrayIfNull($result->toArray());
+    }
 }
