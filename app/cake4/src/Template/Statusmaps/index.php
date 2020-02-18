@@ -1,5 +1,4 @@
 <?php
-
 // Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
@@ -23,28 +22,29 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
-echo $this->Html->css('vendor/vis-4.21.0/dist/vis.min.css', ['inline' => false]);
-echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => false]);
-
-
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="ServicesIndex">
+            <i class="fas fa-globe-americas"></i> <?php echo __('Status Map'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-eye"></i> <?php echo __('Overview'); ?>
+    </li>
+</ol>
+
+
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-globe fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
-            <span>>
-                <?php echo __('Status Map'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
-<div class="row padding-bottom-10">
-    <div class="col col-xs-12 no-padding">
+    <div class="col-lg-12 margin-bottom-10">
         <select
-            id="Instance"
-            data-placeholder="<?php echo __('Filter by instance'); ?>"
+            id="satellites"
+            data-placeholder="<?php echo __('Please select...'); ?>"
             class="form-control"
             chosen="{}"
             ng-model="filter.Hosts.satellite_id"
@@ -57,120 +57,132 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
             endif;
             ?>
         </select>
+
     </div>
 </div>
-<div class="jarviswidget" id="wid-id-0">
-    <header>
-        <h2>
-            <?php echo __('Status Map'); ?>
-        </h2>
 
-        <div class="widget-toolbar" role="menu">
-            <a ng-click="clearFilter();" class="btn btn-default btn-xs cursor-pointer">
-                <i class="fa fa-undo"></i>
-                <?php echo __('Reset'); ?>
-            </a>
-        </div>
 
-        <div class="widget-toolbar">
-            <div class="pull-right padding-left-10">
-                <div class="form-group smart-form no-padding">
-                    <label class="checkbox small-checkbox-label">
-                        <input type="checkbox" name="checkbox" checked="checked"
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Status map'); ?>
+                    <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <div class="form-group no-margin padding-right-10">
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                            </div>
+                            <input type="text" class="form-control form-control-sm"
+                                   placeholder="<?php echo __('Filter by IP address'); ?>"
+                                   ng-model="filter.Hosts.address"
+                                   ng-model-options="{debounce: 500}">
+                        </div>
+                    </div>
+                    <div class="form-group no-margin padding-right-10">
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-desktop"></i></span>
+                            </div>
+                            <input type="text" class="form-control form-control-sm"
+                                   placeholder="<?php echo __('Filter by host name'); ?>"
+                                   ng-model="filter.Hosts.name"
+                                   ng-model-options="{debounce: 500}">
+                        </div>
+                    </div>
+
+                    <div class="custom-control custom-checkbox padding-right-10">
+                        <input type="checkbox"
+                               id="showAll"
+                               class="custom-control-input"
+                               name="checkbox"
+                               checked="checked"
                                ng-model="filter.showAll"
                                ng-model-options="{debounce: 500}"
                                ng-true-value="false"
                                ng-false-value="true">
-                        <i class="checkbox-primary"></i>
-                        <?php
-                        echo __('Consider parent child relations');
-                        ?>
-                    </label>
+                        <label
+                            class="custom-control-label no-margin"
+                            for="showAll"> <?php echo __('Consider parent child relations'); ?></label>
+                    </div>
+
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="clearFilter();">
+                        <i class="fas fa-undo"></i> <?php echo __('Reset'); ?>
+                    </button>
                 </div>
             </div>
-            <div class="pull-right padding-left-10">
-                <div class="form-group smart-form no-padding">
-                    <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                        <input type="text" class="input-sm"
-                               placeholder="<?php echo __('Filter by IP address'); ?>"
-                               ng-model="filter.Hosts.address"
-                               ng-model-options="{debounce: 500}">
-                    </label>
-                </div>
-            </div>
-            <div class="pull-right padding-left-10">
-                <div class="form-group smart-form no-padding">
-                    <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
-                        <input type="text" class="input-sm"
-                               placeholder="<?php echo __('Filter by host name'); ?>"
-                               ng-model="filter.Hosts.name"
-                               ng-model-options="{debounce: 500}">
-                    </label>
+            <div class="panel-container show">
+                <div class="panel-content">
+
+                    <div class="frame-wrap">
+                        <span class="no-padding">
+                            <i class="fa fa-check-circle no-padding up"></i>
+                            <em class="padding-right-10">
+                                <?php
+                                echo __('Up');
+                                ?>
+                            </em>
+                            <i class="fa fa-exclamation-circle no-padding down"></i>
+                            <em class="padding-right-10">
+                                <?php
+                                echo __('Down');
+                                ?>
+                            </em>
+                            <i class="fa fa-question-circle no-padding unreachable"></i>
+                            <em class="padding-right-10">
+                                <?php
+                                echo __('Unreachable');
+                                ?>
+                            </em>
+                            <i class="fa fa-eye-slash no-padding text-primary"></i>
+                            <em class="padding-right-10">
+                                <?php
+                                echo __('Not monitored');
+                                ?>
+                            </em>
+                            <i class="fa fa-plug no-padding text-primary"></i>
+                            <em class="padding-right-10">
+                                <?php
+                                echo __('Disabled');
+                                ?>
+                            </em>
+                            |
+                             <i class="fa fa-power-off no-padding txt-color-blueDark"></i>
+                            <em class="padding-right-10">
+                                <?php
+                                echo __('In downtime');
+                                ?>
+                            </em>
+                             <i class="fa fa-user no-padding txt-color-blueDark"></i>
+                            <em class="padding-right-10">
+                                <?php
+                                echo __('Acknowledged');
+                                ?>
+                            </em>
+                            <i class="fa fa-user-md no-padding txt-color-blueDark"></i>
+                            <em class="padding-right-10">
+                                <?php
+                                echo __('Acknowledged and in downtime');
+                                ?>
+                            </em>
+                        </span>
+                        <div class="margin-top-10" ng-if="isEmpty">
+                            <div class="text-center text-danger italic">
+                                <?php echo __('No entries match the selection'); ?>
+                            </div>
+                        </div>
+                        <div id="statusmap"></div>
+                    </div>
                 </div>
             </div>
         </div>
-
-    </header>
-    <div ng-if="isEmpty">
-        <center>
-            <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-        </center>
-    </div>
-    <div class="widget-body">
-        <span class="no-padding">
-            <i class="fa fa-check-circle no-padding up"></i>
-            <em class="padding-right-10">
-                <?php
-                echo __('Up');
-                ?>
-            </em>
-            <i class="fa fa-exclamation-circle no-padding down"></i>
-            <em class="padding-right-10">
-                <?php
-                echo __('Down');
-                ?>
-            </em>
-            <i class="fa fa-question-circle no-padding unreachable"></i>
-            <em class="padding-right-10">
-                <?php
-                echo __('Unreachable');
-                ?>
-            </em>
-            <i class="fa fa-eye-slash no-padding text-primary"></i>
-            <em class="padding-right-10">
-                <?php
-                echo __('Not monitored');
-                ?>
-            </em>
-            <i class="fa fa-plug no-padding text-primary"></i>
-            <em class="padding-right-10">
-                <?php
-                echo __('Disabled');
-                ?>
-            </em>
-            |
-             <i class="fa fa-power-off no-padding txt-color-blueDark"></i>
-            <em class="padding-right-10">
-                <?php
-                echo __('In downtime');
-                ?>
-            </em>
-             <i class="fa fa-user no-padding txt-color-blueDark"></i>
-            <em class="padding-right-10">
-                <?php
-                echo __('Acknowledged');
-                ?>
-            </em>
-            <i class="fa fa-user-md no-padding txt-color-blueDark"></i>
-            <em class="padding-right-10">
-                <?php
-                echo __('Acknowledged and in downtime');
-                ?>
-            </em>
-        </span>
-        <div id="statusmap"></div>
     </div>
 </div>
+
+
 <div id="statusmap-progress-icon">
     <center>
         <div>

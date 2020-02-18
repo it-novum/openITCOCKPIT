@@ -65,6 +65,7 @@ class AngularAssets implements AngularAssetsInterface {
         'legacy/js/lib/angular-nestable.js',
         'legacy/js/lib/parseuri.js',
         //'js/vendor/vis-4.21.0/dist/vis.js',
+        'node_modules/vis-network/dist/vis-network.js',
         'js/scripts/ng.app.js',
         'legacy/js/vendor/UUID.js-4.0.3/dist/uuid.core.js',
         'node_modules/underscore/underscore-min.js',
@@ -159,13 +160,14 @@ class AngularAssets implements AngularAssetsInterface {
         'vendor/prism.css',
         'vendor/gridstack/gridstack.min.css',*/
         //'vendor/vis-4.21.0/dist/vis.css',
+        '/node_modules/vis-network/dist/vis-network.min.css',
         //'my_vis.css',
         '/node_modules/noty/lib/noty.css',
         '/node_modules/angular-flippy/dist/css/angular-flippy.min.css',
         'legacy/css/vendor/image-picker.css',
         '/node_modules/angular-gridster/dist/angular-gridster.min.css',
         //'vendor/radio_buttons.css',
-
+        'legacy/css/vendor/css3-percentage-loader/circle.css'
     ];
 
     /**
