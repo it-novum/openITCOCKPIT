@@ -27,329 +27,358 @@
  * @var \App\View\AppView $this
  * @var \App\View\Helper\AclHelper $Acl
  */
-
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="ChangelogsIndex">
+            <i class="fa fa-code-fork"></i> <?php echo __('Change log'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-list"></i> <?php echo __('Overview'); ?>
+    </li>
+</ol>
 
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-code-fork fa-fw "></i>
-            <?php echo __('Change log') ?>
-            <span>>
-                <?php echo __('Overview'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
-
-
-<div class="jarviswidget jarviswidget-color-blueDark">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-code-fork"></i> </span>
-        <h2><?php echo __('Change log overview'); ?></h2>
-
-        <div class="widget-toolbar" role="menu">
-            <button type="button" class="btn btn-xs btn-default" ng-click="load()">
-                <i class="fa fa-refresh"></i>
-                <?php echo __('Refresh'); ?>
-            </button>
-
-            <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
-                <i class="fa fa-filter"></i>
-                <?php echo __('Filter'); ?>
-            </button>
-        </div>
-    </header>
-    <div>
-        <div class="widget-body">
-            <!-- Filter start -->
-            <div class="list-filter well" ng-show="showFilter">
-                <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
-                <div class="row">
-                    <div class="col-xs-12 col-md-6">
-                        <div class="form-group smart-form">
-                            <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                                <input type="text" class="input-sm"
-                                       placeholder="<?php echo __('Filter by name'); ?>"
-                                       ng-model="filter.Changelogs.name"
-                                       ng-model-options="{debounce: 500}">
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-md-6">
-                        <div class="form-group smart-form">
-                            <label class="input"> <i class="icon-prepend"
-                                                     style="padding-right:14px;"><?php echo __('From'); ?></i>
-                                <input type="text" class="input-sm" style="padding-left:50px;"
-                                       placeholder="<?php echo __('From date'); ?>"
-                                       ng-model="filter.from"
-                                       ng-model-options="{debounce: 500}">
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-md-offset-6 col-md-6">
-                        <div class="form-group smart-form">
-                            <label class="input"> <i class="icon-prepend"
-                                                     style="padding-right:14px;"><?php echo __('To'); ?></i>
-                                <input type="text" class="input-sm" style="padding-left:50px;"
-                                       placeholder="<?php echo __('From to'); ?>"
-                                       ng-model="filter.to"
-                                       ng-model-options="{debounce: 500}">
-                            </label>
-                        </div>
-                    </div>
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Change log'); ?>
+                    <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
+                        <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
+                    </button>
+                    <button class="btn btn-xs btn-primary shadow-0" ng-click="triggerFilter()">
+                        <i class="fas fa-filter"></i> <?php echo __('Filter'); ?>
+                    </button>
                 </div>
-                <div class="row">
-
-                    <div class="col-xs-12 col-md-3">
-                        <fieldset>
-                            <legend><?php echo __('Object type'); ?></legend>
-                            <div class="form-group smart-form">
-                                <?php
-                                $models = [
-                                    'Command'         => __('Commands'),
-                                    'Contact'         => __('Contacts'),
-                                    'Contactgroup'    => __('Contact groups'),
-                                    'Host'            => __('Hosts'),
-                                    'Hostgroup'       => __('Host groups'),
-                                    'Hosttemplate'    => __('Host templates'),
-                                    'Service'         => __('Services'),
-                                    'Servicegroup'    => __('Service groups'),
-                                    'Servicetemplate' => __('Service templates'),
-                                    'Timeperiod'      => __('Time periods')
-                                ];
-                                ?>
-
-                                <?php foreach ($models as $model => $name): ?>
-                                    <label class="checkbox small-checkbox-label">
-                                        <input type="checkbox" name="checkbox" checked="checked"
-                                               ng-model="filter.Models.<?= $model ?>"
-                                               ng-false-value="0"
-                                               ng-true-value="1"
-                                               ng-model-options="{debounce: 500}">
-                                        <i class="checkbox-primary"></i>
-                                        <?php echo h($name); ?>
-                                    </label>
-                                <?php endforeach; ?>
-                            </div>
-                        </fieldset>
-                    </div>
-
-
-                    <div class="col-xs-12 col-md-3">
-                        <fieldset>
-                            <legend><?php echo __('Actions'); ?></legend>
-                            <div class="form-group smart-form">
-                                <label class="checkbox small-checkbox-label">
-                                    <input type="checkbox" name="checkbox" checked="checked"
-                                           ng-model="filter.Actions.add"
-                                           ng-false-value="0"
-                                           ng-true-value="1"
-                                           ng-model-options="{debounce: 500}">
-                                    <i class="checkbox-success ok"></i>
-                                    <?php echo __('Add'); ?>
-                                </label>
-
-                                <label class="checkbox small-checkbox-label">
-                                    <input type="checkbox" name="checkbox" checked="checked"
-                                           ng-model="filter.Actions.edit"
-                                           ng-false-value="0"
-                                           ng-true-value="1"
-                                           ng-model-options="{debounce: 500}">
-                                    <i class="checkbox-warning warning"></i>
-                                    <?php echo __('Edit'); ?>
-                                </label>
-
-                                <label class="checkbox small-checkbox-label">
-                                    <input type="checkbox" name="checkbox" checked="checked"
-                                           ng-model="filter.Actions.copy"
-                                           ng-false-value="0"
-                                           ng-true-value="1"
-                                           ng-model-options="{debounce: 500}">
-                                    <i class="checkbox-primary"></i>
-                                    <?php echo __('Copy'); ?>
-                                </label>
-
-                                <label class="checkbox small-checkbox-label">
-                                    <input type="checkbox" name="checkbox" checked="checked"
-                                           ng-model="filter.Actions.delete"
-                                           ng-false-value="0"
-                                           ng-true-value="1"
-                                           ng-model-options="{debounce: 500}">
-                                    <i class="checkbox-critical critical"></i>
-                                    <?php echo __('Delete'); ?>
-                                </label>
-
-                                <label class="checkbox small-checkbox-label">
-                                    <input type="checkbox" name="checkbox" checked="checked"
-                                           ng-model="filter.Actions.activate"
-                                           ng-false-value="0"
-                                           ng-true-value="1"
-                                           ng-model-options="{debounce: 500}">
-                                    <i class="checkbox-primary"></i>
-                                    <?php echo __('Activate'); ?>
-                                </label>
-
-                                <label class="checkbox small-checkbox-label">
-                                    <input type="checkbox" name="checkbox" checked="checked"
-                                           ng-model="filter.Actions.deactivate"
-                                           ng-false-value="0"
-                                           ng-true-value="1"
-                                           ng-model-options="{debounce: 500}">
-                                    <i class="checkbox-primary"></i>
-                                    <?php echo __('Deactivate'); ?>
-                                </label>
-                            </div>
-                        </fieldset>
-                    </div>
-
-                </div>
-                <!-- Filter end -->
-
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="pull-right margin-top-10">
-                            <button type="button" ng-click="resetFilter()"
-                                    class="btn btn-xs btn-danger">
-                                <?php echo __('Reset Filter'); ?>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
             </div>
+            <div class="panel-container show">
+                <div class="panel-content">
 
-
-            <div class="row">
-                <div class="col-xs-12">
-                    <ul class="cbp_tmtimeline">
-                        <li ng-repeat="change in changes">
-                            <time class="cbp_tmtime" datetime="{{change.time}}">
-                                <span>{{change.time}}</span>
-                                <span>{{change.timeAgoInWords}}</span>
-                            </time>
-                            <div class="cbp_tmicon txt-color-white {{change.color}}" title="{{change.action}}">
-                                <i class="{{change.icon}}"></i>
+                    <!-- Start Filter -->
+                    <div class="list-filter card margin-bottom-10" ng-show="showFilter">
+                        <div class="card-header">
+                            <i class="fa fa-filter"></i> <?php echo __('Filter'); ?>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span
+                                                    class="input-group-text filter-text"><?php echo __('From'); ?></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   style="padding:0.5rem 0.875rem;"
+                                                   placeholder="<?php echo __('From date'); ?>"
+                                                   ng-model="filter.from"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   placeholder="<?php echo __('Filter by name'); ?>"
+                                                   ng-model="filter.Changelogs.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span
+                                                    class="input-group-text filter-text"><?php echo __('To'); ?></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   style="padding:0.5rem 0.875rem;"
+                                                   placeholder="<?php echo __('To date'); ?>"
+                                                   ng-model="filter.to"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="cbp_tmlabel">
-                                <h2 class="font-md">
-                                    {{change.model}}:
-                                    <strong>
-                                        <a ui-sref="{{change.ngState}}({id: change.object_id})" ng-if="change.ngState">
-                                            {{change.name}}
-                                        </a>
-                                        <span ng-if="!change.ngState"
-                                              ng-class="{'changelog_delete': change.action ==='delete'}">
-                                            {{change.name}}
-                                        </span>
+                            <div class="row">
+                                <div class="col-xs-12 col-lg-3">
+                                    <fieldset>
+                                        <h5><?php echo __('Object type'); ?></h5>
 
-                                    </strong>
-                                    <span class="font-xs" ng-if="change.includeUser && change.user.id > 0">
-                                        <?= __('by') ?>
-                                        <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
-                                            <a ui-sref="UsersEdit({id: change.user.id})">
+
+                                        <?php
+                                        $models = [
+                                            'Command'         => __('Commands'),
+                                            'Contact'         => __('Contacts'),
+                                            'Contactgroup'    => __('Contact groups'),
+                                            'Host'            => __('Hosts'),
+                                            'Hostgroup'       => __('Host groups'),
+                                            'Hosttemplate'    => __('Host templates'),
+                                            'Service'         => __('Services'),
+                                            'Servicegroup'    => __('Service groups'),
+                                            'Servicetemplate' => __('Service templates'),
+                                            'Timeperiod'      => __('Time periods')
+                                        ];
+                                        ?>
+
+                                        <?php foreach ($models as $model => $name): ?>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="Filter<?= $model ?>"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Models.<?= $model ?>"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="Filter<?= $model ?>"><?php echo h($name); ?></label>
+                                            </div>
+                                        <?php endforeach; ?>
+
+                                    </fieldset>
+                                </div>
+                                <div class="col-xs-12 col-lg-3">
+                                    <fieldset>
+                                        <h5><?php echo __('Actions'); ?></h5>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="FilterAdd"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Actions.add"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label custom-control-label-up"
+                                                       for="FilterAdd"><?php echo __('Add'); ?></label>
+                                            </div>
+
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="statusFilterDown"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Actions.edit"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label custom-control-label-warning"
+                                                       for="statusFilterDown"><?php echo __('Edit'); ?></label>
+                                            </div>
+
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="statusFilterUnreachable"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Actions.copy"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="statusFilterUnreachable"><?php echo __('Copy'); ?></label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="statusFilterUnreachable"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Actions.delete"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label custom-control-label-down"
+                                                       for="statusFilterUnreachable"><?php echo __('Delete'); ?></label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="statusFilterUnreachable"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Actions.activate"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="statusFilterUnreachable"><?php echo __('Activate'); ?></label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="statusFilterUnreachable"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Actions.deactivate"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="statusFilterUnreachable"><?php echo __('Deactivate'); ?></label>
+                                            </div>
+
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="float-right">
+                                <button type="button" ng-click="resetFilter()"
+                                        class="btn btn-xs btn-danger">
+                                    <?php echo __('Reset Filter'); ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END FILTER -->
+
+
+                    <div class="frame-wrap">
+                        <div class="col-lg-12">
+                            <ul class="cbp_tmtimeline">
+                                <li ng-repeat="change in changes">
+                                    <time class="cbp_tmtime" datetime="{{change.time}}">
+                                        <span>{{change.time}}</span>
+                                        <span>{{change.timeAgoInWords}}</span>
+                                    </time>
+                                    <div class="cbp_tmicon txt-color-white {{change.color}}" title="{{change.action}}">
+                                        <i class="{{change.icon}}"></i>
+                                    </div>
+                                    <div class="cbp_tmlabel">
+                                        <h2 class="font-md">
+                                            {{change.model}}:
+                                            <strong>
+                                                <a ui-sref="{{change.ngState}}({id: change.object_id})"
+                                                   ng-if="change.ngState">
+                                                    {{change.name}}
+                                                </a>
+                                                <span ng-if="!change.ngState"
+                                                      ng-class="{'changelog_delete': change.action ==='delete'}">
+                                                    {{change.name}}
+                                                </span>
+
+                                            </strong>
+                                            <span class="font-xs" ng-if="change.includeUser && change.user.id > 0">
+                                                <?= __('by') ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
+                                                    <a ui-sref="UsersEdit({id: change.user.id})">
                                                     {{change.user.firstname}}
                                                     {{change.user.lastname}}
                                                 </a>
-                                        <?php else: ?>
-                                            {{change.user.firstname}}
-                                            {{change.user.lastname}}
-                                        <?php endif; ?>
-                                    </span>
-                                    <span class="font-xs" ng-if="change.includeUser && change.user === null">
-                                        <?= __('by Cronjob') ?>
-                                    </span>
-                                </h2>
+                                                <?php else: ?>
+                                                    {{change.user.firstname}}
+                                                    {{change.user.lastname}}
+                                                <?php endif; ?>
+                                            </span>
+                                            <span class="font-xs" ng-if="change.includeUser && change.user === null">
+                                                <?= __('by Cronjob') ?>
+                                            </span>
+                                        </h2>
 
-                                <!-- Add and copy changes -->
-                                <blockquote
-                                    ng-class="{'changelog-blockquote-success': change.action ==='add', 'changelog-blockquote-primary': change.action ==='copy'}"
-                                    ng-if="change.action === 'add' || change.action === 'copy'">
-                                    <div class="blockquote"
-                                         ng-repeat="(tableName, tableChanges) in change.data_unserialized">
-                                        {{tableName}}
+                                        <!-- Add and copy changes -->
+                                        <blockquote
+                                            ng-class="{'changelog-blockquote-success': change.action ==='add', 'changelog-blockquote-primary': change.action ==='copy'}"
+                                            ng-if="change.action === 'add' || change.action === 'copy'" class="blockquote">
+                                            <div
+                                                 ng-repeat="(tableName, tableChanges) in change.data_unserialized">
+                                                {{tableName}}
 
-                                        <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
-                                              ng-if="!tableChanges.isArray">
-                                            <small class="padding-left-10">
-                                                {{fieldName}}: <span class="text-primary">{{fieldValue}}</span>
-                                            </small>
-                                        </span>
-
-                                        <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
-                                              ng-if="tableChanges.isArray" class="padding-top-5">
-                                            <small ng-repeat="(subFieldName, subFieldValue) in fieldValue"
-                                                   class="padding-left-10">
-                                                {{subFieldName}}: <span class="text-primary">{{subFieldValue}}</span>
-                                            </small>
-                                            <div class="padding-top-5"></div>
-                                        </span>
-                                    </div>
-                                </blockquote>
-
-                                <!-- Edit changes -->
-                                <blockquote class="changelog-blockquote-warning"
-                                            ng-if="change.action === 'edit'">
-                                    <div class="blockquote"
-                                         ng-repeat="(tableName, tableChanges) in change.data_unserialized">
-                                        {{tableName}}
-
-                                        <span ng-repeat="(fieldName, fieldValueChanges) in tableChanges.data"
-                                              ng-if="!tableChanges.isArray">
-                                            <small class="padding-left-10">
-                                                {{fieldName}}:
-                                                <span class="down">{{fieldValueChanges.old}}</span>
-                                                <i class="fa fa-caret-right"></i>
-                                                <span class="up">{{fieldValueChanges.new}}</span>
-                                            </small>
-                                        </span>
-
-                                        <span ng-repeat="(fieldIndex, fieldValueChanges) in tableChanges.data"
-                                              ng-if="tableChanges.isArray" class="padding-top-5">
-                                            <small ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
-                                                   ng-if="fieldValueChanges.old === null">
-                                                {{newFieldName}}:
-                                                <span class="up">{{newFieldValue}}</span>
-                                            </small>
-
-                                            <small ng-repeat="(oldFieldName, oldFieldValue) in fieldValueChanges.old"
-                                                   ng-if="fieldValueChanges.new === null">
-                                                {{oldFieldName}}:
-                                                <span class="down changelog_delete">{{oldFieldValue}}</span>
-                                            </small>
-
-                                            <small ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
-                                                   ng-if="fieldValueChanges.old !== null && fieldValueChanges.new !== null">
-                                                {{newFieldName}}:
-                                                <span
-                                                    ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'down': fieldValueChanges.old[newFieldName] !== newFieldValue}">
-                                                    {{fieldValueChanges.old[newFieldName]}}
+                                                <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
+                                                      ng-if="!tableChanges.isArray">
+                                                    <footer class="padding-left-10 blockquote-footer">
+                                                        {{fieldName}}: <span class="text-primary">{{fieldValue}}</span>
+                                                    </footer>
                                                 </span>
-                                                <i class="fa fa-caret-right"></i>
-                                                <span
-                                                    ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'up': fieldValueChanges.old[newFieldName] !== newFieldValue}">
-                                                    {{newFieldValue}}
+
+                                                <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
+                                                      ng-if="tableChanges.isArray" class="padding-top-5">
+                                                    <span ng-repeat="(subFieldName, subFieldValue) in fieldValue">
+                                                        <footers class="padding-left-10 blockquote-footer">
+                                                            {{subFieldName}}:
+                                                            <span class="text-primary">{{subFieldValue}}</span>
+                                                        </footers>
+                                                    </span>
+                                                    <div class="padding-top-5"></div>
                                                 </span>
-                                            </small>
+                                            </div>
+                                        </blockquote>
 
-                                            <div class="padding-top-5"></div>
-                                        </span>
+                                        <!-- Edit changes -->
+                                        <blockquote class="changelog-blockquote-warning"
+                                                    ng-if="change.action === 'edit'" class="blockquote">
+                                            <div ng-repeat="(tableName, tableChanges) in change.data_unserialized">
+                                                {{tableName}}
+
+                                                <span ng-repeat="(fieldName, fieldValueChanges) in tableChanges.data"
+                                                      ng-if="!tableChanges.isArray">
+                                                    <footer class="padding-left-10 blockquote-footer">
+                                                        {{fieldName}}:
+                                                        <span class="down">{{fieldValueChanges.old}}</span>
+                                                        <i class="fa fa-caret-right"></i>
+                                                        <span class="up">{{fieldValueChanges.new}}</span>
+                                                    </footer>
+                                                </span>
+
+                                                <span ng-repeat="(fieldIndex, fieldValueChanges) in tableChanges.data"
+                                                      ng-if="tableChanges.isArray" class="padding-top-5">
+                                                    <small
+                                                        ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
+                                                        ng-if="fieldValueChanges.old === null">
+                                                        <footer class="blockquote-footer">
+                                                            {{newFieldName}}:
+                                                            <span class="up">{{newFieldValue}}</span>
+                                                        </footer>
+
+                                                    </small>
+
+                                                    <small
+                                                        ng-repeat="(oldFieldName, oldFieldValue) in fieldValueChanges.old"
+                                                        ng-if="fieldValueChanges.new === null">
+                                                         <footer class="blockquote-footer">
+                                                            {{oldFieldName}}:
+                                                            <span class="down changelog_delete">{{oldFieldValue}}</span>
+                                                         </footer>
+                                                    </small>
+
+                                                    <small
+                                                        ng-repeat="(newFieldName, newFieldValue) in fieldValueChanges.new"
+                                                        ng-if="fieldValueChanges.old !== null && fieldValueChanges.new !== null">
+                                                         <footer class="blockquote-footer">
+                                                            {{newFieldName}}:
+                                                            <span
+                                                                ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'down': fieldValueChanges.old[newFieldName] !== newFieldValue}">
+                                                                {{fieldValueChanges.old[newFieldName]}}
+                                                            </span>
+                                                            <i class="fa fa-caret-right"></i>
+                                                            <span
+                                                                ng-class="{'text-primary': fieldValueChanges.old[newFieldName] === newFieldValue, 'up': fieldValueChanges.old[newFieldName] !== newFieldValue}">
+                                                                {{newFieldValue}}
+                                                            </span>
+                                                         </footer>
+                                                    </small>
+
+                                                    <div class="padding-top-5"></div>
+                                                </span>
+                                            </div>
+                                        </blockquote>
                                     </div>
-                                </blockquote>
-                            </div>
-                        </li>
-                    </ul>
+                                </li>
+                            </ul>
 
-                </div>
-                <div class="col-xs-12">
-                    <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
-                    <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
-                    <?php echo $this->element('paginator_or_scroll'); ?>
+                        </div>
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
+                    </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
-
-
