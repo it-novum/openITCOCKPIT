@@ -82,6 +82,11 @@
 <div class="row">
     <div class="col-xl-12">
         <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Packagemanager'); ?>
+                </h2>
+            </div>
             <div class="panel-container show">
                 <div class="panel-content">
                     <div class="col-lg-12" ng-show="error">
