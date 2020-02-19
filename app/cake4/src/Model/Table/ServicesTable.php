@@ -2681,4 +2681,45 @@ class ServicesTable extends Table {
 
         return $this->emptyArrayIfNull($result->toArray());
     }
+
+    /**
+     * @param int $id
+     * @param int $USAGE_FLAG
+     * @return Service|bool
+     */
+    public function setUsageFlagById($id, int $USAGE_FLAG) {
+        $service = $this->get($id);
+        $currentFlag = $service->get('usage_flag');
+
+        if($currentFlag & $USAGE_FLAG){
+            //Service already has the flag for given module
+            return true;
+        }else{
+            $newFlag = $currentFlag + $USAGE_FLAG;
+            $service->set('usage_flag', $newFlag);
+            return $this->save($service);
+        }
+    }
+
+    /**
+     * @param int $id
+     * @param int $USAGE_FLAG
+     * @return Service|bool
+     */
+    public function removeUsageFlagById($id, int $USAGE_FLAG) {
+        $service = $this->get($id);
+        $currentFlag = $service->get('usage_flag');
+
+        if($currentFlag & $USAGE_FLAG){
+            $newFlag = $currentFlag - $USAGE_FLAG;
+            if($newFlag < 0){
+                $newFlag = 0;
+            }
+
+            $service->set('usage_flag', $newFlag);
+            return $this->save($service);
+        }
+
+        return true;
+    }
 }
