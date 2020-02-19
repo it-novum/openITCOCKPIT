@@ -373,7 +373,7 @@
                                 <th><?php echo __('Inherits parent'); ?></th>
                                 <th class="no-sort"><?php echo __('Execution failure criteria'); ?></th>
                                 <th class="no-sort"><?php echo __('Notification failure criteria'); ?></th>
-                                <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
+                                <th class="no-sort text-center"><i class="fa fa-gear"></i></th>
                             </tr>
                             </thead>
                             <tbody>

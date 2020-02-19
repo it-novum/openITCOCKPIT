@@ -103,14 +103,14 @@
                             <thead>
                             <tr>
                                 <th class="no-sort width-15">
-                                    <i class="fa fa-check-square fa-lg"></i>
+                                    <i class="fa fa-check-square"></i>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('Usercontainerroles.name')">
                                     <i class="fa" ng-class="getSortClass('Usercontainerroles.name')"></i>
                                     <?php echo __('Name'); ?>
                                 </th>
                                 <th class="no-sort text-center width-80">
-                                    <i class="fa fa-cog fa-lg"></i>
+                                    <i class="fa fa-cog"></i>
                                 </th>
                             </tr>
                             </thead>

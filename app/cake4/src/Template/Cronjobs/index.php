@@ -73,7 +73,7 @@
                                 <th class="no-sort"><?php echo __('Last scheduled'); ?></th>
                                 <th class="no-sort"><?php echo __('Is currently running'); ?></th>
                                 <th class="no-sort"><?php echo __('Enabled'); ?></th>
-                                <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
+                                <th class="no-sort text-center"><i class="fa fa-gear"></i></th>
                             </tr>
                             </thead>
                             <tbody>

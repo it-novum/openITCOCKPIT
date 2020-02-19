@@ -58,7 +58,7 @@
                                     <?php echo __('File name'); ?>
                                 </th>
                                 <th class="no-sort text-center width-25">
-                                    <i class="fa fa-cog fa-lg"></i>
+                                    <i class="fa fa-cog"></i>
                                 </th>
                             </tr>
                             </thead>
@@ -76,7 +76,7 @@
                                 <td class="width-50">
                                     <?php if ($this->Acl->hasPermission('edit', 'configurationfiles')): ?>
                                         <a ui-sref="ConfigurationFilesEdit({configfile: '{{configFile.dbKey}}'})"
-                                           class="btn btn-default btn-lower-padding">
+                                           class="btn btn-default btn-icon btn-sm">
                                             <i class="fa fa-cog"></i>
                                         </a>
                                     <?php else: ?>
