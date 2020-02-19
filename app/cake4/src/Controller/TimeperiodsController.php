@@ -38,7 +38,9 @@ use App\Model\Table\InstantreportsTable;
 use App\Model\Table\ServicedependenciesTable;
 use App\Model\Table\ServiceescalationsTable;
 use App\Model\Table\ServicesTable;
+use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
+use AutoreportModule\Model\Table\AutoreportsTable;
 use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -460,11 +462,6 @@ class TimeperiodsController extends AppController {
             'Servicetemplates'    => []
         ];
 
-        //check if the host is used somwhere
-        if (Plugin::isLoaded('AutoreportModule')) {
-            $objects['Autoreports'] = [];
-        }
-
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
             $MY_RIGHTS = [];
@@ -511,9 +508,23 @@ class TimeperiodsController extends AppController {
         $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
         $objects['Serviceescalations'] = $ServiceescalationsTable->getServiceescalationsByTimeperiodId($id, $MY_RIGHTS, false);
 
+        //Checking service
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
         $objects['Services'] = $ServicesTable->getServicesByTimeperiodId($id, $MY_RIGHTS, false);
+
+        //Check if the time period is used by service templates
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        $objects['Servicetemplates'] = $ServicetemplatesTable->getServicetemplatesByTimeperiodId($id, $MY_RIGHTS, false);
+
+        //check if the time period is used in auto reports
+        if (Plugin::isLoaded('AutoreportModule')) {
+            $objects['Autoreports'] = [];
+            /** @var $AutoreportsTable AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+            $objects['Autoreports'] = $AutoreportsTable->getAutoreportsByTimeperiodId($id, $MY_RIGHTS, false);
+        }
 
 
         $total = 0;
@@ -526,56 +537,13 @@ class TimeperiodsController extends AppController {
         $total += sizeof($objects['Servicedependencies']);
         $total += sizeof($objects['Serviceescalations']);
         $total += sizeof($objects['Services']);
+        $total += sizeof($objects['Servicetemplates']);
 
 
         $this->set('timeperiod', $timeperiod->toArray());
         $this->set('objects', $objects);
         $this->set('total', $total);
         $this->viewBuilder()->setOption('serialize', ['timeperiod', 'objects', 'total']);
-
-        return;
-
-
-        //Check if the contact is used by host or service templates
-        /** @var $HosttemplatesTable HosttemplatesTable */
-        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
-        $objects['Hosttemplates'] = $HosttemplatesTable->getHosttemplatesByContactId($id, $MY_RIGHTS, false);
-
-        /** @var $ServicetemplatesTable ServicetemplatesTable */
-        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
-        $objects['Servicetemplates'] = $ServicetemplatesTable->getServicetemplatesByContactId($id, $MY_RIGHTS, false);
-
-        //Checking host and services
-        /** @var $HostsTable HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        $objects['Hosts'] = $HostsTable->getHostsByContactId($id, $MY_RIGHTS, false);
-
-        /** @var $ServicesTable ServicesTable */
-        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-        $objects['Services'] = $ServicesTable->getServicesByContactId($id, $MY_RIGHTS, false);
-
-        //Checking host and service escalations
-        /** @var $HostescalationsTable HostescalationsTable */
-        $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
-        $objects['Hostescalations'] = $HostescalationsTable->getHostescalationsByContactId($id, $MY_RIGHTS, false);
-
-        /** @var $ServiceescalationsTable ServiceescalationsTable */
-        $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
-        $objects['Serviceescalations'] = $ServiceescalationsTable->getServiceescalationsByContactId($id, $MY_RIGHTS, false);
-
-        $total = 0;
-        $total += sizeof($objects['Contactgroups']);
-        $total += sizeof($objects['Hosttemplates']);
-        $total += sizeof($objects['Servicetemplates']);
-        $total += sizeof($objects['Hosts']);
-        $total += sizeof($objects['Services']);
-        $total += sizeof($objects['Hostescalations']);
-        $total += sizeof($objects['Serviceescalations']);
-
-        $this->set('contact', $contact->toArray());
-        $this->set('objects', $objects);
-        $this->set('total', $total);
-        $this->viewBuilder()->setOption('serialize', ['contact', 'objects', 'total']);
     }
 
     /****************************

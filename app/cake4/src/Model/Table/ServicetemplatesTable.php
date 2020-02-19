@@ -1177,4 +1177,36 @@ class ServicetemplatesTable extends Table {
 
     }
 
+    /**
+     * @param int $timeperiodId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getServicetemplatesByTimeperiodId($timeperiodId, $MY_RIGHTS = [], $enableHydration = true) {
+        $query = $this->find('all');
+        $query->where([
+            'OR' => [
+                'Servicetemplates.check_period_id'  => $timeperiodId,
+                'Servicetemplates.notify_period_id' => $timeperiodId
+            ]
+        ]);
+        $query->select([
+            'Servicetemplates.id',
+            'Servicetemplates.name'
+        ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where(['Servicetemplates.container_id IN' => $MY_RIGHTS]);
+        }
+
+        $query->enableHydration($enableHydration);
+        $query->order([
+            'Servicetemplates.name' => 'asc'
+        ]);
+
+        $result = $query->all();
+
+        return $this->emptyArrayIfNull($result->toArray());
+    }
 }
