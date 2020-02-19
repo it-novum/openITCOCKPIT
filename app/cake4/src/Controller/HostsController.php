@@ -35,16 +35,6 @@ use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
-use App\Model\Entity\Contact;
-use App\Model\Entity\Contactgroup;
-use App\Model\Entity\Container;
-use App\Model\Entity\DeletedHost;
-use App\Model\Entity\DeletedService;
-use App\Model\Entity\Hostcommandargumentvalue;
-use App\Model\Entity\Hostgroup;
-use App\Model\Entity\Hosttemplatecommandargumentvalue;
-use App\Model\Entity\Service;
-use App\Model\Entity\Timeperiod;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
@@ -73,7 +63,6 @@ use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
@@ -110,9 +99,6 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
-use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
-use Statusengine2Module\Model\Entity\DowntimeHost;
-use Statusengine2Module\Model\Entity\NotificationHost;
 
 
 /**
@@ -1106,7 +1092,7 @@ class HostsController extends AppController {
 
                     if ($detailsToEdit['editHostUrl'] == 1) {
                         $newHostUrl = $detailsToEdit['Host']['host_url'];
-                        if (!empty($newHostUrl) && $newHostUrl !=  $mergedHost['Host']['host_url']) {
+                        if (!empty($newHostUrl) && $newHostUrl != $mergedHost['Host']['host_url']) {
                             $dataToSave['host_url'] = $newHostUrl;
                         }
                     }
@@ -2199,55 +2185,49 @@ class HostsController extends AppController {
     }
 
     /**
-     * @deprecated
+     * @param null $id
      */
     public function loadHostById($id = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->Host->exists($id)) {
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if (!$HostsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
 
-        $host = $this->Host->find('first', [
-            'conditions' => [
-                'Host.id' => $id,
-            ],
-            'contain'    => [
-                'Container',
-                'Hosttemplate'
-            ],
-        ]);
+        $host = $HostsTable->getHostByIdWithHosttemplate($id);
 
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
+        $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n}.id');
+        $containerIdsToCheck[] = $host['container_id'];
         if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
             $this->render403();
             return;
         }
 
-        foreach ($host['Host'] as $key => $value) {
-            if ($host['Host'][$key] === '' || $host['Host'][$key] === null) {
-                if (isset($host['Hosttemplate'][$key])) {
-                    $host['Host'][$key] = $host['Hosttemplate'][$key];
+        foreach ($host as $key => $value) {
+            if ($host[$key] === '' || $host[$key] === null) {
+                if (isset($host['hosttemplate'][$key])) {
+                    $host[$key] = $host['hosttemplate'][$key];
                 }
             }
         }
 
-        $host['Host']['is_satellite_host'] = (int)$host['Host']['satellite_id'] !== 0;
-        $host['Host']['allow_edit'] = false;
+        $host['is_satellite_host'] = (int)$host['satellite_id'] !== 0;
+        $host['allow_edit'] = false;
         if ($this->hasRootPrivileges === true) {
-            $host['Host']['allow_edit'] = true;
+            $host['allow_edit'] = true;
         } else {
             if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIdsToCheck);
-                $host['Host']['allow_edit'] = $ContainerPermissions->hasPermission();
+                $host['allow_edit'] = $ContainerPermissions->hasPermission();
             }
         }
 
-
-        unset($host['Hosttemplate']);
+        unset($host['hosttemplate']);
         $this->set('host', $host);
         $this->viewBuilder()->setOption('serialize', ['host']);
     }
