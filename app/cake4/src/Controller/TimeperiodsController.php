@@ -38,6 +38,7 @@ use App\Model\Table\InstantreportsTable;
 use App\Model\Table\ServicedependenciesTable;
 use App\Model\Table\ServiceescalationsTable;
 use App\Model\Table\ServicesTable;
+use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -511,9 +512,15 @@ class TimeperiodsController extends AppController {
         $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
         $objects['Serviceescalations'] = $ServiceescalationsTable->getServiceescalationsByTimeperiodId($id, $MY_RIGHTS, false);
 
+        //Checking service
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
         $objects['Services'] = $ServicesTable->getServicesByTimeperiodId($id, $MY_RIGHTS, false);
+
+        //Check if the time period is used by service templates
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        $objects['Servicetemplates'] = $ServicetemplatesTable->getServicetemplatesByTimeperiodId($id, $MY_RIGHTS, false);
 
 
         $total = 0;
@@ -526,6 +533,7 @@ class TimeperiodsController extends AppController {
         $total += sizeof($objects['Servicedependencies']);
         $total += sizeof($objects['Serviceescalations']);
         $total += sizeof($objects['Services']);
+        $total += sizeof($objects['Servicetemplates']);
 
 
         $this->set('timeperiod', $timeperiod->toArray());
