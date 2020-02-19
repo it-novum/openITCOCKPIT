@@ -59,7 +59,7 @@
 
 <div class="row" ng-if="!pullMode && !pushMode && host.id">
 
-    <div class="col-xs-12 col-mg-6 col-lg-4 col-lg-offset-1">
+    <div class="col-xs-12 col-md-6 col-lg-4 col-lg-offset-1">
         <div class="panel panel-default">
 
             <div class="panel-body" style="min-height: 200px;">
@@ -71,7 +71,11 @@
                     <hr/>
                 </div>
                 <div class="text">
-                    <?= __('Intelligent description'); ?>
+                    <?= __('If you configure the Agent in pull mode, it has to be reachable threw the network.'); ?>
+                    <br>
+                    <?= __('openITCOCKPIT will try to connect to the agent using the hosts IP Address.'); ?>
+                    <br>
+                    <?= __('It will fetch the check results in a minutely check interval.'); ?>
                 </div>
 
             </div>
@@ -93,7 +97,7 @@
         </div>
     </div>
 
-    <div class="col-xs-12 col-mg-6 col-lg-4 col-lg-offset-1">
+    <div class="col-xs-12 col-md-6 col-lg-4 col-lg-offset-1">
         <div class="panel panel-default">
 
             <div class="panel-body" style="min-height: 200px;">
@@ -105,7 +109,9 @@
                     <hr/>
                 </div>
                 <div class="text">
-                    <?= __('Intelligent description'); ?>
+                    <?= __('If you configure the agent in push mode, it needs to establish a connection to the openITCOCKPIT server in your network.'); ?>
+                    <br>
+                    <?= __('The agent will send the check results in a specific interval to the openITCOCKPIT server.'); ?>
                 </div>
 
             </div>
@@ -557,11 +563,11 @@
             </div>
 
             <div class="widget-body col-xs-12 col-md-3">
-                <p><b>oitc_agent.conf:</b></p>
+                <p><b>agent.cnf:</b></p>
                 <textarea readonly ng-model="configTemplate" style="min-height: 560px; width: 100%;"></textarea>
             </div>
             <div class="widget-body col-xs-12 col-md-3" ng-if="agentconfig.customchecks">
-                <p><b>oitc_customchecks.conf:</b></p>
+                <p><b>customchecks.cnf:</b></p>
                 <textarea readonly ng-model="configTemplateCustomchecks"
                           style="min-height: 560px; width: 100%;"></textarea>
             </div>
@@ -604,21 +610,96 @@
 
             <div class="row" style="border-bottom: none;">
                 <p>
-                    <?= __('Download here install there ....'); ?>
+                    <?= __('Download the agent installer for your system from our official openITCOCKPIT Website'); ?>:&nbsp;
+                    <a href="https://openitcockpit.io/download/#download" target="_blank"><?= __('Download here'); ?></a>
+                    <br><br>
+                    <?= __('After the installation you have to update the default configuration files with the recently generated configuration'); ?>
+                    <br>
                 </p>
 
-                <p>
-                    <?= __('Copy the configuration into the given configuration files of your specific host system ....'); ?>
-                </p>
+                <br>
+                <div class="row">
+                    <div class="col-xs-12 col-md-6">
+                        <div class="panel panel-default">
 
-                <div class="widget-body col-xs-12 col-md-3">
-                    <p><b>oitc_agent.conf:</b></p>
-                    <textarea readonly ng-model="configTemplate" style="min-height: 560px; width: 100%;"></textarea>
+                            <div class="panel-body">
+
+                                <div class="">
+                                    <h4>
+                                        <?= __('Config file default paths:'); ?>
+                                    </h4>
+                                    <hr/>
+                                </div>
+                                <div class="text">
+                                    <ul>
+                                        <li>
+                                            Windows: <code>C:\Program Files\openitcockpit-agent\config.cnf</code>
+                                        </li>
+                                        <li>
+                                            Linux: <code>/etc/openitcockpit-agent/config.cnf</code>
+                                        </li>
+                                        <li>
+                                            macOS: <code>/Library/openitcockpit-agent/config.cnf</code>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="widget-body col-xs-12 col-md-3" ng-if="agentconfig.customchecks">
-                    <p><b>oitc_customchecks.conf:</b></p>
-                    <textarea readonly ng-model="configTemplateCustomchecks"
-                              style="min-height: 560px; width: 100%;"></textarea>
+
+                <div class="row">
+                    <p>
+                        <br>
+                        <?= __('Depending on your system, go to the configuration directory and replace the contents of the .cnf files with the following content:'); ?>
+                    </p>
+
+                    <div class="widget-body col-xs-12 col-md-3">
+                        <p><b>agent.cnf:</b></p>
+                        <textarea readonly ng-model="configTemplate" style="min-height: 560px; width: 100%;"></textarea>
+                    </div>
+                    <div class="widget-body col-xs-12 col-md-3" ng-if="agentconfig.customchecks">
+                        <p><b>customchecks.cnf:</b></p>
+                        <textarea readonly ng-model="configTemplateCustomchecks"
+                                  style="min-height: 560px; width: 100%;"></textarea>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <p>
+                        <br>
+                        <?= __('Restart the agent to apply the new configuration:'); ?>
+                    </p>
+
+                    <div class="col-xs-12 col-md-6">
+                        <div class="panel panel-default">
+
+                            <div class="panel-body">
+
+                                <div class="">
+                                    <h4>
+                                        <?= __('Run as administrator:'); ?>
+                                    </h4>
+                                    <hr/>
+                                </div>
+                                <div class="text">
+                                    <ul>
+                                        <li>
+                                            Windows CMD: <code>sc stop oitcAgentSvc && sc start oitcAgentSvc</code>
+                                        </li>
+                                        <li>
+                                            Linux: <code>systemctl restart openitcockpit-agent</code>
+                                        </li>
+                                        <li>
+                                            macOS: <code>/bin/launchctl restart com.it-novum.openitcockpit.agent</code>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -633,7 +714,7 @@
                     </button>
                     <button
                         type="button" style="min-height: 35px;"
-                        class="btn btn-labeled btn-primary pull-right margin-top-10 margin-bottom-10"
+                        class="btn btn-labeled btn-primary pull-right margin-bottom-10 margin-right-5"
                         ng-click="continueWithServiceConfiguration()">
 
                         <?= __('Configure agent services'); ?>
