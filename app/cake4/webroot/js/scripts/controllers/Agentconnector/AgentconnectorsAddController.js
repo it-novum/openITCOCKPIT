@@ -1,10 +1,11 @@
 angular.module('openITCOCKPIT')
-    .controller('AgentconnectorsAddController', function($scope, $http, QueryStringService, $state, $stateParams, NotyService){
+    .controller('AgentconnectorsAddController', function($scope, $http, QueryStringService, $state, $stateParams, NotyService, $interval){
 
         $scope.pullMode = false;
         $scope.pushMode = false;
         $scope.installed = false;
         $scope.configured = false;
+        $scope.checkdataRequestInterval = null;
 
         $scope.resetAgentConfiguration = function(){
             $scope.pullMode = false;
@@ -41,23 +42,46 @@ angular.module('openITCOCKPIT')
                 'oitc_enabled': false
             };
 
+            $scope.choosenServicesToMonitor = {
+                cpu_percentage: false,
+                system_load: false,
+                memory: false,
+                swap: false,
+                disk_io: [],
+                disks: [],
+                fans: [],
+                temperatures: [],
+                battery: false,
+                net_io: [],
+                net_stats: [],
+                processes: [],
+                windows_services: [],
+                docker_running: [],
+                docker_cpu: [],
+                docker_memory: [],
+                qemu_running: [],
+                customchecks: []
+            };
+
             $scope.agentconfigCustomchecks = {
                 'max_worker_threads': 8
             };
 
+            if($scope.checkdataRequestInterval !== null){
+                $interval.cancel($scope.checkdataRequestInterval);
+            }
+
+            $scope.checkdata = false;
             $scope.configTemplate = '';
             $scope.configTemplateCustomchecks = '';
-            $scope.host.id = false;
+            $scope.host = {
+                id: false
+            };
             document.getElementById('AgentHost').disabled = false;
             $scope.updateConfigTemplate();
         };
 
 
-        //delete pre filled uuid and address if loadHostById in HostsController works!
-        $scope.host = {
-            uuid: '91cebbcc-cbcc-46f7-a0c7-a21a5ed513d7',
-            address: '172.16.166.5'
-        };
         $scope.hosts = {};
 
         $scope.load = function(){
@@ -151,10 +175,54 @@ angular.module('openITCOCKPIT')
 
         $scope.continueWithAgentInstallation = function(){
             $scope.configured = true;
+            NotyService.scrollTop();
+        };
+        $scope.skipConfigurationGeneration = function(){
+            $scope.pushMode = true;
+            $scope.configured = true;
+            $scope.installed = true;
         };
 
         $scope.continueWithServiceConfiguration = function(){
+            NotyService.scrollTop();
             $scope.installed = true;
+            // start interval to check /agentconnector/getLatestCheckDataByHostUuid/$uuid.json
+            // process results to agent service templates? or poller host config?
+
+            if(!$scope.checkdata){
+                $scope.checkdataRequestInterval = $interval(function(){
+                    if($scope.checkdata){
+                        $interval.cancel($scope.checkdataRequestInterval);
+                    }else{
+                        $scope.getLatestCheckDataByHostUuid();
+                    }
+                }, 5000);
+            }
+        };
+
+        $scope.getLatestCheckDataByHostUuid = function(){
+            if($scope.host.uuid !== 'undefined' && $scope.host.uuid !== ''){
+                $http.get('/agentconnector/getLatestCheckDataByHostUuid/' + $scope.host.uuid + '.json').then(function(result){
+                    if(result.data.checkdata && result.data.checkdata !== ''){
+                        $scope.checkdata = result.data.checkdata;
+                        console.log($scope.checkdata);
+                    }
+                }, function errorCallback(result){
+                    if(result.status === 403){
+                        $state.go('403');
+                    }
+                    if(result.status === 404){
+                        $state.go('404');
+                    }
+                });
+            }
+
+        };
+
+        $scope.countObj = function(obj){
+            if(obj !== null && obj !== 'undefined'){
+                return Object.keys(obj).length;
+            }
         };
 
         $scope.$watch('host.id', function(){
@@ -170,6 +238,7 @@ angular.module('openITCOCKPIT')
                 }).then(function(result){
                     if(result.data.host && result.data.host.uuid){
                         $scope.host = result.data.host;
+                        $scope.getLatestCheckDataByHostUuid();
                     }
                 }, function errorCallback(result){
                     if(result.status === 403){
@@ -189,6 +258,13 @@ angular.module('openITCOCKPIT')
         $scope.$watch('agentconfigCustomchecks', function(){
             $scope.updateConfigTemplate();
         }, true);
+
+        //Disable interval if object gets removed from DOM.
+        $scope.$on('$destroy', function(){
+            if($scope.checkdataRequestInterval !== null){
+                $interval.cancel($scope.checkdataRequestInterval);
+            }
+        });
 
         $scope.load();
     });

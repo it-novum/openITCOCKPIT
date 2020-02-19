@@ -24,6 +24,7 @@
 
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
+use App\Model\Table\AgentchecksTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ServicetemplatesTable;
 
@@ -44,13 +45,20 @@ class Agent extends Importer {
     private $ServicetemplatesTable;
 
     /**
+     * @var AgentchecksTable
+     */
+    private $AgentchecksTable;
+
+    /**
      * Agent constructor.
      * @param CommandsTable $CommandsTable
      * @param ServicetemplatesTable $ServicetemplatesTable
+     * @param AgentchecksTable $AgentchecksTable
      */
-    public function __construct(CommandsTable $CommandsTable, ServicetemplatesTable $ServicetemplatesTable) {
+    public function __construct(CommandsTable $CommandsTable, ServicetemplatesTable $ServicetemplatesTable, AgentchecksTable $AgentchecksTable) {
         $this->CommandsTable = $CommandsTable;
         $this->ServicetemplatesTable = $ServicetemplatesTable;
+        $this->AgentchecksTable = $AgentchecksTable;
     }
 
     /**
@@ -84,6 +92,19 @@ class Agent extends Importer {
                 }
         }
 
+        foreach ($data['Agentchecks'] as $agentcheck) {
+            //debug($this->ServicetemplatesTable->getServicetemplateByUuid($agentcheck['servicetemplate_id']));die();
+            $servicetemplate = $this->ServicetemplatesTable->getServicetemplateByUuid($agentcheck['servicetemplate_id']);
+            if (isset($servicetemplate['Servicetemplate']) && isset($servicetemplate['Servicetemplate']['id'])) {
+                $agentcheck['servicetemplate_id'] = $servicetemplate['Servicetemplate']['id'];
+
+                if (!$this->AgentchecksTable->existsByNameAndServicetemplateId($agentcheck['name'], $agentcheck['servicetemplate_id'])) {
+                    $entity = $this->AgentchecksTable->newEntity($agentcheck);
+                    $this->AgentchecksTable->save($entity);
+                }
+            }
+        }
+
         return true;
     }
 
@@ -99,6 +120,107 @@ class Agent extends Importer {
             }
         }
         return false;
+    }
+
+    public function getAgentchecksData() {
+        $data = [
+            [
+                'name'               => 'agent',
+                'plugin_name'        => 'Agent',
+                'servicetemplate_id' => 'c475f1c8-fd28-493d-aad0-7861e418170d'
+            ],
+            [
+                'name'               => 'cpu_percentage',
+                'plugin_name'        => 'CpuTotalPercentage',
+                'servicetemplate_id' => 'be4c9649-8771-4704-b409-c56b5f67abc8'
+            ],
+            [
+                'name'               => 'system_load',
+                'plugin_name'        => 'SystemLoad',
+                'servicetemplate_id' => '566a710f-a554-4fa6-b2a2-e46b1d937a64'
+            ],
+            [
+                'name'               => 'memory',
+                'plugin_name'        => 'MemoryUsage',
+                'servicetemplate_id' => '4052fe4f-50b1-443a-8be1-9dbca8d43ebd'
+            ],
+            [
+                'name'               => 'swap',
+                'plugin_name'        => 'SwapUsage',
+                'servicetemplate_id' => 'f9d5e18a-8894-4324-b54a-497db87b6f4f'
+            ],
+            [
+                'name'               => 'disk_io',
+                'plugin_name'        => 'DiskIO',
+                'servicetemplate_id' => '68fb72a3-5bf5-4d97-8690-91242628659b'
+            ],
+            [
+                'name'               => 'disks',
+                'plugin_name'        => 'DiskUsage',
+                'servicetemplate_id' => '24851d0d-32fa-4048-bd67-6a30d710bba1'
+            ],
+            [
+                'name'               => 'sensors',
+                'plugin_name'        => 'Fan',
+                'servicetemplate_id' => '3e0bd59e-822d-47ed-a5b2-15f1e53fe043'
+            ],
+            [
+                'name'               => 'sensors',
+                'plugin_name'        => 'Temperature',
+                'servicetemplate_id' => 'f73dc076-bdb0-4302-9776-88ca1ba79364'
+            ],
+            [
+                'name'               => 'sensors',
+                'plugin_name'        => 'Battery',
+                'servicetemplate_id' => '21057a75-57a1-4972-8f2f-073c8a6000b0'
+            ],
+            [
+                'name'               => 'net_io',
+                'plugin_name'        => 'NetIO',
+                'servicetemplate_id' => 'e5d848f5-a323-4bfe-9ec5-1c5cdf138abf'
+            ],
+            [
+                'name'               => 'net_stats',
+                'plugin_name'        => 'NetStats',
+                'servicetemplate_id' => 'f6f64207-ef75-4a3d-b9f2-2eaab398a6f1'
+            ],
+            [
+                'name'               => 'processes',
+                'plugin_name'        => 'Process',
+                'servicetemplate_id' => '37a78eca-4a58-46cd-9fb1-6029724cab35'
+            ],
+            [
+                'name'               => 'windows_services',
+                'plugin_name'        => 'WindowsService',
+                'servicetemplate_id' => '370731ed-34d4-48f4-933e-90e488bb390f'
+            ],
+            [
+                'name'               => 'dockerstats',
+                'plugin_name'        => 'DockerContainerRunning',
+                'servicetemplate_id' => 'ca73653f-2bba-4542-b11b-0bbd0ecc8b7a'
+            ],
+            [
+                'name'               => 'dockerstats',
+                'plugin_name'        => 'DockerContainerCPU',
+                'servicetemplate_id' => 'a9f7757e-34b0-4df9-8fca-ab8b594c2c26'
+            ],
+            [
+                'name'               => 'dockerstats',
+                'plugin_name'        => 'DockerContainerMemory',
+                'servicetemplate_id' => 'aef4c1a8-ed71-4799-a164-3ad469baadc5'
+            ],
+            [
+                'name'               => 'qemustats',
+                'plugin_name'        => 'QemuVMRunning',
+                'servicetemplate_id' => 'c1c8c77a-cecf-4a94-8418-a69081946ba0'
+            ],
+            [
+                'name'               => 'customchecks',
+                'plugin_name'        => 'Customcheck',
+                'servicetemplate_id' => '03b32b83-df7b-4204-a8bb-138a4939c554'
+            ],
+        ];
+        return $data;
     }
 
     public function getCommandsData() {
@@ -410,11 +532,11 @@ class Agent extends Importer {
                 'human_args'       => null,
                 'uuid'             => '629050dd-1359-4c8d-9f13-fc49fdab84dc',
                 'description'      => "Checks if a custom process or many matching process(es) exceeds the given values for cpu, memory or amount.\n" .
-                    "CPU: Warning and critical percentage values (0-100) of cpu usage for the matching process(es)\n" .
-                    "Memory: Warning and critical percentage values (0-100) of memory usage for the matching process(es)\n" .
-                    "Amount: Warning and critical values (e.g. 5 or 10) as amount of matching processes\n" .
-                    "Match: String that must match with the process command line (use process 'cmdline' > 'exec' > 'name')\n" .
-                    "Strict: Decides if the match must be completely or just in a part (1/0)\n",
+                    "CPU: Warning and critical percentage values (0-100) of cpu usage for the matching process(es).\n" .
+                    "Memory: Warning and critical percentage values (0-100) of memory usage for the matching process(es).\n" .
+                    "Amount: Warning and critical values (e.g. 5 or 10) as amount of matching processes.\n" .
+                    "Match: String that must match with the process command line (use process 'cmdline' > 'exec' > 'name'). Leave empty to select all.\n" .
+                    "Strict: Decides if the match must be completely or just in a part (1/0).\n",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
@@ -446,6 +568,36 @@ class Agent extends Importer {
                     ],
                     [
                         'name'       => '$ARG8$',
+                        'human_name' => 'Strict'
+                    ]
+                ]
+            ],
+
+            [
+                'name'             => 'check_oitc_agent_windows_service_running',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '06bf6bc1-f228-4adc-ac14-5fe902349768',
+                'description'      => "Returns the amount of running windows services.\n" .
+                    "Amount: Warning and critical values (e.g. 5 or 10) as amount of matching services.\n" .
+                    "Match: String that must match with the service binpath (use service 'binpath' > 'display_name' > 'name'). Leave empty to select all.\n" .
+                    "Strict: Decides if the match must be completely or just in a part (1/0).\n",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Amount warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Amount critical'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Match'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
                         'human_name' => 'Strict'
                     ]
                 ]
@@ -1271,7 +1423,7 @@ class Agent extends Importer {
                 'check_period_id'                           => '1',
                 'notify_period_id'                          => '1',
                 'description'                               => '',
-                'command_id'                                => '02289d0e-0a3c-46e5-94f1-b18e57be4e7',
+                'command_id'                                => '02289d0e-0a3c-46e5-94f1-b18e57be4e70',
                 'check_command_args'                        => '',
                 'checkcommand_info'                         => '',
                 'eventhandler_command_id'                   => '0',
@@ -1577,6 +1729,86 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG8$',
+                        'value'              => '0',
+                    ],
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+            [
+                'uuid'                                      => '370731ed-34d4-48f4-933e-90e488bb390f',
+                'template_name'                             => 'OITC_AGENT_WINDOWS_SERVICES',
+                'name'                                      => 'Check windows service running',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '06bf6bc1-f228-4adc-ac14-5fe902349768',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '1:1',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG4$',
                         'value'              => '0',
                     ],
                 ],
@@ -1991,7 +2223,8 @@ class Agent extends Importer {
     public function getData() {
         return [
             'Commands'         => $this->getCommandsData(),
-            'Servicetemplates' => $this->getServicetemplatesData()
+            'Servicetemplates' => $this->getServicetemplatesData(),
+            'Agentchecks'      => $this->getAgentchecksData()
         ];
     }
 }

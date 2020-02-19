@@ -57,6 +57,23 @@
     </div>
 </div>
 
+<div class="row margin-bottom-25" ng-if="!pullMode && !pushMode && host.id && checkdata">
+
+    <div class="col-xs-12 col-md-6 col-md-offset-3">
+        <p class="display-inline">
+            <?= __('We found agent check results of this host. It seems the agent is already configured.'); ?>
+        </p>
+        <button
+            type="button" style="min-height: 35px;"
+            class="btn btn-labeled btn-primary pull-right"
+            ng-click="skipConfigurationGeneration()">
+
+            <?= __('Skip configuration generation'); ?>
+        </button>
+    </div>
+
+</div>
+
 <div class="row" ng-if="!pullMode && !pushMode && host.id">
 
     <div class="col-xs-12 col-md-6 col-lg-4 col-lg-offset-1">
@@ -611,7 +628,8 @@
             <div class="row" style="border-bottom: none;">
                 <p>
                     <?= __('Download the agent installer for your system from our official openITCOCKPIT Website'); ?>:&nbsp;
-                    <a href="https://openitcockpit.io/download/#download" target="_blank"><?= __('Download here'); ?></a>
+                    <a href="https://openitcockpit.io/download/#download"
+                       target="_blank"><?= __('Download here'); ?></a>
                     <br><br>
                     <?= __('After the installation you have to update the default configuration files with the recently generated configuration'); ?>
                     <br>
@@ -731,20 +749,390 @@
             <span class="widget-icon">
                 <i class="fa fa-magic"></i>
             </span>
-            <h2><?php echo __('wait to fetch information ...'); ?></h2>
+            <h2 ng-hide="checkdata"><?php echo __('Wait get check results from the configured agent ...'); ?></h2>
+            <h2 ng-show="checkdata"><?php echo __('Please choose the options you want to monitor'); ?></h2>
         </header>
-        <div class="row">
-            <div class="col-xs-12 padding-right-0">
-                <button
-                    type="button" style="min-height: 35px;"
-                    class="btn btn-labeled btn-default pull-right margin-bottom-10"
-                    ng-click="resetAgentConfiguration()">
 
-                    <?= __('Reset'); ?>
-                </button>
+
+        <div class="row" style="border-bottom: none;">
+            <div class="col-xs-12">
+                <p ng-hide="checkdata">
+                    <?= __('Be patient, a background job is asking the openITCOCKPIT Server (every 5 seconds) for agent check results.'); ?>
+                    <br>
+                    <?= __('Please make sure the agent is running and right configured.'); ?>
+                </p>
+
+                <div class="row" ng-show="checkdata">
+                    <h4><?= __('Got results, please choose the options you want to monitor:'); ?></h4>
+                    <br>
+
+                    <div class="jarviswidget">
+                        <div class="widget-body">
+
+                            <div class="row margin-bottom-5" ng-show="checkdata.cpu_percentage">
+                                <div class="form-group">
+                                    <label class="col col-md-2 control-label"
+                                           for="choosenServicesToMonitor.cpu_percentage">
+                                        <?php echo __('CPU percentage'); ?>
+                                    </label>
+
+                                    <div class="col-xs-12 col-md-9 smart-form">
+                                        <label class="checkbox small-checkbox-label no-required">
+                                            <input type="checkbox" name="checkbox"
+                                                   id="choosenServicesToMonitor.cpu_percentage"
+                                                   ng-model="choosenServicesToMonitor.cpu_percentage">
+                                            <i class="checkbox-primary"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.system_load">
+                                <div class="form-">
+                                    <label class="col col-md-2 control-label"
+                                           for="choosenServicesToMonitor.system_load">
+                                        <?php echo __('System load'); ?>
+                                    </label>
+
+                                    <div class="col-xs-12 col-md-9 smart-form">
+                                        <label class="checkbox small-checkbox-label no-required">
+                                            <input type="checkbox" name="checkbox"
+                                                   id="choosenServicesToMonitor.system_load"
+                                                   ng-model="choosenServicesToMonitor.system_load">
+                                            <i class="checkbox-primary"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.memory">
+                                <div class="form-group">
+                                    <label class="col col-md-2 control-label" for="choosenServicesToMonitor.memory">
+                                        <?php echo __('Memory usage'); ?>
+                                    </label>
+
+                                    <div class="col-xs-12 col-md-9 smart-form">
+                                        <label class="checkbox small-checkbox-label no-required">
+                                            <input type="checkbox" name="checkbox"
+                                                   id="choosenServicesToMonitor.memory"
+                                                   ng-model="choosenServicesToMonitor.memory">
+                                            <i class="checkbox-primary"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.swap">
+                                <div class="form-group">
+                                    <label class="col col-md-2 control-label" for="choosenServicesToMonitor.swap">
+                                        <?php echo __('Swap usage'); ?>
+                                    </label>
+
+                                    <div class="col-xs-12 col-md-9 smart-form">
+                                        <label class="checkbox small-checkbox-label no-required">
+                                            <input type="checkbox" name="checkbox"
+                                                   id="choosenServicesToMonitor.swap"
+                                                   ng-model="choosenServicesToMonitor.swap">
+                                            <i class="checkbox-primary"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.disk_io">
+                                <div class="form-group">
+                                    <label class="col-xs-12 col-lg-2 control-label"
+                                           for="choosenServicesToMonitor.disk_io">
+                                        <?php echo __('Disk IO'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-6">
+                                        <select
+                                            id="choosenServicesToMonitor.disk_io"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="checkdata.disk_io"
+                                            multiple
+                                            ng-options="key as key for (key, value) in checkdata.disk_io"
+                                            ng-model="choosenServicesToMonitor.disk_io">
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1">({{countObj(checkdata.disk_io)}})</div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.disks">
+                                <div class="form-group">
+                                    <label class="col-xs-12 col-lg-2 control-label"
+                                           for="choosenServicesToMonitor.disks">
+                                        <?php echo __('Disk usage'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-6">
+                                        <select
+                                            id="choosenServicesToMonitor.disks"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="checkdata.disks"
+                                            multiple
+                                            ng-options="disk.disk.mountpoint as disk.disk.mountpoint for disk in checkdata.disks"
+                                            ng-model="choosenServicesToMonitor.disks">
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1">({{countObj(checkdata.disks)}})</div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.sensors.fans">
+                                <div class="form-group">
+                                    <label class="col-xs-12 col-lg-2 control-label" for="choosenServicesToMonitor.fans">
+                                        <?php echo __('Fans'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-6">
+                                        <select
+                                            id="choosenServicesToMonitor.fans"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="checkdata.sensors.fans"
+                                            multiple
+                                            ng-options="key as key for (key, value) in checkdata.sensors.fans"
+                                            ng-model="choosenServicesToMonitor.fans">
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1">({{countObj(checkdata.sensors.fans)}})</div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.sensors.temperatures">
+                                <div class="form-group">
+                                    <label class="col-xs-12 col-lg-2 control-label"
+                                           for="choosenServicesToMonitor.temperatures">
+                                        <?php echo __('Temperatures'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-6">
+                                        <select
+                                            id="choosenServicesToMonitor.temperatures"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="checkdata.sensors.temperatures"
+                                            multiple
+                                            ng-options="key as key for (key, value) in checkdata.sensors.temperatures"
+                                            ng-model="choosenServicesToMonitor.temperatures">
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1">({{countObj(checkdata.sensors.temperatures)}})</div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.sensors.battery">
+                                <div class="form-group">
+                                    <label class="col col-md-2 control-label" for="choosenServicesToMonitor.battery">
+                                        <?php echo __('Battery'); ?>
+                                    </label>
+
+                                    <div class="col-xs-12 col-md-9 smart-form">
+                                        <label class="checkbox small-checkbox-label no-required">
+                                            <input type="checkbox" name="checkbox"
+                                                   id="choosenServicesToMonitor.battery"
+                                                   ng-model="choosenServicesToMonitor.battery">
+                                            <i class="checkbox-primary"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.net_io">
+                                <div class="form-group">
+                                    <label class="col-xs-12 col-lg-2 control-label"
+                                           for="choosenServicesToMonitor.net_io">
+                                        <?php echo __('Network device IO'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-6">
+                                        <select
+                                            id="choosenServicesToMonitor.net_io"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="checkdata.net_io"
+                                            multiple
+                                            ng-options="key as key for (key, value) in checkdata.net_io"
+                                            ng-model="choosenServicesToMonitor.net_io">
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1">({{countObj(checkdata.net_io)}})</div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.net_stats">
+                                <div class="form-group">
+                                    <label class="col-xs-12 col-lg-2 control-label"
+                                           for="choosenServicesToMonitor.net_stats">
+                                        <?php echo __('Network device stats'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-6">
+                                        <select
+                                            id="choosenServicesToMonitor.net_stats"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="checkdata.net_stats"
+                                            multiple
+                                            ng-options="key as key for (key, value) in checkdata.net_stats"
+                                            ng-model="choosenServicesToMonitor.net_stats">
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1">({{countObj(checkdata.net_stats)}})</div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.processes">
+                                <div class="form-group">
+                                    <label class="col-xs-12 col-lg-2 control-label"
+                                           for="choosenServicesToMonitor.processes">
+                                        <?php echo __('Processes'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-6">
+                                        <select
+                                            id="choosenServicesToMonitor.processes"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="checkdata.processes"
+                                            multiple
+                                            ng-options="key as (value.cmdline != '' ? value.cmdline : (value.exec != '' ? value.exec : value.name)) for (key, value) in checkdata.processes"
+                                            ng-model="choosenServicesToMonitor.processes">
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1">({{countObj(checkdata.processes)}})</div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.windows_services">
+                                <div class="form-group">
+                                    <label class="col-xs-12 col-lg-2 control-label"
+                                           for="choosenServicesToMonitor.windows_services">
+                                        <?php echo __('Windows services'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-6">
+                                        <select
+                                            id="choosenServicesToMonitor.windows_services"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="checkdata.windows_services"
+                                            multiple
+                                            ng-options="key as (value.binpath != '' ? value.binpath : (value.display_name != '' ? value.display_name : value.name)) for (key, value) in checkdata.windows_services"
+                                            ng-model="choosenServicesToMonitor.windows_services">
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1">({{countObj(checkdata.windows_services)}})</div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.dockerstats.result">
+                                <div class="form-group">
+                                    <label class="col-xs-12 col-lg-2 control-label"
+                                           for="choosenServicesToMonitor.docker_running">
+                                        <?php echo __('Docker container running'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-6">
+                                        <select
+                                            id="choosenServicesToMonitor.docker_running"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="checkdata.dockerstats.result"
+                                            multiple
+                                            ng-options="value.id as (value.id + ' (' + value.name + ')') for (key, value) in checkdata.dockerstats.result"
+                                            ng-model="choosenServicesToMonitor.docker_running">
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1">({{countObj(checkdata.dockerstats.result)}})</div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.dockerstats.result">
+                                <div class="form-group">
+                                    <label class="col-xs-12 col-lg-2 control-label"
+                                           for="choosenServicesToMonitor.docker_cpu">
+                                        <?php echo __('Docker container cpu usage'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-6">
+                                        <select
+                                            id="choosenServicesToMonitor.docker_cpu"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="checkdata.dockerstats.result"
+                                            multiple
+                                            ng-options="value.id as (value.id + ' (' + value.name + ')') for (key, value) in checkdata.dockerstats.result"
+                                            ng-model="choosenServicesToMonitor.docker_cpu">
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1">({{countObj(checkdata.dockerstats.result)}})</div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.dockerstats.result">
+                                <div class="form-group">
+                                    <label class="col-xs-12 col-lg-2 control-label"
+                                           for="choosenServicesToMonitor.docker_memory">
+                                        <?php echo __('Docker container memory usage'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-6">
+                                        <select
+                                            id="choosenServicesToMonitor.docker_memory"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="checkdata.dockerstats.result"
+                                            multiple
+                                            ng-options="value.id as (value.id + ' (' + value.name + ')') for (key, value) in checkdata.dockerstats.result"
+                                            ng-model="choosenServicesToMonitor.docker_memory">
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1">({{countObj(checkdata.dockerstats.result)}})</div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.qemustats.result">
+                                <div class="form-group">
+                                    <label class="col-xs-12 col-lg-2 control-label"
+                                           for="choosenServicesToMonitor.qemu_running">
+                                        <?php echo __('QEMU vm running'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-6">
+                                        <select
+                                            id="choosenServicesToMonitor.qemu_running"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="checkdata.qemustats.result"
+                                            multiple
+                                            ng-options="value.id as (value.id + ' (' + value.name + ')') for (key, value) in checkdata.qemustats.result"
+                                            ng-model="choosenServicesToMonitor.qemu_running">
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1">({{countObj(checkdata.qemustats.result)}})</div>
+                                </div>
+                            </div>
+                            <div class="row margin-bottom-5" ng-show="checkdata.customchecks">
+                                <div class="form-group">
+                                    <label class="col-xs-12 col-lg-2 control-label"
+                                           for="choosenServicesToMonitor.customchecks">
+                                        <?php echo __('Customchecks'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-6">
+                                        <select
+                                            id="choosenServicesToMonitor.customchecks"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="checkdata.customchecks"
+                                            multiple
+                                            ng-options="key as key for (key, value) in checkdata.customchecks"
+                                            ng-model="choosenServicesToMonitor.customchecks">
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1">({{countObj(checkdata.customchecks)}})</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
         </div>
     </div>
+
+
+    <div class="row">
+        <div class="col-xs-12 padding-right-0">
+            <button
+                type="button" style="min-height: 35px;"
+                class="btn btn-labeled btn-default pull-right margin-bottom-10"
+                ng-click="resetAgentConfiguration()">
+
+                <?= __('Reset'); ?>
+            </button>
+        </div>
+    </div>
+</div>
 </div>
 
 <?php echo $this->element('apikey_help'); ?>

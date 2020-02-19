@@ -32,7 +32,6 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Agent\AgentCertificateData;
 use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\AgentconnectorAgentsFilter;
 
@@ -247,14 +246,23 @@ class AgentconnectorController extends AppController {
             throw new MissingParameterExceptions('Host uuid is missing!');
         }
 
+        $this->set('checkdata', '');
         if (is_readable($this->hostsCacheFolder . $uuid)) {
             $fileContents = trim(file_get_contents($this->hostsCacheFolder . $uuid));
+
             if ($fileContents !== '') {
-                $this->set('fileContents', json_decode($fileContents, true));
-                $this->viewBuilder()->setOption('serialize', ['fileContents']);
+                $contentArray = json_decode($fileContents, true);
+                if($contentArray['processes']){
+                    foreach($contentArray['processes'] as $key => $val){
+                        if (!empty($contentArray['processes'][$key]['cmdline'])) {
+                            $contentArray['processes'][$key]['cmdline'] = implode(' ', $contentArray['processes'][$key]['cmdline']);
+                        }
+                    }
+                }
+
+                $this->set('checkdata', $contentArray);
             }
-        } else {
-            echo "nr: " . $this->hostsCacheFolder . $uuid;
         }
+        $this->viewBuilder()->setOption('serialize', ['checkdata']);
     }
 }
