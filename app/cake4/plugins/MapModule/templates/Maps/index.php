@@ -120,7 +120,7 @@
                             <thead>
                             <tr>
                                 <th class="no-sort sorting_disabled width-15">
-                                    <i class="fa fa-check-square fa-lg"></i>
+                                    <i class="fa fa-check-square"></i>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('Maps.name')">
                                     <i class="fa" ng-class="getSortClass('Maps.name')"></i>

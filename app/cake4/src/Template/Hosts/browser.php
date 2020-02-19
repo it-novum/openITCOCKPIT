@@ -1060,7 +1060,7 @@ use Cake\Core\Plugin;
                             </th>
 
                             <th class="no-sort text-center width-50">
-                                <i class="fa fa-gear fa-lg"></i>
+                                <i class="fa fa-gear"></i>
                             </th>
                         </tr>
                         <tr>
@@ -1175,7 +1175,7 @@ use Cake\Core\Plugin;
                             </td>
 
                             <td class="text-center">
-                                <i class="fa fa-lg fa-power-off"
+                                <i class="fa fa-power-off"
                                    ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                             </td>
 
@@ -1183,14 +1183,14 @@ use Cake\Core\Plugin;
                                 <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                     <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                        class="txt-color-blueDark">
-                                        <i class="fa fa-lg fa-area-chart"
+                                        <i class="fa fa-area-chart"
                                            ng-mouseenter="mouseenter($event, mergedHost.uuid, service)"
                                            ng-mouseleave="mouseleave()"
                                            ng-if="service.Service.has_graph">
                                         </i>
                                     </a>
                                 <?php else: ?>
-                                    <i class="fa fa-lg fa-area-chart"
+                                    <i class="fa fa-area-chart"
                                        ng-mouseenter="mouseenter($event, mergedHost.uuid, service)"
                                        ng-mouseleave="mouseleave()"
                                        ng-if="service.Service.has_graph">
@@ -1305,7 +1305,7 @@ use Cake\Core\Plugin;
                                 </th>
 
                                 <th class="no-sort text-center width-50">
-                                    <i class="fa fa-gear fa-lg"></i>
+                                    <i class="fa fa-gear"></i>
                                 </th>
                             </tr>
                             </thead>
@@ -1400,7 +1400,7 @@ use Cake\Core\Plugin;
                                 </th>
 
                                 <th class="no-sort text-center width-50">
-                                    <i class="fa fa-gear fa-lg"></i>
+                                    <i class="fa fa-gear"></i>
                                 </th>
                             </tr>
                             </thead>

@@ -107,23 +107,23 @@
                                     {{macro.description}}
                                 </td>
                                 <td>
-                                    <button class="btn btn-default txt-color-red btn-sm"
+                                    <button class="btn btn-default txt-color-red btn-icon btn-sm"
                                             title="<?php echo __('Hide value'); ?>"
                                             ng-click="macro.password = 1"
                                             ng-hide="macro.password">
-                                        <i class="fa fa-eye-slash fa-lg"></i>
+                                        <i class="fa fa-eye-slash"></i>
                                     </button>
 
-                                    <button class="btn btn-default txt-color-blue btn-sm"
+                                    <button class="btn btn-default txt-color-blue btn-icon btn-sm"
                                             title="<?php echo __('Show value'); ?>"
                                             ng-click="macro.password = 0"
                                             ng-show="macro.password">
-                                        <i class="fa fa-eye fa-lg"></i>
+                                        <i class="fa fa-eye"></i>
                                     </button>
 
-                                    <button class="btn btn-default btn-sm" ng-click="triggerEditModal(macro);"
+                                    <button class="btn btn-default btn-icon btn-sm" ng-click="triggerEditModal(macro);"
                                             title="<?php echo __('Edit macro'); ?>">
-                                        <i class="fa fa-cog fa-lg"></i>
+                                        <i class="fa fa-cog"></i>
                                     </button>
                                 </td>
                             </tr>

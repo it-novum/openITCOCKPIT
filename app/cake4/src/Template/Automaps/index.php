@@ -110,11 +110,11 @@
                     <!-- END FILTER -->
 
                     <div class="frame-wrap">
-                        <table id="automaps_list" class="table table-striped m-0 table-bordered table-hover">
+                        <table id="automaps_list" class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
                                 <th class="no-sort width-5">
-                                    <i class="fa fa-check-square fa-lg"></i>
+                                    <i class="fa fa-check-square"></i>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('Automaps.name')">
                                     <i class="fa" ng-class="getSortClass('Automaps.name')"></i>
@@ -139,7 +139,7 @@
                                     <?php echo __('Recursive container'); ?>
                                 </th>
                                 <th class="no-sort text-center">
-                                    <i class="fa fa-cog fa-lg"></i>
+                                    <i class="fa fa-cog"></i>
                                 </th>
                             </tr>
                             </thead>

@@ -69,7 +69,7 @@
                         <tbody>
                         <tr>
                             <th class="no-sort sorting_disabled width-15">
-                                <i class="fa fa-check-square fa-lg"></i>
+                                    <i class="fa fa-check-square"></i>
                             </th>
                             <th>
                                 <?php echo __('Host name'); ?>

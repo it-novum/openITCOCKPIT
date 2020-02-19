@@ -129,7 +129,7 @@
                         </div>
                     </div>
                     <!-- End Filter -->
-                    <table id="service_list" class="table table-striped m-0 table-bordered table-hover">
+                    <table id="service_list" class="table table-striped m-0 table-bordered table-hover table-sm">
                         <thead>
                         <tr>
                             <th colspan="2" class="no-sort">
@@ -143,7 +143,7 @@
 
 
                             <th class="no-sort text-center editItemWidth width-50">
-                                <i class="fa fa-gear fa-lg"></i>
+                                <i class="fa fa-gear"></i>
                             </th>
                         </tr>
                         </thead>

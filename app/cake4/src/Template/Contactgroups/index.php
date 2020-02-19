@@ -131,7 +131,7 @@
                                     <?php echo __('Number of contacts'); ?>
                                 </th>
                                 <th class="no-sort text-center">
-                                    <i class="fa fa-cog fa-lg"></i>
+                                    <i class="fa fa-cog"></i>
                                 </th>
                             </tr>
                             </thead>

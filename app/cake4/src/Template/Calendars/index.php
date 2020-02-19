@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="CalendarsIndex">
-            <i class="fa fa-user"></i> <?php echo __('Calendars'); ?>
+            <i class="fa fa-calendar"></i> <?php echo __('Calendars'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -112,7 +112,7 @@
                             <thead>
                             <tr>
                                 <th class="no-sort sorting_disabled width-15">
-                                    <i class="fa fa-check-square fa-lg"></i>
+                                    <i class="fa fa-check-square"></i>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('Calendars.name')">
                                     <i class="fa" ng-class="getSortClass('Calendars.name')"></i>
@@ -123,7 +123,7 @@
                                     <?php echo __('Description'); ?>
                                 </th>
                                 <th class="no-sort text-center">
-                                    <i class="fa fa-cog fa-lg"></i>
+                                    <i class="fa fa-cog"></i>
                                 </th>
                             </tr>
                             </thead>
@@ -163,7 +163,7 @@
                                                 data-toggle="dropdown">
                                             <i class="caret"></i>
                                         </button>
-                                        <div class="dropdown-menu">
+                                        <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('edit', 'calendars')): ?>
                                                 <a ui-sref="CalendarsEdit({id: calendar.id})"
                                                    ng-if="calendar.allowEdit"

@@ -117,7 +117,7 @@
                                         <?php echo __('Service template name'); ?>
                                     </th>
                                     <th class="no-sort text-center">
-                                        <i class="fa fa-cog fa-lg"></i>
+                                    <i class="fa fa-cog"></i>
                                     </th>
                                 </tr>
                                 </thead>

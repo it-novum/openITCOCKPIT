@@ -120,7 +120,7 @@
                             <thead>
                             <tr>
                                 <th class="no-sort sorting_disabled width-15">
-                                    <i class="fa fa-check-square fa-lg"></i>
+                                    <i class="fa fa-check-square"></i>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('Rotations.name')">
                                     <i class="fa" ng-class="getSortClass('Rotations.name')"></i>
@@ -131,7 +131,7 @@
                                     <?php echo __('Rotation interval'); ?>
                                 </th>
                                 <th class="no-sort text-center" style="width:60px;">
-                                    <i class="fa fa-gear fa-lg"></i>
+                                    <i class="fa fa-gear"></i>
                                 </th>
                             </tr>
                             </thead>
@@ -232,7 +232,7 @@
                             </div>
                             <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
+                                    <i class="fas fa-lg fa-trash"></i>
                                     <?php echo __('Delete all'); ?>
                                 </span>
                             </div>

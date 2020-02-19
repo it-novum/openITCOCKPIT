@@ -205,7 +205,7 @@
                                     <i class="fa" ng-class="getSortClass('Hosts.satellite_id')"></i>
                                     <?php echo __('Instance'); ?>
                                 </th>
-                                <th class="no-sort text-center editItemWidth"><i class="fa fa-gear fa-lg"></i></th>
+                                <th class="no-sort text-center editItemWidth"><i class="fa fa-gear"></i></th>
                             </tr>
                             </thead>
                             <tbody>

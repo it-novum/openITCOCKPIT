@@ -242,7 +242,7 @@
                                     <?php echo __('Send to'); ?>
                                 </th>
                                 <th class="no-sort text-center width-70">
-                                    <i class="fa fa-cog fa-lg"></i>
+                                    <i class="fa fa-cog"></i>
                                 </th>
                             </tr>
                             </thead>
@@ -397,13 +397,13 @@
                             </div>
                             <div class="col-xs-12 col-md-2">
                                 <span ng-click="selectAll()" class="pointer">
-                                    <i class="fas fa-lg fa-check-square"></i>
+                                    <i class="fas fa-check-square"></i>
                                     <?php echo __('Select all'); ?>
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
                                 <span ng-click="undoSelection()" class="pointer">
-                                    <i class="fas fa-lg fa-square"></i>
+                                    <i class="fas fa-square"></i>
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>

@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="CalendarsIndex">
-            <i class="fa fa-user"></i> <?php echo __('Calendars'); ?>
+            <i class="fa fa-calendar"></i> <?php echo __('Calendars'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">

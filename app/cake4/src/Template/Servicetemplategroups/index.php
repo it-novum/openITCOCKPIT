@@ -117,7 +117,7 @@
                             <thead>
                             <tr>
                                 <th class="no-sort sorting_disabled width-15">
-                                    <i class="fa fa-check-square fa-lg"></i>
+                                    <i class="fa fa-check-square"></i>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('Containers.name')">
                                     <i class="fa" ng-class="getSortClass('Containers.name')"></i>
@@ -128,7 +128,7 @@
                                     <?php echo __('Description'); ?>
                                 </th>
                                 <th class="no-sort text-center">
-                                    <i class="fa fa-cog fa-lg"></i>
+                                    <i class="fa fa-cog"></i>
                                 </th>
                             </tr>
                             </thead>

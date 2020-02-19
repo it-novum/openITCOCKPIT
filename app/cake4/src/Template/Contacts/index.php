@@ -130,7 +130,7 @@
                             <thead>
                             <tr>
                                 <th class="no-sort width-5">
-                                    <i class="fas fa-check-square fa-lg"></i>
+                                    <i class="fas fa-check-square"></i>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('Contacts.name')">
                                     <i class="fa" ng-class="getSortClass('Contacts.name')"></i>
@@ -155,7 +155,7 @@
                                     <?php echo __('Service notifications'); ?>
                                 </th>
                                 <th class="no-sort text-center">
-                                    <i class="fas fa-cog fa-lg"></i>
+                                    <i class="fas fa-cog"></i>
                                 </th>
                             </tr>
                             </thead>

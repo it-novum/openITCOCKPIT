@@ -411,20 +411,20 @@
                                 </th>
 
                                 <th class="no-sort text-center">
-                                    <i class="fa fa-user fa-lg" title="<?php echo __('is acknowledged'); ?>"></i>
+                                    <i class="fa fa-user" title="<?php echo __('is acknowledged'); ?>"></i>
                                 </th>
 
                                 <th class="no-sort text-center">
-                                    <i class="fa fa-power-off fa-lg"
+                                    <i class="fa fa-power-off"
                                        title="<?php echo __('is in downtime'); ?>"></i>
                                 </th>
 
                                 <th class="no-sort text-center">
-                                    <i class="fa fa fa-area-chart fa-lg" title="<?php echo __('Grapher'); ?>"></i>
+                                    <i class="fa fa fa-area-chart" title="<?php echo __('Grapher'); ?>"></i>
                                 </th>
 
                                 <th class="no-sort text-center">
-                                    <i title="<?php echo __('Shared'); ?>" class="fa fa-sitemap fa-lg"></i>
+                                    <i title="<?php echo __('Shared'); ?>" class="fa fa-sitemap"></i>
                                 </th>
 
                                 <th class="no-sort text-center">
@@ -462,7 +462,7 @@
                                     <?php echo __('Instance'); ?>
                                 </th>
 
-                                <th class="no-sort text-center editItemWidth"><i class="fa fa-gear fa-lg"></i></th>
+                                <th class="no-sort text-center editItemWidth"><i class="fa fa-gear"></i></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -478,18 +478,18 @@
                                 </td>
 
                                 <td class="text-center">
-                                    <i class="fa fa-lg fa-user"
+                                    <i class="far fa-user"
                                        ng-show="host.Hoststatus.problemHasBeenAcknowledged"
                                        ng-if="host.Hoststatus.acknowledgement_type == 1"></i>
 
-                                    <i class="fa fa-lg fa-user-o"
+                                    <i class="fas fa-user"
                                        ng-show="host.Hoststatus.problemHasBeenAcknowledged"
                                        ng-if="host.Hoststatus.acknowledgement_type == 2"
                                        title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
                                 </td>
 
                                 <td class="text-center">
-                                    <i class="fa fa-lg fa-power-off"
+                                    <i class="fa fa-power-off"
                                        ng-show="host.Hoststatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
 
@@ -498,10 +498,10 @@
                                         <a ui-sref="ServicesServiceList({id: host.Host.id})"
                                            class="txt-color-blueDark"
                                            ng-if="host.Host.has_graphs">
-                                            <i class="fa fa-lg fa-area-chart"></i>
+                                            <i class="fa fa-area-chart"></i>
                                         </a>
                                     <?php else: ?>
-                                        <i class="fa fa-lg fa-area-chart txt-color-blueDark"
+                                        <i class="fa fa-area-chart txt-color-blueDark"
                                            ng-if="host.Host.has_graphs">
                                         </i>
                                     <?php endif; ?>
@@ -512,9 +512,9 @@
                                     <a class="txt-color-blueDark" title="<?php echo __('Shared'); ?>"
                                        ng-if="host.Host.allow_sharing === true && host.Host.containerIds.length > 1"
                                        ui-sref="HostsSharing({id:host.Host.id})">
-                                        <i class="fa fa-sitemap fa-lg "></i></a>
+                                        <i class="fa fa-sitemap"></i></a>
 
-                                    <i class="fa fa-low-vision fa-lg txt-color-blueLight"
+                                    <i class="fa fa-low-vision txt-color-blueLight"
                                        ng-if="host.Host.allow_sharing === false && host.Host.containerIds.length > 1"
                                        title="<?php echo __('Restricted view'); ?>"></i>
                                 </td>
@@ -648,19 +648,19 @@
                             </div>
                             <div class="col-xs-12 col-md-2">
                                 <span ng-click="selectAll()" class="pointer">
-                                    <i class="fas fa-lg fa-check-square"></i>
+                                    <i class="fas fa-check-square"></i>
                                     <?php echo __('Select all'); ?>
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
                                 <span ng-click="undoSelection()" class="pointer">
-                                    <i class="fas fa-lg fa-square"></i>
+                                    <i class="fas fa-square"></i>
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
                                 <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
-                                    <i class="fas fa-lg fa-files-o"></i>
+                                    <i class="fas fa-files-o"></i>
                                     <?php echo __('Copy'); ?>
                                 </a>
                             </div>
