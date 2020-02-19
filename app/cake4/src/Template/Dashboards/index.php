@@ -124,14 +124,14 @@
                         <div class="dropdown-menu" x-placement="bottom-start"
                              style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
                             <a href="javascript:void(0);" ng-repeat="availableWidget in availableWidgets"
-                               ng-click="addWidgetToTab(availableWidget.type_id)" class="dropdown-item">
+                               ng-click="addWidgetToTab(availableWidget.type_id)" class="dropdown-item dropdown-item-xs">
                                 <i class="{{availableWidget.icon}}"></i>&nbsp;
                                 {{availableWidget.title}}
                             </a>
 
                             <a href="javascript:void(0);"
                                ng-click="restoreDefault()"
-                               class="dropdown-item">
+                               class="dropdown-item dropdown-item-xs">
                                 <i class="fa fa-recycle"></i>
                                 <?php echo __('Restore default'); ?>
                             </a>
