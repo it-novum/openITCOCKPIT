@@ -294,6 +294,10 @@ td.fc-other-month {
     background-size: 16px 16px
 }
 
+.fc-content {
+    color: #fff;
+}
+
 /* highlight within textarea */
 .hwt-container {
     width: 100%;
@@ -702,3 +706,5 @@ pre {
 .downtime-report-service-widget {
     border-radius: 12px 2px 2px 58px;
 }
+
+
