@@ -2199,56 +2199,57 @@ class HostsController extends AppController {
     }
 
     /**
-     * @deprecated
+     * @param int|null $id
      */
     public function loadHostById($id = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->Host->exists($id)) {
-            throw new NotFoundException(__('Invalid host'));
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var HosttemplatesTable $HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+        if (!$HostsTable->existsById($id)) {
+            throw new NotFoundException(__('Host not found'));
         }
 
-        $host = $this->Host->find('first', [
-            'conditions' => [
-                'Host.id' => $id,
-            ],
-            'contain'    => [
-                'Container',
-                'Hosttemplate'
-            ],
-        ]);
+        //Load required data to merge and display inheritance data
+        $host = $HostsTable->getHostForBrowser($id);
 
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-            $this->render403();
-            return;
-        }
+        //Check permissions
+        $containerIdsToCheck = Hash::extract($host, 'hosts_to_containers_sharing.{n},id');
+        $containerIdsToCheck[] = $host['container_id'];
 
-        foreach ($host['Host'] as $key => $value) {
-            if ($host['Host'][$key] === '' || $host['Host'][$key] === null) {
-                if (isset($host['Hosttemplate'][$key])) {
-                    $host['Host'][$key] = $host['Hosttemplate'][$key];
-                }
+        //Check if user is permitted to see this object
+        if (!$this->hasRootPrivileges) {
+            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+                $this->render403();
+                return;
             }
         }
 
-        $host['Host']['is_satellite_host'] = (int)$host['Host']['satellite_id'] !== 0;
-        $host['Host']['allow_edit'] = false;
-        if ($this->hasRootPrivileges === true) {
-            $host['Host']['allow_edit'] = true;
-        } else {
-            if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIdsToCheck);
-                $host['Host']['allow_edit'] = $ContainerPermissions->hasPermission();
-            }
+        $allowEdit = $this->hasRootPrivileges;
+        if ($this->hasRootPrivileges === false) {
+            $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIdsToCheck);
+            $allowEdit = $ContainerPermissions->hasPermission();
         }
+        $hostObj = new Host($host, $allowEdit);
+
+        //Merge host and inheritance data
+        $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($host['hosttemplate_id']);
+        $HostMergerForBrowser = new HostMergerForBrowser(
+            $host,
+            $hosttemplate
+        );
+        $mergedHost = $HostMergerForBrowser->getDataForView();
+
+        $mergedHost['is_satellite_host'] = $hostObj->isSatelliteHost();
+        $mergedHost['allowEdit'] = $allowEdit;
 
 
-        unset($host['Hosttemplate']);
-        $this->set('host', $host);
+        $this->set('host', $mergedHost);
         $this->viewBuilder()->setOption('serialize', ['host']);
     }
 

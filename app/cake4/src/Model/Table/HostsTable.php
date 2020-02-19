@@ -2775,15 +2775,15 @@ class HostsTable extends Table {
         if (!empty($conditions)) {
             $query->where($conditions);
         }
-        if($limit !== null){
+        if ($limit !== null) {
             $query->limit($limit);
         }
-        if($offset !== null){
+        if ($offset !== null) {
             $query->offset($offset);
         }
         $query->disableHydration()->all();
 
-        if($count === true){
+        if ($count === true) {
             return $query->count();
         }
 
@@ -2791,5 +2791,24 @@ class HostsTable extends Table {
             return [];
         }
         return $query->toArray();
+    }
+
+    /**
+     * @param int $id
+     * @param bool $enableHydration
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getHostsbyIdWithDetails($id, $enableHydration = true) {
+        $query = $this->find()
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'HostsToContainersSharing',
+                'Hosttemplates'
+            ])
+            ->enableHydration($enableHydration);
+
+        return $query->firstOrFail();
     }
 }
