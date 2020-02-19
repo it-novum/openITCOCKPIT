@@ -138,9 +138,7 @@ class AngularAssets implements AngularAssetsInterface {
         '/node_modules/font-awesome/css/font-awesome.css',
         '/node_modules/@fortawesome/fontawesome-free/css/all.min.css',
         '/css/console.css',
-        '/css/openitcockpit-colors.css',
-        '/css/openitcockpit-utils.css',
-        '/css/openitcockpit.css',
+
         '/node_modules/@fullcalendar/core/main.css',
         '/node_modules/@fullcalendar/daygrid/main.css',
         '/node_modules/@fullcalendar/timegrid/main.css',
@@ -168,7 +166,10 @@ class AngularAssets implements AngularAssetsInterface {
         'legacy/css/vendor/image-picker.css',
         '/node_modules/angular-gridster/dist/angular-gridster.min.css',
         //'vendor/radio_buttons.css',
-        'legacy/css/vendor/css3-percentage-loader/circle.css'
+        'legacy/css/vendor/css3-percentage-loader/circle.css',
+        '/css/openitcockpit-colors.css',
+        '/css/openitcockpit-utils.css',
+        '/css/openitcockpit.css',
     ];
 
     /**

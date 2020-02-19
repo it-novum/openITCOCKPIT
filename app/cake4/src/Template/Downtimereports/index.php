@@ -234,55 +234,52 @@
 
                         <div ng-if="tabName == 'hostsServicesOverview'" id="hostsServicesOverview">
                             <div class="row">
-                                <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class="jarviswidget jarviswidget-sortable" role="widget">
-                                        <header role="heading">
-                                            <h2>
+                                <div class="card" style="width: 100%;">
+                                    <div class="card-header">
+                                        <h4>
                                         <span class="fa-stack">
                                             <i class="fa fa-desktop fa-lg fa-stack-1x"></i>
                                             <i class="fa fa-exclamation-triangle fa-stack-1x fa-xs cornered cornered-lr text-danger padding-bottom-2"></i>
                                         </span>
-                                                <?php echo __('Involved in outages (Hosts):'); ?>
-                                            </h2>
-                                        </header>
-                                        <div class="well padding-bottom-10">
-                                            <div
-                                                ng-repeat="(chunkIndex, hostsWithOutages) in reportData.hostsWithOutages">
-                                                <hosts-bar-chart chart-id="chunkIndex"
-                                                                 bar-chart-data="hostsWithOutages.hostBarChartData"></hosts-bar-chart>
+                                            <?php echo __('Involved in outages (Hosts):'); ?>
+                                        </h4>
+                                    </div>
+                                    <div class="card-body padding-bottom-10">
+                                        <div
+                                            ng-repeat="(chunkIndex, hostsWithOutages) in reportData.hostsWithOutages">
+                                            <hosts-bar-chart chart-id="chunkIndex"
+                                                             bar-chart-data="hostsWithOutages.hostBarChartData"></hosts-bar-chart>
 
-                                                <div class="row" ng-repeat="host in hostsWithOutages.hosts">
-                                                    <host-availability-overview data="host"
-                                                                                evaluation-type="post.evaluation_type"
-                                                                                dynamic-color="setColorDynamically"
-                                                                                class="col-lg-12"></host-availability-overview>
-                                                </div>
+                                            <div class="row" ng-repeat="host in hostsWithOutages.hosts">
+                                                <host-availability-overview data="host"
+                                                                            evaluation-type="post.evaluation_type"
+                                                                            dynamic-color="setColorDynamically"
+                                                                            class="col-lg-12"></host-availability-overview>
                                             </div>
                                         </div>
                                     </div>
-                                </article>
+                                </div>
                             </div>
                             <div class="row">
-                                <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class="jarviswidget jarviswidget-sortable" role="widget">
-                                        <header role="heading">
-                                            <h2>
+                                <div class="card" style="width: 100%;">
+                                    <div class="card-header">
+                                        <h4>
                                         <span class="fa-stack">
                                             <i class="fa fa-desktop fa-lg fa-stack-1x"></i>
                                             <i class="fa fa-check-circle fa-stack-1x fa-xs cornered cornered-lr ok padding-bottom-2"></i>
                                         </span>
-                                                <?php echo __('Hosts without outages:'); ?>
-                                            </h2>
-                                        </header>
-                                        <div class="well padding-bottom-10">
-                                            <div class="row" ng-repeat="host in reportData.hostsWithoutOutages.hosts">
-                                                <host-availability-overview data="host"
-                                                                            evaluation-type="post.evaluation_type"
-                                                                            dynamic-color="setColorDynamically"></host-availability-overview>
-                                            </div>
+                                            <?php echo __('Hosts without outages:'); ?>
+                                        </h4>
+                                    </div>
+                                    <div class="card-body padding-bottom-10">
+                                        <div class="row" ng-repeat="host in reportData.hostsWithoutOutages.hosts">
+                                            <host-availability-overview data="host"
+                                                                        evaluation-type="post.evaluation_type"
+                                                                        dynamic-color="setColorDynamically"
+                                                                        class="col-lg-12"></host-availability-overview>
                                         </div>
                                     </div>
-                                </article>
+                                </div>
                             </div>
                         </div>
                     </div>

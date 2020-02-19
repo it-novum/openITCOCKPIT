@@ -1,4 +1,4 @@
-<div class="row padding-2 downtime-report-service-widget"
+<div class="row margin-2 downtime-report-service-widget"
      ng-style="{'background': color}">
     <div class=" col-lg-4">
         <canvas id="servicePieChart-{{data.Service.id}}"></canvas>
