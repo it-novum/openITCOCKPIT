@@ -27,7 +27,8 @@
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-code-fork fa-fw "></i>
-            <?php echo __('Time periods'); ?>
+            <?php
+            echo __('Time periods'); ?>
             <span>>
                 <?php echo __('Used by...'); ?>
             </span>
@@ -151,7 +152,6 @@
                                     <?php endif; ?>
                                 </td>
                             </tr>
-
                             <tr ng-if="objects.Instantreports.length > 0">
                                 <th class="bg-color-lightGray">
                                     <i class="fa fa-file-image-o"></i>
@@ -234,6 +234,23 @@
                                         </a>
                                     <?php else: ?>
                                         {{ servicetemplate.name }}
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                            <tr ng-if="objects.Autoreports.length > 0">
+                                <th class="bg-color-lightGray">
+                                    <i class="fa fa-file-image-o"></i>
+                                    <?php echo __('Autoreports'); ?> ({{objects.Autoreports.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="autoreport in objects.Autoreports">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'autoreports', 'AutoreportModule')): ?>
+                                        <a ui-sref="AutoreportsEditStepOne({id: autoreport.id})" target="_blank">
+                                            {{ autoreport.name }}
+                                        </a>
+                                    <?php else: ?>
+                                        {{ autoreport.name }}
                                     <?php endif; ?>
                                 </td>
                             </tr>

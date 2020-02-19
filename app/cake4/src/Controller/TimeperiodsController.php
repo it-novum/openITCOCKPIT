@@ -40,6 +40,7 @@ use App\Model\Table\ServiceescalationsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
+use AutoreportModule\Model\Table\AutoreportsTable;
 use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -461,11 +462,6 @@ class TimeperiodsController extends AppController {
             'Servicetemplates'    => []
         ];
 
-        //check if the host is used somwhere
-        if (Plugin::isLoaded('AutoreportModule')) {
-            $objects['Autoreports'] = [];
-        }
-
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
             $MY_RIGHTS = [];
@@ -521,6 +517,14 @@ class TimeperiodsController extends AppController {
         /** @var $ServicetemplatesTable ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
         $objects['Servicetemplates'] = $ServicetemplatesTable->getServicetemplatesByTimeperiodId($id, $MY_RIGHTS, false);
+
+        //check if the time period is used in auto reports
+        if (Plugin::isLoaded('AutoreportModule')) {
+            $objects['Autoreports'] = [];
+            /** @var $AutoreportsTable AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+            $objects['Autoreports'] = $AutoreportsTable->getAutoreportsByTimeperiodId($id, $MY_RIGHTS, false);
+        }
 
 
         $total = 0;
