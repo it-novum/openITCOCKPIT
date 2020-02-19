@@ -450,7 +450,7 @@
 
                         <!-- NOT MONITORED TAB START -->
                         <div ng-if="activeTab === 'notMonitored'">
-                            <table id="service_list" class="table table-striped m-0 table-bordered table-hover">
+                            <table id="service_list" class="table table-striped m-0 table-bordered table-hover table-sm">
                                 <thead>
                                 <tr>
                                     <th class="no-sort text-center">
@@ -593,7 +593,7 @@
 
                         <!-- DISABLED TAB START -->
                         <div ng-if="activeTab === 'disabled'">
-                            <table id="service_list" class="table table-striped m-0 table-bordered table-hover">
+                            <table id="service_list" class="table table-striped m-0 table-bordered table-hover table-sm">
                                 <thead>
                                 <tr>
                                     <th class="no-sort text-center">
@@ -736,7 +736,7 @@
 
                         <!-- DELETED TAB START -->
                         <div ng-if="activeTab === 'deleted'">
-                            <table id="service_list" class="table table-striped m-0 table-bordered table-hover">
+                            <table id="service_list" class="table table-striped m-0 table-bordered table-hover table-sm">
                                 <thead>
                                 <tr>
                                     <th class="no-sort">

@@ -262,7 +262,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                     <div class="row">
                         <div class="col-12">
                             <div id="MacroContent">
-                                <table id="macrosTable" class="table table-striped m-0 table-bordered table-hover">
+                                <table id="macrosTable" class="table table-striped m-0 table-bordered table-hover table-sm">
                                     <thead>
                                     <tr>
                                         <th class="no-sort">
