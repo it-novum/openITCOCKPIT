@@ -149,7 +149,7 @@
                             </td>
                         </tr>
 
-                        <tr ng-if="objects.Services.length > 0">
+                        <tr ng-if="objects.Hostescalations.length > 0">
                             <th class="bg-color-lightGray">
                                 <i class="fa fa-bomb"></i>
                                 <?php echo __('Host escalations'); ?> ({{objects.Hostescalations.length}})
@@ -167,7 +167,7 @@
                             </td>
                         </tr>
 
-                        <tr ng-if="objects.Services.length > 0">
+                        <tr ng-if="objects.Serviceescalations.length > 0">
                             <th class="bg-color-lightGray">
                                 <i class="fa fa-bomb"></i>
                                 <?php echo __('Service escalations'); ?> ({{objects.Serviceescalations.length}})

@@ -11,7 +11,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ContactsFilter;
 
@@ -44,7 +43,7 @@ class ContactsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('contacts');
@@ -104,7 +103,7 @@ class ContactsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -226,7 +225,7 @@ class ContactsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
         $rules->add($rules->existsIn(['user_id'], 'Users'));
 
@@ -780,7 +779,7 @@ class ContactsTable extends Table {
             ->all();
 
         $result = $query->toArray();
-        if(empty($result)){
+        if (empty($result)) {
             $result = [];
         }
 
@@ -800,13 +799,13 @@ class ContactsTable extends Table {
             ->all();
 
         $result = $query->toArray();
-        if(empty($result)){
+        if (empty($result)) {
             $result = [];
         }
 
         $contactIds = array_unique(array_merge($contactIds, Hash::extract($result, '{n}.contact_id')));
 
-        if(empty($contactIds)){
+        if (empty($contactIds)) {
             return [];
         }
 
@@ -835,4 +834,47 @@ class ContactsTable extends Table {
         return $this->emptyArrayIfNull($result->toArray());
     }
 
+    /**
+     * @param $timeperiodId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getContactsByTimeperiodId($timeperiodId, $MY_RIGHTS = [], $enableHydration = true) {
+        $query = $this->find()
+            ->select([
+                'Contacts.id',
+                'Contacts.name'
+            ])
+            ->where([
+                'OR' => [
+                    'Contacts.host_timeperiod_id'    => $timeperiodId,
+                    'Contacts.service_timeperiod_id' => $timeperiodId
+                ]
+            ])
+            ->group([
+                'Contacts.id'
+            ]);
+
+        $query->contain([
+            'Containers'
+        ]);
+
+        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+
+
+        $query->enableHydration($enableHydration);
+        $query->order([
+            'Contacts.name' => 'asc'
+        ]);
+
+        $result = $query->all();
+
+        return $this->emptyArrayIfNull($result->toArray());
+    }
 }

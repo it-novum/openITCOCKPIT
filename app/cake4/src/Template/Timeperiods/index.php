@@ -170,6 +170,13 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('usedBy', 'timeperiods')): ?>
+                                                <a ui-sref="TimeperiodsUsedBy({id:timeperiod.Timeperiod.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-reply-all fa-flip-horizontal"></i>
+                                                    <?php echo __('Used by'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'contacts')): ?>
                                                 <a href="javascript:void(0);"
                                                    ng-if="timeperiod.Timeperiod.allow_edit"

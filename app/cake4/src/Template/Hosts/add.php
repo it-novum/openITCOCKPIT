@@ -870,6 +870,12 @@
                                         <?php echo __('Create another'); ?>
                                     </label>
 
+                                    <div class="btn-group" ng-if="!data.createAnother">
+                                        <button ng-click="submit('AgentconnectorsAdd')" class="btn btn-primary">
+                                            <?php echo __('Create host and setup agent'); ?>
+                                        </button>
+                                    </div>
+
                                     <div class="btn-group">
                                         <button type="submit" class="btn btn-primary waves-effect waves-themed">
                                             <?php echo __('Create host'); ?>
@@ -883,6 +889,12 @@
                                                 <i class="fa fa fa-gear"></i>
                                                 <?php echo __('Save and create service'); ?>
                                             </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('add', 'agentconnector')): ?>
+                                                <a class="dropdown-item" href="javascript:void(0);" ng-click="submit('AgentconnectorsAdd')" ng-if="!data.createAnother">
+                                                    <i class="fa fa fa-gear"></i>
+                                                    <?php echo __('Save and setup agent'); ?>
+                                                </a>
                                             <?php endif; ?>
                                             <a ui-sref="MkModuleMkdiscovery" href="javascript:void(0);" class="dropdown-item">
                                                 <i class="fa fa fa-share-alt"></i>
