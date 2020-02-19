@@ -5,6 +5,7 @@ angular.module('openITCOCKPIT')
         $scope.pushMode = false;
         $scope.installed = false;
         $scope.configured = false;
+        $scope.servicesConfigured = false;
         $scope.checkdataRequestInterval = null;
 
         $scope.resetAgentConfiguration = function(){
@@ -12,6 +13,7 @@ angular.module('openITCOCKPIT')
             $scope.pushMode = false;
             $scope.configured = false;
             $scope.installed = false;
+            $scope.servicesConfigured = false;
 
             $scope.agentconfig = {
                 address: '0.0.0.0',
@@ -43,10 +45,10 @@ angular.module('openITCOCKPIT')
             };
 
             $scope.choosenServicesToMonitor = {
-                cpu_percentage: false,
-                system_load: false,
-                memory: false,
-                swap: false,
+                cpu_percentage: true,
+                system_load: true,
+                memory: true,
+                swap: true,
                 disk_io: [],
                 disks: [],
                 fans: [],
@@ -145,7 +147,7 @@ angular.module('openITCOCKPIT')
                 if(option === 'customchecks'){
                     value = '';
                     if($scope.agentconfig[option] === true){
-                        value = './oitc_customchecks.conf';
+                        value = '/etc/openitcockpit-agent/customchecks.cnf';
                     }
                 }
                 tmpDefaultTemplate += option + ' = ' + value + '\n';
@@ -182,6 +184,12 @@ angular.module('openITCOCKPIT')
             $scope.configured = true;
             $scope.installed = true;
         };
+        $scope.saveAgentServices = function(){
+            $scope.servicesConfigured = true;
+            console.log($scope.choosenServicesToMonitor);
+
+
+        };
 
         $scope.continueWithServiceConfiguration = function(){
             NotyService.scrollTop();
@@ -200,12 +208,39 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.createCheckdataDependingPreselection = function(){
+            if($scope.checkdata){
+                if($scope.checkdata.disks && $scope.countObj($scope.checkdata.disks) > 0){
+                    for(var i = 0; i < $scope.countObj($scope.checkdata.disks); i++){
+                        if($scope.checkdata.disks[i].disk.mountpoint === '/'){
+                            $scope.choosenServicesToMonitor.disks.push('/');
+                        }
+                        if($scope.checkdata.disks[i].disk.mountpoint === 'C:\\'){
+                            $scope.choosenServicesToMonitor.disks.push('C:\\');
+                        }
+                    }
+                }
+                if($scope.checkdata.sensors.temperatures && $scope.countObj($scope.checkdata.sensors.temperatures) > 0){
+                    for(var key in $scope.checkdata.sensors.temperatures){
+                        if(key === 'coretemp'){
+                            $scope.choosenServicesToMonitor.temperatures.push('coretemp');
+                        }
+                    }
+                }
+                if($scope.checkdata.customchecks && $scope.countObj($scope.checkdata.customchecks) > 0){
+                    for(var key in $scope.checkdata.customchecks){
+                        $scope.choosenServicesToMonitor.customchecks.push(key);
+                    }
+                }
+            }
+        };
+
         $scope.getLatestCheckDataByHostUuid = function(){
             if($scope.host.uuid !== 'undefined' && $scope.host.uuid !== ''){
                 $http.get('/agentconnector/getLatestCheckDataByHostUuid/' + $scope.host.uuid + '.json').then(function(result){
                     if(result.data.checkdata && result.data.checkdata !== ''){
                         $scope.checkdata = result.data.checkdata;
-                        console.log($scope.checkdata);
+                        $scope.createCheckdataDependingPreselection();
                     }
                 }, function errorCallback(result){
                     if(result.status === 403){
@@ -220,7 +255,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.countObj = function(obj){
-            if(obj !== null && obj !== 'undefined'){
+            if(obj && obj instanceof Object && obj !== 'undefined'){
                 return Object.keys(obj).length;
             }
         };

@@ -696,7 +696,7 @@ class Agent extends Importer {
                 'human_args'       => null,
                 'uuid'             => '67ca5f1d-cc94-4bf1-8397-fc6e4abdbf92',
                 'description'      => "Return the state of a qemu virtual machine (ok/critical).\n" .
-                    "Identifier Type: Values: name or id - Determines if the name of the id should be used to identify the virtual machine.\n" .
+                    "Identifier Type: Values: name or uuid - Determines if the name of the uuid should be used to identify the virtual machine.\n" .
                     "Identifier:  Name or id of the virtual machine.\n",
                 'commandarguments' => [
                     [
