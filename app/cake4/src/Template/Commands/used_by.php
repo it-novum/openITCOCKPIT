@@ -161,7 +161,7 @@
                         </tbody>
                     </table>
                     <div class="row margin-top-10 margin-bottom-10">
-                        <div class="row margin-top-10 margin-bottom-10" ng-show="total.length == 0">
+                        <div class="row margin-top-10 margin-bottom-10" ng-show="total == 0">
                             <div class="col-xs-12 text-center txt-color-red italic">
                                 <?php echo __('This command is not used by any object'); ?>
                             </div>

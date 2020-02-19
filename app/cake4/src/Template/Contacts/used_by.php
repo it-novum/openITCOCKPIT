@@ -189,7 +189,7 @@
                     <div class="row margin-top-10 margin-bottom-10">
                         <div class="row margin-top-10 margin-bottom-10" ng-show="contacts.length == 0">
                             <div class="col-xs-12 text-center txt-color-red italic">
-                                <?php echo __('No entries match the selection'); ?>
+                                <?php echo __('This contact is not used by any object'); ?>
                             </div>
                         </div>
                     </div>

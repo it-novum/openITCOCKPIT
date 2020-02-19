@@ -187,8 +187,6 @@
                                             <?php endif; ?>
                                         </div>
                                     </div>
-
-
                                 </td>
                             </tr>
                             </tbody>
