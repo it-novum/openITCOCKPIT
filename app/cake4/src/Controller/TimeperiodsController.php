@@ -544,50 +544,6 @@ class TimeperiodsController extends AppController {
         $this->set('objects', $objects);
         $this->set('total', $total);
         $this->viewBuilder()->setOption('serialize', ['timeperiod', 'objects', 'total']);
-
-        return;
-
-
-        //Check if the contact is used by host or service templates
-        /** @var $HosttemplatesTable HosttemplatesTable */
-        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
-        $objects['Hosttemplates'] = $HosttemplatesTable->getHosttemplatesByContactId($id, $MY_RIGHTS, false);
-
-        /** @var $ServicetemplatesTable ServicetemplatesTable */
-        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
-        $objects['Servicetemplates'] = $ServicetemplatesTable->getServicetemplatesByContactId($id, $MY_RIGHTS, false);
-
-        //Checking host and services
-        /** @var $HostsTable HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        $objects['Hosts'] = $HostsTable->getHostsByContactId($id, $MY_RIGHTS, false);
-
-        /** @var $ServicesTable ServicesTable */
-        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-        $objects['Services'] = $ServicesTable->getServicesByContactId($id, $MY_RIGHTS, false);
-
-        //Checking host and service escalations
-        /** @var $HostescalationsTable HostescalationsTable */
-        $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
-        $objects['Hostescalations'] = $HostescalationsTable->getHostescalationsByContactId($id, $MY_RIGHTS, false);
-
-        /** @var $ServiceescalationsTable ServiceescalationsTable */
-        $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
-        $objects['Serviceescalations'] = $ServiceescalationsTable->getServiceescalationsByContactId($id, $MY_RIGHTS, false);
-
-        $total = 0;
-        $total += sizeof($objects['Contactgroups']);
-        $total += sizeof($objects['Hosttemplates']);
-        $total += sizeof($objects['Servicetemplates']);
-        $total += sizeof($objects['Hosts']);
-        $total += sizeof($objects['Services']);
-        $total += sizeof($objects['Hostescalations']);
-        $total += sizeof($objects['Serviceescalations']);
-
-        $this->set('contact', $contact->toArray());
-        $this->set('objects', $objects);
-        $this->set('total', $total);
-        $this->viewBuilder()->setOption('serialize', ['contact', 'objects', 'total']);
     }
 
     /****************************
