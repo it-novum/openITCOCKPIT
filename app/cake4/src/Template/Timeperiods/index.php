@@ -177,7 +177,7 @@
                                                     <?php echo __('Used by'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('delete', 'contacts')): ?>
+                                            <?php if ($this->Acl->hasPermission('delete', 'timeperiods')): ?>
                                                 <a href="javascript:void(0);"
                                                    ng-if="timeperiod.Timeperiod.allow_edit"
                                                    class="txt-color-red dropdown-item"
