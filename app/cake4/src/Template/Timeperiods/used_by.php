@@ -259,11 +259,9 @@
                             </tr>
                             </tbody>
                         </table>
-                        <div class="row margin-top-10 margin-bottom-10 ">
-                            <div class="row margin-top-10 margin-bottom-10" ng-show="total == 0">
-                                <div class="col-lg-12 d-flex justify-content-center txt-color-red italic">
-                                    <?php echo __('This timeperiod is not used by any object'); ?>
-                                </div>
+                        <div class="row margin-top-10 margin-bottom-10" ng-show="total == 0">
+                            <div class="col-lg-12 d-flex justify-content-center txt-color-red italic">
+                                <?php echo __('This timeperiod is not used by any object'); ?>
                             </div>
                         </div>
                     </div>

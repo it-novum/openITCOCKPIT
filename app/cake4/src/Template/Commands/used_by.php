@@ -65,104 +65,104 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-                    <table id="usedby_list" class="table table-striped m-0 table-bordered table-hover table-sm">
-                        <tbody>
-                        <tr ng-if="objects.Contacts.length > 0">
-                            <th class="bg-color-lightGray">
-                                <i class="fa fa-user"></i>
-                                <?php echo __('Contacts'); ?> ({{objects.Contacts.length}})
-                            </th>
-                        </tr>
-                        <tr ng-repeat="contact in objects.Contacts">
-                            <td>
-                                <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
-                                    <a ui-sref="ContactsEdit({id: contact.id})" target="_blank">
+                    <div class="frame-wrap">
+                        <table id="usedby_list" class="table table-striped m-0 table-bordered table-hover table-sm">
+                            <tbody>
+                            <tr ng-if="objects.Contacts.length > 0">
+                                <th class="bg-color-lightGray">
+                                    <i class="fa fa-user"></i>
+                                    <?php echo __('Contacts'); ?> ({{objects.Contacts.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="contact in objects.Contacts">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                        <a ui-sref="ContactsEdit({id: contact.id})" target="_blank">
+                                            {{ contact.name }}
+                                        </a>
+                                    <?php else: ?>
                                         {{ contact.name }}
-                                    </a>
-                                <?php else: ?>
-                                    {{ contact.name }}
-                                <?php endif; ?>
-                            </td>
-                        </tr>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
 
 
-                        <tr ng-if="objects.Hosttemplates.length > 0">
-                            <th class="bg-color-lightGray">
-                                <i class="fa fa-pencil-square-o"></i>
-                                <?php echo __('Host templates'); ?> ({{objects.Hosttemplates.length}})
-                            </th>
-                        </tr>
-                        <tr ng-repeat="hosttemplate in objects.Hosttemplates">
-                            <td>
-                                <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
-                                    <a ui-sref="HosttemplatesEdit({id: hosttemplate.id})" target="_blank">
+                            <tr ng-if="objects.Hosttemplates.length > 0">
+                                <th class="bg-color-lightGray">
+                                    <i class="fa fa-pencil-square-o"></i>
+                                    <?php echo __('Host templates'); ?> ({{objects.Hosttemplates.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="hosttemplate in objects.Hosttemplates">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                        <a ui-sref="HosttemplatesEdit({id: hosttemplate.id})" target="_blank">
+                                            {{ hosttemplate.name }}
+                                        </a>
+                                    <?php else: ?>
                                         {{ hosttemplate.name }}
-                                    </a>
-                                <?php else: ?>
-                                    {{ hosttemplate.name }}
-                                <?php endif; ?>
-                            </td>
-                        </tr>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
 
-                        <tr ng-if="objects.Servicetemplates.length > 0">
-                            <th class="bg-color-lightGray">
-                                <i class="fa fa-pencil-square-o"></i>
-                                <?php echo __('Service templates'); ?> ({{objects.Servicetemplates.length}})
-                            </th>
-                        </tr>
-                        <tr ng-repeat="servicetemplate in objects.Servicetemplates">
-                            <td>
-                                <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
-                                    <a ui-sref="ServicetemplatesEdit({id: servicetemplate.id})" target="_blank">
+                            <tr ng-if="objects.Servicetemplates.length > 0">
+                                <th class="bg-color-lightGray">
+                                    <i class="fa fa-pencil-square-o"></i>
+                                    <?php echo __('Service templates'); ?> ({{objects.Servicetemplates.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="servicetemplate in objects.Servicetemplates">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
+                                        <a ui-sref="ServicetemplatesEdit({id: servicetemplate.id})" target="_blank">
+                                            {{ servicetemplate.name }}
+                                        </a>
+                                    <?php else: ?>
                                         {{ servicetemplate.name }}
-                                    </a>
-                                <?php else: ?>
-                                    {{ servicetemplate.name }}
-                                <?php endif; ?>
-                            </td>
-                        </tr>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
 
-                        <tr ng-if="objects.Hosts.length > 0">
-                            <th class="bg-color-lightGray">
-                                <i class="fa fa-desktop"></i>
-                                <?php echo __('Hosts'); ?> ({{objects.Hosts.length}})
-                            </th>
-                        </tr>
-                        <tr ng-repeat="host in objects.Hosts">
-                            <td>
-                                <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                    <a ui-sref="HostsEdit({id:host.id})" target="_blank">
+                            <tr ng-if="objects.Hosts.length > 0">
+                                <th class="bg-color-lightGray">
+                                    <i class="fa fa-desktop"></i>
+                                    <?php echo __('Hosts'); ?> ({{objects.Hosts.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="host in objects.Hosts">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                        <a ui-sref="HostsEdit({id:host.id})" target="_blank">
+                                            {{ host.name }}
+                                        </a>
+                                    <?php else: ?>
                                         {{ host.name }}
-                                    </a>
-                                <?php else: ?>
-                                    {{ host.name }}
-                                <?php endif; ?>
-                            </td>
-                        </tr>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
 
-                        <tr ng-if="objects.Services.length > 0">
-                            <th class="bg-color-lightGray">
-                                <i class="fa fa-cog"></i>
-                                <?php echo __('Services'); ?> ({{objects.Services.length}})
-                            </th>
-                        </tr>
-                        <tr ng-repeat="service in objects.Services">
-                            <td>
-                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                    <a ui-sref="ServicesEdit({id:service.id})" target="_blank">
+                            <tr ng-if="objects.Services.length > 0">
+                                <th class="bg-color-lightGray">
+                                    <i class="fa fa-cog"></i>
+                                    <?php echo __('Services'); ?> ({{objects.Services.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="service in objects.Services">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                        <a ui-sref="ServicesEdit({id:service.id})" target="_blank">
+                                            {{ service._matchingData.Hosts.name }} / {{ service.servicename }}
+                                        </a>
+                                    <?php else: ?>
                                         {{ service._matchingData.Hosts.name }} / {{ service.servicename }}
-                                    </a>
-                                <?php else: ?>
-                                    {{ service._matchingData.Hosts.name }} / {{ service.servicename }}
-                                <?php endif; ?>
-                            </td>
-                        </tr>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
 
-                        </tbody>
-                    </table>
-                    <div class="row margin-top-10 margin-bottom-10">
+                            </tbody>
+                        </table>
                         <div class="row margin-top-10 margin-bottom-10" ng-show="total == 0">
-                            <div class="col-xs-12 text-center txt-color-red italic">
+                            <div class="col-lg-12 d-flex justify-content-center txt-color-red italic">
                                 <?php echo __('This command is not used by any object'); ?>
                             </div>
                         </div>
