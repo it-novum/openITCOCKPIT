@@ -66,8 +66,8 @@
                 <div class="col col-xs-4" style="padding-left:0;">
                     <div class="btn-group pull-left" style="padding-top: 2px;">
                         <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                            <a ui-sref="HostsEdit({id:host.Host.id})"
-                               ng-show="host.Host.allow_edit"
+                            <a ui-sref="HostsEdit({id:host.id})"
+                               ng-show="host.allowEdit"
                                class="btn btn-default">
                                 &nbsp;<i class="fa fa-cog"></i>&nbsp;
                             </>
@@ -81,15 +81,15 @@
                         <ul class="dropdown-menu" id="menuHack-host">
                             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                 <li>
-                                    <a href="/ng/#!/hosts/browser/{{ host.Host.id }}">
+                                    <a href="/ng/#!/hosts/browser/{{ host.id }}">
                                         <i class="fa fa-desktop"></i> <?php echo __('Browser'); ?>
                                     </a>
                                 </li>
                             <?php endif; ?>
                             <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                 <li>
-                                    <a ui-sref="HostsEdit({id:host.Host.id})"
-                                       ng-show="host.Host.allow_edit">
+                                    <a ui-sref="HostsEdit({id:host.id})"
+                                       ng-show="host.allowEdit">
                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                     </a>
                                 </li>
@@ -97,7 +97,7 @@
 
                             <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
                                 <li>
-                                    <a href="/hosts/allocateServiceTemplateGroup/{{ host.Host.id }}">
+                                    <a href="/hosts/allocateServiceTemplateGroup/{{ host.id }}">
                                         <i class="fa fa-external-link"></i>
                                         <?php echo __('Allocate Service Template Group'); ?>
                                     </a>
@@ -118,7 +118,7 @@
                             </button>
 
                             <?php if ($this->Acl->hasPermission('add', 'services')): ?>
-                                <a ui-sref="ServicesAdd({hostId: host.Host.id})"
+                                <a ui-sref="ServicesAdd({hostId: host.id})"
                                    class="btn btn-xs btn-success">
                                     <i class="fa fa-plus"></i>
                                     <?php echo __('Add'); ?>
@@ -126,7 +126,7 @@
                             <?php endif; ?>
 
                             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                <a href="/ng/#!/hosts/browser/{{host.Host.id}}"
+                                <a href="/ng/#!/hosts/browser/{{host.id}}"
                                    class="btn btn-xs btn-primary hidden-mobile">
                                     <i class="fa fa-desktop"></i>
                                     <?php echo __('Open host in browser'); ?>
@@ -134,7 +134,7 @@
                             <?php endif; ?>
                         </div>
                         <span class="widget-icon hidden-mobile"> <i class="fa fa-desktop"></i> </span>
-                        <h2 class="hidden-mobile">{{ host.Host.name }} </h2>
+                        <h2 class="hidden-mobile">{{ host.name }} </h2>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                             <li class="active cursor-pointer">
                                 <a data-toggle="tab" ng-click="changeTab('active')">
@@ -301,7 +301,7 @@
 
                                                 <td class="text-center">
                                                     <strong title="<?php echo __('Passively transferred service'); ?>"
-                                                            ng-show="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                                            ng-show="service.Service.active_checks_enabled === false || host.is_satellite_host === true">
                                                         P
                                                     </strong>
                                                 </td>
@@ -321,15 +321,15 @@
                                                 </td>
 
                                                 <td>
-                                                    <span ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
-                                                    <span ng-if="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                                    <span ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
+                                                    <span ng-if="service.Service.active_checks_enabled === false || host.is_satellite_host === true">
                                                         <?php echo __('n/a'); ?>
                                                     </span>
                                                 </td>
 
                                                 <td>
-                                                    <span ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
-                                                    <span ng-if="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                                    <span ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
+                                                    <span ng-if="service.Service.active_checks_enabled === false || host.is_satellite_host === true">
                                                         <?php echo __('n/a'); ?>
                                                     </span>
                                                 </td>

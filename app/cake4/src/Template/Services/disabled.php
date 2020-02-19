@@ -237,6 +237,10 @@
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
+                                                <?php
+                                                $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                                                echo $AdditionalLinks->getLinksAsHtmlList('services', 'disabled', 'list');
+                                                ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                     <li class="divider"></li>
                                                     <li ng-if="service.allow_edit">

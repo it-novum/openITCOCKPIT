@@ -572,21 +572,10 @@
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-
-                                                <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                    <li ng-if="host.Host.allow_edit">
-                                                        <?php
-                                                        /**
-                                                         * @todo AdditionalLinks
-                                                         */
-                                                        /*echo $this->AdditionalLinks->renderAsListItems(
-                                                        $additionalLinksList,
-                                                        '{{host.Host.id}}',
-                                                        [],
-                                                        true
-                                                    );*/ ?>
-                                                    </li>
-                                                <?php endif; ?>
+                                                <?php
+                                                $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                                                echo $AdditionalLinks->getLinksAsHtmlList('hosts', 'index', 'list');
+                                                ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
                                                     <li class="divider" ng-if="host.Host.allow_edit"></li>
                                                     <li ng-if="host.Host.allow_edit">

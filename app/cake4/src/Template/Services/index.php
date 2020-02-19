@@ -498,6 +498,10 @@
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
+                                                <?php
+                                                $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                                                echo $AdditionalLinks->getLinksAsHtmlList('services', 'index', 'list');
+                                                ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                     <li class="divider"></li>
                                                     <li ng-if="service.Service.allow_edit">

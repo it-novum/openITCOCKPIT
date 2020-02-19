@@ -2793,8 +2793,28 @@ class HostsTable extends Table {
         return $query->toArray();
     }
 
+
     /**
-     * @param $timeperiodId
+     * @param int $id
+     * @param bool $enableHydration
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getHostsbyIdWithDetails($id, $enableHydration = true) {
+        $query = $this->find()
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'HostsToContainersSharing',
+                'Hosttemplates'
+            ])
+            ->enableHydration($enableHydration);
+
+        return $query->firstOrFail();
+    }
+
+    /**
+     * @param int $timeperiodId
      * @param array $MY_RIGHTS
      * @param bool $enableHydration
      * @return array
@@ -2826,5 +2846,46 @@ class HostsTable extends Table {
 
         $result = $query->all();
         return $this->emptyArrayIfNull($result->toArray());
+    }
+
+    /**
+     * @param int $id
+     * @param int $USAGE_FLAG
+     * @return Host|bool
+     */
+    public function setUsageFlagById($id, int $USAGE_FLAG) {
+        $host = $this->get($id);
+        $currentFlag = $host->get('usage_flag');
+
+        if($currentFlag & $USAGE_FLAG){
+            //Host already has the flag for given module
+            return true;
+        }else{
+            $newFlag = $currentFlag + $USAGE_FLAG;
+            $host->set('usage_flag', $newFlag);
+            return $this->save($host);
+        }
+    }
+
+    /**
+     * @param int $id
+     * @param int $USAGE_FLAG
+     * @return Host|bool
+     */
+    public function removeUsageFlagById($id, int $USAGE_FLAG) {
+        $host = $this->get($id);
+        $currentFlag = $host->get('usage_flag');
+
+        if($currentFlag & $USAGE_FLAG){
+            $newFlag = $currentFlag - $USAGE_FLAG;
+            if($newFlag < 0){
+                $newFlag = 0;
+            }
+
+            $host->set('usage_flag', $newFlag);
+            return $this->save($host);
+        }
+
+        return true;
     }
 }
