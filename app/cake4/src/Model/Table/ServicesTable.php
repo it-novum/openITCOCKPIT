@@ -971,12 +971,15 @@ class ServicesTable extends Table {
      * @return array|Service|null
      */
     public function getServiceByIdForPermissionsCheck($id) {
-        $query = $this->find()
-            ->select([
+        $query = $this->find();
+        $query
+        ->select([
                 'Services.id',
                 'Services.name',
                 'Services.uuid',
                 'Services.servicetemplate_id',
+
+                'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
             ])
             ->where([
                 'Services.id' => $id
@@ -986,17 +989,24 @@ class ServicesTable extends Table {
                     $query->select([
                         'Hosts.id',
                         'Hosts.uuid',
+                        'Hosts.name',
                         'Hosts.container_id'
                     ])
                         ->contain([
                             'HostsToContainersSharing'
                         ]);
                     return $query;
+                },
+                'Servicetemplates' => function (Query $query) {
+                    $query->select([
+                        'Servicetemplates.id',
+                        'Servicetemplates.name',
+                    ]);
+                    return $query;
                 }
-            ])
-            ->first();
+            ]);
 
-        return $query;
+        return $query->first();
     }
 
     /**
