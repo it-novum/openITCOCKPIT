@@ -835,7 +835,7 @@ class InstantreportsTable extends Table {
                     ->toArray();
 
                 foreach ($services as $service) {
-                    if(!isset($instantReportObjects['Hosts'])){
+                    if (!isset($instantReportObjects['Hosts'])) {
                         $instantReportObjects['Hosts'] = [];
                     }
                     if (!array_key_exists($service['Hosts']['id'], $instantReportObjects['Hosts'])) {
@@ -856,5 +856,33 @@ class InstantreportsTable extends Table {
                 break;
         }
         return $instantReportObjects;
+    }
+
+    /**
+     * @param $timeperiodId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getInstantreportsByTimeperiodId($timeperiodId, $MY_RIGHTS = [], $enableHydration = true) {
+        $query = $this->find()
+            ->select([
+                'Instantreports.id',
+                'Instantreports.name'
+            ])
+            ->where([
+                'Instantreports.timeperiod_id' => $timeperiodId
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Instantreports.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->order('Instantreports.name', 'asc');
+        $query->enableHydration($enableHydration);
+
+        $result = $query->all();
+        return $this->emptyArrayIfNull($result->toArray());
     }
 }

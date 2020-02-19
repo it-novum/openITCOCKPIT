@@ -35,16 +35,6 @@ use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
-use App\Model\Entity\Contact;
-use App\Model\Entity\Contactgroup;
-use App\Model\Entity\Container;
-use App\Model\Entity\DeletedHost;
-use App\Model\Entity\DeletedService;
-use App\Model\Entity\Hostcommandargumentvalue;
-use App\Model\Entity\Hostgroup;
-use App\Model\Entity\Hosttemplatecommandargumentvalue;
-use App\Model\Entity\Service;
-use App\Model\Entity\Timeperiod;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
@@ -73,7 +63,6 @@ use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
@@ -110,9 +99,6 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
-use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
-use Statusengine2Module\Model\Entity\DowntimeHost;
-use Statusengine2Module\Model\Entity\NotificationHost;
 
 
 /**
@@ -1106,7 +1092,7 @@ class HostsController extends AppController {
 
                     if ($detailsToEdit['editHostUrl'] == 1) {
                         $newHostUrl = $detailsToEdit['Host']['host_url'];
-                        if (!empty($newHostUrl) && $newHostUrl !=  $mergedHost['Host']['host_url']) {
+                        if (!empty($newHostUrl) && $newHostUrl != $mergedHost['Host']['host_url']) {
                             $dataToSave['host_url'] = $newHostUrl;
                         }
                     }
@@ -2198,9 +2184,6 @@ class HostsController extends AppController {
         return null;
     }
 
-    /**
-     * @param int|null $id
-     */
     public function loadHostById($id = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();

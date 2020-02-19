@@ -11,7 +11,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostescalationsFilter;
 
@@ -46,7 +45,7 @@ class HostescalationsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
         $this->addBehavior('Timestamp');
 
@@ -100,7 +99,7 @@ class HostescalationsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -174,7 +173,7 @@ class HostescalationsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
 
         return $rules;
@@ -605,5 +604,30 @@ class HostescalationsTable extends Table {
         }
 
         return false;
+    }
+
+    /**
+     * @param $timeperiodId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getHostescalationsByTimeperiodId($timeperiodId, $MY_RIGHTS = [], $enableHydration = true) {
+        $query = $this->find()
+            ->select([
+                'Hostescalations.id'
+            ])
+            ->where([
+                'timeperiod_id' => $timeperiodId,
+
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where(['Hostescalations.container_id IN' => $MY_RIGHTS]);
+        }
+        $query->enableHydration($enableHydration);
+
+        $result = $query->all();
+        return $this->emptyArrayIfNull($result->toArray());
     }
 }

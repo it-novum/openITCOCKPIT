@@ -128,6 +128,9 @@ class ServicesController extends AppController {
         'Service'
     ];
 
+    /**
+     * @throws MissingDbBackendException
+     */
     public function index() {
         if (!$this->isApiRequest()) {
             $User = new User($this->getUser());

@@ -44,7 +44,7 @@ class HostdependenciesTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
         $this->addBehavior('Timestamp');
 
@@ -90,7 +90,7 @@ class HostdependenciesTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -132,7 +132,7 @@ class HostdependenciesTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
 
         return $rules;
@@ -471,5 +471,30 @@ class HostdependenciesTable extends Table {
         }
 
         return false;
+    }
+
+    /**
+     * @param $timeperiodId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getHostdependenciesByTimeperiodId($timeperiodId, $MY_RIGHTS = [], $enableHydration = true) {
+        $query = $this->find()
+            ->select([
+                'Hostdependencies.id'
+            ])
+            ->where([
+                'timeperiod_id' => $timeperiodId,
+
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where(['Hostdependencies.container_id IN' => $MY_RIGHTS]);
+        }
+        $query->enableHydration($enableHydration);
+
+        $result = $query->all();
+        return $this->emptyArrayIfNull($result->toArray());
     }
 }

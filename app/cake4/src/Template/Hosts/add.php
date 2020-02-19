@@ -923,6 +923,11 @@
                                 <?php echo _('Create another'); ?>
                             </label>
 
+                            <div class="btn-group" ng-if="!data.createAnother">
+                                <a ng-click="submit('AgentconnectorsAdd')" class="btn btn-primary">
+                                    <?php echo __('Create host and setup agent'); ?>
+                                </a>
+                            </div>
 
                             <div class="btn-group">
                                 <button type="submit" class="btn btn-primary">
@@ -941,6 +946,14 @@
                                             <a href="" ng-click="submit('ServicesAdd')">
                                                 <i class="fa fa fa-gear"></i>
                                                 <?php echo __('Save and create service'); ?>
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('add', 'agentconnector')): ?>
+                                        <li ng-if="!data.createAnother">
+                                            <a class="cursor-pointer" ng-click="submit('AgentconnectorsAdd')">
+                                                <i class="fa fa fa-gear"></i>
+                                                <?php echo __('Save and setup agent'); ?>
                                             </a>
                                         </li>
                                     <?php endif; ?>

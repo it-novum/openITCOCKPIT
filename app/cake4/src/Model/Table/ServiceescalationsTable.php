@@ -618,4 +618,29 @@ class ServiceescalationsTable extends Table {
 
         return false;
     }
+
+    /**
+     * @param $timeperiodId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getServiceescalationsByTimeperiodId($timeperiodId, $MY_RIGHTS = [], $enableHydration = true) {
+        $query = $this->find()
+            ->select([
+                'Serviceescalations.id'
+            ])
+            ->where([
+                'timeperiod_id' => $timeperiodId,
+
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where(['Serviceescalations.container_id IN' => $MY_RIGHTS]);
+        }
+        $query->enableHydration($enableHydration);
+
+        $result = $query->all();
+        return $this->emptyArrayIfNull($result->toArray());
+    }
 }

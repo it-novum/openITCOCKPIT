@@ -2632,4 +2632,53 @@ class ServicesTable extends Table {
         }
         return $result;
     }
+
+    /**
+     * @param int $timeperiodId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getServicesByTimeperiodId($timeperiodId, $MY_RIGHTS = [], $enableHydration = true) {
+        $query = $this->find('all');
+        $query->where([
+            'OR' => [
+                'Services.check_period_id'  => $timeperiodId,
+                'Services.notify_period_id' => $timeperiodId
+            ]
+        ]);
+        $query->select([
+            'Services.id',
+            'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+
+            'Hosts.name',
+            'Hosts.id',
+        ]);
+        $query
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                    ]);
+                }
+                return $q;
+            })
+            ->contain([
+                'Servicetemplates'
+            ]);
+
+
+        $query->enableHydration($enableHydration);
+        $query->order([
+            'servicename' => 'asc'
+        ]);
+        $query->group([
+            'Services.id'
+        ]);
+
+        $result = $query->all();
+
+        return $this->emptyArrayIfNull($result->toArray());
+    }
 }

@@ -29,7 +29,19 @@ namespace App\Controller;
 
 use App\Model\Entity\Changelog;
 use App\Model\Table\ChangelogsTable;
+use App\Model\Table\ContactsTable;
+use App\Model\Table\HostdependenciesTable;
+use App\Model\Table\HostescalationsTable;
+use App\Model\Table\HostsTable;
+use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\InstantreportsTable;
+use App\Model\Table\ServicedependenciesTable;
+use App\Model\Table\ServiceescalationsTable;
+use App\Model\Table\ServicesTable;
+use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
+use AutoreportModule\Model\Table\AutoreportsTable;
+use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -419,8 +431,119 @@ class TimeperiodsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
-    public function usedBy($id){
-        
+    /**
+     * @param int|null $id
+     */
+    public function usedBy($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var TimeperiodsTable $TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        if (!$TimeperiodsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid timeperiod'));
+        }
+
+        $timeperiod = $TimeperiodsTable->get($id);
+
+
+        $objects = [
+            'Contacts'            => [],
+            'Hostdependencies'    => [],
+            'Hostescalations'     => [],
+            'Hosts'               => [],
+            'Hosttemplates'       => [],
+            'Instantreports'      => [],
+            'Servicedependencies' => [],
+            'Serviceescalations'  => [],
+            'Services'            => [],
+            'Servicetemplates'    => []
+        ];
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        //Check if the time period is used by contacts
+        /** @var ContactsTable $ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        $objects['Contacts'] = $ContactsTable->getContactsByTimeperiodId($id, $MY_RIGHTS, false);
+
+
+        //Checking host dependencies
+        /** @var HostdependenciesTable $HostdependenciesTable */
+        $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+        $objects['Hostdependencies'] = $HostdependenciesTable->getHostdependenciesByTimeperiodId($id, $MY_RIGHTS, false);
+
+        //Checking host escalations
+        /** @var $HostescalationsTable HostescalationsTable */
+        $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
+        $objects['Hostescalations'] = $HostescalationsTable->getHostescalationsByTimeperiodId($id, $MY_RIGHTS, false);
+
+        //Checking host
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        $objects['Hosts'] = $HostsTable->getHostsByTimeperiodId($id, $MY_RIGHTS, false);
+
+        //Check if the time period is used by host templates
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        $objects['Hosttemplates'] = $HosttemplatesTable->getHosttemplatesByTimeperiodId($id, $MY_RIGHTS, false);
+
+        //Check if the time period is used by instant reports
+        /** @var $InstantreportsTable InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        $objects['Instantreports'] = $InstantreportsTable->getInstantreportsByTimeperiodId($id, $MY_RIGHTS, false);
+
+        //Checking service dependencies
+        /** @var ServicedependenciesTable $ServicedependenciesTable */
+        $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+        $objects['Servicedependencies'] = $ServicedependenciesTable->getServicedependenciesByTimeperiodId($id, $MY_RIGHTS, false);
+
+        //Checking service escalations
+        /** @var $ServiceescalationsTable ServiceescalationsTable */
+        $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+        $objects['Serviceescalations'] = $ServiceescalationsTable->getServiceescalationsByTimeperiodId($id, $MY_RIGHTS, false);
+
+        //Checking service
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $objects['Services'] = $ServicesTable->getServicesByTimeperiodId($id, $MY_RIGHTS, false);
+
+        //Check if the time period is used by service templates
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        $objects['Servicetemplates'] = $ServicetemplatesTable->getServicetemplatesByTimeperiodId($id, $MY_RIGHTS, false);
+
+        //check if the time period is used in auto reports
+        if (Plugin::isLoaded('AutoreportModule')) {
+            $objects['Autoreports'] = [];
+            /** @var $AutoreportsTable AutoreportsTable */
+            $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
+            $objects['Autoreports'] = $AutoreportsTable->getAutoreportsByTimeperiodId($id, $MY_RIGHTS, false);
+        }
+
+
+        $total = 0;
+        $total += sizeof($objects['Contacts']);
+        $total += sizeof($objects['Hostdependencies']);
+        $total += sizeof($objects['Hostescalations']);
+        $total += sizeof($objects['Hosts']);
+        $total += sizeof($objects['Hosttemplates']);
+        $total += sizeof($objects['Instantreports']);
+        $total += sizeof($objects['Servicedependencies']);
+        $total += sizeof($objects['Serviceescalations']);
+        $total += sizeof($objects['Services']);
+        $total += sizeof($objects['Servicetemplates']);
+
+
+        $this->set('timeperiod', $timeperiod->toArray());
+        $this->set('objects', $objects);
+        $this->set('total', $total);
+        $this->viewBuilder()->setOption('serialize', ['timeperiod', 'objects', 'total']);
     }
 
     /****************************

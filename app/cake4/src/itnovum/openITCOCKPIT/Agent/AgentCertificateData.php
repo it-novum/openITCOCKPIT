@@ -19,7 +19,7 @@ class AgentCertificateData {
 
     private $caCertPath = '/opt/openitc/agent/server_ca.pem';
     private $caKeyPath = '/opt/openitc/agent/server_ca.key';
-    //needs: mkdir /opt/openitc/agent && chown www-data:www-data -R /opt/openitc/agent
+    //needs: mkdir -p /opt/openitc/agent/hostscache && chown www-data:www-data -R /opt/openitc/agent
 
 
     public function isEccCa() {
