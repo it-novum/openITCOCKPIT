@@ -554,6 +554,10 @@
                                                     <?php echo __('Disable'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php
+                                            $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                                            echo $AdditionalLinks->getLinksAsHtmlList('services', 'index', 'list');
+                                            ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                 <a ng-click="confirmDelete(getObjectForDelete(host, service))"
                                                    ng-if="service.Service.allow_edit"

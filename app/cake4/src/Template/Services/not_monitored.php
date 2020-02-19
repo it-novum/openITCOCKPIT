@@ -232,6 +232,10 @@
                                                 <?php echo __('Disable'); ?>
                                             </a>
                                         <?php endif; ?>
+                                        <?php
+                                        $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                                        echo $AdditionalLinks->getLinksAsHtmlList('services', 'notMonitored', 'list');
+                                        ?>
                                         <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                             <a href="javascript:void(0);"
                                                ng-click="confirmDelete(getObjectForDelete(host, service))"

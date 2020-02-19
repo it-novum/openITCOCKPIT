@@ -605,6 +605,10 @@
                                                     <?php echo __('openITCOCKPIT Agent discovery'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php
+                                            $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                                            echo $AdditionalLinks->getLinksAsHtmlList('hosts', 'index', 'list');
+                                            ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
                                                 <a g-click="confirmDelete(getObjectForDelete(host))"
                                                    class="dropdown-item txt-color-red">

@@ -299,6 +299,10 @@
                                                     <?php echo __('Service list'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php
+                                            $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                                            echo $AdditionalLinks->getLinksAsHtmlList('hosts', 'disabled', 'list');
+                                            ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
                                                 <a ng-click="confirmDelete(getObjectForDelete(host))"
                                                    class="dropdown-item txt-color-red">

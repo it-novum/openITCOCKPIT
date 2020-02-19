@@ -77,7 +77,7 @@
                     <?php endif; ?>
                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                         <a class="dropdown-item" ui-sref="HostsEdit({id:data.hostId})"
-                           ng-show="host.Host.allow_edit">
+                           ng-show="host.allowEdit">
                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                         </a>
                     <?php endif; ?>
@@ -135,7 +135,7 @@
                         </button>
                     <?php endif; ?>
                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                        <button class="btn btn-xs btn-primary mr-1 shadow-0" ui-sref="HostsBrowser({id:host.Host.id})">
+                        <button class="btn btn-xs btn-primary mr-1 shadow-0" ui-sref="HostsBrowser({id:host.id})">
                             <i class="fa fa-desktop"></i>
                             <?php echo __('Open host in browser'); ?>
                         </button>
@@ -263,7 +263,7 @@
 
                                     <td class="text-center">
                                         <strong title="<?php echo __('Passively transferred service'); ?>"
-                                                ng-show="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                                ng-show="service.Service.active_checks_enabled === false || host.is_satellite_host === true">
                                             P
                                         </strong>
                                     </td>
@@ -283,15 +283,15 @@
                                     </td>
 
                                     <td>
-                                        <span ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
+                                        <span ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
                                         <span ng-if="service.Service.active_checks_enabled === false">
                                             <?php echo __('n/a'); ?>
                                         </span>
                                     </td>
 
                                     <td>
-                                        <span ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
-                                        <span ng-if="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                        <span ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
+                                        <span ng-if="service.Service.active_checks_enabled === false || host.is_satellite_host === true">
                                             <?php echo __('n/a'); ?>
                                         </span>
                                     </td>
@@ -336,6 +336,10 @@
                                                         <?php echo __('Disable'); ?>
                                                     </a>
                                                 <?php endif; ?>
+                                                <?php
+                                                $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                                                echo $AdditionalLinks->getLinksAsHtmlList('services', 'index', 'list');
+                                                ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                     <a ng-click="confirmDelete(getObjectForDelete(host, service))"
                                                        ng-if="service.Service.allow_edit"

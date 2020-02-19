@@ -2793,8 +2793,28 @@ class HostsTable extends Table {
         return $query->toArray();
     }
 
+
     /**
-     * @param $timeperiodId
+     * @param int $id
+     * @param bool $enableHydration
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getHostsbyIdWithDetails($id, $enableHydration = true) {
+        $query = $this->find()
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'HostsToContainersSharing',
+                'Hosttemplates'
+            ])
+            ->enableHydration($enableHydration);
+
+        return $query->firstOrFail();
+    }
+
+    /**
+     * @param int $timeperiodId
      * @param array $MY_RIGHTS
      * @param bool $enableHydration
      * @return array
