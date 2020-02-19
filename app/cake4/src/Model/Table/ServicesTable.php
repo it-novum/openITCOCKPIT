@@ -2632,6 +2632,7 @@ class ServicesTable extends Table {
         }
         return $result;
     }
+
     /**
      * @param int $timeperiodId
      * @param array $MY_RIGHTS
