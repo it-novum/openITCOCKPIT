@@ -207,20 +207,20 @@
                             <div class="custom-control custom-radio custom-control-inline">
                                 <input type="radio" class="custom-control-input"
                                        name="downtimeType"
-                                       id="InstantreportEvaluation1"
+                                       id="InstantreportEvaluation2"
                                        ng-model="post.Instantreport.evaluation"
                                        ng-value="2">
-                                <label class="custom-control-label" for="InstantreportEvaluation1">
+                                <label class="custom-control-label" for="InstantreportEvaluation2">
                                     <i class="fa fa-cogs"></i> <?php echo __('Hosts and Services'); ?>
                                 </label>
                             </div>
                             <div class="custom-control custom-radio custom-control-inline">
                                 <input type="radio" class="custom-control-input"
                                        name="downtimeType"
-                                       id="InstantreportEvaluation1"
+                                       id="InstantreportEvaluation3"
                                        ng-model="post.Instantreport.evaluation"
                                        ng-value="3">
-                                <label class="custom-control-label" for="InstantreportEvaluation1">
+                                <label class="custom-control-label" for="InstantreportEvaluation3">
                                     <i class="fa fa-cog"></i> <?php echo __('Service'); ?>
                                 </label>
                             </div>
@@ -354,6 +354,7 @@
                                     <?php echo __('Users to send'); ?>
                                 </label>
                                 <select
+                                    multiple
                                     id="UserId"
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
@@ -365,9 +366,7 @@
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
-
                         </div>
-
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">
@@ -384,4 +383,3 @@
         </div>
     </div>
 </div>
-
