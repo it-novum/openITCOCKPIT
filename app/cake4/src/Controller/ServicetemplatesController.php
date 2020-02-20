@@ -453,6 +453,16 @@ class ServicetemplatesController extends AppController {
                             unset($sourceServicetemplate['servicetemplatecommandargumentvalues'][$i]['servicetemplate_id']);
                         }
 
+                        foreach ($sourceServicetemplate['servicetemplateeventcommandargumentvalues'] as $i => $servicetemplateeventcommandargumentvalues) {
+                            unset($sourceServicetemplate['servicetemplateeventcommandargumentvalues'][$i]['id']);
+                            unset($sourceServicetemplate['servicetemplateeventcommandargumentvalues'][$i]['servicetemplate_id']);
+                        }
+
+                        foreach ($sourceServicetemplate['customvariables'] as $i => $customvariable) {
+                            unset($sourceServicetemplate['customvariables'][$i]['id']);
+                            unset($sourceServicetemplate['customvariables'][$i]['object_id']);
+                        }
+
                         $Cache->set($sourceServicetemplateId, $sourceServicetemplate);
                     }
 

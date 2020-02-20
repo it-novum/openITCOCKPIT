@@ -47,6 +47,7 @@ use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
+use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Core\Plugin;
@@ -1471,13 +1472,10 @@ class HostsController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['hosts']);
             return;
         }
-
-        $validationErrors = [];
+        $hasErrors = false;
         if ($this->request->is('post') || $this->request->is('put')) {
-            $validationError = false;
             //We want to save/validate the data and save it
             $postData = $this->request->getData('data');
-
             foreach ($postData as $index => $host2copyData) {
                 $action = 'copy';
                 $currentDataForChangelog = [];
@@ -1609,7 +1607,6 @@ class HostsController extends AppController {
                     $hostData['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
                     $hostData['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
                     $hostData['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
-
                     $newHost = $HostsTable->newEntity($hostData);
 
                 }
@@ -1630,8 +1627,8 @@ class HostsController extends AppController {
                 $postData[$index]['Error'] = [];
 
                 if ($newHost->hasErrors()) {
-                    $hasErrors = true;
                     $postData[$index]['Error'] = $newHost->getErrors();
+                    $hasErrors = true;
                 } else {
                     //No errors
                     $postData[$index]['Host']['id'] = $newHost->get('id');
@@ -1657,12 +1654,7 @@ class HostsController extends AppController {
                         $ChangelogsTable->save($changelogEntry);
                     }
 
-                    /**
-                     * @todo Copy all services from host
-                     */
-
                     if ($action === 'copy') {
-                        $Cache = new KeyValueStore();
                         $ServicetemplateCache = new KeyValueStore();
                         $ServicetemplateEditCache = new KeyValueStore();
                         $hostId = $newHost->get('id');
@@ -1671,7 +1663,7 @@ class HostsController extends AppController {
 
                         /** @var ServicesTable $ServicesTable */
                         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-                        /** @var  Servicetemplates $ServicetemplatesTable */
+                        /** @var  ServicetemplatesTable $ServicetemplatesTable */
                         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
                         $servicesFromHost = $ServicesTable->getServicesByHostIdForCopy($sourceHost->get('id'));
@@ -1708,8 +1700,32 @@ class HostsController extends AppController {
                             }
 
                             if (!empty($serviceData['Service']['servicecommandargumentvalues'])) {
-                                $serviceData['Service']['servicecommandargumentvalues'] = $serviceData['Service']['servicecommandargumentvalues'];
+                                $serviceData['Service']['servicecommandargumentvalues'] = $sourceService['Service']['servicecommandargumentvalues'];
                             }
+
+                            foreach ($sourceService['Service']['serviceeventcommandargumentvalues'] as $i => $serviceeventcommandargumentvalues) {
+                                unset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['id']);
+                                if (isset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['service_id'])) {
+                                    unset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['service_id']);
+                                }
+
+                                if (isset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['servicetemplate_id'])) {
+                                    unset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['servicetemplate_id']);
+                                }
+                            }
+
+                            if (!empty($serviceData['Service']['serviceeventcommandargumentvalues'])) {
+                                $serviceData['Service']['serviceeventcommandargumentvalues'] = $sourceService['Service']['serviceeventcommandargumentvalues'];
+                            }
+
+                            foreach ($sourceService['Service']['customvariables'] as $i => $customvariables) {
+                                unset($sourceService['Service']['customvariables'][$i]['id']);
+                                if (isset($sourceService['Service']['customvariables'][$i]['object_id'])) {
+                                    unset($sourceService['Service']['customvariables'][$i]['object_id']);
+                                }
+                            }
+
+
                             $newServiceData = $sourceService;
                             $newServiceData['Service']['host_id'] = $hostId;
                             // Replace service template values with zero
@@ -1766,7 +1782,11 @@ class HostsController extends AppController {
                 }
             }
         }
-        $this->set('back_url', $this->referer());
+        if ($hasErrors) {
+            $this->response = $this->response->withStatus(400);
+        }
+        $this->set('result', $postData);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
     /**

@@ -420,12 +420,11 @@ class ContactsController extends AppController {
                         ])->toArray();
                         foreach ($sourceContact['customvariables'] as $i => $customvariable) {
                             unset($sourceContact['customvariables'][$i]['id']);
-                            unset($sourceContact['customvariables'][$i]['contact_id']);
+                            unset($sourceContact['customvariables'][$i]['object_id']);
                         }
 
                         $containers = Hash::extract($sourceContact['containers'], '{n}.id');
                         $sourceContact['containers'] = $containers;
-
                         $Cache->set($sourceContact['id'], $sourceContact);
                     }
 
