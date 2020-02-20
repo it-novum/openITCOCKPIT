@@ -410,7 +410,7 @@ class HosttemplatesController extends AppController {
                             unset($sourceHosttemplate['customvariables'][$i]['id']);
                             unset($sourceHosttemplate['customvariables'][$i]['object_id']);
                         }
-                        
+
                         $Cache->set($sourceHosttemplateId, $sourceHosttemplate);
                     }
 
