@@ -201,7 +201,19 @@ class ServicesTable extends Table {
             ->scalar('name')
             ->maxLength('name', 255)
             ->requirePresence('name', false)
-            ->allowEmptyString('name', null, true);
+            ->allowEmptyString('name', __('Please enter a service name.'), function ($context) {
+                if (array_key_exists('name', $context['data'])) {
+                    if ($context['data']['name'] === '') {
+                        return false;
+                    }
+
+                    if ($context['data']['name'] === null) {
+                        return true;
+                    }
+                }
+
+                return true;
+            });
 
 
         $validator
