@@ -478,7 +478,8 @@
                                             </label>
                                         </div>
 
-                                        <div class="col col-xs-12 col-md-offset-2 help-block" ng-class="{'strikethrough': data.disableInheritance}">
+                                        <div class="col col-xs-12 col-md-offset-2 help-block"
+                                             ng-class="{'strikethrough': data.disableInheritance}">
                                             <?php echo __('Contacts and contact groups got inherited from'); ?>
 
                                             <span ng-class="{'bold': data.areContactsInheritedFromServicetemplate}">
@@ -516,8 +517,6 @@
                                             .
                                         </div>
                                     </div>
-
-
 
 
                                 </div>
@@ -626,8 +625,9 @@
                                     </legend>
                                     <div class="row">
                                         <?php foreach ($serviceOptions as $serviceOption): ?>
-                                            <div class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
-                                                 ng-class="{'has-error': errors.<?php echo $serviceOption['field']; ?>}">
+                                            <div
+                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                                ng-class="{'has-error': errors.<?php echo $serviceOption['field']; ?>}">
                                                 <input type="checkbox"
                                                        class="custom-control-input"
                                                        ng-true-value="1"
@@ -636,9 +636,10 @@
                                                        ng-model="post.Service.<?php echo $serviceOption['field']; ?>">
                                                 <label for="<?php echo $serviceOption['field']; ?>"
                                                        class="col col-md-6 custom-control-label custom-control-label-<?php echo $serviceOption['class']; ?> padding-top-0 margin-right-10 ">
-                                                        <span class="badge badge-<?php echo $serviceOption['class']; ?> notify-label-small">
-                                                            <?php echo $serviceOption['text']; ?>
-                                                        </span>
+                                                    <span
+                                                        class="badge badge-<?php echo $serviceOption['class']; ?> notify-label-small">
+                                                        <?php echo $serviceOption['text']; ?>
+                                                    </span>
                                                 </label>
                                                 <span class="margin-left-15">
                                                     <template-diff-button ng-show="post.Service.servicetemplate_id"
@@ -767,8 +768,9 @@
                                     </legend>
                                     <div class="row">
                                         <?php foreach ($serviceFlapOptions as $serviceFlapOption): ?>
-                                            <div class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
-                                                 ng-class="{'has-error': errors.<?php echo $serviceFlapOption['field']; ?>}">
+                                            <div
+                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                                ng-class="{'has-error': errors.<?php echo $serviceFlapOption['field']; ?>}">
                                                 <input type="checkbox" name="checkbox"
                                                        class="custom-control-input"
                                                        ng-true-value="1"
@@ -778,9 +780,10 @@
                                                        ng-model="post.Service.<?php echo $serviceFlapOption['field']; ?>">
                                                 <label for="<?php echo $serviceFlapOption['field']; ?>"
                                                        class="col col-md-6 custom-control-label custom-control-label-<?php echo $serviceFlapOption['class']; ?> padding-top-0 margin-right-10">
-                                                        <span class="badge badge-<?php echo $serviceFlapOption['class']; ?> notify-label-small">
-                                                            <?php echo $serviceFlapOption['text']; ?>
-                                                        </span>
+                                                    <span
+                                                        class="badge badge-<?php echo $serviceFlapOption['class']; ?> notify-label-small">
+                                                        <?php echo $serviceFlapOption['text']; ?>
+                                                    </span>
                                                 </label>
                                                 <span class="margin-left-15">
                                                     <template-diff-button ng-show="post.Service.servicetemplate_id"

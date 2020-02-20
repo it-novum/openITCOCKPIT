@@ -115,7 +115,8 @@
                                             <?php echo __('Service template'); ?>
                                         <?php endif; ?>
                                     </label>
-                                    <div ng-if="post.Service.service_type !== <?php echo MK_SERVICE; ?> && post.Service.service_type !== <?php echo OITC_AGENT_SERVICE; ?>">
+                                    <div
+                                        ng-if="post.Service.service_type !== <?php echo MK_SERVICE; ?> && post.Service.service_type !== <?php echo OITC_AGENT_SERVICE; ?>">
                                         <select
                                             id="ServiceServicetemplateSelect"
                                             data-placeholder="<?php echo __('Please choose'); ?>"
@@ -130,15 +131,16 @@
                                         <?php echo __('Please select a service template.'); ?>
                                     </div>
 
-                                    <div ng-if="post.Service.service_type == <?php echo MK_SERVICE; ?> || post.Service.service_type == <?php echo OITC_AGENT_SERVICE; ?>">
+                                    <div
+                                        ng-if="post.Service.service_type == <?php echo MK_SERVICE; ?> || post.Service.service_type == <?php echo OITC_AGENT_SERVICE; ?>">
                                         <!-- Service template of MK_SERVICES can't be changed -->
                                         <!-- For better design we use a fake select box to display the service template name -->
                                         <div class="chosen-container chosen-container-single chosen-disabled"
                                              style="width: 100%;">
                                             <a class="chosen-single fake-chosen-select">
-                                                        <span>
-                                                            {{servicetemplate.Servicetemplate.template_name}}
-                                                        </span>
+                                                <span>
+                                                    {{servicetemplate.Servicetemplate.template_name}}
+                                                </span>
                                                 <div><b></b></div>
                                             </a>
                                         </div>
@@ -154,7 +156,8 @@
                                     <label class="control-label">
                                         <?php echo __('Service name'); ?>
                                     </label>
-                                    <div class="input-group" ng-if="post.Service.service_type !== <?php echo MK_SERVICE; ?>">
+                                    <div class="input-group"
+                                         ng-if="post.Service.service_type !== <?php echo MK_SERVICE; ?>">
                                         <input
                                             id="ServiceName"
                                             class="form-control"
@@ -538,53 +541,52 @@
 
                                 <div class="form-group"
                                      ng-show="data.areContactsInheritedFromHosttemplate || data.areContactsInheritedFromHost || data.areContactsInheritedFromServicetemplate">
-                                    <label class="col-xs-12 col-lg-2 control-label" for="resetContacts">
-                                        <?php echo __('Disable inheritance'); ?>
-                                    </label>
+                                    <div class="custom-control custom-checkbox  margin-bottom-10"
+                                         ng-class="{'has-error': errors.disableInheritance}">
 
-                                    <div class="col-xs-12 col-lg-1 smart-form">
-                                        <label class="checkbox no-required no-padding no-margin label-default-off">
-                                            <input type="checkbox" name="checkbox"
-                                                   id="resetContacts"
-                                                   ng-model="data.disableInheritance">
-                                            <i class="checkbox-primary"></i>
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="resetContacts"
+                                               ng-model="data.disableInheritance">
+                                        <label class="custom-control-label" for="resetContacts">
+                                            <?php echo __('Disable inheritance'); ?>
                                         </label>
                                     </div>
-                                    <div class="col col-xs-12 col-md-offset-2 help-block text-info"
+                                    <div class="col col-xs-12 col-md-offset-2 help-block"
                                          ng-class="{'strikethrough': data.disableInheritance}">
                                         <?php echo __('Contacts and contact groups got inherited from'); ?>
 
                                         <span ng-class="{'bold': data.areContactsInheritedFromServicetemplate}">
-                                                <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
-                                                    <a ui-sref="ServicetemplatesEdit({id: post.Service.servicetemplate_id})">
-                                                        <?php echo __('service template'); ?>
-                                                    </a>
-                                                <?php else: ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
+                                                <a ui-sref="ServicetemplatesEdit({id: post.Service.servicetemplate_id})">
                                                     <?php echo __('service template'); ?>
-                                                <?php endif; ?>
-                                            </span>
+                                                </a>
+                                            <?php else: ?>
+                                                <?php echo __('service template'); ?>
+                                            <?php endif; ?>
+                                        </span>
 
                                         <span ng-show="!data.areContactsInheritedFromServicetemplate"
                                               ng-class="{'bold': data.areContactsInheritedFromHost}">
-                                                <i class="fa fa-angle-double-right"></i>
-                                                <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                    <a ui-sref="HostsEdit({id: host.Host.id})">
-                                                        <?php echo __('host'); ?>
-                                                    </a>
-                                                <?php else: ?>
+                                            <i class="fa fa-angle-double-right"></i>
+                                            <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                                <a ui-sref="HostsEdit({id: host.Host.id})">
                                                     <?php echo __('host'); ?>
-                                                <?php endif; ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <?php echo __('host'); ?>
+                                            <?php endif; ?>
                                         </span>
 
                                         <span ng-show="data.areContactsInheritedFromHosttemplate" class="bold">
-                                                <i class="fa fa-angle-double-right"></i>
-                                                <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
-                                                    <a ui-sref="HosttemplatesEdit({id: host.Host.hosttemplate_id})">
-                                                        <?php echo __('host template'); ?>
-                                                    </a>
-                                                <?php else: ?>
+                                            <i class="fa fa-angle-double-right"></i>
+                                            <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                                <a ui-sref="HosttemplatesEdit({id: host.Host.hosttemplate_id})">
                                                     <?php echo __('host template'); ?>
-                                                <?php endif; ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <?php echo __('host template'); ?>
+                                            <?php endif; ?>
                                         </span>
                                         .
                                     </div>
@@ -694,8 +696,9 @@
                                     </legend>
                                     <div class="row">
                                         <?php foreach ($serviceOptions as $serviceOption): ?>
-                                            <div class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
-                                                 ng-class="{'has-error': errors.<?php echo $serviceOption['field']; ?>}">
+                                            <div
+                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                                ng-class="{'has-error': errors.<?php echo $serviceOption['field']; ?>}">
                                                 <input type="checkbox"
                                                        class="custom-control-input"
                                                        ng-true-value="1"
@@ -704,9 +707,10 @@
                                                        ng-model="post.Service.<?php echo $serviceOption['field']; ?>">
                                                 <label for="<?php echo $serviceOption['field']; ?>"
                                                        class="col col-md-6 custom-control-label custom-control-label-<?php echo $serviceOption['class']; ?> padding-top-0 margin-right-10 ">
-                                                        <span class="badge badge-<?php echo $serviceOption['class']; ?> notify-label-small">
-                                                            <?php echo $serviceOption['text']; ?>
-                                                        </span>
+                                                    <span
+                                                        class="badge badge-<?php echo $serviceOption['class']; ?> notify-label-small">
+                                                        <?php echo $serviceOption['text']; ?>
+                                                    </span>
                                                 </label>
                                                 <span class="margin-left-15">
                                                     <template-diff-button ng-show="post.Service.servicetemplate_id"
@@ -835,8 +839,9 @@
                                     </legend>
                                     <div class="row">
                                         <?php foreach ($serviceFlapOptions as $serviceFlapOption): ?>
-                                            <div class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
-                                                 ng-class="{'has-error': errors.<?php echo $serviceFlapOption['field']; ?>}">
+                                            <div
+                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                                ng-class="{'has-error': errors.<?php echo $serviceFlapOption['field']; ?>}">
                                                 <input type="checkbox" name="checkbox"
                                                        class="custom-control-input"
                                                        ng-true-value="1"
@@ -846,9 +851,10 @@
                                                        ng-model="post.Service.<?php echo $serviceFlapOption['field']; ?>">
                                                 <label for="<?php echo $serviceFlapOption['field']; ?>"
                                                        class="col col-md-6 custom-control-label custom-control-label-<?php echo $serviceFlapOption['class']; ?> padding-top-0 margin-right-10">
-                                                        <span class="badge badge-<?php echo $serviceFlapOption['class']; ?> notify-label-small">
-                                                            <?php echo $serviceFlapOption['text']; ?>
-                                                        </span>
+                                                    <span
+                                                        class="badge badge-<?php echo $serviceFlapOption['class']; ?> notify-label-small">
+                                                        <?php echo $serviceFlapOption['text']; ?>
+                                                    </span>
                                                 </label>
                                                 <span class="margin-left-15">
                                                     <template-diff-button ng-show="post.Service.servicetemplate_id"
