@@ -26,16 +26,13 @@
 
 namespace App\Command;
 
-use App\Model\Entity\Instantreport;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
-use App\Model\Table\InstantreportsTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
-use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 
@@ -83,34 +80,6 @@ class TestingCommand extends Command {
          * Lof of space for your experimental code
          * Have fun :)
          */
-
-        /** @var InstantreportsTable $InstantreportsTable */
-        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
-        $instantreports = $InstantreportsTable->find()
-            ->contain([
-                'Users' => function (Query $q) {
-                    return $q->enableAutoFields(false)
-                        ->select([
-                            'Users.id',
-                            'Users.email',
-                            'Users.firstname',
-                            'Users.lastname'
-                        ]);
-                }
-            ])
-            ->where([
-                'Instantreports.send_email' => 1
-            ]);
-
-        /** @var Instantreport $instantreport */
-        foreach($instantreports as $instantreport){
-            //print_r($instantreport);
-            print_r('****'.(int)$instantreport->hasToBeSend());
-
-
-        }
-
-        ///print_r($instantreports->toArray());
 
     }
 
