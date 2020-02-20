@@ -164,7 +164,7 @@
                                 <div class="col-lg-12 padding-5">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h2>
+                                            <h4>
                                                 <i class="fa fa-desktop"></i>
                                                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                                     <a ui-sref="HostsBrowser({id:report.Host.id})">
@@ -173,7 +173,7 @@
                                                 <?php else: ?>
                                                     {{report.Host.name}}
                                                 <?php endif; ?>
-                                            </h2>
+                                            </h4>
                                         </div>
                                         <div class="card-body">
                                             <div class="row" ng-if="report.Host.reportData">
