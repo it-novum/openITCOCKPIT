@@ -54,8 +54,50 @@ class Instantreport extends Entity {
         'hosts'          => true,
         'servicegroups'  => true,
         'services'       => true,
-        'users'           => true,
+        'users'          => true,
         'created'        => true,
         'modified'       => true
     ];
+
+    /**
+     * @param $lastSendDate
+     * @param $sendInterval
+     * @return bool
+     */
+    public function hasToBeSend() {
+        $now = time();
+        $hasToBeSend = false;
+        $lastSendDate = $this->get('last_send_date');
+        $sendInterval = $this->get('send_interval');
+        print_r('LAST SEND DATE !!!! ' . $lastSendDate);
+        print_r('SEND INTERVAL !!!!' . $sendInterval);
+        if ($lastSendDate == '0000-00-00 00:00:00') {
+            return true;
+        }
+        $lastSendTimestamp = strtotime($lastSendDate);
+        switch ($sendInterval) {
+            case 1: //daily
+                if (intval(date('Ymd', $now)) > intval(date('Ymd', $lastSendTimestamp))) {
+                    $hasToBeSend = true;
+                }
+                break;
+            case 2: //weekly
+                if (intval(date('oW', $now)) > intval(date('oW', $lastSendTimestamp))) {
+                    $hasToBeSend = true;
+                }
+                break;
+            case 3: //monthly
+                if (intval(date('Ym', $now)) > intval(date('Ym', $lastSendTimestamp))) {
+                    $hasToBeSend = true;
+                }
+                break;
+            case 4: //yearly
+                if (intval(date('Y', $now)) > intval(date('Y', $lastSendTimestamp))) {
+                    $hasToBeSend = true;
+                }
+                break;
+        }
+
+        return $hasToBeSend;
+    }
 }

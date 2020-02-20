@@ -49,7 +49,8 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'instantreports')): ?>
-                        <a back-button fallback-state='InstantreportsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button fallback-state='InstantreportsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -318,7 +319,8 @@
                             </div>
                         </div>
                         <div class="send-interval-holder" ng-if="post.Instantreport.send_email">
-                            <div class="form-group required" ng-class="{'has-error': errors.send_interval}">
+                            <div class="form-group {{(post.Instantreport.send_email)?'required':''}}"
+                                 ng-class="{'has-error': errors.send_interval}">
                                 <label class="control-label" for="InstantreportSendInterval">
                                     <?php echo __('Send interval'); ?>
                                 </label>
@@ -328,7 +330,7 @@
                                     chosen="{}"
                                     id="InstantreportSendInterval"
                                     ng-model="post.Instantreport.send_interval">
-                                    <option ng-value="0" ng-if="!post.Instantreport.send_interval">
+                                    <option ng-value="0" ng-if="!post.Instantreport.send_email">
                                         <?php echo __('NEVER'); ?>
                                     </option>
                                     <option ng-value="1">
