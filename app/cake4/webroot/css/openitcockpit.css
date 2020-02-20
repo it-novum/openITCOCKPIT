@@ -707,4 +707,25 @@ pre {
     border-radius: 12px 2px 2px 58px;
 }
 
+.serviceBarChart{
+    height: 30px;
+}
 
+
+.barchart-legend-container ul {
+    margin: 0;
+    overflow: hidden;
+    padding: 3px 0px;
+    display: -webkit-flex;
+}
+
+.barchart-legend-container ul li{
+    -webkit-flex: 1 0 0px;
+    overflow: hidden;
+}
+
+.barchart-legend-label {
+    list-style: none;
+    float: left;
+    margin-right: 15px;
+}

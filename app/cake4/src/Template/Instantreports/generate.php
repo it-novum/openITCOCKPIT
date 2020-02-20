@@ -30,7 +30,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="DowntimereportsIndex">
+        <a ui-sref="InstantreportsIndex">
             <i class="fas fa-clipboard-list"></i> <?php echo __('Instant reports'); ?>
         </a>
     </li>
@@ -182,21 +182,21 @@
                                                                                  data="report.Host"></host-availability-pie-chart>
                                                 </div>
                                             </div>
-                                            <div class="row" ng-repeat="service in report.Host.Services">
-                                                <div class="col col-md-12 padding-2">
-                                                    <i class="fa fa-cog"></i>
-                                                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                        <a ui-sref="ServicesBrowser({id:service.Service.id})">
+                                            <div ng-repeat="service in report.Host.Services">
+                                                <div class="row">
+                                                    <div class="col-lg-12 padding-2">
+                                                        <i class="fa fa-cog"></i>
+                                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                                            <a ui-sref="ServicesBrowser({id:service.Service.id})">
+                                                                {{service.Service.name}}
+                                                            </a>
+                                                        <?php else: ?>
                                                             {{service.Service.name}}
-                                                        </a>
-                                                    <?php else: ?>
-                                                        {{service.Service.name}}
-                                                    <?php endif; ?>
+                                                        <?php endif; ?>
+                                                    </div>
                                                 </div>
-                                                <div class="col col-md-12 no-padding"
-                                                     ng-if="service.Service.reportData">
-                                                    <div
-                                                        class="col col-lg-3 col-md-12 col-sm-12 col-xs-12 no-padding">
+                                                <div class="row" ng-if="service.Service.reportData">
+                                                    <div class="col-lg-6 col-md-12">
                                                         <service-availability-bar-chart
                                                             chart-id="service.Service.id"
                                                             data="service.Service"></service-availability-bar-chart>
