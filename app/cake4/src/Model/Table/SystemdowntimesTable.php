@@ -331,12 +331,12 @@ class SystemdowntimesTable extends Table {
             ])
             ->contain([
                 'Hosts' => function (Query $query) use ($MY_RIGHTS) {
-                    $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                        if (!empty($MY_RIGHTS)) {
-                            return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                        }
-                        return $q;
-                    });
+                    if (!empty($MY_RIGHTS)) {
+                        $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                            'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                        ]);
+                    }
+
                     $query->contain('HostsToContainersSharing');
                     return $query;
                 }
@@ -397,12 +397,11 @@ class SystemdowntimesTable extends Table {
                 'Services' => function (Query $query) use ($MY_RIGHTS) {
                     $query->contain([
                         'Hosts' => function (Query $query) use ($MY_RIGHTS) {
-                            $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                                if (!empty($MY_RIGHTS)) {
-                                    return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                                }
-                                return $q;
-                            });
+                            if (!empty($MY_RIGHTS)) {
+                                $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                                    'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                                ]);
+                            }
                             $query->contain('HostsToContainersSharing');
                             return $query;
                         },

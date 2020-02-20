@@ -434,13 +434,11 @@ class InstantreportsTable extends Table {
                                                 'Hosts.name',
                                                 'Hosts.hosttemplate_id'
                                             ]);
-                                        $query
-                                            ->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                                                if (!empty($MY_RIGHTS)) {
-                                                    return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                                                }
-                                                return $q;
-                                            });
+                                        if (!empty($MY_RIGHTS)) {
+                                            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                                                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                                            ]);
+                                        }
                                         $query
                                             ->leftJoinWith('Hostgroups')
                                             ->whereNull('Hostgroups.id');
@@ -474,13 +472,11 @@ class InstantreportsTable extends Table {
                                     'Hosts.uuid',
                                     'Hosts.name'
                                 ]);
-                            $query
-                                ->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                                    if (!empty($MY_RIGHTS)) {
-                                        return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                                    }
-                                    return $q;
-                                });
+                            if (!empty($MY_RIGHTS)) {
+                                $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                                    'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                                ]);
+                            }
                             if ($instantReport->get('evaluation') > 1) {
                                 $query->contain([
                                     'Services' => [
@@ -577,13 +573,12 @@ class InstantreportsTable extends Table {
                         ->where([
                             'Hosts.id IN' => $hostsIds
                         ]);
-                    $hosts
-                        ->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                            if (!empty($MY_RIGHTS)) {
-                                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                            }
-                            return $q;
-                        });
+
+                    if (!empty($MY_RIGHTS)) {
+                        $hosts->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                            'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                        ]);
+                    }
                     $hosts
                         ->disableHydration()
                         ->all()
@@ -615,13 +610,11 @@ class InstantreportsTable extends Table {
                         ->where([
                             'Hosts.id IN' => $hostsIds
                         ]);
-                    $hosts
-                        ->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                            if (!empty($MY_RIGHTS)) {
-                                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                            }
-                            return $q;
-                        });
+                    if (!empty($MY_RIGHTS)) {
+                        $hosts->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                            'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                        ]);
+                    }
                     $hosts
                         ->disableHydration()
                         ->all()
@@ -689,12 +682,10 @@ class InstantreportsTable extends Table {
                                                 if (empty($MY_RIGHTS)) {
                                                     return $q;
                                                 }
-                                                $q->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                                                    if (!empty($MY_RIGHTS)) {
-                                                        return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                                                    }
-                                                    return $q;
-                                                });
+                                                $q->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                                                    'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                                                ]);
+                                                return $q;
                                             }
                                         ]);
                                         $query->leftJoinWith('Servicegroups')
@@ -723,12 +714,10 @@ class InstantreportsTable extends Table {
                                         if (empty($MY_RIGHTS)) {
                                             return $q;
                                         }
-                                        $q->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                                            if (!empty($MY_RIGHTS)) {
-                                                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                                            }
-                                            return $q;
-                                        });
+                                        $q->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                                            'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                                        ]);
+                                        return $q;
                                     }
                                 ])
                                 ->select([
@@ -826,12 +815,10 @@ class InstantreportsTable extends Table {
                             if (empty($MY_RIGHTS)) {
                                 return $q;
                             }
-                            $q->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                                if (!empty($MY_RIGHTS)) {
-                                    return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                                }
-                                return $q;
-                            });
+                            $q->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                            ]);
+                            return $q;
                         }
                     ])
                     ->where([
