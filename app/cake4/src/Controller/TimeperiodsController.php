@@ -363,7 +363,6 @@ class TimeperiodsController extends AppController {
                             unset($sourceTimeperiod['timeperiod_timeranges'][$i]['id']);
                             unset($sourceTimeperiod['timeperiod_timeranges'][$i]['timeperiod_id']);
                         }
-
                         $Cache->set($sourceTimeperiod['id'], $sourceTimeperiod);
                     }
 

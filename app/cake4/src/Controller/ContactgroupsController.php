@@ -369,7 +369,6 @@ class ContactgroupsController extends AppController {
                         ])->toArray();
                         $contacts = Hash::extract($sourceContactgroup['contacts'], '{n}.id');
                         $sourceContactgroup['contacts'] = $contacts;
-
                         $Cache->set($sourceContactgroup['id'], $sourceContactgroup);
                     }
 
@@ -499,19 +498,19 @@ class ContactgroupsController extends AppController {
                 'Contactgroups.id' => $id
             ])
             ->contain([
-                'Containers' => [
+                'Containers'         => [
                     'fields' => [
                         'Containers.name'
                     ]
                 ],
-                'Hosttemplates'    => [
+                'Hosttemplates'      => [
                     'fields' => [
                         'ContactgroupsToHosttemplates.contactgroup_id',
                         'Hosttemplates.id',
                         'Hosttemplates.name'
                     ]
                 ],
-                'Hosts'            => [
+                'Hosts'              => [
                     'fields' => [
                         'ContactgroupsToHosts.contactgroup_id',
                         'Hosts.id',
@@ -519,15 +518,15 @@ class ContactgroupsController extends AppController {
                         'Hosts.address'
                     ]
                 ],
-                'Servicetemplates' => [
+                'Servicetemplates'   => [
                     'fields' => [
                         'ContactgroupsToServicetemplates.contactgroup_id',
                         'Servicetemplates.id',
                         'Servicetemplates.name'
                     ]
                 ],
-                'Services'         => [
-                    'Hosts' => [
+                'Services'           => [
+                    'Hosts'            => [
                         'fields' => [
                             'Hosts.name'
                         ]
@@ -537,7 +536,7 @@ class ContactgroupsController extends AppController {
                             'Servicetemplates.name'
                         ]
                     ],
-                    'fields' => [
+                    'fields'           => [
                         'ContactgroupsToServices.contactgroup_id',
                         'Services.id',
                         'Services.name'
@@ -549,7 +548,7 @@ class ContactgroupsController extends AppController {
                         'Hostescalations.id'
                     ]
                 ],
-                'Serviceescalations'    => [
+                'Serviceescalations' => [
                     'fields' => [
                         'ContactgroupsToServiceescalations.contactgroup_id',
                         'Serviceescalations.id'

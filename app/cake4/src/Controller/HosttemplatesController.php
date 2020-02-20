@@ -340,11 +340,11 @@ class HosttemplatesController extends AppController {
                     'Hosttemplate' => $hosttemplate->toArray()
                 ]
             );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
 
             //Delete Documentation record if exists
             /** @var $DocumentationsTable DocumentationsTable */
@@ -404,6 +404,11 @@ class HosttemplatesController extends AppController {
                         foreach ($sourceHosttemplate['hosttemplatecommandargumentvalues'] as $i => $hosttemplatecommandargumentvalues) {
                             unset($sourceHosttemplate['hosttemplatecommandargumentvalues'][$i]['id']);
                             unset($sourceHosttemplate['hosttemplatecommandargumentvalues'][$i]['hosttemplate_id']);
+                        }
+
+                        foreach ($sourceHosttemplate['customvariables'] as $i => $customvariable) {
+                            unset($sourceHosttemplate['customvariables'][$i]['id']);
+                            unset($sourceHosttemplate['customvariables'][$i]['object_id']);
                         }
 
                         $Cache->set($sourceHosttemplateId, $sourceHosttemplate);
