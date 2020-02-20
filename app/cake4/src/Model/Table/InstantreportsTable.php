@@ -120,6 +120,14 @@ class InstantreportsTable extends Table {
             ]);
 
         $validator
+            ->greaterThan('send_interval', 0,
+                __('Please select a valid interval type'),
+                function ($context) {
+                    return ($context['data']['send_email'] === 1 && $context['data']['send_interval']);
+                });
+
+
+        $validator
             ->add('hostgroups', 'custom', [
                 'rule'    => [$this, 'atLeastOneHostgroup'],
                 'message' => __('You must specify at least one host group')

@@ -26,28 +26,18 @@
 
 namespace App\Command;
 
-use App\itnovum\openITCOCKPIT\Database\Backup;
-use App\itnovum\openITCOCKPIT\Monitoring\Naemon\ExternalCommands;
-use App\Model\Entity\CalendarHoliday;
-use App\Model\Entity\Service;
-use App\Model\Table\CalendarsTable;
-use App\Model\Table\HostgroupsTable;
+use App\Model\Entity\Instantreport;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
-use App\Model\Table\ServicesTable;
+use App\Model\Table\InstantreportsTable;
 use App\Model\Table\SystemsettingsTable;
-use App\Model\Table\TimeperiodsTable;
 use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
-use Cake\Core\Configure;
-use Cake\Datasource\Exception\RecordNotFoundException;
-use Cake\Log\Log;
+use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
-use itnovum\openITCOCKPIT\Core\HoststatusFields;
-use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 
 /**
  * Testing command.
@@ -93,6 +83,34 @@ class TestingCommand extends Command {
          * Lof of space for your experimental code
          * Have fun :)
          */
+
+        /** @var InstantreportsTable $InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        $instantreports = $InstantreportsTable->find()
+            ->contain([
+                'Users' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'Users.id',
+                            'Users.email',
+                            'Users.firstname',
+                            'Users.lastname'
+                        ]);
+                }
+            ])
+            ->where([
+                'Instantreports.send_email' => 1
+            ]);
+
+        /** @var Instantreport $instantreport */
+        foreach($instantreports as $instantreport){
+            //print_r($instantreport);
+            print_r('****'.(int)$instantreport->hasToBeSend());
+
+
+        }
+
+        ///print_r($instantreports->toArray());
 
     }
 

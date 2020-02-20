@@ -306,7 +306,8 @@
                     </div>
                 </div>
                 <div class="send-interval-holder" ng-if="post.Instantreport.send_email">
-                    <div class="form-group">
+                    <div class="form-group {{(post.Instantreport.send_email)?'required':''}}"
+                         ng-class="{'has-error': errors.send_interval}">
                         <label for="InstantreportSendInterval" class="col col-md-2 control-label">
                             <?php echo __('Send interval'); ?>
                         </label>
@@ -317,7 +318,7 @@
                                     id="InstantreportSendInterval"
                                     chosen="send_interval"
                                     ng-model="post.Instantreport.send_interval">
-                                <option ng-value="0" ng-if="!post.Instantreport.send_interval">
+                                <option ng-value="0" ng-if="!post.Instantreport.send_email">
                                     <?php echo __('NEVER'); ?>
                                 </option>
                                 <option ng-value="1">
@@ -333,6 +334,9 @@
                                     <?php echo __('YEAR'); ?>
                                 </option>
                             </select>
+                            <div ng-repeat="error in errors.send_interval">
+                                <div class="text-danger">{{ error }}</div>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group required" ng-class="{'has-error': errors.send_email}">
