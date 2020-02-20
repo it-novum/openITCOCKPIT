@@ -152,108 +152,104 @@
                                     <i class="fa fa-calendar txt-color-blueDark"></i>
                                     <?php echo __('Analysis period: '); ?>
                                     {{reportDetails.from}}
-                                    <i class="fa fa-long-arrow-right"></i>
+                                    <i class="fas fa-long-arrow-alt-right"></i>
                                     {{reportDetails.to}}
                                 </div>
                                 <div class="col-md-3 text-left">
 
                                 </div>
                             </div>
-                            <div class="row" ng-if="!reportDetails.summary">
-                                <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12"
-                                         ng-repeat="report in reportData">
-                                    <div class="col-xs-12 col-md-12 col-lg-12 padding-5">
-                                        <div class="jarviswidget jarviswidget-sortable" role="widget">
-                                            <header role="heading">
-                                                <h2>
-                                                    <i class="fa fa-desktop"></i>
-                                                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                                        <a ui-sref="HostsBrowser({id:report.Host.id})">
-                                                            {{report.Host.name}}
+                            <div class="row" ng-if="!reportDetails.summary" ng-repeat="report in reportData">
+
+                                <div class="col-lg-12 padding-5">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h2>
+                                                <i class="fa fa-desktop"></i>
+                                                <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                                    <a ui-sref="HostsBrowser({id:report.Host.id})">
+                                                        {{report.Host.name}}
+                                                    </a>
+                                                <?php else: ?>
+                                                    {{report.Host.name}}
+                                                <?php endif; ?>
+                                            </h2>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row" ng-if="report.Host.reportData">
+                                                <div class="col col-md-12 padding-2">
+                                                    <host-availability-pie-chart chart-id="report.Host.id"
+                                                                                 data="report.Host"></host-availability-pie-chart>
+                                                </div>
+                                            </div>
+                                            <div class="row" ng-repeat="service in report.Host.Services">
+                                                <div class="col col-md-12 padding-2">
+                                                    <i class="fa fa-cog"></i>
+                                                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                                        <a ui-sref="ServicesBrowser({id:service.Service.id})">
+                                                            {{service.Service.name}}
                                                         </a>
                                                     <?php else: ?>
-                                                        {{report.Host.name}}
+                                                        {{service.Service.name}}
                                                     <?php endif; ?>
-                                                </h2>
-                                            </header>
-                                            <div class="widget-body">
-                                                <div class="row" ng-if="report.Host.reportData">
-                                                    <div class="col col-md-12 padding-2">
-                                                        <host-availability-pie-chart chart-id="report.Host.id"
-                                                                                     data="report.Host"></host-availability-pie-chart>
-                                                    </div>
                                                 </div>
-                                                <div class="row" ng-repeat="service in report.Host.Services">
-                                                    <div class="col col-md-12 padding-2">
-                                                        <i class="fa fa-cog"></i>
-                                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                            <a ui-sref="ServicesBrowser({id:service.Service.id})">
-                                                                {{service.Service.name}}
-                                                            </a>
-                                                        <?php else: ?>
-                                                            {{service.Service.name}}
-                                                        <?php endif; ?>
-                                                    </div>
-                                                    <div class="col col-md-12 no-padding"
-                                                         ng-if="service.Service.reportData">
-                                                        <div
-                                                            class="col col-lg-3 col-md-12 col-sm-12 col-xs-12 no-padding">
-                                                            <service-availability-bar-chart
-                                                                chart-id="service.Service.id"
-                                                                data="service.Service"></service-availability-bar-chart>
-                                                        </div>
+                                                <div class="col col-md-12 no-padding"
+                                                     ng-if="service.Service.reportData">
+                                                    <div
+                                                        class="col col-lg-3 col-md-12 col-sm-12 col-xs-12 no-padding">
+                                                        <service-availability-bar-chart
+                                                            chart-id="service.Service.id"
+                                                            data="service.Service"></service-availability-bar-chart>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </article>
+                                </div>
                             </div>
                             <div class="row" ng-if="reportDetails.summary">
-                                <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <div class="col-xs-12 col-md-12 col-lg-12 padding-5"
-                                         ng-if="reportDetails.summary_hosts">
-                                        <div class="jarviswidget jarviswidget-sortable" role="widget">
-                                            <header role="heading">
-                                                <h2>
-                                                    <i class="fa fa-desktop"></i>
-                                                    <?php echo __('Hosts summary'); ?>
-                                                </h2>
-                                            </header>
-                                            <div class="widget-body">
-                                                <div class="row" ng-if="reportDetails.summary_hosts.reportData">
-                                                    <div class="col col-md-12 padding-2">
-                                                        <host-availability-pie-chart chart-id="'hostSummary'"
-                                                                                     data="reportDetails.summary_hosts"></host-availability-pie-chart>
+                                <div class="col-lg-12 padding-5"
+                                     ng-if="reportDetails.summary_hosts">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h4>
+                                                <i class="fa fa-desktop"></i>
+                                                <?php echo __('Hosts summary'); ?>
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row" ng-if="reportDetails.summary_hosts.reportData">
+                                                <div class="col col-md-12 padding-2">
+                                                    <host-availability-pie-chart chart-id="'hostSummary'"
+                                                                                 data="reportDetails.summary_hosts"></host-availability-pie-chart>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 padding-5"
+                                     ng-if="reportDetails.summary_services">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h4>
+                                                <i class="fa fa-cog"></i>
+                                                <?php echo __('Services summary'); ?>
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row" ng-if="reportDetails.summary_services.reportData">
+                                                <div class="col col-md-12 no-padding"
+                                                     ng-if="reportDetails.summary_services.reportData">
+                                                    <div
+                                                        class="col col-lg-3 col-md-12 col-sm-12 col-xs-12 no-padding">
+                                                        <service-availability-pie-chart chart-id="'serviceSummary'"
+                                                                                        data="reportDetails.summary_services"></service-availability-pie-chart>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xs-12 col-md-12 col-lg-12 padding-5"
-                                         ng-if="reportDetails.summary_services">
-                                        <div class="jarviswidget jarviswidget-sortable" role="widget">
-                                            <header role="heading">
-                                                <h2>
-                                                    <i class="fa fa-cog"></i>
-                                                    <?php echo __('Services summary'); ?>
-                                                </h2>
-                                            </header>
-                                            <div class="widget-body">
-                                                <div class="row" ng-if="reportDetails.summary_services.reportData">
-                                                    <div class="col col-md-12 no-padding"
-                                                         ng-if="reportDetails.summary_services.reportData">
-                                                        <div
-                                                            class="col col-lg-3 col-md-12 col-sm-12 col-xs-12 no-padding">
-                                                            <service-availability-pie-chart chart-id="'serviceSummary'"
-                                                                                            data="reportDetails.summary_services"></service-availability-pie-chart>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </article>
+                                </div>
                             </div>
                         </div>
                     </div>
