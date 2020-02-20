@@ -14,6 +14,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
@@ -752,12 +753,11 @@ class HostsTable extends Table {
         }
 
         $query->where($where);
-        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-            if (!empty($MY_RIGHTS)) {
-                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-            }
-            return $q;
-        });
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
         $query->contain('HostsToContainersSharing');
         $query->disableHydration();
         $query->group(['Hosts.id']);
@@ -825,12 +825,12 @@ class HostsTable extends Table {
             ]
         ]);
 
-        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-            if (!empty($MY_RIGHTS)) {
-                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-            }
-            return $q;
-        });
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
         $query->contain([
             'HostsToContainersSharing',
             'Hosttemplates' => [
@@ -925,12 +925,12 @@ class HostsTable extends Table {
             ]
         ]);
 
-        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-            if (!empty($MY_RIGHTS)) {
-                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-            }
-            return $q;
-        });
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
         $query->contain([
             'HostsToContainersSharing',
             'Hosttemplates' => [
@@ -992,12 +992,11 @@ class HostsTable extends Table {
         $where['Hosts.disabled'] = (int)$HostConditions->includeDisabled();
 
         $query->where($where);
-        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-            if (!empty($MY_RIGHTS)) {
-                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-            }
-            return $q;
-        });
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
         $query->contain([
             'HostsToContainersSharing',
             'Hosttemplates' => [
@@ -1046,12 +1045,11 @@ class HostsTable extends Table {
             'Hosts.tags',
         ]);
 
-        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-            if (!empty($MY_RIGHTS)) {
-                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-            }
-            return $q;
-        });
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
         $query->contain([
             'HostsToContainersSharing'
         ]);
@@ -1130,12 +1128,11 @@ class HostsTable extends Table {
             'Hosts.tags',
         ]);
 
-        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-            if (!empty($MY_RIGHTS)) {
-                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-            }
-            return $q;
-        });
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
         $query->contain([
             'HostsToContainersSharing'
         ]);
@@ -1219,12 +1216,11 @@ class HostsTable extends Table {
         ]);
 
         $query->where($where);
-        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($containerIds) {
-            if (!empty($containerIds)) {
-                return $q->where(['HostsToContainersSharing.id IN' => $containerIds]);
-            }
-            return $q;
-        });
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $containerIds
+            ]);
+        }
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order([
@@ -1514,12 +1510,11 @@ class HostsTable extends Table {
 
         $query = $this->find('list');
         $MY_RIGHTS = $HostConditions->getContainerIds();
-        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-            if (!empty($MY_RIGHTS)) {
-                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-            }
-            return $q;
-        });
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
         $query->contain([
             'HostsToContainersSharing'
         ]);
@@ -1559,12 +1554,11 @@ class HostsTable extends Table {
         if (!empty($selected)) {
             $query = $this->find('list');
             $MY_RIGHTS = $HostConditions->getContainerIds();
-            $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                if (!empty($MY_RIGHTS)) {
-                    return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                }
-                return $q;
-            });
+            if (!empty($MY_RIGHTS)) {
+                $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                    'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                ]);
+            }
             $query->contain([
                 'HostsToContainersSharing'
             ]);
@@ -1947,12 +1941,11 @@ class HostsTable extends Table {
                 'Hosts.uuid'
             ]);
 
-        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-            if (!empty($MY_RIGHTS)) {
-                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-            }
-            return $q;
-        });
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
         $query->contain([
             'HostsToContainersSharing',
         ]);
@@ -2007,12 +2000,11 @@ class HostsTable extends Table {
             'Hosts.id IN' => $hostIds
         ];
 
-        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-            if (!empty($MY_RIGHTS)) {
-                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-            }
-            return $q;
-        });
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
         $query->contain([
             'HostsToContainersSharing'
         ]);
@@ -2151,12 +2143,11 @@ class HostsTable extends Table {
         ];
 
         $query->where($where);
-        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-            if (!empty($MY_RIGHTS)) {
-                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-            }
-            return $q;
-        });
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
         $query->contain([
             'HostsToContainersSharing',
             'Hosttemplates' => [
@@ -2205,7 +2196,6 @@ class HostsTable extends Table {
             $hoststatusCount['0'] = 0;
         }
 
-
         $query = $this->find();
         $query
             ->select([
@@ -2229,16 +2219,17 @@ class HostsTable extends Table {
                     'alias'      => 'Hoststatus',
                     'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
                 ]
-            ])
-            ->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                if (!empty($MY_RIGHTS)) {
-                    return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                }
-                return $q;
-            })
-            ->contain([
-                'HostsToContainersSharing'
-            ])
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->contain([
+            'HostsToContainersSharing'
+        ])
             ->group([
                 'Hoststatus.current_state',
             ])
@@ -2249,6 +2240,7 @@ class HostsTable extends Table {
                 'Hoststatus.current_state >' => 0
             ]);
         }
+
 
         $hoststatusCountResult = $query->all();
 
@@ -2302,16 +2294,15 @@ class HostsTable extends Table {
                     'alias'      => 'Servicestatus',
                     'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
                 ],
-            ])
-            ->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                if (!empty($MY_RIGHTS)) {
-                    return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                }
-                return $q;
-            })
-            ->contain([
-                'HostsToContainersSharing'
-            ])
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->contain([
+            'HostsToContainersSharing'
+        ])
             ->group([
                 'Servicestatus.current_state',
             ])
@@ -2360,16 +2351,15 @@ class HostsTable extends Table {
                     'alias'      => 'Hoststatus',
                     'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
                 ]
-            ])
-            ->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                if (!empty($MY_RIGHTS)) {
-                    return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                }
-                return $q;
-            })
-            ->contain([
-                'HostsToContainersSharing'
-            ])
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->contain([
+            'HostsToContainersSharing'
+        ])
             ->disableHydration();
 
         $where = [];
@@ -2857,10 +2847,10 @@ class HostsTable extends Table {
         $host = $this->get($id);
         $currentFlag = $host->get('usage_flag');
 
-        if($currentFlag & $USAGE_FLAG){
+        if ($currentFlag & $USAGE_FLAG) {
             //Host already has the flag for given module
             return true;
-        }else{
+        } else {
             $newFlag = $currentFlag + $USAGE_FLAG;
             $host->set('usage_flag', $newFlag);
             return $this->save($host);
@@ -2876,9 +2866,9 @@ class HostsTable extends Table {
         $host = $this->get($id);
         $currentFlag = $host->get('usage_flag');
 
-        if($currentFlag & $USAGE_FLAG){
+        if ($currentFlag & $USAGE_FLAG) {
             $newFlag = $currentFlag - $USAGE_FLAG;
-            if($newFlag < 0){
+            if ($newFlag < 0) {
                 $newFlag = 0;
             }
 

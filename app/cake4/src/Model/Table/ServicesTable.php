@@ -506,13 +506,12 @@ class ServicesTable extends Table {
                             'Hosts.id',
                             'Hosts.uuid',
                             'Hosts.address'
-                        ])
-                        ->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                            if (!empty($MY_RIGHTS)) {
-                                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                            }
-                            return $q;
-                        });
+                        ]);
+                    if (!empty($MY_RIGHTS)) {
+                        $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                            'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                        ]);
+                    }
 
                     return $query;
                 },
@@ -973,7 +972,7 @@ class ServicesTable extends Table {
     public function getServiceByIdForPermissionsCheck($id) {
         $query = $this->find();
         $query
-        ->select([
+            ->select([
                 'Services.id',
                 'Services.name',
                 'Services.uuid',
@@ -985,7 +984,7 @@ class ServicesTable extends Table {
                 'Services.id' => $id
             ])
             ->contain([
-                'Hosts' => function (Query $query) {
+                'Hosts'            => function (Query $query) {
                     $query->select([
                         'Hosts.id',
                         'Hosts.uuid',
@@ -2701,10 +2700,10 @@ class ServicesTable extends Table {
         $service = $this->get($id);
         $currentFlag = $service->get('usage_flag');
 
-        if($currentFlag & $USAGE_FLAG){
+        if ($currentFlag & $USAGE_FLAG) {
             //Service already has the flag for given module
             return true;
-        }else{
+        } else {
             $newFlag = $currentFlag + $USAGE_FLAG;
             $service->set('usage_flag', $newFlag);
             return $this->save($service);
@@ -2720,9 +2719,9 @@ class ServicesTable extends Table {
         $service = $this->get($id);
         $currentFlag = $service->get('usage_flag');
 
-        if($currentFlag & $USAGE_FLAG){
+        if ($currentFlag & $USAGE_FLAG) {
             $newFlag = $currentFlag - $USAGE_FLAG;
-            if($newFlag < 0){
+            if ($newFlag < 0) {
                 $newFlag = 0;
             }
 
