@@ -424,14 +424,15 @@
                                 <i class="fa fa-wrench"></i> <?php echo __('Notification configuration'); ?>
                             </div>
                             <div class="card-body">
+
                                 <div class="form-group required"
                                      ng-class="{'has-error': errors.notify_period_id}">
-                                    <label class="col-xs-12 col-lg-2 control-label">
+                                    <label class="control-label" for="NotificationPeriod">
                                         <?php echo __('Notification period'); ?>
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
-                                            id="NotifyPeriodSelect"
+                                            id="NotificationPeriod"
                                             data-placeholder="<?php echo __('Please choose'); ?>"
                                             class="form-control"
                                             chosen="timeperiods"
@@ -664,46 +665,43 @@
                             <div class="card-body">
 
                                 <div class="form-group" ng-class="{'has-error': errors.service_url}">
-                                    <label class="col-xs-12 col-lg-2 control-label">
+                                    <label class="control-label">
                                         <?php echo __('Service URL'); ?>
                                     </label>
-                                    <div class="col-xs-12 col-lg-10">
-                                        <div class="input-group" style="width: 100%;">
-                                            <input
-                                                class="form-control"
-                                                placeholder="https://issues.example.org?host=$HOSTNAME$&service=$SERVICEDESC$"
-                                                type="text"
-                                                ng-model="post.Service.service_url">
-                                            <template-diff ng-show="post.Service.servicetemplate_id"
-                                                           value="post.Service.service_url"
-                                                           template-value="servicetemplate.Servicetemplate.service_url"></template-diff>
-                                        </div>
-                                        <div ng-repeat="error in errors.service_url">
-                                            <div class="help-block text-danger">{{ error }}</div>
-                                        </div>
-                                        <div class="help-block">
-                                            <?php echo __('The macros $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$, $HOSTADDRESS$, $SERVICEID$, $SERVICEDESC$, $SERVICEDISPLAYNAME$ will be replaced'); ?>
-                                        </div>
+                                    <div class="input-group">
+                                        <input
+                                            class="form-control"
+                                            placeholder="https://issues.example.org?host=$HOSTNAME$&service=$SERVICEDESC$"
+                                            type="text"
+                                            ng-model="post.Service.service_url">
+
+                                        <template-diff ng-show="post.Service.servicetemplate_id"
+                                                       value="post.Service.service_url"
+                                                       template-value="servicetemplate.Servicetemplate.service_url"></template-diff>
+                                    </div>
+                                    <div ng-repeat="error in errors.service_url">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                    <div class="help-block">
+                                        <?php echo __('The macros $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$, $HOSTADDRESS$, $SERVICEID$, $SERVICEDESC$, $SERVICEDISPLAYNAME$ will be replaced'); ?>
                                     </div>
                                 </div>
 
                                 <div class="form-group" ng-class="{'has-error': errors.notes}">
-                                    <label class="col-xs-12 col-lg-2 control-label">
+                                    <label class="control-label">
                                         <?php echo __('Notes'); ?>
                                     </label>
-                                    <div class="col-xs-12 col-lg-10">
-                                        <div class="input-group" style="width: 100%;">
-                                            <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.Service.notes">
-                                            <template-diff ng-show="post.Service.servicetemplate_id"
-                                                           value="post.Service.notes"
-                                                           template-value="servicetemplate.Servicetemplate.notes"></template-diff>
-                                        </div>
-                                        <div ng-repeat="error in errors.notes">
-                                            <div class="help-block text-danger">{{ error }}</div>
-                                        </div>
+                                    <div class="input-group">
+                                        <input
+                                            class="form-control"
+                                            type="text"
+                                            ng-model="post.Service.notes">
+                                        <template-diff ng-show="post.Service.servicetemplate_id"
+                                                       value="post.Service.notes"
+                                                       template-value="servicetemplate.Servicetemplate.notes"></template-diff>
+                                    </div>
+                                    <div ng-repeat="error in errors.notes">
+                                        <div class="help-block text-danger">{{ error }}</div>
                                     </div>
                                 </div>
 
