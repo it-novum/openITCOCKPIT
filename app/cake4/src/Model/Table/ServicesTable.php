@@ -971,12 +971,15 @@ class ServicesTable extends Table {
      * @return array|Service|null
      */
     public function getServiceByIdForPermissionsCheck($id) {
-        $query = $this->find()
-            ->select([
+        $query = $this->find();
+        $query
+        ->select([
                 'Services.id',
                 'Services.name',
                 'Services.uuid',
                 'Services.servicetemplate_id',
+
+                'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
             ])
             ->where([
                 'Services.id' => $id
@@ -986,17 +989,24 @@ class ServicesTable extends Table {
                     $query->select([
                         'Hosts.id',
                         'Hosts.uuid',
+                        'Hosts.name',
                         'Hosts.container_id'
                     ])
                         ->contain([
                             'HostsToContainersSharing'
                         ]);
                     return $query;
+                },
+                'Servicetemplates' => function (Query $query) {
+                    $query->select([
+                        'Servicetemplates.id',
+                        'Servicetemplates.name',
+                    ]);
+                    return $query;
                 }
-            ])
-            ->first();
+            ]);
 
-        return $query;
+        return $query->first();
     }
 
     /**
@@ -2680,5 +2690,46 @@ class ServicesTable extends Table {
         $result = $query->all();
 
         return $this->emptyArrayIfNull($result->toArray());
+    }
+
+    /**
+     * @param int $id
+     * @param int $USAGE_FLAG
+     * @return Service|bool
+     */
+    public function setUsageFlagById($id, int $USAGE_FLAG) {
+        $service = $this->get($id);
+        $currentFlag = $service->get('usage_flag');
+
+        if($currentFlag & $USAGE_FLAG){
+            //Service already has the flag for given module
+            return true;
+        }else{
+            $newFlag = $currentFlag + $USAGE_FLAG;
+            $service->set('usage_flag', $newFlag);
+            return $this->save($service);
+        }
+    }
+
+    /**
+     * @param int $id
+     * @param int $USAGE_FLAG
+     * @return Service|bool
+     */
+    public function removeUsageFlagById($id, int $USAGE_FLAG) {
+        $service = $this->get($id);
+        $currentFlag = $service->get('usage_flag');
+
+        if($currentFlag & $USAGE_FLAG){
+            $newFlag = $currentFlag - $USAGE_FLAG;
+            if($newFlag < 0){
+                $newFlag = 0;
+            }
+
+            $service->set('usage_flag', $newFlag);
+            return $this->save($service);
+        }
+
+        return true;
     }
 }
