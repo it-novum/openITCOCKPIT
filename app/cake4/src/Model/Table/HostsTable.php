@@ -14,7 +14,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
@@ -2200,6 +2199,7 @@ class HostsTable extends Table {
         $query
             ->select([
                 'Hoststatus.current_state',
+                'Hosts.id',
                 'count' => $query->newExpr('COUNT(DISTINCT Hoststatus.host_object_id)'),
             ])
             ->where([
@@ -2222,14 +2222,16 @@ class HostsTable extends Table {
             ]);
 
         if (!empty($MY_RIGHTS)) {
-            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
-                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
-            ]);
+            $query
+                ->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                    'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                ]);
         }
 
-        $query->contain([
-            'HostsToContainersSharing'
-        ])
+        $query
+            ->contain([
+                'HostsToContainersSharing'
+            ])
             ->group([
                 'Hoststatus.current_state',
             ])
@@ -2269,6 +2271,7 @@ class HostsTable extends Table {
         $query
             ->select([
                 'Servicestatus.current_state',
+                'Hosts.id',
                 'count' => $query->newExpr('COUNT(DISTINCT Servicestatus.service_object_id)'),
             ])
             ->where([
