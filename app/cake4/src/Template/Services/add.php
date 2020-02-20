@@ -465,23 +465,23 @@
 
                                 <div class="form-group"
                                      ng-show="data.areContactsInheritedFromHosttemplate || data.areContactsInheritedFromHost || data.areContactsInheritedFromServicetemplate">
-                                    <label class="col-xs-12 col-lg-2 control-label" for="resetContacts">
-                                        <?php echo __('Disable inheritance'); ?>
-                                    </label>
+                                    <div class="form-group" ng-class="{'has-error': errors.disableInheritance}">
+                                        <div class="custom-control custom-checkbox  margin-bottom-10"
+                                             ng-class="{'has-error': errors.disableInheritance}">
 
-                                    <div class="col-xs-12 col-lg-1 smart-form">
-                                        <label class="checkbox no-required no-padding no-margin label-default-off">
-                                            <input type="checkbox" name="checkbox"
+                                            <input type="checkbox"
+                                                   class="custom-control-input"
                                                    id="resetContacts"
                                                    ng-model="data.disableInheritance">
-                                            <i class="checkbox-primary"></i>
-                                        </label>
-                                    </div>
-                                    <div class="col col-xs-12 col-md-offset-2 help-block text-info"
-                                         ng-class="{'strikethrough': data.disableInheritance}">
-                                        <?php echo __('Contacts and contact groups got inherited from'); ?>
+                                            <label class="custom-control-label" for="resetContacts">
+                                                <?php echo __('Disable inheritance'); ?>
+                                            </label>
+                                        </div>
 
-                                        <span ng-class="{'bold': data.areContactsInheritedFromServicetemplate}">
+                                        <div class="col col-xs-12 col-md-offset-2 help-block" ng-class="{'strikethrough': data.disableInheritance}">
+                                            <?php echo __('Contacts and contact groups got inherited from'); ?>
+
+                                            <span ng-class="{'bold': data.areContactsInheritedFromServicetemplate}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
                                                     <a ui-sref="ServicetemplatesEdit({id: post.Service.servicetemplate_id})">
                                                         <?php echo __('service template'); ?>
@@ -491,8 +491,8 @@
                                                 <?php endif; ?>
                                             </span>
 
-                                        <span ng-show="!data.areContactsInheritedFromServicetemplate"
-                                              ng-class="{'bold': data.areContactsInheritedFromHost}">
+                                            <span ng-show="!data.areContactsInheritedFromServicetemplate"
+                                                  ng-class="{'bold': data.areContactsInheritedFromHost}">
                                                 <i class="fa fa-angle-double-right"></i>
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                     <a ui-sref="HostsEdit({id: host.Host.id})">
@@ -501,9 +501,9 @@
                                                 <?php else: ?>
                                                     <?php echo __('host'); ?>
                                                 <?php endif; ?>
-                                        </span>
+                                            </span>
 
-                                        <span ng-show="data.areContactsInheritedFromHosttemplate" class="bold">
+                                            <span ng-show="data.areContactsInheritedFromHosttemplate" class="bold">
                                                 <i class="fa fa-angle-double-right"></i>
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
                                                     <a ui-sref="HosttemplatesEdit({id: host.Host.hosttemplate_id})">
@@ -512,9 +512,14 @@
                                                 <?php else: ?>
                                                     <?php echo __('host template'); ?>
                                                 <?php endif; ?>
-                                        </span>
-                                        .
+                                            </span>
+                                            .
+                                        </div>
                                     </div>
+
+
+
+
                                 </div>
 
 
