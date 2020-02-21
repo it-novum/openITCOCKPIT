@@ -805,6 +805,7 @@ class HostsTable extends Table {
             'Hoststatus.scheduled_downtime_depth',
             'Hoststatus.active_checks_enabled',
             'Hoststatus.state_type',
+            'Hoststatus.is_flapping',
             'Hoststatus.problem_has_been_acknowledged',
             'Hoststatus.acknowledgement_type'
         ]);

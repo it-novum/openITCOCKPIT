@@ -1686,22 +1686,22 @@ class ServicesController extends AppController {
     }
 
     public function listToPdf() {
-        $User = new User($this->getUser());
-        $UserTime = $User->getUserTime();
-
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $ServiceFilter = new ServiceFilter($this->request);
+        $User = new User($this->getUser());
+
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions(
             $ServiceFilter->indexFilter()
         );
-
         $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+
         if ($ServiceControllerRequest->isRequestFromBrowser() === false) {
             $ServiceConditions->setIncludeDisabled(false);
             $ServiceConditions->setContainerIds($this->MY_RIGHTS);
@@ -1715,8 +1715,10 @@ class ServicesController extends AppController {
                     return;
                 }
             }
+
             $ServiceConditions->setIncludeDisabled(false);
             $ServiceConditions->setContainerIds($browserContainerIds);
+
             if ($User->isRecursiveBrowserEnabled()) {
                 //get recursive container ids
                 $containerIdToResolve = $browserContainerIds;
@@ -1731,21 +1733,27 @@ class ServicesController extends AppController {
                 $ServiceConditions->setContainerIds(array_merge($ServiceConditions->getContainerIds(), $recursiveContainerIds));
             }
         }
+
         $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
             'Hosts.name'  => 'asc',
             'servicename' => 'asc'
         ]));
-        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
+
+
         if ($this->DbBackend->isNdoUtils()) {
-            $services = $ServicesTable->getServiceIndex($ServiceConditions, $PaginateOMat);
+            $services = $ServicesTable->getServiceIndex($ServiceConditions);
         }
+
         if ($this->DbBackend->isCrateDb()) {
             throw new MissingDbBackendException('MissingDbBackendException');
         }
+
         if ($this->DbBackend->isStatusengine3()) {
             throw new MissingDbBackendException('MissingDbBackendException');
         }
+
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
+
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields
             ->currentState()
@@ -1755,6 +1763,7 @@ class ServicesController extends AppController {
             array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
         );
+
         $all_services = [];
         $UserTime = $User->getUserTime();
         foreach ($services as $service) {
@@ -1764,41 +1773,28 @@ class ServicesController extends AppController {
             } else {
                 $Hoststatus = new Hoststatus([], $UserTime);
             }
-            $Service = new Service($service, null);
+            $Service = new Service($service );
             $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
+
             $tmpRecord = [
-                'Service'       => $Service,
-                'Host'          => $Host,
+                'Service'       => $Service->toArray(),
+                'Host'          => $Host->toArray(),
                 'Hoststatus'    => $Hoststatus,
                 'Servicestatus' => $Servicestatus
             ];
             $all_services[] = $tmpRecord;
         }
+
+        $this->set('User', $User);
         $this->set('all_services', $all_services);
-        $this->set('UserTime', $UserTime);
-        $filename = 'Services_' . strtotime('now') . '.pdf';
-        $binary_path = '/usr/bin/wkhtmltopdf';
-        if (file_exists('/usr/local/bin/wkhtmltopdf')) {
-            $binary_path = '/usr/local/bin/wkhtmltopdf';
-        }
-        $this->pdfConfig = [
-            'engine'             => 'CakePdf.WkHtmlToPdf',
-            'margin'             => [
-                'bottom' => 15,
-                'left'   => 0,
-                'right'  => 0,
-                'top'    => 15,
-            ],
-            'encoding'           => 'UTF-8',
-            'download'           => true,
-            'binary'             => $binary_path,
-            'orientation'        => 'portrait',
-            'filename'           => $filename,
-            'no-pdf-compression' => '*',
-            'image-dpi'          => '900',
-            'background'         => true,
-            'no-background'      => false,
-        ];
+
+        $this->viewBuilder()->setOption(
+            'pdfConfig',
+            [
+                'download' => true,
+                'filename' => __('Services_') . date('dmY_his') . '.pdf',
+            ]
+        );
     }
 
     /**
