@@ -109,6 +109,10 @@ class ServicetemplatesTable extends Table {
             'joinType'   => 'INNER'
         ]);
 
+        $this->hasOne('Agentchecks', [
+            'foreignKey' => 'servicetemplate_id',
+        ]);
+
         $this->hasMany('Customvariables', [
             'conditions'   => [
                 'objecttype_id' => OBJECT_SERVICETEMPLATE

@@ -1739,6 +1739,24 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param $uuid
+     * @return int
+     */
+    public function getHostIdByUuid($uuid) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+            ])
+            ->where([
+                'Hosts.uuid' => $uuid
+            ]);
+
+        $host = $query->firstOrFail();
+
+        return $host->get('id');
+    }
+
+    /**
      * @param int $hostId
      * @return int
      */
@@ -2857,10 +2875,10 @@ class HostsTable extends Table {
         $host = $this->get($id);
         $currentFlag = $host->get('usage_flag');
 
-        if($currentFlag & $USAGE_FLAG){
+        if ($currentFlag & $USAGE_FLAG) {
             //Host already has the flag for given module
             return true;
-        }else{
+        } else {
             $newFlag = $currentFlag + $USAGE_FLAG;
             $host->set('usage_flag', $newFlag);
             return $this->save($host);
@@ -2876,9 +2894,9 @@ class HostsTable extends Table {
         $host = $this->get($id);
         $currentFlag = $host->get('usage_flag');
 
-        if($currentFlag & $USAGE_FLAG){
+        if ($currentFlag & $USAGE_FLAG) {
             $newFlag = $currentFlag - $USAGE_FLAG;
-            if($newFlag < 0){
+            if ($newFlag < 0) {
                 $newFlag = 0;
             }
 

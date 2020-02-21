@@ -939,6 +939,34 @@ class ServicesTable extends Table {
      * @param bool $enableHydration
      * @return \Cake\Datasource\ResultSetInterface
      */
+    public function getServicesByHostIdForAgent($id, $servicetemplateType = OITC_AGENT_SERVICE, $enableHydration = true) {
+        $query = $this->find()
+            ->contain([
+                'Servicecommandargumentvalues',
+                'Servicetemplates' => function (Query $query) use ($servicetemplateType) {
+                    $query->contain([
+                        //'CheckCommand',
+                        'Agentchecks'
+                    ])->where([
+                        'Servicetemplates.servicetemplatetype_id' => $servicetemplateType
+                    ]);
+                    return $query;
+                }
+            ])
+            ->where([
+                'Services.host_id' => $id,
+            ])
+            ->enableAutoFields()
+            ->enableHydration($enableHydration)
+            ->all();
+        return $query;
+    }
+
+    /**
+     * @param $id
+     * @param bool $enableHydration
+     * @return \Cake\Datasource\ResultSetInterface
+     */
     public function getActiveServicesByHostId($id, $enableHydration = true) {
         $query = $this->find()
             ->where([
@@ -973,7 +1001,7 @@ class ServicesTable extends Table {
     public function getServiceByIdForPermissionsCheck($id) {
         $query = $this->find();
         $query
-        ->select([
+            ->select([
                 'Services.id',
                 'Services.name',
                 'Services.uuid',
@@ -985,7 +1013,7 @@ class ServicesTable extends Table {
                 'Services.id' => $id
             ])
             ->contain([
-                'Hosts' => function (Query $query) {
+                'Hosts'            => function (Query $query) {
                     $query->select([
                         'Hosts.id',
                         'Hosts.uuid',
@@ -2701,10 +2729,10 @@ class ServicesTable extends Table {
         $service = $this->get($id);
         $currentFlag = $service->get('usage_flag');
 
-        if($currentFlag & $USAGE_FLAG){
+        if ($currentFlag & $USAGE_FLAG) {
             //Service already has the flag for given module
             return true;
-        }else{
+        } else {
             $newFlag = $currentFlag + $USAGE_FLAG;
             $service->set('usage_flag', $newFlag);
             return $this->save($service);
@@ -2720,9 +2748,9 @@ class ServicesTable extends Table {
         $service = $this->get($id);
         $currentFlag = $service->get('usage_flag');
 
-        if($currentFlag & $USAGE_FLAG){
+        if ($currentFlag & $USAGE_FLAG) {
             $newFlag = $currentFlag - $USAGE_FLAG;
-            if($newFlag < 0){
+            if ($newFlag < 0) {
                 $newFlag = 0;
             }
 

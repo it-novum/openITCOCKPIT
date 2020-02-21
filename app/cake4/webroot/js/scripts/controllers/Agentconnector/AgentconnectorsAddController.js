@@ -7,6 +7,7 @@ angular.module('openITCOCKPIT')
         $scope.configured = false;
         $scope.servicesConfigured = false;
         $scope.checkdataRequestInterval = null;
+        $scope.checkFinishedStateInterval = null;
 
         $scope.resetAgentConfiguration = function(){
             $scope.pullMode = false;
@@ -14,6 +15,9 @@ angular.module('openITCOCKPIT')
             $scope.configured = false;
             $scope.installed = false;
             $scope.servicesConfigured = false;
+            $scope.finished = false;
+            $scope.expectedServiceCreations = 0;
+            $scope.processedServiceCreations = 0;
 
             $scope.agentconfig = {
                 address: '0.0.0.0',
@@ -51,17 +55,17 @@ angular.module('openITCOCKPIT')
                 swap: true,
                 disk_io: [],
                 disks: [],
-                fans: [],
-                temperatures: [],
-                battery: false,
+                sensors__Fan: [],
+                sensors__Temperature: [],
+                sensors__Battery: false,
                 net_io: [],
                 net_stats: [],
                 processes: [],
                 windows_services: [],
-                docker_running: [],
-                docker_cpu: [],
-                docker_memory: [],
-                qemu_running: [],
+                dockerstats__DockerContainerRunning: [],
+                dockerstats__DockerContainerCPU: [],
+                dockerstats__DockerContainerMemory: [],
+                qemustats__QemuVMRunning: [],
                 customchecks: []
             };
 
@@ -71,6 +75,9 @@ angular.module('openITCOCKPIT')
 
             if($scope.checkdataRequestInterval !== null){
                 $interval.cancel($scope.checkdataRequestInterval);
+            }
+            if($scope.checkFinishedStateInterval !== null){
+                $interval.cancel($scope.checkFinishedStateInterval);
             }
 
             $scope.checkdata = false;
@@ -186,9 +193,161 @@ angular.module('openITCOCKPIT')
         };
         $scope.saveAgentServices = function(){
             $scope.servicesConfigured = true;
-            console.log($scope.choosenServicesToMonitor);
 
+            $http.get('/agentchecks/getAgentchecksForMapping.json').then(function(result){
+                if(result.data.agentchecks_mapping && result.data.agentchecks_mapping !== ''){
+                    $scope.agentchecksMapping = result.data.agentchecks_mapping;
 
+                    for(var key in $scope.choosenServicesToMonitor){
+                        const service = $scope.getServiceMappingForAgentKey(key);
+                        if(service === false){
+                            continue;
+                        }
+                        if(Array.isArray($scope.choosenServicesToMonitor[key]) && $scope.choosenServicesToMonitor[key].length > 0){
+                            for(var i in $scope.choosenServicesToMonitor[key]){
+                                if($scope.choosenServicesToMonitor[key].hasOwnProperty(i)){
+                                    $scope.expectedServiceCreations++;
+                                    $scope.createService($scope.updateServicecommandargumentvaluesForAgentKey(service, key, $scope.choosenServicesToMonitor[key][i]));
+                                }
+                            }
+                        }else if(typeof ($scope.choosenServicesToMonitor[key]) === 'boolean' && $scope.choosenServicesToMonitor[key]){
+                            $scope.expectedServiceCreations++;
+                            $scope.createService(service);
+                        }
+                    }
+                    $scope.checkFinishedState();
+                }
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+                if(result.status === 404){
+                    $state.go('404');
+                }
+            });
+        };
+
+        $scope.checkFinishedState = function(){
+            //seems that all needed services are created
+            if($scope.processedServiceCreations === $scope.expectedServiceCreations){
+                $scope.finished = true;
+                if($scope.checkFinishedStateInterval !== null){
+                    $interval.cancel($scope.checkFinishedStateInterval);
+                }
+            }else if($scope.checkFinishedStateInterval === null){
+                $scope.checkFinishedStateInterval = $interval(function(){
+                    $scope.checkFinishedState();
+                }, 500);
+            }
+        };
+
+        $scope.createService = function(service){
+            $http.post('/services/add.json?angular=true',
+                {
+                    Service: service
+                }
+            ).then(function(result){
+                $scope.processedServiceCreations++;
+            }, function errorCallback(result){
+                $scope.processedServiceCreations++;
+                NotyService.genericError({
+                    message: 'Error while saving service for '
+                });
+            });
+        };
+
+        $scope.updateServicecommandargumentvaluesForAgentKey = function(service, key, value){
+            var customarguments = [];
+            var myservice = JSON.parse(JSON.stringify(service));
+
+            /*
+                No customargument updates needed for:
+                ['agent', 'cpu_percentage', 'system_load', 'memory', 'swap', 'sensors__Battery']
+             */
+
+            if(key === 'dockerstats'){
+                customarguments[1] = value;
+            }
+            if(key === 'disk_io'){
+                customarguments[2] = value;
+            }
+            if(key === 'disks'){
+                customarguments[2] = value;
+            }
+            if(key === 'sensors__Fan'){
+                customarguments[2] = value;
+            }
+            if(key === 'sensors__Temperature'){
+                customarguments[3] = value;
+            }
+            if(key === 'net_io'){
+                customarguments[6] = value;
+            }
+            if(key === 'net_stats'){
+                customarguments[1] = value;
+            }
+            if(key === 'processes'){
+                customarguments[6] = value;
+            }
+            if(key === 'dockerstats__DockerContainerRunning'){
+                customarguments[1] = value;
+            }
+            if(key === 'dockerstats__DockerContainerCPU'){
+                customarguments[1] = value;
+            }
+            if(key === 'dockerstats__DockerContainerMemory'){
+                customarguments[1] = value;
+            }
+            if(key === 'qemustats__QemuVMRunning'){
+                customarguments[0] = 'name';
+                if(Number.isInteger(value)){
+                    customarguments[0] = 'id';
+                }else if($scope.isUuid(value)){
+                    customarguments[0] = 'uuid';
+                }
+                customarguments[1] = value;
+            }
+            if(key === 'customchecks'){
+                customarguments[0] = value;
+            }
+            if(key === 'windows_services'){
+                customarguments[2] = value;
+            }
+
+            if($scope.countObj(customarguments) !== 0){
+                for(var i = 0; i < myservice.servicecommandargumentvalues.length; i++){
+                    if(customarguments[i]){
+                        myservice.servicecommandargumentvalues[i].value = customarguments[i];
+                    }
+                }
+            }
+
+            return myservice;
+        };
+
+        $scope.isUuid = function(string){
+            var s = '' + string;
+            s = s.match('^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$');
+            return s !== null;
+        };
+
+        $scope.getServiceMappingForAgentKey = function(name){
+            var plugin = null;
+            if(name.includes('__')){
+                var arr = name.split('__');
+                name = arr[0];
+                plugin = arr[1];
+            }
+            for(var i = 0; i < $scope.agentchecksMapping.length; i++){
+                if($scope.agentchecksMapping[i].name === name){
+                    if(plugin !== null && $scope.agentchecksMapping[i].plugin_name !== plugin){
+                        continue;
+                    }
+                    $scope.agentchecksMapping[i].service.host_id = $scope.host.id;
+                    return $scope.agentchecksMapping[i].service;
+                }
+            }
+            return false;
         };
 
         $scope.continueWithServiceConfiguration = function(){
@@ -223,7 +382,7 @@ angular.module('openITCOCKPIT')
                 if($scope.checkdata.sensors.temperatures && $scope.countObj($scope.checkdata.sensors.temperatures) > 0){
                     for(var key in $scope.checkdata.sensors.temperatures){
                         if(key === 'coretemp'){
-                            $scope.choosenServicesToMonitor.temperatures.push('coretemp');
+                            $scope.choosenServicesToMonitor.sensors__Temperature.push('coretemp');
                         }
                     }
                 }
@@ -264,7 +423,7 @@ angular.module('openITCOCKPIT')
             if($scope.host.id !== 'undefined' && $scope.host.id > 0){
                 document.getElementById('AgentHost').disabled = true;
 
-                var params = {
+                const params = {
                     'angular': true
                 };
 
@@ -298,6 +457,9 @@ angular.module('openITCOCKPIT')
         $scope.$on('$destroy', function(){
             if($scope.checkdataRequestInterval !== null){
                 $interval.cancel($scope.checkdataRequestInterval);
+            }
+            if($scope.checkFinishedStateInterval !== null){
+                $interval.cancel($scope.checkFinishedStateInterval);
             }
         });
 

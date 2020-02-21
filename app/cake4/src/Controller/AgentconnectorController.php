@@ -27,7 +27,10 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Table\AgentchecksTable;
 use App\Model\Table\AgentconnectorTable;
+use App\Model\Table\HostsTable;
+use App\Model\Table\ServicesTable;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Agent\AgentCertificateData;
@@ -252,13 +255,264 @@ class AgentconnectorController extends AppController {
 
             if ($fileContents !== '') {
                 $contentArray = json_decode($fileContents, true);
-                if($contentArray['processes']){
-                    foreach($contentArray['processes'] as $key => $val){
+                if ($contentArray['processes']) {
+                    foreach ($contentArray['processes'] as $key => $val) {
                         if (!empty($contentArray['processes'][$key]['cmdline'])) {
                             $contentArray['processes'][$key]['cmdline'] = implode(' ', $contentArray['processes'][$key]['cmdline']);
                         }
                     }
                 }
+
+                $this->set('checkdata', $contentArray);
+            }
+        }
+        $this->viewBuilder()->setOption('serialize', ['checkdata']);
+    }
+
+    private function getServiceFromAgentcheckForMapping($name, $receiverPluginName, $agentchecks_mapping, $hostId) {
+        foreach ($agentchecks_mapping as $agentcheck) {
+            if ($agentcheck['name'] === $name) {
+                if ($receiverPluginName !== null && $agentcheck['plugin_name'] !== $receiverPluginName) {
+                    continue;
+                }
+                $agentcheck['service']['host_id'] = $hostId;
+                return $agentcheck['service'];
+            }
+        }
+    }
+
+    private function isInExistingServices($serviceToCompare, $services) {
+        foreach ($services as $index => $service) {
+            //Service already monitored
+            if ($serviceToCompare['servicetemplate_id'] === $service['servicetemplate_id']) {
+                continue;
+            }
+
+        }
+    }
+
+    public function getLatestFilteredCheckDataByHostUuid($uuid = null) {
+        if (!$this->isJsonRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        if ($uuid === null) {
+            throw new MissingParameterExceptions('Host uuid is missing!');
+        }
+
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $AgentchecksTable AgentchecksTable */
+        $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
+
+        $agentchecks_mapping = $AgentchecksTable->getAgentchecksForMapping();
+        $hostId = $HostsTable->getHostIdByUuid($uuid);
+        $services = $ServicesTable->getServicesByHostIdForAgent($hostId, OITC_AGENT_SERVICE, false);
+        $services = $services->toArray();
+debug($agentchecks_mapping);die();
+
+        $fileContents = trim(file_get_contents($this->hostsCacheFolder . $uuid));
+
+        $contentArray = json_decode($fileContents, true);
+        $agentJsonOutput = $contentArray;
+
+
+        $possibleServicesToCreate = [];
+
+        foreach ($agentJsonOutput as $agentCheckName => $objects) {
+            $receiverPluginNames = [];
+            foreach ($agentchecks_mapping as $agentcheck) {
+                if ($agentcheck['name'] === $agentCheckName) {
+                    $receiverPluginNames[] = $agentcheck['plugin_name'];
+                }
+            }
+
+            switch ($agentCheckName) {
+                case 'agent':
+                case 'cpu_percentage':
+                case 'system_load':
+                case 'memory':
+                case 'swap':
+                    foreach ($receiverPluginNames as $receiverPluginName) {
+                        $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
+                        if (!isset($possibleServicesToCreate[$receiverPluginName])) {
+                            $possibleServicesToCreate[$receiverPluginName] = [];
+                        }
+                        $possibleServicesToCreate[$receiverPluginName][] = $service;
+                    }
+                    /*
+                    foreach ($services as $index => $service) {
+                        //Service already monitored
+                        if ($agentCheckName === $service['servicetemplate']['agentcheck']['name']) {
+                            continue;
+                        }
+
+                    }*/
+                    break;
+                case 'dockerstats':
+                    foreach ($objects['result'] as $dockercontainer) {
+                        foreach ($receiverPluginNames as $receiverPluginName) {
+                            $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
+                            $service['servicecommandargumentvalues'][0]['value'] = 'id';
+                            $service['servicecommandargumentvalues'][1]['value'] = $dockercontainer['id'];
+                            if (!isset($possibleServicesToCreate[$receiverPluginName])) {
+                                $possibleServicesToCreate[$receiverPluginName] = [];
+                            }
+                            $possibleServicesToCreate[$receiverPluginName][] = $service;
+                        }
+                        //Service already monitored
+                        /*if ($agentCheckName === $service['servicetemplate']['agentcheck']['name']) {
+                            continue;
+                        }*/
+                    }
+                    break;
+                case 'disk_io':
+                    foreach ($objects as $diskname => $disk) {
+                        foreach ($receiverPluginNames as $receiverPluginName) {
+                            $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
+                            $service['servicecommandargumentvalues'][2]['value'] = $diskname;
+                            if (!isset($possibleServicesToCreate[$receiverPluginName])) {
+                                $possibleServicesToCreate[$receiverPluginName] = [];
+                            }
+                            $possibleServicesToCreate[$receiverPluginName][] = $service;
+                        }
+                    }
+                    break;
+            }
+
+        }
+        debug($possibleServicesToCreate);
+        //debug($objects);
+        die();
+        return;
+
+
+        foreach ($services as $service) {
+            if (isset($service['Agentchecks']) && !empty($service['Agentchecks'])) {
+                $agentJsonKey = $service['Agentchecks']['name'];
+
+                if (isset($agentJsonOutput[$agentJsonKey])) {
+                    //Check if we already have this service
+
+                    if ($agentJsonKey === 'dockerstats') {
+                        $identifier = $service['servicecommandargumentvalues'][0]['value'];
+                        $dockerContainerId = $service['servicecommandargumentvalues'][1]['value'];
+
+                        if (!empty($agentJsonOutput[$agentJsonKey]['result'])) {
+                            foreach ($agentJsonOutput[$agentJsonKey]['result'] as $dockerService) {
+                                if ($dockerService[$identifier] === $dockerContainerId) {
+
+                                }
+                            }
+                        }
+
+                        debug($service);
+                        debug($agentJsonOutput[$agentJsonKey]['result']);
+                    }
+                }
+            }
+        }
+
+
+        die();
+
+        /*
+            No customargument filter needed for:
+            ['agent', 'cpu_percentage', 'system_load', 'memory', 'swap', 'sensors__Battery']
+         */
+
+        $this->set('checkdata', '');
+        if (is_readable($this->hostsCacheFolder . $uuid)) {
+            $fileContents = trim(file_get_contents($this->hostsCacheFolder . $uuid));
+
+            if ($fileContents !== '') {
+                $contentArray = json_decode($fileContents, true);
+                if ($contentArray['processes']) {
+                    foreach ($contentArray['processes'] as $key => $val) {
+                        if (!empty($contentArray['processes'][$key]['cmdline'])) {
+                            $contentArray['processes'][$key]['cmdline'] = implode(' ', $contentArray['processes'][$key]['cmdline']);
+                        }
+                    }
+                }
+
+
+                foreach ($services as $service) {
+                    if (isset($service['Agentchecks']) && !empty($service['Agentchecks'])) {
+                        $checkResultObjectName = $service['Agentchecks']['name'];
+                        $checkResultObjectPlugin = $service['Agentchecks']['plugin_name'];
+                        $valueToDelete = null;
+
+
+                        if ($checkResultObjectName === 'dockerstats') {
+                            $identifier = $service['servicetemplate']['servicetemplatecommandargumentvalues'][0]['value'];
+                            $valueToDelete = $service['servicetemplate']['servicetemplatecommandargumentvalues'][1]['value'];
+
+                            if ($valueToDelete !== null) {
+                                foreach ($contentArray[$checkResultObjectName]['result'] as $key => $val) {
+                                    if (isset($contentArray[$checkResultObjectName]['result'][$key][$identifier]) && $contentArray[$checkResultObjectName]['result'][$key][$identifier] === $valueToDelete) {
+                                        unset($contentArray[$checkResultObjectName]['result'][$key]);
+                                    }
+                                }
+                            }
+                        }
+                        /*
+                        if(key === 'disk_io'){
+                            customarguments[2] = value;
+                        }
+                        if(key === 'disks'){
+                            customarguments[2] = value;
+                        }
+                        if(key === 'sensors__Fan'){
+                            customarguments[2] = value;
+                        }
+                        if(key === 'sensors__Temperature'){
+                            customarguments[3] = value;
+                        }
+                        if(key === 'net_io'){
+                            customarguments[6] = value;
+                        }
+                        if(key === 'net_stats'){
+                            customarguments[1] = value;
+                        }
+                        if(key === 'processes'){
+                            customarguments[6] = value;
+                        }
+                        if(key === 'dockerstats__DockerContainerRunning'){
+                            customarguments[1] = value;
+                        }
+                        if(key === 'dockerstats__DockerContainerCPU'){
+                            customarguments[1] = value;
+                        }
+                        if(key === 'dockerstats__DockerContainerMemory'){
+                            customarguments[1] = value;
+                        }
+                        if(key === 'qemustats__QemuVMRunning'){
+                            customarguments[0] = 'name';
+                            if(Number.isInteger(value)){
+                                customarguments[0] = 'id';
+                            }else if($scope.isUuid(value)){
+                                customarguments[0] = 'uuid';
+                            }
+                            customarguments[1] = value;
+                        }
+                        if(key === 'customchecks'){
+                            customarguments[0] = value;
+                        }
+                        if(key === 'windows_services'){
+                            customarguments[2] = value;
+                        }
+
+*/
+
+                        if (isset($contentArray[$checkResultObjectName])) {
+                            unset($contentArray[$checkResultObjectName]);
+                        }
+                    }
+                }
+
 
                 $this->set('checkdata', $contentArray);
             }

@@ -336,7 +336,8 @@ class Agent extends Importer {
                 'human_args'       => null,
                 'uuid'             => 'ffd0a58f-01e0-4a4d-8db9-a3107a9e765f',
                 'description'      => "Fetch disk io statistics.\n" .
-                    "Linux only: Warning and Critical thresholds for disk load as percentage value.",
+                    "Linux only: Warning and Critical thresholds for disk load as percentage value.\n" .
+                    "Device: Disk device name (e.g. sda1)",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
@@ -345,6 +346,10 @@ class Agent extends Importer {
                     [
                         'name'       => '$ARG2$',
                         'human_name' => 'Critical %'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Device'
                     ]
                 ]
             ],
@@ -696,8 +701,8 @@ class Agent extends Importer {
                 'human_args'       => null,
                 'uuid'             => '67ca5f1d-cc94-4bf1-8397-fc6e4abdbf92',
                 'description'      => "Return the state of a qemu virtual machine (ok/critical).\n" .
-                    "Identifier Type: Values: name or uuid - Determines if the name of the uuid should be used to identify the virtual machine.\n" .
-                    "Identifier:  Name or id of the virtual machine.\n",
+                    "Identifier Type: Values: name, id, uuid - Determines if the name, the id or the uuid should be used to identify the virtual machine.\n" .
+                    "Identifier:  Name, id or uuid of the virtual machine.\n",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
@@ -716,27 +721,12 @@ class Agent extends Importer {
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'fbd23c8c-453d-4107-ae27-2cfafe63fef5',
-                'description'      => "Commands that should be executed by the openITCOCKPIT Agent to replace check_by_ssh or check_nrpe.\n" .
-                    "Name: Unique name of the command (e.g. username)\n" .
-                    "CMD_Line: Command line that will be executed by the agent (e.g. /usr/lib/nagios/plugins/check_users -w 5 -c 10)\n" .
-                    "Interval: Execution interval in seconds\n" .
-                    "Timeout: Check timeout in seconds\n",
+                'description'      => "Custom command that were executed by the openITCOCKPIT Agent to replace check_by_ssh or check_nrpe.\n" .
+                    "Name: Unique name of the command (e.g. username)\n",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
                         'human_name' => 'Name'
-                    ],
-                    [
-                        'name'       => '$ARG2$',
-                        'human_name' => 'CMD_LINE'
-                    ],
-                    [
-                        'name'       => '$ARG3$',
-                        'human_name' => 'Interval'
-                    ],
-                    [
-                        'name'       => '$ARG4$',
-                        'human_name' => 'Timeout'
                     ]
                 ]
             ],
@@ -1162,6 +1152,10 @@ class Agent extends Importer {
                     [
                         'commandargument_id' => '$ARG2$',
                         'value'              => '80',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => 'sda1',
                     ]
                 ],
                 'customvariables'                           => [],
@@ -2187,18 +2181,6 @@ class Agent extends Importer {
                         'commandargument_id' => '$ARG1$',
                         'value'              => 'username',
                     ],
-                    [
-                        'commandargument_id' => '$ARG2$',
-                        'value'              => 'whoami',
-                    ],
-                    [
-                        'commandargument_id' => '$ARG3$',
-                        'value'              => '30',
-                    ],
-                    [
-                        'commandargument_id' => '$ARG4$',
-                        'value'              => '5',
-                    ]
                 ],
                 'customvariables'                           => [],
                 'servicegroups'                             => [

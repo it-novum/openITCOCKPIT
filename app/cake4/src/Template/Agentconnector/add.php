@@ -98,7 +98,7 @@
                                 </button>
                             </div>
                             <div class="actions" style="position: relative;">
-                                <button class="btn btn-sm btn-default" ng-if="host.id"
+                                <button class="btn btn-sm btn-default" ng-if="(host.id && !servicesConfigured) || finished"
                                         ng-click="resetAgentConfiguration()">
                                     <i class="fa fa-arrow-left"></i>&nbsp;
                                     <?php echo __('Reset'); ?>
@@ -811,7 +811,8 @@
                                 </div>
                             </div>
 
-                            <div class=" row" ng-if="(pullMode || pushMode) && installed && configured && !servicesConfigured">
+                            <div class=" row"
+                                 ng-if="(pullMode || pushMode) && installed && configured && !servicesConfigured">
                                 <div class="jarviswidget">
                                     <header>
                                         <span class="widget-icon">
@@ -955,18 +956,18 @@
                                                              ng-show="checkdata.sensors.fans">
                                                             <div class="form-group">
                                                                 <label class="col-xs-12 col-lg-2 control-label"
-                                                                       for="choosenServicesToMonitor.fans">
+                                                                       for="choosenServicesToMonitor.sensors__Fan">
                                                                     <?php echo __('Fans'); ?>
                                                                 </label>
                                                                 <div class="col-xs-12 col-lg-6">
                                                                     <select
-                                                                        id="choosenServicesToMonitor.fans"
+                                                                        id="choosenServicesToMonitor.sensors__Fan"
                                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                                         class="form-control"
                                                                         chosen="checkdata.sensors.fans"
                                                                         multiple
                                                                         ng-options="key as key for (key, value) in checkdata.sensors.fans"
-                                                                        ng-model="choosenServicesToMonitor.fans">
+                                                                        ng-model="choosenServicesToMonitor.sensors__Fan">
                                                                     </select>
                                                                 </div>
                                                                 <div class="col-lg-1">
@@ -978,18 +979,18 @@
                                                              ng-show="checkdata.sensors.temperatures">
                                                             <div class="form-group">
                                                                 <label class="col-xs-12 col-lg-2 control-label"
-                                                                       for="choosenServicesToMonitor.temperatures">
+                                                                       for="choosenServicesToMonitor.sensors__Temperature">
                                                                     <?php echo __('Temperatures'); ?>
                                                                 </label>
                                                                 <div class="col-xs-12 col-lg-6">
                                                                     <select
-                                                                        id="choosenServicesToMonitor.temperatures"
+                                                                        id="choosenServicesToMonitor.sensors__Temperature"
                                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                                         class="form-control"
                                                                         chosen="checkdata.sensors.temperatures"
                                                                         multiple
                                                                         ng-options="key as key for (key, value) in checkdata.sensors.temperatures"
-                                                                        ng-model="choosenServicesToMonitor.temperatures">
+                                                                        ng-model="choosenServicesToMonitor.sensors__Temperature">
                                                                     </select>
                                                                 </div>
                                                                 <div class="col-lg-1">
@@ -1001,7 +1002,7 @@
                                                              ng-show="checkdata.sensors.battery">
                                                             <div class="form-group">
                                                                 <label class="col col-md-2 control-label"
-                                                                       for="choosenServicesToMonitor.battery">
+                                                                       for="choosenServicesToMonitor.sensors__Battery">
                                                                     <?php echo __('Battery'); ?>
                                                                 </label>
 
@@ -1009,8 +1010,8 @@
                                                                     <label
                                                                         class="checkbox small-checkbox-label no-required">
                                                                         <input type="checkbox" name="checkbox"
-                                                                               id="choosenServicesToMonitor.battery"
-                                                                               ng-model="choosenServicesToMonitor.battery">
+                                                                               id="choosenServicesToMonitor.sensors__Battery"
+                                                                               ng-model="choosenServicesToMonitor.sensors__Battery">
                                                                         <i class="checkbox-primary"></i>
                                                                     </label>
                                                                 </div>
@@ -1108,18 +1109,18 @@
                                                              ng-show="checkdata.dockerstats.result">
                                                             <div class="form-group">
                                                                 <label class="col-xs-12 col-lg-2 control-label"
-                                                                       for="choosenServicesToMonitor.docker_running">
+                                                                       for="choosenServicesToMonitor.dockerstats__DockerContainerRunning">
                                                                     <?php echo __('Docker container running'); ?>
                                                                 </label>
                                                                 <div class="col-xs-12 col-lg-6">
                                                                     <select
-                                                                        id="choosenServicesToMonitor.docker_running"
+                                                                        id="choosenServicesToMonitor.dockerstats__DockerContainerRunning"
                                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                                         class="form-control"
                                                                         chosen="checkdata.dockerstats.result"
                                                                         multiple
                                                                         ng-options="value.id as (value.id + ' (' + value.name + ')') for (key, value) in checkdata.dockerstats.result"
-                                                                        ng-model="choosenServicesToMonitor.docker_running">
+                                                                        ng-model="choosenServicesToMonitor.dockerstats__DockerContainerRunning">
                                                                     </select>
                                                                 </div>
                                                                 <div class="col-lg-1">
@@ -1131,18 +1132,18 @@
                                                              ng-show="checkdata.dockerstats.result">
                                                             <div class="form-group">
                                                                 <label class="col-xs-12 col-lg-2 control-label"
-                                                                       for="choosenServicesToMonitor.docker_cpu">
+                                                                       for="choosenServicesToMonitor.dockerstats__DockerContainerCPU">
                                                                     <?php echo __('Docker container cpu usage'); ?>
                                                                 </label>
                                                                 <div class="col-xs-12 col-lg-6">
                                                                     <select
-                                                                        id="choosenServicesToMonitor.docker_cpu"
+                                                                        id="choosenServicesToMonitor.dockerstats__DockerContainerCPU"
                                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                                         class="form-control"
                                                                         chosen="checkdata.dockerstats.result"
                                                                         multiple
                                                                         ng-options="value.id as (value.id + ' (' + value.name + ')') for (key, value) in checkdata.dockerstats.result"
-                                                                        ng-model="choosenServicesToMonitor.docker_cpu">
+                                                                        ng-model="choosenServicesToMonitor.dockerstats__DockerContainerCPU">
                                                                     </select>
                                                                 </div>
                                                                 <div class="col-lg-1">
@@ -1154,18 +1155,18 @@
                                                              ng-show="checkdata.dockerstats.result">
                                                             <div class="form-group">
                                                                 <label class="col-xs-12 col-lg-2 control-label"
-                                                                       for="choosenServicesToMonitor.docker_memory">
+                                                                       for="choosenServicesToMonitor.dockerstats__DockerContainerMemory">
                                                                     <?php echo __('Docker container memory usage'); ?>
                                                                 </label>
                                                                 <div class="col-xs-12 col-lg-6">
                                                                     <select
-                                                                        id="choosenServicesToMonitor.docker_memory"
+                                                                        id="choosenServicesToMonitor.dockerstats__DockerContainerMemory"
                                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                                         class="form-control"
                                                                         chosen="checkdata.dockerstats.result"
                                                                         multiple
                                                                         ng-options="value.id as (value.id + ' (' + value.name + ')') for (key, value) in checkdata.dockerstats.result"
-                                                                        ng-model="choosenServicesToMonitor.docker_memory">
+                                                                        ng-model="choosenServicesToMonitor.dockerstats__DockerContainerMemory">
                                                                     </select>
                                                                 </div>
                                                                 <div class="col-lg-1">
@@ -1177,18 +1178,18 @@
                                                              ng-show="checkdata.qemustats.result">
                                                             <div class="form-group">
                                                                 <label class="col-xs-12 col-lg-2 control-label"
-                                                                       for="choosenServicesToMonitor.qemu_running">
+                                                                       for="choosenServicesToMonitor.qemustats__QemuVMRunning">
                                                                     <?php echo __('QEMU vm running'); ?>
                                                                 </label>
                                                                 <div class="col-xs-12 col-lg-6">
                                                                     <select
-                                                                        id="choosenServicesToMonitor.qemu_running"
+                                                                        id="choosenServicesToMonitor.qemustats__QemuVMRunning"
                                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                                         class="form-control"
                                                                         chosen="checkdata.qemustats.result"
                                                                         multiple
-                                                                        ng-options="value.uuid as (value.uuid + ' (' + value.name + ')') for (key, value) in checkdata.qemustats.result"
-                                                                        ng-model="choosenServicesToMonitor.qemu_running">
+                                                                        ng-options="(value.uuid ? value.uuid : (value.id ? value.id : value.name)) as (value.uuid ? (value.uuid + ' (' + value.name + ')') : (value.id ? (value.id + ' (' + value.name + ')') : value.name)) for (key, value) in checkdata.qemustats.result"
+                                                                        ng-model="choosenServicesToMonitor.qemustats__QemuVMRunning">
                                                                     </select>
                                                                 </div>
                                                                 <div class="col-lg-1">
@@ -1224,6 +1225,37 @@
                                                 </div>
                                             </div>
 
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class=" row" ng-if="(pullMode || pushMode) && installed && configured && servicesConfigured">
+                                <div class="jarviswidget">
+                                    <header>
+                                        <span class="widget-icon">
+                                            <i class="fa fa-magic"></i>
+                                        </span>
+                                        <h2 ng-show="!finished"><?php echo __('Save changes'); ?></h2>
+                                        <h2 ng-show="finished"><?php echo __('Setup finished'); ?></h2>
+                                    </header>
+
+                                    <div class="col-xs-12">
+
+                                        <div class="row" style="border-bottom: none;" ng-show="!finished">
+                                            <p>
+                                                <?= __('Please wait during service creation ...'); ?>
+                                            </p>
+                                        </div>
+
+                                        <div class="row" style="border-bottom: none;" ng-show="finished">
+                                            <p>
+                                                <?= __('Agent services successfully created.'); ?>
+                                            </p>
+                                            <p>
+                                                <b><?= __('Next steps: Run an export and keep your agent running :)'); ?></b>
+                                            </p>
                                         </div>
 
                                     </div>
