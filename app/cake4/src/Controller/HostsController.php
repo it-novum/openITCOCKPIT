@@ -2032,9 +2032,6 @@ class HostsController extends AppController {
         ]);
     }
 
-    /**
-     * @deprecated
-     */
     public function listToPdf() {
         $User = new User($this->getUser());
 
