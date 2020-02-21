@@ -677,6 +677,9 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostsByIds($ids, $useHydration = true) {
+        if (empty($ids)) {
+            return [];
+        }
         if (!is_array($ids)) {
             $ids = [$ids];
         }

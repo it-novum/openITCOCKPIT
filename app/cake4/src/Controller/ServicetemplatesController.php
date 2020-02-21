@@ -577,8 +577,7 @@ class ServicetemplatesController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['hostsWithServices', 'servicetemplate', 'count']);
             return;
         }
-
-        $hostIds = array_unique(Hash::extract($services, '{n}._matchingData.Hosts.id'));
+        $hostIds = array_unique(Hash::extract($services, '{n}.host.id'));
         $tmpHosts = $HostsTable->getHostsByIds($hostIds, false);
 
         foreach ($tmpHosts as $index => $host) {
@@ -597,15 +596,13 @@ class ServicetemplatesController extends AppController {
         foreach ($tmpHosts as $host) {
             $hosts[$host['id']] = $host;
         }
-
         //Merge hosts into service array
         foreach ($services as $index => $service) {
             $services[$index]['servicename'] = $service['name'];
             if ($service['name'] === '' || $service['name'] === null) {
                 $services[$index]['servicename'] = $service['servicetemplate']['name'];
             }
-
-            $services[$index]['host'] = $hosts[$service['_matchingData']['Hosts']['id']];
+            $services[$index]['host'] = $hosts[$service['host']['id']];
         }
 
         $groupByHost = [];
