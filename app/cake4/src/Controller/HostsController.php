@@ -2032,48 +2032,6 @@ class HostsController extends AppController {
     }
 
     /**
-     * Converts BB code to HTML
-     *
-     * @param string $uuid The hosts UUID you want to get the long output
-     * @param bool $parseBbcode If you want to convert BB Code to HTML
-     * @param bool $nl2br If you want to replace \n with <br>
-     *
-     * @return string
-     * @deprecated
-     */
-    public function longOutputByUuid($uuid = null, $parseBbcode = true, $nl2br = true) {
-        $this->autoRender = false;
-        $result = $this->Host->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
-                'Host.id',
-                'Host.uuid'
-            ],
-            'conditions' => [
-                'Host.uuid' => $uuid
-            ]
-        ]);
-        if (!empty($result)) {
-            $Hoststatusfields = new HoststatusFields($this->DbBackend);
-            $Hoststatusfields->longOutput();
-            $hoststatus = $this->Hoststatus->byUuid($result['Host']['uuid'], $Hoststatusfields);
-            if (!empty($hoststatus)) {
-                if ($parseBbcode === true) {
-                    if ($nl2br === true) {
-                        return $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($hoststatus['Hoststatus']['long_output'], $nl2br));
-                    } else {
-                        return $this->Bbcode->asHtml($hoststatus['Hoststatus']['long_output'], $nl2br);
-                    }
-                }
-
-                return $hoststatus['Hoststatus']['long_output'];
-            }
-        }
-
-        return '';
-    }
-
-    /**
      * @deprecated
      */
     public function listToPdf() {
