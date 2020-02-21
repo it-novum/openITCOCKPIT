@@ -51,7 +51,7 @@ $UserTime = $User->getUserTime();
     <?php endforeach; ?>
 
 </head>
-<body style="background: #FFF;">
+<body>
 <div>
     <div class="row margin-top-10 font-lg no-padding">
         <div class="col-md-9 text-left padding-left-10">

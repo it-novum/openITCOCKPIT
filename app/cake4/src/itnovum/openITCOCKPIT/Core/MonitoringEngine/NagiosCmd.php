@@ -28,7 +28,6 @@ namespace itnovum\openITCOCKPIT\Core\MonitoringEngine;
 use App\Model\Table\HostgroupsTable;
 use Cake\Core\Plugin;
 use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Core\ModuleManager;
 
 class NagiosCmd {
 

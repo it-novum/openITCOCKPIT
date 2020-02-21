@@ -227,8 +227,7 @@ class ContactsTable extends Table {
      */
     public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
-        $rules->add($rules->existsIn(['user_id'], 'Users'));
-
+        //$rules->add($rules->existsIn(['user_id'], 'Users'));
         return $rules;
     }
 

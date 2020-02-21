@@ -23,39 +23,36 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-/** @var $UserTime UserTime */
-
-use itnovum\openITCOCKPIT\Core\Hoststatus;
-use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
+
+/**
+ * @var \App\View\AppView $this
+ * @var array $all_hosts
+ * @var \itnovum\openITCOCKPIT\Core\ValueObjects\User $User
+ */
 
 $Logo = new Logo();
-?>
+$css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
 
+
+$UserTime = $User->getUserTime();
+
+?>
 <head>
+
     <?php
-    //PDF Output
-    $css = [
-        'css/vendor/bootstrap/css/bootstrap.css',
-        'smartadmin/css/font-awesome.css',
-        'smartadmin/css/smartadmin-production.css',
-        'smartadmin/css/your_style.css',
-        'css/app.css',
-        'css/bootstrap_pdf.css',
-        'css/pdf_list_style.css',
-    ];
     foreach ($css as $cssFile): ?>
         <link rel="stylesheet" type="text/css" href="<?php echo WWW_ROOT . $cssFile; ?>"/>
     <?php endforeach; ?>
+
 </head>
 <body>
 <div class="well">
     <div class="row margin-top-10 font-lg no-padding">
         <div class="col-md-9 text-left padding-left-10">
-            <i class="fa fa-cog txt-color-blueDark padding-left-10"></i>
-            <?php echo __('Hosts'); ?>
+            <i class="fa fa-desktop txt-color-blueDark padding-left-10"></i>
+            <?php echo __('Hosts Overview'); ?>
         </div>
         <div class="col-md-3 text-left">
             <img src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
@@ -68,7 +65,7 @@ $Logo = new Logo();
     </div>
     <div class="row padding-left-10 margin-top-10 font-sm">
         <div class="text-left padding-left-10">
-            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hosts: ' . count($all_hosts)); ?>
+            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hosts: ' . sizeof($all_hosts)); ?>
         </div>
     </div>
     <div class="padding-top-10">
@@ -81,14 +78,14 @@ $Logo = new Logo();
                 <th><?php echo __('Host'); ?></th>
                 <th class="width-70"><?php echo __('Last state change'); ?></th>
                 <th class="width-60"><?php echo __('Last check'); ?></th>
-                <th class="width-60"><?php echo __('Next check'); ?></th>
+                <th><?php echo __('Output'); ?></th>
             </tr>
             </thead>
             <tbody>
-            <?php
-            foreach ($all_hosts as $host):
-                $Host = new Host($host);
-                $Hoststatus = new Hoststatus($host['Hoststatus']);
+            <?php foreach ($all_hosts as $host): ?>
+                <?php
+                /** @var \itnovum\openITCOCKPIT\Core\Hoststatus $Hoststatus */
+                $Hoststatus = $host['Hoststatus'];
                 $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                 ?>
 
@@ -112,16 +109,18 @@ $Logo = new Logo();
                             <i class="fa fa-power-off fa-lg"></i>
                         <?php endif; ?>
                     </td>
-                    <td class="font-xs"><?php echo $host['Host']['name']; ?></td>
+                    <td class="font-xs">
+                        <?= h($host['Host']['name']); ?>
+                    </td>
                     <?php if ($Hoststatus->isInMonitoring()): ?>
                         <td class="font-xs">
-                            <?php echo $UserTime->format($Hoststatus->getLastStateChange()) ?>
+                            <?= h($UserTime->format($Hoststatus->getLastStateChange())) ?>
                         </td>
                         <td class="font-xs">
-                            <?php echo $UserTime->format($Hoststatus->getLastCheck()) ?>
+                            <?= h($UserTime->format($Hoststatus->getLastCheck())) ?>
                         </td>
                         <td class="font-xs">
-                            <?php echo $UserTime->format($Hoststatus->getNextCheck()) ?>
+                            <?= h($Hoststatus->getOutput()) ?>
                         </td>
                     <?php else: ?>
                         <td><?php echo __('n/a'); ?></td>

@@ -201,7 +201,19 @@ class ServicesTable extends Table {
             ->scalar('name')
             ->maxLength('name', 255)
             ->requirePresence('name', false)
-            ->allowEmptyString('name', null, true);
+            ->allowEmptyString('name', __('Please enter a service name.'), function ($context) {
+                if (array_key_exists('name', $context['data'])) {
+                    if ($context['data']['name'] === '') {
+                        return false;
+                    }
+
+                    if ($context['data']['name'] === null) {
+                        return true;
+                    }
+                }
+
+                return true;
+            });
 
 
         $validator
@@ -506,13 +518,12 @@ class ServicesTable extends Table {
                             'Hosts.id',
                             'Hosts.uuid',
                             'Hosts.address'
-                        ])
-                        ->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                            if (!empty($MY_RIGHTS)) {
-                                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                            }
-                            return $q;
-                        });
+                        ]);
+                    if (!empty($MY_RIGHTS)) {
+                        $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                            'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                        ]);
+                    }
 
                     return $query;
                 },

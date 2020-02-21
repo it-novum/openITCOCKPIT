@@ -415,16 +415,28 @@ class ContactsController extends AppController {
                         $sourceContact = $ContactsTable->get($sourceContactId, [
                             'contain' => [
                                 'Customvariables',
-                                'Containers'
+                                'Containers',
+                                'HostCommands',
+                                'ServiceCommands'
                             ]
                         ])->toArray();
                         foreach ($sourceContact['customvariables'] as $i => $customvariable) {
                             unset($sourceContact['customvariables'][$i]['id']);
-                            unset($sourceContact['customvariables'][$i]['contact_id']);
+                            unset($sourceContact['customvariables'][$i]['object_id']);
                         }
 
                         $containers = Hash::extract($sourceContact['containers'], '{n}.id');
                         $sourceContact['containers'] = $containers;
+                        $Cache->set($sourceContact['id'], $sourceContact);
+
+                        $sourceContact['host_commands'] = [
+                            '_ids' => Hash::extract($sourceContact['host_commands'], '{n}.id')
+                        ];
+
+                        $sourceContact['service_commands'] = [
+                            '_ids' => Hash::extract($sourceContact['service_commands'], '{n}.id')
+                        ];
+
 
                         $Cache->set($sourceContact['id'], $sourceContact);
                     }
@@ -447,11 +459,12 @@ class ContactsController extends AppController {
                         'notify_host_flapping',
                         'notify_host_downtime',
                         'host_push_notifications_enabled',
-                        'service_push_notifications_enabled'
+                        'service_push_notifications_enabled',
+                        'host_commands',
+                        'service_commands'
                     ];
 
                     $sourceContact = $Cache->get($sourceContactId);
-
                     $newContactData = [
                         'name'            => $contactData['Contact']['name'],
                         'description'     => $contactData['Contact']['description'],

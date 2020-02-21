@@ -47,6 +47,7 @@ use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
+use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Core\Plugin;
@@ -74,7 +75,6 @@ use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForView;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForView;
-use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\Permissions\HostContainersPermissions;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
@@ -92,6 +92,7 @@ use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\Downtime;
 use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\Hosttemplate;
 use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
@@ -365,8 +366,7 @@ class HostsController extends AppController {
 
         $masterInstanceName = $Systemsettings->getMasterInstanceName();
         $SatelliteNames = [];
-        $ModuleManager = new ModuleManager('DistributeModule');
-        if ($ModuleManager->moduleExists()) {
+        if (Plugin::isLoaded('DistributeModule')) {
             $MY_RIGHTS = [];
             if ($this->hasRootPrivileges === false) {
                 $MY_RIGHTS = $this->MY_RIGHTS;
@@ -1132,34 +1132,12 @@ class HostsController extends AppController {
         }
     }
 
-    /**
-     * @deprecated
-     */
-    public function getSharingContainers($containerId = null, $jsonOutput = true) {
-        if ($jsonOutput) {
-            $this->autoRender = false;
-        }
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
-        $sharingContainers = array_diff_key($containers, [$containerId => $containerId]);
-
-        if ($jsonOutput) {
-            echo json_encode($sharingContainers);
-        } else {
-            return $sharingContainers;
-        }
-    }
-
-
     public function disabled() {
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $masterInstanceName = $Systemsettings->getMasterInstanceName();
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
         $SatelliteNames = [];
-        $ModuleManager = new ModuleManager('DistributeModule');
-        if ($ModuleManager->moduleExists()) {
+        if (Plugin::isLoaded('DistributeModule')) {
             $MY_RIGHTS = [];
             if ($this->hasRootPrivileges === false) {
                 $MY_RIGHTS = $this->MY_RIGHTS;
@@ -1471,13 +1449,10 @@ class HostsController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['hosts']);
             return;
         }
-
-        $validationErrors = [];
+        $hasErrors = false;
         if ($this->request->is('post') || $this->request->is('put')) {
-            $validationError = false;
             //We want to save/validate the data and save it
             $postData = $this->request->getData('data');
-
             foreach ($postData as $index => $host2copyData) {
                 $action = 'copy';
                 $currentDataForChangelog = [];
@@ -1609,7 +1584,6 @@ class HostsController extends AppController {
                     $hostData['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
                     $hostData['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
                     $hostData['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
-
                     $newHost = $HostsTable->newEntity($hostData);
 
                 }
@@ -1630,8 +1604,8 @@ class HostsController extends AppController {
                 $postData[$index]['Error'] = [];
 
                 if ($newHost->hasErrors()) {
-                    $hasErrors = true;
                     $postData[$index]['Error'] = $newHost->getErrors();
+                    $hasErrors = true;
                 } else {
                     //No errors
                     $postData[$index]['Host']['id'] = $newHost->get('id');
@@ -1657,12 +1631,7 @@ class HostsController extends AppController {
                         $ChangelogsTable->save($changelogEntry);
                     }
 
-                    /**
-                     * @todo Copy all services from host
-                     */
-
                     if ($action === 'copy') {
-                        $Cache = new KeyValueStore();
                         $ServicetemplateCache = new KeyValueStore();
                         $ServicetemplateEditCache = new KeyValueStore();
                         $hostId = $newHost->get('id');
@@ -1671,7 +1640,7 @@ class HostsController extends AppController {
 
                         /** @var ServicesTable $ServicesTable */
                         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-                        /** @var  Servicetemplates $ServicetemplatesTable */
+                        /** @var  ServicetemplatesTable $ServicetemplatesTable */
                         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
                         $servicesFromHost = $ServicesTable->getServicesByHostIdForCopy($sourceHost->get('id'));
@@ -1708,8 +1677,32 @@ class HostsController extends AppController {
                             }
 
                             if (!empty($serviceData['Service']['servicecommandargumentvalues'])) {
-                                $serviceData['Service']['servicecommandargumentvalues'] = $serviceData['Service']['servicecommandargumentvalues'];
+                                $serviceData['Service']['servicecommandargumentvalues'] = $sourceService['Service']['servicecommandargumentvalues'];
                             }
+
+                            foreach ($sourceService['Service']['serviceeventcommandargumentvalues'] as $i => $serviceeventcommandargumentvalues) {
+                                unset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['id']);
+                                if (isset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['service_id'])) {
+                                    unset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['service_id']);
+                                }
+
+                                if (isset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['servicetemplate_id'])) {
+                                    unset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['servicetemplate_id']);
+                                }
+                            }
+
+                            if (!empty($serviceData['Service']['serviceeventcommandargumentvalues'])) {
+                                $serviceData['Service']['serviceeventcommandargumentvalues'] = $sourceService['Service']['serviceeventcommandargumentvalues'];
+                            }
+
+                            foreach ($sourceService['Service']['customvariables'] as $i => $customvariables) {
+                                unset($sourceService['Service']['customvariables'][$i]['id']);
+                                if (isset($sourceService['Service']['customvariables'][$i]['object_id'])) {
+                                    unset($sourceService['Service']['customvariables'][$i]['object_id']);
+                                }
+                            }
+
+
                             $newServiceData = $sourceService;
                             $newServiceData['Service']['host_id'] = $hostId;
                             // Replace service template values with zero
@@ -1766,7 +1759,11 @@ class HostsController extends AppController {
                 }
             }
         }
-        $this->set('back_url', $this->referer());
+        if ($hasErrors) {
+            $this->response = $this->response->withStatus(400);
+        }
+        $this->set('result', $postData);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
     /**
@@ -2035,59 +2032,29 @@ class HostsController extends AppController {
         ]);
     }
 
-    /**
-     * Converts BB code to HTML
-     *
-     * @param string $uuid The hosts UUID you want to get the long output
-     * @param bool $parseBbcode If you want to convert BB Code to HTML
-     * @param bool $nl2br If you want to replace \n with <br>
-     *
-     * @return string
-     * @deprecated
-     */
-    public function longOutputByUuid($uuid = null, $parseBbcode = true, $nl2br = true) {
-        $this->autoRender = false;
-        $result = $this->Host->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
-                'Host.id',
-                'Host.uuid'
-            ],
-            'conditions' => [
-                'Host.uuid' => $uuid
-            ]
-        ]);
-        if (!empty($result)) {
-            $Hoststatusfields = new HoststatusFields($this->DbBackend);
-            $Hoststatusfields->longOutput();
-            $hoststatus = $this->Hoststatus->byUuid($result['Host']['uuid'], $Hoststatusfields);
-            if (!empty($hoststatus)) {
-                if ($parseBbcode === true) {
-                    if ($nl2br === true) {
-                        return $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($hoststatus['Hoststatus']['long_output'], $nl2br));
-                    } else {
-                        return $this->Bbcode->asHtml($hoststatus['Hoststatus']['long_output'], $nl2br);
-                    }
-                }
+    public function listToPdf() {
+        $User = new User($this->getUser());
 
-                return $hoststatus['Hoststatus']['long_output'];
-            }
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+
+        $satellites = [];
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+            $satellites[0] = $masterInstanceName;
         }
 
-        return '';
-    }
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-    /**
-     * @deprecated
-     */
-    public function listToPdf() {
         $HostFilter = new HostFilter($this->request);
 
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
-        $User = new User($this->getUser());
-        $UserTime = $User->getUserTime();
-
         if ($HostControllerRequest->isRequestFromBrowser() === false) {
             $HostCondition->setIncludeDisabled(false);
             $HostCondition->setContainerIds($this->MY_RIGHTS);
@@ -2108,7 +2075,9 @@ class HostsController extends AppController {
             if ($User->isRecursiveBrowserEnabled()) {
                 //get recursive container ids
                 $containerIdToResolve = $browserContainerIds;
-                $containerIds = Hash::extract($this->Container->children($containerIdToResolve[0], false, ['Container.id']), '{n}.Container.id');
+
+                $children = $ContainersTable->getChildren($containerIdToResolve[0]);
+                $containerIds = Hash::extract($children, '{n}.id');
                 $recursiveContainerIds = [];
                 foreach ($containerIds as $containerId) {
                     if (in_array($containerId, $this->MY_RIGHTS)) {
@@ -2119,59 +2088,62 @@ class HostsController extends AppController {
             }
         }
 
-        $HostCondition->setOrder($HostControllerRequest->getOrder([
-            'Host.name' => 'asc'
-        ]));
-
-
         if ($this->DbBackend->isNdoUtils()) {
-            $query = $this->Host->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
-            $this->Host->virtualFieldsForIndex();
-            $modelName = 'Host';
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+            /** @var $ServicestatusTable ServicestatusTableInterface */
+            $ServicestatusTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Servicestatus');
+            $hosts = $HostsTable->getHostsIndex($HostFilter, $HostCondition);
         }
 
         if ($this->DbBackend->isCrateDb()) {
-            $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
-            $modelName = 'Hoststatus';
+            throw new MissingDbBackendException('MissingDbBackendException');
+            //$query = $this->Hoststatus->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
+            //$modelName = 'Hoststatus';
         }
 
         if ($this->DbBackend->isStatusengine3()) {
-            $query = $this->Host->getHostIndexQueryStatusengine3($HostCondition, $HostFilter->indexFilter());
-            $this->Host->virtualFieldsForIndex();
-            $modelName = 'Host';
+            throw new MissingDbBackendException('MissingDbBackendException');
+            //$query = $this->Host->getHostIndexQueryStatusengine3($HostCondition, $HostFilter->indexFilter());
+            //$this->Host->virtualFieldsForIndex();
+            //$modelName = 'Host';
         }
 
-        if (isset($query['limit'])) {
-            unset($query['limit']);
-        }
-        $all_hosts = $this->{$modelName}->find('all', $query);
 
+        $all_hosts = [];
+        $UserTime = new UserTime($User->getTimezone(), $User->getDateformat());
+        foreach ($hosts as $host) {
+            $Host = new Host($host['Host']);
+            $Hoststatus = new Hoststatus($host['Host']['Hoststatus'], $UserTime);
+
+            $satelliteName = $masterInstanceName;
+            $satellite_id = 0;
+            if ($Host->isSatelliteHost()) {
+                $satelliteName = $satellites[$Host->getSatelliteId()];
+                $satellite_id = $Host->getSatelliteId();
+            }
+
+            $tmpRecord = [
+                'Host'                 => $Host->toArray(),
+                'Hoststatus'           => $Hoststatus
+            ];
+            $tmpRecord['Host']['satelliteName'] = $satelliteName;
+            $tmpRecord['Host']['satelliteId'] = $satellite_id;
+
+            $all_hosts[] = $tmpRecord;
+        }
+
+        $this->set('User', $User);
         $this->set('all_hosts', $all_hosts);
-        $this->set('UserTime', $UserTime);
 
-        $filename = 'Hosts_' . strtotime('now') . '.pdf';
-        $binary_path = '/usr/bin/wkhtmltopdf';
-        if (file_exists('/usr/local/bin/wkhtmltopdf')) {
-            $binary_path = '/usr/local/bin/wkhtmltopdf';
-        }
-        $this->pdfConfig = [
-            'engine'             => 'CakePdf.WkHtmlToPdf',
-            'margin'             => [
-                'bottom' => 15,
-                'left'   => 0,
-                'right'  => 0,
-                'top'    => 15,
-            ],
-            'encoding'           => 'UTF-8',
-            'download'           => true,
-            'binary'             => $binary_path,
-            'orientation'        => 'portrait',
-            'filename'           => $filename,
-            'no-pdf-compression' => '*',
-            'image-dpi'          => '900',
-            'background'         => true,
-            'no-background'      => false,
-        ];
+        $this->viewBuilder()->setOption(
+            'pdfConfig',
+            [
+                'download' => true,
+                'filename' => __('Hosts_') . date('dmY_his') . '.pdf',
+            ]
+        );
     }
 
     //Only for ACLs
@@ -2621,8 +2593,7 @@ class HostsController extends AppController {
         $masterInstanceName = $Systemsettings->getMasterInstanceName();
 
         $satellites = [];
-        $ModuleManager = new ModuleManager('DistributeModule');
-        if ($ModuleManager->moduleExists()) {
+        if (Plugin::isLoaded('DistributeModule')) {
             /** @var $SatellitesTable SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
