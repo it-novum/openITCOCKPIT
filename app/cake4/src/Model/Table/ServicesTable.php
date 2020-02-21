@@ -519,6 +519,7 @@ class ServicesTable extends Table {
                             'Hosts.uuid',
                             'Hosts.address'
                         ]);
+
                     if (!empty($MY_RIGHTS)) {
                         $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
                             'HostsToContainersSharing.container_id IN' => $MY_RIGHTS

@@ -171,11 +171,11 @@ class ServicetemplatesController extends AppController {
                 //No errors
 
                 $User = new User($this->getUser());
+                $requestData = $this->request->getData();
 
-                $extDataForChangelog = $ServicetemplatesTable->resolveDataForChangelog($request);
+                $extDataForChangelog = $ServicetemplatesTable->resolveDataForChangelog($requestData);
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'servicetemplates',
@@ -184,7 +184,7 @@ class ServicetemplatesController extends AppController {
                     $servicetemplate->get('container_id'),
                     $User->getId(),
                     $servicetemplate->get('template_name'),
-                    array_merge($request, $extDataForChangelog)
+                    array_merge($extDataForChangelog, $requestData)
                 );
 
                 if ($changelog_data) {
@@ -653,8 +653,7 @@ class ServicetemplatesController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['hostsWithServices', 'servicetemplate', 'count']);
             return;
         }
-
-        $hostIds = array_unique(Hash::extract($services, '{n}._matchingData.Hosts.id'));
+        $hostIds = array_unique(Hash::extract($services, '{n}.host.id'));
         $tmpHosts = $HostsTable->getHostsByIds($hostIds, false);
 
         foreach ($tmpHosts as $index => $host) {
@@ -673,15 +672,13 @@ class ServicetemplatesController extends AppController {
         foreach ($tmpHosts as $host) {
             $hosts[$host['id']] = $host;
         }
-
         //Merge hosts into service array
         foreach ($services as $index => $service) {
             $services[$index]['servicename'] = $service['name'];
             if ($service['name'] === '' || $service['name'] === null) {
                 $services[$index]['servicename'] = $service['servicetemplate']['name'];
             }
-
-            $services[$index]['host'] = $hosts[$service['_matchingData']['Hosts']['id']];
+            $services[$index]['host'] = $hosts[$service['host']['id']];
         }
 
         $groupByHost = [];
@@ -1018,39 +1015,4 @@ class ServicetemplatesController extends AppController {
         $this->set('servicetemplates', $servicetemplates);
         $this->viewBuilder()->setOption('serialize', ['servicetemplates']);
     }
-
-    public function agent() {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship HTML Template
-            return;
-        }
-
-        /** @var ServicetemplatesTable $ServicetemplatesTable */
-        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
-
-        $ServicetemplateFilter = new ServicetemplateFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServicetemplateFilter->getPage());
-
-        $MY_RIGHTS = $this->MY_RIGHTS;
-        if ($this->hasRootPrivileges) {
-            $MY_RIGHTS = [];
-        }
-        $servicetemplates = $ServicetemplatesTable->getServicetemplatesIndex($ServicetemplateFilter, $PaginateOMat, $MY_RIGHTS, OITC_AGENT_SERVICE);
-
-        foreach ($servicetemplates as $index => $servicetemplate) {
-            $servicetemplates[$index]['Servicetemplate']['allow_edit'] = true;
-            if ($this->hasRootPrivileges === false) {
-                $servicetemplates[$index]['Servicetemplate']['allow_edit'] = $this->isWritableContainer($servicetemplate['Servicetemplate']['container_id']);
-            }
-        }
-
-
-        $this->set('all_servicetemplates', $servicetemplates);
-        $toJson = ['all_servicetemplates', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['all_servicetemplates', 'scroll'];
-        }
-        $this->viewBuilder()->setOption('serialize', $toJson);
-    }
-
 }
