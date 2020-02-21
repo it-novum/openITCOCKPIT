@@ -5,12 +5,15 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Changelog;
+use App\Model\Entity\Servicetemplate;
 use Cake\Core\Plugin;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 
@@ -1273,5 +1276,87 @@ class ServicetemplatesTable extends Table {
         }
 
         return $servicetemplate;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function allowDelete($id) {
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $count = $ServicesTable->find()
+            ->where([
+                'Services.servicetemplate_id' => $id,
+                'Services.usage_flag >'       => 0
+            ])
+            ->count();
+
+        if ($count > 0) {
+            //Service template is used by modules
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param Servicetemplate $Servicetemplate
+     * @param User $User
+     * @return bool
+     */
+    public function __delete(Servicetemplate $Servicetemplate, User $User) {
+
+        /** @var  ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $services = $ServicesTable->find()
+            ->contain([
+                'ServiceescalationsServiceMemberships',
+                'ServicedependenciesServiceMemberships'
+            ])
+            ->where([
+                'Services.servicetemplate_id' => $Servicetemplate->get('id')
+            ])
+            ->all();
+
+        //Delete all services used by this service template
+        foreach ($services as $service) {
+            $ServicesTable->__delete($service, $User);
+        }
+
+        if (!$this->delete($Servicetemplate)) {
+            return false;
+        }
+
+        /** @var  ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'delete',
+            'servicetemplates',
+            $Servicetemplate->get('id'),
+            OBJECT_SERVICETEMPLATE,
+            $Servicetemplate->get('container_id'),
+            $User->getId(),
+            $Servicetemplate->get('name'),
+            [
+                'Servicetemplate' => $Servicetemplate->toArray()
+            ]
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        //Delete Documentation record if exists
+        /** @var $DocumentationsTable DocumentationsTable */
+        if ($DocumentationsTable->existsByUuid($Servicetemplate->get('uuid'))) {
+            $DocumentationsTable->delete($DocumentationsTable->getDocumentationByUuid($Servicetemplate->get('uuid')));
+        }
+
+        return true;
     }
 }

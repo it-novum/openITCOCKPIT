@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
@@ -56,19 +57,12 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 
 /**
- * @property Changelog $Changelog
- * @property Servicetemplate $Servicetemplate
- * @property Service $Service
- *
- * @property AppPaginatorComponent $Paginator
+ * Class ServicetemplatesController
+ * @package App\Controller
  */
 class ServicetemplatesController extends AppController {
 
-    public $uses = [
-        'Servicetemplate', //Remove me
-        'Service', //Remove me
-        'Changelog'
-    ];
+    use PluginManagerTableTrait;
 
     public function index() {
         /** @var $ServicetemplatesTable ServicetemplatesTable */
@@ -313,81 +307,28 @@ class ServicetemplatesController extends AppController {
 
 
     /**
-     * @param null $id
-     * @deprecated
+     * @param int|null $id
      */
     public function delete($id = null) {
-        if (!$this->Servicetemplate->exists($id)) {
-            throw new NotFoundException(__('Invalid service template'));
-        }
-
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        $servicetemplate = $this->Servicetemplate->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container'
-            ],
-            'conditions' => [
-                'Servicetemplate.id' => $id,
-            ]
-        ]);
+        /** @var ServicetemplatesTable $ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
-        if (!$this->allowedByContainerId(Hash::extract($servicetemplate, 'Container.id'))) {
+        if (!$ServicetemplatesTable->existsById($id)) {
+            throw new NotFoundException(__('Service template not found'));
+        }
+
+        $servicetemplate = $ServicetemplatesTable->get($id);
+
+        if (!$this->allowedByContainerId($servicetemplate->get('container_id'))) {
             $this->render403();
             return;
         }
 
-        $this->Servicetemplate->id = $id;
-
-        if ($this->Servicetemplate->__allowDelete($id)) {
-            $User = new User($this->getUser());
-            if ($this->Servicetemplate->delete()) {
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    $this->request->getParam('action'),
-                    $this->request->getParam('controller'),
-                    $id,
-                    OBJECT_SERVICETEMPLATE,
-                    $servicetemplate['Servicetemplate']['container_id'],
-                    $User->getId(),
-                    $servicetemplate['Servicetemplate']['name'],
-                    $servicetemplate
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
-
-                //Delete Documentation record if exists
-                /** @var $DocumentationsTable DocumentationsTable */
-                $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
-
-                $DocumentationsTable->deleteDocumentationByUuid($servicetemplate['Servicetemplate']['uuid']);
-
-
-                //Delete all services that were created using this template
-                $this->loadModel('Service');
-                $services = $this->Service->find('all', [
-                    'conditions' => [
-                        'Service.servicetemplate_id' => $id,
-                    ],
-                ]);
-                foreach ($services as $service) {
-                    $this->Service->__delete($service, $this->Auth->user('id'));
-                }
-
-                $this->set('success', true);
-                $this->set('message', __('Service template successfully deleted'));
-                $this->viewBuilder()->setOption('serialize', ['success']);
-                return;
-            }
-
+        if (!$ServicetemplatesTable->allowDelete($id)) {
             $usedBy = [
                 [
                     'baseUrl' => '#',
@@ -397,17 +338,32 @@ class ServicetemplatesController extends AppController {
                 ]
             ];
 
+            $this->response = $this->response->withStatus(400);
             $this->set('success', false);
             $this->set('id', $id);
             $this->set('message', __('Issue while deleting service template'));
             $this->set('usedBy', $usedBy);
             $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
+            return;
         }
+
+        $User = new User($this->getUser());
+
+        if ($ServicetemplatesTable->__delete($servicetemplate, $User)) {
+            $this->set('success', true);
+            $this->set('message', __('Service template successfully deleted'));
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
+        $this->set('success', false);
+        $this->set('message', __('Error while deleting service template'));
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
 
     /**
-     * @param null $id
+     * @param int|null $id
      */
     public function copy($id = null) {
         if (!$this->isAngularJsRequest()) {
@@ -577,8 +533,7 @@ class ServicetemplatesController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['hostsWithServices', 'servicetemplate', 'count']);
             return;
         }
-
-        $hostIds = array_unique(Hash::extract($services, '{n}._matchingData.Hosts.id'));
+        $hostIds = array_unique(Hash::extract($services, '{n}.host.id'));
         $tmpHosts = $HostsTable->getHostsByIds($hostIds, false);
 
         foreach ($tmpHosts as $index => $host) {
@@ -597,15 +552,13 @@ class ServicetemplatesController extends AppController {
         foreach ($tmpHosts as $host) {
             $hosts[$host['id']] = $host;
         }
-
         //Merge hosts into service array
         foreach ($services as $index => $service) {
             $services[$index]['servicename'] = $service['name'];
             if ($service['name'] === '' || $service['name'] === null) {
                 $services[$index]['servicename'] = $service['servicetemplate']['name'];
             }
-
-            $services[$index]['host'] = $hosts[$service['_matchingData']['Hosts']['id']];
+            $services[$index]['host'] = $hosts[$service['host']['id']];
         }
 
         $groupByHost = [];
@@ -942,39 +895,4 @@ class ServicetemplatesController extends AppController {
         $this->set('servicetemplates', $servicetemplates);
         $this->viewBuilder()->setOption('serialize', ['servicetemplates']);
     }
-
-    public function agent() {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship HTML Template
-            return;
-        }
-
-        /** @var ServicetemplatesTable $ServicetemplatesTable */
-        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
-
-        $ServicetemplateFilter = new ServicetemplateFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServicetemplateFilter->getPage());
-
-        $MY_RIGHTS = $this->MY_RIGHTS;
-        if ($this->hasRootPrivileges) {
-            $MY_RIGHTS = [];
-        }
-        $servicetemplates = $ServicetemplatesTable->getServicetemplatesIndex($ServicetemplateFilter, $PaginateOMat, $MY_RIGHTS, OITC_AGENT_SERVICE);
-
-        foreach ($servicetemplates as $index => $servicetemplate) {
-            $servicetemplates[$index]['Servicetemplate']['allow_edit'] = true;
-            if ($this->hasRootPrivileges === false) {
-                $servicetemplates[$index]['Servicetemplate']['allow_edit'] = $this->isWritableContainer($servicetemplate['Servicetemplate']['container_id']);
-            }
-        }
-
-
-        $this->set('all_servicetemplates', $servicetemplates);
-        $toJson = ['all_servicetemplates', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['all_servicetemplates', 'scroll'];
-        }
-        $this->viewBuilder()->setOption('serialize', $toJson);
-    }
-
 }

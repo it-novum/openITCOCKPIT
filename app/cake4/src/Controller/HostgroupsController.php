@@ -482,7 +482,6 @@ class HostgroupsController extends AppController {
 
     /**
      * @throws MissingDbBackendException
-     * @deprecated
      */
     public function listToPdf() {
 

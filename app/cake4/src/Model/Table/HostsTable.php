@@ -6,7 +6,10 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Lib\Traits\PluginManagerTableTrait;
+use App\Model\Entity\Changelog;
 use App\Model\Entity\Host;
+use App\Model\Entity\Hostdependency;
+use App\Model\Entity\Hostescalation;
 use Cake\Database\Expression\Comparison;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -15,6 +18,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 
@@ -677,6 +681,9 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostsByIds($ids, $useHydration = true) {
+        if (empty($ids)) {
+            return [];
+        }
         if (!is_array($ids)) {
             $ids = [$ids];
         }
@@ -2899,5 +2906,130 @@ class HostsTable extends Table {
         }
 
         return true;
+    }
+
+    /**
+     * @param Host $Host
+     * @param User $User
+     * @return bool
+     */
+    public function __delete(Host $Host, User $User) {
+        $hostdependencies = $Host->get('hostdependencies_host_memberships');
+        $hostdependenciesToDelete = [];
+
+        if (!empty($hostdependencies)) {
+            /** @var HostdependenciesTable $HostdependenciesTable */
+            $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+            /** @var Hostdependency $Hostdependency */
+            foreach ($hostdependencies as $Hostdependency) {
+                $hostdependencyId = $Hostdependency->get('hostdependency_id');
+                $hostdependencyIsBroken = $HostdependenciesTable->isHostdependencyBroken(
+                    $hostdependencyId,
+                    $Host->get('id')
+                );
+                if ($hostdependencyIsBroken === true) {
+                    $hostdependenciesToDelete[] = $Hostdependency;
+                }
+            }
+        }
+
+        $hostescalations = $Host->get('hostescalations_host_memberships');
+        $hostescalationsToDelete = [];
+        if (!empty($hostescalations)) {
+            /** @var HostescalationsTable $HostescalationsTable */
+            $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
+            /** @var Hostescalation $Hostescalation */
+            foreach ($hostescalations as $Hostescalation) {
+                $hostescalationId = $Hostescalation->get('hostescalation_id');
+                $hostescalationIsBroken = $HostescalationsTable->isHostescalationBroken(
+                    $hostescalationId,
+                    $Host->get('id')
+                );
+                if ($hostescalationIsBroken === true) {
+                    $hostescalationsToDelete[] = $Hostescalation;
+                }
+            }
+        }
+
+        if (!$this->delete($Host)) {
+            return false;
+        }
+
+        /** @var DocumentationsTable $DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+        /** @var DeletedHostsTable $DeletedHostsTable */
+        $DeletedHostsTable = TableRegistry::getTableLocator()->get('DeletedHosts');
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'delete',
+            'hosts',
+            $Host->get('id'),
+            OBJECT_HOST,
+            $Host->get('container_id'),
+            $User->getId(),
+            $Host->get('name'),
+            [
+                'Host' => $Host->toArray()
+            ]
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        if ($DocumentationsTable->existsByUuid($Host->get('uuid'))) {
+            $DocumentationsTable->delete($DocumentationsTable->getDocumentationByUuid($Host->get('uuid')));
+        }
+
+        $this->_clenupHostEscalationAndDependency($hostdependenciesToDelete, $hostescalationsToDelete);
+
+        //Save host to DeletedHostsTable
+        $data = $DeletedHostsTable->newEntity([
+            'host_id'          => $Host->get('id'),
+            'uuid'             => $Host->get('uuid'),
+            'hosttemplate_id'  => $Host->get('hosttemplate_id'),
+            'name'             => $Host->get('name'),
+            'description'      => $Host->get('description'),
+            'deleted_perfdata' => 0,
+        ]);
+        $DeletedHostsTable->save($data);
+
+        return true;
+    }
+
+    /**
+     * Check if the host was part of an hostescalation or hostdependency
+     * If yes, cake delete the records by it self, but may be we have an empty hostescalation or hostgroup now.
+     * Nagios don't relay like this so we need to check this and delete the host escalation or host dependency if empty
+     *
+     * @param array $hostdependenciesMembershipToDelete
+     * @param array $hostescalationsMembershipToDelete
+     */
+    public function _clenupHostEscalationAndDependency($hostdependenciesMembershipToDelete = [], $hostscalationsMembershipToDelete = []) {
+        if (!empty($hostdependenciesMembershipToDelete)) {
+            /** @var HostdependenciesTable $HostdependenciesTable */
+            $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+            foreach ($hostdependenciesMembershipToDelete as $hostdependencyMembership) {
+                if ($HostdependenciesTable->existsById($hostdependencyMembership->get('hostdependency_id'))) {
+                    $hostdependency = $HostdependenciesTable->get($hostdependencyMembership->get('hostdependency_id'));
+                    $HostdependenciesTable->delete($hostdependency);
+                }
+            }
+        }
+
+        if (!empty($hostscalationsMembershipToDelete)) {
+            /* @var HostescalationsTable $HostescalationsTable */
+            $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
+            foreach ($hostscalationsMembershipToDelete as $hostescalationMembership) {
+                if ($HostescalationsTable->existsById($hostescalationMembership->get('hostescalation_id'))) {
+                    $hostescalation = $HostescalationsTable->get($hostescalationMembership->get('hostescalation_id'));
+                    $HostescalationsTable->delete($hostescalation);
+                }
+            }
+        }
     }
 }

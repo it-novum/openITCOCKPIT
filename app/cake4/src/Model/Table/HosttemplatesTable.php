@@ -5,6 +5,9 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Changelog;
+use App\Model\Entity\Hosttemplate;
+use App\Model\Entity\User;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -49,7 +52,7 @@ class HosttemplatesTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('hosttemplates');
@@ -129,7 +132,7 @@ class HosttemplatesTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -367,7 +370,7 @@ class HosttemplatesTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
 
         return $rules;
@@ -501,10 +504,10 @@ class HosttemplatesTable extends Table {
                     'hostetemplate_id'   => $hosttemplate['id'],
                     'value'              => '',
                     'commandargument'    => [
-                    'name'       => $commandargument['name'],
-                    'human_name' => $commandargument['human_name'],
-                    'command_id' => $commandargument['command_id'],
-                ]
+                        'name'       => $commandargument['name'],
+                        'human_name' => $commandargument['human_name'],
+                        'command_id' => $commandargument['command_id'],
+                    ]
                 ];
             }
         }
@@ -534,10 +537,10 @@ class HosttemplatesTable extends Table {
                 'Hosttemplates.id' => $id
             ])
             ->contain([
-                'Contactgroups' => [
+                'Contactgroups'                     => [
                     'Containers'
                 ],
-                'Contacts' => [
+                'Contacts'                          => [
                     'Containers'
                 ],
                 'Hostgroups',
@@ -1034,7 +1037,7 @@ class HosttemplatesTable extends Table {
                 'Contactgroups' => [
                     'Containers'
                 ],
-                'Contacts' => [
+                'Contacts'      => [
                     'Containers'
                 ]
             ])
@@ -1166,5 +1169,46 @@ class HosttemplatesTable extends Table {
 
         $result = $query->all();
         return $this->emptyArrayIfNull($result->toArray());
+    }
+
+    /**
+     * @param Hosttemplate $Hosttemplate
+     * @param User $User
+     * @return bool
+     */
+    public function __delete(Hosttemplate $Hosttemplate, \itnovum\openITCOCKPIT\Core\ValueObjects\User $User) {
+
+        if (!$this->delete($Hosttemplate)) {
+            return false;
+        }
+
+        /** @var  ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'delete',
+            'hosttemplates',
+            $Hosttemplate->get('id'),
+            OBJECT_HOSTTEMPLATE,
+            $Hosttemplate->get('container_id'),
+            $User->getId(),
+            $Hosttemplate->get('name'),
+            [
+                'Hosttemplate' => $Hosttemplate->toArray()
+            ]
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        //Delete Documentation record if exists
+        /** @var $DocumentationsTable DocumentationsTable */
+        if ($DocumentationsTable->existsByUuid($Hosttemplate->get('uuid'))) {
+            $DocumentationsTable->delete($DocumentationsTable->getDocumentationByUuid($Hosttemplate->get('uuid')));
+        }
+
+        return true;
     }
 }

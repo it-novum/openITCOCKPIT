@@ -487,10 +487,8 @@ class ServicegroupsController extends AppController {
 
     /**
      * @throws MissingDbBackendException
-     * @deprecated
      */
     public function listToPdf() {
-
         /** @var $ServicegroupsTable ServicegroupsTable */
         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
         /** @var $HoststatusTable HoststatusTableInterface */
