@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="AutomapsIndex">
-            <i class="fa fa-bolt"></i> <?php echo __('Export'); ?>
+            <i class="fa fa-retweet"></i> <?php echo __('Export'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -86,72 +86,66 @@
                     <!-- Satellite select -->
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
-                            <div class="jarviswidget padding-top-15" ng-show="useSingleInstanceSync">
-                                <header>
-                                <span class="widget-icon">
-                                    <i class="fas fa-satellite"></i>
-                                </span>
-                                    <h2><?= __('Select instances which the new configuration should get pushed.'); ?></h2>
-                                </header>
-                                <div>
-                                    <div class="widget-body">
+                            <div class="card padding-top-15" ng-show="useSingleInstanceSync">
+                                <div class="card-header">
+                                    <h4>
+                                        <i class="fas fa-satellite">&nbsp;</i>
+                                        <?= __('Select instances which the new configuration should get pushed.'); ?>
+                                    </h4>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-striped m-0 table-bordered table-hover table-sm">
+                                        <thead>
+                                        <tr>
+                                            <th class="no-sort width-15">
+                                                <i class="fa fa-check-square"></i>
+                                            </th>
 
-                                        <table id="host_list"
-                                               class="table table-striped table-hover table-bordered smart-form"
-                                               style="">
-                                            <thead>
-                                            <tr>
-                                                <th class="no-sort width-15">
-                                                    <i class="fa fa-check-square-o fa-lg"></i>
-                                                </th>
-
-                                                <th class="no-sort">
-                                                    <?= __('Instances name'); ?>
-                                                </th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr ng-repeat="satellite in satellites">
-                                                <td>
-                                                    <label class="checkbox no-required">
-                                                        <input type="checkbox" name="checkbox"
-                                                               ng-disabled="exportRunning"
-                                                               ng-true-value="1"
-                                                               ng-false-value="0"
-                                                               ng-model="satellite.sync_instance">
-                                                        <i class="checkbox-primary"></i>
-                                                    </label>
-                                                </td>
-                                                <td>
-                                                    {{ satellite.name }}
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                        <div class="row margin-top-10 margin-bottom-10">
-                                            <div class="col-xs-12 col-md-2 text-muted text-center">
-                                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
-                                            </div>
-                                            <div class="col-xs-12 col-md-2">
-                                        <span ng-click="selectAll()" class="pointer">
-                                            <i class="fa fa-lg fa-check-square-o"></i>
-                                            <?php echo __('Select all'); ?>
-                                        </span>
-                                            </div>
-                                            <div class="col-xs-12 col-md-2">
-                                        <span ng-click="undoSelection()" class="pointer">
-                                            <i class="fa fa-lg fa-square-o"></i>
-                                            <?php echo __('Undo selection'); ?>
-                                        </span>
-                                            </div>
-                                            <div class="col-xs-12 col-md-2">
-                                                <button class="btn btn-xs btn-default"
-                                                        ng-click="saveInstanceConfigSyncSelection();">
-                                                    <?= __('Save selection'); ?>
-                                                </button>
-                                            </div>
+                                            <th class="no-sort">
+                                                <?= __('Instances name'); ?>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="satellite in satellites">
+                                            <td>
+                                                <label class="checkbox no-required">
+                                                    <input type="checkbox" name="checkbox"
+                                                           ng-disabled="exportRunning"
+                                                           ng-true-value="1"
+                                                           ng-false-value="0"
+                                                           ng-model="satellite.sync_instance">
+                                                    <i class="checkbox-primary"></i>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                {{ satellite.name }}
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="row margin-top-10 margin-bottom-10">
+                                        <div class="col-xs-12 col-md-2 text-muted text-center">
+                                            <span ng-show="selectedElements > 0">({{selectedElements}})</span>
                                         </div>
-
+                                        <div class="col-xs-12 col-md-2">
+                                            <span ng-click="selectAll()" class="pointer">
+                                                <i class="fa fa-lg fa-check-square"></i>
+                                                <?php echo __('Select all'); ?>
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 col-md-2">
+                                            <span ng-click="undoSelection()" class="pointer">
+                                                <i class="fa fa-lg fa-square"></i>
+                                                <?php echo __('Undo selection'); ?>
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 col-md-2">
+                                            <button class="btn btn-xs btn-default"
+                                                    ng-click="saveInstanceConfigSyncSelection();">
+                                                <?= __('Save selection'); ?>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
