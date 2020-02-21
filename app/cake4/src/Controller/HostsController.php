@@ -35,6 +35,7 @@ use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
+use App\Model\Entity\Service;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
@@ -109,7 +110,6 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 class HostsController extends AppController {
 
     use PluginManagerTableTrait;
-
 
     public function index() {
         /** @var User $User */
@@ -1347,84 +1347,95 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message']);
     }
 
-    /**
-     * @deprecated
-     * @todo insert data to delete hosts table
-     */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        /** @var HostsTable $HostTable */
-        $HostTable = TableRegistry::getTableLocator()->get('Hosts');
-        if (!$HostTable->existsById($id)) {
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if (!$HostsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
 
         /** @var \App\Model\Entity\Host $host */
-        $host = $HostTable->getHostById($id);
-        $hostForChangelog = $host;
+        $host = $HostsTable
+            ->find()
+            ->contain([
+                'HostescalationsHostMemberships',
+                'HostdependenciesHostMemberships',
+                'HostsToContainersSharing'
+            ])
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->firstOrFail();
 
         if (!$this->allowedByContainerId($host->getContainerIds())) {
             $this->render403();
             return;
         }
 
-        /** @var Constants $Constants */
-        $Constants = new Constants();
-        $moduleConstants = $Constants->getModuleConstants();
+        $usedBy = $host->isUsedByModules();
+        if (!empty($usedBy)) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->set('message', __('Issue while deleting host'));
+            $this->set('usedBy', $usedBy);
+            $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
+            return;
+        }
 
-        $usedBy = $host->isUsedByModules($moduleConstants);
-        if (empty($usedBy['host']) && empty($usedBy['service'])) {
-            //Not used by any module
 
-            if ($HostTable->delete($host)) {
-
-                $User = new User($this->getUser());
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'delete',
-                    'hosts',
-                    $id,
-                    OBJECT_HOST,
-                    $hostForChangelog->get('container_id'),
-                    $User->getId(),
-                    $hostForChangelog->get('name'),
-                    []
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
-                /** @var $DocumentationsTable DocumentationsTable */
-                $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
-
-                $DocumentationsTable->deleteDocumentationByUuid($hostForChangelog->get('uuid'));
-
-                $this->set('success', true);
-                $this->set('message', __('Host successfully deleted'));
-                $this->viewBuilder()->setOption('serialize', ['success']);
+        $services = $ServicesTable->getServicesByHostIdForDelete($id, true);
+        foreach ($services as $service) {
+            /** @var Service $service */
+            $usedBy = $service->isUsedByModules();
+            if (!empty($usedBy)) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('success', false);
+                $this->set('id', $id);
+                $this->set('service_id', $service->get('id'));
+                $this->set('message', __('Issue while deleting host. Service used by other objects.'));
+                $this->set('usedBy', $usedBy);
+                $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy', 'service_id']);
                 return;
             }
         }
 
-        //both types must be host, otherwise the serviceUsedBy site with the host id will be displayed which results in an error
-        $usedBy = Hash::merge(
-            $this->getUsedByForFrontend($usedBy['host'], 'host'),
-            $this->getUsedByForFrontend($usedBy['service'], 'host')
-        );
+        //Host + Services of the host are not in use by any Modules an can be deleted.
+        $User = new User($this->getUser());
 
-        $this->response = $this->response->withStatus(400);
+        //Delete services of the host
+        foreach ($services as $serviceEntity) {
+            $service = $ServicesTable->find()
+                ->contain([
+                    'ServiceescalationsServiceMemberships',
+                    'ServicedependenciesServiceMemberships'
+                ])
+                ->where([
+                    'Services.id' => $serviceEntity->get('id')
+                ])
+                ->firstOrFail();
+
+            $ServicesTable->__delete($service, $User);
+        }
+
+        //Delete the host
+        if ($HostsTable->__delete($host, $User)) {
+            $this->set('success', true);
+            $this->set('message', __('Host successfully deleted'));
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
         $this->set('success', false);
-        $this->set('id', $id);
-        $this->set('message', __('Issue while deleting host'));
-        $this->set('usedBy', $usedBy);
-        $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
-
+        $this->set('message', __('Error while deleting host'));
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     /**
@@ -2125,8 +2136,8 @@ class HostsController extends AppController {
             }
 
             $tmpRecord = [
-                'Host'                 => $Host->toArray(),
-                'Hoststatus'           => $Hoststatus
+                'Host'       => $Host->toArray(),
+                'Hoststatus' => $Hoststatus
             ];
             $tmpRecord['Host']['satelliteName'] = $satelliteName;
             $tmpRecord['Host']['satelliteId'] = $satellite_id;
@@ -2286,7 +2297,8 @@ class HostsController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         $checkTimePeriod = $TimeperiodsTable->getTimeperiodWithTimerangesById($timeperiodId);
 
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
 
         $Groups = new Groups();
         $this->set('groups', $Groups->serialize(true));

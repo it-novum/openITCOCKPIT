@@ -7,6 +7,7 @@ use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\Service;
 use Cake\Database\Expression\Comparison;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -432,7 +433,7 @@ class ServicedependenciesTable extends Table {
      */
     public function isServicedependencyBroken($id = null, $serviceId = null) {
         if (!$this->exists(['Servicedependencies.id' => $id]) && $id !== null) {
-            throw new \NotFoundException();
+            throw new NotFoundException();
         }
         $query = $this->find()
             ->contain([

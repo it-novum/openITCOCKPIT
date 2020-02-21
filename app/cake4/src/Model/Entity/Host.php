@@ -2,6 +2,7 @@
 
 namespace App\Model\Entity;
 
+use App\Lib\Constants;
 use Cake\ORM\Entity;
 use Cake\Utility\Hash;
 
@@ -383,14 +384,38 @@ class Host extends Entity {
     }
 
     /**
-     * @param $moduleConstants
      * @return array
      */
-    public function isUsedByModules($moduleConstants) {
+    public function isUsedByModules() {
+        $Constants = new Constants();
+        $moduleConstants = $Constants->getModuleConstants();
+
         $usedBy = [];
-        foreach ($moduleConstants as $moduleName => $value) {
-            if ($this->get('usage_flag') & $value) {
-                $usedBy[$moduleName] = $value;
+        foreach ($moduleConstants as $moduleName => $moduleId) {
+            if ($this->usage_flag & $moduleId) {
+                switch ($moduleId) {
+                    case AUTOREPORT_MODULE:
+                        $usedBy[$moduleName] = [
+                            'baseUrl' => '#',
+                            'state'   => 'AutoreportsHostUsedBy',
+                            'message' => __('Used by Autoreport module'),
+                            'module'  => 'AutoreportModule',
+                            'id'      => $this->id
+                        ];
+                        break;
+                    case EVENTCORRELATION_MODULE:
+                        $usedBy[$moduleName] = [
+                            'baseUrl' => '#',
+                            'state'   => 'EventcorrelationsHostUsedBy',
+                            'message' => __('Used by Eventcorrelation module'),
+                            'module'  => 'EventcorrelationModule',
+                            'id'      => $this->id
+                        ];
+                        break;
+                    default:
+                        $usedBy[$moduleName] = $moduleId;
+                        break;
+                }
             }
         }
         return $usedBy;

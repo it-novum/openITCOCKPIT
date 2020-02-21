@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
@@ -53,15 +54,9 @@ use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 
-
-/**
- * @property AppPaginatorComponent $Paginator
- */
 class HosttemplatesController extends AppController {
 
-    public $uses = [
-        'Changelog'
-    ];
+    use PluginManagerTableTrait;
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
