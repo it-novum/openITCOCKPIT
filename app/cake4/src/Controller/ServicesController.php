@@ -811,9 +811,6 @@ class ServicesController extends AppController {
 
     /**
      * @param int|null $id
-     * @deprecated
-     * @todo Implement EVC in $ServicesTable->__delete
-     * @todo Implement Appcontroller::getUsedByForFrontend()
      */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
