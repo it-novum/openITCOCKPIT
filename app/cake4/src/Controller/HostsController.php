@@ -75,7 +75,6 @@ use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForView;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForView;
-use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\Permissions\HostContainersPermissions;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
@@ -366,8 +365,7 @@ class HostsController extends AppController {
 
         $masterInstanceName = $Systemsettings->getMasterInstanceName();
         $SatelliteNames = [];
-        $ModuleManager = new ModuleManager('DistributeModule');
-        if ($ModuleManager->moduleExists()) {
+        if (Plugin::isLoaded('DistributeModule')) {
             $MY_RIGHTS = [];
             if ($this->hasRootPrivileges === false) {
                 $MY_RIGHTS = $this->MY_RIGHTS;
@@ -1133,34 +1131,12 @@ class HostsController extends AppController {
         }
     }
 
-    /**
-     * @deprecated
-     */
-    public function getSharingContainers($containerId = null, $jsonOutput = true) {
-        if ($jsonOutput) {
-            $this->autoRender = false;
-        }
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
-        $sharingContainers = array_diff_key($containers, [$containerId => $containerId]);
-
-        if ($jsonOutput) {
-            echo json_encode($sharingContainers);
-        } else {
-            return $sharingContainers;
-        }
-    }
-
-
     public function disabled() {
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $masterInstanceName = $Systemsettings->getMasterInstanceName();
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
         $SatelliteNames = [];
-        $ModuleManager = new ModuleManager('DistributeModule');
-        if ($ModuleManager->moduleExists()) {
+        if (Plugin::isLoaded('DistributeModule')) {
             $MY_RIGHTS = [];
             if ($this->hasRootPrivileges === false) {
                 $MY_RIGHTS = $this->MY_RIGHTS;
@@ -2641,8 +2617,7 @@ class HostsController extends AppController {
         $masterInstanceName = $Systemsettings->getMasterInstanceName();
 
         $satellites = [];
-        $ModuleManager = new ModuleManager('DistributeModule');
-        if ($ModuleManager->moduleExists()) {
+        if (Plugin::isLoaded('DistributeModule')) {
             /** @var $SatellitesTable SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
