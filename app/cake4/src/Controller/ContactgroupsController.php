@@ -441,6 +441,7 @@ class ContactgroupsController extends AppController {
 
     /**
      * @param null $id
+     * @deprecated
      * @todo Refactor with Cake4
      */
     public function usedBy($id = null) {
