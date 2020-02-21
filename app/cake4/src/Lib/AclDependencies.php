@@ -356,7 +356,6 @@ class AclDependencies {
             ->dependency('Hosts', 'index', 'Hosts', 'loadHostById')
             ->dependency('Hosts', 'delete', 'Hosts', 'mass_delete')
             ->dependency('Hosts', 'deactivate', 'Hosts', 'mass_deactivate')
-            ->dependency('Hosts', 'browser', 'Hosts', 'longOutputByUuid')
             ->dependency('Hosts', 'browser', 'Hosts', 'getGrafanaIframeUrlForDatepicker')
             ->dependency('Hosts', 'add', 'Hosts', 'loadContainers')
             ->dependency('Hosts', 'add', 'Hosts', 'loadCommands')

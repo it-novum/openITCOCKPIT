@@ -984,6 +984,43 @@ class ServicesController extends AppController {
                             }
                         }
 
+                        if (!empty($serviceData['Service']['servicecommandargumentvalues'])) {
+                            $newServiceData['Service']['servicecommandargumentvalues'] = $serviceData['Service']['servicecommandargumentvalues'];
+                        }
+
+                        foreach ($sourceService['Service']['serviceeventcommandargumentvalues'] as $i => $serviceeventcommandargumentvalues) {
+                            unset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['id']);
+                            if (isset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['service_id'])) {
+                                unset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['service_id']);
+                            }
+
+                            if (isset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['servicetemplate_id'])) {
+                                unset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['servicetemplate_id']);
+                            }
+                        }
+
+                        if (!empty($serviceData['Service']['serviceeventcommandargumentvalues'])) {
+                            $newServiceData['Service']['serviceeventcommandargumentvalues'] = $serviceData['Service']['serviceeventcommandargumentvalues'];
+                        }
+
+                        foreach ($sourceService['Service']['serviceeventcommandargumentvalues'] as $i => $serviceeventcommandargumentvalues) {
+                            unset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['id']);
+                            if (isset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['service_id'])) {
+                                unset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['service_id']);
+                            }
+
+                            if (isset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['servicetemplate_id'])) {
+                                unset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['servicetemplate_id']);
+                            }
+                        }
+
+                        foreach ($sourceService['Service']['customvariables'] as $i => $customvariables) {
+                            unset($sourceService['Service']['customvariables'][$i]['id']);
+                            if (isset($sourceService['Service']['customvariables'][$i]['object_id'])) {
+                                unset($sourceService['Service']['customvariables'][$i]['object_id']);
+                            }
+                        }
+
                         $Cache->set($sourceServiceId, $sourceService);
                     }
 
@@ -994,9 +1031,6 @@ class ServicesController extends AppController {
                     $newServiceData['Service']['name'] = $serviceData['Service']['name'];
                     $newServiceData['Service']['description'] = $serviceData['Service']['description'];
                     $newServiceData['Service']['command_id'] = $serviceData['Service']['command_id'];
-                    if (!empty($serviceData['Service']['servicecommandargumentvalues'])) {
-                        $newServiceData['Service']['servicecommandargumentvalues'] = $serviceData['Service']['servicecommandargumentvalues'];
-                    }
                 }
 
                 $action = 'copy';
@@ -1085,7 +1119,6 @@ class ServicesController extends AppController {
 
                 if ($action === 'copy') {
                     $serviceData['uuid'] = UUID::v4();
-
                     $newServiceEntity = $ServicesTable->newEntity($serviceData);
                 } else {
                     $newServiceEntity = $ServicesTable->get($newServiceData['Service']['id']);

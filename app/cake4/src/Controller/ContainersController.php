@@ -32,13 +32,13 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\UsersTable;
 use Cake\Cache\Cache;
+use Cake\Core\Plugin;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\ModuleManager;
 
 
 /**
@@ -766,8 +766,7 @@ class ContainersController extends AppController {
                 'Container.id' => $id
             ]
         ]);
-        $ModuleManager = new ModuleManager('DistributeModule');
-        if ($ModuleManager->moduleExists()) {
+        if (Plugin::isLoaded('DistributeModule')) {
             $SatelliteModel = $ModuleManager->loadModel('Satellite');
             $satellites = $SatelliteModel->find('all', [
                 'recursive'  => -1,
