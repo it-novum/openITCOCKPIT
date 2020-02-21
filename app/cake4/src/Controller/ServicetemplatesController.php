@@ -177,11 +177,11 @@ class ServicetemplatesController extends AppController {
                 //No errors
 
                 $User = new User($this->getUser());
+                $requestData = $this->request->getData();
 
-                $extDataForChangelog = $ServicetemplatesTable->resolveDataForChangelog($request);
+                $extDataForChangelog = $ServicetemplatesTable->resolveDataForChangelog($requestData);
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'servicetemplates',
@@ -190,7 +190,7 @@ class ServicetemplatesController extends AppController {
                     $servicetemplate->get('container_id'),
                     $User->getId(),
                     $servicetemplate->get('template_name'),
-                    array_merge($request, $extDataForChangelog)
+                    array_merge($extDataForChangelog, $requestData)
                 );
 
                 if ($changelog_data) {

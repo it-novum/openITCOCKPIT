@@ -270,7 +270,7 @@
                                         {{tableName}}
 
                                         <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
-                                              ng-if="!tableChanges.isArray">
+                                              ng-if="!tableChanges.isArray && fieldName !== 'id'">
                                             <small class="padding-left-10">
                                                 {{fieldName}}: <span class="text-primary">{{fieldValue}}</span>
                                             </small>
@@ -279,7 +279,7 @@
                                         <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
                                               ng-if="tableChanges.isArray" class="padding-top-5">
                                             <small ng-repeat="(subFieldName, subFieldValue) in fieldValue"
-                                                   class="padding-left-10">
+                                                   class="padding-left-10" ng-if="subFieldName !== 'id'">
                                                 {{subFieldName}}: <span class="text-primary">{{subFieldValue}}</span>
                                             </small>
                                             <div class="padding-top-5"></div>

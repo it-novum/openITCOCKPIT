@@ -208,7 +208,7 @@ class ServicetemplatesTable extends Table {
             ->integer('command_id')
             ->requirePresence('command_id', 'create')
             ->greaterThan('command_id', 0, __('Please select a check command'))
-            ->allowEmptyString('command_id', null, false);
+            ->allowEmptyString('command_id', null,  __('Please select a check period'));
 
         $validator
             ->integer('eventhandler_command_id')
@@ -383,7 +383,7 @@ class ServicetemplatesTable extends Table {
 
         $validator
             ->integer('freshness_threshold')
-            ->greaterThan('check_period_id', 0, __('This field cannot be 0'))
+            ->greaterThan('check_period_id', 0, __('This field cannot be empty'))
             ->allowEmptyString('freshness_threshold');
 
         return $validator;
