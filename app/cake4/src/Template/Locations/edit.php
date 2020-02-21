@@ -68,6 +68,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                             data-placeholder="<?php echo __('Please choose'); ?>"
                                             class="form-control"
                                             chosen="containers"
+                                            disabled
                                             ng-options="container.key as container.value for container in containers"
                                             ng-model="post.container.parent_id">
                                     </select>
