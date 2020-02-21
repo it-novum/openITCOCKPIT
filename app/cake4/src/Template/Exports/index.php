@@ -89,7 +89,7 @@
                             <div class="jarviswidget padding-top-15" ng-show="useSingleInstanceSync">
                                 <header>
                                 <span class="widget-icon">
-                                    <i class="fa fa-cloud"></i>
+                                    <i class="fas fa-satellite"></i>
                                 </span>
                                     <h2><?= __('Select instances which the new configuration should get pushed.'); ?></h2>
                                 </header>
