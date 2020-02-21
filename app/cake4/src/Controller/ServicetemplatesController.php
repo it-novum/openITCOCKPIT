@@ -939,39 +939,4 @@ class ServicetemplatesController extends AppController {
         $this->set('servicetemplates', $servicetemplates);
         $this->viewBuilder()->setOption('serialize', ['servicetemplates']);
     }
-
-    public function agent() {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship HTML Template
-            return;
-        }
-
-        /** @var ServicetemplatesTable $ServicetemplatesTable */
-        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
-
-        $ServicetemplateFilter = new ServicetemplateFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServicetemplateFilter->getPage());
-
-        $MY_RIGHTS = $this->MY_RIGHTS;
-        if ($this->hasRootPrivileges) {
-            $MY_RIGHTS = [];
-        }
-        $servicetemplates = $ServicetemplatesTable->getServicetemplatesIndex($ServicetemplateFilter, $PaginateOMat, $MY_RIGHTS, OITC_AGENT_SERVICE);
-
-        foreach ($servicetemplates as $index => $servicetemplate) {
-            $servicetemplates[$index]['Servicetemplate']['allow_edit'] = true;
-            if ($this->hasRootPrivileges === false) {
-                $servicetemplates[$index]['Servicetemplate']['allow_edit'] = $this->isWritableContainer($servicetemplate['Servicetemplate']['container_id']);
-            }
-        }
-
-
-        $this->set('all_servicetemplates', $servicetemplates);
-        $toJson = ['all_servicetemplates', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['all_servicetemplates', 'scroll'];
-        }
-        $this->viewBuilder()->setOption('serialize', $toJson);
-    }
-
 }

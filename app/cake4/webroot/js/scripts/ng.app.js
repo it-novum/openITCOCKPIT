@@ -1169,12 +1169,6 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ServicetemplatesIndexController"
             })
 
-            .state('ServicetemplatesAgent', {
-                url: '/servicetemplates/agent',
-                templateUrl: "/servicetemplates/agent.html",
-                controller: "ServicetemplatesAgentController"
-            })
-
             .state('ServicetemplatesAdd', {
                 url: '/servicetemplates/add',
                 params: {
