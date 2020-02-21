@@ -72,32 +72,37 @@ use Cake\Core\Plugin;
                     </button>
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean flex-column flex-sm-row" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" data-toggle="tab" ng-click="selectedTab = 'tab1'; hideTimeline()" role="tab">
+                            <a class="nav-link active" data-toggle="tab" ng-click="selectedTab = 'tab1'; hideTimeline()"
+                               role="tab">
                                 <i class="fa fa-info">&nbsp;</i> <?php echo __('Status information'); ?>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab2'; hideTimeline()" role="tab">
+                            <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab2'; hideTimeline()"
+                               role="tab">
                                 <i class="fa fa-hdd-o">&nbsp;</i> <?php echo __('Device information'); ?>
                             </a>
                         </li>
                         <?php if ($this->Acl->hasPermission('timeline', 'hosts')): ?>
                             <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab3'; showTimeline()" role="tab">
+                                <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab3'; showTimeline()"
+                                   role="tab">
                                     <i class="fa fa-clock-o">&nbsp;</i> <?php echo __('Timeline'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <?php if (Plugin::isLoaded('ServicenowModule')): ?>
                             <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab4'; hideTimeline()" role="tab">
+                                <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab4'; hideTimeline()"
+                                   role="tab">
                                     <i class="fa fa-user-circle">&nbsp;</i> <?php echo __('ServiceNow'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <?php if (Plugin::isLoaded('GrafanaModule')): ?>
                             <li class="nav-item" ng-show="GrafanaDashboardExists">
-                                <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab5'; hideTimeline()" role="tab">
+                                <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab5'; hideTimeline()"
+                                   role="tab">
                                     <i class="fa fa-area-chart">&nbsp;</i> <?php echo __('Grafana'); ?>
                                 </a>
                             </li>
@@ -144,12 +149,13 @@ use Cake\Core\Plugin;
                                         <?php echo __('Next check'); ?>
                                     </div>
                                     <div class="col-6">
-                                            <span
-                                                ng-if="mergedHost.active_checks_enabled && mergedHost.is_satellite_host === false">{{ hoststatus.nextCheck }}</span>
+                                        <span
+                                            ng-if="mergedHost.active_checks_enabled && mergedHost.is_satellite_host === false">{{
+                                            hoststatus.nextCheck }}</span>
                                         <span
                                             ng-if="mergedHost.active_checks_enabled === false || mergedHost.is_satellite_host === true">
-                                                <?php echo __('n/a'); ?>
-                                            </span>
+                                            <?php echo __('n/a'); ?>
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="row" ng-show="hoststatus.isHardstate">
@@ -230,14 +236,16 @@ use Cake\Core\Plugin;
                         </div>
 
                         <div class="row">
-                            <div class="col-xs-12 col-sm-6 col-md-7 col-lg-9 padding-bottom-10 padding-left-10 padding-right-10">
+                            <div
+                                class="col-xs-12 col-sm-6 col-md-7 col-lg-9 padding-bottom-10 padding-left-10 padding-right-10">
 
                                 <div class="row" ng-show="mergedHost.disabled">
-                                    <div class="col-lg-12 bg-warning browser-border margin-bottom-10 margin-left-10 padding-5">
-                                            <h4>
-                                                <i class="fa fa-plug"></i>
-                                                <?php echo __('This host is currently disabled!'); ?>
-                                            </h4>
+                                    <div
+                                        class="col-lg-12 bg-warning browser-border margin-bottom-10 margin-left-10 padding-5">
+                                        <h4>
+                                            <i class="fa fa-plug"></i>
+                                            <?php echo __('This host is currently disabled!'); ?>
+                                        </h4>
                                     </div>
                                 </div>
 
@@ -303,8 +311,8 @@ use Cake\Core\Plugin;
                                                     <i class="fas fa-user" ng-show="acknowledgement.is_sticky"></i>
                                                     <?php echo __('State of host is acknowledged'); ?>
                                                     <span ng-show="acknowledgement.is_sticky">
-                                                            (<?php echo __('Sticky'); ?>)
-                                                        </span>
+                                                        (<?php echo __('Sticky'); ?>)
+                                                    </span>
                                                 </h4>
                                             </div>
                                             <div class="padding-top-5">
@@ -472,14 +480,14 @@ use Cake\Core\Plugin;
                                         <?php echo __('Contacts and contact groups got inherited from'); ?>
                                         <span ng-show="areContactsInheritedFromHosttemplate" class="bold">
 
-                                                <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
-                                                    <a ui-sref="HosttemplatesEdit({id: mergedHost.hosttemplate_id})">
-                                                        <?php echo __('host template'); ?>
-                                                    </a>
-                                                <?php else: ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                                <a ui-sref="HosttemplatesEdit({id: mergedHost.hosttemplate_id})">
                                                     <?php echo __('host template'); ?>
-                                                <?php endif; ?>
-                                            </span>
+                                                </a>
+                                            <?php else: ?>
+                                                <?php echo __('host template'); ?>
+                                            <?php endif; ?>
+                                        </span>
                                         .
                                     </div>
 
@@ -515,8 +523,8 @@ use Cake\Core\Plugin;
                                                                 {{contactgroup.container.name}}
                                                             </a>
                                                             <span ng-if="!contactgroup.allowEdit">
-                                                                    {{contactgroup.container.name}}
-                                                                </span>
+                                                                {{contactgroup.container.name}}
+                                                            </span>
                                                         <?php else: ?>
                                                             {{contactgroup.container.name}}
                                                         <?php endif; ?>
@@ -541,50 +549,50 @@ use Cake\Core\Plugin;
                                             <tr>
                                                 <td><?php echo __('Notifications enabled'); ?></td>
                                                 <td>
-                                                        <span class="badge badge-success"
-                                                              ng-show="hoststatus.notifications_enabled">
-                                                            <?php echo __('Yes'); ?>
-                                                        </span>
+                                                    <span class="badge badge-success"
+                                                          ng-show="hoststatus.notifications_enabled">
+                                                        <?php echo __('Yes'); ?>
+                                                    </span>
 
                                                     <span class="badge badge-danger"
                                                           ng-show="!hoststatus.notifications_enabled">
-                                                            <?php echo __('No'); ?>
-                                                        </span>
+                                                        <?php echo __('No'); ?>
+                                                    </span>
                                                 </td>
                                             </tr>
 
                                             <tr>
                                                 <td><?php echo __('Notify on'); ?></td>
                                                 <td>
-                                                        <span class="badge badge-success"
-                                                              ng-show="mergedHost.notify_on_recovery"
-                                                              style="margin-right: 2px;">
-                                                            <?php echo __('Recover'); ?>
-                                                        </span>
+                                                    <span class="badge badge-success"
+                                                          ng-show="mergedHost.notify_on_recovery"
+                                                          style="margin-right: 2px;">
+                                                        <?php echo __('Recover'); ?>
+                                                    </span>
 
                                                     <span class="badge badge-danger"
                                                           ng-show="mergedHost.notify_on_down"
                                                           style="margin-right: 2px;">
-                                                            <?php echo __('Down'); ?>
-                                                        </span>
+                                                        <?php echo __('Down'); ?>
+                                                    </span>
 
                                                     <span class="badge badge-secondary"
                                                           ng-show="mergedHost.notify_on_unreachable"
                                                           style="margin-right: 2px;">
-                                                            <?php echo __('Unreachable'); ?>
-                                                        </span>
+                                                        <?php echo __('Unreachable'); ?>
+                                                    </span>
 
                                                     <span class="badge badge-primary"
                                                           ng-show="mergedHost.notify_on_flapping"
                                                           style="margin-right: 2px;">
-                                                            <?php echo __('Flapping'); ?>
-                                                        </span>
+                                                        <?php echo __('Flapping'); ?>
+                                                    </span>
 
                                                     <span class="badge badge-primary"
                                                           ng-show="mergedHost.notify_on_downtime"
                                                           style="margin-right: 2px;">
-                                                            <?php echo __('Downtime'); ?>
-                                                        </span>
+                                                        <?php echo __('Downtime'); ?>
+                                                    </span>
                                                 </td>
                                             </tr>
                                         </table>
@@ -616,17 +624,17 @@ use Cake\Core\Plugin;
                                     <div class="text-center txt-color-white">
                                         <div><?php echo __('Next check'); ?></div>
                                         <h3 class="margin-top-0">
-                                                <span
-                                                    ng-if="mergedHost.active_checks_enabled && mergedHost.is_satellite_host === false">
-                                                    {{ hoststatus.nextCheck }}
-                                                    <small style="color: #333;"
-                                                           ng-show="hoststatus.latency > 1">(+ {{ hoststatus.latency }})
-                                                    </small>
-                                                </span>
+                                            <span
+                                                ng-if="mergedHost.active_checks_enabled && mergedHost.is_satellite_host === false">
+                                                {{ hoststatus.nextCheck }}
+                                                <small style="color: #333;"
+                                                       ng-show="hoststatus.latency > 1">(+ {{ hoststatus.latency }})
+                                                </small>
+                                            </span>
                                             <span
                                                 ng-if="mergedHost.active_checks_enabled === false || mergedHost.is_satellite_host === true">
-                                                    <?php echo __('n/a'); ?>
-                                                </span>
+                                                <?php echo __('n/a'); ?>
+                                            </span>
                                         </h3>
                                     </div>
 
@@ -729,15 +737,15 @@ use Cake\Core\Plugin;
                                             <tr>
                                                 <td><?php echo __('Flap detection enabled'); ?></td>
                                                 <td>
-                                                        <span class="badge badge-danger"
-                                                              ng-show="hoststatus.flap_detection_enabled">
-                                                            <?php echo __('Yes'); ?>
-                                                        </span>
+                                                    <span class="badge badge-danger"
+                                                          ng-show="hoststatus.flap_detection_enabled">
+                                                        <?php echo __('Yes'); ?>
+                                                    </span>
 
                                                     <span class="badge badge-success"
                                                           ng-show="!hoststatus.flap_detection_enabled">
-                                                            <?php echo __('No'); ?>
-                                                        </span>
+                                                        <?php echo __('No'); ?>
+                                                    </span>
                                                 </td>
                                             </tr>
                                         </table>
@@ -763,8 +771,8 @@ use Cake\Core\Plugin;
                                                         class="btn btn-default btn-xs"
                                                         onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"
                                                         title="<?php echo __('Copy to clipboard'); ?>">
-                                                            <i class="fa fa-copy"></i>
-                                                        </span>
+                                                        <i class="fa fa-copy"></i>
+                                                    </span>
                                                     <input type="text" style="display:none;" id="host-uuid-copy"
                                                            value="{{ mergedHost.uuid }}"
                                                 </td>
@@ -809,9 +817,9 @@ use Cake\Core\Plugin;
                                             <tr ng-show="tags.length">
                                                 <td><?php echo __('Tags'); ?></td>
                                                 <td>
-                                                        <span class="label label-primary"
-                                                              ng-repeat="tag in tags"
-                                                              style="margin-right: 2px;">{{tag}}</span>
+                                                    <span class="label label-primary"
+                                                          ng-repeat="tag in tags"
+                                                          style="margin-right: 2px;">{{tag}}</span>
                                                 </td>
                                             </tr>
 
@@ -860,11 +868,12 @@ use Cake\Core\Plugin;
                                         <h3 class="margin-top-0">
                                             <?php echo __('Outages: '); ?>
                                             <span ng-hide="failureDurationInPercent">
-                                                    <i class="fa fa-refresh fa-spin txt-primary"></i>
-                                                </span>
-                                            <span ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ? failureDurationInPercent+' %' :
-                                                    '<?php echo __('No data available !'); ?>'}}
-                                                </span>
+                                                <i class="fa fa-refresh fa-spin txt-primary"></i>
+                                            </span>
+                                            <span ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ?
+                                                failureDurationInPercent+' %' :
+                                                '<?php echo __('No data available !'); ?>'}}
+                                            </span>
                                         </h3></div>
                                     <div class="col-12">
                                         <div id="visualization"></div>
@@ -986,7 +995,7 @@ use Cake\Core\Plugin;
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab"  ng-click="changeTab('notMonitored')" role="tab">
+                            <a class="nav-link" data-toggle="tab" ng-click="changeTab('notMonitored')" role="tab">
                                 <i class="fa fa-user-md">&nbsp;</i> <?php echo __('Not monitored'); ?>
                             </a>
                         </li>
@@ -1012,266 +1021,266 @@ use Cake\Core\Plugin;
                 <div class="panel-content">
                     <div id="serviceTab1" class="tab-pane" ng-if="activeTab === 'active'">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
-                        <thead>
-                        <tr>
+                            <thead>
+                            <tr>
 
-                            <th class="width-120 no-sort" ng-click="orderBy('Servicestatus.current_state')">
-                                <i class="fa"
-                                   ng-class="getSortClass('Servicestatus.current_state')"></i>
-                                <?php echo __('Service status'); ?>
-                            </th>
+                                <th class="width-120 no-sort" ng-click="orderBy('Servicestatus.current_state')">
+                                    <i class="fa"
+                                       ng-class="getSortClass('Servicestatus.current_state')"></i>
+                                    <?php echo __('Service status'); ?>
+                                </th>
 
-                            <th class="no-sort text-center">
-                                <i class="fa fa-user"
-                                   title="<?php echo __('Acknowledgedment'); ?>"></i>
-                            </th>
+                                <th class="no-sort text-center">
+                                    <i class="fa fa-user"
+                                       title="<?php echo __('Acknowledgedment'); ?>"></i>
+                                </th>
 
-                            <th class="no-sort text-center">
-                                <i class="fa fa-power-off"
-                                   title="<?php echo __('in Downtime'); ?>"></i>
-                            </th>
+                                <th class="no-sort text-center">
+                                    <i class="fa fa-power-off"
+                                       title="<?php echo __('in Downtime'); ?>"></i>
+                                </th>
 
-                            <th class="no-sort text-center">
-                                <i class="fa fa fa-area-chart"
-                                   title="<?php echo __('Grapher'); ?>"></i>
-                            </th>
+                                <th class="no-sort text-center">
+                                    <i class="fa fa fa-area-chart"
+                                       title="<?php echo __('Grapher'); ?>"></i>
+                                </th>
 
-                            <th class="no-sort text-center">
-                                <strong title="<?php echo __('Passively transferred service'); ?>">
-                                    P
-                                </strong>
-                            </th>
+                                <th class="no-sort text-center">
+                                    <strong title="<?php echo __('Passively transferred service'); ?>">
+                                        P
+                                    </strong>
+                                </th>
 
-                            <th class="no-sort" ng-click="orderBy('servicename')">
-                                <i class="fa" ng-class="getSortClass('servicename')"></i>
-                                <?php echo __('Service name'); ?>
-                            </th>
+                                <th class="no-sort" ng-click="orderBy('servicename')">
+                                    <i class="fa" ng-class="getSortClass('servicename')"></i>
+                                    <?php echo __('Service name'); ?>
+                                </th>
 
-                            <th class="no-sort tableStatewidth"
-                                ng-click="orderBy('Servicestatus.last_state_change')">
-                                <i class="fa"
-                                   ng-class="getSortClass('Servicestatus.last_state_change')"></i>
-                                <?php echo __('Last state change'); ?>
-                            </th>
+                                <th class="no-sort tableStatewidth"
+                                    ng-click="orderBy('Servicestatus.last_state_change')">
+                                    <i class="fa"
+                                       ng-class="getSortClass('Servicestatus.last_state_change')"></i>
+                                    <?php echo __('Last state change'); ?>
+                                </th>
 
-                            <th class="no-sort" ng-click="orderBy('Servicestatus.output')">
-                                <i class="fa" ng-class="getSortClass('Servicestatus.output')"></i>
-                                <?php echo __('Service output'); ?>
-                            </th>
+                                <th class="no-sort" ng-click="orderBy('Servicestatus.output')">
+                                    <i class="fa" ng-class="getSortClass('Servicestatus.output')"></i>
+                                    <?php echo __('Service output'); ?>
+                                </th>
 
-                            <th class="no-sort text-center width-50">
-                                <i class="fa fa-gear"></i>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>
-                                <div class="custom-control-inline">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox"
-                                               id="statusFilterOk"
-                                               class="custom-control-input"
-                                               name="checkbox"
-                                               checked="checked"
-                                               ng-model-options="{debounce: 500}"
-                                               ng-model="activeServiceFilter.Servicestatus.current_state.ok">
-                                        <label
-                                            class="custom-control-label custom-control-label-ok no-margin"
-                                            for="statusFilterOk">&nbsp;</label>
-                                    </div>
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox"
-                                               id="statusFilterWarning"
-                                               class="custom-control-input"
-                                               name="checkbox"
-                                               checked="checked"
-                                               ng-model-options="{debounce: 500}"
-                                               ng-model="activeServiceFilter.Servicestatus.current_state.warning">
-                                        <label
-                                            class="custom-control-label custom-control-label-warning no-margin"
-                                            for="statusFilterWarning">&nbsp;</label>
-                                    </div>
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox"
-                                               id="statusFilterCritical"
-                                               class="custom-control-input"
-                                               name="checkbox"
-                                               checked="checked"
-                                               ng-model-options="{debounce: 500}"
-                                               ng-model="activeServiceFilter.Servicestatus.current_state.critical">
-                                        <label
-                                            class="custom-control-label custom-control-label-critical no-margin"
-                                            for="statusFilterCritical">&nbsp;</label>
-                                    </div>
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox"
-                                               id="statusFilterUnknown"
-                                               class="custom-control-input"
-                                               name="checkbox"
-                                               checked="checked"
-                                               ng-model-options="{debounce: 500}"
-                                               ng-model="activeServiceFilter.Servicestatus.current_state.unknown">
-                                        <label
-                                            class="custom-control-label custom-control-label-unknown no-margin"
-                                            for="statusFilterUnknown">&nbsp;</label>
-                                    </div>
-                                </div>
-                            </th>
-
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-
-                            <th>
-                                <div class="form-group">
-                                    <div class="input-group input-group-sm">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text"><i class="fa fa-cog"></i></span>
+                                <th class="no-sort text-center width-50">
+                                    <i class="fa fa-gear"></i>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <div class="custom-control-inline">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="statusFilterOk"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-model="activeServiceFilter.Servicestatus.current_state.ok">
+                                            <label
+                                                class="custom-control-label custom-control-label-ok no-margin"
+                                                for="statusFilterOk">&nbsp;</label>
                                         </div>
-                                        <input type="text" class="form-control form-control-sm"
-                                               placeholder="<?php echo __('Filter by service name'); ?>"
-                                               ng-model="activeServiceFilter.Service.name"
-                                               ng-model-options="{debounce: 500}">
-                                    </div>
-                                </div>
-                            </th>
-
-                            <th></th>
-
-                            <th>
-                                <div class="form-group">
-                                    <div class="input-group input-group-sm">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="statusFilterWarning"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-model="activeServiceFilter.Servicestatus.current_state.warning">
+                                            <label
+                                                class="custom-control-label custom-control-label-warning no-margin"
+                                                for="statusFilterWarning">&nbsp;</label>
                                         </div>
-                                        <input type="text" class="form-control form-control-sm"
-                                               placeholder="<?php echo __('Filter by output'); ?>"
-                                               ng-model="activeServiceFilter.Servicestatus.output"
-                                               ng-model-options="{debounce: 500}">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="statusFilterCritical"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-model="activeServiceFilter.Servicestatus.current_state.critical">
+                                            <label
+                                                class="custom-control-label custom-control-label-critical no-margin"
+                                                for="statusFilterCritical">&nbsp;</label>
+                                        </div>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   id="statusFilterUnknown"
+                                                   class="custom-control-input"
+                                                   name="checkbox"
+                                                   checked="checked"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-model="activeServiceFilter.Servicestatus.current_state.unknown">
+                                            <label
+                                                class="custom-control-label custom-control-label-unknown no-margin"
+                                                for="statusFilterUnknown">&nbsp;</label>
+                                        </div>
                                     </div>
-                                </div>
-                            </th>
-                            <th></th>
+                                </th>
 
-                        </tr>
-                        </thead>
-                        <tbody>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
 
-                        <tr ng-repeat="service in services">
+                                <th>
+                                    <div class="form-group">
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-cog"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   placeholder="<?php echo __('Filter by service name'); ?>"
+                                                   ng-model="activeServiceFilter.Service.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </th>
 
-                            <td class="text-center width-90">
-                                <servicestatusicon service="service"></servicestatusicon>
-                            </td>
+                                <th></th>
 
-                            <td class="text-center">
-                                <i class="far fa-user"
-                                   ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                   ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
+                                <th>
+                                    <div class="form-group">
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   placeholder="<?php echo __('Filter by output'); ?>"
+                                                   ng-model="activeServiceFilter.Servicestatus.output"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </th>
+                                <th></th>
 
-                                <i class="fas fa-user"
-                                   ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                   ng-if="service.Servicestatus.acknowledgement_type == 2"
-                                   title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
-                            </td>
+                            </tr>
+                            </thead>
+                            <tbody>
 
-                            <td class="text-center">
-                                <i class="fa fa-power-off"
-                                   ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
-                            </td>
+                            <tr ng-repeat="service in services">
 
-                            <td class="text-center">
-                                <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                    <a ui-sref="ServicesBrowser({id:service.Service.id})"
-                                       class="txt-color-blueDark">
+                                <td class="text-center width-90">
+                                    <servicestatusicon service="service"></servicestatusicon>
+                                </td>
+
+                                <td class="text-center">
+                                    <i class="far fa-user"
+                                       ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                       ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
+
+                                    <i class="fas fa-user"
+                                       ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                       ng-if="service.Servicestatus.acknowledgement_type == 2"
+                                       title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                </td>
+
+                                <td class="text-center">
+                                    <i class="fa fa-power-off"
+                                       ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
+                                </td>
+
+                                <td class="text-center">
+                                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                        <a ui-sref="ServicesBrowser({id:service.Service.id})"
+                                           class="txt-color-blueDark">
+                                            <i class="fa fa-area-chart"
+                                               ng-mouseenter="mouseenter($event, mergedHost.uuid, service)"
+                                               ng-mouseleave="mouseleave()"
+                                               ng-if="service.Service.has_graph">
+                                            </i>
+                                        </a>
+                                    <?php else: ?>
                                         <i class="fa fa-area-chart"
                                            ng-mouseenter="mouseenter($event, mergedHost.uuid, service)"
                                            ng-mouseleave="mouseleave()"
                                            ng-if="service.Service.has_graph">
                                         </i>
-                                    </a>
-                                <?php else: ?>
-                                    <i class="fa fa-area-chart"
-                                       ng-mouseenter="mouseenter($event, mergedHost.uuid, service)"
-                                       ng-mouseleave="mouseleave()"
-                                       ng-if="service.Service.has_graph">
-                                    </i>
-                                <?php endif; ?>
-                            </td>
+                                    <?php endif; ?>
+                                </td>
 
-                            <td class="text-center">
-                                <strong title="<?php echo __('Passively transferred service'); ?>"
-                                        ng-show="service.Service.active_checks_enabled === false || mergedHost.is_satellite_host === true">
-                                    P
-                                </strong>
-                            </td>
+                                <td class="text-center">
+                                    <strong title="<?php echo __('Passively transferred service'); ?>"
+                                            ng-show="service.Service.active_checks_enabled === false || mergedHost.is_satellite_host === true">
+                                        P
+                                    </strong>
+                                </td>
 
-                            <td>
-                                <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                    <a ui-sref="ServicesBrowser({id:service.Service.id})">
-                                        {{ service.Service.servicename }}
-                                    </a>
-                                <?php else: ?>
-                                    {{ service.Service.servicename }}
-                                <?php endif; ?>
-                            </td>
-
-                            <td>
-                                {{ service.Servicestatus.last_state_change }}
-                            </td>
-
-                            <td>
-                                {{ service.Servicestatus.output }}
-                            </td>
-
-                            <td class="width-50">
-                                <div class="btn-group btn-group-xs" role="group">
-                                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                        <a ui-sref="ServicesEdit({id: service.Service.id})"
-                                           ng-if="service.Service.allow_edit"
-                                           class="btn btn-default btn-lower-padding">
-                                            <i class="fa fa-cog"></i>
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                        <a ui-sref="ServicesBrowser({id:service.Service.id})">
+                                            {{ service.Service.servicename }}
                                         </a>
                                     <?php else: ?>
-                                        <a href="javascript:void(0);"
-                                           class="btn btn-default btn-lower-padding">
-                                            <i class="fa fa-cog"></i></a>
+                                        {{ service.Service.servicename }}
                                     <?php endif; ?>
-                                    <button type="button"
-                                            class="btn btn-default dropdown-toggle btn-lower-padding"
-                                            data-toggle="dropdown">
-                                        <i class="caret"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-right">
+                                </td>
+
+                                <td>
+                                    {{ service.Servicestatus.last_state_change }}
+                                </td>
+
+                                <td>
+                                    {{ service.Servicestatus.output }}
+                                </td>
+
+                                <td class="width-50">
+                                    <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                             <a ui-sref="ServicesEdit({id: service.Service.id})"
                                                ng-if="service.Service.allow_edit"
-                                               class="dropdown-item">
+                                               class="btn btn-default btn-lower-padding">
                                                 <i class="fa fa-cog"></i>
-                                                <?php echo __('Edit'); ?>
                                             </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);"
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i></a>
                                         <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
-                                            <a ng-click="confirmDeactivate(getObjectForDelete(mergedHost.name, service))"
-                                               ng-if="service.Service.allow_edit"
-                                               href="javascript:void(0);"
-                                               class="dropdown-item">
-                                                <i class="fa fa-plug"></i>
-                                                <?php echo __('Disable'); ?>
-                                            </a>
-                                        <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
-                                            <a ng-click="confirmDelete(getObjectForDelete(mergedHost.name, service))"
-                                               ng-if="service.Service.allow_edit"
-                                               class="dropdown-item txt-color-red">
-                                                <i class="fa fa-trash"></i>
-                                                <?php echo __('Delete'); ?>
-                                            </a>
-                                        <?php endif; ?>
+                                        <button type="button"
+                                                class="btn btn-default dropdown-toggle btn-lower-padding"
+                                                data-toggle="dropdown">
+                                            <i class="caret"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                                <a ui-sref="ServicesEdit({id: service.Service.id})"
+                                                   ng-if="service.Service.allow_edit"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-cog"></i>
+                                                    <?php echo __('Edit'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
+                                                <a ng-click="confirmDeactivate(getObjectForDelete(mergedHost.name, service))"
+                                                   ng-if="service.Service.allow_edit"
+                                                   href="javascript:void(0);"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-plug"></i>
+                                                    <?php echo __('Disable'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                                <a ng-click="confirmDelete(getObjectForDelete(mergedHost.name, service))"
+                                                   ng-if="service.Service.allow_edit"
+                                                   class="dropdown-item txt-color-red">
+                                                    <i class="fa fa-trash"></i>
+                                                    <?php echo __('Delete'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
+                                </td>
+                            </tr>
+                            </tbody>
                         </table>
                         <div class="margin-top-10" ng-show="services.length == 0">
                             <div class="text-center text-danger italic">
