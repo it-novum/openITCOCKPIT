@@ -110,7 +110,6 @@ class HostsController extends AppController {
 
     use PluginManagerTableTrait;
 
-
     public function index() {
         /** @var User $User */
         $User = new User($this->getUser());
@@ -1371,11 +1370,7 @@ class HostsController extends AppController {
             return;
         }
 
-        /** @var Constants $Constants */
-        $Constants = new Constants();
-        $moduleConstants = $Constants->getModuleConstants();
-
-        $usedBy = $host->isUsedByModules($moduleConstants);
+        $usedBy = $host->isUsedByModules();
         if (empty($usedBy['host']) && empty($usedBy['service'])) {
             //Not used by any module
 

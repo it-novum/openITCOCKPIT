@@ -2,6 +2,7 @@
 
 namespace App\Model\Entity;
 
+use App\Lib\Constants;
 use Cake\ORM\Entity;
 use Cake\Utility\Hash;
 
@@ -383,10 +384,13 @@ class Host extends Entity {
     }
 
     /**
-     * @param $moduleConstants
      * @return array
      */
-    public function isUsedByModules($moduleConstants) {
+    public function isUsedByModules() {
+        /** @var Constants $Constants */
+        $Constants = new Constants();
+        $moduleConstants = $Constants->getModuleConstants();
+
         $usedBy = [];
         foreach ($moduleConstants as $moduleName => $value) {
             if ($this->get('usage_flag') & $value) {

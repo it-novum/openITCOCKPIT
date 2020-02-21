@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
@@ -56,19 +57,12 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 
 /**
- * @property Changelog $Changelog
- * @property Servicetemplate $Servicetemplate
- * @property Service $Service
- *
- * @property AppPaginatorComponent $Paginator
+ * Class ServicetemplatesController
+ * @package App\Controller
  */
 class ServicetemplatesController extends AppController {
 
-    public $uses = [
-        'Servicetemplate', //Remove me
-        'Service', //Remove me
-        'Changelog'
-    ];
+    use PluginManagerTableTrait;
 
     public function index() {
         /** @var $ServicetemplatesTable ServicetemplatesTable */
@@ -317,6 +311,88 @@ class ServicetemplatesController extends AppController {
      * @deprecated
      */
     public function delete($id = null) {
+        if(!$this->request->is('post')){
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        if (!$ServicetemplatesTable->existsById($id)) {
+            throw new NotFoundException(__('Service template not found'));
+        }
+
+        $servicetemplate = $ServicetemplatesTable->get($id);
+
+        if (!$this->allowedByContainerId($servicetemplate->get('container_id'))) {
+            $this->render403();
+            return;
+        }
+
+
+        if (!$ServicetemplatesTable->allowDelete($id)) {
+            $usedBy = [
+                [
+                    'baseUrl' => '#',
+                    'state'   => 'ServicetemplatesUsedBy',
+                    'message' => __('Used by other objects'),
+                    'module'  => 'Core'
+                ]
+            ];
+
+            $this->response = $this->response->withStatus(400);
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->set('message', __('Issue while deleting service template'));
+            $this->set('usedBy', $usedBy);
+            $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
+            return;
+        }
+
+
+        if ($ServicetemplatesTable->delete($servicetemplate)) {
+            $User = new User($this->getUser());
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                'delete',
+                'servicetemplates',
+                $id,
+                OBJECT_SERVICETEMPLATE,
+                $servicetemplate->get('container_id'),
+                $User->getId(),
+                $servicetemplate->get('name'),
+                [
+                    'Servicetemplate' => $servicetemplate->toArray()
+                ]
+            );
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
+
+            //Delete Documentation record if exists
+            /** @var $DocumentationsTable DocumentationsTable */
+            $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+            $DocumentationsTable->deleteDocumentationByUuid($servicetemplate->get('uuid'));
+
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
+        $this->response = $this->response->withStatus(500);
+        $this->set('success', false);
+        $this->viewBuilder()->setOption('serialize', ['success']);
+
+
+
+
+        /**** OLD CODE ***/
+        return;
+
         if (!$this->Servicetemplate->exists($id)) {
             throw new NotFoundException(__('Invalid service template'));
         }

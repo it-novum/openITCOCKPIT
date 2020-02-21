@@ -2,6 +2,7 @@
 
 namespace App\Model\Entity;
 
+use App\Lib\Constants;
 use Cake\ORM\Entity;
 use Cake\Utility\Hash;
 
@@ -313,20 +314,6 @@ class Service extends Entity {
     }
 
     /**
-     * @param $moduleConstants
-     * @return array
-     */
-    public function isUsedByModules($moduleConstants) {
-        $usedBy = [];
-        foreach ($moduleConstants as $moduleName => $value) {
-            if ($this->get('usage_flag') & $value) {
-                $usedBy[$moduleName] = $value;
-            }
-        }
-        return $usedBy;
-    }
-
-    /**
      * @return array
      */
     public function getContainerIds() {
@@ -340,6 +327,42 @@ class Service extends Entity {
         }
 
         return array_unique($containerIds);
+    }
+
+    /**
+     * @return array
+     */
+    public function isUsedByModules() {
+        $Constants = new Constants();
+        $moduleConstants = $Constants->getModuleConstants();
+
+        $usedBy = [];
+        foreach ($moduleConstants as $moduleName => $moduleId) {
+            if ($this->usage_flag & $moduleId) {
+                switch ($moduleId) {
+                    case AUTOREPORT_MODULE:
+                        $usedBy[$moduleName] = [
+                            'baseUrl' => '#',
+                            'state'   => 'AutoreportsServiceUsedBy',
+                            'message' => __('Used by Autoreport module'),
+                            'module'  => 'AutoreportModule'
+                        ];
+                        break;
+                    case EVENTCORRELATION_MODULE:
+                        $usedBy[$moduleName] = [
+                            'baseUrl' => '#',
+                            'state'   => 'EventcorrelationsServiceUsedBy',
+                            'message' => __('Used by Eventcorrelation module'),
+                            'module'  => 'EventcorrelationModule'
+                        ];
+                        break;
+                    default:
+                        $usedBy[$moduleName] = $moduleId;
+                        break;
+                }
+            }
+        }
+        return $usedBy;
     }
 
 }
