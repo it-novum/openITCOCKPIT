@@ -65,7 +65,7 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group required" ng-class="{'has-error': sourceHosttemplate.Error.name}">
-                                <label for="Command{{$index}}Name" class="control-label required">
+                                <label for="Hosttemplate{{$index}}Name" class="control-label required">
                                     <?php echo __('Host template name'); ?>
                                 </label>
                                 <input
@@ -144,19 +144,18 @@
                                     <?php echo __('This command does not have any parameters.'); ?>
                                 </div>
                             </div>
-
-                            <div class="card margin-top-10">
-                                <div class="card-body">
-                                    <div class="float-right">
-                                        <button class="btn btn-primary" ng-click="copy()">
-                                            <?php echo __('Copy host templates'); ?>
-                                        </button>
-                                        <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
-                                            <a back-button fallback-state='HosttemplatesIndex'
-                                               class="btn btn-default"><?php echo __('Cancel'); ?></a>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+                    <div class="card margin-top-10">
+                        <div class="card-body">
+                            <div class="float-right">
+                                <button class="btn btn-primary" ng-click="copy()">
+                                    <?php echo __('Copy host templates'); ?>
+                                </button>
+                                <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
+                                    <a back-button fallback-state='HosttemplatesIndex'
+                                       class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

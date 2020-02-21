@@ -57,8 +57,8 @@
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
-                    <?php if ($this->Acl->hasPermission('add', 'hosttemplates')): ?>
-                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="HosttemplatesAdd">
+                    <?php if ($this->Acl->hasPermission('add', 'servicetemplates')): ?>
+                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="ServicetemplatesAdd">
                             <i class="fas fa-plus"></i> <?php echo __('New'); ?>
                         </button>
                     <?php endif; ?>
