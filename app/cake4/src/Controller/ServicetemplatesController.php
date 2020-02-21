@@ -307,15 +307,14 @@ class ServicetemplatesController extends AppController {
 
 
     /**
-     * @param null $id
-     * @deprecated
+     * @param int|null $id
      */
     public function delete($id = null) {
-        if(!$this->request->is('post')){
+        if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        /** @var ServicetemplatesTable $ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
         if (!$ServicetemplatesTable->existsById($id)) {
@@ -328,7 +327,6 @@ class ServicetemplatesController extends AppController {
             $this->render403();
             return;
         }
-
 
         if (!$ServicetemplatesTable->allowDelete($id)) {
             $usedBy = [
@@ -349,141 +347,23 @@ class ServicetemplatesController extends AppController {
             return;
         }
 
+        $User = new User($this->getUser());
 
-        if ($ServicetemplatesTable->delete($servicetemplate)) {
-            $User = new User($this->getUser());
-            /** @var  ChangelogsTable $ChangelogsTable */
-            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-            $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                'delete',
-                'servicetemplates',
-                $id,
-                OBJECT_SERVICETEMPLATE,
-                $servicetemplate->get('container_id'),
-                $User->getId(),
-                $servicetemplate->get('name'),
-                [
-                    'Servicetemplate' => $servicetemplate->toArray()
-                ]
-            );
-            if ($changelog_data) {
-                /** @var Changelog $changelogEntry */
-                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                $ChangelogsTable->save($changelogEntry);
-            }
-
-            //Delete Documentation record if exists
-            /** @var $DocumentationsTable DocumentationsTable */
-            $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
-            $DocumentationsTable->deleteDocumentationByUuid($servicetemplate->get('uuid'));
-
+        if ($ServicetemplatesTable->__delete($servicetemplate, $User)) {
             $this->set('success', true);
+            $this->set('message', __('Service template successfully deleted'));
             $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
-        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
+        $this->set('message', __('Error while deleting service template'));
         $this->viewBuilder()->setOption('serialize', ['success']);
-
-
-
-
-        /**** OLD CODE ***/
-        return;
-
-        if (!$this->Servicetemplate->exists($id)) {
-            throw new NotFoundException(__('Invalid service template'));
-        }
-
-        if (!$this->request->is('post')) {
-            throw new MethodNotAllowedException();
-        }
-
-        $servicetemplate = $this->Servicetemplate->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container'
-            ],
-            'conditions' => [
-                'Servicetemplate.id' => $id,
-            ]
-        ]);
-
-        if (!$this->allowedByContainerId(Hash::extract($servicetemplate, 'Container.id'))) {
-            $this->render403();
-            return;
-        }
-
-        $this->Servicetemplate->id = $id;
-
-        if ($this->Servicetemplate->__allowDelete($id)) {
-            $User = new User($this->getUser());
-            if ($this->Servicetemplate->delete()) {
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    $this->request->getParam('action'),
-                    $this->request->getParam('controller'),
-                    $id,
-                    OBJECT_SERVICETEMPLATE,
-                    $servicetemplate['Servicetemplate']['container_id'],
-                    $User->getId(),
-                    $servicetemplate['Servicetemplate']['name'],
-                    $servicetemplate
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
-
-                //Delete Documentation record if exists
-                /** @var $DocumentationsTable DocumentationsTable */
-                $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
-
-                $DocumentationsTable->deleteDocumentationByUuid($servicetemplate['Servicetemplate']['uuid']);
-
-
-                //Delete all services that were created using this template
-                $this->loadModel('Service');
-                $services = $this->Service->find('all', [
-                    'conditions' => [
-                        'Service.servicetemplate_id' => $id,
-                    ],
-                ]);
-                foreach ($services as $service) {
-                    $this->Service->__delete($service, $this->Auth->user('id'));
-                }
-
-                $this->set('success', true);
-                $this->set('message', __('Service template successfully deleted'));
-                $this->viewBuilder()->setOption('serialize', ['success']);
-                return;
-            }
-
-            $usedBy = [
-                [
-                    'baseUrl' => '#',
-                    'state'   => 'ServicetemplatesUsedBy',
-                    'message' => __('Used by other objects'),
-                    'module'  => 'Core'
-                ]
-            ];
-
-            $this->set('success', false);
-            $this->set('id', $id);
-            $this->set('message', __('Issue while deleting service template'));
-            $this->set('usedBy', $usedBy);
-            $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
-        }
     }
 
 
     /**
-     * @param null $id
+     * @param int|null $id
      */
     public function copy($id = null) {
         if (!$this->isAngularJsRequest()) {
