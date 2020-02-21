@@ -48,7 +48,7 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
                                         message: result.data.usedBy[key].message,
                                         url: result.data.usedBy[key].baseUrl + id,
                                         isAngular: isAngular,
-                                        id: id
+                                        id: result.data.usedBy[key].id || id
                                     };
 
                                     if(isAngular){

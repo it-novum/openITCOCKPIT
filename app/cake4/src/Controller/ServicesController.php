@@ -792,7 +792,8 @@ class ServicesController extends AppController {
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
         $result = $DeletedServicesTable->getDeletedServicesIndex($ServiceFilter, $PaginateOMat);
 
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
         $all_services = [];
         foreach ($result as $deletedService) {
             $DeletedService = new DeletedService($deletedService, $UserTime);
@@ -857,12 +858,6 @@ class ServicesController extends AppController {
         //Service is not in use by any Module an can be deleted.
         $User = new User($this->getUser());
         if ($ServicesTable->__delete($service, $User)) {
-
-            /** @var $DocumentationsTable DocumentationsTable */
-            $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
-
-            $DocumentationsTable->deleteDocumentationByUuid($service->get('uuid'));
-
             $this->set('success', true);
             $this->set('message', __('Service successfully deleted'));
             $this->viewBuilder()->setOption('serialize', ['success']);

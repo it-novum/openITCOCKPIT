@@ -345,7 +345,8 @@ class Service extends Entity {
                             'baseUrl' => '#',
                             'state'   => 'AutoreportsServiceUsedBy',
                             'message' => __('Used by Autoreport module'),
-                            'module'  => 'AutoreportModule'
+                            'module'  => 'AutoreportModule',
+                            'id'      => $this->id
                         ];
                         break;
                     case EVENTCORRELATION_MODULE:
@@ -353,7 +354,8 @@ class Service extends Entity {
                             'baseUrl' => '#',
                             'state'   => 'EventcorrelationsServiceUsedBy',
                             'message' => __('Used by Eventcorrelation module'),
-                            'module'  => 'EventcorrelationModule'
+                            'module'  => 'EventcorrelationModule',
+                            'id'      => $this->id
                         ];
                         break;
                     default:

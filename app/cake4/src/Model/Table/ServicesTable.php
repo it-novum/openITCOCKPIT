@@ -2500,7 +2500,7 @@ class ServicesTable extends Table {
      * @param array $hostIds
      * @return array
      */
-    public function getServicesByHostIdForDelete($hostIds = []) {
+    public function getServicesByHostIdForDelete($hostIds = [], $enableHydration = false) {
         if (!is_array($hostIds)) {
             $hostIds = [$hostIds];
         }
@@ -2512,10 +2512,11 @@ class ServicesTable extends Table {
         $query = $this->find()
             ->select([
                 'Services.id',
-                'Services.name'
+                'Services.name',
+                'Services.usage_flag'
             ])->where([
                 'Services.host_id IN' => $hostIds
-            ])->disableHydration();
+            ])->enableHydration($enableHydration);
 
         $result = $query->toArray();
         if (empty($result)) {
