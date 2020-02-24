@@ -94,6 +94,18 @@ div.custom-control-right .custom-control-label::after {
     top: 3px;
 }
 
+div.custom-control-right-badge {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+div.custom-control-right-badge .custom-control-label::before,
+div.custom-control-right-badge .custom-control-label::after {
+    right: -4rem;
+    left: initial;
+    top: 3px;
+}
+
 .chosen-container {
     font-size: 0.8125rem;
 }
@@ -685,7 +697,7 @@ pre {
     color: #ffffff;
     text-align: center;
     padding: 1px 4px;
-    width:30px;
+    width: 30px;
     font-size: 10px;
     font-weight: bold;
     display: inline-block;
@@ -712,7 +724,7 @@ pre {
     border-radius: 12px 2px 2px 58px;
 }
 
-.serviceBarChart{
+.serviceBarChart {
     height: 30px;
 }
 
@@ -724,7 +736,7 @@ pre {
     display: -webkit-flex;
 }
 
-.barchart-legend-container ul li{
+.barchart-legend-container ul li {
     -webkit-flex: 1 0 0px;
     overflow: hidden;
 }
