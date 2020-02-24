@@ -610,7 +610,7 @@
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <?php echo __('More actions'); ?>
                                 </button>
-                                <div class="dropdown-menu" x-placement="bottom-start"
+                                <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-start"
                                      style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
                                     <a ng-href="{{ linkForPdf() }}" class="dropdown-item">
                                         <i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>

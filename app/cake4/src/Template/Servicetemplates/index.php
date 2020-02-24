@@ -280,6 +280,22 @@
                                     <?php echo __('Delete all'); ?>
                                 </span>
                             </div>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-default dropdown-toggle waves-effect waves-themed" type="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <?php echo __('More actions'); ?>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-start"
+                                     style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
+                                    <?php if ($this->Acl->hasPermission('add', 'servicetemplates')): ?>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="confirmAddServicetemplatessToServicetemplategroup(getObjectsForDelete())">
+                                            <i class="fa fa-plus-circle"></i>
+                                            <?php echo __('Add to service template group'); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
