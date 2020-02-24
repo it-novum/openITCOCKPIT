@@ -64,17 +64,17 @@
                 <i class="fa fa-cog fa-lg"></i>
             </li>
             <li>
-                <button class="btn btn-warning btn-xs">
+                <button class="btn btn-warning btn-xs btn-icon">
                     {{ servicestatusCount['1'] }}
                 </button>
             </li>
             <li>
-                <button class="btn btn-danger btn-xs">
+                <button class="btn btn-danger btn-xs btn-icon">
                     {{ servicestatusCount['2'] }}
                 </button>
             </li>
             <li>
-                <button class="btn btn-default btn-xs">
+                <button class="btn btn-default btn-xs btn-icon">
                     {{ servicestatusCount['3'] }}
                 </button>
             </li>
