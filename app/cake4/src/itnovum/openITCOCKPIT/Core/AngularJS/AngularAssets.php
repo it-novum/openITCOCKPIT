@@ -166,7 +166,6 @@ class AngularAssets implements AngularAssetsInterface {
         'legacy/css/vendor/image-picker.css',
         '/node_modules/angular-gridster/dist/angular-gridster.min.css',
         //'vendor/radio_buttons.css',
-        'legacy/css/vendor/css3-percentage-loader/circle.css',
         '/css/openitcockpit-colors.css',
         '/css/openitcockpit-utils.css',
         '/css/openitcockpit.css',
