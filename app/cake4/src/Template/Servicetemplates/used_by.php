@@ -38,6 +38,10 @@
         <i class="fa fa-code-fork"></i> <?php echo __('Used by'); ?>
     </li>
 </ol>
+
+<!-- ANGAULAR DIRECTIVES -->
+<massdelete></massdelete>
+
 <div class="row">
     <div class="col-xl-12">
         <div id="panel-1" class="panel">
