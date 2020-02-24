@@ -56,9 +56,7 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/flot-axislabels/jquery.flot.axislabels.js',
         'node_modules/flot/jquery.flot.time.js',
         'node_modules/flot/jquery.flot.fillbetween.js',
-        //'node_modules/flot/jquery.flot.pie.js',
         'node_modules/flot/jquery.flot.resize.js',
-        //'node_modules/flot/jquery.flot.navigate.js',
         'node_modules/flot/jquery.flot.threshold.js',
         'node_modules/flot/jquery.flot.selection.js',
         'node_modules/jquery-nestable/jquery.nestable.js',
@@ -76,10 +74,7 @@ class AngularAssets implements AngularAssetsInterface {
         'legacy/js/lib/jquery.svg.min.js',
         'legacy/js/lib/jquery.svgfilter.min.js',
         'node_modules/dropzone/dist/min/dropzone.min.js',
-        //'smartadmin/js/notification/SmartNotification.js',
         'node_modules/rangyinputs/rangyinputs-jquery.js',
-        //'vendor/node_modules/javascript-detect-element-resize/jquery.resize.js',
-        //'node_modules/javascript-detect-element-resize/jquery.resize.js',
         'node_modules/angular-gridster/dist/angular-gridster.min.js',
         'legacy/js/lib/GraphDefaults.js',
         'legacy/js/lib/jqconsole.min.js',
@@ -93,8 +88,6 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/@fullcalendar/list/main.js',
         'node_modules/@fullcalendar/bootstrap/main.js',
         'node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js',
-        /*'js/vendor/Chart.min.js',
-        'js/vendor/chartjs-plugin-piechart-center-element.min.js', */
         'node_modules/chart.js/dist/Chart.min.js',
         'node_modules/highlight-within-textarea/jquery.highlight-within-textarea.js',
         'node_modules/jquery-sparkline/jquery.sparkline.min.js',
@@ -106,21 +99,6 @@ class AngularAssets implements AngularAssetsInterface {
     ];
 
     private $cssFiles = [
-
-        /*   'lib/jquery.imgareaselect-0.9.10/imgareaselect-animated.css',
-           'lib/jquery.svg.css',*/
-        /*'/vendor/node_modules/bootstrap/dist/js/bootstrap.css',
-        '/vendor/node_modules/bootstrap/dist/js/bootstrap-grid.css',*/
-        //'vendor/jquery.gridster.css',
-        /*'vendor/chosen/chosen',
-        'vendor/chosen/chosen-bootstrap',*/
-        /*'list_filter',
-        'vendor/fineuploader/fineuploader-3.2',
-        'vendor/select2/select2',
-        'vendor/select2/select2-bootstrap',
-        'vendor/bootstrap-datepicker.css',
-        'vendor/bootstrap-datetimepicker.min.css',
-        'vendor/gauge/css/gauge.css',*/
         '/node_modules/jquery-ui-dist/jquery-ui.css',
         '/node_modules/node-waves/dist/waves.css',
         '/node_modules/bootstrap4-tagsinput/tagsinput.css',
@@ -129,10 +107,6 @@ class AngularAssets implements AngularAssetsInterface {
         '/css/timeline.css',
         '/css/changelog.css',
         '/node_modules/dropzone/dist/min/dropzone.min.css',
-        //  '/vendor/node_modules/jquery-tageditor/jquery.tag-editor.css',
-        /*'/smartadmin4/dist/css/fa-brands.css',
-        '/smartadmin4/dist/css/fa-regular.css',
-        '/smartadmin4/dist/css/fa-solid.css', */
         '/smartadmin4/dist/css/vendors.bundle.css',
         '/smartadmin4/dist/css/app.bundle.css',
         '/smartadmin4/dist/css/themes/cust-theme-10.css',
@@ -140,35 +114,21 @@ class AngularAssets implements AngularAssetsInterface {
         '/node_modules/font-awesome/css/font-awesome.css',
         '/node_modules/@fortawesome/fontawesome-free/css/all.min.css',
         '/css/console.css',
-
         '/node_modules/@fullcalendar/core/main.css',
         '/node_modules/@fullcalendar/daygrid/main.css',
         '/node_modules/@fullcalendar/timegrid/main.css',
         '/node_modules/@fullcalendar/list/main.css',
         '/node_modules/@fullcalendar/bootstrap/main.css',
         '/node_modules/flag-icon-css/css/flag-icon.css',
-        //'/smartadmin/css/your_style.css',                             //check if we need this anymore
-        //'/smartadmin/css/animate.css',
         '/node_modules/animate.css/animate.min.css',
         '/legacy/css/ansi.css',
         '/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.css',
-        /*'lockscreen.css',
-        'base',
-        'app',
-        'status',
-        'lists',
-        'animate_new',
-        'vendor/prism.css',
-        'vendor/gridstack/gridstack.min.css',*/
-        //'vendor/vis-4.21.0/dist/vis.css',
         '/node_modules/vis-network/dist/vis-network.min.css',
         '/node_modules/vis-timeline/dist/vis-timeline-graph2d.css',
-        //'my_vis.css',
         '/node_modules/noty/lib/noty.css',
         '/node_modules/angular-flippy/dist/css/angular-flippy.min.css',
         'legacy/css/vendor/image-picker.css',
         '/node_modules/angular-gridster/dist/angular-gridster.min.css',
-        //'vendor/radio_buttons.css',
         '/css/openitcockpit-colors.css',
         '/css/openitcockpit-utils.css',
         '/css/openitcockpit.css',
