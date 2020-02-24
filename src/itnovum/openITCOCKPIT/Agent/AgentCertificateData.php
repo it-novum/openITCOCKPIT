@@ -7,6 +7,8 @@
 namespace itnovum\openITCOCKPIT\Agent;
 
 use App\Model\Table\AgentconnectorTable;
+use Cake\I18n\FrozenTime;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\System\Health\SystemId;
 
 /**
@@ -19,6 +21,7 @@ class AgentCertificateData {
 
     private $caCertPath = '/opt/openitc/agent/server_ca.pem';
     private $caKeyPath = '/opt/openitc/agent/server_ca.key';
+
     //needs: mkdir -p /opt/openitc/agent/hostscache && chown www-data:www-data -R /opt/openitc/agent
 
 
@@ -50,13 +53,13 @@ class AgentCertificateData {
             'checksum'        => $checksum,
             'ca_checksum'     => $ca_checksum,
             //'generation_date' => $tsb->timestamp()
-            'generation_date' => time()
+            'generation_date' => FrozenTime::now()
         ]);
         $AgentconnectorTable->save($AgentConnectionEntity);
         return $output;
     }
 
-    public function signAgentCsr($csr) {
+    public function signAgentCsr($csr, $updateDatabaseUsingHostUuid = '') {
         if (!is_file($this->getCaCertPath())) {
             $this->generateServerCA();
         }
@@ -67,7 +70,34 @@ class AgentCertificateData {
         openssl_x509_export($x509, $signedPublic);
         #openssl_x509_export_to_file($x509, '/var/www/html/testcrts/test_agent_csr_cert.pem');
 
-        return ["signed" => $signedPublic, "ca" => file_get_contents($this->getCaCertPath())];
+        $ca = file_get_contents($this->getCaCertPath());
+
+        if ($updateDatabaseUsingHostUuid !== '') {
+            /** @var AgentconnectorTable $AgentconnectorTable */
+            $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
+
+            if ($AgentconnectorTable->existsByHostuuid($updateDatabaseUsingHostUuid)) {
+                $AgentConnectionEntity = $AgentconnectorTable->getByHostUuid($updateDatabaseUsingHostUuid);
+                $AgentConnectionEntity = $AgentconnectorTable->patchEntity($AgentConnectionEntity, [
+                    'checksum'        => strtoupper(hash('sha512', $signedPublic)),
+                    'ca_checksum'     => strtoupper(hash('sha512', $ca)),
+                    //'generation_date' => $tsb->timestamp()
+                    'generation_date' => FrozenTime::now()
+                ]);
+            } else {
+                $AgentConnectionEntity = $AgentconnectorTable->newEmptyEntity();
+                $AgentConnectionEntity = $AgentconnectorTable->patchEntity($AgentConnectionEntity, [
+                    'hostuuid'        => $updateDatabaseUsingHostUuid,
+                    'checksum'        => strtoupper(hash('sha512', $signedPublic)),
+                    'ca_checksum'     => strtoupper(hash('sha512', $ca)),
+                    //'generation_date' => $tsb->timestamp()
+                    'generation_date' => FrozenTime::now()
+                ]);
+            }
+            $AgentconnectorTable->save($AgentConnectionEntity);
+        }
+
+        return ["signed" => $signedPublic, "ca" => $ca];
     }
 
     public function generateServerCA() {

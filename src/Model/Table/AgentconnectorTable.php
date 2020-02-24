@@ -95,6 +95,14 @@ class AgentconnectorTable extends Table {
     }
 
     /**
+     * @param string $uuid
+     * @return bool
+     */
+    public function existsByHostuuid($uuid) {
+        return $this->exists(['Agentconnector.hostuuid' => $uuid]);
+    }
+
+    /**
      * @param AgentconnectorAgentsFilter $AgentconnectorAgentsFilter
      * @param PaginateOMat|null $PaginateOMat
      * @return array

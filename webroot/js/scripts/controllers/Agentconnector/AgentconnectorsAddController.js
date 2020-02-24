@@ -7,7 +7,6 @@ angular.module('openITCOCKPIT')
         $scope.configured = false;
         $scope.servicesConfigured = false;
         $scope.servicesToCreateRequestInterval = null;
-        $scope.checkFinishedStateInterval = null;
 
         $scope.resetAgentConfiguration = function(){
             $scope.pullMode = false;
@@ -16,8 +15,6 @@ angular.module('openITCOCKPIT')
             $scope.installed = false;
             $scope.servicesConfigured = false;
             $scope.finished = false;
-            $scope.expectedServiceCreations = 0;
-            $scope.processedServiceCreations = 0;
             $scope.agentconfigId = null;
             $scope.remoteAgentConfig = null;
 
@@ -43,11 +40,11 @@ angular.module('openITCOCKPIT')
                 netio: true,
                 diskio: true,
                 winservices: true,
-                'oitc_hostuuid': '',
-                'oitc_url': '',
-                'oitc_apikey': '',
-                'oitc_interval': 60,
-                'oitc_enabled': false
+                'oitc-hostuuid': '',
+                'oitc-url': '',
+                'oitc-apikey': '',
+                'oitc-interval': 60,
+                'oitc-enabled': false
             };
 
             $scope.choosenServicesToMonitor = {
@@ -78,10 +75,8 @@ angular.module('openITCOCKPIT')
             if($scope.servicesToCreateRequestInterval !== null){
                 $interval.cancel($scope.servicesToCreateRequestInterval);
             }
-            if($scope.checkFinishedStateInterval !== null){
-                $interval.cancel($scope.checkFinishedStateInterval);
-            }
 
+            $scope.serviceQueue = [];
             $scope.servicesToCreate = false;
             $scope.configTemplate = '';
             $scope.configTemplateCustomchecks = '';
@@ -149,8 +144,8 @@ angular.module('openITCOCKPIT')
             for(var option in $scope.agentconfig){
                 var value = $scope.agentconfig[option];
 
-                if(option.includes('oitc_')){
-                    tmpOitcTemplate += option.replace('oitc_', '') + ' = ' + value + '\n';
+                if(option.includes('oitc-')){
+                    tmpOitcTemplate += option.replace('oitc-', '') + ' = ' + value + '\n';
                     continue;
                 }
                 if(option === 'customchecks'){
@@ -245,8 +240,8 @@ angular.module('openITCOCKPIT')
             $scope.pullMode = false;
 
             //$scope.agentconfig.address = $scope.host.address;
-            $scope.agentconfig.oitc_hostuuid = $scope.host.uuid;
-            $scope.agentconfig.oitc_enabled = true;
+            $scope.agentconfig['oitc-hostuuid'] = $scope.host.uuid;
+            $scope.agentconfig['oitc-enabled'] = true;
         };
 
         $scope.continueWithAgentInstallation = function(){
@@ -270,51 +265,44 @@ angular.module('openITCOCKPIT')
 
             for(var key in $scope.choosenServicesToMonitor){    //kay could be 'Fan' / 'SystemLoad'
                 if(Array.isArray($scope.choosenServicesToMonitor[key]) && $scope.choosenServicesToMonitor[key].length > 0){
-                    for(var i in $scope.choosenServicesToMonitor[key]){ //i=key -> servicesToCreate.Fan[i]
-                        if($scope.servicesToCreate.hasOwnProperty(key) && $scope.servicesToCreate[key].hasOwnProperty(i)){
-                            $scope.expectedServiceCreations++;
-                            $scope.createService($scope.servicesToCreate[key][i]);
+                    for(let i in $scope.choosenServicesToMonitor[key]){ //i=key -> servicesToCreate.Fan[i]
+                        const choosenkey = $scope.choosenServicesToMonitor[key][i];
+                        if($scope.servicesToCreate.hasOwnProperty(key) && $scope.servicesToCreate[key].hasOwnProperty(choosenkey)){
+                            $scope.enqueueServiceConfig($scope.servicesToCreate[key][choosenkey]);
                         }
                     }
                 }else if(typeof ($scope.choosenServicesToMonitor[key]) === 'boolean' && $scope.choosenServicesToMonitor[key] && $scope.servicesToCreate[key]){
                     if($scope.servicesToCreate[key].name){
-                        $scope.expectedServiceCreations++;
-                        $scope.createService($scope.servicesToCreate[key]);
-                    }else if($scope.servicesToCreate[key][0].name){
-                        $scope.expectedServiceCreations++;
-                        $scope.createService($scope.servicesToCreate[key][0]);
+                        $scope.enqueueServiceConfig($scope.servicesToCreate[key]);
+                    }else if($scope.servicesToCreate[key][0] && $scope.servicesToCreate[key][0].name){
+                        $scope.enqueueServiceConfig($scope.servicesToCreate[key][0]);
                     }
                 }
             }
 
-            $scope.checkFinishedState();
+            $scope.createServices();
         };
 
-        $scope.checkFinishedState = function(){
-            //seems that all needed services are created
-            if($scope.processedServiceCreations >= $scope.expectedServiceCreations){
-                $scope.finished = true;
-                if($scope.checkFinishedStateInterval !== null){
-                    $interval.cancel($scope.checkFinishedStateInterval);
-                }
-            }else if($scope.checkFinishedStateInterval === null){
-                $scope.checkFinishedStateInterval = $interval(function(){
-                    $scope.checkFinishedState();
-                }, 500);
-            }
+        $scope.enqueueServiceConfig = function(service){
+            $scope.serviceQueue.push(service);
         };
 
-        $scope.createService = function(service){
-            $http.post('/services/add.json?angular=true',
+        $scope.createServices = function(){
+            $http.post('/agentconnector/createServices.json?angular=true',
                 {
-                    Service: service
+                    serviceConfigs: $scope.serviceQueue,
+                    hostId: $scope.host.id
                 }
             ).then(function(){
-                $scope.processedServiceCreations++;
-            }, function errorCallback(){
-                $scope.processedServiceCreations++;
+                $scope.finished = true;
+                NotyService.genericSuccess({
+                    message: 'Agent services successfully created'
+                });
+            }, function errorCallback(error){
+                $scope.finished = true;
+                console.warn(error);
                 NotyService.genericError({
-                    message: 'Error while saving service for '
+                    message: 'Error while saving service ' + service.name
                 });
             });
         };
@@ -395,6 +383,26 @@ angular.module('openITCOCKPIT')
 
         $scope.runRemoteConfigUpdate = function(){
             console.log('runRemoteConfigUpdate');
+
+            $http.post('/agentconnector/sendNewAgentConfig/' + $scope.host.uuid + '.json?angular=true',
+                {
+                    config: $scope.agentconfig
+                }
+            ).then(function(result){
+                if(result.data.success && (result.data.success === true || result.data.success === 'true')){
+                    NotyService.genericSuccess({
+                        message: 'Configuration successfully updated'
+                    });
+                }else{
+                    NotyService.genericError({
+                        message: 'Error while trying to remote update agent configuration'
+                    });
+                }
+            }, function errorCallback(){
+                NotyService.genericError({
+                    message: 'Error while trying to remote update agent configuration'
+                });
+            });
         };
 
         $scope.getServicesToCreateByHostUuid = function(){
@@ -416,7 +424,17 @@ angular.module('openITCOCKPIT')
 
                         if(result.data.config && result.data.config !== ''){
                             $scope.remoteAgentConfig = result.data.config;
-                            console.log($scope.remoteAgentConfig);
+                            for(var option in $scope.remoteAgentConfig.config){
+                                var tmpVal = $scope.remoteAgentConfig.config[option];
+                                if(option.includes('interval') || option === 'port'){
+                                    tmpVal = Number.parseInt(tmpVal);
+                                }else if(tmpVal === 'true'){
+                                    tmpVal = true;
+                                }else if(tmpVal === 'false'){
+                                    tmpVal = false;
+                                }
+                                $scope.agentconfig[option] = tmpVal;
+                            }
                         }
                     }
                 }, function errorCallback(result){
@@ -475,9 +493,6 @@ angular.module('openITCOCKPIT')
         $scope.$on('$destroy', function(){
             if($scope.servicesToCreateRequestInterval !== null){
                 $interval.cancel($scope.servicesToCreateRequestInterval);
-            }
-            if($scope.checkFinishedStateInterval !== null){
-                $interval.cancel($scope.checkFinishedStateInterval);
             }
         });
 

@@ -27,11 +27,16 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Changelog;
+use App\Model\Entity\Host;
 use App\Model\Table\AgentchecksTable;
 use App\Model\Table\AgentconfigsTable;
 use App\Model\Table\AgentconnectorTable;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\HostsTable;
+use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
+use App\Model\Table\ServicetemplatesTable;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use GuzzleHttp\Exception\GuzzleException;
@@ -39,6 +44,9 @@ use itnovum\openITCOCKPIT\Agent\AgentCertificateData;
 use itnovum\openITCOCKPIT\Agent\AgentServicesToCreate;
 use itnovum\openITCOCKPIT\Agent\HttpLoader;
 use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
+use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
+use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\AgentconnectorAgentsFilter;
 
@@ -232,6 +240,50 @@ class AgentconnectorController extends AppController {
         file_put_contents('/opt/openitc/agent/hostscache/' . $hostuuid, $checkdata);
     }
 
+    public function sendNewAgentConfig($uuid = null) {
+        if (!$this->isJsonRequest()) {
+            return;
+        }
+
+        if (empty($this->request->getData('config'))) {
+            throw new MissingParameterExceptions('config is missing!');
+        }
+        //debug($this->request->getData('config'));die();
+
+
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $AgentchecksTable AgentchecksTable */
+        $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
+        /** @var $AgentconfigsTable AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+        $hostId = $HostsTable->getHostIdByUuid($uuid);
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
+        $this->set('success', 'false');
+        if ($AgentconfigsTable->existsByHostId($hostId)) {
+            $agentconfig = $AgentconfigsTable->getConfigByHostId($hostId, true);
+
+            $HttpLoader = new HttpLoader($agentconfig, $host->get('address'));
+            $response = $HttpLoader->updateAgentConfig($this->request->getData('config'));
+            $this->set('success', $response['success']);
+
+            $agentconfigEntity = $AgentconfigsTable->getConfigOrEmptyEntity($hostId);
+            $agentconfigEntity = $AgentconfigsTable->patchEntity($agentconfigEntity, [
+                'port'      => $this->request->getData('config')['port'],
+                'use_https' => $this->request->getData('config')['try-autossl'],
+            ]);
+            $AgentconfigsTable->save($agentconfigEntity);
+        }
+        $this->viewBuilder()->setOption('serialize', ['success']);
+    }
+
     public function add() {
         if (!$this->isAngularJsRequest()) {
             return;
@@ -334,8 +386,168 @@ class AgentconnectorController extends AppController {
         if (isset($agentJsonOutput) && !empty($agentJsonOutput)) {
             $AgentServicesToCreate = new AgentServicesToCreate($agentJsonOutput, $AgentchecksTable->getAgentchecksForMapping(), $hostId, $services);
 
-            $this->set('servicesToCreate', $AgentServicesToCreate->getServicesToCreate());
+            $this->set('servicesToCreate', $AgentServicesToCreate->getServicesForFrontend());
         }
         $this->viewBuilder()->setOption('serialize', ['servicesToCreate', 'mode', 'config']);
+    }
+
+    public function createServices() {
+        if (!$this->isJsonRequest()) {
+            return;
+        }
+
+        if (empty($this->request->getData('serviceConfigs'))) {
+            throw new MissingParameterExceptions('serviceConfigs is missing!');
+        }
+        if (empty($this->request->getData('hostId'))) {
+            throw new MissingParameterExceptions('hostId is missing!');
+        }
+
+        $serviceConfigs = $this->request->getData('serviceConfigs');
+        $hostId = $this->request->getData('hostId');
+
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $AgentchecksTable AgentchecksTable */
+        $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
+        /** @var $AgentconfigsTable AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $host = $HostsTable->get($hostId);
+        $hostuuid = $HostsTable->getHostUuidById($hostId);
+        $services = $ServicesTable->getServicesByHostIdForAgent($hostId, OITC_AGENT_SERVICE, false);
+        $services = $services->toArray();
+
+        if ($AgentconfigsTable->existsByHostId($hostId)) {
+            $agentconfig = $AgentconfigsTable->getConfigByHostId($hostId, true);
+
+            try {
+                $HttpLoader = new HttpLoader($agentconfig, $host->get('address'));
+                $response = $HttpLoader->queryAgent(false);
+
+                if (isset($response['response']) && !empty($response['response'])) {
+                    $agentJsonOutput = $response['response'];
+                }
+            } catch (\Exception | GuzzleException $e) {
+
+            }
+        }
+
+        if (is_readable($this->hostsCacheFolder . $hostuuid)) {
+            $fileContents = trim(file_get_contents($this->hostsCacheFolder . $hostuuid));
+            $contentArray = json_decode($fileContents, true);
+            $agentJsonOutput = $contentArray;
+        }
+
+        if (isset($agentJsonOutput) && !empty($agentJsonOutput)) {
+            $AgentServicesToCreate = new AgentServicesToCreate($agentJsonOutput, $AgentchecksTable->getAgentchecksForMapping(), $hostId, $services);
+
+            $servicesToCreate = $AgentServicesToCreate->getServicesToCreate();
+        }
+
+        foreach ($serviceConfigs as $serviceConfig) {
+            foreach ($servicesToCreate as $receiverPlugin) {
+                foreach ($receiverPlugin as $service) {
+                    if ($service['name'] === $serviceConfig['name'] && $service['servicetemplate_id'] === $serviceConfig['servicetemplate_id']) {
+                        $this->createRealService($service, $host);
+                        continue 3;
+                    }
+                }
+            }
+        }
+
+        if (isset($this->serviceCreationErrors) && !empty($this->serviceCreationErrors)) {
+            $this->serviceCreationErrors = [];
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $this->serviceCreationErrors);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+        $this->set('success', 'true');
+        $this->viewBuilder()->setOption('serialize', ['success']);
+    }
+
+    private function createRealService($serviceInput, Host $host) {
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $request = ['Service' => $serviceInput];
+        $request['Host'] = [
+            [
+                'id'   => $host->get('id'),
+                'name' => $host->get('name')
+            ]
+        ];
+
+        $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($request['Service']['servicetemplate_id']);
+
+
+        $servicename = $request['Service']['name'];
+        if ($servicename === null || $servicename === '') {
+            $servicename = $servicetemplate['Servicetemplate']['name'];
+        }
+
+        $ServiceComparisonForSave = new ServiceComparisonForSave(
+            $request,
+            $servicetemplate,
+            $HostsTable->getContactsAndContactgroupsById($host->get('id')),
+            $HosttemplatesTable->getContactsAndContactgroupsById($host->get('hosttemplate_id'))
+        );
+        $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
+        $serviceData['uuid'] = UUID::v4();
+
+        //Add required fields for validation
+        $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
+        $serviceData['servicetemplate_flap_detection_on_ok'] = $servicetemplate['Servicetemplate']['flap_detection_on_ok'];
+        $serviceData['servicetemplate_flap_detection_on_warning'] = $servicetemplate['Servicetemplate']['flap_detection_on_warning'];
+        $serviceData['servicetemplate_flap_detection_on_critical'] = $servicetemplate['Servicetemplate']['flap_detection_on_critical'];
+        $serviceData['servicetemplate_flap_detection_on_unknown'] = $servicetemplate['Servicetemplate']['flap_detection_on_unknown'];
+
+        $service = $ServicesTable->newEntity($serviceData);
+
+        $ServicesTable->save($service);
+        if ($service->hasErrors()) {
+            if (!isset($this->serviceCreationErrors)) {
+                $this->serviceCreationErrors = [];
+            }
+            $this->serviceCreationErrors[] = $service->getErrors();
+        } else {
+            //No errors
+
+            $User = new User($this->getUser());
+
+            $extDataForChangelog = $ServicesTable->resolveDataForChangelog($request);
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                'add',
+                'services',
+                $service->get('id'),
+                OBJECT_SERVICE,
+                $host->get('container_id'),
+                $User->getId(),
+                $host->get('name') . '/' . $servicename,
+                array_merge($request, $extDataForChangelog)
+            );
+
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
+        }
     }
 }

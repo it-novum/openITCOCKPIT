@@ -39,6 +39,9 @@ class HttpLoader {
      */
     private $hostaddress = '';
 
+    private $guzzleOptions = [];
+    private $guzzleProtocol = 'http';
+
     /**
      * HttpLoader constructor.
      * @param array $config
@@ -47,6 +50,37 @@ class HttpLoader {
     public function __construct($config, $hostaddress) {
         $this->config = $config;
         $this->hostaddress = $hostaddress;
+    }
+
+    private function buildConnectionOptions($config) {
+        $this->guzzleOptions = [];
+        $this->guzzleProtocol = 'http';
+
+        if ($config['use_https'] === 1) {
+            $this->guzzleProtocol = 'https';
+            $this->updateGuzzleOptionsToUseSSL();
+        }
+
+        if ($config['insecure'] === 1) {
+            $this->guzzleOptions['verify'] = false;
+        }
+
+        if ($config['basic_auth'] === 1) {
+            $this->guzzleOptions['auth'] = [
+                $config['username'],
+                $config['password']
+            ];
+        }
+    }
+
+    private function updateGuzzleOptionsToUseSSL() {
+        /** @var AgentCertificateData $AgentCertificateData */
+        $AgentCertificateData = new AgentCertificateData();
+
+        //$this->guzzleOptions['verify'] = $AgentCertificateData->getCaCertPath();     //do i need this? CURLOPT_SSL_VERIFYHOST was disabled in curl version
+        $this->guzzleOptions['verify'] = false;
+        $this->guzzleOptions['cert'] = $AgentCertificateData->getCaCertPath();
+        $this->guzzleOptions['ssl_key'] = $AgentCertificateData->getCaKeyPath();
     }
 
     /**
@@ -58,44 +92,28 @@ class HttpLoader {
     public function queryAgent($checkConfig = false) {
         $Client = new Client();
         $config = $this->config;
-
-        $options = [];
-        $protocol = 'http';
-        if ($config['use_https'] === 1) {
-            $protocol = 'https';
-        }
-
-        if ($config['insecure'] === 1) {
-            $options['verify'] = false;
-        }
-
-        if ($config['basic_auth'] === 1) {
-            $options['auth'] = [
-                $config['username'],
-                $config['password']
-            ];
-        }
+        $this->buildConnectionOptions($config);
 
         $url = sprintf(
             '%s://%s:%s',
-            $protocol,
+            $this->guzzleProtocol,
             $this->hostaddress,
             $config['port']
         );
         $configUrl = sprintf(
             '%s://%s:%s/config',
-            $protocol,
+            $this->guzzleProtocol,
             $this->hostaddress,
             $config['port']
         );
 
-        $response = $Client->request('GET', $url, $options);
+        $response = $Client->request('GET', $url, $this->guzzleOptions);
 
         $configResult = '';
         if ($checkConfig) {
-            $configResponse = $Client->request('GET', $configUrl, $options);
+            $configResponse = $Client->request('GET', $configUrl, $this->guzzleOptions);
             if ($response->getStatusCode() === 200) {
-                $configResult = $configResponse->getBody()->getContents();
+                $configResult = json_decode($configResponse->getBody()->getContents(), true);
             }
         }
 
@@ -115,6 +133,36 @@ class HttpLoader {
             'config'   => $configResult,
             'error'    => null,
             'success'  => true
+        ];
+    }
+
+    public function updateAgentConfig($agentConfig) {
+        $Client = new Client();
+        $config = $this->config;
+        $this->buildConnectionOptions($config);
+        $this->guzzleOptions['json'] = [
+            'config' => $agentConfig
+        ];
+
+        $url = sprintf(
+            '%s://%s:%s/config',
+            $this->guzzleProtocol,
+            $this->hostaddress,
+            $config['port']
+        );
+
+        $response = $Client->request('POST', $url, $this->guzzleOptions);
+        if ($response->getStatusCode() !== 200) {
+            return [
+                'error'   => $response->getBody()->getContents(),
+                'success' => false
+            ];
+        }
+
+        return [
+            'error'    => null,
+            'success'  => true,
+            'response' => json_decode($response->getBody()->getContents(), true)
         ];
     }
 

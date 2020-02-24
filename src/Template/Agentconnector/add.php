@@ -254,33 +254,33 @@
 
                                                     <div class="form-group" ng-if="pushMode">
                                                         <label class="col-xs-12 col-md-3 control-label"
-                                                               for="agentconfig.oitc_url">
+                                                               for="agentconfig['oitc-url']">
                                                             <?php echo __('openITCOCKPIT Server Address'); ?>
                                                         </label>
 
                                                         <div class="col-xs-12 col-md-9">
                                                             <input
-                                                                id="agentconfig.oitc_url"
+                                                                id="agentconfig['oitc-url']"
                                                                 class="form-control"
                                                                 type="text"
                                                                 placeholder="<?php echo __('External address or FQDN (example: https://demo.openitcockpit.io)'); ?>"
-                                                                ng-model="agentconfig.oitc_url">
+                                                                ng-model="agentconfig['oitc-url']">
                                                         </div>
                                                     </div>
 
                                                     <div class="form-group" ng-if="pushMode">
                                                         <label class="col-xs-12 col-md-3 control-label"
-                                                               for="agentconfig.oitc_apikey">
+                                                               for="agentconfig['oitc-apikey']">
                                                             <?php echo __('openITCOCKPIT Api-Key'); ?>
                                                         </label>
 
                                                         <div class="col-xs-12 col-md-9">
                                                             <input
-                                                                id="agentconfig.oitc_apikey"
+                                                                id="agentconfig['oitc-apikey']"
                                                                 class="form-control"
                                                                 type="text"
                                                                 placeholder="<?php echo __('Api-Key'); ?>"
-                                                                ng-model="agentconfig.oitc_apikey">
+                                                                ng-model="agentconfig['oitc-apikey']">
                                                             <div class="help-block">
                                                                 <?php echo __('You need to create an openITCOCKPIT user defined API key first.'); ?>
                                                                 <a href="javascript:void(0);" data-toggle="modal"
@@ -1273,7 +1273,7 @@
                                         </div>
 
                                         <div class="row" style="border-bottom: none;"
-                                             ng-show="finished && processedServiceCreations > 0">
+                                             ng-show="finished && serviceQueue.length > 0">
                                             <p>
                                                 <?= __('Agent services successfully created.'); ?>
                                             </p>
@@ -1292,7 +1292,7 @@
                                             </p>
                                         </div>
                                         <div class="row" style="border-bottom: none;"
-                                             ng-show="finished && processedServiceCreations <= 0">
+                                             ng-show="finished && serviceQueue.length <= 0">
                                             <p>
                                                 <?= __('No services were created.'); ?>
                                             </p>
