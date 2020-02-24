@@ -35,7 +35,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fa fa-plus"></i> <?php echo __('Append services to service group'); ?>
+        <i class="fas fa-chain"></i> <?php echo __('Append services to service group'); ?>
     </li>
 </ol>
 
