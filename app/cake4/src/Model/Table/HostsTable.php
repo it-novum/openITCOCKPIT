@@ -3032,4 +3032,38 @@ class HostsTable extends Table {
             }
         }
     }
+
+    /**
+     * @param $id
+     * @return array|Host|null
+     */
+    public function getHostByIdForTimeline($id) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.name',
+                'Hosts.uuid',
+                'Hosts.container_id',
+                'Hosts.hosttemplate_id',
+                'Hosts.check_period_id',
+                'Hosts.notify_period_id',
+            ])
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'HostsToContainersSharing',
+                'Hosttemplates' => function (Query $query) {
+                    $query->select([
+                        'Hosttemplates.id',
+                        'Hosttemplates.check_period_id',
+                        'Hosttemplates.notify_period_id'
+                    ]);
+                    return $query;
+                }
+            ])
+            ->first();
+
+        return $query;
+    }
 }

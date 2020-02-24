@@ -65,6 +65,7 @@ use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
@@ -77,6 +78,7 @@ use itnovum\openITCOCKPIT\Core\Merger\HostMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForView;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForView;
 use itnovum\openITCOCKPIT\Core\Permissions\HostContainersPermissions;
+use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
@@ -90,11 +92,14 @@ use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
+use itnovum\openITCOCKPIT\Core\Views\Command;
+use itnovum\openITCOCKPIT\Core\Views\Contact;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\Downtime;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\Hosttemplate;
+use itnovum\openITCOCKPIT\Core\Views\NotificationHost;
 use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -2246,50 +2251,37 @@ class HostsController extends AppController {
     }
 
     /**
-     * @deprecated
+     * @param int|null $id
+     * @throws MissingDbBackendException
      */
     public function timeline($id = null) {
         $session = $this->request->getSession();
         $session->close();
+
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Host->exists($id)) {
+
+        /** @var HostsTable $HostsTable  */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if (!$HostsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
 
-        $host = $this->Host->find('first', [
-            'conditions' => [
-                'Host.id' => $id,
-            ],
-            'contain'    => [
-                'Container',
-                'Hosttemplate' => [
-                    'fields' => [
-                        'Hosttemplate.check_period_id',
-                        'Hosttemplate.notify_period_id'
-                    ]
-                ]
-            ],
-            'fields'     => [
-                'Host.uuid',
-                'Host.container_id',
-                'Container.*',
-                'Host.check_period_id',
-                'Host.notify_period_id'
-            ]
-        ]);
+        $host = $HostsTable->getHostByIdForTimeline($id);
 
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+        if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
             $this->render403();
             return;
         }
 
-        $timeperiodId = ($host['Host']['check_period_id']) ? $host['Host']['check_period_id'] : $host['Hosttemplate']['check_period_id'];
-        //$notifyPeriodId = ($host['Host']['notify_period_id']) ? $host['Host']['notify_period_id'] : $host['Hosttemplate']['notify_period_id'];
+        $timeperiodId = $host->get('check_period_id');
+        if ($timeperiodId === null || $timeperiodId === '') {
+            $timeperiodId = $host->get('hosttemplate')->get('check_period_id');
+        }
 
+        /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         $checkTimePeriod = $TimeperiodsTable->getTimeperiodWithTimerangesById($timeperiodId);
 
@@ -2302,10 +2294,10 @@ class HostsController extends AppController {
 
         //Process conditions
         $Conditions = new StatehistoryHostConditions();
-        $Conditions->setOrder(['StatehistoryHost.state_time' => 'asc']);
+        $Conditions->setOrder(['StatehistoryHosts.state_time' => 'asc']);
 
-        $start = $this->request->getQuery('start');
-        $end = $this->request->getQuery('end');
+        $start = $this->request->getQuery('start', -1);
+        $end = $this->request->getQuery('end', -1);
 
 
         if (!is_numeric($start) || $start < 0) {
@@ -2316,9 +2308,11 @@ class HostsController extends AppController {
         if (!is_numeric($end) || $end < 0) {
             $end = time();
         }
-        $timeRanges = $this->DateRange->createDateRanges(
-            date('d-m-Y H:i:s', $start),
-            date('d-m-Y H:i:s', $end),
+
+        /*************  TIME RANGES *************/
+        $timeRanges = DaterangesCreator::createDateRanges(
+            $start,
+            $end,
             $checkTimePeriod['Timeperiod']['timeperiod_timeranges']
         );
 
@@ -2326,45 +2320,63 @@ class HostsController extends AppController {
         $this->set('timeranges', $TimeRangeSerializer->serialize());
         unset($TimeRangeSerializer, $timeRanges);
 
-        $hostUuid = $host['Host']['uuid'];
+        $hostUuid = $host->get('uuid');
 
         $Conditions->setFrom($start);
         $Conditions->setTo($end);
         $Conditions->setHostUuid($hostUuid);
         $Conditions->setUseLimit(false);
 
-        //Query state history records for hosts
-        $query = $this->StatehistoryHost->getQuery($Conditions);
-        $statehistories = $this->StatehistoryHost->find('all', $query);
+        /*************  HOST STATEHISTORY *************/
+        $StatehistoryHostsTable = $this->DbBackend->getStatehistoryHostsTable();
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+
+        //Query state history records for host
+        /** @var \Statusengine2Module\Model\Entity\StatehistoryHost[] $statehistoriesHost */
+        $statehistories = $StatehistoryHostsTable->getStatehistoryIndex($Conditions);
+
         $statehistoryRecords = [];
 
         //Host has no state history record for selected time range
         //Get last available state history record for this host
-        $query = $this->StatehistoryHost->getLastRecord($Conditions);
-        $record = $this->StatehistoryHost->find('first', $query);
+        $record = $StatehistoryHostsTable->getLastRecord($Conditions);
         if (!empty($record)) {
-            $record['StatehistoryHost']['state_time'] = $start;
-            $StatehistoryHost = new StatehistoryHost($record['StatehistoryHost']);
+            $record->set('state_time', $start);
+            $StatehistoryHost = new StatehistoryHost($record->toArray());
             $statehistoryRecords[] = $StatehistoryHost;
         }
+
         if (empty($statehistories) && empty($record)) {
             $HoststatusFields = new HoststatusFields($this->DbBackend);
             $HoststatusFields->currentState()
+                ->currentState()
                 ->isHardstate()
                 ->lastStateChange()
                 ->lastHardStateChange();
 
-            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
+            $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
             if (!empty($hoststatus)) {
-                $record['StatehistoryHost']['state_time'] = $hoststatus['Hoststatus']['last_state_change'];
-                $record['StatehistoryHost']['state'] = $hoststatus['Hoststatus']['current_state'];
-                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type']) ? true : false;
-                $StatehistoryHost = new StatehistoryHost($record['StatehistoryHost']);
+                $isHardstate = false;
+                if(isset($hoststatus['Hoststatus']['state_type'])){
+                    $isHardstate = ($hoststatus['Hoststatus']['state_type']) ? true : false;
+                }
+
+                if(isset($hoststatus['Hoststatus']['is_hardstate'])){
+                    $isHardstate = ($hoststatus['Hoststatus']['is_hardstate']) ? true : false;
+                }
+
+                $record = [
+                    'state_time' => $hoststatus['Hoststatus']['last_state_change'],
+                    'state'      => $hoststatus['Hoststatus']['current_state'],
+                    'state_type' => $isHardstate,
+                ];
+
+                $StatehistoryHost = new StatehistoryHost($record);
                 $statehistoryRecords[] = $StatehistoryHost;
             }
         }
         foreach ($statehistories as $statehistory) {
-            $StatehistoryHost = new StatehistoryHost($statehistory['StatehistoryHost']);
+            $StatehistoryHost = new StatehistoryHost($statehistory);
             $statehistoryRecords[] = $StatehistoryHost;
         }
 
@@ -2372,41 +2384,44 @@ class HostsController extends AppController {
         $this->set('statehistory', $StatehistorySerializer->serialize());
         unset($StatehistorySerializer, $statehistoryRecords);
 
+        /*************  HOST DOWNTIMES *************/
+        $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
 
         //Query downtime records for hosts
         $DowntimeHostConditions = new DowntimeHostConditions();
-        $DowntimeHostConditions->setOrder(['DowntimeHost.scheduled_start_time' => 'asc']);
+        $DowntimeHostConditions->setOrder(['DowntimeHosts.scheduled_start_time' => 'asc']);
         $DowntimeHostConditions->setFrom($start);
         $DowntimeHostConditions->setTo($end);
         $DowntimeHostConditions->setHostUuid($hostUuid);
         $DowntimeHostConditions->setIncludeCancelledDowntimes(true);
 
 
-        $query = $this->DowntimeHost->getQueryForReporting($DowntimeHostConditions);
-        $downtimes = $this->DowntimeHost->find('all', $query);
+        $downtimes = $DowntimehistoryHostsTable->getDowntimesForReporting($DowntimeHostConditions);
         $downtimeRecords = [];
         foreach ($downtimes as $downtime) {
-            $downtimeRecords[] = new Downtime($downtime['DowntimeHost']);
+            $downtimeRecords[] = new Downtime($downtime);
         }
 
         $DowntimeSerializer = new DowntimeSerializer($downtimeRecords, $UserTime);
         $this->set('downtimes', $DowntimeSerializer->serialize());
         unset($DowntimeSerializer, $downtimeRecords);
 
+        /*************  HOST NOTIFICATIONS *************/
+        $NotificationHostsTable = $this->DbBackend->getNotificationHostsTable();
 
         $Conditions = new HostNotificationConditions();
         $Conditions->setUseLimit(false);
         $Conditions->setFrom($start);
         $Conditions->setTo($end);
         $Conditions->setHostUuid($hostUuid);
-        $query = $this->NotificationHost->getQuery($Conditions, []);
 
+        $notifications = $NotificationHostsTable->getNotifications($Conditions);
         $notificationRecords = [];
-        foreach ($this->NotificationHost->find('all', $query) as $notification) {
+        foreach ($notifications as $notification) {
             $notificationRecords[] = [
-                'NotificationHost' => new itnovum\openITCOCKPIT\Core\Views\NotificationHost($notification),
-                'Command'          => new itnovum\openITCOCKPIT\Core\Views\Command($notification['Command']),
-                'Contact'          => new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact'])
+                'NotificationHost' => new NotificationHost($notification),
+                'Command'          => new Command($notification['Commands']),
+                'Contact'          => new Contact($notification['Contacts'])
             ];
         }
 
@@ -2414,6 +2429,8 @@ class HostsController extends AppController {
         $this->set('notifications', $NotificationSerializer->serialize());
         unset($NotificationSerializer, $notificationRecords);
 
+        /*************  HOST ACKNOWLEDGEMENTS *************/
+        $AcknowledgementHostsTable = $this->DbBackend->getAcknowledgementHostsTable();
 
         //Process conditions
         $Conditions = new AcknowledgedHostConditions();
@@ -2423,9 +2440,10 @@ class HostsController extends AppController {
         $Conditions->setHostUuid($hostUuid);
 
         $acknowledgementRecords = [];
-        $query = $this->AcknowledgedHost->getQuery($Conditions, []);
-        foreach ($this->AcknowledgedHost->find('all', $query) as $acknowledgement) {
-            $acknowledgementRecords[] = new itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost($acknowledgement['AcknowledgedHost']);
+        $acknowledgements = $AcknowledgementHostsTable->getAcknowledgements($Conditions);
+
+        foreach ($acknowledgements as $acknowledgement) {
+            $acknowledgementRecords[] = new AcknowledgementHost($acknowledgement->toArray());
         }
 
         $AcknowledgementSerializer = new AcknowledgementSerializer($acknowledgementRecords, $UserTime);
