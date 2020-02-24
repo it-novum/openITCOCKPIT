@@ -1,0 +1,22 @@
+#
+# This file could be used to overwrite defaults made by
+# the openITCOCKPIT installation and to automate things.
+#
+
+# openITCOCKPIT SETUP.sh
+# Uncomment this block to automate SETUP.sh
+#setup:
+#  firstname: John
+#  lastname: Doe
+#  email: john.doe@example.org
+#  password: abcd1234
+#  timezone: Europe/Berlin
+#  hostname: null
+#  mail:
+#    host: 127.0.0.1
+#    port: 25
+#    sender: openitcockpit@example.org
+#    username: null
+#    password: null
+
+

@@ -1,0 +1,1120 @@
+{
+	"config": {
+		"debug": false,
+		"data" : {
+			"app": "SmartAdmin",
+			"app-name": "SmartAdmin WebApp",
+			"app-flavor": "SmartAdmin WebApp",
+			"app-flavor-subscript": "",
+			"user": "Dr. Codex Lantern",
+			"email": "drlantern@gotbootstrap.com",
+			"twitter": "codexlantern",
+			"avatar": "avatar-admin.png",
+			"version": "4.0.2",
+			"bs4v": "4.3",
+			"logo": "logo.png",
+			"logo-m": "logo.png",
+			"copyright": "2019 © SmartAdmin by&nbsp;<a href='https://www.gotbootstrap.com' class='text-primary fw-500' title='gotbootstrap.com' target='_blank'>gotbootstrap.com</a>",
+			"copyright-inverse": "2019 © SmartAdmin by&nbsp;<a href='https://www.gotbootstrap.com' class='text-white opacity-40 fw-500' title='gotbootstrap.com' target='_blank'>gotbootstrap.com</a>",
+			"layoutSettings": true,
+			"chatInterface": true,
+			"shortcutMenu": true,
+			"appLayoutShortcut": true,
+			"appShortcutModal": true,
+			"appHeader": true,
+			"appFooter": true,
+			"appSidebar": true
+		},
+		"compile": {
+			"jsUglify": false,
+			"cssMinify": false,
+			"jsSourcemaps": false,
+			"cssSourcemaps": true,
+			"autoprefixer": true,
+			"seedOnly": false,
+			"rtl": false
+		},
+		"path": {
+			"src": "./src",
+			"node_modules": "./node_modules",
+			"exportPath": "./src/template/include/_nav.hbs",
+			"outputPath": "./src/template/include"
+		},
+		"dist": {
+			"theme": {
+				"path": "./dist"
+			}
+		}
+	},
+	"build": {
+		"vendors": {
+			"base": {
+				"src": {
+					"required": {	
+						"pace-js": {
+							"scripts": [
+								"{$config.path.node_modules}/pace-js/pace.js"
+							]
+						},			
+						"jquery": {
+							"scripts": [
+								"{$config.path.node_modules}/jquery/dist/jquery.js"
+							]
+						},
+						"jquery-ui": {
+							"scripts": [
+								"{$config.path.src}/custom/plugins/jquery-ui-cust/jquery-ui-cust.js"
+							]
+						},	
+						"bootstrap": {
+							"styles": [
+								"{$config.path.src}/scss/bootstrap.scss"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/popper.js/dist/umd/popper.js",
+								"{$config.path.node_modules}/bootstrap/dist/js/bootstrap.js"
+							]
+						},
+						"bootbox": {
+							"scripts": [
+								"{$config.path.src}/custom/plugins/bootbox/bootbox-cust.js",
+								"{$config.path.src}/custom/plugins/bootbox/bootbox-config.js"
+							]
+						},
+						"jquery-snippets": {
+							"scripts": [
+								"{$config.path.src}/custom/plugins/jquery-snippets/jquery-snippets.js"
+							]
+						},
+						"throttle-debounce": {
+							"scripts": [
+								"{$config.path.node_modules}/jquery-throttle-debounce/jquery.ba-throttle-debounce.js"
+							]
+						},
+						"webfonts": {
+							"styles": [
+								"{$config.path.src}/scss/app.icons.scss"
+							],
+							"fonts": [
+								"{$config.path.src}/custom/webfonts/fontawesome-pro-master/webfonts/**",
+								"{$config.path.src}/custom/webfonts/nextgen-fonts-master/webfonts/**",
+								"{$config.path.src}/custom/webfonts/plugins/summernote/**"
+							]
+						}							
+					},
+					"optional": {
+						"jquery-slimscroll": {
+							"scripts": [
+								"{$config.path.node_modules}/jquery-slimscroll/jquery.slimscroll.js"
+							]
+						},
+						"waves": {
+							"scripts": [
+								"{$config.path.node_modules}/node-waves/dist/waves.js"
+							]
+						},
+						"smartpanels": {
+							"scripts": [
+								"{$config.path.src}/custom/plugins/smartpanels/smartpanels.js"
+							]
+						},
+						"app-images" : {
+							"images" : [
+								"{$config.path.src}/img/**"
+							]
+						},
+						"app-data": {
+							"json" : [
+								"{$config.path.src}/custom/webfonts/fontawesome-pro-master/used-for-demo-pages/*.json",
+								"{$config.path.src}/custom/webfonts/nextgen-fonts-master/used-for-demo-pages/*.json",
+								"{$config.path.src}/custom/plugins/datatables/demo-data/*.json",
+								"{$config.path.src}/custom/docs-data/*.json",
+								"{$config.path.src}/custom/lang/*.json"
+								
+							]
+						},
+						"app-media": {
+							"media" : [
+								"{$config.path.src}/custom/media/**"
+							]
+						}
+					}
+				},
+				"bundle": {
+					"styles": "{$config.output}/css/vendors.bundle.css",
+					"scripts": "{$config.output}/js/vendors.bundle.js",
+					"images": "{$config.output}/img",
+					"fonts": "{$config.output}/webfonts",
+					"json": "{$config.output}/media/data/",
+					"media": "{$config.output}/media"
+				}
+			},
+			"custom": {
+				"holderjs": {
+					"src": {
+						"scripts": [
+							"{$config.path.node_modules}/holderjs/holder.js"
+						]
+					},
+					"bundle": {
+						"scripts": "{$config.output}/js/holder.js"
+					}
+				},
+				"i18next": {
+					"src": {
+						"scripts": [
+							"{$config.path.node_modules}/i18next-client/i18next.js"
+						]
+					},
+					"bundle": {
+						"scripts": "{$config.output}/js/i18n/i18n.js"
+					}
+				},
+				"fontawesome": {
+					"regular" : {
+						"src": {
+							"styles":[
+								"{$config.path.src}/custom/webfonts/fontawesome-pro-master/scss/fa-regular.scss"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/fa-regular.scss"
+						}
+					},
+					"solid" : {
+						"src": {
+							"styles":[
+								"{$config.path.src}/custom/webfonts/fontawesome-pro-master/scss/fa-solid.scss"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/fa-solid.scss"
+						}
+					},
+					"brand" : {
+						"src": {
+							"styles":[
+								"{$config.path.src}/custom/webfonts/fontawesome-pro-master/scss/fa-brands.scss"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/fa-brands.scss"
+						}
+					}
+				}
+			},
+			"addons": {
+				"statistics" : {
+					"dygraph" : {
+						"plugin" : {
+							"src": {
+								"styles":[
+									"{$config.path.node_modules}/dygraphs/dist/dygraph.css"
+								],
+								"scripts": [
+									"{$config.path.node_modules}/dygraphs/dist/dygraph.min.js"
+								]
+							},
+							"bundle": {
+								"styles": "{$config.output}/css/statistics/dygraph/dygraph.css",
+								"scripts": "{$config.output}/js/statistics/dygraph/dygraph.js"
+							}
+						},
+						"demo-data" : {
+							"src": {
+								"scripts": [
+									"{$config.path.src}/custom/demo-data/demo-data-dygraph.js"
+								]
+							},
+							"bundle": {
+								"scripts": "{$config.output}/js/statistics/demo-data/demo-data-dygraph.js"
+							}
+						}	
+					},
+					"flotchart" : {
+						"src": {
+							"scripts": [
+								"{$config.path.node_modules}/flot/jquery.flot.js",
+								"{$config.path.node_modules}/flot/jquery.colorhelpers.js",
+								"{$config.path.node_modules}/flot/jquery.flot.canvas.js",
+								"{$config.path.node_modules}/flot/jquery.flot.categories.js",
+								"{$config.path.node_modules}/flot/jquery.flot.crosshair.js",
+								"{$config.path.node_modules}/flot/jquery.flot.errorbars.js",
+								"{$config.path.node_modules}/flot/jquery.flot.fillbetween.js",
+								"{$config.path.node_modules}/flot/jquery.flot.image.js",
+								"{$config.path.node_modules}/flot/jquery.flot.navigate.js",
+								"{$config.path.node_modules}/flot/jquery.flot.pie.js",
+								"{$config.path.node_modules}/flot/jquery.flot.resize.js",
+								"{$config.path.node_modules}/flot/jquery.flot.selection.js",
+								"{$config.path.node_modules}/flot/jquery.flot.stack.js",
+								"{$config.path.node_modules}/flot-spline/js/jquery.flot.spline.js",
+								"{$config.path.node_modules}/flot/jquery.flot.symbol.js",
+								"{$config.path.node_modules}/flot/jquery.flot.threshold.js",
+								"{$config.path.node_modules}/jquery.flot.tooltip/js/jquery.flot.tooltip.js",
+								"{$config.path.node_modules}/flot/jquery.flot.time.js"
+							]
+						},
+						"bundle": {"scripts": "{$config.output}/js/statistics/flot/flot.bundle.js"}
+					},
+					"chartjs" : {
+						"src": {
+							"styles":[
+								"{$config.path.node_modules}/chart.js/dist/Chart.css"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/chart.js/dist/Chart.bundle.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/statistics/chartjs/chartjs.css",
+							"scripts": "{$config.output}/js/statistics/chartjs/chartjs.bundle.js"
+						}
+					},
+					"chartist" : {
+						"src": {
+							"styles":[
+								"{$config.path.src}/custom/plugins/chartist/chartist.scss"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/chartist/dist/chartist.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/statistics/chartist/chartist.css",
+							"scripts": "{$config.output}/js/statistics/chartist/chartist.js"
+						}
+					},
+					"d3" : {
+						"src": {
+							"scripts": [
+								"{$config.path.node_modules}/d3/dist/d3.js"
+							]
+						},
+						"bundle": {
+							"scripts": "{$config.output}/js/statistics/d3/d3.js"
+						}
+					},
+					"c3" : {
+						"plugin": {
+							"src": {
+								"styles":[
+									"{$config.path.node_modules}/c3/c3.css"
+								],
+								"scripts": [
+									"{$config.path.node_modules}/c3/c3.js"
+								]
+							},
+							"bundle": {
+								"styles": "{$config.output}/css/statistics/c3/c3.css",
+								"scripts": "{$config.output}/js/statistics/c3/c3.js"
+							}
+						},
+						"demo-data": {
+							"src": {
+								"scripts": [
+									"{$config.path.src}/custom/demo-data/demo-c3.js"
+								]
+							},
+							"bundle": {
+								"scripts": "{$config.output}/js/statistics/demo-data/demo-c3.js"
+							}
+						}
+					},
+					"peity" : {
+						"src": {
+							"scripts": [
+								"{$config.path.node_modules}/peity/jquery.peity.js",
+								"{$config.path.src}/custom/plugins/peity/jquery.peity.config.js"
+							]
+						},
+						"bundle": {
+							"scripts": "{$config.output}/js/statistics/peity/peity.bundle.js"
+						}
+					},
+					"sparkline" : {
+						"src": {
+							"scripts": [
+								"{$config.path.node_modules}/jquery-sparkline/jquery.sparkline.js",
+								"{$config.path.src}/custom/plugins/jquery-sparkline/jquery-sparkline.config.js"
+							]
+						},
+						"bundle": {
+							"scripts": "{$config.output}/js/statistics/sparkline/sparkline.bundle.js"
+						}
+					},
+					"easypiechart" : {
+						"src": {
+							"scripts": [
+								"{$config.path.node_modules}/easy-pie-chart/dist/jquery.easypiechart.js",
+								"{$config.path.src}/custom/plugins/easy-pie-chart/jquery.easypiechart.config.js"
+							]
+						},
+						"bundle": {
+							"scripts": "{$config.output}/js/statistics/easypiechart/easypiechart.bundle.js"
+						}
+					}
+				},
+				"datagrid" : {
+					"datatables" : {
+						"core" : {
+							"src": {
+								"styles":[
+									"{$config.path.node_modules}/datatables.net-bs4/css/dataTables.bootstrap4.css",
+									"{$config.path.node_modules}/datatables.net-autofill-bs4/css/autoFill.bootstrap4.css",
+									"{$config.path.node_modules}/datatables.net-buttons-bs4/css/buttons.bootstrap4.css",
+									"{$config.path.node_modules}/datatables.net-colreorder-bs4/css/colReorder.bootstrap4.css",
+									"{$config.path.node_modules}/datatables.net-fixedcolumns-bs4/css/fixedColumns.bootstrap4.css",
+									"{$config.path.node_modules}/datatables.net-fixedheader-bs4/css/fixedHeader.bootstrap4.css",
+									"{$config.path.node_modules}/datatables.net-keytable-bs4/css/keyTable.bootstrap4.css",
+									"{$config.path.node_modules}/datatables.net-responsive-bs4/css/responsive.bootstrap4.css",
+									"{$config.path.node_modules}/datatables.net-rowgroup-bs4/css/rowGroup.bootstrap4.css",
+									"{$config.path.node_modules}/datatables.net-rowreorder-bs4/css/rowReorder.bootstrap4.css",
+									"{$config.path.node_modules}/datatables.net-scroller-bs4/css/scroller.bootstrap4.css",
+									"{$config.path.node_modules}/datatables.net-select-bs4/css/select.bootstrap4.css",
+									"{$config.path.src}/custom/plugins/datatables/datatables.styles.app.scss"
+								],
+								"scripts": [
+									"{$config.path.node_modules}/datatables.net/js/jquery.dataTables.js",
+									"{$config.path.node_modules}/datatables.net-bs4/js/dataTables.bootstrap4.js",
+									"{$config.path.src}/custom/plugins/datatables/datatables.styles.app.js",
+									"{$config.path.node_modules}/datatables.net-autofill/js/dataTables.autoFill.js",							
+									"{$config.path.node_modules}/datatables.net-autofill-bs4/js/autoFill.bootstrap4.js",
+									"{$config.path.node_modules}/datatables.net-buttons/js/dataTables.buttons.js",
+									"{$config.path.node_modules}/datatables.net-buttons-bs4/js/buttons.bootstrap4.js",
+									"{$config.path.node_modules}/datatables.net-buttons/js/buttons.html5.js",
+									"{$config.path.node_modules}/datatables.net-buttons/js/buttons.print.js",
+									"{$config.path.node_modules}/datatables.net-buttons/js/buttons.colVis.js",
+									"{$config.path.src}/custom/plugins/datatables/datatables.styles.buttons.app.js",
+									"{$config.path.node_modules}/datatables.net-colreorder/js/dataTables.colReorder.js",							
+									"{$config.path.node_modules}/datatables.net-colreorder-bs4/js/colReorder.bootstrap4.js",
+									"{$config.path.node_modules}/datatables.net-fixedcolumns/js/dataTables.fixedColumns.js",							
+									"{$config.path.node_modules}/datatables.net-fixedcolumns-bs4/js/fixedColumns.bootstrap4.js",
+									"{$config.path.node_modules}/datatables.net-fixedheader/js/dataTables.fixedHeader.js",							
+									"{$config.path.node_modules}/datatables.net-fixedheader-bs4/js/fixedHeader.bootstrap4.js",
+									"{$config.path.node_modules}/datatables.net-keytable/js/dataTables.keyTable.js",							
+									"{$config.path.node_modules}/datatables.net-keytable-bs4/js/keyTable.bootstrap4.js",
+									"{$config.path.node_modules}/datatables.net-responsive/js/dataTables.responsive.js",							
+									"{$config.path.node_modules}/datatables.net-responsive-bs4/js/responsive.bootstrap4.js",
+									"{$config.path.node_modules}/datatables.net-rowgroup/js/dataTables.rowGroup.js",							
+									"{$config.path.node_modules}/datatables.net-rowgroup-bs4/js/rowGroup.bootstrap4.js",
+									"{$config.path.node_modules}/datatables.net-rowreorder/js/dataTables.rowReorder.js",							
+									"{$config.path.node_modules}/datatables.net-rowreorder-bs4/js/rowReorder.bootstrap4.js",
+									"{$config.path.node_modules}/datatables.net-scroller/js/dataTables.scroller.js",							
+									"{$config.path.node_modules}/datatables.net-scroller-bs4/js/scroller.bootstrap4.js",
+									"{$config.path.node_modules}/datatables.net-select/js/dataTables.select.js",							
+									"{$config.path.node_modules}/datatables.net-select-bs4/js/select.bootstrap4.js",
+									"{$config.path.src}/custom/plugins/datatables-alteditor/datatables-alteditor.js"
+								]
+							},
+							"bundle": {
+								"styles": "{$config.output}/css/datagrid/datatables/datatables.bundle.css",
+								"scripts": "{$config.output}/js/datagrid/datatables/datatables.bundle.js"
+							}	
+						},
+						"export" : {
+							"src": {
+								"scripts": [
+									"{$config.path.node_modules}/jszip/dist/jszip.js",
+									"{$config.path.node_modules}/pdfmake/build/pdfmake.js",
+									"{$config.path.node_modules}/pdfmake/build/vfs_fonts.js"									
+								]
+							},
+							"bundle": {
+								"scripts": "{$config.output}/js/datagrid/datatables/datatables.export.js"
+							}
+						}
+					}
+				},
+				"notifications" : {
+					"toastr" : {
+						"src": {
+							"styles":[
+								"{$config.path.node_modules}/toastr/toastr.scss",
+								"{$config.path.src}/custom/plugins/toastr/toastr-custom.scss"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/toastr/toastr.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/notifications/toastr/toastr.css",
+							"scripts": "{$config.output}/js/notifications/toastr/toastr.js"
+						}
+					},
+					"sweetalert2" : {
+						"src": {
+							"styles":[
+								"{$config.path.src}/custom/plugins/sweetalert2/sweetalert2.scss"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/es6-promise-polyfill/promise.js",
+								"{$config.path.node_modules}/sweetalert2/dist/sweetalert2.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/notifications/sweetalert2/sweetalert2.bundle.css",
+							"scripts": "{$config.output}/js/notifications/sweetalert2/sweetalert2.bundle.js"
+						}
+					}
+				},
+				"formplugins" : {
+					"colorpicker" : {
+						"src": {
+							"styles":[
+								"{$config.path.node_modules}/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.css"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/formplugins/bootstrap-colorpicker/bootstrap-colorpicker.css",
+							"scripts": "{$config.output}/js/formplugins/bootstrap-colorpicker/bootstrap-colorpicker.js"
+						}
+					},
+					"datepicker" : {
+						"src": {
+							"styles": [
+								"{$config.path.node_modules}/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css",
+								"{$config.path.src}/custom/plugins/datepicker/datepicker-custom.scss"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/formplugins/bootstrap-datepicker/bootstrap-datepicker.css",
+							"scripts": "{$config.output}/js/formplugins/bootstrap-datepicker/bootstrap-datepicker.js"
+						}
+					},
+					"daterangepicker" : {
+						"src": {
+							"styles": [
+								"{$config.path.node_modules}/bootstrap-daterangepicker/daterangepicker.css",
+								"{$config.path.src}/custom/plugins/daterangepicker/daterangepicker-custom.scss"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/bootstrap-daterangepicker/daterangepicker.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.css",
+							"scripts": "{$config.output}/js/formplugins/bootstrap-daterangepicker/bootstrap-daterangepicker.js"
+						}
+					},
+					"dropzone" : {
+						"src": {
+							"styles": [
+								"{$config.path.node_modules}/dropzone/dist/dropzone.css",
+								"{$config.path.src}/custom/plugins/dropzone/dropzone-custom.scss"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/dropzone/dist/dropzone.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/formplugins/dropzone/dropzone.css",
+							"scripts": "{$config.output}/js/formplugins/dropzone/dropzone.js"
+						}					
+					},
+					"ion-rangeslider": {
+						"src": {
+							"styles": [
+								"{$config.path.node_modules}/ion-rangeslider/css/ion.rangeSlider.css",
+								"{$config.path.src}/custom/plugins/ion-rangeslider/ion.rangeslider-custom.scss"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/ion-rangeslider/js/ion.rangeSlider.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/formplugins/ion-rangeslider/ion-rangeslider.css",
+							"scripts": "{$config.output}/js/formplugins/ion-rangeslider/ion-rangeslider.js"
+						}	
+					},
+					"inputmusk": {
+						"src": {
+							"scripts": [
+								"{$config.path.node_modules}/inputmask/dist/jquery.inputmask.bundle.js"
+							]
+						},
+						"bundle": {
+							"scripts": "{$config.output}/js/formplugins/inputmask/inputmask.bundle.js"
+						}	
+					},
+					"cropper": {
+						"src": {
+							"styles": [
+								"{$config.path.node_modules}/cropperjs/dist/cropper.css",
+								"{$config.path.src}/custom/plugins/cropperjs/cropper-demo.scss"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/cropperjs/dist/cropper.js",
+								"{$config.path.node_modules}/jquery-cropper/dist/jquery-cropper.js"
+								
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/formplugins/cropperjs/cropper.css",
+							"scripts": "{$config.output}/js/formplugins/cropperjs/cropper.js"
+						}	
+					},
+					"select2": {
+						"src": {
+							"styles": [
+								"{$config.path.node_modules}/select2/dist/css/select2.css",
+								"{$config.path.src}/custom/plugins/select2/select2-cust.scss"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/select2/dist/js/select2.full.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/formplugins/select2/select2.bundle.css",
+							"scripts": "{$config.output}/js/formplugins/select2/select2.bundle.js"
+						}	
+					},
+					"summernote": {
+						"src": {
+							"styles": [
+								"{$config.path.node_modules}/summernote/dist/summernote-bs4.css",
+								"{$config.path.src}/custom/plugins/summernote/summernote-custom.scss"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/summernote/dist/summernote-bs4.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/formplugins/summernote/summernote.css",
+							"scripts": "{$config.output}/js/formplugins/summernote/summernote.js"
+						}	
+					},
+					"markdown": {
+						"src": {
+							"styles": [
+								"{$config.path.node_modules}/bootstrap-markdown/css/bootstrap-markdown.min.css"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/markdown/lib/markdown.js",
+								"{$config.path.node_modules}/bootstrap-markdown/js/bootstrap-markdown.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/formplugins/bootstrap-markdown/bootstrap-markdown.css",
+							"scripts": "{$config.output}/js/formplugins/bootstrap-markdown/bootstrap-markdown.js"
+						}	
+					},
+					"nouislider": {
+						"src": {
+							"styles": [
+								"{$config.path.node_modules}/nouislider/distribute/nouislider.css"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/nouislider/distribute/nouislider.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/formplugins/nouislider/nouislider.css",
+							"scripts": "{$config.output}/js/formplugins/nouislider/nouislider.js"
+						}	
+					},
+					"wizard": {
+						"src": {
+							"styles": [
+								"{$config.path.node_modules}/smartwizard/dist/css/smart_wizard.css",
+								"{$config.path.node_modules}/smartwizard/dist/css/smart_wizard_theme_arrows.css",
+								"{$config.path.node_modules}/smartwizard/dist/css/smart_wizard_theme_circles.css",
+								"{$config.path.node_modules}/smartwizard/dist/css/smart_wizard_theme_dots.css"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/smartwizard/dist/js/jquery.smartWizard.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/formplugins/smartwizard/smartwizard.css",
+							"scripts": "{$config.output}/js/formplugins/smartwizard/smartwizard.js"
+						}	
+					}
+				},
+				"miscellaneous" : {
+					"fullcalendar" : {
+						"src": {
+							"styles":[
+								"{$config.path.node_modules}/@fullcalendar/core/main.css",
+								"{$config.path.node_modules}/@fullcalendar/daygrid/main.css",
+								"{$config.path.node_modules}/@fullcalendar/list/main.css",
+								"{$config.path.node_modules}/@fullcalendar/timegrid/main.css",
+								"{$config.path.node_modules}/@fullcalendar/bootstrap/main.css",
+								"{$config.path.src}/custom/plugins/@fullcalendar/core-main-override.scss"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/@fullcalendar/core/main.js",
+								"{$config.path.node_modules}/@fullcalendar/daygrid/main.js",
+								"{$config.path.node_modules}/@fullcalendar/list/main.js",
+								"{$config.path.node_modules}/@fullcalendar/timegrid/main.js",
+								"{$config.path.node_modules}/@fullcalendar/interaction/main.js",
+								"{$config.path.src}/custom/plugins/@fullcalendar/bootstrap-main-cust.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/miscellaneous/fullcalendar/fullcalendar.bundle.css",
+							"scripts": "{$config.output}/js/miscellaneous/fullcalendar/fullcalendar.bundle.js"
+						}
+					},
+					"lightgallery" : {
+						"src": {
+							"styles":[
+								"{$config.path.node_modules}/justifiedGallery/dist/css/justifiedGallery.css",
+								"{$config.path.src}/custom/plugins/lightgallery/lightgallery.scss"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/justifiedGallery/dist/js/jquery.justifiedGallery.js",
+								"{$config.path.node_modules}/jquery-mousewheel/jquery.mousewheel.js",
+								"{$config.path.node_modules}/lightgallery/src/js/lightgallery.js",
+								"{$config.path.node_modules}/lightgallery/modules/lg-autoplay.js",
+								"{$config.path.node_modules}/lightgallery/modules/lg-fullscreen.js",
+								"{$config.path.node_modules}/lightgallery/modules/lg-hash.js",
+								"{$config.path.node_modules}/lightgallery/modules/lg-pager.js",
+								"{$config.path.node_modules}/lightgallery/modules/lg-thumbnail.js",
+								"{$config.path.node_modules}/lightgallery/modules/lg-zoom.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/miscellaneous/lightgallery/lightgallery.bundle.css",
+							"scripts": "{$config.output}/js/miscellaneous/lightgallery/lightgallery.bundle.js"
+						}
+					},
+					"smartvoice" : {
+						"src": {
+							"scripts": [
+								"{$config.path.src}/custom/plugins/smartvoice/smartvoice-config.js",
+								"{$config.path.src}/custom/plugins/smartvoice/smartvoice.js"
+							]
+						},
+						"bundle": {
+							"scripts": "{$config.output}/js/miscellaneous/lightgallery/smartvoice.bundle.js"
+						}
+					},
+					"reactions" : {
+						"src": {
+							"styles":[
+								"{$config.path.src}/custom/plugins/reactions/reactions.scss"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/miscellaneous/reactions/reactions.css"
+						}
+					},
+					"jqvmap" : {
+						"core" : {
+							"src": {
+								"styles":[
+									"{$config.path.node_modules}/jqvmap/dist/jqvmap.css",
+									"{$config.path.src}/custom/plugins/jqvmap/jqvmap-cust.scss"
+								],
+								"scripts": [
+									"{$config.path.node_modules}/jqvmap/dist/jquery.vmap.js",
+									"{$config.path.node_modules}/jqvmap/dist/maps/jquery.vmap.world.js"
+								]
+							},
+							"bundle": {
+								"styles": "{$config.output}/css/miscellaneous/jqvmap/jqvmap.bundle.css",
+								"scripts": "{$config.output}/js/miscellaneous/jqvmap/jqvmap.bundle.js"
+							}
+						},
+						"maps" : {
+							"algeria" : {
+								"src": {
+									"scripts": [
+										"{$config.path.node_modules}/jqvmap/dist/maps/jquery.vmap.algeria.js"
+									]
+								},
+								"bundle": {
+									"scripts": "{$config.output}/js/miscellaneous/jqvmap/maps/jquery.vmap.algeria.js"
+								}
+							},
+							"argentina" : {
+								"src": {
+									"scripts": [
+										"{$config.path.node_modules}/jqvmap/dist/maps/jquery.vmap.argentina.js"
+									]
+								},
+								"bundle": {
+									"scripts": "{$config.output}/js/miscellaneous/jqvmap/maps/jquery.vmap.argentina.js"
+								}
+							},
+							"brazil" : {
+								"src": {
+									"scripts": [
+										"{$config.path.node_modules}/jqvmap/dist/maps/jquery.vmap.brazil.js"
+									]
+								},
+								"bundle": {
+									"scripts": "{$config.output}/js/miscellaneous/jqvmap/maps/jquery.vmap.brazil.js"
+								}
+							},
+							"canada" : {
+								"src": {
+									"scripts": [
+										"{$config.path.node_modules}/jqvmap/dist/maps/jquery.vmap.canada.js"
+									]
+								},
+								"bundle": {
+									"scripts": "{$config.output}/js/miscellaneous/jqvmap/maps/jquery.vmap.canada.js"
+								}
+							},
+							"europe" : {
+								"src": {
+									"scripts": [
+										"{$config.path.node_modules}/jqvmap/dist/maps/jquery.vmap.europe.js"
+									]
+								},
+								"bundle": {
+									"scripts": "{$config.output}/js/miscellaneous/jqvmap/maps/jquery.vmap.europe.js"
+								}
+							},
+							"france" : {
+								"src": {
+									"scripts": [
+										"{$config.path.node_modules}/jqvmap/dist/maps/jquery.vmap.france.js"
+									]
+								},
+								"bundle": {
+									"scripts": "{$config.output}/js/miscellaneous/jqvmap/maps/jquery.vmap.france.js"
+								}
+							},
+							"germany" : {
+								"src": {
+									"scripts": [
+										"{$config.path.node_modules}/jqvmap/dist/maps/jquery.vmap.germany.js"
+									]
+								},
+								"bundle": {
+									"scripts": "{$config.output}/js/miscellaneous/jqvmap/maps/jquery.vmap.germany.js"
+								}
+							},
+							"greece" : {
+								"src": {
+									"scripts": [
+										"{$config.path.node_modules}/jqvmap/dist/maps/jquery.vmap.greece.js"
+									]
+								},
+								"bundle": {
+									"scripts": "{$config.output}/js/miscellaneous/jqvmap/maps/jquery.vmap.greece.js"
+								}
+							},
+							"iran" : {
+								"src": {
+									"scripts": [
+										"{$config.path.node_modules}/jqvmap/dist/maps/jquery.vmap.iran.js"
+									]
+								},
+								"bundle": {
+									"scripts": "{$config.output}/js/miscellaneous/jqvmap/maps/jquery.vmap.iran.js"
+								}
+							},
+							"iraq" : {
+								"src": {
+									"scripts": [
+										"{$config.path.node_modules}/jqvmap/dist/maps/jquery.vmap.iraq.js"
+									]
+								},
+								"bundle": {
+									"scripts": "{$config.output}/js/miscellaneous/jqvmap/maps/jquery.vmap.iraq.js"
+								}
+							},
+							"russia" : {
+								"src": {
+									"scripts": [
+										"{$config.path.node_modules}/jqvmap/dist/maps/jquery.vmap.russia.js"
+									]
+								},
+								"bundle": {
+									"scripts": "{$config.output}/js/miscellaneous/jqvmap/maps/jquery.vmap.russia.js"
+								}
+							},
+							"tunisia" : {
+								"src": {
+									"scripts": [
+										"{$config.path.node_modules}/jqvmap/dist/maps/jquery.vmap.tunisia.js"
+									]
+								},
+								"bundle": {
+									"scripts": "{$config.output}/js/miscellaneous/jqvmap/maps/jquery.vmap.tunisia.js"
+								}
+							},
+							"turkey" : {
+								"src": {
+									"scripts": [
+										"{$config.path.node_modules}/jqvmap/dist/maps/jquery.vmap.turkey.js"
+									]
+								},
+								"bundle": {
+									"scripts": "{$config.output}/js/miscellaneous/jqvmap/maps/jquery.vmap.turkey.js"
+								}
+							},
+							"usa" : {
+								"src": {
+									"scripts": [
+										"{$config.path.node_modules}/jqvmap/dist/maps/jquery.vmap.usa.js"
+									]
+								},
+								"bundle": {
+									"scripts": "{$config.output}/js/miscellaneous/jqvmap/maps/jquery.vmap.usa.js"
+								}
+							}
+						}
+					},
+					"nestable" : {
+						"src": {
+							"styles":[
+								"{$config.path.src}/custom/plugins/nestable/nestable.scss"
+							],
+							"scripts": [
+								"{$config.path.node_modules}/nestable/jquery.nestable.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/miscellaneous/nestable/nestable.css",
+							"scripts": "{$config.output}/js/miscellaneous/nestable/nestable.js"
+						}
+					},
+					"treeview" : {
+						"src": {
+							"styles":[
+								"{$config.path.src}/custom/plugins/treeview/treeview.scss"
+							],
+							"scripts": [
+								"{$config.path.src}/custom/plugins/treeview/treeview.js"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/miscellaneous/treeview/treeview.css",
+							"scripts": "{$config.output}/js/miscellaneous/treeview/treeview.js"
+						}
+					}
+				},
+				"dependencyplugins" : {
+					"moment" : {
+						"src": {
+							"scripts": [
+								"{$config.path.node_modules}/moment/min/moment.min.js"
+							]
+						},
+						"bundle": {
+							"scripts": "{$config.output}/js/dependency/moment/moment.js"
+						}
+					}
+				}
+			}
+		},
+		"app": {
+			"base": {
+				"src": {
+					"styles": [
+						"{$config.path.src}/scss/app.core.scss"
+					],
+					"scripts": [
+						"{$config.path.src}/js/_config/app.config.js",
+						"{$config.path.src}/js/_modules/app.navigation.js",
+						"{$config.path.src}/js/_modules/app.menu.slider.js",
+						"{$config.path.src}/js/_modules/app.init.js",
+						"{$config.path.src}/js/_modules/app.resize.trigger.js",
+						"{$config.path.src}/js/_modules/app.scroll.trigger.js",
+						"{$config.path.src}/js/_modules/app.domReady.js",
+						"{$config.path.src}/js/_modules/app.orientationchange.js",
+						"{$config.path.src}/js/_modules/app.window.load.js",
+						"{$config.path.src}/js/_config/app.colors.js"
+						
+					]
+				},
+				"bundle": {
+					"styles": "{$config.output}/css/app.bundle.css",
+					"scripts": "{$config.output}/js/app.bundle.js"
+				}
+			},
+			"custom": {
+				"auth" : {
+					"login" : {
+						"src": {
+							"styles":[
+								"{$config.path.src}/content/pages/page_login/page-login.scss"
+							]
+						},
+						"bundle": {
+							"styles": "{$config.output}/css/page-login.css"
+						}
+					}
+				},
+				"invoice" : {
+					"src": {
+						"styles":[
+							"{$config.path.src}/content/pages/page_invoice/page-invoice.scss"
+						]
+					},
+					"bundle": {
+						"styles": "{$config.output}/css/page-invoice.css"
+					}
+				}
+			},
+			"demo": {
+				"theme": {
+					"src": {
+						"styles": [
+							"{$config.path.src}/scss/theme-demo.scss"
+						]
+					},
+					"bundle": {
+						"styles": "{$config.output}/css/theme-demo.css"
+						
+					}
+				}
+			},
+			"themes": {
+				"theme-1": {
+					"src": {
+						"styles": [
+							"{$config.path.src}/scss/_themes/cust-theme-1.scss"
+						]
+					},
+					"bundle": {
+						"styles": "{$config.output}/css/themes/cust-theme-1.css"
+						
+					}
+				},
+				"theme-2": {
+					"src": {
+						"styles": [
+							"{$config.path.src}/scss/_themes/cust-theme-2.scss"
+						]
+					},
+					"bundle": {
+						"styles": "{$config.output}/css/themes/cust-theme-2.css"
+						
+					}
+				},
+				"theme-3": {
+					"src": {
+						"styles": [
+							"{$config.path.src}/scss/_themes/cust-theme-3.scss"
+						]
+					},
+					"bundle": {
+						"styles": "{$config.output}/css/themes/cust-theme-3.css"
+						
+					}
+				},
+				"theme-4": {
+					"src": {
+						"styles": [
+							"{$config.path.src}/scss/_themes/cust-theme-4.scss"
+						]
+					},
+					"bundle": {
+						"styles": "{$config.output}/css/themes/cust-theme-4.css"
+						
+					}
+				},
+				"theme-5": {
+					"src": {
+						"styles": [
+							"{$config.path.src}/scss/_themes/cust-theme-5.scss"
+						]
+					},
+					"bundle": {
+						"styles": "{$config.output}/css/themes/cust-theme-5.css"
+						
+					}
+				},
+				"theme-6": {
+					"src": {
+						"styles": [
+							"{$config.path.src}/scss/_themes/cust-theme-6.scss"
+						]
+					},
+					"bundle": {
+						"styles": "{$config.output}/css/themes/cust-theme-6.css"
+						
+					}
+				},
+				"theme-7": {
+					"src": {
+						"styles": [
+							"{$config.path.src}/scss/_themes/cust-theme-7.scss"
+						]
+					},
+					"bundle": {
+						"styles": "{$config.output}/css/themes/cust-theme-7.css"
+						
+					}
+				},
+				"theme-8": {
+					"src": {
+						"styles": [
+							"{$config.path.src}/scss/_themes/cust-theme-8.scss"
+						]
+					},
+					"bundle": {
+						"styles": "{$config.output}/css/themes/cust-theme-8.css"
+						
+					}
+				},
+				"theme-9": {
+					"src": {
+						"styles": [
+							"{$config.path.src}/scss/_themes/cust-theme-9.scss"
+						]
+					},
+					"bundle": {
+						"styles": "{$config.output}/css/themes/cust-theme-9.css"
+						
+					}
+				},
+				"theme-10": {
+					"src": {
+						"styles": [
+							"{$config.path.src}/scss/_themes/cust-theme-10.scss"
+						]
+					},
+					"bundle": {
+						"styles": "{$config.output}/css/themes/cust-theme-10.css"
+						
+					}
+				},
+				"theme-11": {
+					"src": {
+						"styles": [
+							"{$config.path.src}/scss/_themes/cust-theme-11.scss"
+						]
+					},
+					"bundle": {
+						"styles": "{$config.output}/css/themes/cust-theme-11.css"
+						
+					}
+				},
+				"theme-12": {
+					"src": {
+						"styles": [
+							"{$config.path.src}/scss/_themes/cust-theme-12.scss"
+						]
+					},
+					"bundle": {
+						"styles": "{$config.output}/css/themes/cust-theme-12.css"
+						
+					}
+				},
+				"theme-13": {
+					"src": {
+						"styles": [
+							"{$config.path.src}/scss/_themes/cust-theme-13.scss"
+						]
+					},
+					"bundle": {
+						"styles": "{$config.output}/css/themes/cust-theme-13.css"
+						
+					}
+				}
+			}			
+		}			
+	}
+}

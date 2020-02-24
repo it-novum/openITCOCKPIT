@@ -1,0 +1,6 @@
+/composer.lock
+/phpunit.xml
+/vendor
+webroot/img/backgrounds
+webroot/img/icons
+config/Migrations/schema-dump-default.lock

@@ -1,0 +1,381 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+msgid "All cronjobs will be forced to execute!"
+msgstr ""
+
+msgid "Interactive openITCOCKPIT debugging shell"
+msgstr ""
+
+msgid "[D]ebug Monitoring Configuration"
+msgstr ""
+
+msgid "[Q]uit"
+msgstr ""
+
+msgid "What would you like to debug?"
+msgstr ""
+
+msgid "You have made an invalid selection. Please choose by entering D or C."
+msgstr ""
+
+msgid "Tail and parse monitoring logfile"
+msgstr ""
+
+msgid "Tailf and parse monitoring logfile"
+msgstr ""
+
+msgid "Read and translate from stdin. Example cat file.cfg | oitc debug -s"
+msgstr ""
+
+msgid "Debuging menu"
+msgstr ""
+
+msgid "[T]ail and parse monitoring log file"
+msgstr ""
+
+msgid "[TF] Tail -f and parse monitoring log file"
+msgstr ""
+
+msgid "[H] Debug host configuratgion files"
+msgstr ""
+
+msgid "[HT] Debug host template configuration files"
+msgstr ""
+
+msgid "[S] Debug service configuration files"
+msgstr ""
+
+msgid "[ST] Debug service template configuration files"
+msgstr ""
+
+msgid "[TP] Debug timeperiod configuration files"
+msgstr ""
+
+msgid "[CM] Debug command configuration files"
+msgstr ""
+
+msgid "[C] Debug contact configuration files"
+msgstr ""
+
+msgid "[CG] Debug contact group configuration files"
+msgstr ""
+
+msgid "[HE] Debug host escalation configuration files"
+msgstr ""
+
+msgid "[SE] Debug service escalation configuration files"
+msgstr ""
+
+msgid "[HD] Debug host dependency configuration files"
+msgstr ""
+
+msgid "[SD] Debug service dependency configuration files"
+msgstr ""
+
+msgid "[UUID] Search object by UUID"
+msgstr ""
+
+msgid "[B]ack"
+msgstr ""
+
+msgid "What would you like to do?"
+msgstr ""
+
+msgid "You have made an invalid selection. Please choose by entering T or B."
+msgstr ""
+
+msgid "Hopefully i was helpful"
+msgstr ""
+
+msgid "Thanks for using me, bye"
+msgstr ""
+
+msgid "Starts GearmanWorker in forground mode and fork worker processes"
+msgstr ""
+
+msgid "Start GearmanWorker in daemon mode and and fork the process in the background the daemon"
+msgstr ""
+
+msgid "Stops the daemon"
+msgstr ""
+
+msgid "Restart the daemon"
+msgstr ""
+
+msgid "Resturn the status of the daemon"
+msgstr ""
+
+msgid "Pacemaker likes this, but we dont know why :) (it's recommended to use with -q e.g.: gearman_worker -p -q)"
+msgstr ""
+
+msgid "Type of the notification host or service"
+msgstr ""
+
+msgid "Notification type of monitoring engine"
+msgstr ""
+
+msgid "Host uuid you want to send a notification"
+msgstr ""
+
+msgid "Host description you want to send a notification"
+msgstr ""
+
+msgid "current host state"
+msgstr ""
+
+msgid "host address"
+msgstr ""
+
+msgid "host output"
+msgstr ""
+
+msgid "host long output"
+msgstr ""
+
+msgid "host acknowledgement author"
+msgstr ""
+
+msgid "host acknowledgement comment"
+msgstr ""
+
+msgid "recivers mail address"
+msgstr ""
+
+msgid "human name of the contact"
+msgstr ""
+
+msgid "Service uuid you want to notify"
+msgstr ""
+
+msgid "service state"
+msgstr ""
+
+msgid "service output"
+msgstr ""
+
+msgid "service long output"
+msgstr ""
+
+msgid "service acknowledgement author"
+msgstr ""
+
+msgid "service acknowledgement comment"
+msgstr ""
+
+msgid "Email type for notifications [text, html, both]"
+msgstr ""
+
+msgid "Email without attachments"
+msgstr ""
+
+msgid "Notification type of monitoring engine => $NOTIFICATIONTYPE$ "
+msgstr ""
+
+msgid "Host uuid you want to send a notification => $HOSTNAME$"
+msgstr ""
+
+msgid "Service uuid you want to send a notification => $SERVICEDESC$"
+msgstr ""
+
+msgid "current host state => $HOSTSTATEID$/$SERVICESTATEID$"
+msgstr ""
+
+msgid "host output => $HOSTOUTPUT$/$SERVICEOUTPUT$"
+msgstr ""
+
+msgid "host acknowledgement author => $NOTIFICATIONAUTHOR$"
+msgstr ""
+
+msgid "host acknowledgement comment => $NOTIFICATIONCOMMENT$"
+msgstr ""
+
+msgid "API Token of your Pushover Application => $_CONTACTPUSHOVERAPP$"
+msgstr ""
+
+msgid "Your Pushover User Key => $_CONTACTPUSHOVERUSER$"
+msgstr ""
+
+msgid "If set, connection will be established using the proxy server defined in openITCOCKPIT interface. (1/0)"
+msgstr ""
+
+msgid "Pretty print sql queries"
+msgstr ""
+
+msgid "Hide ARO and ACO queries"
+msgstr ""
+
+msgid "Start a WebSocket server to make the query log accessible from openITCOCKPIT web interface"
+msgstr ""
+
+msgid "The uuid of the host"
+msgstr ""
+
+msgid "openITCOCKPIT User Id"
+msgstr ""
+
+msgid "[Y]es I want to continue the setup of openITCOCKPIT"
+msgstr ""
+
+msgid "[N]o and exit shell"
+msgstr ""
+
+msgid "Are you sure to continue?"
+msgstr ""
+
+msgid "You have made an invalid selection. Please choose by entering Y or N."
+msgstr ""
+
+msgid "Please enter your first name"
+msgstr ""
+
+msgid "Please enter your last name"
+msgstr ""
+
+msgid "Please enter your email address. This will be the username for the login."
+msgstr ""
+
+msgid "Please enter a password for the login."
+msgstr ""
+
+msgid "Please confirm your password"
+msgstr ""
+
+msgid "Please enter the FQDN or IP address of your openITCOCKPIT Server. If you do not know your IP address enter a random one and change it via the interface later."
+msgstr ""
+
+msgid "Please enter your return mail address"
+msgstr ""
+
+msgid "Please enter the address of your mail server (e.g. mail.example.org)"
+msgstr ""
+
+msgid "Please enter the port of your mail server"
+msgstr ""
+
+msgid "Please enter your username, or leave it blank if you don't need a user"
+msgstr ""
+
+msgid "Please enter your password, or leave it blank if you don't need a password"
+msgstr ""
+
+msgid "IP address of the SMS gateway"
+msgstr ""
+
+msgid "Transport method for example NRPE"
+msgstr ""
+
+msgid "Starts SudoServer in daemon mode, instead of as a forground process"
+msgstr ""
+
+msgid "Pacemaker likes this, but we dont know why :) (it's recommended to use with -q e.g.: sudo_server -p -q)"
+msgstr ""
+
+msgid "Fix Hosts and Services where a flag is assigned but not in use by any module"
+msgstr ""
+
+msgid "Please enter the name of the "
+msgstr ""
+
+msgid "No name field for "
+msgstr ""
+
+msgid "I found "
+msgstr ""
+
+msgid "Please select one "
+msgstr ""
+
+msgid "Your choice please"
+msgstr ""
+
+msgid " not found"
+msgstr ""
+
+msgid "Please enter your UUID"
+msgstr ""
+
+msgid "No result for given UUID"
+msgstr ""
+
+msgid "Notice: This is not the real nagios configuration file. This is a human readable version of the config."
+msgstr ""
+
+msgid "<error>File not found! ("
+msgstr ""
+
+msgid "<error>Folder %s is empty!</error>"
+msgstr ""
+
+msgid "verifying configuration files, please standby..."
+msgstr ""
+
+msgid "Host or Service"
+msgstr ""
+
+msgid "PROBLEM"
+msgstr ""
+
+msgid "The Host UUID"
+msgstr ""
+
+msgid "The Host output"
+msgstr ""
+
+msgid "The Service UUID"
+msgstr ""
+
+msgid "The Service output"
+msgstr ""
+
+msgid "The Receiver of the message in international format eg. 0049123456789"
+msgstr ""
+
+msgid "The Sender of the message"
+msgstr ""
+
+msgid "The ID of your massenversand.de account"
+msgstr ""
+
+msgid "The Password of your massenversand.de account"
+msgstr ""
+
+msgid "The time to send the Message 0 = now or hhmmddmmyyyy"
+msgstr ""
+
+msgid "t = text sms, c = oversize sms, f = flash sms, utf8 = utf8 sms 70 digits per sms "
+msgstr ""
+
+msgid "1 = no SMS will be created but the server will respond like it would be"
+msgstr ""
+
+msgid "host or service"
+msgstr ""
+
+msgid "The date and time the problem occoured"
+msgstr ""
+
+msgid "State of the Host"
+msgstr ""
+
+msgid "State of the Service"
+msgstr ""
+
+msgid "output"
+msgstr ""
+
+msgid "comment"
+msgstr ""
+

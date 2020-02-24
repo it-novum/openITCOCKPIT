@@ -1,3 +1,0 @@
-Composer Depandency
-    "adldap/adldap": "dev-master",
-was removed form the composer.json, due to patched done to this package

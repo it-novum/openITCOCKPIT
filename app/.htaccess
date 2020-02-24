@@ -1,9 +1,0 @@
-<IfModule mod_rewrite.c>
-    RewriteEngine on
-    RewriteRule    ^$    webroot/    [L]
-    RewriteRule    (.*) webroot/$1    [L]
-</IfModule>
-<Files ~ "^\._"> 
-Order Allow,Deny
-Deny from all
-</Files>
