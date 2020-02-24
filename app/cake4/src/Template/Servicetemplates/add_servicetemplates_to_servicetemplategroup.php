@@ -23,7 +23,6 @@
 //  confirmation.
 ?>
 
-<!-- Rename widget modal -->
 <div id="angularAddServicetemplatesToServicetemplategroups" class="modal" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
