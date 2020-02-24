@@ -28,13 +28,16 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\AgentchecksTable;
+use App\Model\Table\AgentconfigsTable;
 use App\Model\Table\AgentconnectorTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Agent\AgentCertificateData;
 use itnovum\openITCOCKPIT\Agent\AgentServicesToCreate;
+use itnovum\openITCOCKPIT\Agent\HttpLoader;
 use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\AgentconnectorAgentsFilter;
@@ -286,18 +289,53 @@ class AgentconnectorController extends AppController {
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
         /** @var $AgentchecksTable AgentchecksTable */
         $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
+        /** @var $AgentconfigsTable AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
 
         $hostId = $HostsTable->getHostIdByUuid($uuid);
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
         $services = $ServicesTable->getServicesByHostIdForAgent($hostId, OITC_AGENT_SERVICE, false);
         $services = $services->toArray();
 
-        $fileContents = trim(file_get_contents($this->hostsCacheFolder . $uuid));
-        $contentArray = json_decode($fileContents, true);
-        $agentJsonOutput = $contentArray;
+        $this->set('servicesToCreate', '');
+        $this->set('config', '');
+        $this->set('mode', '');
 
-        $AgentServicesToCreate = new AgentServicesToCreate($agentJsonOutput, $AgentchecksTable->getAgentchecksForMapping(), $hostId, $services);
+        if ($AgentconfigsTable->existsByHostId($hostId)) {
+            $agentconfig = $AgentconfigsTable->getConfigByHostId($hostId, true);
 
-        $this->set('servicesToCreate', $AgentServicesToCreate->getServicesToCreate());
-        $this->viewBuilder()->setOption('serialize', ['servicesToCreate']);
+            try {
+                $HttpLoader = new HttpLoader($agentconfig, $host->get('address'));
+                $response = $HttpLoader->queryAgent(true);
+
+                if (isset($response['response']) && !empty($response['response'])) {
+                    $agentJsonOutput = $response['response'];
+                }
+                if (isset($response['config']) && $response['config'] !== '' && !empty($response['config'])) {
+                    $this->set('config', $response['config']);
+                }
+                $this->set('mode', 'pull');
+            } catch (\Exception | GuzzleException $e) {
+
+            }
+        }
+
+        if (is_readable($this->hostsCacheFolder . $uuid)) {
+            $fileContents = trim(file_get_contents($this->hostsCacheFolder . $uuid));
+            $contentArray = json_decode($fileContents, true);
+            $agentJsonOutput = $contentArray;
+            $this->set('mode', 'push');
+        }
+
+        if (isset($agentJsonOutput) && !empty($agentJsonOutput)) {
+            $AgentServicesToCreate = new AgentServicesToCreate($agentJsonOutput, $AgentchecksTable->getAgentchecksForMapping(), $hostId, $services);
+
+            $this->set('servicesToCreate', $AgentServicesToCreate->getServicesToCreate());
+        }
+        $this->viewBuilder()->setOption('serialize', ['servicesToCreate', 'mode', 'config']);
     }
 }

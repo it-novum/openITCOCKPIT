@@ -115,14 +115,16 @@ class AgentServicesToCreate {
                     }
                     break;
                 case 'dockerstats':
-                    foreach ($objects['result'] as $dockercontainer) {
-                        foreach ($receiverPluginNames as $receiverPluginName) {
-                            $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
-                            $service['servicecommandargumentvalues'][0]['value'] = 'id';
-                            $service['servicecommandargumentvalues'][1]['value'] = $dockercontainer['id'];
-                            $service['agent_wizard_option_description'] = $dockercontainer['id'] . (isset($dockercontainer['name']) ? ' (' . $dockercontainer['name'] . ')' : '');
+                    if (isset($objects['result'])) {
+                        foreach ($objects['result'] as $dockercontainer) {
+                            foreach ($receiverPluginNames as $receiverPluginName) {
+                                $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
+                                $service['servicecommandargumentvalues'][0]['value'] = 'id';
+                                $service['servicecommandargumentvalues'][1]['value'] = $dockercontainer['id'];
+                                $service['agent_wizard_option_description'] = $dockercontainer['id'] . (isset($dockercontainer['name']) ? ' (' . $dockercontainer['name'] . ')' : '');
 
-                            $this->addServiceToCreate($service, $receiverPluginName, $services, $dockercontainer['id'], 1);
+                                $this->addServiceToCreate($service, $receiverPluginName, $services, $dockercontainer['id'], 1);
+                            }
                         }
                     }
                     break;
@@ -223,29 +225,31 @@ class AgentServicesToCreate {
                     }
                     break;
                 case 'qemustats':
-                    foreach ($objects['result'] as $qemuVM) {
-                        foreach ($receiverPluginNames as $receiverPluginName) {
-                            $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
+                    if (isset($objects['result'])) {
+                        foreach ($objects['result'] as $qemuVM) {
+                            foreach ($receiverPluginNames as $receiverPluginName) {
+                                $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
 
-                            if (isset($qemuVM['name'])) {
-                                $type = 'name';
-                                $value = $qemuVM['name'];
-                            }
-                            if (isset($qemuVM['id'])) {
-                                $type = 'id';
-                                $value = $qemuVM['id'];
-                            }
-                            if (isset($qemuVM['uuid'])) {
-                                $type = 'uuid';
-                                $value = $qemuVM['uuid'];
-                            }
+                                if (isset($qemuVM['name'])) {
+                                    $type = 'name';
+                                    $value = $qemuVM['name'];
+                                }
+                                if (isset($qemuVM['id'])) {
+                                    $type = 'id';
+                                    $value = $qemuVM['id'];
+                                }
+                                if (isset($qemuVM['uuid'])) {
+                                    $type = 'uuid';
+                                    $value = $qemuVM['uuid'];
+                                }
 
-                            if (isset($type) && isset($value)) {
-                                $service['servicecommandargumentvalues'][0]['value'] = $type;
-                                $service['servicecommandargumentvalues'][1]['value'] = $value;
-                                $service['agent_wizard_option_description'] = $value . (isset($qemuVM['name']) ? ' (' . $qemuVM['name'] . ')' : '');
+                                if (isset($type) && isset($value)) {
+                                    $service['servicecommandargumentvalues'][0]['value'] = $type;
+                                    $service['servicecommandargumentvalues'][1]['value'] = $value;
+                                    $service['agent_wizard_option_description'] = $value . (isset($qemuVM['name']) ? ' (' . $qemuVM['name'] . ')' : '');
 
-                                $this->addServiceToCreate($service, $receiverPluginName, $services, $value, 1);
+                                    $this->addServiceToCreate($service, $receiverPluginName, $services, $value, 1);
+                                }
                             }
                         }
                     }

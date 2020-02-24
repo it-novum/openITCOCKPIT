@@ -18,6 +18,8 @@ angular.module('openITCOCKPIT')
             $scope.finished = false;
             $scope.expectedServiceCreations = 0;
             $scope.processedServiceCreations = 0;
+            $scope.agentconfigId = null;
+            $scope.remoteAgentConfig = null;
 
             $scope.agentconfig = {
                 address: '0.0.0.0',
@@ -166,7 +168,71 @@ angular.module('openITCOCKPIT')
             $scope.configTemplateCustomchecks = tmpDefaultTemplateCustomchecks + tmpExampleTemplateCustomchecks;
         };
 
+        $scope.requestAgentconfig = function(){
+            $http.get('/agentconfigs/config/' + $scope.host.id + '.json?angular=true').then(function(result){
+                if(result.data.config && result.data.config !== ''){
+                    $scope.agentconfig.port = result.data.config.port;
+                    if(result.data.config.basic_auth === 1){
+                        $scope.agentconfig.auth = result.data.config.username + ':' + result.data.config.password;
+                    }
+                    if(result.data.config.id){
+                        $scope.agentconfigId = result.data.config.id;
+                    }
+                }
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+                if(result.status === 404){
+                    $state.go('404');
+                }
+            });
+        };
+
+        $scope.setAgentconfig = function(){
+            var basicAuth = 0;
+            var basicAuthUsername = '';
+            var basicAuthPassword = '';
+            if($scope.agentconfig.auth !== ''){
+                basicAuth = 1;
+                basicAuthUsername = $scope.agentconfig.auth.split(':')[0];
+                basicAuthPassword = $scope.agentconfig.auth.split(':')[1];
+            }
+            if($scope.agentconfigId){   //update
+                $http.post('/agentconfigs/edit/' + $scope.agentconfigId + '.json?angular=true',
+                    {
+                        Agentconfig: {
+                            id: $scope.agentconfigId,
+                            port: $scope.agentconfig.port,
+                            use_https: $scope.agentconfig['try-autossl'],
+                            basic_auth: basicAuth,
+                            username: basicAuthUsername,
+                            password: basicAuthPassword
+                        }
+                    }
+                );
+            }else{    //add
+                $http.post('/agentconfigs/add.json?angular=true',
+                    {
+                        Agentconfig: {
+                            host_id: $scope.host.id,
+                            port: $scope.agentconfig.port,
+                            use_https: $scope.agentconfig['try-autossl'],
+                            basic_auth: basicAuth,
+                            username: basicAuthUsername,
+                            password: basicAuthPassword
+                        }
+                    }
+                ).then(function(result){
+                    if(result.data.id && result.data.id > 0){
+                        $scope.agentconfigId = result.data.id;
+                    }
+                });
+            }
+        };
+
         $scope.continueWithPullMode = function(){
+            $scope.requestAgentconfig();
             $scope.pullMode = true;
             $scope.pushMode = false;
 
@@ -174,6 +240,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.continueWithPushMode = function(){
+            $scope.requestAgentconfig();
             $scope.pushMode = true;
             $scope.pullMode = false;
 
@@ -185,9 +252,16 @@ angular.module('openITCOCKPIT')
         $scope.continueWithAgentInstallation = function(){
             $scope.configured = true;
             NotyService.scrollTop();
+            if($scope.pullMode){
+                $scope.setAgentconfig();
+            }
         };
         $scope.skipConfigurationGeneration = function(){
-            $scope.pushMode = true;
+            if($scope.seemsPushMode === true){
+                $scope.pushMode = true;
+            }else if($scope.seemsPullMode === true){
+                $scope.pullMode = true;
+            }
             $scope.configured = true;
             $scope.installed = true;
         };
@@ -218,7 +292,7 @@ angular.module('openITCOCKPIT')
 
         $scope.checkFinishedState = function(){
             //seems that all needed services are created
-            if($scope.processedServiceCreations === $scope.expectedServiceCreations){
+            if($scope.processedServiceCreations >= $scope.expectedServiceCreations){
                 $scope.finished = true;
                 if($scope.checkFinishedStateInterval !== null){
                     $interval.cancel($scope.checkFinishedStateInterval);
@@ -276,6 +350,7 @@ angular.module('openITCOCKPIT')
             // start interval to check /agentconnector/getServicesToCreateByHostUuid/$uuid.json
 
             if(!$scope.servicesToCreate){
+                $scope.getServicesToCreateByHostUuid();
                 $scope.servicesToCreateRequestInterval = $interval(function(){
                     if($scope.servicesToCreate){
                         $interval.cancel($scope.servicesToCreateRequestInterval);
@@ -318,12 +393,31 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.runRemoteConfigUpdate = function(){
+            console.log('runRemoteConfigUpdate');
+        };
+
         $scope.getServicesToCreateByHostUuid = function(){
             if($scope.host.uuid !== 'undefined' && $scope.host.uuid !== ''){
                 $http.get('/agentconnector/getServicesToCreateByHostUuid/' + $scope.host.uuid + '.json').then(function(result){
                     if(result.data.servicesToCreate && result.data.servicesToCreate !== ''){
                         $scope.servicesToCreate = result.data.servicesToCreate;
                         $scope.createCheckdataDependingPreselection();
+                        if(result.data.mode && result.data.mode !== ''){
+                            if(result.data.mode === 'push'){
+                                $scope.seemsPushMode = true;
+                                $scope.seemsPullMode = false;
+                            }
+                            if(result.data.mode === 'push'){
+                                $scope.seemsPushMode = false;
+                                $scope.seemsPullMode = true;
+                            }
+                        }
+
+                        if(result.data.config && result.data.config !== ''){
+                            $scope.remoteAgentConfig = result.data.config;
+                            console.log($scope.remoteAgentConfig);
+                        }
                     }
                 }, function errorCallback(result){
                     if(result.status === 403){

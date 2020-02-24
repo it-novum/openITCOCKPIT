@@ -1,13 +1,11 @@
 angular.module('openITCOCKPIT')
     .controller('AgentconnectorsAgentController', function($scope, $http, QueryStringService, $state, $stateParams, NotyService, MassChangeService, SortService){
 
-        $scope.hostId = $stateParams.hostId;
-
         SortService.setSort(QueryStringService.getValue('sort', 'Agentconnector.id'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
 
         $scope.filter = {
-            hostuuid: '',
+            hostuuid: QueryStringService.getValue('hostuuid', ''),
             remote_addr: ''
         };
         $scope.currentPage = 1;

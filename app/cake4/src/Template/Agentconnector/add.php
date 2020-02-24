@@ -126,6 +126,16 @@
                                                 ng-model="host.id">
                                             </select>
                                         </div>
+                                        <div class="col-xs-12 col-md-2 col-md-offset-1"
+                                             ng-show="remoteAgentConfig && pullMode && !installed && !configured">
+                                            <button
+                                                type="button" style="min-height: 35px;"
+                                                class="btn btn-labeled btn-primary pull-right"
+                                                ng-click="runRemoteConfigUpdate()">
+
+                                                <?= __('Run remote configuration update'); ?>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -393,7 +403,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="form-group">
+                                                    <div class="form-group" ng-show="pullMode">
                                                         <label class="col col-md-3 control-label"
                                                                for="agentconfig.config-update-mode">
                                                             <?php echo __('Enable remote configuration update mode'); ?>
@@ -753,6 +763,9 @@
                                                 <p>
                                                     <br>
                                                     <?= __('Depending on your system, go to the configuration directory and replace the contents of the .cnf files with the following content:'); ?>
+                                                    <br>
+                                                    (<?= __('If the custom check configuration file is set, be sure, the file path matches the path for your specific system.'); ?>
+                                                    )
                                                 </p>
 
                                                 <div class="widget-body col-xs-12 col-md-3">
@@ -1259,15 +1272,27 @@
                                             </p>
                                         </div>
 
-                                        <div class="row" style="border-bottom: none;" ng-show="finished && processedServiceCreations > 0">
+                                        <div class="row" style="border-bottom: none;"
+                                             ng-show="finished && processedServiceCreations > 0">
                                             <p>
                                                 <?= __('Agent services successfully created.'); ?>
                                             </p>
                                             <p>
                                                 <b><?= __('Next steps: Run an export and keep your agent running :)'); ?></b>
                                             </p>
+                                            <p ng-show="pushMode && agentconfig['try-autossl']">
+                                                <b><?= __('To activate automatic ssl certificate generation for this agent, click here to trust it: '); ?></b>
+                                                <button
+                                                    type="button" style="min-height: 35px;"
+                                                    class="btn btn-labeled btn-primary pull-right"
+                                                    ui-sref="AgentconnectorsAgent({hostuuid: host.uuid})">
+
+                                                    <?= __('Show untrusted agent'); ?>
+                                                </button>
+                                            </p>
                                         </div>
-                                        <div class="row" style="border-bottom: none;" ng-show="finished && processedServiceCreations <= 0">
+                                        <div class="row" style="border-bottom: none;"
+                                             ng-show="finished && processedServiceCreations <= 0">
                                             <p>
                                                 <?= __('No services were created.'); ?>
                                             </p>

@@ -191,7 +191,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('AgentconnectorsAgent', {
-                url: '/agentconnector/agents',
+                url: '/agentconnector/agents?hostuuid',
+                params: {
+                    hostuuid: {
+                        value: null
+                    }
+                },
                 templateUrl: "/agentconnector/agents.html",
                 controller: "AgentconnectorsAgentController"
             })

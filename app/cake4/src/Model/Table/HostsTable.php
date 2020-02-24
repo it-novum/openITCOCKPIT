@@ -164,6 +164,10 @@ class HostsTable extends Table {
             'foreignKey' => 'host_id'
         ]);
 
+        $this->hasOne('Agentconfigs', [
+            'foreignKey' => 'host_id',
+        ]);
+
     }
 
     /**
