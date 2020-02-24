@@ -1892,6 +1892,7 @@ class ServicesController extends AppController {
 
     /**
      * @param int|null $id
+     * @deprecated
      * @throws MissingDbBackendException
      */
     public function timeline($id = null) {

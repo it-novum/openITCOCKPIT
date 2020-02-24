@@ -187,7 +187,6 @@ class ServicegroupsController extends AppController {
                     $ChangelogsTable->save($changelogEntry);
                 }
 
-                //@todo refactor with cake4
                 Cache::clear('permissions');
 
                 if ($this->isJsonRequest()) {

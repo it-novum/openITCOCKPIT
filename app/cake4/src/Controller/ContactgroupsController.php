@@ -440,9 +440,7 @@ class ContactgroupsController extends AppController {
     }
 
     /**
-     * @param null $id
-     * @deprecated
-     * @todo Refactor with Cake4
+     * @param int|null $id
      */
     public function usedBy($id = null) {
         if (!$this->isApiRequest()) {
