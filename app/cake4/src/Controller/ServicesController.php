@@ -35,6 +35,7 @@ use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Lib\Interfaces\DowntimehistoryServicesTableInterface;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
@@ -113,20 +114,12 @@ use itnovum\openITCOCKPIT\Graphite\GraphiteLoader;
 use Statusengine\PerfdataParser;
 
 /**
- * @property Changelog $Changelog
- * @property Service $Service
- *
- * @property DbBackend $DbBackend
- * @property PerfdataBackend $PerfdataBackend
- * @property AppPaginatorComponent $Paginator
- * @property AppAuthComponent $Auth
+ * Class ServicesController
+ * @package App\Controller
  */
 class ServicesController extends AppController {
 
-    public $uses = [
-        'Changelog',
-        'Service'
-    ];
+    use PluginManagerTableTrait;
 
     /**
      * @throws MissingDbBackendException
@@ -799,7 +792,8 @@ class ServicesController extends AppController {
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
         $result = $DeletedServicesTable->getDeletedServicesIndex($ServiceFilter, $PaginateOMat);
 
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
         $all_services = [];
         foreach ($result as $deletedService) {
             $DeletedService = new DeletedService($deletedService, $UserTime);
@@ -818,9 +812,6 @@ class ServicesController extends AppController {
 
     /**
      * @param int|null $id
-     * @deprecated
-     * @todo Implement EVC in $ServicesTable->__delete
-     * @todo Implement Appcontroller::getUsedByForFrontend()
      */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
@@ -841,43 +832,41 @@ class ServicesController extends AppController {
             ->contain([
                 'ServiceescalationsServiceMemberships',
                 'ServicedependenciesServiceMemberships'
-            ])->where([
+            ])
+            ->where([
                 'Services.id' => $id
-            ])->first();
+            ])
+            ->firstOrFail();
 
-        $host = $HostsTable->getHostForServiceEdit($service->get('host_id'));
-        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
+        $host = $HostsTable->getHostByIdForPermissionCheck($service->get('host_id'));
+        if (!$this->allowedByContainerId($host->getContainerIds(), true)) {
             $this->render403();
             return;
         }
 
-        $Constants = new Constants();
-        $moduleConstants = $Constants->getModuleConstants();
-
-        $usedBy = $service->isUsedByModules($moduleConstants);
-        $User = new User($this->getUser());
-        if (empty($usedBy)) {
-            //Not used by any module
-            if ($ServicesTable->__delete($service, $User)) {
-
-                /** @var $DocumentationsTable DocumentationsTable */
-                $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
-
-                $DocumentationsTable->deleteDocumentationByUuid($service->get('uuid'));
-
-                $this->set('success', true);
-                $this->set('message', __('Service successfully deleted'));
-                $this->viewBuilder()->setOption('serialize', ['success']);
-                return;
-            }
+        $usedBy = $service->isUsedByModules();
+        if (!empty($usedBy)) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->set('message', __('Issue while deleting service'));
+            $this->set('usedBy', $usedBy);
+            $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
+            return;
         }
 
-        $this->response = $this->response->withStatus(400);
+        //Service is not in use by any Module an can be deleted.
+        $User = new User($this->getUser());
+        if ($ServicesTable->__delete($service, $User)) {
+            $this->set('success', true);
+            $this->set('message', __('Service successfully deleted'));
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
         $this->set('success', false);
-        $this->set('id', $id);
-        $this->set('message', __('Issue while deleting service'));
-        $this->set('usedBy', $this->getUsedByForFrontend($usedBy, 'service'));
-        $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
+        $this->set('message', __('Error while deleting service'));
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
 
@@ -1228,7 +1217,7 @@ class ServicesController extends AppController {
         $User = new User($this->getUser());
         /** @var  ChangelogsTable $ChangelogsTable */
         $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-        $serviceName = !empty($service->get('name'))?$service->get('name'):$service->get('servicetemplate')->get('name');
+        $serviceName = !empty($service->get('name')) ? $service->get('name') : $service->get('servicetemplate')->get('name');
 
         $changelog_data = $ChangelogsTable->parseDataForChangelog(
             'deactivate',
@@ -1237,7 +1226,7 @@ class ServicesController extends AppController {
             OBJECT_SERVICE,
             $host['Host']['container_id'],
             $User->getId(),
-            $host['Host']['name'] . '/' .$serviceName,
+            $host['Host']['name'] . '/' . $serviceName,
             []
         );
         if ($changelog_data) {
@@ -1304,7 +1293,7 @@ class ServicesController extends AppController {
         $User = new User($this->getUser());
         /** @var  ChangelogsTable $ChangelogsTable */
         $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-        $serviceName = !empty($service->get('name'))?$service->get('name'):$service->get('servicetemplate')->get('name');
+        $serviceName = !empty($service->get('name')) ? $service->get('name') : $service->get('servicetemplate')->get('name');
 
         $changelog_data = $ChangelogsTable->parseDataForChangelog(
             'activate',
@@ -1313,7 +1302,7 @@ class ServicesController extends AppController {
             OBJECT_SERVICE,
             $host['Host']['container_id'],
             $User->getId(),
-            $host['Host']['name'] . '/' .$serviceName,
+            $host['Host']['name'] . '/' . $serviceName,
             []
         );
         if ($changelog_data) {
@@ -1686,22 +1675,22 @@ class ServicesController extends AppController {
     }
 
     public function listToPdf() {
-        $User = new User($this->getUser());
-        $UserTime = $User->getUserTime();
-
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $ServiceFilter = new ServiceFilter($this->request);
+        $User = new User($this->getUser());
+
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions(
             $ServiceFilter->indexFilter()
         );
-
         $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+
         if ($ServiceControllerRequest->isRequestFromBrowser() === false) {
             $ServiceConditions->setIncludeDisabled(false);
             $ServiceConditions->setContainerIds($this->MY_RIGHTS);
@@ -1715,8 +1704,10 @@ class ServicesController extends AppController {
                     return;
                 }
             }
+
             $ServiceConditions->setIncludeDisabled(false);
             $ServiceConditions->setContainerIds($browserContainerIds);
+
             if ($User->isRecursiveBrowserEnabled()) {
                 //get recursive container ids
                 $containerIdToResolve = $browserContainerIds;
@@ -1731,21 +1722,27 @@ class ServicesController extends AppController {
                 $ServiceConditions->setContainerIds(array_merge($ServiceConditions->getContainerIds(), $recursiveContainerIds));
             }
         }
+
         $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
             'Hosts.name'  => 'asc',
             'servicename' => 'asc'
         ]));
-        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
+
+
         if ($this->DbBackend->isNdoUtils()) {
-            $services = $ServicesTable->getServiceIndex($ServiceConditions, $PaginateOMat);
+            $services = $ServicesTable->getServiceIndex($ServiceConditions);
         }
+
         if ($this->DbBackend->isCrateDb()) {
             throw new MissingDbBackendException('MissingDbBackendException');
         }
+
         if ($this->DbBackend->isStatusengine3()) {
             throw new MissingDbBackendException('MissingDbBackendException');
         }
+
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
+
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields
             ->currentState()
@@ -1755,6 +1752,7 @@ class ServicesController extends AppController {
             array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
         );
+
         $all_services = [];
         $UserTime = $User->getUserTime();
         foreach ($services as $service) {
@@ -1764,41 +1762,28 @@ class ServicesController extends AppController {
             } else {
                 $Hoststatus = new Hoststatus([], $UserTime);
             }
-            $Service = new Service($service, null);
+            $Service = new Service($service);
             $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
+
             $tmpRecord = [
-                'Service'       => $Service,
-                'Host'          => $Host,
+                'Service'       => $Service->toArray(),
+                'Host'          => $Host->toArray(),
                 'Hoststatus'    => $Hoststatus,
                 'Servicestatus' => $Servicestatus
             ];
             $all_services[] = $tmpRecord;
         }
+
+        $this->set('User', $User);
         $this->set('all_services', $all_services);
-        $this->set('UserTime', $UserTime);
-        $filename = 'Services_' . strtotime('now') . '.pdf';
-        $binary_path = '/usr/bin/wkhtmltopdf';
-        if (file_exists('/usr/local/bin/wkhtmltopdf')) {
-            $binary_path = '/usr/local/bin/wkhtmltopdf';
-        }
-        $this->pdfConfig = [
-            'engine'             => 'CakePdf.WkHtmlToPdf',
-            'margin'             => [
-                'bottom' => 15,
-                'left'   => 0,
-                'right'  => 0,
-                'top'    => 15,
-            ],
-            'encoding'           => 'UTF-8',
-            'download'           => true,
-            'binary'             => $binary_path,
-            'orientation'        => 'portrait',
-            'filename'           => $filename,
-            'no-pdf-compression' => '*',
-            'image-dpi'          => '900',
-            'background'         => true,
-            'no-background'      => false,
-        ];
+
+        $this->viewBuilder()->setOption(
+            'pdfConfig',
+            [
+                'download' => true,
+                'filename' => __('Services_') . date('dmY_his') . '.pdf',
+            ]
+        );
     }
 
     /**
@@ -1850,13 +1835,13 @@ class ServicesController extends AppController {
         /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        if($recursive === false) {
+        if ($recursive === false) {
             if ($containerId == ROOT_CONTAINER) {
                 //Don't panic! Only root users can edit /root objects ;)
                 //So no loss of selected hosts/host templates
                 $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
             }
-        }else{
+        } else {
             //Also include child containers
             if ($containerId != ROOT_CONTAINER) {
                 $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false);
@@ -1907,6 +1892,7 @@ class ServicesController extends AppController {
 
     /**
      * @param int|null $id
+     * @deprecated
      * @throws MissingDbBackendException
      */
     public function timeline($id = null) {

@@ -79,7 +79,6 @@ class AgentchecksController extends AppController {
             $toJson = ['all_agentchecks', 'scroll'];
         }
         $this->viewBuilder()->setOption('serialize', $toJson);
-
     }
 
     public function add() {
@@ -184,6 +183,18 @@ class AgentchecksController extends AppController {
         $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
+    }
+
+    public function getAgentchecksForMapping() {
+        if (!$this->isApiRequest()) {
+            return;
+        }
+
+        /** @var $AgentchecksTable AgentchecksTable */
+        $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
+
+        $this->set('agentchecks_mapping', $AgentchecksTable->getAgentchecksForMapping());
+        $this->viewBuilder()->setOption('serialize', ['agentchecks_mapping']);
     }
 
     public function loadServicetemplates() {

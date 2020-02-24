@@ -869,7 +869,6 @@ class DashboardsController extends AppController {
 
     /**
      * @throws \Exception
-     * @deprecated
      */
     public function parentOutagesWidget() {
         if (!$this->isApiRequest()) {

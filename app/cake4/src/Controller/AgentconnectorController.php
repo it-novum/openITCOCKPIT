@@ -27,10 +27,14 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Table\AgentchecksTable;
 use App\Model\Table\AgentconnectorTable;
+use App\Model\Table\HostsTable;
+use App\Model\Table\ServicesTable;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Agent\AgentCertificateData;
+use itnovum\openITCOCKPIT\Agent\AgentServicesToCreate;
 use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\AgentconnectorAgentsFilter;
@@ -252,8 +256,8 @@ class AgentconnectorController extends AppController {
 
             if ($fileContents !== '') {
                 $contentArray = json_decode($fileContents, true);
-                if($contentArray['processes']){
-                    foreach($contentArray['processes'] as $key => $val){
+                if ($contentArray['processes']) {
+                    foreach ($contentArray['processes'] as $key => $val) {
                         if (!empty($contentArray['processes'][$key]['cmdline'])) {
                             $contentArray['processes'][$key]['cmdline'] = implode(' ', $contentArray['processes'][$key]['cmdline']);
                         }
@@ -264,5 +268,36 @@ class AgentconnectorController extends AppController {
             }
         }
         $this->viewBuilder()->setOption('serialize', ['checkdata']);
+    }
+
+    public function getServicesToCreateByHostUuid($uuid = null) {
+        if (!$this->isJsonRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        if ($uuid === null) {
+            throw new MissingParameterExceptions('Host uuid is missing!');
+        }
+
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $AgentchecksTable AgentchecksTable */
+        $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
+
+        $hostId = $HostsTable->getHostIdByUuid($uuid);
+        $services = $ServicesTable->getServicesByHostIdForAgent($hostId, OITC_AGENT_SERVICE, false);
+        $services = $services->toArray();
+
+        $fileContents = trim(file_get_contents($this->hostsCacheFolder . $uuid));
+        $contentArray = json_decode($fileContents, true);
+        $agentJsonOutput = $contentArray;
+
+        $AgentServicesToCreate = new AgentServicesToCreate($agentJsonOutput, $AgentchecksTable->getAgentchecksForMapping(), $hostId, $services);
+
+        $this->set('servicesToCreate', $AgentServicesToCreate->getServicesToCreate());
+        $this->viewBuilder()->setOption('serialize', ['servicesToCreate']);
     }
 }

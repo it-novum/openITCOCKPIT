@@ -5,12 +5,15 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Changelog;
+use App\Model\Entity\Servicetemplate;
 use Cake\Core\Plugin;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 
@@ -107,6 +110,10 @@ class ServicetemplatesTable extends Table {
             'className'  => 'Commands',
             'foreignKey' => 'command_id',
             'joinType'   => 'INNER'
+        ]);
+
+        $this->hasOne('Agentchecks', [
+            'foreignKey' => 'servicetemplate_id',
         ]);
 
         $this->hasMany('Customvariables', [
@@ -208,7 +215,7 @@ class ServicetemplatesTable extends Table {
             ->integer('command_id')
             ->requirePresence('command_id', 'create')
             ->greaterThan('command_id', 0, __('Please select a check command'))
-            ->allowEmptyString('command_id', null, false);
+            ->allowEmptyString('command_id', null, __('Please select a check period'));
 
         $validator
             ->integer('eventhandler_command_id')
@@ -383,7 +390,7 @@ class ServicetemplatesTable extends Table {
 
         $validator
             ->integer('freshness_threshold')
-            ->greaterThan('check_period_id', 0, __('This field cannot be 0'))
+            ->greaterThan('check_period_id', 0, __('This field cannot be empty'))
             ->allowEmptyString('freshness_threshold');
 
         return $validator;
@@ -1208,5 +1215,148 @@ class ServicetemplatesTable extends Table {
         $result = $query->all();
 
         return $this->emptyArrayIfNull($result->toArray());
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getServicetemplateForNewAgentService($id) {
+        $query = $this->find()
+            ->where([
+                'Servicetemplates.id' => $id
+            ])
+            ->contain([
+                'Servicetemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ],
+                'CheckCommand'                         => [
+                    'Commandarguments'
+                ]
+            ])
+            ->disableHydration()
+            ->first();
+
+        $servicetemplate = $query;
+        unset($servicetemplate['created'], $servicetemplate['modified']);
+
+        // Merge new command arguments that are missing in the service template to service template command arguments
+        // and remove old command arguments that don't exists in the command anymore.
+        $filteredCommandArgs = [];
+        foreach ($servicetemplate['check_command']['commandarguments'] as $commandargument) {
+            $valueExists = false;
+            foreach ($servicetemplate['servicetemplatecommandargumentvalues'] as $servicetemplatecommandargumentvalue) {
+                if ($commandargument['id'] === $servicetemplatecommandargumentvalue['commandargument']['id']) {
+                    $filteredCommandArgs[] = $servicetemplatecommandargumentvalue;
+                    $valueExists = true;
+                }
+            }
+            if (!$valueExists) {
+                $filteredCommandArgs[] = [
+                    'commandargument_id' => $commandargument['id'],
+                    'servicetemplate_id' => $servicetemplate['id'],
+                    'value'              => '',
+                    'commandargument'    => [
+                        'name'       => $commandargument['name'],
+                        'human_name' => $commandargument['human_name'],
+                        'command_id' => $commandargument['command_id'],
+                    ]
+                ];
+            }
+        }
+
+        $servicetemplate['servicetemplatecommandargumentvalues'] = $filteredCommandArgs;
+
+        foreach ($servicetemplate['servicetemplatecommandargumentvalues'] as $i => $servicecommandargumentvalues) {
+            unset($servicetemplate['servicetemplatecommandargumentvalues'][$i]['id']);
+
+            if (isset($servicetemplate['servicetemplatecommandargumentvalues'][$i]['servicetemplate_id'])) {
+                unset($servicetemplate['servicetemplatecommandargumentvalues'][$i]['servicetemplate_id']);
+            }
+        }
+
+        return $servicetemplate;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function allowDelete($id) {
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $count = $ServicesTable->find()
+            ->where([
+                'Services.servicetemplate_id' => $id,
+                'Services.usage_flag >'       => 0
+            ])
+            ->count();
+
+        if ($count > 0) {
+            //Service template is used by modules
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param Servicetemplate $Servicetemplate
+     * @param User $User
+     * @return bool
+     */
+    public function __delete(Servicetemplate $Servicetemplate, User $User) {
+
+        /** @var  ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $services = $ServicesTable->find()
+            ->contain([
+                'ServiceescalationsServiceMemberships',
+                'ServicedependenciesServiceMemberships'
+            ])
+            ->where([
+                'Services.servicetemplate_id' => $Servicetemplate->get('id')
+            ])
+            ->all();
+
+        //Delete all services used by this service template
+        foreach ($services as $service) {
+            $ServicesTable->__delete($service, $User);
+        }
+
+        if (!$this->delete($Servicetemplate)) {
+            return false;
+        }
+
+        /** @var  ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'delete',
+            'servicetemplates',
+            $Servicetemplate->get('id'),
+            OBJECT_SERVICETEMPLATE,
+            $Servicetemplate->get('container_id'),
+            $User->getId(),
+            $Servicetemplate->get('name'),
+            [
+                'Servicetemplate' => $Servicetemplate->toArray()
+            ]
+        );
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        //Delete Documentation record if exists
+        /** @var $DocumentationsTable DocumentationsTable */
+        if ($DocumentationsTable->existsByUuid($Servicetemplate->get('uuid'))) {
+            $DocumentationsTable->delete($DocumentationsTable->getDocumentationByUuid($Servicetemplate->get('uuid')));
+        }
+
+        return true;
     }
 }

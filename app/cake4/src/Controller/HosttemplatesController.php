@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
@@ -53,15 +54,9 @@ use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 
-
-/**
- * @property AppPaginatorComponent $Paginator
- */
 class HosttemplatesController extends AppController {
 
-    public $uses = [
-        'Changelog'
-    ];
+    use PluginManagerTableTrait;
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -282,14 +277,14 @@ class HosttemplatesController extends AppController {
     }
 
     /**
-     * @param null $id
+     * @param int|null $id
      */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $HosttemplatesTable HosttemplatesTable */
+        /** @var HosttemplatesTable $HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
         if (!$HosttemplatesTable->existsById($id)) {
@@ -322,42 +317,17 @@ class HosttemplatesController extends AppController {
             return;
         }
 
+        $User = new User($this->getUser());
 
-        if ($HosttemplatesTable->delete($hosttemplate)) {
-            $User = new User($this->getUser());
-            /** @var  ChangelogsTable $ChangelogsTable */
-            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-            $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                'delete',
-                'hosttemplates',
-                $id,
-                OBJECT_HOSTTEMPLATE,
-                $hosttemplate->get('container_id'),
-                $User->getId(),
-                $hosttemplate->get('name'),
-                [
-                    'Hosttemplate' => $hosttemplate->toArray()
-                ]
-            );
-            if ($changelog_data) {
-                /** @var Changelog $changelogEntry */
-                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                $ChangelogsTable->save($changelogEntry);
-            }
-
-            //Delete Documentation record if exists
-            /** @var $DocumentationsTable DocumentationsTable */
-            $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
-            $DocumentationsTable->deleteDocumentationByUuid($hosttemplate->get('uuid'));
-
+        if ($HosttemplatesTable->__delete($hosttemplate, $User)) {
             $this->set('success', true);
+            $this->set('message', __('Host template successfully deleted'));
             $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
-        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
+        $this->set('message', __('Error while deleting host template'));
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
 

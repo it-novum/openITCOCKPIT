@@ -519,6 +519,7 @@ class ServicesTable extends Table {
                             'Hosts.uuid',
                             'Hosts.address'
                         ]);
+
                     if (!empty($MY_RIGHTS)) {
                         $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
                             'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
@@ -950,6 +951,34 @@ class ServicesTable extends Table {
      * @param bool $enableHydration
      * @return \Cake\Datasource\ResultSetInterface
      */
+    public function getServicesByHostIdForAgent($id, $servicetemplateType = OITC_AGENT_SERVICE, $enableHydration = true) {
+        $query = $this->find()
+            ->contain([
+                'Servicecommandargumentvalues',
+                'Servicetemplates' => function (Query $query) use ($servicetemplateType) {
+                    $query->contain([
+                        //'CheckCommand',
+                        'Agentchecks'
+                    ])->where([
+                        'Servicetemplates.servicetemplatetype_id' => $servicetemplateType
+                    ]);
+                    return $query;
+                }
+            ])
+            ->where([
+                'Services.host_id' => $id,
+            ])
+            ->enableAutoFields()
+            ->enableHydration($enableHydration)
+            ->all();
+        return $query;
+    }
+
+    /**
+     * @param $id
+     * @param bool $enableHydration
+     * @return \Cake\Datasource\ResultSetInterface
+     */
     public function getActiveServicesByHostId($id, $enableHydration = true) {
         $query = $this->find()
             ->where([
@@ -1282,22 +1311,22 @@ class ServicesTable extends Table {
     }
 
     /**
-     * @param Service $service
+     * @param Service $Service
      * @param User $User
      * @return bool
      */
-    public function __delete(Service $service, User $User) {
-        $servicename = $service->get('name');
+    public function __delete(Service $Service, User $User) {
+        $servicename = $Service->get('name');
 
         /** @var $ServicetemplatesTable ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
         if ($servicename === null || $servicename === '') {
-            $servicetemplate = $ServicetemplatesTable->get($service->get('servicetemplate_id'));
+            $servicetemplate = $ServicetemplatesTable->get($Service->get('servicetemplate_id'));
             $servicename = $servicetemplate->get('name');
         }
 
-        $servicedependencies = $service->get('servicedependencies_service_memberships');
+        $servicedependencies = $Service->get('servicedependencies_service_memberships');
         $servicedependenciesToDelete = [];
 
         if (!empty($servicedependencies)) {
@@ -1308,7 +1337,7 @@ class ServicesTable extends Table {
                 $servicedependencyId = $servicedependency->get('servicedependency_id');
                 $servicedependencyIsBroken = $ServicedependenciesTable->isServicedependencyBroken(
                     $servicedependencyId,
-                    $service->get('id')
+                    $Service->get('id')
                 );
                 if ($servicedependencyIsBroken === true) {
                     $servicedependenciesToDelete[] = $servicedependency;
@@ -1316,7 +1345,7 @@ class ServicesTable extends Table {
             }
         }
 
-        $serviceescalations = $service->get('serviceescalations_service_memberships');
+        $serviceescalations = $Service->get('serviceescalations_service_memberships');
         $serviceescalationsToDelete = [];
         if (!empty($serviceescalations)) {
             /** @var $ServiceescalationsTable ServiceescalationsTable */
@@ -1326,7 +1355,7 @@ class ServicesTable extends Table {
                 $serviceescalationId = $serviceescalation->get('serviceescalation_id');
                 $serviceescalationIsBroken = $ServiceescalationsTable->isServiceescalationBroken(
                     $serviceescalationId,
-                    $service->get('id')
+                    $Service->get('id')
                 );
                 if ($serviceescalationIsBroken === true) {
                     $serviceescalationsToDelete[] = $serviceescalation;
@@ -1334,7 +1363,7 @@ class ServicesTable extends Table {
             }
         }
 
-        if (!$this->delete($service)) {
+        if (!$this->delete($Service)) {
             return false;
         }
 
@@ -1347,18 +1376,18 @@ class ServicesTable extends Table {
         /** @var $ChangelogsTable ChangelogsTable */
         $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-        $host = $HostsTable->get($service->get('host_id'));
+        $host = $HostsTable->get($Service->get('host_id'));
 
         $changelog_data = $ChangelogsTable->parseDataForChangelog(
             'delete',
             'services',
-            $service->get('id'),
+            $Service->get('id'),
             OBJECT_SERVICE,
             $host->get('container_id'),
             $User->getId(),
             $host->get('name') . '/' . $servicename,
             [
-                'Service' => $service->toArray()
+                'Service' => $Service->toArray()
             ]
         );
 
@@ -1368,26 +1397,23 @@ class ServicesTable extends Table {
             $ChangelogsTable->save($changelogEntry);
         }
 
-        if ($DocumentationsTable->existsByUuid($service->get('uuid'))) {
-            $DocumentationsTable->delete($DocumentationsTable->getDocumentationByUuid($service->get('uuid')));
+        if ($DocumentationsTable->existsByUuid($Service->get('uuid'))) {
+            $DocumentationsTable->delete($DocumentationsTable->getDocumentationByUuid($Service->get('uuid')));
         }
 
         $this->_clenupServiceEscalationAndDependency($servicedependenciesToDelete, $serviceescalationsToDelete);
 
         //Save service to DeletedServicesTable
         $data = $DeletedServicesTable->newEntity([
-            'uuid'               => $service->get('uuid'),
+            'uuid'               => $Service->get('uuid'),
             'host_uuid'          => $host->get('uuid'),
-            'servicetemplate_id' => $service->get('servicetemplate_id'),
-            'host_id'            => $service->get('host_id'),
+            'servicetemplate_id' => $Service->get('servicetemplate_id'),
+            'host_id'            => $Service->get('host_id'),
             'name'               => $servicename,
-            'description'        => $service->get('description'),
+            'description'        => $Service->get('description'),
             'deleted_perfdata'   => 0
         ]);
         $DeletedServicesTable->save($data);
-
-        // @todo implement this in cake4
-        //Service::_clenupServiceEscalationDependencyAndGroup($service);
 
         return true;
     }
@@ -2502,7 +2528,7 @@ class ServicesTable extends Table {
      * @param array $hostIds
      * @return array
      */
-    public function getServicesByHostIdForDelete($hostIds = []) {
+    public function getServicesByHostIdForDelete($hostIds = [], $enableHydration = false) {
         if (!is_array($hostIds)) {
             $hostIds = [$hostIds];
         }
@@ -2514,10 +2540,11 @@ class ServicesTable extends Table {
         $query = $this->find()
             ->select([
                 'Services.id',
-                'Services.name'
+                'Services.name',
+                'Services.usage_flag'
             ])->where([
                 'Services.host_id IN' => $hostIds
-            ])->disableHydration();
+            ])->enableHydration($enableHydration);
 
         $result = $query->toArray();
         if (empty($result)) {
@@ -2743,4 +2770,5 @@ class ServicesTable extends Table {
 
         return true;
     }
+
 }

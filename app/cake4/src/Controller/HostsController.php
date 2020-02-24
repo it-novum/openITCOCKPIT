@@ -35,6 +35,7 @@ use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
+use App\Model\Entity\Service;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
@@ -92,6 +93,7 @@ use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\Downtime;
 use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\Hosttemplate;
 use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
@@ -108,7 +110,6 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 class HostsController extends AppController {
 
     use PluginManagerTableTrait;
-
 
     public function index() {
         /** @var User $User */
@@ -1346,84 +1347,95 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message']);
     }
 
-    /**
-     * @deprecated
-     * @todo insert data to delete hosts table
-     */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        /** @var HostsTable $HostTable */
-        $HostTable = TableRegistry::getTableLocator()->get('Hosts');
-        if (!$HostTable->existsById($id)) {
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if (!$HostsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
 
         /** @var \App\Model\Entity\Host $host */
-        $host = $HostTable->getHostById($id);
-        $hostForChangelog = $host;
+        $host = $HostsTable
+            ->find()
+            ->contain([
+                'HostescalationsHostMemberships',
+                'HostdependenciesHostMemberships',
+                'HostsToContainersSharing'
+            ])
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->firstOrFail();
 
         if (!$this->allowedByContainerId($host->getContainerIds())) {
             $this->render403();
             return;
         }
 
-        /** @var Constants $Constants */
-        $Constants = new Constants();
-        $moduleConstants = $Constants->getModuleConstants();
+        $usedBy = $host->isUsedByModules();
+        if (!empty($usedBy)) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->set('message', __('Issue while deleting host'));
+            $this->set('usedBy', $usedBy);
+            $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
+            return;
+        }
 
-        $usedBy = $host->isUsedByModules($moduleConstants);
-        if (empty($usedBy['host']) && empty($usedBy['service'])) {
-            //Not used by any module
 
-            if ($HostTable->delete($host)) {
-
-                $User = new User($this->getUser());
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'delete',
-                    'hosts',
-                    $id,
-                    OBJECT_HOST,
-                    $hostForChangelog->get('container_id'),
-                    $User->getId(),
-                    $hostForChangelog->get('name'),
-                    []
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
-                /** @var $DocumentationsTable DocumentationsTable */
-                $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
-
-                $DocumentationsTable->deleteDocumentationByUuid($hostForChangelog->get('uuid'));
-
-                $this->set('success', true);
-                $this->set('message', __('Host successfully deleted'));
-                $this->viewBuilder()->setOption('serialize', ['success']);
+        $services = $ServicesTable->getServicesByHostIdForDelete($id, true);
+        foreach ($services as $service) {
+            /** @var Service $service */
+            $usedBy = $service->isUsedByModules();
+            if (!empty($usedBy)) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('success', false);
+                $this->set('id', $id);
+                $this->set('service_id', $service->get('id'));
+                $this->set('message', __('Issue while deleting host. Service used by other objects.'));
+                $this->set('usedBy', $usedBy);
+                $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy', 'service_id']);
                 return;
             }
         }
 
-        //both types must be host, otherwise the serviceUsedBy site with the host id will be displayed which results in an error
-        $usedBy = Hash::merge(
-            $this->getUsedByForFrontend($usedBy['host'], 'host'),
-            $this->getUsedByForFrontend($usedBy['service'], 'host')
-        );
+        //Host + Services of the host are not in use by any Modules an can be deleted.
+        $User = new User($this->getUser());
 
-        $this->response = $this->response->withStatus(400);
+        //Delete services of the host
+        foreach ($services as $serviceEntity) {
+            $service = $ServicesTable->find()
+                ->contain([
+                    'ServiceescalationsServiceMemberships',
+                    'ServicedependenciesServiceMemberships'
+                ])
+                ->where([
+                    'Services.id' => $serviceEntity->get('id')
+                ])
+                ->firstOrFail();
+
+            $ServicesTable->__delete($service, $User);
+        }
+
+        //Delete the host
+        if ($HostsTable->__delete($host, $User)) {
+            $this->set('success', true);
+            $this->set('message', __('Host successfully deleted'));
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
         $this->set('success', false);
-        $this->set('id', $id);
-        $this->set('message', __('Issue while deleting host'));
-        $this->set('usedBy', $usedBy);
-        $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
-
+        $this->set('message', __('Error while deleting host'));
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     /**
@@ -2031,17 +2043,29 @@ class HostsController extends AppController {
         ]);
     }
 
-    /**
-     * @deprecated
-     */
     public function listToPdf() {
+        $User = new User($this->getUser());
+
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+
+        $satellites = [];
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+            $satellites[0] = $masterInstanceName;
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $HostFilter = new HostFilter($this->request);
 
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
-        $User = new User($this->getUser());
-        $UserTime = $User->getUserTime();
-
         if ($HostControllerRequest->isRequestFromBrowser() === false) {
             $HostCondition->setIncludeDisabled(false);
             $HostCondition->setContainerIds($this->MY_RIGHTS);
@@ -2062,7 +2086,9 @@ class HostsController extends AppController {
             if ($User->isRecursiveBrowserEnabled()) {
                 //get recursive container ids
                 $containerIdToResolve = $browserContainerIds;
-                $containerIds = Hash::extract($this->Container->children($containerIdToResolve[0], false, ['Container.id']), '{n}.Container.id');
+
+                $children = $ContainersTable->getChildren($containerIdToResolve[0]);
+                $containerIds = Hash::extract($children, '{n}.id');
                 $recursiveContainerIds = [];
                 foreach ($containerIds as $containerId) {
                     if (in_array($containerId, $this->MY_RIGHTS)) {
@@ -2073,59 +2099,62 @@ class HostsController extends AppController {
             }
         }
 
-        $HostCondition->setOrder($HostControllerRequest->getOrder([
-            'Host.name' => 'asc'
-        ]));
-
-
         if ($this->DbBackend->isNdoUtils()) {
-            $query = $this->Host->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
-            $this->Host->virtualFieldsForIndex();
-            $modelName = 'Host';
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+            /** @var $ServicestatusTable ServicestatusTableInterface */
+            $ServicestatusTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Servicestatus');
+            $hosts = $HostsTable->getHostsIndex($HostFilter, $HostCondition);
         }
 
         if ($this->DbBackend->isCrateDb()) {
-            $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
-            $modelName = 'Hoststatus';
+            throw new MissingDbBackendException('MissingDbBackendException');
+            //$query = $this->Hoststatus->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
+            //$modelName = 'Hoststatus';
         }
 
         if ($this->DbBackend->isStatusengine3()) {
-            $query = $this->Host->getHostIndexQueryStatusengine3($HostCondition, $HostFilter->indexFilter());
-            $this->Host->virtualFieldsForIndex();
-            $modelName = 'Host';
+            throw new MissingDbBackendException('MissingDbBackendException');
+            //$query = $this->Host->getHostIndexQueryStatusengine3($HostCondition, $HostFilter->indexFilter());
+            //$this->Host->virtualFieldsForIndex();
+            //$modelName = 'Host';
         }
 
-        if (isset($query['limit'])) {
-            unset($query['limit']);
-        }
-        $all_hosts = $this->{$modelName}->find('all', $query);
 
+        $all_hosts = [];
+        $UserTime = new UserTime($User->getTimezone(), $User->getDateformat());
+        foreach ($hosts as $host) {
+            $Host = new Host($host['Host']);
+            $Hoststatus = new Hoststatus($host['Host']['Hoststatus'], $UserTime);
+
+            $satelliteName = $masterInstanceName;
+            $satellite_id = 0;
+            if ($Host->isSatelliteHost()) {
+                $satelliteName = $satellites[$Host->getSatelliteId()];
+                $satellite_id = $Host->getSatelliteId();
+            }
+
+            $tmpRecord = [
+                'Host'       => $Host->toArray(),
+                'Hoststatus' => $Hoststatus
+            ];
+            $tmpRecord['Host']['satelliteName'] = $satelliteName;
+            $tmpRecord['Host']['satelliteId'] = $satellite_id;
+
+            $all_hosts[] = $tmpRecord;
+        }
+
+        $this->set('User', $User);
         $this->set('all_hosts', $all_hosts);
-        $this->set('UserTime', $UserTime);
 
-        $filename = 'Hosts_' . strtotime('now') . '.pdf';
-        $binary_path = '/usr/bin/wkhtmltopdf';
-        if (file_exists('/usr/local/bin/wkhtmltopdf')) {
-            $binary_path = '/usr/local/bin/wkhtmltopdf';
-        }
-        $this->pdfConfig = [
-            'engine'             => 'CakePdf.WkHtmlToPdf',
-            'margin'             => [
-                'bottom' => 15,
-                'left'   => 0,
-                'right'  => 0,
-                'top'    => 15,
-            ],
-            'encoding'           => 'UTF-8',
-            'download'           => true,
-            'binary'             => $binary_path,
-            'orientation'        => 'portrait',
-            'filename'           => $filename,
-            'no-pdf-compression' => '*',
-            'image-dpi'          => '900',
-            'background'         => true,
-            'no-background'      => false,
-        ];
+        $this->viewBuilder()->setOption(
+            'pdfConfig',
+            [
+                'download' => true,
+                'filename' => __('Hosts_') . date('dmY_his') . '.pdf',
+            ]
+        );
     }
 
     //Only for ACLs
@@ -2264,7 +2293,8 @@ class HostsController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         $checkTimePeriod = $TimeperiodsTable->getTimeperiodWithTimerangesById($timeperiodId);
 
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
 
         $Groups = new Groups();
         $this->set('groups', $Groups->serialize(true));

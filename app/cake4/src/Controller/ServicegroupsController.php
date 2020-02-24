@@ -187,7 +187,6 @@ class ServicegroupsController extends AppController {
                     $ChangelogsTable->save($changelogEntry);
                 }
 
-                //@todo refactor with cake4
                 Cache::clear('permissions');
 
                 if ($this->isJsonRequest()) {
@@ -487,10 +486,8 @@ class ServicegroupsController extends AppController {
 
     /**
      * @throws MissingDbBackendException
-     * @deprecated
      */
     public function listToPdf() {
-
         /** @var $ServicegroupsTable ServicegroupsTable */
         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
         /** @var $HoststatusTable HoststatusTableInterface */

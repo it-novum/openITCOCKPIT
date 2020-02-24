@@ -6,6 +6,7 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\Host;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -405,7 +406,7 @@ class HostdependenciesTable extends Table {
      */
     public function isHostdependencyBroken($id = null, $hostId = null) {
         if (!$this->exists(['Hostdependencies.id' => $id]) && $id !== null) {
-            throw new \NotFoundException();
+            throw new NotFoundException();
         }
         $query = $this->find()
             ->contain([
