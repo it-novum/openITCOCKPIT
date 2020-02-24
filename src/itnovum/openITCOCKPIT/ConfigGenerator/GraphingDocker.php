@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use Cake\Utility\Hash;
 use Symfony\Component\Yaml\Yaml;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -35,9 +36,9 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'docker-compose.yml';
 
-    protected $linkedOutfile = '/usr/share/openitcockpit/docker/container/graphing/docker-compose.yml';
+    protected $linkedOutfile = '/opt/openitc/docker/container/graphing/docker-compose.yml';
 
-    protected $realOutfile = '/usr/share/openitcockpit/docker/container/graphing/docker-compose.yml';
+    protected $realOutfile = '/opt/openitc/docker/container/graphing/docker-compose.yml';
 
     /**
      * @var string
@@ -143,7 +144,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
 
         $customResult = $this->customValidationRules($data);
         if (is_array($customResult) && !empty($customResult)) {
-            $error = \Hash::merge($error, $customResult);
+            $error = Hash::merge($error, $customResult);
         }
 
         if (empty($error)) {
@@ -289,7 +290,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             }
         }
 
-        if (!is_dir('/etc/openitcockpit/carbon') || !is_dir('/etc/openitcockpit/grafana')) {
+        if (!is_dir('/opt/openitc/etc/carbon') || !is_dir('/opt/openitc/etc/grafana')) {
             return false;
         }
 
@@ -344,50 +345,50 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
         }
 
         //carbon-c-relay.conf
-        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/carbon-c-relay.conf', '/etc/openitcockpit/carbon/carbon-c-relay.conf');
-        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/carbon/carbon-c-relay.conf', $twig->render('carbon-c-relay.conf', $configToExport))) {
+        $ConfigSymlink = new ConfigSymlink('/opt/openitc/etc/carbon/carbon-c-relay.conf', '/opt/openitc/etc/carbon/carbon-c-relay.conf');
+        if (!file_put_contents('/opt/openitc/etc/carbon/carbon-c-relay.conf', $twig->render('carbon-c-relay.conf', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
 
         //carbon.conf
-        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/carbon.conf', '/etc/openitcockpit/carbon/carbon.conf');
-        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/carbon/carbon.conf', $twig->render('carbon.conf', $configToExport))) {
+        $ConfigSymlink = new ConfigSymlink('/opt/openitc/etc/carbon/carbon.conf', '/opt/openitc/etc/carbon/carbon.conf');
+        if (!file_put_contents('/opt/openitc/etc/carbon/carbon.conf', $twig->render('carbon.conf', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
 
         //storage-schemas.conf
-        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/storage-schemas.conf', '/etc/openitcockpit/carbon/storage-schemas.conf');
-        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/carbon/storage-schemas.conf', $twig->render('storage-schemas.conf', $configToExport))) {
+        $ConfigSymlink = new ConfigSymlink('/opt/openitc/etc/carbon/storage-schemas.conf', '/opt/openitc/etc/carbon/storage-schemas.conf');
+        if (!file_put_contents('/opt/openitc/etc/carbon/storage-schemas.conf', $twig->render('storage-schemas.conf', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
 
         //storage-aggregation.conf
-        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/storage-aggregation.conf', '/etc/openitcockpit/carbon/storage-aggregation.conf');
-        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/carbon/storage-aggregation.conf', $twig->render('storage-aggregation.conf', $configToExport))) {
+        $ConfigSymlink = new ConfigSymlink('/opt/openitc/etc/carbon/storage-aggregation.conf', '/opt/openitc/etc/carbon/storage-aggregation.conf');
+        if (!file_put_contents('/opt/openitc/etc/carbon/storage-aggregation.conf', $twig->render('storage-aggregation.conf', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
 
         //local_settings.py (graphite web)
-        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/local_settings.py', '/etc/openitcockpit/carbon/local_settings.py');
-        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/carbon/local_settings.py', $twig->render('local_settings.py', $configToExport))) {
+        $ConfigSymlink = new ConfigSymlink('/opt/openitc/etc/carbon/local_settings.py', '/opt/openitc/etc/carbon/local_settings.py');
+        if (!file_put_contents('/opt/openitc/etc/carbon/local_settings.py', $twig->render('local_settings.py', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
 
         //wsgi.py (graphite web)
-        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/wsgi.py', '/etc/openitcockpit/carbon/wsgi.py');
-        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/carbon/wsgi.py', $twig->render('wsgi.py', $configToExport))) {
+        $ConfigSymlink = new ConfigSymlink('/opt/openitc/etc/carbon/wsgi.py', '/opt/openitc/etc/carbon/wsgi.py');
+        if (!file_put_contents('/opt/openitc/etc/carbon/wsgi.py', $twig->render('wsgi.py', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
 
         //grafana.ini
-        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/grafana/grafana.ini', '/etc/openitcockpit/grafana/grafana.ini');
-        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/grafana/grafana.ini', $twig->render('grafana.ini', $configToExport))) {
+        $ConfigSymlink = new ConfigSymlink('/opt/openitc/etc/grafana/grafana.ini', '/opt/openitc/etc/grafana/grafana.ini');
+        if (!file_put_contents('/opt/openitc/etc/grafana/grafana.ini', $twig->render('grafana.ini', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();

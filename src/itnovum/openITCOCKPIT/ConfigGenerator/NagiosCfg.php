@@ -36,12 +36,12 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
     /**
      * @var string
      */
-    protected $linkedOutfile = '/etc/openitcockpit/nagios.cfg';
+    protected $linkedOutfile = '/opt/openitc/etc/nagios/nagios.cfg';
 
     /**
      * @var string
      */
-    protected $realOutfile = '/var/lib/openitcockpit/etc/generated/nagios.cfg';
+    protected $realOutfile = '/opt/openitc/etc/nagios/nagios.cfg';
 
     /**
      * @var string

@@ -34,9 +34,9 @@ class StatusengineCfg extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'Statusengine.php.tpl';
 
-    protected $realOutfile = '/var/lib/openitcockpit/etc/generated/statusengine/Statusengine.php';
+    protected $realOutfile = '/opt/openitc/etc/statusengine/Config/Statusengine.php';
 
-    protected $linkedOutfile = '/etc/statusengine/Config/Statusengine.php';
+    protected $linkedOutfile = '/opt/openitc/etc/statusengine/Config/Statusengine.php';
 
     /**
      * @var string
@@ -171,22 +171,22 @@ class StatusengineCfg extends ConfigGenerator implements ConfigInterface {
         $twig = new Environment($loader, ['debug' => true]);
 
         // /etc/statusengine/Config/Statusengine.php
-        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/statusengine/Statusengine.php', '/etc/statusengine/Config/Statusengine.php');
+        $ConfigSymlink = new ConfigSymlink('/opt/openitc/etc/statusengine/Config/Statusengine.php', '/opt/openitc/etc/statusengine/Config/Statusengine.php');
         if (!file_put_contents($this->realOutfile, $twig->render($this->getTemplateName(), $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
 
         // /etc/statusengine/Config/Perfdata.php
-        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/statusengine/Perfdata.php', '/etc/statusengine/Config/Perfdata.php');
-        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/statusengine/Perfdata.php', $twig->render('Perfdata.php.tpl', $configToExport))) {
+        $ConfigSymlink = new ConfigSymlink('/opt/openitc/etc/statusengine/Config/Perfdata.php', '/opt/openitc/etc/statusengine/Config/Perfdata.php');
+        if (!file_put_contents('/opt/openitc/etc/statusengine/Config/Perfdata.php', $twig->render('Perfdata.php.tpl', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
 
         // /etc/statusengine/Config/Graphite.php
-        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/statusengine/Graphite.php', '/etc/statusengine/Config/Graphite.php');
-        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/statusengine/Graphite.php', $twig->render('Graphite.php.tpl', $configToExport))) {
+        $ConfigSymlink = new ConfigSymlink('/opt/openitc/etc/statusengine/Config/Graphite.php', '/opt/openitc/etc/statusengine/Config/Graphite.php');
+        if (!file_put_contents('/opt/openitc/etc/statusengine/Config/Graphite.php', $twig->render('Graphite.php.tpl', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
@@ -234,8 +234,8 @@ class StatusengineCfg extends ConfigGenerator implements ConfigInterface {
         $defaultConfig['int']['number_of_bulk_records'] = (int)$config['bulk_query_limit'];
 
         //Try to load Graphite.php
-        if (file_exists('/var/lib/openitcockpit/etc/generated/statusengine/Graphite.php')) {
-            require_once '/var/lib/openitcockpit/etc/generated/statusengine/Graphite.php';
+        if (file_exists('/opt/openitc/etc/statusengine/Config/Graphite.php')) {
+            require_once '/opt/openitc/etc/statusengine/Config/Graphite.php';
 
             if (isset($config['graphite']['host'])) {
                 $defaultConfig['string']['graphite_address'] = $config['graphite']['host'];
