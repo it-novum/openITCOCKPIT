@@ -746,3 +746,17 @@ pre {
     float: left;
     margin-right: 15px;
 }
+
+.menustats {
+    display: inline-block;
+    margin: 0;
+    padding: 0px 34px 11px 0 !important;
+    background: 0 0;
+    vertical-align: top;
+    list-style: none;
+    color: #bbb !important;
+}
+
+.menustats > li {
+    display: inline-block;
+}
