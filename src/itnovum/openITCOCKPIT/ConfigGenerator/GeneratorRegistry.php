@@ -34,7 +34,7 @@ class GeneratorRegistry {
         return [
             new NagiosCfg(),
             new AfterExport(),
-            new NagiosModuleConfig(),
+            //new NagiosModuleConfig(),
             new phpNSTAMaster(),
             new DbBackend(),
             new PerfdataBackend(),

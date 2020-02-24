@@ -1,0 +1,73 @@
+{{STATIC_FILE_HEADER}}
+
+version: '3'
+services:
+{%for CarbonCache in CarbonCaches %}
+  {{CarbonCache.hostname}}:
+    image: openitcockpit/carbon-cache:latest
+    hostname: {{CarbonCache.hostname}}
+    volumes:
+      - {{carbon_path}}:/var/lib/graphite/whisper
+      - /opt/openitc/etc/carbon:/etc/carbon
+    command: ["/opt/graphite/bin/carbon-cache.py", "--config=/etc/carbon/carbon.conf", "--nodaemon", "start", "--instance", "{{CarbonCache.instanceName}}"]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+{% endfor %}
+  graphite-web:
+    image: openitcockpit/graphite-web:latest
+    ports:
+      - "127.0.0.1:{{local_graphite_http_port}}:8080"
+    volumes:
+      - {{carbon_path}}:/var/lib/graphite/whisper
+      - /opt/openitc/etc/carbon:/etc/carbon
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+  carbon-c-relay:
+    image: openitcockpit/carbon-c-relay:latest
+    ports:
+      - "127.0.0.1:{{local_graphite_plaintext_port}}:2003"
+    volumes:
+      - /opt/openitc/etc/carbon:/etc/carbon
+    command: ["/opt/carbon-c-relay/bin/relay", "-f", "/etc/carbon/carbon-c-relay.conf", "-w {{number_of_carbon_c_relay_workers}}", "-p", "2003"]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+  grafana:
+    image: grafana/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD__FILE=/etc/openitcockpit/grafana/admin_password
+      - GF_PATHS_CONFIG=/etc/openitcockpit/grafana/grafana.ini
+      - GF_PATHS_DATA=/var/lib/grafana
+      - GF_PATHS_HOME=/usr/share/grafana
+      - GF_PATHS_LOGS=/var/log/grafana
+      - GF_PATHS_PLUGINS=/var/lib/grafana/plugins
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+    ports:
+      - "127.0.0.1:3033:3033"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - /opt/openitc/etc/grafana:/etc/openitcockpit/grafana
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+volumes:
+  grafana-data:
+{% if USE_AUTO_NETWORKING == 0 %}
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: {{docker_compose_subnet}}
+{% endif %}

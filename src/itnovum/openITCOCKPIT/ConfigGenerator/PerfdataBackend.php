@@ -37,12 +37,12 @@ class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
     /**
      * @var string
      */
-    protected $linkedOutfile = '/etc/openitcockpit/app/Config/perfdatabackend.php';
+    protected $linkedOutfile = '/opt/openitc/etc/frontend/core/perfdatabackend.php';
 
     /**
      * @var string
      */
-    protected $realOutfile = '/var/lib/openitcockpit/etc/generated/app/Config/perfdatabackend.php';
+    protected $realOutfile = '/opt/openitc/etc/frontend/core/perfdatabackend.php';
 
     /**
      * @var string

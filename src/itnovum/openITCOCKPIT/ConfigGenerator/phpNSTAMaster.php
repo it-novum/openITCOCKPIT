@@ -33,9 +33,9 @@ class phpNSTAMaster extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'config.php.tpl';
 
-    protected $linkedOutfile = '/etc/phpnsta/config.php';
+    protected $linkedOutfile = '/opt/openitc/etc/phpnsta/config.php';
 
-    protected $realOutfile = '/var/lib/openitcockpit/etc/generated/phpnsta/config.php';
+    protected $realOutfile = '/opt/openitc/etc/phpnsta/config.php';
 
     /**
      * @var string
@@ -168,10 +168,10 @@ class phpNSTAMaster extends ConfigGenerator implements ConfigInterface {
             }
         }
 
-        $grepCommand = 'ps -eaf | grep "/opt/openitc/nagios/bin/naemon -d /etc/openitcockpit/nagios.cfg" |grep -v "grep"';
+        $grepCommand = 'ps -eaf | grep "/opt/openitc/nagios/bin/naemon -d /opt/openitc/etc/nagios/nagios.cfg" |grep -v "grep"';
         $MonitoringEngine = new MonitoringEngine();
         if($MonitoringEngine->isNagios()){
-            $grepCommand = 'ps -eaf | grep "/opt/openitc/nagios/bin/nagios -d /etc/openitcockpit/nagios.cfg" |grep -v "grep"';
+            $grepCommand = 'ps -eaf | grep "/opt/openitc/nagios/bin/nagios -d /opt/openitc/etc/nagios/nagios.cfg" |grep -v "grep"';
 
             if($configToExport['use_spooldir'] == '3'){
                 //Query handler not supported by Nagios 4.x
