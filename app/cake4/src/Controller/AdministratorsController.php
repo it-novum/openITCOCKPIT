@@ -48,7 +48,7 @@ use itnovum\openITCOCKPIT\Core\Views\Logo;
  * @package App\Controller
  */
 class AdministratorsController extends AppController {
-    
+
     function debug() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template

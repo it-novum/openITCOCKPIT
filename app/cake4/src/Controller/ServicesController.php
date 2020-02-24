@@ -1996,10 +1996,19 @@ class ServicesController extends AppController {
 
             $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
             if (!empty($hoststatus)) {
+                $isHardstate = false;
+                if(isset($hoststatus['Hoststatus']['state_type'])){
+                    $isHardstate = ($hoststatus['Hoststatus']['state_type']) ? true : false;
+                }
+
+                if(isset($hoststatus['Hoststatus']['is_hardstate'])){
+                    $isHardstate = ($hoststatus['Hoststatus']['is_hardstate']) ? true : false;
+                }
+
                 $record = [
                     'state_time' => $hoststatus['Hoststatus']['last_state_change'],
                     'state'      => $hoststatus['Hoststatus']['current_state'],
-                    'state_type' => ($hoststatus['Hoststatus']['state_type']) ? true : false
+                    'state_type' => $isHardstate,
                 ];
                 $StatehistoryHost = new StatehistoryHost($record);
                 $statehistoryRecords[] = $StatehistoryHost;
@@ -2049,10 +2058,19 @@ class ServicesController extends AppController {
 
             $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
             if (!empty($servicestatus)) {
+                $isHardstate = false;
+                if(isset($servicestatus['Servicestatus']['state_type'])){
+                    $isHardstate = ($servicestatus['Servicestatus']['state_type']) ? true : false;
+                }
+
+                if(isset($servicestatus['Servicestatus']['is_hardstate'])){
+                    $isHardstate = ($servicestatus['Servicestatus']['is_hardstate']) ? true : false;
+                }
+
                 $record = [
                     'state_time' => $servicestatus['Servicestatus']['last_state_change'],
                     'state'      => $servicestatus['Servicestatus']['current_state'],
-                    'state_type' => $servicestatus['Servicestatus']['state_type']
+                    'state_type' => $isHardstate
                 ];
 
                 $StatehistoryService = new StatehistoryService($record);
