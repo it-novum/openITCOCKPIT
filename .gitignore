@@ -61,6 +61,7 @@ webroot/img/charts
 # Plugins #
 #######################
 plugins/config
+plugins/AutoreportModule
 plugins/DistributeModule
 plugins/EventcorrelationModule
 plugins/MkModule
