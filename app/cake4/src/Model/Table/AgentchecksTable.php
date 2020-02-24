@@ -169,19 +169,18 @@ class AgentchecksTable extends Table {
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
         foreach ($agentchecks as $index => $agentcheck) {
-            $servicetemplate = $ServicetemplatesTable->getServicetemplateForEdit(
+            $servicetemplate = $ServicetemplatesTable->getServicetemplateForNewAgentService(
                 $agentcheck['servicetemplate_id']
             );
 
-            $service = $servicetemplate['Servicetemplate'];
+            $service = $servicetemplate;
 
             $fieldsToRename = [
-                'id'                                        => 'servicetemplate_id',
-                'servicetemplatecommandargumentvalues'      => 'servicecommandargumentvalues',
-                'servicetemplateeventcommandargumentvalues' => 'serviceeventcommandargumentvalues'
+                'id'                                   => 'servicetemplate_id',
+                'servicetemplatecommandargumentvalues' => 'servicecommandargumentvalues',
             ];
             foreach ($fieldsToRename as $srcField => $dscField) {
-                $service[$dscField] = $servicetemplate['Servicetemplate'][$srcField];
+                $service[$dscField] = $servicetemplate[$srcField];
                 unset($service[$srcField]);
                 unset($service['uuid'], $service['template_name']);
             }

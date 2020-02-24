@@ -951,6 +951,34 @@ class ServicesTable extends Table {
      * @param bool $enableHydration
      * @return \Cake\Datasource\ResultSetInterface
      */
+    public function getServicesByHostIdForAgent($id, $servicetemplateType = OITC_AGENT_SERVICE, $enableHydration = true) {
+        $query = $this->find()
+            ->contain([
+                'Servicecommandargumentvalues',
+                'Servicetemplates' => function (Query $query) use ($servicetemplateType) {
+                    $query->contain([
+                        //'CheckCommand',
+                        'Agentchecks'
+                    ])->where([
+                        'Servicetemplates.servicetemplatetype_id' => $servicetemplateType
+                    ]);
+                    return $query;
+                }
+            ])
+            ->where([
+                'Services.host_id' => $id,
+            ])
+            ->enableAutoFields()
+            ->enableHydration($enableHydration)
+            ->all();
+        return $query;
+    }
+
+    /**
+     * @param $id
+     * @param bool $enableHydration
+     * @return \Cake\Datasource\ResultSetInterface
+     */
     public function getActiveServicesByHostId($id, $enableHydration = true) {
         $query = $this->find()
             ->where([

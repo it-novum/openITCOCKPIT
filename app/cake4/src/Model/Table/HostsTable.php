@@ -1740,6 +1740,24 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param $uuid
+     * @return int
+     */
+    public function getHostIdByUuid($uuid) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+            ])
+            ->where([
+                'Hosts.uuid' => $uuid
+            ]);
+
+        $host = $query->firstOrFail();
+
+        return $host->get('id');
+    }
+
+    /**
      * @param int $hostId
      * @return int
      */
