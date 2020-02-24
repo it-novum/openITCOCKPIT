@@ -554,6 +554,24 @@ class ContainersController extends AppController {
             throw new NotFoundException(__('Invalid container'));
         }
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        $container = $ContainersTable->getContainerById($id, $MY_RIGHTS);
+debug($container);
+
+
+
+        die();
+        $containersMap = $ContainersTable->getContainerWithAllChildren($id);
+
+        $this->set(compact(['containerDetails']));
+        $this->viewBuilder()->setOption('serialize', ['containerDetails']);
+
+
+        return;
         $this->Container->bindModel([
                 'hasMany' => [
                     'Hostdependency',

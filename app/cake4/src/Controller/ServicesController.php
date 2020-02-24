@@ -1811,8 +1811,7 @@ class ServicesController extends AppController {
     }
 
     /**
-     * @deprecated
-     * Refactor javascript directive serviceStatusDetails as soon as self::browser() got refactord
+     * Angular directive serviceStatusDetails
      */
     public function details() {
         //Only ship template for auto maps modal
@@ -1932,8 +1931,8 @@ class ServicesController extends AppController {
         $Groups = new Groups();
         $this->set('groups', $Groups->serialize(false));
 
-        $start = $this->request->getQuery('start');
-        $end = $this->request->getQuery('end');
+        $start = $this->request->getQuery('start', -1);
+        $end = $this->request->getQuery('end', -1);
 
 
         if (!is_numeric($start) || $start < 0) {
@@ -1997,10 +1996,19 @@ class ServicesController extends AppController {
 
             $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
             if (!empty($hoststatus)) {
+                $isHardstate = false;
+                if(isset($hoststatus['Hoststatus']['state_type'])){
+                    $isHardstate = ($hoststatus['Hoststatus']['state_type']) ? true : false;
+                }
+
+                if(isset($hoststatus['Hoststatus']['is_hardstate'])){
+                    $isHardstate = ($hoststatus['Hoststatus']['is_hardstate']) ? true : false;
+                }
+
                 $record = [
                     'state_time' => $hoststatus['Hoststatus']['last_state_change'],
                     'state'      => $hoststatus['Hoststatus']['current_state'],
-                    'state_type' => ($hoststatus['Hoststatus']['state_type']) ? true : false
+                    'state_type' => $isHardstate,
                 ];
                 $StatehistoryHost = new StatehistoryHost($record);
                 $statehistoryRecords[] = $StatehistoryHost;
@@ -2050,10 +2058,19 @@ class ServicesController extends AppController {
 
             $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
             if (!empty($servicestatus)) {
+                $isHardstate = false;
+                if(isset($servicestatus['Servicestatus']['state_type'])){
+                    $isHardstate = ($servicestatus['Servicestatus']['state_type']) ? true : false;
+                }
+
+                if(isset($servicestatus['Servicestatus']['is_hardstate'])){
+                    $isHardstate = ($servicestatus['Servicestatus']['is_hardstate']) ? true : false;
+                }
+
                 $record = [
                     'state_time' => $servicestatus['Servicestatus']['last_state_change'],
                     'state'      => $servicestatus['Servicestatus']['current_state'],
-                    'state_type' => $servicestatus['Servicestatus']['state_type']
+                    'state_type' => $isHardstate
                 ];
 
                 $StatehistoryService = new StatehistoryService($record);
@@ -2160,7 +2177,7 @@ class ServicesController extends AppController {
     /**
      * @param int $hostId
      * @param int $serviceId
-     * @throws Exception
+     * @throws \Exception
      */
     public function loadElementsByHostId($hostId, $serviceId = 0) {
         if (!$this->isAngularJsRequest()) {

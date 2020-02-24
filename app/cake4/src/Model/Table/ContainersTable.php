@@ -74,7 +74,7 @@ class ContainersTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('containers');
@@ -109,7 +109,7 @@ class ContainersTable extends Table {
         ])->setDependent(true);
 
         $this->hasMany('MapsToContainers', [
-            'foreignKey' => 'container_id',
+            'foreignKey'       => 'container_id',
             'cascadeCallbacks' => true
         ]);
 
@@ -217,7 +217,7 @@ class ContainersTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -275,7 +275,7 @@ class ContainersTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         //$rules->add($rules->existsIn(['parent_id'], 'ParentContainers'));
 
         return $rules;
@@ -607,5 +607,57 @@ class ContainersTable extends Table {
      */
     public function existsById($id) {
         return $this->exists(['Containers.id' => $id]);
+    }
+
+
+    /**
+     * @param $id
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getContainerById($id, $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->select([
+                'Containers.id',
+                'Containers.name',
+                'Containers.containertype_id'
+            ])
+            ->where([
+                'Containers.id' => $id
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
+        $result = $query->first();
+        if (empty($result)) {
+            return [];
+        }
+        return $result->toArray();
+    }
+
+
+    /**
+     * @param $containerId
+     * @return array
+     */
+    public function getContainerWithAllChildren($containerId) {
+        $containersMap = [
+            'nodes' => [],
+            'edges' => []
+        ];
+        $children = $this->find('children', ['for' => $containerId])
+            ->find('threaded')
+            ->toArray();
+        debug($children);
+        die();
+        foreach ($children as $child) {
+            echo "<br />{$child->name} has " . ' --- ' . $child->containertype_id . ' ->>>> ' . count($child->children) . " direct children<br />";
+            debug($child->children);
+        }
+
+        return $containersMap;
     }
 }

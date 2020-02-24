@@ -62,7 +62,7 @@ class StatehistorySerializer {
      * @param int $end
      * @param string $type
      */
-    public function __construct($statehistoryRecords = [], UserTime $UserTime, $end = 0, $type = 'host') {
+    public function __construct($statehistoryRecords, UserTime $UserTime, $end = 0, $type = 'host') {
         $this->records = $statehistoryRecords;
         $this->UserTime = $UserTime;
         $this->end = $end;
@@ -91,8 +91,8 @@ class StatehistorySerializer {
             }
 
             $records[] = [
-                'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getStateTime()),
-                'end'       => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $end),
+                'start'     => $this->UserTime->customFormat('Y-m-d H:i:s', $this->records[$i]->getStateTime()),
+                'end'       => $this->UserTime->customFormat('Y-m-d H:i:s', $end),
                 'type'      => 'background',
                 'className' => $this->getStateClass($this->records[$i]),
                 'group'     => $this->groupId

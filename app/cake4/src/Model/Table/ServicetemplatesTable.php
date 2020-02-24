@@ -89,6 +89,14 @@ class ServicetemplatesTable extends Table {
             'saveStrategy'     => 'replace'
         ]);
 
+        $this->belongsToMany('Servicetemplategroups', [
+            'className'        => 'Servicetemplategroups',
+            'foreignKey'       => 'servicetemplate_id',
+            'targetForeignKey' => 'servicetemplategroup_id',
+            'joinTable'        => 'servicetemplates_to_servicetemplategroups',
+            'saveStrategy'     => 'replace'
+        ]);
+
         $this->belongsTo('Containers', [
             'foreignKey' => 'container_id',
             'joinType'   => 'INNER'
@@ -131,7 +139,7 @@ class ServicetemplatesTable extends Table {
         $this->hasMany('Servicetemplateeventcommandargumentvalues', [
             'foreignKey'   => 'servicetemplate_id',
             'saveStrategy' => 'replace'
-        ]);
+        ])->setDependent(true);
 
         $this->hasMany('Services');
     }
