@@ -1,10 +1,55 @@
 #!/bin/bash
 
+if ! [ $(id -u) = 0 ]; then
+    echo "You need to run this script as root user or via sudo!"
+    exit 1
+fi
+
 . /etc/dbconfig-common/openitcockpit.conf
 
 APPDIR="/usr/share/openitcockpit/app/cake4"
 
 INIFILE=/etc/openitcockpit/mysql.cnf
+DUMPINIFILE/etc/openitcockpit/mysql.cnf
+DEBIANCNF=/etc/mysql/debian.cnf
+
+if [[ ! -f "$INIFILE" ]]; then
+    echo "Create MySQL configuration and database"
+
+    MYSQL_USER="openitcockpit"
+    MYSQL_DATABASE="openitcockpit"
+    MYSQL_PASSWORD=$(pwgen -s -1 16)
+
+    if [[ -f "$DEBIANCNF" ]]; then
+        echo "Detected Debian based distribution"
+
+        mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE USER '${MYSQL_DATABASE}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';" -B
+        mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_swedish_ci;" -B
+        mysql --defaults-extra-file=${DEBIANCNF} -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '\`${MYSQL_DATABASE}\`'@'localhost';" -B
+
+        echo "# Automatically generated for openITCOCKPIT scripts. DO NOT TOUCH!" >$INIFILE
+        echo "[client]" >>$INIFILE
+        echo "database = ${MYSQL_DATABASE}" >>$INIFILE
+        echo "host = localhost" >>$INIFILE
+        echo "user = ${MYSQL_USER}" >>$INIFILE
+        echo "password = ${MYSQL_PASSWORD}" >>$INIFILE
+        echo "port = 3306" >>$INIFILE
+
+        echo " # Automatically generated for mysqldump. DO NOT TOUCH!" >$DUMPINIFILE
+        echo "[client]" >>$DUMPINIFILE
+        echo "host     = localhost" >>$DUMPINIFILE
+        echo "user     = ${MYSQL_USER}" >>$DUMPINIFILE
+        echo "password = ${MYSQL_PASSWORD}" >>$DUMPINIFILE
+        echo "port     = 3306" >>$DUMPINIFILE
+
+    else
+        echo "Unsupported distribution or $DEBIANCNF is missing!"
+        exit 1
+    fi
+
+fi
+
+oitc4 config_generator --generate
 
 #ln -s /etc/openitcockpit/nagios.cfg /opt/openitc/nagios/etc/nagios.cfg
 #sudo -g www-data /usr/share/openitcockpit/app/Console/cake schema update -y --connection default --file schema_itcockpit.php -s 26
@@ -57,7 +102,6 @@ if [ $CODENAME = "trusty" ]; then
     service sudo_server stop
     service sudo_server start
 fi
-
 
 #Set default permissions, check for always allowed permissions and dependencies
 oitc4 roles --enable-defaults --admin
