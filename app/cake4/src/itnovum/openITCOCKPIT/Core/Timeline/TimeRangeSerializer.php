@@ -56,8 +56,8 @@ class TimeRangeSerializer {
 
         for ($i = 0; $i < $size; $i++) {
             $records[] = [
-                'start' => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]['start']),
-                'end'   => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]['end']),
+                'start' => $this->UserTime->customFormat('Y-m-d H:i:s', $this->records[$i]['start']),
+                'end'   => $this->UserTime->customFormat('Y-m-d H:i:s', $this->records[$i]['end']),
                 'type'  => 'background'
             ];
         }

@@ -1811,8 +1811,7 @@ class ServicesController extends AppController {
     }
 
     /**
-     * @deprecated
-     * Refactor javascript directive serviceStatusDetails as soon as self::browser() got refactord
+     * Angular directive serviceStatusDetails
      */
     public function details() {
         //Only ship template for auto maps modal
@@ -1892,7 +1891,6 @@ class ServicesController extends AppController {
 
     /**
      * @param int|null $id
-     * @deprecated
      * @throws MissingDbBackendException
      */
     public function timeline($id = null) {
@@ -1933,8 +1931,8 @@ class ServicesController extends AppController {
         $Groups = new Groups();
         $this->set('groups', $Groups->serialize(false));
 
-        $start = $this->request->getQuery('start');
-        $end = $this->request->getQuery('end');
+        $start = $this->request->getQuery('start', -1);
+        $end = $this->request->getQuery('end', -1);
 
 
         if (!is_numeric($start) || $start < 0) {
@@ -2161,7 +2159,7 @@ class ServicesController extends AppController {
     /**
      * @param int $hostId
      * @param int $serviceId
-     * @throws Exception
+     * @throws \Exception
      */
     public function loadElementsByHostId($hostId, $serviceId = 0) {
         if (!$this->isAngularJsRequest()) {
