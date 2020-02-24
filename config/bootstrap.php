@@ -26,17 +26,10 @@ if (!defined('PLUGIN')) {
     define('PLUGIN', ROOT . DS . 'plugins' . DS);
 }
 
-//Load CakePHP 2 Database @todo remove me
-
-if (!defined('OLD_APP')) {
-    define('OLD_APP', APP . '../../');
-}
-
 if (!defined('ENVIRONMENT')) {
     define('ENVIRONMENT', 'development');
 }
 
-require_once OLD_APP . 'Config' . DS . 'database.php';
 
 /*
  * Bootstrap CakePHP.
