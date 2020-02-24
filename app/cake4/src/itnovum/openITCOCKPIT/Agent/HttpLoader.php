@@ -50,10 +50,12 @@ class HttpLoader {
     }
 
     /**
+     * @param bool $checkConfig
+     *
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function queryAgent() {
+    public function queryAgent($checkConfig = false) {
         $Client = new Client();
         $config = $this->config;
 
@@ -80,23 +82,39 @@ class HttpLoader {
             $this->hostaddress,
             $config['port']
         );
+        $configUrl = sprintf(
+            '%s://%s:%s/config',
+            $protocol,
+            $this->hostaddress,
+            $config['port']
+        );
 
         $response = $Client->request('GET', $url, $options);
 
+        $configResult = '';
+        if ($checkConfig) {
+            $configResponse = $Client->request('GET', $configUrl, $options);
+            if ($response->getStatusCode() === 200) {
+                $configResult = $configResponse->getBody()->getContents();
+            }
+        }
+
         if ($response->getStatusCode() !== 200) {
             return [
-                'output'  => null,
-                'error'   => $response->getBody()->getContents(),
-                'success' => false
+                'response' => null,
+                'config'   => $configResult,
+                'error'    => $response->getBody()->getContents(),
+                'success'  => false
             ];
         }
 
         $agentOutput = json_decode($response->getBody()->getContents(), true);
 
         return [
-            'response'  => $agentOutput,
-            'error'   => null,
-            'success' => true
+            'response' => $agentOutput,
+            'config'   => $configResult,
+            'error'    => null,
+            'success'  => true
         ];
     }
 

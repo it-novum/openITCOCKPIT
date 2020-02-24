@@ -233,25 +233,25 @@ class AgentconfigsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            /** @var $AgentchecksTable AgentchecksTable */
-            $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
-            $agentcheck = $AgentchecksTable->newEmptyEntity();
-            $agentcheck = $AgentchecksTable->patchEntity($agentcheck, $this->request->getData('Agentcheck'));
+            /** @var AgentconfigsTable $AgentconfigsTable */
+            $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+            $agentconfig = $AgentconfigsTable->newEmptyEntity();
+            $agentconfig = $AgentconfigsTable->patchEntity($agentconfig, $this->request->getData('Agentconfig'));
 
-            $AgentchecksTable->save($agentcheck);
-            if ($agentcheck->hasErrors()) {
+            $AgentconfigsTable->save($agentconfig);
+            if ($agentconfig->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
-                $this->set('error', $agentcheck->getErrors());
+                $this->set('error', $agentconfig->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 if ($this->isJsonRequest()) {
-                    $this->serializeCake4Id($agentcheck); // REST API ID serialization
+                    $this->serializeCake4Id($agentconfig); // REST API ID serialization
                     return;
                 }
             }
-            $this->set('agentcheck', $agentcheck);
-            $this->viewBuilder()->setOption('serialize', ['agentcheck']);
+            $this->set('agentconfig', $agentconfig);
+            $this->viewBuilder()->setOption('serialize', ['agentconfig']);
         }
     }
 
@@ -264,39 +264,33 @@ class AgentconfigsController extends AppController {
             return;
         }
 
-        /** @var $AgentchecksTable AgentchecksTable */
-        $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
 
-        if (!$AgentchecksTable->existsById($id)) {
-            throw new NotFoundException(__('Agentcheck not found'));
+        if (!$AgentconfigsTable->existsById($id)) {
+            throw new NotFoundException(__('Agentconfig not found'));
         }
 
-        $agentcheck = $AgentchecksTable->getAgentcheckById($id);
-
-        $allowEdit = $this->isWritableContainer($agentcheck->get('servicetemplate')->get('container_id'));
-        if (!$allowEdit) {
-            $this->render403();
-            return;
-        }
+        $agentconfig = $AgentconfigsTable->get($id);
 
         if ($this->request->is('post')) {
-            $agentcheck = $AgentchecksTable->patchEntity($agentcheck, $this->request->getData('Agentcheck'));
+            $agentconfig = $AgentconfigsTable->patchEntity($agentconfig, $this->request->getData('Agentconfig'));
 
-            $AgentchecksTable->save($agentcheck);
-            if ($agentcheck->hasErrors()) {
+            $AgentconfigsTable->save($agentconfig);
+            if ($agentconfig->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
-                $this->set('error', $agentcheck->getErrors());
+                $this->set('error', $agentconfig->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 if ($this->isJsonRequest()) {
-                    $this->serializeCake4Id($agentcheck); // REST API ID serialization
+                    $this->serializeCake4Id($agentconfig); // REST API ID serialization
                     return;
                 }
             }
         }
-        $this->set('agentcheck', $agentcheck);
-        $this->viewBuilder()->setOption('serialize', ['agentcheck']);
+        $this->set('agentconfig', $agentconfig);
+        $this->viewBuilder()->setOption('serialize', ['agentconfig']);
     }
 
     public function delete($id) {
@@ -304,22 +298,16 @@ class AgentconfigsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $AgentchecksTable AgentchecksTable */
-        $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
 
-        if (!$AgentchecksTable->existsById($id)) {
-            throw new NotFoundException(__('Agentcheck not found'));
+        if (!$AgentconfigsTable->existsById($id)) {
+            throw new NotFoundException(__('Agentconfig not found'));
         }
 
-        $agentcheck = $AgentchecksTable->getAgentcheckById($id);
+        $agentconfig = $AgentconfigsTable->get($id);
 
-        $allowEdit = $this->isWritableContainer($agentcheck->get('servicetemplate')->get('container_id'));
-        if (!$allowEdit) {
-            $this->render403();
-            return;
-        }
-
-        if ($AgentchecksTable->delete($agentcheck)) {
+        if ($AgentconfigsTable->delete($agentconfig)) {
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
             return;
