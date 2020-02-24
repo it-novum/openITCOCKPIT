@@ -563,7 +563,7 @@
                                     <div class="row">
                                         <?php foreach ($serviceOptions as $serviceOption): ?>
                                             <div
-                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right-badge"
                                                 ng-class="{'has-error': errors.<?php echo $serviceOption['field']; ?>}">
                                                 <input type="checkbox"
                                                        class="custom-control-input"
@@ -686,7 +686,7 @@
                                     <div class="row">
                                         <?php foreach ($serviceFlapOptions as $serviceFlapOption): ?>
                                             <div
-                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right-badge"
                                                 ng-class="{'has-error': errors.<?php echo $serviceFlapOption['field']; ?>}">
                                                 <input type="checkbox" name="checkbox"
                                                        class="custom-control-input"
