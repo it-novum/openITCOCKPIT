@@ -66,6 +66,7 @@ class AngularAssets implements AngularAssetsInterface {
         'legacy/js/lib/parseuri.js',
         //'js/vendor/vis-4.21.0/dist/vis.js',
         'node_modules/vis-network/dist/vis-network.js',
+        'node_modules/vis-timeline/dist/vis-timeline-graph2d.min.js',
         'js/scripts/ng.app.js',
         'legacy/js/vendor/UUID.js-4.0.3/dist/uuid.core.js',
         'node_modules/underscore/underscore-min.js',
@@ -160,6 +161,7 @@ class AngularAssets implements AngularAssetsInterface {
         'vendor/gridstack/gridstack.min.css',*/
         //'vendor/vis-4.21.0/dist/vis.css',
         '/node_modules/vis-network/dist/vis-network.min.css',
+        '/node_modules/vis-timeline/dist/vis-timeline-graph2d.css',
         //'my_vis.css',
         '/node_modules/noty/lib/noty.css',
         '/node_modules/angular-flippy/dist/css/angular-flippy.min.css',
