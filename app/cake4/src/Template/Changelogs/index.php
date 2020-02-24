@@ -143,6 +143,8 @@
                                                        class="custom-control-input"
                                                        name="checkbox"
                                                        checked="checked"
+                                                       ng-false-value="0"
+                                                       ng-true-value="1"
                                                        ng-model="filter.Models.<?= $model ?>"
                                                        ng-model-options="{debounce: 500}">
                                                 <label class="custom-control-label"
@@ -162,6 +164,8 @@
                                                        class="custom-control-input"
                                                        name="checkbox"
                                                        checked="checked"
+                                                       ng-false-value="0"
+                                                       ng-true-value="1"
                                                        ng-model="filter.Actions.add"
                                                        ng-model-options="{debounce: 500}">
                                                 <label class="custom-control-label custom-control-label-up"
@@ -170,59 +174,69 @@
 
                                             <div class="custom-control custom-checkbox">
                                                 <input type="checkbox"
-                                                       id="statusFilterDown"
+                                                       id="FilterEdit"
                                                        class="custom-control-input"
                                                        name="checkbox"
                                                        checked="checked"
+                                                       ng-false-value="0"
+                                                       ng-true-value="1"
                                                        ng-model="filter.Actions.edit"
                                                        ng-model-options="{debounce: 500}">
                                                 <label class="custom-control-label custom-control-label-warning"
-                                                       for="statusFilterDown"><?php echo __('Edit'); ?></label>
+                                                       for="FilterEdit"><?php echo __('Edit'); ?></label>
                                             </div>
 
                                             <div class="custom-control custom-checkbox">
                                                 <input type="checkbox"
-                                                       id="statusFilterUnreachable"
+                                                       id="FilterCopy"
                                                        class="custom-control-input"
                                                        name="checkbox"
                                                        checked="checked"
+                                                       ng-false-value="0"
+                                                       ng-true-value="1"
                                                        ng-model="filter.Actions.copy"
                                                        ng-model-options="{debounce: 500}">
                                                 <label class="custom-control-label"
-                                                       for="statusFilterUnreachable"><?php echo __('Copy'); ?></label>
+                                                       for="FilterCopy"><?php echo __('Copy'); ?></label>
                                             </div>
                                             <div class="custom-control custom-checkbox">
                                                 <input type="checkbox"
-                                                       id="statusFilterUnreachable"
+                                                       id="FilterDelete"
                                                        class="custom-control-input"
                                                        name="checkbox"
                                                        checked="checked"
+                                                       ng-false-value="0"
+                                                       ng-true-value="1"
                                                        ng-model="filter.Actions.delete"
                                                        ng-model-options="{debounce: 500}">
                                                 <label class="custom-control-label custom-control-label-down"
-                                                       for="statusFilterUnreachable"><?php echo __('Delete'); ?></label>
+                                                       for="FilterDelete"><?php echo __('Delete'); ?></label>
                                             </div>
                                             <div class="custom-control custom-checkbox">
                                                 <input type="checkbox"
-                                                       id="statusFilterUnreachable"
+                                                       id="FilterActivate"
                                                        class="custom-control-input"
                                                        name="checkbox"
                                                        checked="checked"
+                                                       ng-false-value="0"
+                                                       ng-true-value="1"
                                                        ng-model="filter.Actions.activate"
                                                        ng-model-options="{debounce: 500}">
                                                 <label class="custom-control-label"
-                                                       for="statusFilterUnreachable"><?php echo __('Activate'); ?></label>
+                                                       for="FilterActivate"><?php echo __('Activate'); ?></label>
                                             </div>
                                             <div class="custom-control custom-checkbox">
                                                 <input type="checkbox"
-                                                       id="statusFilterUnreachable"
+                                                       id="FilterDeactivate"
                                                        class="custom-control-input"
                                                        name="checkbox"
                                                        checked="checked"
+                                                       ng-false-value="0"
+                                                       ng-true-value="1"
                                                        ng-model="filter.Actions.deactivate"
                                                        ng-model-options="{debounce: 500}">
                                                 <label class="custom-control-label"
-                                                       for="statusFilterUnreachable"><?php echo __('Deactivate'); ?></label>
+                                                       for="FilterDeactivate"><?php echo __('Deactivate'); ?></label>
                                             </div>
 
                                         </div>
