@@ -25,12 +25,13 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use Cake\Utility\Hash;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
 class ConfigGenerator {
 
-    protected $basePath = OLD_APP . 'config_templates' . DS;
+    protected $basePath = APP . 'config_templates' . DS;
 
     /**
      * Folder where Twig should search for the template.
@@ -232,7 +233,7 @@ class ConfigGenerator {
 
         $customResult = $this->customValidationRules($data);
         if (is_array($customResult) && !empty($customResult)) {
-            $error = \Hash::merge($error, $customResult);
+            $error = Hash::merge($error, $customResult);
         }
 
         if (empty($error)) {
