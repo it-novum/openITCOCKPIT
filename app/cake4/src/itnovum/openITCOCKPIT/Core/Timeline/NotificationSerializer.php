@@ -84,7 +84,7 @@ class NotificationSerializer {
             );
 
             $records[] = [
-                'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $notificationTime),
+                'start'     => $this->UserTime->customFormat('Y-m-d H:i:s', $notificationTime),
                 'type'      => 'box',
                 'className' => 'orange',
                 'content'   => '<i class="fa fa-envelope"></i>',

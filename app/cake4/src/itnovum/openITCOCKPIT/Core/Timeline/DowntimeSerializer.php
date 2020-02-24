@@ -91,8 +91,8 @@ class DowntimeSerializer {
                     $title = h($title);
                 }
                 $records[] = [
-                    'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledStartTime()),
-                    'end'       => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getActualEndTime()),
+                    'start'     => $this->UserTime->customFormat('Y-m-d H:i:s', $this->records[$i]->getScheduledStartTime()),
+                    'end'       => $this->UserTime->customFormat('Y-m-d H:i:s', $this->records[$i]->getActualEndTime()),
                     'type'      => 'range',
                     'className' => 'bg-downtime-cancelled',
                     'content'   => $title,
@@ -101,8 +101,8 @@ class DowntimeSerializer {
                 ];
             } else {
                 $records[] = [
-                    'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledStartTime()),
-                    'end'       => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledEndTime()),
+                    'start'     => $this->UserTime->customFormat('Y-m-d H:i:s', $this->records[$i]->getScheduledStartTime()),
+                    'end'       => $this->UserTime->customFormat('Y-m-d H:i:s', $this->records[$i]->getScheduledEndTime()),
                     'type'      => 'range',
                     'className' => 'bg-downtime',
                     'content'   => $title,

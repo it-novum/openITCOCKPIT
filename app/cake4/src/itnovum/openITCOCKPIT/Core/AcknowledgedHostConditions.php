@@ -29,13 +29,6 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
 
 class AcknowledgedHostConditions extends ListSettingsConditions {
 
-    /**
-     * @var array
-     */
-    protected $order = [
-        'AcknowledgedHosts.entry_time' => 'DESC'
-    ];
-
     protected $states = [
         0, 1, 2
     ];
