@@ -28,7 +28,7 @@
     <div class="btn-group btn-group-xs mr-2" role="group">
         <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
             <button class="btn btn-default"
-                    ui-sref="HostsIndex({sort: 'Hoststatus.last_state_change', direction: 'desc'})" style="color:#bbb;">
+                    ui-sref="ServicesIndex({sort: 'Servicestatus.last_state_change', direction: 'desc'})" style="color:#bbb;">
                 <i class="fa fa-cog fa-lg"></i>
             </button>
             <button class="btn btn-warning"
