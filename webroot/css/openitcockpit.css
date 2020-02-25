@@ -760,3 +760,7 @@ pre {
 .menustats > li {
     display: inline-block;
 }
+
+.pointer{
+    cursor:pointer;
+}
