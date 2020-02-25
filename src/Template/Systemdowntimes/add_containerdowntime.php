@@ -88,7 +88,7 @@
                                        id="recursiveContainerLookup"
                                        ng-true-value="1"
                                        ng-false-value="0"
-                                       ng-model="post.Systemdowntime.is_recurring">
+                                       ng-model="post.Systemdowntime.is_recursive">
                                 <label class="custom-control-label" for="recursiveContainerLookup">
                                     <?php echo __('Recursive container lookup'); ?>
                                 </label>
