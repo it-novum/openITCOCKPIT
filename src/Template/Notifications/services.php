@@ -56,14 +56,14 @@
                         <?php if ($this->Acl->hasPermission('index', 'notifications')): ?>
                             <li class="nav-item">
                                 <a class="nav-link" data-toggle="tab" ui-sref="NotificationsIndex" role="tab">
-                                    <i class="fa fa-desktop"></i> <?php echo __('Host notifications'); ?>
+                                    <i class="fa fa-desktop">&nbsp;</i> <?php echo __('Host notifications'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('services', 'notifications')): ?>
                             <li class="nav-item">
                                 <a class="nav-link active" data-toggle="tab" ui-sref="NotificationsServices" role="tab">
-                                    <i class="fa fa-cogs"></i> <?php echo __('Service notifications'); ?>
+                                    <i class="fa fa-cogs">&nbsp;</i> <?php echo __('Service notifications'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
