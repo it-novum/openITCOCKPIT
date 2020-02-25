@@ -765,7 +765,7 @@ pre {
     cursor:pointer;
 }
 
-div.required label::after {
+div.required .control-label::after {
     content: ' *';
     color: red;
     display: inline;

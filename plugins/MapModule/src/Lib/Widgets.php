@@ -52,7 +52,7 @@ class Widgets implements ModuleWidgetsInterface {
             $widgets[] = [
                 'type_id'   => 100,
                 'title'     => __('Map'),
-                'icon'      => 'fa-map-marker',
+                'icon'      => 'fa fa-map-marker',
                 'directive' => 'map-widget',
                 'width'     => 12,
                 'height'    => 25
