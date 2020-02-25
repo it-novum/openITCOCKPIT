@@ -97,7 +97,8 @@ class AngularAssets implements AngularAssetsInterface {
         'js/lib/raphael-charts-cust/raphael-charts-0.2.1.js',
         'js/lib/raphael-charts-cust/g.raphael.js',
         'js/lib/raphael-charts-cust/g.bar.js',
-        'js/lib/raphael-charts-cust/pielicious.js'
+        'js/lib/raphael-charts-cust/pielicious.js',
+        'node_modules/smartwizard/dist/js/jquery.smartWizard.js'
     ];
 
     private $cssFiles = [
@@ -131,6 +132,8 @@ class AngularAssets implements AngularAssetsInterface {
         '/node_modules/angular-flippy/dist/css/angular-flippy.min.css',
         'legacy/css/vendor/image-picker.css',
         '/node_modules/angular-gridster/dist/angular-gridster.min.css',
+        '/node_modules/smartwizard/dist/css/smart_wizard.css',
+        '/node_modules/smartwizard/dist/css/smart_wizard_theme_dots.css',
         '/css/openitcockpit-colors.css',
         '/css/openitcockpit-utils.css',
         '/css/openitcockpit.css',
