@@ -69,7 +69,7 @@
         <div class="header-icon">
             <version-check></version-check>
         </div>
-        <div class="header-icon">
+        <div >
             <?php if ($showstatsinmenu): ?>
                 <menustats></menustats>
             <?php endif; ?>
