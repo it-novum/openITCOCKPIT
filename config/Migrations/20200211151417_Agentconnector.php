@@ -21,7 +21,7 @@ class Agentconnector extends AbstractMigration {
                     'default' => null,
                     'null'    => true,
                 ])
-                ->addColumn('generation_date', 'biginteger', [
+                ->addColumn('generation_date', 'datetime', [
                     'default' => null,
                     'null'    => true,
                 ])

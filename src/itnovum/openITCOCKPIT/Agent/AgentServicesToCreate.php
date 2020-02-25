@@ -29,6 +29,7 @@ namespace itnovum\openITCOCKPIT\Agent;
 class AgentServicesToCreate {
 
     private $servicesToCreate = [];
+    private $servicesForFrontend = [];
 
     private $agentJsonOutput = null;
     private $agentchecks_mapping = [];
@@ -46,6 +47,10 @@ class AgentServicesToCreate {
 
     public function getServicesToCreate() {
         return $this->servicesToCreate;
+    }
+
+    public function getServicesForFrontend() {
+        return $this->servicesForFrontend;
     }
 
     private function isInExistingServices($serviceToCompare, $services, $servicecommandargumentvalue = null, $servicecommandargumentvaluePosition = null) {
@@ -78,6 +83,18 @@ class AgentServicesToCreate {
                 $this->servicesToCreate[$receiverPluginName] = [];
             }
             $this->servicesToCreate[$receiverPluginName][] = $service;
+
+            if (!isset($this->servicesForFrontend[$receiverPluginName])) {
+                $this->servicesForFrontend[$receiverPluginName] = [];
+            }
+            $frontendService = [
+                'name'               => $service['name'],
+                'servicetemplate_id' => $service['servicetemplate_id'],
+            ];
+            if (isset($service['agent_wizard_option_description'])) {
+                $frontendService['agent_wizard_option_description'] = $service['agent_wizard_option_description'];
+            }
+            $this->servicesForFrontend[$receiverPluginName][] = $frontendService;
         }
     }
 
