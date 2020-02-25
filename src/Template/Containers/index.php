@@ -24,154 +24,171 @@
 //	confirmation.
 $timezones = \Cake\I18n\FrozenTime::listTimezones();
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-link fa-fw"></i> <?php echo __('System'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="ContainersIndex">
+            <i class="fas fa-clipboard-list"></i> <?php echo __('Containers'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-sitemap"></i> <?php echo __('Overview'); ?>
+    </li>
+</ol>
+
+
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-link fa-fw "></i>
-            <?php echo __('System'); ?>
-            <span>>
-                <?php echo __('Containers'); ?>
-            </span>
-            <div class="third_level"> <?php echo __('Overview') ?></div>
-        </h1>
-    </div>
-</div>
-
-
-<div class="jarviswidget" id="wid-id-0">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-link"></i> </span>
-        <h2><?php echo __('Edit containers'); ?></h2>
-        <div class="widget-toolbar" role="menu"></div>
-    </header>
-    <div>
-        <div class="widget-body">
-            <div class="row">
-                <div class="form-group">
-                    <label class="col col-md-1 control-label">
-                        <?php echo __('Container'); ?>
-                    </label>
-                    <div class="col col-xs-11">
-                        <select
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Containers'); ?>
+                    <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
+                </h2>
+            </div>
+            <div class="panel-container">
+                <div class="panel-content">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label">
+                                <?php echo __('Container'); ?>
+                            </label>
+                            <select
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="containers"
                                 ng-model="selectedContainer.id"
                                 ng-options="container.key as container.value for container in containers">
-                        </select>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="panel-content pull-right">
+                    <div class="frame-wrap margin-bottom-10">
+                        <div>
+                            <i class="fa fa-globe"></i>
+                            <em class="padding-right-20">
+                                <?php echo __('Global'); ?>
+                            </em>
+                            <i class="fa fa-home"></i>
+                            <em class="padding-right-20">
+                                <?php echo __('Tenant'); ?>
+                            </em>
+                            <i class="fa fa-location-arrow"></i>
+                            <em class="padding-right-20">
+                                <?php echo __('Location'); ?>
+                            </em>
+                            <i class="fa fa-link"></i>
+                            <em class="padding-right-20">
+                                <?php echo __('Node'); ?>
+                            </em>
+                            <i class="fa fa-users"></i>
+                            <em class="padding-right-20">
+                                <?php echo __('Contactgroup'); ?>
+                            </em>
+                            <i class="fa fa-server"></i>
+                            <em class="padding-right-20">
+                                <?php echo __('Hostgroup'); ?>
+                            </em>
+                            <i class="fa fa-cogs"></i>
+                            <em class="padding-right-20">
+                                <?php echo __('Servicegroup'); ?>
+                            </em>
+                            <i class="fa fa-pencil-square-o"></i>
+                            <em>
+                                <?php echo __('Servicetemplategroup'); ?>
+                            </em>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div>
-                <span class="ajax_loader text-center">
-                    <h1>
-                        <i class="fa fa-cog fa-lg fa-spin"></i>
-                    </h1>
-                    <br/>
-                </span>
-            </div>
-            <div class="row padding-top-15">
-                <div class="row">
-                    <div class="col-sm-12 col-lg-12">
-                        <div class="jarviswidget" id="wid-id-0">
+                <div class="panel-content">
+                    <div class="row padding-top-15">
+                        <div class="col col-sm-12 col-lg-12">
                             <header>
-                                <span class="widget-icon"> <i class="fa fa-link"></i> </span>
-                                <h2><?php echo __('Tree'); ?></h2>
+                                <h4>
+                                    <i class="fa fa-link"></i>
+                                    <?php echo __('Tree'); ?>
+                                </h4>
                             </header>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <div class="row padding-top-15">
 
-                            <div class="widget-body">
-                                <div class="padding-bottom-10">
-                                    <div class="col col-xs-12 col-md-2 col-lg-3">
-                                        <i class="fa fa-globe"></i> <?php echo __('Global'); ?>
-                                    </div>
-                                    <div class="col col-xs-12 col-md-2 col-lg-3">
-                                        <i class="fa fa-home"></i> <?php echo __('Tenant'); ?>
-                                    </div>
-                                    <div class="col col-xs-12 col-md-2 col-lg-3">
-                                        <i class="fa fa-location-arrow"></i> <?php echo __('Location'); ?>
-                                    </div>
-                                    <div class="col col-xs-12 col-md-2 col-lg-3">
-                                        <i class="fa fa-link"></i> <?php echo __('Node'); ?>
-                                    </div>
-                                    <div class="col col-xs-12 col-md-2 col-lg-3">
-                                        <i class="fa fa-users"></i> <?php echo __('Contactgroup'); ?>
-                                    </div>
-                                    <div class="col col-xs-12 col-md-2 col-lg-3">
-                                        <i class="fa fa-sitemap"></i> <?php echo __('Hostgroup'); ?>
-                                    </div>
-                                    <div class="col col-xs-12 col-md-2 col-lg-3">
-                                        <i class="fa fa-cogs"></i> <?php echo __('Servicegroup'); ?>
-                                    </div>
-                                    <div class="col col-xs-12 col-md-2 col-lg-3">
-                                        <i class="fa fa-pencil-square-o"></i> <?php echo __('Servicetemplategroup'); ?>
-                                    </div>
-                                </div>
-                                <div ng-if="subcontainers" ng-nestable ng-model="subcontainers">
-                                    <div>
-                                        <i class="fa fa-globe"
-                                           ng-if="$Container.containertype_id == <?php echo CT_GLOBAL; ?>"></i>
-                                        <i class="fa fa-home"
-                                           ng-if="$Container.containertype_id == <?php echo CT_TENANT; ?>"></i>
-                                        <i class="fa fa-location-arrow"
-                                           ng-if="$Container.containertype_id == <?php echo CT_LOCATION; ?>"></i>
-                                        <i class="fa fa-link"
-                                           ng-if="$Container.containertype_id == <?php echo CT_NODE; ?>"></i>
-                                        <i class="fa fa-users"
-                                           ng-if="$Container.containertype_id == <?php echo CT_CONTACTGROUP; ?>"></i>
-                                        <i class="fa fa-sitemap"
-                                           ng-if="$Container.containertype_id == <?php echo CT_HOSTGROUP; ?>"></i>
-                                        <i class="fa fa-cogs"
-                                           ng-if="$Container.containertype_id == <?php echo CT_SERVICEGROUP; ?>"></i>
-                                        <i class="fa fa-pencil-square-o"
-                                           ng-if="$Container.containertype_id == <?php echo CT_SERVICETEMPLATEGROUP; ?>"></i>
+                        <div class="col col-sm-12 col-lg-12">
+                            <div ng-if="subcontainers" ng-nestable ng-model="subcontainers">
+                                <div>
+                                    <i class="fa fa-globe"
+                                       ng-if="$Container.containertype_id == <?php echo CT_GLOBAL; ?>"></i>
+                                    <i class="fa fa-home"
+                                       ng-if="$Container.containertype_id == <?php echo CT_TENANT; ?>"></i>
+                                    <i class="fa fa-location-arrow"
+                                       ng-if="$Container.containertype_id == <?php echo CT_LOCATION; ?>"></i>
+                                    <i class="fa fa-link"
+                                       ng-if="$Container.containertype_id == <?php echo CT_NODE; ?>"></i>
+                                    <i class="fa fa-users"
+                                       ng-if="$Container.containertype_id == <?php echo CT_CONTACTGROUP; ?>"></i>
+                                    <i class="fa fa-sitemap"
+                                       ng-if="$Container.containertype_id == <?php echo CT_HOSTGROUP; ?>"></i>
+                                    <i class="fa fa-cogs"
+                                       ng-if="$Container.containertype_id == <?php echo CT_SERVICEGROUP; ?>"></i>
+                                    <i class="fa fa-pencil-square-o"
+                                       ng-if="$Container.containertype_id == <?php echo CT_SERVICETEMPLATEGROUP; ?>"></i>
 
-                                        <div class="nodes-container-name" title="{{ $Container.name }}">
-                                            <span class="ellipsis"">{{ $Container.name }}</span>
-                                        </div>
+                                    <div class="nodes-container-name" title="{{ $Container.name }}">
+                                        <span class="ellipsis"">{{ $Container.name }}</span>
+                                    </div>
 
-                                        <?php if ($this->Acl->hasPermission('edit', 'containers')): ?>
-                                            <span ng-if="$Container.allow_edit === true">
-                                                <a ng-if="$Container.containertype_id == <?php echo CT_NODE; ?> ||
+                                    <?php if ($this->Acl->hasPermission('edit', 'containers')): ?>
+                                        <span ng-if="$Container.allow_edit === true">
+                                            <a ng-if="$Container.containertype_id == <?php echo CT_NODE; ?> ||
                                                     $Container.containertype_id == <?php echo CT_TENANT; ?> ||
                                                     $Container.containertype_id == <?php echo CT_LOCATION; ?>"
-                                                   class="txt-color-red padding-left-10 font-xs pointer"
-                                                   ng-click="openEditNodeModal($Container)">
-                                                    <i class="fa fa-pencil"></i>
-                                                    <?php echo __('Edit'); ?>
-                                                </a>
-                                            </span>
-                                        <?php endif; ?>
+                                               class="txt-color-red padding-left-10 font-xs pointer"
+                                               ng-click="openEditNodeModal($Container)">
+                                                <i class="fas fa-pencil-alt"></i>
+                                                <?php echo __('Edit'); ?>
+                                            </a>
+                                        </span>
+                                    <?php endif; ?>
 
-                                        <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
-                                            <a ng-if="$Container.containertype_id == <?php echo CT_GLOBAL; ?> ||
+                                    <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
+                                        <a ng-if="$Container.containertype_id == <?php echo CT_GLOBAL; ?> ||
                                             $Container.containertype_id == <?php echo CT_NODE; ?> ||
                                             $Container.containertype_id == <?php echo CT_TENANT; ?> ||
                                             $Container.containertype_id == <?php echo CT_LOCATION; ?>"
-                                               class="txt-color-green padding-left-10 font-xs pointer"
-                                               ng-click="openAddNodeModal($Container)">
-                                                <i class="fa fa-plus"></i>
-                                                <?php echo __('Add'); ?>
-                                            </a>
-                                        <?php endif; ?>
+                                           class="txt-color-green padding-left-10 font-xs pointer"
+                                           ng-click="openAddNodeModal($Container)">
+                                            <i class="fa fa-plus"></i>
+                                            <?php echo __('Add'); ?>
+                                        </a>
+                                    <?php endif; ?>
 
-                                        <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
-                                            <a ng-if="$Container.containertype_id == <?php echo CT_NODE; ?> ||
+                                    <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
+                                        <a ng-if="$Container.containertype_id == <?php echo CT_NODE; ?> ||
                                             $Container.containertype_id == <?php echo CT_TENANT; ?> ||
                                             $Container.containertype_id == <?php echo CT_LOCATION; ?>"
-                                               class="text-info padding-left-10 font-xs pointer"
-                                               ui-sref="ContainersShowDetails({id:$Container.id, tenant:selectedContainer.id})">
-                                                <i class="fa fa-info"></i>
-                                                <?php echo __('Show details'); ?>
-                                            </a>
-                                        <?php endif; ?>
+                                           class="text-info padding-left-10 font-xs pointer"
+                                           ui-sref="ContainersShowDetails({id:$Container.id, tenant:selectedContainer.id})">
+                                            <i class="fa fa-info"></i>
+                                            <?php echo __('Show details'); ?>
+                                        </a>
+                                    <?php endif; ?>
 
 
-                                        <i class="note pull-right"
-                                           ng-if="(($Container.rght-$Container.lft)/2-0.5) == 0">empty</i>
-                                        <span class="badge bg-color-blue txt-color-white pull-right"
-                                              ng-if="(($Container.rght-$Container.lft)/2-0.5) > 0">{{ ($Container.rght-$Container.lft)/2-0.5 }}</span>
+                                    <i class="note pull-right"
+                                       ng-if="(($Container.rght-$Container.lft)/2-0.5) == 0">
+                                        <?php echo __('empty'); ?>
+                                    </i>
+                                    <span class="badge bg-color-blue txt-color-white pull-right"
+                                          ng-if="(($Container.rght-$Container.lft)/2-0.5) > 0">{{
+                                        ($Container.rght-$Container.lft)/2-0.5 }}</span>
 
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -181,7 +198,6 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
         </div>
     </div>
 </div>
-
 
 <div id="angularAddNodeModal" class="modal" role="dialog">
     <div class="modal-dialog modal-lg">
@@ -222,7 +238,8 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                             </div>
                         </div>
                     </div>
-                    <div class="row" ng-class="{'has-error': errors.Container.name || errors.name}" ng-show="post.Container.containertype_id==5">
+                    <div class="row" ng-class="{'has-error': errors.Container.name || errors.name}"
+                         ng-show="post.Container.containertype_id==5">
                         <label class="col-xs-12 control-label">
                             <?php echo __('Name'); ?>
                         </label>
@@ -334,7 +351,8 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                     <?php foreach ($timezones as $continent => $continentTimezons): ?>
                                         <optgroup label="<?php echo h($continent); ?>">
                                             <?php foreach ($continentTimezons as $timezoneKey => $timezoneName): ?>
-                                                <option value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
+                                                <option
+                                                    value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
                                             <?php endforeach; ?>
                                         </optgroup>
                                     <?php endforeach;; ?>

@@ -760,3 +760,13 @@ pre {
 .menustats > li {
     display: inline-block;
 }
+
+.nodes-container-name {
+    display: inline-flex;
+    max-width: 80%;
+}
+
+.containers-dd {
+    max-width: 100%;
+}
+
