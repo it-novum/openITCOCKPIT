@@ -33,6 +33,7 @@ systemctl enable oitc_cmd
 systemctl enable gearman_worker
 systemctl enable push_notification
 systemctl enable nodejs_server
+systemctl enable openitcockpit-graphing.service
 
 if [[ ! -f "$INIFILE" ]]; then
     echo "Create local MySQL configuration and database"
@@ -80,6 +81,12 @@ echo "Import openITCOCKPIT Core database schema"
 oitc migrations migrate
 
 oitc config_generator_shell --generate
+
+echo "---------------------------------------------------------------"
+echo "Configure Grafana"
+systemctl restart openitcockpit-graphing.service
+
+
 
 echo "---------------------------------------------------------------"
 echo "Scan and import ACL objects. This will take a while..."
