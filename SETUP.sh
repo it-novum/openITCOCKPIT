@@ -86,9 +86,9 @@ echo "---------------------------------------------------------------"
 echo "Load Statusengine DB Schema"
 STATUSENGINE_VERSION=$(oitc StatusengineVersion)
 if [[ $STATUSENGINE_VERSION == "Statusengine2" ]]; then
-    cp -r ${APPDIR}/system/Statusengine2/legacy_schema_innodb.php /opt/openitc/statusengine/cakephp/app/Plugin/Legacy/Config/Schema/legacy_schema.php
-    chmod +x /opt/openitc/statusengine/cakephp/app/Console/cake
-    /opt/openitc/statusengine/cakephp/app/Console/cake schema update --plugin Legacy --file legacy_schema_innodb.php --connection legacy --yes
+    cp -r ${APPDIR}/system/Statusengine2/legacy_schema_innodb.php /opt/openitc/statusengine2/cakephp/app/Plugin/Legacy/Config/Schema/legacy_schema.php
+    chmod +x /opt/openitc/statusengine2/cakephp/app/Console/cake
+    /opt/openitc/statusengine2/cakephp/app/Console/cake schema update --plugin Legacy --file legacy_schema_innodb.php --connection legacy --yes
 fi
 
 echo "---------------------------------------------------------------"
