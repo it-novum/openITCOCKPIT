@@ -83,18 +83,85 @@ oitc migrations migrate
 oitc config_generator_shell --generate
 
 echo "---------------------------------------------------------------"
-echo "Configure Grafana"
-systemctl restart openitcockpit-graphing.service
-
-
-
-echo "---------------------------------------------------------------"
-echo "Scan and import ACL objects. This will take a while..."
-oitc Acl.acl_extras aco_sync
+echo "Load Statusengine DB Schema"
+STATUSENGINE_VERSION=$(oitc StatusengineVersion)
+if [[ $STATUSENGINE_VERSION == "Statusengine2" ]]; then
+    cp -r ${APPDIR}/system/Statusengine2/legacy_schema_innodb.php /opt/openitc/statusengine/cakephp/app/Plugin/Legacy/Config/Schema/legacy_schema.php
+    chmod +x /opt/openitc/statusengine/cakephp/app/Console/cake
+    /opt/openitc/statusengine/cakephp/app/Console/cake schema update --plugin Legacy --file legacy_schema_innodb.php --connection legacy --yes
+fi
 
 echo "---------------------------------------------------------------"
 echo "Load default database"
 oitc migrations seed
+
+echo "---------------------------------------------------------------"
+echo "Configure Grafana"
+systemctl restart openitcockpit-graphing.service
+
+ADMIN_PASSWORD=$(cat /opt/openitc/etc/grafana/admin_password)
+
+if [ ! -f /opt/openitc/etc/grafana/api_key ]; then
+    echo "Create new Grafana API Key for openITCOCKPIT"
+    COUNTER=0
+
+    set +e
+    while [ "$COUNTER" -lt 30 ]; do
+        echo "Try to connect to Grafana API..."
+        #Is Grafana Server Online?
+        STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/admin/stats' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+
+        if [ "$STATUSCODE" == "200" ]; then
+            API_KEY=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/auth/keys' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{"role":"Editor","name":"openITCOCKPIT"}' | jq -r '.key')
+            echo "$API_KEY" >/opt/openitc/etc/grafana/api_key
+            break
+        fi
+        COUNTER=$((COUNTER + 1))
+        sleep 1
+    done
+
+    if [ ! -f /opt/openitc/etc/grafana/api_key ]; then
+        echo "ERROR!"
+        echo "Could not create API key for Grafana"
+    fi
+    set -e
+fi
+
+echo "Check if Graphite Datasource exists in Grafana"
+DS_STATUSCODE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources/name/Graphite' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+if [ "$DS_STATUSCODE" == "404" ]; then
+    echo "Create Graphite as default Datasource for Grafana"
+    export NO_PROXY="127.0.0.1"
+    RESPONSE=$(NO_PROXY="127.0.0.1" curl 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
+      "name":"Graphite",
+      "type":"graphite",
+      "url":"http://graphite-web:8080",
+      "access":"proxy",
+      "basicAuth":false,
+      "isDefault": true,
+      "jsonData": {
+        "graphiteVersion": 1.1
+      }
+    }')
+    echo $RESPONSE | jq .
+fi
+echo "Ok: Graphite datasource exists."
+
+if [ -f /opt/openitc/etc/grafana/api_key ]; then
+    echo "Check for Grafana Configuration in openITCOCKPIT database"
+    API_KEY=$(cat /opt/openitc/etc/grafana/api_key)
+    set +e
+    COUNT=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT COUNT(*) FROM grafana_configurations;" -B -s 2>/dev/null)
+    if [ "$?" == 0 ] && [ "$COUNT" == 0 ]; then
+        echo "Create missing default configuration."
+        $(mysql "--defaults-extra-file=$INIFILE" -e "INSERT INTO grafana_configurations (api_url, api_key, graphite_prefix, use_https, use_proxy, ignore_ssl_certificate, dashboard_style, created, modified) VALUES('grafana.docker', '$API_KEY', 'openitcockpit', 1, 0, 1, 'light', '2018-12-05 08:42:55', '2018-12-05 08:42:55');" -B -s 2>/dev/null)
+    fi
+    set -e
+fi
+
+echo "---------------------------------------------------------------"
+echo "Scan and import ACL objects. This will take a while..."
+oitc Acl.acl_extras aco_sync
 
 echo "Running openITCOCKPIT Module database migration/s"
 for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do
