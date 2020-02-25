@@ -59,7 +59,9 @@ class AngularAssets implements AngularAssetsInterface {
         'node_modules/flot/jquery.flot.resize.js',
         'node_modules/flot/jquery.flot.threshold.js',
         'node_modules/flot/jquery.flot.selection.js',
-        'node_modules/jquery-nestable/jquery.nestable.js',
+        //'node_modules/jquery-nestable/jquery.nestable.js',
+        //webroot/legacy/smartadmin/js/plugin/jquery-nestable/jquery.nestable.js
+        'legacy/smartadmin/js/plugin/jquery-nestable/jquery.nestable.js',
         'legacy/js/lib/angular-nestable.js',
         'legacy/js/lib/parseuri.js',
         'node_modules/moment/min/moment.min.js',
@@ -132,6 +134,7 @@ class AngularAssets implements AngularAssetsInterface {
         '/css/openitcockpit-colors.css',
         '/css/openitcockpit-utils.css',
         '/css/openitcockpit.css',
+        '/css/nestable.css'
     ];
 
     /**
