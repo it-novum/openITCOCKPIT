@@ -314,10 +314,10 @@
                                                 <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
                                                       ng-if="tableChanges.isArray" class="padding-top-5">
                                                     <span ng-repeat="(subFieldName, subFieldValue) in fieldValue">
-                                                        <footers class="padding-left-10 blockquote-footer" ng-if="subFieldName !== 'id'>
+                                                        <footer class="padding-left-10 blockquote-footer" ng-if="subFieldName !== 'id'">
                                                             {{subFieldName}}:
                                                             <span class="text-primary">{{subFieldValue}}</span>
-                                                        </footers>
+                                                        </footer>
                                                     </span>
                                                     <div class="padding-top-5"></div>
                                                 </span>

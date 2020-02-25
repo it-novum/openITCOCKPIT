@@ -23,32 +23,6 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 ?>
-<!--<ul>
-    <li>
-        <div class="clearfix padding-10">
-            <input type="text"
-                   placeholder="<?php echo __('Type to search'); ?>"
-                   class="form-control pull-left"
-                   id="filterMainMenu"
-                   title="<?php echo __('If you type the menu will be instantly searched'); ?>&#10;<?php echo __('If you press return, the system will run a host search'); ?>"
-                   ng-model="menuFilter"
-                   ng-keydown="navigate($event)"
-            />
-        </div>
-    </li>
-
-    <li ng-repeat="menuMatche in menuMatches" ng-show="menuMatches.length > 0"
-        ng-class="{'menu-search-border':$last, 'search_list_item_active':$index == menuFilterPosition}">
-        <a ng-if="menuMatche.isAngular != 1" href="{{ menuMatche.url }}">
-            <i class="fa fa-lg fa-fw fa-{{menuMatche.icon}}"></i>
-            <span class="menu-item-parent" ng-bind-html="menuMatche.title | highlight:menuFilter"></span>
-        </a>
-        <a ng-if="menuMatche.isAngular == 1" href="/ng/#!{{ menuMatche.url }}">
-            <i class="fa fa-lg fa-fw fa-{{menuMatche.icon}}"></i>
-            <span class="menu-item-parent" ng-bind-html="menuMatche.title | highlight:menuFilter"></span>
-        </a>
-    </li>
--->
 
 <span ng-repeat="headline in menu">
     <li class="nav-title">
