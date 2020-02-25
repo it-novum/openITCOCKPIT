@@ -42,7 +42,7 @@
             </span>
         </h1>
     </div>
-    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6 margin-top-10">
+    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
 
         <div class="pull-right">
             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
