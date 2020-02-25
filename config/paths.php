@@ -59,6 +59,8 @@ if(!defined('WWW_ROOT')) {
     define('WWW_ROOT', ROOT . DS . 'webroot' . DS);
 }
 
+$isCli = PHP_SAPI === 'cli';
+
 /*
  * Path to the tests directory.
  */
@@ -67,17 +69,32 @@ define('TESTS', ROOT . DS . 'tests' . DS);
 /*
  * Path to the temporary files directory.
  */
-define('TMP', ROOT . DS . 'tmp' . DS);
+if($isCli === false) {
+    define('TMP', ROOT . DS . 'tmp' . DS);
+}else{
+    // www-data
+    define('TMP', ROOT . DS . 'tmp_cli' . DS);
+}
 
 /*
  * Path to the logs directory.
  */
-define('LOGS', ROOT . DS . 'logs' . DS);
+if($isCli === false) {
+    define('LOGS', ROOT . DS . 'logs' . DS);
+}else{
+    // www-data
+    define('LOGS', ROOT . DS . 'logs_cli' . DS);
+}
 
 /*
  * Path to the cache files directory. It can be shared between hosts in a multi-server setup.
  */
-define('CACHE', TMP . 'cache' . DS);
+if($isCli === false) {
+    define('CACHE', TMP . 'cache' . DS);
+}else{
+    // www-data
+    define('CACHE', TMP . 'cache_cli' . DS);
+}
 
 /**
  * Path to the resources directory.
