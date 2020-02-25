@@ -23,225 +23,233 @@
 //  confirmation.
 ?>
 
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-user-secret fa-fw "></i>
-            <?php echo __('openITCOCKPIT Agent'); ?>
-            <span>>
-                <?php echo __('Agents'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
-
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="AgentconnectorsAgent">
+            <i class="fa fa-user-secret"></i> <?php echo __('openITCOCKPIT Agent'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <?php echo __('Agents'); ?>
+    </li>
+</ol>
 
 <massdelete></massdelete>
 
-<section id="widget-grid" class="">
-    <div class="row">
-        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark">
-                <header>
-                    <div class="widget-toolbar" role="menu">
-                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
-                            <i class="fa fa-refresh"></i>
-                            <?php echo __('Refresh'); ?>
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Agents overview'); ?>
+                </h2>
+                <div class="panel-toolbar">
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
+                        <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
+                    </button>
+                    <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
+                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="AgentconnectorsConfig">
+                            <i class="fas fa-plus"></i> <?php echo __('New'); ?>
                         </button>
+                    <?php endif; ?>
+                    <button class="btn btn-xs btn-primary shadow-0" ng-click="triggerFilter()">
+                        <i class="fas fa-filter"></i> <?php echo __('Filter'); ?>
+                    </button>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
 
-                        <?php if ($this->Acl->hasPermission('add', 'agentconnector')): ?>
-                            <a class="btn btn-xs btn-success" ui-sref="AgentconnectorsAdd">
-                                <i class="fa fa-plus"></i>
-                                <?php echo __('New'); ?>
-                            </a>
-                        <?php endif; ?>
-
-                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
-                            <i class="fa fa-filter"></i>
-                            <?php echo __('Filter'); ?>
-                        </button>
-                    </div>
-
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-pencil-square-o"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Agents overview'); ?></h2>
-
-                </header>
-                <div>
-                    <div class="widget-body no-padding">
-                        <div class="list-filter well" ng-show="showFilter">
-                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                    <div class="list-filter card margin-bottom-10" ng-show="showFilter">
+                        <div class="card-header">
+                            <i class="fa fa-filter"></i> <?php echo __('Filter'); ?>
+                        </div>
+                        <div class="card-body">
                             <div class="row">
-
                                 <div class="col-xs-12 col-md-6">
-                                    <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                                            <input type="text" class="input-sm"
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by host uuid'); ?>"
                                                    ng-model="filter.hostuuid"
                                                    ng-model-options="{debounce: 500}">
-                                        </label>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div class="col-xs-12 col-md-6">
-                                    <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                                            <input type="text" class="input-sm"
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by agent ip'); ?>"
                                                    ng-model="filter.remote_addr"
                                                    ng-model-options="{debounce: 500}">
-                                        </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="mobile_table">
-                            <table class="table table-striped table-hover table-bordered smart-form">
-                                <thead>
-                                <tr>
-                                    <th class="no-sort sorting_disabled width-15">
-                                        <i class="fa fa-check-square-o fa-lg"></i>
-                                    </th>
-                                    <th class="no-sort text-center">
-                                        <i class="fa fa-user-secret fa-lg" title="<?php echo __('Is trusted'); ?>"></i>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Agentconnector.hostuuid')">
-                                        <i class="fa" ng-class="getSortClass('Agentconnector.hostuuid')"></i>
-                                        <?php echo __('Host'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Agentconnector.remote_addr')">
-                                        <i class="fa" ng-class="getSortClass('Agentconnector.remote_addr')"></i>
-                                        <?php echo __('Agent IP Address'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Agentconnector.generation_date')">
-                                        <i class="fa" ng-class="getSortClass('Agentconnector.generation_date')"></i>
-                                        <?php echo __('Certificate generation date'); ?>
-                                    </th>
-                                    <th class="no-sort text-center">
+                    <div class="frame-wrap">
+
+                        <table class="table table-striped m-0 table-hover table-bordered table-sm">
+                            <thead>
+                            <tr>
+                                <th class="no-sort sorting_disabled width-15">
+                                    <i class="fa fa-check-square fa-lg"></i>
+                                </th>
+                                <th class="no-sort text-center">
+                                    <i class="fa fa-user-secret fa-lg"
+                                       title="<?php echo __('Is trusted'); ?>"></i>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Agentconnector.hostuuid')">
+                                    <i class="fa" ng-class="getSortClass('Agentconnector.hostuuid')"></i>
+                                    <?php echo __('Host'); ?>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Agentconnector.remote_addr')">
+                                    <i class="fa" ng-class="getSortClass('Agentconnector.remote_addr')"></i>
+                                    <?php echo __('Agent IP Address'); ?>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Agentconnector.generation_date')">
+                                    <i class="fa" ng-class="getSortClass('Agentconnector.generation_date')"></i>
+                                    <?php echo __('Certificate generation date'); ?>
+                                </th>
+                                <th class="no-sort text-center">
                                     <i class="fa fa-cog"></i>
-                                    </th>
-                                </tr>
-                                </thead>
+                                </th>
+                            </tr>
+                            </thead>
 
-                                <tbody>
-                                <tr ng-repeat="agent in agents">
-                                    <td class="text-center" class="width-15">
+                            <tbody>
+                            <tr ng-repeat="agent in agents">
+                                <td class="text-center" class="width-15">
+                                    <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
+                                        <input type="checkbox"
+                                               ng-model="massChange[agent.Agentconnector.id]">
+                                    <?php endif; ?>
+                                </td>
+                                <td class="text-center">
+                                    <i class="fa fa-lg fa-check" ng-show="agent.Agentconnector.trusted"></i>
+                                    <i class="fa fa-lg fa-times-circle"
+                                       ng-hide="agent.Agentconnector.trusted"></i>
+                                </td>
+                                <td>{{agent.Agentconnector.hostuuid}}</td>
+                                <td>{{agent.Agentconnector.http_x_forwarded_for ?
+                                    agent.Agentconnector.http_x_forwarded_for :
+                                    agent.Agentconnector.remote_addr}}
+                                </td>
+                                <td>{{agent.Agentconnector.generation_date}}</td>
+                                <td class="width-50">
+                                    <div class="btn-group">
                                         <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
-                                            <input type="checkbox"
-                                                   ng-model="massChange[agent.Agentconnector.id]">
+                                            <a href="javascript:void(0);"
+                                               class="btn btn-default">
+                                                &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);" class="btn btn-default disabled">
+                                                &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                         <?php endif; ?>
-                                    </td>
-                                    <td class="text-center">
-                                        <i class="fa fa-lg fa-check" ng-show="agent.Agentconnector.trusted"></i>
-                                        <i class="fa fa-lg fa-times-circle-o" ng-hide="agent.Agentconnector.trusted"></i>
-                                    </td>
-                                    <td>{{agent.Agentconnector.hostuuid}}</td>
-                                    <td>{{agent.Agentconnector.http_x_forwarded_for ? agent.Agentconnector.http_x_forwarded_for :
-                                        agent.Agentconnector.remote_addr}}
-                                    </td>
-                                    <td>{{agent.Agentconnector.generation_date}}</td>
-                                    <td class="width-50">
-                                        <div class="btn-group">
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-default dropdown-toggle"><span
+                                                class="caret"></span></a>
+                                        <ul class="dropdown-menu pull-right"
+                                            id="menuHack-{{agent.Agentconnector.id}}">
                                             <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
-                                                <a href="javascript:void(0);"
-                                                   class="btn btn-default">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                </a>
-                                            <?php else: ?>
-                                                <a href="javascript:void(0);" class="btn btn-default disabled">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                                <li ng-hide="agent.Agentconnector.trusted">
+                                                    <a ng-click="changetrust(agent.Agentconnector.id, 1, true)"
+                                                       class="cursor-pointer">
+                                                        <i class="fa fa-check"></i>
+                                                        <?php echo __('Trust Agent'); ?>
+                                                    </a>
+                                                </li>
+                                                <li ng-show="agent.Agentconnector.trusted">
+                                                    <a ng-click="changetrust(agent.Agentconnector.id, 0, true)"
+                                                       class="cursor-pointer">
+                                                        <i class="fa fa-times-circle"></i>
+                                                        <?php echo __('Untrust Agent'); ?>
+                                                    </a>
+                                                </li>
                                             <?php endif; ?>
-                                            <a href="javascript:void(0);" data-toggle="dropdown"
-                                               class="btn btn-default dropdown-toggle"><span
-                                                    class="caret"></span></a>
-                                            <ul class="dropdown-menu pull-right"
-                                                id="menuHack-{{agent.Agentconnector.id}}">
-                                                <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
-                                                    <li ng-hide="agent.Agentconnector.trusted">
-                                                        <a ng-click="changetrust(agent.Agentconnector.id, 1, true)" class="cursor-pointer">
-                                                            <i class="fa fa-check"></i>
-                                                            <?php echo __('Trust Agent'); ?>
-                                                        </a>
-                                                    </li>
-                                                    <li ng-show="agent.Agentconnector.trusted">
-                                                        <a ng-click="changetrust(agent.Agentconnector.id, 0, true)" class="cursor-pointer">
-                                                            <i class="fa fa-times-circle-o"></i>
-                                                            <?php echo __('Untrust Agent'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
 
-                                                <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
-                                                    <li class="divider"></li>
-                                                    <li>
-                                                        <a href="javascript:void(0);"
-                                                           class="txt-color-red"
-                                                           ng-click="confirmDelete(getObjectForDelete(agent))">
-                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
-                                            </ul>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="row margin-top-10 margin-bottom-10">
-                            <div class="row margin-top-10 margin-bottom-10" ng-show="agentchecks.length == 0">
-                                <div class="col-xs-12 text-center txt-color-red italic">
-                                    <?php echo __('No entries match the selection'); ?>
-                                </div>
+                                            <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
+                                                <li class="divider"></li>
+                                                <li>
+                                                    <a href="javascript:void(0);"
+                                                       class="txt-color-red"
+                                                       ng-click="confirmDelete(getObjectForDelete(agent))">
+                                                        <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row margin-top-10 margin-bottom-10">
+                        <div class="row margin-top-10 margin-bottom-10" ng-show="agentchecks.length == 0">
+                            <div class="col-xs-12 text-center txt-color-red italic">
+                                <?php echo __('No entries match the selection'); ?>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="row margin-top-10 margin-bottom-10">
-                            <div class="col-xs-12 col-md-2 text-muted text-center">
-                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
-                            </div>
-                            <div class="col-xs-12 col-md-2">
+                    <div class="row margin-top-10 margin-bottom-10">
+                        <div class="col-xs-12 col-md-2 text-muted text-center">
+                            <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                        </div>
+                        <div class="col-xs-12 col-md-2">
                             <span ng-click="selectAll()" class="pointer">
-                                <i class="fa fa-lg fa-check-square-o"></i>
+                                <i class="fa fa-lg fa-check-square"></i>
                                 <?php echo __('Select all'); ?>
                             </span>
-                            </div>
-                            <div class="col-xs-12 col-md-2">
+                        </div>
+                        <div class="col-xs-12 col-md-2">
                             <span ng-click="undoSelection()" class="pointer">
-                                <i class="fa fa-lg fa-square-o"></i>
+                                <i class="fa fa-lg fa-square"></i>
                                 <?php echo __('Undo selection'); ?>
                             </span>
-                            </div>
-                            <div class="col-xs-12 col-md-2">
+                        </div>
+                        <div class="col-xs-12 col-md-2">
                                 <span ng-click="trustSelected()" class="pointer">
                                 <i class="fa fa-lg fa-check"></i>
                                 <?php echo __('Trust'); ?>
                             </span>
-                            </div>
-                            <div class="col-xs-12 col-md-2">
+                        </div>
+                        <div class="col-xs-12 col-md-2">
                                 <span ng-click="untrustSelected()" class="pointer">
-                                <i class="fa fa-lg fa-times-circle-o"></i>
+                                <i class="fa fa-lg fa-times-circle"></i>
                                 <?php echo __('Untrust'); ?>
                             </span>
-                            </div>
-                            <div class="col-xs-12 col-md-2 txt-color-red">
+                        </div>
+                        <div class="col-xs-12 col-md-2 txt-color-red">
                             <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                <i class="fa fa-lg fa-trash-o"></i>
+                                <i class="fa fa-lg fa-trash"></i>
                                 <?php echo __('Delete all'); ?>
                             </span>
-                            </div>
                         </div>
-
-                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
-                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
-                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
+
+                    <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                    <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                    <?php echo $this->element('paginator_or_scroll'); ?>
                 </div>
             </div>
-        </article>
+        </div>
     </div>
-</section>
-
-
-
+</div>

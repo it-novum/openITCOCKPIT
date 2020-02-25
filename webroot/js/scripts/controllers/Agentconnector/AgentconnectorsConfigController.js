@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('AgentconnectorsAddController', function($scope, $http, QueryStringService, $state, $stateParams, NotyService, $interval){
+    .controller('AgentconnectorsConfigController', function($scope, $http, QueryStringService, $state, $stateParams, NotyService, $interval){
 
         $scope.pullMode = false;
         $scope.pushMode = false;
@@ -382,8 +382,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.runRemoteConfigUpdate = function(){
-            console.log('runRemoteConfigUpdate');
-
             $http.post('/agentconnector/sendNewAgentConfig/' + $scope.host.uuid + '.json?angular=true',
                 {
                     config: $scope.agentconfig

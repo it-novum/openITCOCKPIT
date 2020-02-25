@@ -107,7 +107,8 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group required" ng-class="{'has-error': errors.hosts_to_containers_sharing}">
+                                <div class="form-group required"
+                                     ng-class="{'has-error': errors.hosts_to_containers_sharing}">
                                     <label class="control-label" for="HostSharingContainer">
                                         <?php echo __('Shared containers'); ?>
                                     </label>
@@ -662,8 +663,9 @@
                                     </legend>
                                     <div class="row">
                                         <?php foreach ($hostOptions as $hostOption): ?>
-                                            <div class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
-                                                 ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
+                                            <div
+                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                                ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
                                                 <input type="checkbox"
                                                        class="custom-control-input"
                                                        ng-true-value="1"
@@ -672,7 +674,8 @@
                                                        ng-model="post.Host.<?php echo $hostOption['field']; ?>">
                                                 <label for="<?php echo $hostOption['field']; ?>"
                                                        class="col col-md-6 custom-control-label custom-control-label-<?php echo $hostOption['class']; ?> padding-top-0 margin-right-10 ">
-                                                        <span class="badge badge-<?php echo $hostOption['class']; ?> notify-label-small">
+                                                        <span
+                                                            class="badge badge-<?php echo $hostOption['class']; ?> notify-label-small">
                                                             <?php echo $hostOption['text']; ?>
                                                         </span>
                                                 </label>
@@ -792,8 +795,9 @@
                                     </legend>
                                     <div class="row">
                                         <?php foreach ($hostFlapOptions as $hostFlapOption): ?>
-                                            <div class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
-                                                 ng-class="{'has-error': errors.<?php echo $hostFlapOption['field']; ?>}">
+                                            <div
+                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                                ng-class="{'has-error': errors.<?php echo $hostFlapOption['field']; ?>}">
                                                 <input type="checkbox" name="checkbox"
                                                        class="custom-control-input"
                                                        ng-true-value="1"
@@ -803,7 +807,8 @@
                                                        ng-model="post.Host.<?php echo $hostFlapOption['field']; ?>">
                                                 <label for="<?php echo $hostFlapOption['field']; ?>"
                                                        class="col col-md-6 custom-control-label custom-control-label-<?php echo $hostFlapOption['class']; ?> padding-top-0 margin-right-10">
-                                                        <span class="badge badge-<?php echo $hostFlapOption['class']; ?> notify-label-small">
+                                                        <span
+                                                            class="badge badge-<?php echo $hostFlapOption['class']; ?> notify-label-small">
                                                             <?php echo $hostFlapOption['text']; ?>
                                                         </span>
                                                 </label>
@@ -871,7 +876,8 @@
                                     </label>
 
                                     <div class="btn-group" ng-if="!data.createAnother">
-                                        <button ng-click="submit('AgentconnectorsAdd')" class="btn btn-primary">
+                                        <button onclick="return false;" ng-click="submit('AgentconnectorsConfig')"
+                                                class="btn btn-primary">
                                             <?php echo __('Create host and setup agent'); ?>
                                         </button>
                                     </div>
@@ -880,23 +886,28 @@
                                         <button type="submit" class="btn btn-primary waves-effect waves-themed">
                                             <?php echo __('Create host'); ?>
                                         </button>
-                                        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split waves-effect waves-themed" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <button type="button"
+                                                class="btn btn-primary dropdown-toggle dropdown-toggle-split waves-effect waves-themed"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </button>
                                         <div class="dropdown-menu">
                                             <?php if ($this->Acl->hasPermission('add', 'services')): ?>
-                                            <a class="dropdown-item" href="javascript:void(0);" ng-click="submit('ServicesAdd')">
-                                                <i class="fa fa fa-gear"></i>
-                                                <?php echo __('Save and create service'); ?>
-                                            </a>
+                                                <a class="dropdown-item" href="javascript:void(0);"
+                                                   ng-click="submit('ServicesAdd')">
+                                                    <i class="fa fa fa-gear"></i>
+                                                    <?php echo __('Save and create service'); ?>
+                                                </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('add', 'agentconnector')): ?>
-                                                <a class="dropdown-item" href="javascript:void(0);" ng-click="submit('AgentconnectorsAdd')" ng-if="!data.createAnother">
+                                                <a class="dropdown-item" href="javascript:void(0);"
+                                                   ng-click="submit('AgentconnectorsConfig')" ng-if="!data.createAnother">
                                                     <i class="fa fa fa-gear"></i>
                                                     <?php echo __('Save and setup agent'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <a ui-sref="MkModuleMkdiscovery" href="javascript:void(0);" class="dropdown-item">
+                                            <a ui-sref="MkModuleMkdiscovery" href="javascript:void(0);"
+                                               class="dropdown-item">
                                                 <i class="fa fa fa-share-alt"></i>
                                                 <?php echo __('Save and run Check_MK discovery'); ?>
                                             </a>

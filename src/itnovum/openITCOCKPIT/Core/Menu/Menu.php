@@ -579,14 +579,24 @@ class Menu {
                 'fa fa-user-secret'
             ))
                 ->addLink(new MenuLink(
-                    __('Agent Servicetemp.'),
-                    'ServicetemplatesAgent',
-                    'servicetemplates',
-                    'agent',
+                    __('Agent Configuration'),
+                    'AgentconnectorsConfig',
+                    'agentconnector',
+                    'config',
                     '',
-                    'fa fa-pencil-square-o',
+                    'fa fa-user-secret',
                     [],
                     1
+                ))
+                ->addLink(new MenuLink(
+                    __('Untrusted Agents'),
+                    'AgentconnectorsAgent',
+                    'agentconnector',
+                    'agents',
+                    '',
+                    'fa fa-user-secret',
+                    [],
+                    2
                 ))
                 ->addLink(new MenuLink(
                     __('Agent Checks'),
@@ -596,7 +606,7 @@ class Menu {
                     '',
                     'fa fa-cogs',
                     [],
-                    2
+                    3
                 ))
             );
         $Configuration = new MenuHeadline(self::MENU_CONFIGURATION, __('System Configuration'), 4);

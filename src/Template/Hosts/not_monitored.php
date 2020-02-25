@@ -312,7 +312,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('scan', 'agentconfigs', '')): ?>
-                                                <a ui-sref="AgentconfigsConfig({hostId: host.Host.id})"
+                                                <a ui-sref="AgentconnectorsConfig({hostId: host.Host.id})"
                                                    class="dropdown-item">
                                                     <i class="fa fa-user-secret"></i>
                                                     <?php echo __('openITCOCKPIT Agent discovery'); ?>

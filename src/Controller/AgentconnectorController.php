@@ -284,15 +284,13 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
-    public function add() {
+    public function config() {
         if (!$this->isAngularJsRequest()) {
             return;
         }
 
         /** @var AgentconnectorTable $AgentconnectorTable */
         $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
-
-
     }
 
     public function getLatestCheckDataByHostUuid($uuid = null) {

@@ -456,7 +456,6 @@ angular.module('openITCOCKPIT')
         }, true);
 
         $scope.$watch('post.Host.container_id', function(){
-            console.log($scope.post.Host.container_id);
             if($scope.post.Host.container_id == 1){
                 $scope.showRootAlert = true;
             }else{
