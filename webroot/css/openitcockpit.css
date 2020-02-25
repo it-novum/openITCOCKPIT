@@ -764,3 +764,9 @@ pre {
 .pointer{
     cursor:pointer;
 }
+
+div.required label::after {
+    content: ' *';
+    color: red;
+    display: inline;
+}
