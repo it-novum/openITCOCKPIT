@@ -4721,7 +4721,7 @@ msgstr ""
 msgid "Transport protocol"
 msgstr ""
 
-msgid "Password hidden due to security please see the file /etc/openitcockpit/app/Config/email.php for detailed configuration information."
+msgid "Password hidden due to security please see the file /opt/openitc/frontend/config/email.php for detailed configuration information."
 msgstr ""
 
 msgid "Send test Email to"

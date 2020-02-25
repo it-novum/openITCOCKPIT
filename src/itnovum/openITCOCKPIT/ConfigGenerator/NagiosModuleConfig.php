@@ -27,6 +27,11 @@ namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 use Cake\Core\Configure;
 
+/**
+ * Class NagiosModuleConfig
+ * @package itnovum\openITCOCKPIT\ConfigGenerator
+ * @deprecated With openITCOCKPIT 4.x not in use anymore !
+ */
 class NagiosModuleConfig extends ConfigGenerator implements ConfigInterface {
 
     protected $templateDir = 'config';

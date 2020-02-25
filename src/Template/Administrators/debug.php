@@ -600,7 +600,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 
                 <dt><?php echo __('Password'); ?>:</dt>
                 <dd>
-                    <i><?php echo __('Password hidden due to security please see the file /etc/openitcockpit/app/config/email.php for detailed configuration information.'); ?></i>
+                    <i><?php echo __('Password hidden due to security please see the file /opt/openitc/frontend/config/email.php for detailed configuration information.'); ?></i>
                 </dd>
 
                 <dt>&nbsp;</dt>

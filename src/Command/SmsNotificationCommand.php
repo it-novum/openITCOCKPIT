@@ -32,13 +32,13 @@ use itnovum\openITCOCKPIT\Core\Views\Service;
  *   oitc sms_notification --address 128.1.1.85 -m nrpe --type host --hostname c36b8048-93ce-4385-ac19-ab5c90574b77 --contactpager 0049123456789 --notificationtype PROBLEM
  *
  *  Monitoring command:
- *   /usr/share/openitcockpit/app/cake4/bin/cake sms_notification -q --address 128.1.1.85 -m nrpe --type Host --contactpager $CONTACTPAGER$ --hostname "$HOSTNAME$" --notificationtype "$NOTIFICATIONTYPE$"
+ *   /opt/openitc/frontend/bin/cake sms_notification -q --address 128.1.1.85 -m nrpe --type Host --contactpager $CONTACTPAGER$ --hostname "$HOSTNAME$" --notificationtype "$NOTIFICATIONTYPE$"
  *
  *  Services:
  *   oitc sms_notification --address 128.1.1.85 -m nrpe --type service --hostname c36b8048-93ce-4385-ac19-ab5c90574b77 --servicedesc 74f14950-a58f-4f18-b6c3-5cfa9dffef4e --contactpager 0049123456789 --notificationtype PROBLEM
  *
  *  Monitoring command:
- *   /usr/share/openitcockpit/app/cake4/bin/cake sms_notification -q --address 128.1.1.85 -m nrpe --type Service --contactpager $CONTACTPAGER$ --hostname "$HOSTNAME$" --servicedesc "$SERVICEDESC$" --notificationtype "$NOTIFICATIONTYPE$"
+ *   /opt/openitc/frontend/bin/cake sms_notification -q --address 128.1.1.85 -m nrpe --type Service --contactpager $CONTACTPAGER$ --hostname "$HOSTNAME$" --servicedesc "$SERVICEDESC$" --notificationtype "$NOTIFICATIONTYPE$"
  */
 class SmsNotificationCommand extends Command {
 

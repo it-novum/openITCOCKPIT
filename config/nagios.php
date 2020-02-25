@@ -37,7 +37,7 @@ return [
         'user'        => 'nagios',
         'group'       => 'nagios',
         'verify'      => '-v',
-        'nagios_cfg'  => '/etc/openitcockpit/nagios.cfg',
+        'nagios_cfg'  => '/opt/openitc/nagios/etc/nagios.cfg',
         'export'      => [
             'minified'                                 => true,
             'backupSource'                             => '/opt/openitc/nagios/etc/config',

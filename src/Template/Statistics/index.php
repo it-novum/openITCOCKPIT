@@ -106,7 +106,7 @@
                     <br/>
 
                     <?php echo __('If you want to change your system_id, you can delete the file'); ?>
-                    <code>/etc/openitcockpit/system-id</code>.
+                    <code>/opt/openitc/etc/system-id</code>.
                     <?php echo __('openITCOCKPIT will generate a new system_id, if required.'); ?>
 
                 </div>
@@ -119,7 +119,7 @@
                     <p><?php echo __('
                             This information influences decisions such as which openITCOCKPIT modules should
                             get new features or which operating system is used by most of the users.
-                            
+
                             In addition the data will help use to optimize the database schema and improve scalability of
                             openITCOCKPIT.
                         '); ?></p>

@@ -7,19 +7,21 @@ if [[ $1 == "--help" ]]; then
 
     exit 0
 fi
-. /etc/dbconfig-common/openitcockpit.conf
 
-APPDIR="/usr/share/openitcockpit/app/cake4"
+. /opt/openitc/etc/mysql/bash.conf
 
-INIFILE=/etc/openitcockpit/mysql.cnf
+APPDIR="/opt/openitc/frontend"
+
+INIFILE=/opt/openitc/etc/mysql/mysql.cnf
+DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
 
 echo "Create mysqldump of your current database"
 BACKUP_TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')
 BACKUP_DIR='/opt/openitc/nagios/backup'
 mkdir -p $BACKUP_DIR
 #If you have mysql binlog enabled uses this command:
-#mysqldump --defaults-extra-file=/etc/mysql/debian.cnf --databases $dbc_dbname --flush-privileges --single-transaction --master-data=1 --flush-logs --triggers --routines --events --hex-blob \
-mysqldump --defaults-extra-file=/etc/mysql/debian.cnf --databases $dbc_dbname --flush-privileges --single-transaction --triggers --routines --events --hex-blob \
+#mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-privileges --single-transaction --master-data=1 --flush-logs --triggers --routines --events --hex-blob \
+mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-privileges --single-transaction --triggers --routines --events --hex-blob \
     --ignore-table=$dbc_dbname.nagios_acknowledgements \
     --ignore-table=$dbc_dbname.nagios_commands \
     --ignore-table=$dbc_dbname.nagios_commenthistory \
@@ -82,21 +84,21 @@ mysqldump --defaults-extra-file=/etc/mysql/debian.cnf --databases $dbc_dbname --
     >$BACKUP_DIR/openitcockpit_dump_$BACKUP_TIMESTAMP.sql
 
 echo "Running openITCOCKPIT Core database migration"
-oitc4 migrations migrate
+oitc migrations migrate
 
 echo "Running openITCOCKPIT Module database migration/s"
 for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do
     if [[ "$PLUGIN" == *Module ]]; then
         if [[ -d "${APPDIR}/plugins/${PLUGIN}/config/Migrations" ]]; then
             echo "Running openITCOCKPIT ${PLUGIN} database migration"
-            oitc4 migrations migrate -p "${PLUGIN}"
+            oitc migrations migrate -p "${PLUGIN}"
         fi
 
         if [[ -d "${APPDIR}/plugins/${PLUGIN}/config/Seeds" ]]; then
             num_files=$(find "${APPDIR}/plugins/${PLUGIN}/config/Seeds" -mindepth 1 -iname "*.php" -type f | wc -l)
             if [[ "$num_files" -gt 0 ]]; then
                 echo "Importing default records for ${PLUGIN} into database"
-                oitc4 migrations seed -p "${PLUGIN}"
+                oitc migrations seed -p "${PLUGIN}"
             fi
         fi
 
@@ -115,15 +117,15 @@ mysql "--defaults-extra-file=$INIFILE" -e "UPDATE containers SET containertype_i
 #Acc ALC dependencies config for itc core
 echo "---------------------------------------------------------------"
 echo "Scan for new user permissions. This will take a while..."
-oitc4 Acl.acl_extras aco_sync
+oitc Acl.acl_extras aco_sync
 
 #Set default permissions, check for always allowed permissions and dependencies
-oitc4 roles --enable-defaults --admin
+oitc roles --enable-defaults --admin
 
 #Check for browser push notification commands
 echo "Check for browser push notification commands"
-#oitc api --model Commands --action addByUuid --ignore-errors 1 --data 'host-notify-by-browser-notification' '/usr/share/openitcockpit/app/Console/cake send_push_notification --type Host --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --state "$HOSTSTATEID$" --output "$HOSTOUTPUT$"  --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$" --user-id $_CONTACTOITCUSERID$' '3' 'cd13d22e-acd4-4a67-997b-6e120e0d3153' 'Send a host notification to the browser window'
-#oitc api --model Commands --action addByUuid --ignore-errors 1 --data 'service-notify-by-browser-notification' '/usr/share/openitcockpit/app/Console/cake send_push_notification --type Service --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --serviceuuid "$SERVICEDESC$" --state "$SERVICESTATEID$" --output "$SERVICEOUTPUT$" --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$" --user-id $_CONTACTOITCUSERID$' '3' 'c23255b7-5b1a-40b4-b614-17837dc376af ' 'Send a service notification to the browser window'
+#oitc api --model Commands --action addByUuid --ignore-errors 1 --data 'host-notify-by-browser-notification' '/opt/openitc/frontend/bin/cake send_push_notification --type Host --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --state "$HOSTSTATEID$" --output "$HOSTOUTPUT$"  --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$" --user-id $_CONTACTOITCUSERID$' '3' 'cd13d22e-acd4-4a67-997b-6e120e0d3153' 'Send a host notification to the browser window'
+#oitc api --model Commands --action addByUuid --ignore-errors 1 --data 'service-notify-by-browser-notification' '/opt/openitc/frontend/bin/cake send_push_notification --type Service --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --serviceuuid "$SERVICEDESC$" --state "$SERVICESTATEID$" --output "$SERVICEOUTPUT$" --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$" --user-id $_CONTACTOITCUSERID$' '3' 'c23255b7-5b1a-40b4-b614-17837dc376af ' 'Send a service notification to the browser window'
 
 #Generate documentation
 #oitc docu_generator
@@ -133,12 +135,12 @@ NORESTART=false
 for i in "$@"; do
     case $i in
     --cc)
-        echo "Clear out Model Cache /usr/share/openitcockpit/app/cake4/tmp/cache/models/"
-        rm -rf /usr/share/openitcockpit/app/cake4/tmp/cache/models/*
+        echo "Clear out Model Cache /opt/openitc/frontend/tmp/cache/models/"
+        rm -rf /opt/openitc/frontend/tmp/cache/models/*
         ;;
 
     --rights)
-        oitc4 rights
+        oitc rights
         ;;
 
     --no-restart)
@@ -172,23 +174,28 @@ if [[ "$1" == "install" ]]; then
     echo "Update successfully finished"
 else
 
-    if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "bionic" ] || [ $CODENAME = "stretch" ]; then
-        systemctl restart oitc_cmd
-        systemctl restart gearman_worker
-        systemctl restart push_notification
-        systemctl restart nodejs_server
-    fi
+    systemctl restart sudo_server
+    systemctl restart oitc_cmd
+    systemctl restart gearman_worker
+    systemctl restart push_notification
+    systemctl restart nodejs_server
 
-    if [ $CODENAME = "xenial" ] || [ $CODENAME = "stretch" ]; then
-        systemctl restart php7.0-fpm
-    fi
+    PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
+    echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
-    if [ $CODENAME = "bionic" ]; then
-        systemctl restart php7.2-fpm.service
+    systemctl is-enabled --quiet php${PHPVersion}-fpm.service
+    RC=$?
+    if [ $RC -eq 0 ]; then
+        #Is it php7.3-fpm-service ?
+        systemctl restart php${PHPVersion}-fpm.service
+    else
+        # Is it just php-fpm.service?
+        systemctl is-enabled --quiet php-fpm.service
+        RC=$?
+        if [ $RC -eq 0 ]; then
+            systemctl restart php-fpm.service
+        else
+            echo "ERROR: could not detect php-fpm systemd service file. You need to restart php-fpm manualy"
+        fi
     fi
-
-    if [ $CODENAME = "jessie" ]; then
-        systemctl restart php5-fpm
-    fi
-
 fi

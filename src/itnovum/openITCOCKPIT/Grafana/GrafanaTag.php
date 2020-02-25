@@ -29,7 +29,7 @@ use \Cake\Filesystem\File;
 
 class GrafanaTag {
 
-    private $tagfilePath = '/etc/openitcockpit/app/Config/';
+    private $tagfilePath = '/opt/openitc/etc/frontend/core/';
     private $tagfileName = 'openitcGrafanaTag.php';
 
     private function generateTag() {
