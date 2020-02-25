@@ -57,6 +57,7 @@ config/graphite.php
 src/Lib/openITCOCKPIT_AvailableVersion.php
 webroot/img/userimages
 webroot/img/charts
+ansible_settings.yml
 
 # Plugins #
 #######################

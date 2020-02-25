@@ -5,12 +5,6 @@ if ! [ $(id -u) = 0 ]; then
     exit 1
 fi
 
-echo "Create oitc command"
-echo '#!/bin/bash' >/usr/bin/oitc
-echo 'sudo -g www-data /opt/openitc/frontend/bin/cake "$@"' >>/usr/bin/oitc
-
-chmod +x /usr/bin/oitc
-
 APPDIR="/opt/openitc/frontend"
 
 INIFILE=/opt/openitc/etc/mysql/mysql.cnf
@@ -23,11 +17,30 @@ MYSQL_USER="openitcockpit"
 MYSQL_DATABASE="openitcockpit"
 MYSQL_PASSWORD=$(pwgen -s -1 16)
 
+PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
+
+echo "Copy required system files"
+cp -r ${APPDIR}/etc/. /etc/
+cp -r ${APPDIR}/lib/. /lib/
+cp -r ${APPDIR}/fpm/. /etc/php/${PHPVersion}/fpm/
+chmod +x /usr/bin/oitc
+
+echo "Enable new systemd services"
+systemctl daemon-reload
+systemctl enable sudo_server
+systemctl enable oitc_cmd
+systemctl enable gearman_worker
+systemctl enable push_notification
+systemctl enable nodejs_server
+
 if [[ ! -f "$INIFILE" ]]; then
     echo "Create local MySQL configuration and database"
 
     if [[ -f "$DEBIANCNF" ]]; then
         echo "Detected Debian based distribution"
+
+        # set sql_mode to enable group by like it was in the good old times :)
+        mysql --defaults-extra-file=${DEBIANCNF} -e "SET GLOBAL sql_mode = '';"
 
         mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE USER '${MYSQL_DATABASE}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';" -B
         mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_swedish_ci;" -B
@@ -130,7 +143,6 @@ if [ $CODENAME = "trusty" ]; then
     service nodejs_server restart
 fi
 
-PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
 systemctl is-enabled --quiet php${PHPVersion}-fpm.service

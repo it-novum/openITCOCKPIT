@@ -1,0 +1,2 @@
+#!/bin/bash
+sudo -g www-data /opt/openitc/frontend/bin/cake "$@"
