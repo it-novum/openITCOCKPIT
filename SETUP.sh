@@ -20,9 +20,10 @@ MYSQL_PASSWORD=$(pwgen -s -1 16)
 PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 
 echo "Copy required system files"
-cp -r ${APPDIR}/etc/. /etc/
-cp -r ${APPDIR}/lib/. /lib/
-cp -r ${APPDIR}/fpm/. /etc/php/${PHPVersion}/fpm/
+cp -r ${APPDIR}/system/etc/. /etc/
+cp -r ${APPDIR}/system/lib/. /lib/
+cp -r ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/
+cp -r ${APPDIR}/system/usr/. /usr/
 chmod +x /usr/bin/oitc
 
 echo "Enable new systemd services"
@@ -163,3 +164,5 @@ fi
 
 #Set default permissions, check for always allowed permissions and dependencies
 oitc roles --enable-defaults --admin
+
+chown -R www-data:www-data /opt/openitc/frontend

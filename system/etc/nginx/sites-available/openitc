@@ -40,11 +40,11 @@ server {
     add_header X-Frame-Options sameorigin;
 
     # root directive should be global
-    root   /usr/share/openitcockpit/app/webroot/;
+    root   /opt/openitc/frontend/webroot/;
     index  index.php;
 
-    access_log /var/log/nginx/cake/access.log;
-    error_log /var/log/nginx/cake/error.log;
+    access_log /opt/openitc/logs/nginx/cake/access.log;
+    error_log /opt/openitc/logs/nginx/cake/error.log;
 
     location / {
         try_files $uri $uri/ /index.php?$args;
