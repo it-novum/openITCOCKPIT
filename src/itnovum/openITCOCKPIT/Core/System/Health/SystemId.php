@@ -32,12 +32,12 @@ class SystemId {
     private $systemId = null;
 
     public function __construct() {
-        if (file_exists('/etc/openitcockpit/system-id')) {
-            $this->systemId = trim(file_get_contents('/etc/openitcockpit/system-id'));
+        if (file_exists('/opt/openitc/etc/system-id')) {
+            $this->systemId = trim(file_get_contents('/opt/openitc/etc/system-id'));
             return;
         } else {
-            if (is_writable('/etc/openitcockpit')) {
-                $file = fopen('/etc/openitcockpit/system-id', 'w+');
+            if (is_writable('/opt/openitc/etc')) {
+                $file = fopen('/opt/openitc/etc/system-id', 'w+');
                 $this->systemId = UUID::v4();
                 fwrite($file, $this->systemId);
                 fclose($file);

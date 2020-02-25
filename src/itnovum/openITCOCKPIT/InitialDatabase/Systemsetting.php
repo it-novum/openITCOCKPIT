@@ -207,7 +207,7 @@ class Systemsetting extends Importer {
             ],
             (int)19 => [
                 'key'      => 'MONITORING.CORECONFIG',
-                'value'    => '/etc/openitcockpit/nagios.cfg',
+                'value'    => '/opt/openitc/etc/nagios/nagios.cfg',
                 'info'     => 'Path to monitoring core configuration file',
                 'section'  => 'MONITORING',
                 'created'  => '2020-01-29 09:28:17',

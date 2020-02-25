@@ -21,7 +21,7 @@ $config = [
     'port'                        => 4730,
 
     //path to your naemon.cfg or nagios.cfg
-    'coreconfig'                  => '/etc/openitcockpit/nagios.cfg',
+    'coreconfig'                  => '/opt/openitc/etc/nagios/nagios.cfg',
 
     //Number of your monitoring instance (just an integer value)
     'instance_id'                 => 1,

@@ -5,16 +5,11 @@ if ! [ $(id -u) = 0 ]; then
     exit 1
 fi
 
-echo "Create oitc command"
-echo '#!/bin/bash' > /usr/bin/oitc
-echo 'sudo -g www-data /opt/openitc/frontend/bin/cake "$@"' >> /usr/bin/oitc
-
-chmod +x /usr/bin/oitc
-
-APPDIR="/usr/share/openitcockpit/app/cake4"
+APPDIR="/opt/openitc/frontend"
 
 INIFILE=/opt/openitc/etc/mysql/mysql.cnf
 DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
+BASHCONF=/opt/openitc/etc/mysql/bash.conf
 
 DEBIANCNF=/etc/mysql/debian.cnf
 
@@ -22,11 +17,30 @@ MYSQL_USER="openitcockpit"
 MYSQL_DATABASE="openitcockpit"
 MYSQL_PASSWORD=$(pwgen -s -1 16)
 
+PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
+
+echo "Copy required system files"
+cp -r ${APPDIR}/etc/. /etc/
+cp -r ${APPDIR}/lib/. /lib/
+cp -r ${APPDIR}/fpm/. /etc/php/${PHPVersion}/fpm/
+chmod +x /usr/bin/oitc
+
+echo "Enable new systemd services"
+systemctl daemon-reload
+systemctl enable sudo_server
+systemctl enable oitc_cmd
+systemctl enable gearman_worker
+systemctl enable push_notification
+systemctl enable nodejs_server
+
 if [[ ! -f "$INIFILE" ]]; then
-    echo "Create MySQL configuration and database"
+    echo "Create local MySQL configuration and database"
 
     if [[ -f "$DEBIANCNF" ]]; then
         echo "Detected Debian based distribution"
+
+        # set sql_mode to enable group by like it was in the good old times :)
+        mysql --defaults-extra-file=${DEBIANCNF} -e "SET GLOBAL sql_mode = '';"
 
         mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE USER '${MYSQL_DATABASE}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';" -B
         mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_swedish_ci;" -B
@@ -47,6 +61,12 @@ if [[ ! -f "$INIFILE" ]]; then
         echo "password = ${MYSQL_PASSWORD}" >>$DUMPINIFILE
         echo "port     = 3306" >>$DUMPINIFILE
 
+        echo "dbc_dbuser='${MYSQL_USER}'" >$BASHCONF
+        echo "dbc_dbpass='${MYSQL_PASSWORD}'" >>$BASHCONF
+        echo "dbc_dbserver='127.0.0.1'" >>$BASHCONF
+        echo "dbc_dbport='3306'" >>$BASHCONF
+        echo "dbc_dbname='${MYSQL_DATABASE}'" >>$BASHCONF
+
     else
         echo "Unsupported distribution or $DEBIANCNF is missing!"
         exit 1
@@ -54,14 +74,11 @@ if [[ ! -f "$INIFILE" ]]; then
 
 fi
 
-oitc config_generator_shell --generate
-
-#ln -s /etc/openitcockpit/nagios.cfg /opt/openitc/nagios/etc/nagios.cfg
-#sudo -g www-data /usr/share/openitcockpit/app/Console/cake schema update -y --connection default --file schema_itcockpit.php -s 26
-
 echo "---------------------------------------------------------------"
 echo "Import openITCOCKPIT Core database schema"
 oitc migrations migrate
+
+oitc config_generator_shell --generate
 
 echo "---------------------------------------------------------------"
 echo "Scan and import ACL objects. This will take a while..."
@@ -98,14 +115,50 @@ oitc nagios_export
 
 CODENAME=$(lsb_release -sc)
 if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "bionic" ] || [ $CODENAME = "stretch" ]; then
+    systemctl restart statusengine
     systemctl restart nagios
+    systemctl restart nginx
+
     systemctl restart sudo_server
+    systemctl restart oitc_cmd
+    systemctl restart gearman_worker
+    systemctl restart push_notification
+    systemctl restart nodejs_server
 fi
 
 if [ $CODENAME = "trusty" ]; then
+    service statusengine restart
     service nagios restart
+    service nginx restart
+
     service sudo_server stop
     service sudo_server start
+
+    service oitc_cmd restart
+
+    service gearman_worker stop
+    service gearman_worker stop
+
+    service push_notification restart
+    service nodejs_server restart
+fi
+
+echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
+
+systemctl is-enabled --quiet php${PHPVersion}-fpm.service
+RC=$?
+if [ $RC -eq 0 ]; then
+    #Is it php7.3-fpm-service ?
+    systemctl restart php${PHPVersion}-fpm.service
+else
+    # Is it just php-fpm.service?
+    systemctl is-enabled --quiet php-fpm.service
+    RC=$?
+    if [ $RC -eq 0 ]; then
+        systemctl restart php-fpm.service
+    else
+        echo "ERROR: could not detect php-fpm systemd service file. You need to restart php-fpm manualy"
+    fi
 fi
 
 #Set default permissions, check for always allowed permissions and dependencies

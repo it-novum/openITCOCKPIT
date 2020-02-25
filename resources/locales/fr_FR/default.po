@@ -4721,8 +4721,8 @@ msgstr "Port du serveur de messagerie"
 msgid "Transport protocol"
 msgstr "Protocole de transport"
 
-msgid "Password hidden due to security please see the file /etc/openitcockpit/app/Config/email.php for detailed configuration information."
-msgstr "Mot de passe masqué pour des raisons de sécurité, veuillez consulter le fichier /etc/openitcockpit/app/Config/email.php pour obtenir des informations détaillées sur la configuration."
+msgid "Password hidden due to security please see the file /opt/openitc/frontend/config/email.php for detailed configuration information."
+msgstr "Mot de passe masqué pour des raisons de sécurité, veuillez consulter le fichier /opt/openitc/frontend/config/email.php pour obtenir des informations détaillées sur la configuration."
 
 msgid "Send test Email to"
 msgstr "Envoyer un e-mail de test à"

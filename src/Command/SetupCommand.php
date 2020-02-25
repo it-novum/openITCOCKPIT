@@ -434,8 +434,9 @@ class SetupCommand extends Command {
             throw new \RuntimeException('File ' . $sqlFile . ' does not exists!');
         }
 
-        if (file_exists('/etc/openitcockpit/mysql.cnf')) {
-            exec('mysql --defaults-extra-file=/etc/openitcockpit/mysql.cnf < ' . $sqlFile, $out, $ret);
+        $mysqlCnf = '/opt/openitc/etc/mysql/mysql.cnf';
+        if (file_exists($mysqlCnf)) {
+            exec('mysql --defaults-extra-file=' . $mysqlCnf . ' < ' . $sqlFile, $out, $ret);
             if ($ret == 0) {
                 $this->io->success(' ...OK');
                 return true;
@@ -443,7 +444,7 @@ class SetupCommand extends Command {
             $this->io->error(' ...ERROR');
             return false;
         }
-        $this->io->error('MySQL configuration file /etc/openitcockpit/mysql.cnf does not exist');
+        $this->io->error('MySQL configuration file ' . $mysqlCnf . ' does not exist');
         return false;
     }
 

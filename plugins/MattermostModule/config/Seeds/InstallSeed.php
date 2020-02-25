@@ -36,7 +36,7 @@ class InstallSeed extends AbstractSeed {
         $data = [
             [
                 'name'         => 'host-notifiy-by-mattermost',
-                'command_line' => '/usr/share/openitcockpit/app/Console/cake MattermostModule.mattermost_notification --type Host --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --state "$HOSTSTATEID$" --output "$HOSTOUTPUT$" --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$"',
+                'command_line' => '/opt/openitc/frontend/bin/cake MattermostModule.mattermost_notification --type Host --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --state "$HOSTSTATEID$" --output "$HOSTOUTPUT$" --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$"',
                 'command_type' => NOTIFICATION_COMMAND,
                 'human_args'   => null,
                 'uuid'         => \itnovum\openITCOCKPIT\Core\UUID::v4(),
@@ -44,7 +44,7 @@ class InstallSeed extends AbstractSeed {
             ],
             [
                 'name'         => 'service-notify-by-mattermost',
-                'command_line' => '/usr/share/openitcockpit/app/Console/cake MattermostModule.mattermost_notification --type Service --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --serviceuuid "$SERVICEDESC$" --state "$SERVICESTATEID$" --output "$SERVICEOUTPUT$" --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$"',
+                'command_line' => '/opt/openitc/frontend/bin/cake MattermostModule.mattermost_notification --type Service --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --serviceuuid "$SERVICEDESC$" --state "$SERVICESTATEID$" --output "$SERVICEOUTPUT$" --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$"',
                 'command_type' => NOTIFICATION_COMMAND,
                 'human_args'   => null,
                 'uuid'         => \itnovum\openITCOCKPIT\Core\UUID::v4(),

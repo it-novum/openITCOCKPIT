@@ -77,9 +77,8 @@ class RightsCommand extends Command {
         $this->modulesOnly = $args->getOption('modules');
 
         $directories = [
-            '/usr/share/openitcockpit/',
-            '/usr/share/openitcockpit-modules/',
-            '/usr/share/openITCOCKPIT-modules/',
+            '/opt/openitc/frontend/',
+            '/opt/openitc/frontend-modules/'
         ];
         $this->setRights($io, $directories);
     }

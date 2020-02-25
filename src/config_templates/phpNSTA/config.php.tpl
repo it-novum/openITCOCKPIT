@@ -41,10 +41,11 @@ $config = [
          * Version of your openITCOCKPIT installation
          * Value: 2   //for openITCOCKPIT V2
          * Value: 3   //for openITCOCKPIT V3
+         * Value: 4   //for openITCOCKPIT V4
          * Type: Integer
          * @since 1.0
          **/
-        'oitc_version'  => 3,
+        'oitc_version'  => 4,
 
         /**
          * oitc_core
@@ -57,11 +58,15 @@ $config = [
         /**
          * oitc_database
          * Path to the openITCOCKPIT database configuration
-         * Only important, if oitc_version is set to 3!
+         * Only important, if oitc_version is set to 3 or 4!
+         *
+         * V3 Default: /etc/openitcockpit/app/Config/database.php
+         * V4 Default: /opt/openitc/etc/frontend/core/datasource.php
+         *
          * Type: String
          * @since 1.6.0
          **/
-        'oitc_database' => '/etc/openitcockpit/app/Config/database.php',
+        'oitc_database' => '/opt/openitc/etc/frontend/core/datasource.php',
 
 
         /**
@@ -441,6 +446,7 @@ $config = [
          * Type: String
          * Default V2: ps -eaf | grep "/opt/openitc/nagios/bin/nagios -d /opt/openitc/nagios/etc/nagios.cfg" |grep -v "grep"
          * Default V3: ps -eaf | grep "/opt/openitc/nagios/bin/nagios -d /etc/openitcockpit/nagios.cfg" |grep -v "grep"
+         * Default V4: ps -eaf | grep "/opt/openitc/nagios/bin/nagios -d /opt/openitc/etc/nagios/nagios.cfg" |grep -v "grep"
          * Notice: Use an empty string, to disable!
          * @since 1.4
          * @version 1.8.0

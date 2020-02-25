@@ -132,7 +132,7 @@
                             <br/>
 
                             <?php echo __('If you want to change your system_id, you can delete the file'); ?>
-                            <code>/etc/openitcockpit/system-id</code>.
+                            <code>/opt/openitc/etc/system-id</code>.
                             <?php echo __('openITCOCKPIT will generate a new system_id, if required.'); ?>
 
                         </div>

@@ -18,14 +18,13 @@ class Backup {
 
     /**
      * @var string
-     * @todo cahnge this to /etc/openitcockpit/mysql.cnf
      */
-    private $myCnf = '/etc/mysql/debian.cnf';
+    private $myCnf = '/opt/openitc/etc/mysql/dump.cnf';
 
     /**
      * @var string
      */
-    private $oitcMyCnf = '/etc/openitcockpit/mysql.cnf';
+    private $oitcMyCnf = '/opt/openitc/etc/mysql/mysql.cnf';
 
     /**
      * Tables that be ignored during mysql dump
