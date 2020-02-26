@@ -223,11 +223,13 @@
                     <div class="col-xs-12 margin-top-10">
                         <div class="well formactions ">
                             <div class="pull-right">
-                                <button type="button"
-                                        class="btn text-center btn-primary"
-                                        ng-click="checkGrafanaConnection()">
-                                    <?php echo __('Check Grafana Connection'); ?>
-                                </button>
+                                <?php if ($this->Acl->hasPermission('testGrafanaConnection', 'GrafanaConfiguration', 'GrafanaModule')): ?>
+                                    <button type="button"
+                                            class="btn text-center btn-primary"
+                                            ng-click="checkGrafanaConnection()">
+                                        <?php echo __('Check Grafana Connection'); ?>
+                                    </button>
+                                <?php endif; ?>
                                 <input class="btn btn-primary" type="submit" value="<?= __('Save') ?>">&nbsp;
                             </div>
                         </div>
