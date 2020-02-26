@@ -940,7 +940,7 @@
                                                                         chosen="servicesToCreate.DiskUsage"
                                                                         multiple
                                                                         ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.DiskUsage"
-                                                                        ng-model="choosenServicesToMonitor.DiskIO">
+                                                                        ng-model="choosenServicesToMonitor.DiskUsage">
                                                                     </select>
                                                                 </div>
                                                             </div>

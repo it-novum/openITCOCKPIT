@@ -302,7 +302,7 @@ class AgentconnectorController extends AppController {
                 $agentconfig['basic_auth'] = 0;
                 $agentconfig['username'] = '';
                 $agentconfig['password'] = '';
-                if($this->request->getData('config')['auth'] !== ''){
+                if ($this->request->getData('config')['auth'] !== '') {
                     $agentconfig['basic_auth'] = 1;
                     $agentconfig['username'] = explode(':', $this->request->getData('config')['auth'])[0];
                     $agentconfig['password'] = explode(':', $this->request->getData('config')['auth'])[1];
@@ -412,11 +412,10 @@ class AgentconnectorController extends AppController {
 
         if ($AgentconfigsTable->existsByHostId($hostId)) {
             $agentconfig = $AgentconfigsTable->getConfigByHostId($hostId, true);
-            //debug($agentconfig);die();
+
             try {
                 $HttpLoader = new HttpLoader($agentconfig, $host->get('address'));
                 $response = $HttpLoader->queryAgent(true);
-                //debug($response);die();
 
                 if (isset($response['response']) && !empty($response['response'])) {
                     $agentJsonOutput = $response['response'];
