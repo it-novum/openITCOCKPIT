@@ -40,7 +40,11 @@ class Hosttemplate extends Importer {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
-                $entity = $this->Table->newEntity($record);
+                $entity = $this->Table->newEmptyEntity();
+                $entity->setAccess('id', true);
+                $entity = $this->Table->patchEntity($entity, $record, [
+                    //'validate' => false,
+                ]);
                 $this->Table->save($entity);
             }
         }
@@ -68,7 +72,7 @@ class Hosttemplate extends Importer {
                 'max_check_attempts'                => '3',
                 'first_notification_delay'          => '0',
                 'notification_interval'             => '7200',
-                'notify_on_down'                    => '0',
+                'notify_on_down'                    => '1',
                 'notify_on_unreachable'             => '1',
                 'notify_on_recovery'                => '1',
                 'notify_on_flapping'                => '0',

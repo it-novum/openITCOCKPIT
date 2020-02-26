@@ -40,7 +40,11 @@ class Contact extends Importer {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
-                $entity = $this->Table->newEntity($record);
+                $entity = $this->Table->newEmptyEntity();
+                $entity->setAccess('id', true);
+                $entity = $this->Table->patchEntity($entity, $record, [
+                    //'validate' => false,
+                ]);
                 $this->Table->save($entity);
             }
         }
@@ -80,20 +84,14 @@ class Contact extends Importer {
                 'service_push_notifications_enabled' => '0',
                 'customvariables'                    => [],
                 'containers'                         => [
-                    (int)0 => [
-                        'id'               => '1',
-                        'containertype_id' => '1',
-                        'name'             => 'root',
-                        'parent_id'        => null,
-                        'lft'              => '1',
-                        'rght'             => '2',
-                        '_joinData'        => [
-                            'id'           => '2',
-                            'contact_id'   => '1',
-                            'container_id' => '1'
-                        ]
-                    ]
-                ]
+                    '_ids' => [1]
+                ],
+                'host_commands'                      => [
+                    '_ids' => [1]
+                ],
+                'service_commands'                   => [
+                    '_ids' => [2]
+                ],
             ]
         ];
 

@@ -41,7 +41,11 @@ class Macro extends Importer {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
-                $entity = $this->Table->newEntity($record);
+                $entity = $this->Table->newEmptyEntity();
+                $entity->setAccess('id', true);
+                $entity = $this->Table->patchEntity($entity, $record, [
+                    //'validate' => false,
+                ]);
                 $this->Table->save($entity);
             }
         }

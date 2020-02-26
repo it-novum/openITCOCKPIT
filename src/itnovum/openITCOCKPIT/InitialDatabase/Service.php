@@ -40,8 +40,10 @@ class Service extends Importer {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
-                $entity = $this->Table->newEntity($record, [
-                    'validate' => false
+                $entity = $this->Table->newEmptyEntity();
+                $entity->setAccess('id', true);
+                $entity = $this->Table->patchEntity($entity, $record, [
+                    'validate' => false,
                 ]);
                 $this->Table->save($entity);
             }
@@ -67,7 +69,7 @@ class Service extends Importer {
                 'eventhandler_command_id'           => null,
                 'notify_period_id'                  => null,
                 'check_period_id'                   => null,
-                'check_interval'                    => null,
+                'check_interval'                    => 60,
                 'retry_interval'                    => null,
                 'max_check_attempts'                => null,
                 'first_notification_delay'          => null,
