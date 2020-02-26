@@ -626,7 +626,7 @@ class LegacySchema extends CakeSchema {
     ];
 
     public $hoststatus = [
-        'hoststatus_id'                 => ['type' => 'biginteger', 'null' => false, 'default' => null, 'unsigned' => ture, 'key' => 'primary'],
+        'hoststatus_id'                 => ['type' => 'biginteger', 'null' => false, 'default' => null, 'unsigned' => true, 'key' => 'primary'],
         'instance_id'                   => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
         'host_object_id'                => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'key' => 'unique'],
         'status_update_time'            => ['type' => 'datetime', 'null' => false, 'default' => '1970-01-01 00:00:00', 'key' => 'index'],

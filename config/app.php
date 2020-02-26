@@ -43,7 +43,7 @@ return [
         'namespace'       => 'App',
         'encoding'        => 'UTF-8',
         'defaultLocale'   => 'en_US',
-        'defaultTimezone' => 'UTC',
+        'defaultTimezone' => 'Europe/Berlin',
         'base'            => false,
         'dir'             => 'src',
         'webroot'         => 'webroot',
