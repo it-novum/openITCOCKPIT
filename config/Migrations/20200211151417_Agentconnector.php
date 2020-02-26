@@ -41,11 +41,38 @@ class Agentconnector extends AbstractMigration {
                 ])
                 ->create();
         }
+
+        if (!$this->hasTable('agenthostscache')) {
+            $this->table('agenthostscache')
+                ->addColumn('hostuuid', 'string', [
+                    'default' => null,
+                    'limit'   => 255,
+                    'null'    => false,
+                ])
+                ->addColumn('checkdata', 'json', [
+                    'default' => null,
+                    'null'    => true,
+                ])
+                ->addColumn('modified', 'datetime', [
+                    'default' => null,
+                    'limit'   => null,
+                    'null'    => false,
+                ])
+                ->addColumn('created', 'datetime', [
+                    'default' => null,
+                    'limit'   => null,
+                    'null'    => false,
+                ])
+                ->create();
+        }
     }
 
     public function down() {
         if ($this->hasTable('agentconnector')) {
             $this->table('agentconnector')->drop()->save();
+        }
+        if ($this->hasTable('agenthostscache')) {
+            $this->table('agenthostscache')->drop()->save();
         }
     }
 }
