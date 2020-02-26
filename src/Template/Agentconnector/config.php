@@ -466,7 +466,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="form-group col-12" ng-if="agentconfig.customchecks">
+                                                        <div class="form-group col-12 padding-left-0" ng-if="agentconfig.customchecks">
                                                             <label class="col-xs-12 col-md-3 control-label"
                                                                    for="agentconfigCustomchecks.max_worker_threads">
                                                                 <?php echo __('Set max custom check threads'); ?>
