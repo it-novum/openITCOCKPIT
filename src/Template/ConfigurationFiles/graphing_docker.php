@@ -26,8 +26,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker;
 
 /** @var GraphingDocker $GraphingDocker */
 
-$timezones = CakeTime::listTimezones();
-
+$timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 ?>
 
 <form ng-submit="submit();" class="form-horizontal">
