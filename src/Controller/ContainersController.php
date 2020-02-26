@@ -30,6 +30,11 @@ namespace App\Controller;
 use App\Model\Entity\User;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostgroupsTable;
+use App\Model\Table\LocationsTable;
+use App\Model\Table\ServicegroupsTable;
+use App\Model\Table\ServicetemplategroupsTable;
+use App\Model\Table\TenantsTable;
 use App\Model\Table\UsersTable;
 use Cake\Cache\Cache;
 use Cake\Core\Plugin;
@@ -147,6 +152,18 @@ class ContainersController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var  $TenantsTable TenantsTable */
+        $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
+        /** @var  $LocationsTable LocationsTable */
+        $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
+        /** @var  $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var  $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        /** @var  $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+        /** @var  $ServicetemplategroupsTable ServicetemplategroupsTable */
+        $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
 
         if (!$ContainersTable->existsById($id)) {
             throw new NotFoundException(__('Container not found'));
@@ -154,20 +171,71 @@ class ContainersController extends AppController {
 
         $parent = [$ContainersTable->get($id)->toArray()];
 
-        $parent[0]['allow_edit'] = false;
+        $parent[0]['allowEdit'] = false;
 
         if (isset($this->MY_RIGHTS_LEVEL[$parent[0]['id']])) {
             if ((int)$this->MY_RIGHTS_LEVEL[$parent[0]['id']] === WRITE_RIGHT) {
-                $parent[0]['allow_edit'] = true;
+                $parent[0]['allowEdit'] = true;
+                $parent[0]['elements'] = ($parent[0]['rght'] - $parent[0]['lft']) / 2 - 0.5;;
             }
         }
         $containers = $ContainersTable->getChildren($id);
         foreach ($containers as $key => $container) {
-            $containers[$key]['allow_edit'] = false;
+            $containers[$key]['allowEdit'] = false;
             $containerId = $container['id'];
             if (isset($this->MY_RIGHTS_LEVEL[$containerId])) {
                 if ((int)$this->MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT) {
-                    $containers[$key]['allow_edit'] = true;
+                    $containers[$key]['allowEdit'] = true;
+                    switch ($containers[$key]['containertype_id']) {
+                        case CT_GLOBAL:
+                            $containers[$key]['linkedId'] = ROOT_CONTAINER;
+                            $containers[$key]['elements'] = ($container['rght'] - $container['lft']) / 2 - 0.5;
+                            break;
+                        case CT_TENANT:
+                            $tenantId = $TenantsTable->getTenantIdByContainerId($container['id']);
+                            $containers[$key]['linkedId'] = $tenantId;
+                            $containers[$key]['elements'] = ($container['rght'] - $container['lft']) / 2 - 0.5;
+                            break;
+                        case CT_LOCATION:
+                            $locationId = $LocationsTable->getLocationIdByContainerId($container['id']);
+                            $containers[$key]['linkedId'] = $locationId;
+                            $containers[$key]['elements'] = ($container['rght'] - $container['lft']) / 2 - 0.5;
+                            break;
+                        case CT_NODE:
+                            $containers[$key]['linkedId'] = $container['id'];
+                            $containers[$key]['elements'] = ($container['rght'] - $container['lft']) / 2 - 0.5;
+                            break;
+                        case CT_CONTACTGROUP:
+                            $contactGroup = $ContactgroupsTable->getContactgroupByContainerId($container['id']);
+                            if (!empty($contactGroup)) {
+                                $containers[$key]['linkedId'] = $contactGroup['id'];
+                                $containers[$key]['contacts'] = sizeof($contactGroup['contacts']);
+                            }
+                            break;
+                        case CT_HOSTGROUP:
+                            $hostGroup = $HostgroupsTable->getHostgroupByContainerId($container['id']);
+                            if (!empty($hostGroup)) {
+                                $containers[$key]['linkedId'] = $hostGroup['id'];
+                                $containers[$key]['hosts'] = sizeof($hostGroup['hosts']);
+                                $containers[$key]['hosttemplates'] = sizeof($hostGroup['templates']);
+                            }
+                            break;
+                        case CT_SERVICEGROUP:
+                            $serviceGroup = $ServicegroupsTable->getServicegroupByContainerId($container['id']);
+                            if (!empty($serviceGroup)) {
+                                $containers[$key]['linkedId'] = $serviceGroup['id'];
+                                $containers[$key]['services'] = sizeof($serviceGroup['services']);
+                                $containers[$key]['servicetemplates'] = sizeof($serviceGroup['servicetemplates']);
+                            }
+                            break;
+                        case CT_SERVICETEMPLATEGROUP:
+                            $serviceTemplateGroup = $ServicetemplategroupsTable->getServicetemplategroupByContainerId($container['id']);
+                            if (!empty($serviceTemplateGroup)) {
+                                $containers[$key]['linkedId'] = $serviceTemplateGroup['id'];
+                                $containers[$key]['servicetemplates'] = sizeof($serviceTemplateGroup['servicetemplates']);
+                            }
+                            break;
+                    }
                 }
             }
         }
