@@ -12,11 +12,9 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.hasError = null;
-        $scope.hasWebSocketError = false;
 
         $scope.args = [];
         $scope.macros = [];
-        $scope.jqConsole = null;
 
         $scope.load = function(){
             $http.get("/commands/add/.json", {
@@ -127,63 +125,6 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.createJQConsole = function(){
-            $scope.jqConsole = $('#console').jqconsole('', 'nagios$ ');
-
-            $http.get('/commands/terminal.json', {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                if(result.data.gearmanReachable !== true){
-                    $('#console').block({
-                        fadeIn: 1000,
-                        message: '<i class="fa fa-minus-circle fa-5x"></i>',
-                        theme: false
-                    });
-                    $('.blockElement').css({
-                        'background-color': '',
-                        'border': 'none',
-                        'color': '#FFFFFF'
-                    });
-                    $scope.hasWebSocketError = true;
-                }else{
-                    $http.get('/commands/getConsoleWelcome/.json', {
-                        params: {
-                            'angular': true
-                        }
-                    }).then(function(result){
-                        $scope.jqConsole.Write(result.data.welcomeMessage);
-                    });
-                }
-            });
-
-            var newLineInPromt = function(){
-                $scope.jqConsole.Prompt(true, function(input){
-
-                    $http.post("/commands/terminal.json?angular=true",
-                        {
-                            command: input
-                        }
-                    ).then(function(result){
-                        for(var index in result.data.result.stdout){
-                            $scope.jqConsole.Write(result.data.result.stdout[index], 'jqconsole-output');
-                        }
-
-                        for(var errIndex in result.data.result.stderr){
-                            $scope.jqConsole.Write(result.data.result.stderr[errIndex], 'jqconsole-output-error');
-                        }
-
-                        $scope.jqConsole.Write("\n", 'jqconsole-output');
-                        newLineInPromt();
-                    }, function errorCallback(result){
-                        NotyService.genericError();
-                    });
-                });
-            };
-            newLineInPromt();
-        };
-
         $scope.showDefaultMacros = function(){
             $('#defaultMacrosOverview').modal('show');
         };
@@ -234,5 +175,4 @@ angular.module('openITCOCKPIT')
 
         //Fire on page load
         $scope.load();
-        setTimeout($scope.createJQConsole, 250);
     });
