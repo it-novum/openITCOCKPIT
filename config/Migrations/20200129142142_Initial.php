@@ -4931,7 +4931,7 @@ class Initial extends AbstractMigration {
                     'null'    => true,
                 ])
                 ->addColumn('dateformat', 'string', [
-                    'default' => '%H:%M:%S - %d.%m.%Y',
+                    'default' => 'H:i:s - d.m.Y',
                     'limit'   => 100,
                     'null'    => true,
                 ])
