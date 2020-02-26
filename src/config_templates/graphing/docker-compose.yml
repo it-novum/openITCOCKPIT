@@ -43,8 +43,8 @@ services:
   grafana:
     image: grafana/grafana
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD__FILE=/opt/openitc/etc/grafana/admin_password
-      - GF_PATHS_CONFIG=/opt/openitc/etc/grafana/grafana.ini
+      - GF_SECURITY_ADMIN_PASSWORD__FILE=/etc/openitcockpit/grafana/admin_password
+      - GF_PATHS_CONFIG=/etc/openitcockpit/grafana/grafana.ini
       - GF_PATHS_DATA=/var/lib/grafana
       - GF_PATHS_HOME=/usr/share/grafana
       - GF_PATHS_LOGS=/var/log/grafana

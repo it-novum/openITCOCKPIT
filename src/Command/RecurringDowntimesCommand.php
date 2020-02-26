@@ -90,7 +90,7 @@ class RecurringDowntimesCommand extends Command implements CronjobInterface {
             $io->out('<red>' . $e->getMessage() . '</red>');
             $io->hr();
 
-            return false;
+            return 1;
         }
 
         $io->out('Create recurring downtimes...', 0);
