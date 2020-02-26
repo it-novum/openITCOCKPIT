@@ -40,6 +40,7 @@ use Cake\Controller\Controller;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\EventInterface;
 use Cake\I18n\I18n;
+use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
@@ -468,13 +469,16 @@ class AppController extends Controller {
                 'Aros.foreign_key' => $usergroupId
             ])
             ->contain([
-                'Acos'
+                'Acos' => function (Query $query){
+                    return $query->where([
+                        '_create' => '1'
+                    ]);
+                }
             ])
             ->disableHydration()
             ->first();
 
         $acos = $AcosAros['acos'];
-
 
         $acoIdsOfUsergroup = Hash::combine($acos, '{n}.id', '{n}.id');
         unset($acos, $AcosAros);

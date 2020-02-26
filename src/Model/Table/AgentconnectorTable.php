@@ -41,6 +41,11 @@ class AgentconnectorTable extends Table {
         $this->setTable('agentconnector');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
+
+        $this->belongsTo('Hosts', [
+            'foreignKey' => 'hostuuid',
+            'bindingKey' => 'uuid'
+        ]);
     }
 
     /**
@@ -130,6 +135,10 @@ class AgentconnectorTable extends Table {
         return $result;
     }
 
+    /**
+     * @param string $hostuuid
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
     public function getByHostUuid(string $hostuuid) {
         $query = $this->find()
             ->where([
