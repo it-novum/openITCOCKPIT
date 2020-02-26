@@ -25,7 +25,12 @@
 namespace itnovum\openITCOCKPIT\Agent;
 
 
+use App\Model\Table\AgentconfigsTable;
+use App\Model\Table\ProxiesTable;
+use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 
 class HttpLoader {
 
@@ -48,13 +53,36 @@ class HttpLoader {
      * @param string $hostaddress
      */
     public function __construct($config, $hostaddress) {
+        if (!isset($config['proxy'])) {
+            $config['proxy'] = 1;
+        }
         $this->config = $config;
         $this->hostaddress = $hostaddress;
     }
 
     private function buildConnectionOptions($config) {
-        $this->guzzleOptions = [];
+        /** @var ProxiesTable $ProxiesTable */
+        $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
+        $proxySettings = $ProxiesTable->getSettings();
+
         $this->guzzleProtocol = 'http';
+        $this->guzzleOptions = [
+            'headers' => [
+                'Content-Type' => 'application/json'
+            ],
+            'proxy'   => [
+                'http'  => false,
+                'https' => false
+            ],
+            'timeout' => 4
+        ];
+
+        if ($proxySettings['enabled'] === 1 && $config['proxy'] === 1) {
+            $this->guzzleOptions['proxy'] = [
+                'http'  => sprintf('%s:%s', $proxySettings['ipaddress'], $proxySettings['port']),
+                'https' => sprintf('%s:%s', $proxySettings['ipaddress'], $proxySettings['port'])
+            ];
+        }
 
         if ($config['use_https'] === 1) {
             $this->guzzleProtocol = 'https';
@@ -83,6 +111,17 @@ class HttpLoader {
         $this->guzzleOptions['ssl_key'] = $AgentCertificateData->getCaKeyPath();
     }
 
+    private function updateAgentconfigProxy($configupdate) {
+        /** @var $AgentconfigsTable AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+        if (isset($this->config['host_id'])) {
+            $Agentconfig = $AgentconfigsTable->getConfigOrEmptyEntity($this->config['host_id']);
+            $Agentconfig = $AgentconfigsTable->patchEntity($Agentconfig, $configupdate);
+            $AgentconfigsTable->save($Agentconfig);
+        }
+    }
+
     /**
      * @param bool $checkConfig
      *
@@ -107,21 +146,40 @@ class HttpLoader {
             $config['port']
         );
 
-        $response = $Client->request('GET', $url, $this->guzzleOptions);
+        try {
+            $response = $Client->request('GET', $url, $this->guzzleOptions);
+        } catch (RequestException | GuzzleException $e) {
+            try {
+                $this->guzzleOptions['proxy'] = false;
+                unset($response);
+                $response = $Client->request('GET', $url, $this->guzzleOptions);
+                $this->config['proxy'] = false;
+                $this->updateAgentconfigProxy(['proxy' => $this->config['proxy']]);
+            } catch (RequestException | GuzzleException $e) {
+
+            }
+        }
 
         $configResult = '';
         if ($checkConfig) {
             $configResponse = $Client->request('GET', $configUrl, $this->guzzleOptions);
-            if ($response->getStatusCode() === 200) {
+            if ($configResponse->getStatusCode() === 200) {
                 $configResult = json_decode($configResponse->getBody()->getContents(), true);
             }
         }
 
-        if ($response->getStatusCode() !== 200) {
+        if (isset($response) && $response->getStatusCode() !== 200) {
             return [
                 'response' => null,
                 'config'   => $configResult,
                 'error'    => $response->getBody()->getContents(),
+                'success'  => false
+            ];
+        } else if (!isset($response)) {
+            return [
+                'response' => null,
+                'config'   => $configResult,
+                'error'    => '',
                 'success'  => false
             ];
         }
@@ -166,4 +224,46 @@ class HttpLoader {
         ];
     }
 
+    public function sendCertificateToAgent() {
+        /** @var AgentCertificateData $AgentCertificateData */
+        $AgentCertificateData = new AgentCertificateData();
+
+        $this->buildConnectionOptions($this->config);
+        $Client = new Client();
+        $useSSL = false;
+
+        try {
+            $responseOne = $Client->get('http://' . $this->hostaddress . ':' . $this->config['port'] . '/getCsr', $this->guzzleOptions);
+            $result = json_decode($responseOne->getBody()->getContents(), true);
+        } catch (RequestException $e) {
+            $this->updateGuzzleOptionsToUseSSL();
+            $useSSL = true;
+
+            $responseTwo = $Client->get('https://' . $this->hostaddress . ':' . $this->config['port'] . '/getCsr', $this->guzzleOptions);
+            $result = json_decode($responseTwo->getBody()->getContents(), true);
+
+            if ($result === false) {
+                return false;
+            }
+        }
+
+        try {
+            if (isset($result['csr']) && $result['csr'] != "disabled") {
+                $data_string = json_encode($AgentCertificateData->signAgentCsr($result['csr']));
+                $this->guzzleOptions['json'] = $data_string;
+                //$this->guzzleOptions['headers']['Content-Length'] = strlen($data_string);
+
+                if ($useSSL) {
+                    $responseThree = $Client->post('https://' . $this->hostaddress . ':' . $this->config['port'] . '/updateCrt', $this->guzzleOptions);
+                } else {
+                    $responseThree = $Client->post('http://' . $this->hostaddress . ':' . $this->config['port'] . '/updateCrt', $this->guzzleOptions);
+                }
+                $this->updateAgentconfigProxy(['use_https' => 1]);
+            }
+        } catch (\Exception $e) {
+            if (!$e->getCode() == 0) {     //else: got no response; need to be fixed in a future version
+                echo 'Error: ' . $e->getCode() . ' - ' . $e->getMessage();
+            }
+        }
+    }
 }

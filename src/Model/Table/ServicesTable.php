@@ -958,6 +958,8 @@ class ServicesTable extends Table {
                 'Servicetemplates' => function (Query $query) use ($servicetemplateType) {
                     $query->contain([
                         //'CheckCommand',
+                        'Contacts',
+                        'Servicegroups',
                         'Agentchecks'
                     ])->where([
                         'Servicetemplates.servicetemplatetype_id' => $servicetemplateType

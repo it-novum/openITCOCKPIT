@@ -80,7 +80,13 @@
                                     ng-model="host.id">
                                 </select>
                             </div>
-                            <div class="col-xs-12 col-md-2 col-md-offset-1"
+                            <div class="col-xs-12 col-md-4"
+                                 ng-show="remoteAgentConfig && pullMode && !installed && !configured">
+                                <p>
+                                    <?= __('If you changed some configuration, you should run the remote configuration update before you continue. Otherwise you are maybe not able to connect to the agent again threw the web interface. In that case you have to copy the configuration manually to the agent.'); ?>
+                                </p>
+                            </div>
+                            <div class="col-xs-12 col-md-2"
                                  ng-show="remoteAgentConfig && pullMode && !installed && !configured">
                                 <button
                                     type="button" style="min-height: 35px;"
@@ -822,7 +828,7 @@
                                         <div class="row" style="border-bottom: none;">
                                             <div class="col-12">
                                                 <p ng-hide="servicesToCreate">
-                                                    <?= __('Be patient, a background job is asking the openITCOCKPIT Server (every 5 seconds) for agent check results.'); ?>
+                                                    <?= __('Be patient, a background job is asking the openITCOCKPIT Server (every 10 seconds) for agent check results.'); ?>
                                                     <br>
                                                     <?= __('Please make sure the agent is running and right configured.'); ?>
                                                 </p>

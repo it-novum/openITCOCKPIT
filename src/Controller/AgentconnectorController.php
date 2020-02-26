@@ -32,12 +32,14 @@ use App\Model\Entity\Host;
 use App\Model\Table\AgentchecksTable;
 use App\Model\Table\AgentconfigsTable;
 use App\Model\Table\AgentconnectorTable;
+use App\Model\Table\AgenthostscacheTable;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use Cake\Http\Exception\NotFoundException;
+use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
 use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Agent\AgentCertificateData;
@@ -52,7 +54,6 @@ use itnovum\openITCOCKPIT\Filter\AgentconnectorAgentsFilter;
 
 class AgentconnectorController extends AppController {
 
-    private $hostsCacheFolder = '/opt/openitc/agent/hostscache/';
     //public $autoRender = false;
 
     /* TODO:
@@ -233,13 +234,33 @@ class AgentconnectorController extends AppController {
         }
     }
 
+    /**
+     * @param $hostuuid
+     * @param $checkdata
+     */
     private function processUpdateCheckdata($hostuuid, $checkdata) {
-        //FileDebugger::dump(json_decode($checkdata, true)['agent']);
+        /** @var AgenthostscacheTable $AgenthostscacheTable */
+        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
 
-        //if no host check config (poller host config) is available, store data to process later
-        file_put_contents('/opt/openitc/agent/hostscache/' . $hostuuid, $checkdata);
+        if ($AgenthostscacheTable->existsByHostuuid($hostuuid)) {
+            $Agenthostscache = $AgenthostscacheTable->getByHostUuid($hostuuid);
+            $Agenthostscache = $AgenthostscacheTable->patchEntity($Agenthostscache, ['checkdata' => $checkdata, 'modified' => FrozenTime::now()]);
+        } else {
+            $Agenthostscache = $AgenthostscacheTable->newEntity([
+                'hostuuid'  => $hostuuid,
+                'checkdata' => $checkdata,
+                'modified'  => FrozenTime::now(),
+                'created'   => FrozenTime::now()
+            ]);
+        }
+
+        $AgenthostscacheTable->save($Agenthostscache);
     }
 
+    /**
+     * @param null $uuid
+     * @throws MissingParameterExceptions
+     */
     public function sendNewAgentConfig($uuid = null) {
         if (!$this->isJsonRequest()) {
             return;
@@ -274,12 +295,23 @@ class AgentconnectorController extends AppController {
             $response = $HttpLoader->updateAgentConfig($this->request->getData('config'));
             $this->set('success', $response['success']);
 
-            $agentconfigEntity = $AgentconfigsTable->getConfigOrEmptyEntity($hostId);
-            $agentconfigEntity = $AgentconfigsTable->patchEntity($agentconfigEntity, [
-                'port'      => $this->request->getData('config')['port'],
-                'use_https' => $this->request->getData('config')['try-autossl'],
-            ]);
-            $AgentconfigsTable->save($agentconfigEntity);
+            if ($response['success'] === true) {
+                $agentconfigEntity = $AgentconfigsTable->getConfigOrEmptyEntity($hostId);
+
+                $agentconfig['modified'] = FrozenTime::now();
+                $agentconfig['basic_auth'] = 0;
+                $agentconfig['username'] = '';
+                $agentconfig['password'] = '';
+                if($this->request->getData('config')['auth'] !== ''){
+                    $agentconfig['basic_auth'] = 1;
+                    $agentconfig['username'] = explode(':', $this->request->getData('config')['auth'])[0];
+                    $agentconfig['password'] = explode(':', $this->request->getData('config')['auth'])[1];
+                }
+                $agentconfig['port'] = $this->request->getData('config')['port'];
+                $agentconfig['use_https'] = intval($this->request->getData('config')['try-autossl'] === 'true' || $this->request->getData('config')['try-autossl'] === true);
+                $agentconfigEntity = $AgentconfigsTable->patchEntity($agentconfigEntity, $agentconfig);
+                $AgentconfigsTable->save($agentconfigEntity);
+            }
         }
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
@@ -293,6 +325,10 @@ class AgentconnectorController extends AppController {
         $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
     }
 
+    /**
+     * @param null $uuid
+     * @throws MissingParameterExceptions
+     */
     public function getLatestCheckDataByHostUuid($uuid = null) {
         if (!$this->isJsonRequest()) {
             //Only ship HTML Template
@@ -303,12 +339,16 @@ class AgentconnectorController extends AppController {
             throw new MissingParameterExceptions('Host uuid is missing!');
         }
 
-        $this->set('checkdata', '');
-        if (is_readable($this->hostsCacheFolder . $uuid)) {
-            $fileContents = trim(file_get_contents($this->hostsCacheFolder . $uuid));
+        /** @var AgenthostscacheTable $AgenthostscacheTable */
+        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
 
-            if ($fileContents !== '') {
-                $contentArray = json_decode($fileContents, true);
+        $this->set('checkdata', '');
+
+        if ($AgenthostscacheTable->existsByHostuuid($uuid)) {
+            $Agenthostscache = $AgenthostscacheTable->getByHostUuid($uuid);
+
+            if ($Agenthostscache->checkdata !== null && $Agenthostscache->checkdata !== '') {
+                $contentArray = json_decode($Agenthostscache->checkdata, true);
                 if ($contentArray['processes']) {
                     foreach ($contentArray['processes'] as $key => $val) {
                         if (!empty($contentArray['processes'][$key]['cmdline'])) {
@@ -323,6 +363,10 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['checkdata']);
     }
 
+    /**
+     * @param null $uuid
+     * @throws MissingParameterExceptions
+     */
     public function getServicesToCreateByHostUuid($uuid = null) {
         if (!$this->isJsonRequest()) {
             //Only ship HTML Template
@@ -341,6 +385,8 @@ class AgentconnectorController extends AppController {
         $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
         /** @var $AgentconfigsTable AgentconfigsTable */
         $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+        /** @var AgenthostscacheTable $AgenthostscacheTable */
+        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
 
         $hostId = $HostsTable->getHostIdByUuid($uuid);
         if (!$HostsTable->existsById($hostId)) {
@@ -355,12 +401,22 @@ class AgentconnectorController extends AppController {
         $this->set('config', '');
         $this->set('mode', '');
 
+        if ($AgenthostscacheTable->existsByHostuuid($uuid)) {
+            $Agenthostscache = $AgenthostscacheTable->getByHostUuid($uuid);
+
+            if ($Agenthostscache->checkdata !== null && $Agenthostscache->checkdata !== '') {
+                $agentJsonOutput = json_decode($Agenthostscache->checkdata, true);
+                $this->set('mode', 'push');
+            }
+        }
+
         if ($AgentconfigsTable->existsByHostId($hostId)) {
             $agentconfig = $AgentconfigsTable->getConfigByHostId($hostId, true);
-
+            //debug($agentconfig);die();
             try {
                 $HttpLoader = new HttpLoader($agentconfig, $host->get('address'));
                 $response = $HttpLoader->queryAgent(true);
+                //debug($response);die();
 
                 if (isset($response['response']) && !empty($response['response'])) {
                     $agentJsonOutput = $response['response'];
@@ -370,15 +426,8 @@ class AgentconnectorController extends AppController {
                 }
                 $this->set('mode', 'pull');
             } catch (\Exception | GuzzleException $e) {
-
+                //var_dump($e);
             }
-        }
-
-        if (is_readable($this->hostsCacheFolder . $uuid)) {
-            $fileContents = trim(file_get_contents($this->hostsCacheFolder . $uuid));
-            $contentArray = json_decode($fileContents, true);
-            $agentJsonOutput = $contentArray;
-            $this->set('mode', 'push');
         }
 
         if (isset($agentJsonOutput) && !empty($agentJsonOutput)) {
@@ -389,16 +438,16 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['servicesToCreate', 'mode', 'config']);
     }
 
+    /**
+     * @throws MissingParameterExceptions
+     */
     public function createServices() {
         if (!$this->isJsonRequest()) {
             return;
         }
 
-        if (empty($this->request->getData('serviceConfigs'))) {
-            throw new MissingParameterExceptions('serviceConfigs is missing!');
-        }
         if (empty($this->request->getData('hostId'))) {
-            throw new MissingParameterExceptions('hostId is missing!');
+            throw new MissingParameterExceptions('hostId parameter is missing!');
         }
 
         $serviceConfigs = $this->request->getData('serviceConfigs');
@@ -412,6 +461,8 @@ class AgentconnectorController extends AppController {
         $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
         /** @var $AgentconfigsTable AgentconfigsTable */
         $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+        /** @var AgenthostscacheTable $AgenthostscacheTable */
+        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
 
         if (!$HostsTable->existsById($hostId)) {
             throw new NotFoundException(__('Invalid host'));
@@ -421,6 +472,14 @@ class AgentconnectorController extends AppController {
         $hostuuid = $HostsTable->getHostUuidById($hostId);
         $services = $ServicesTable->getServicesByHostIdForAgent($hostId, OITC_AGENT_SERVICE, false);
         $services = $services->toArray();
+
+        if ($AgenthostscacheTable->existsByHostuuid($hostuuid)) {
+            $Agenthostscache = $AgenthostscacheTable->getByHostUuid($hostuuid);
+
+            if ($Agenthostscache->checkdata !== null && $Agenthostscache->checkdata !== '') {
+                $agentJsonOutput = json_decode($Agenthostscache->checkdata, true);
+            }
+        }
 
         if ($AgentconfigsTable->existsByHostId($hostId)) {
             $agentconfig = $AgentconfigsTable->getConfigByHostId($hostId, true);
@@ -437,15 +496,8 @@ class AgentconnectorController extends AppController {
             }
         }
 
-        if (is_readable($this->hostsCacheFolder . $hostuuid)) {
-            $fileContents = trim(file_get_contents($this->hostsCacheFolder . $hostuuid));
-            $contentArray = json_decode($fileContents, true);
-            $agentJsonOutput = $contentArray;
-        }
-
         if (isset($agentJsonOutput) && !empty($agentJsonOutput)) {
             $AgentServicesToCreate = new AgentServicesToCreate($agentJsonOutput, $AgentchecksTable->getAgentchecksForMapping(), $hostId, $services);
-
             $servicesToCreate = $AgentServicesToCreate->getServicesToCreate();
         }
 
@@ -460,6 +512,12 @@ class AgentconnectorController extends AppController {
             }
         }
 
+        if ($this->request->getData('tryAutosslInPullMode') === true || $this->request->getData('tryAutosslInPullMode') === 'true') {
+            $agentconfig = $AgentconfigsTable->getConfigByHostId($hostId, true);
+            $HttpLoader = new HttpLoader($agentconfig, $host->get('address'));
+            $response = $HttpLoader->sendCertificateToAgent();
+        }
+
         if (isset($this->serviceCreationErrors) && !empty($this->serviceCreationErrors)) {
             $this->serviceCreationErrors = [];
             $this->response = $this->response->withStatus(400);
@@ -471,6 +529,10 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
+    /**
+     * @param $serviceInput
+     * @param Host $host
+     */
     private function createRealService($serviceInput, Host $host) {
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
