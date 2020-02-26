@@ -162,27 +162,27 @@ class SetupCommand extends Command {
 
     private function setupFromDefaults() {
         $this->createAdminUser([
-            'firstname'        => $this->defaultConfig['firstname'],
-            'lastname'         => $this->defaultConfig['lastname'],
-            'email'            => $this->defaultConfig['email'],
-            'password'         => $this->defaultConfig['password'],
-            'confirm_password' => $this->defaultConfig['password'],
-            'timezone'         => $this->defaultConfig['timezone'],
-            'is_active'        => 1,
-            'usergroup_id'     => 1,
-            'dateformat'       => 'H:i:s - d.m.Y'
+            'firstname'              => $this->defaultConfig['firstname'],
+            'lastname'               => $this->defaultConfig['lastname'],
+            'email'                  => $this->defaultConfig['email'],
+            'password'               => $this->defaultConfig['password'],
+            'confirm_password'       => $this->defaultConfig['password'],
+            'timezone'               => $this->defaultConfig['timezone'],
+            'is_active'              => 1,
+            'usergroup_id'           => 1,
+            'dateformat'             => 'H:i:s - d.m.Y',
             'showstatsinmenu'        => 0,
             'dashboard_tab_rotation' => 0,
             'paginatorlength'        => 25,
             'recursive_browser'      => 0,
             'containers'             => [
-            [
-                'id'        => ROOT_CONTAINER,
-                '_joinData' => [
-                    'permission_level' => WRITE_RIGHT
+                [
+                    'id'        => ROOT_CONTAINER,
+                    '_joinData' => [
+                        'permission_level' => WRITE_RIGHT
+                    ]
                 ]
             ]
-        ]
         ]);
         $this->setHostname($this->defaultConfig['hostname']);
         $this->setSender($this->defaultConfig['mail']['sender']);
