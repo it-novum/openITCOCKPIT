@@ -167,14 +167,6 @@ class SudoMessageInterface implements MessageComponentInterface {
                 $this->send('Pong', 'keepAlive', 'keepAlive');
                 break;
 
-            case 'apt_get_update':
-                //$this->exec('apt-get update');
-                break;
-
-            case 'execute_nagios_command':
-                $this->execNagiosPlugin($msg->data);
-                break;
-
             case 'rescheduleHost':
                 $this->Cake->Externalcommand->rescheduleHost(['uuid' => $msg->data[0], 'type' => $msg->data[1], 'satellite_id' => $msg->data[2]]);
                 break;
@@ -306,43 +298,6 @@ class SudoMessageInterface implements MessageComponentInterface {
 
         $conn->close();
         $this->clients->detach($conn);
-    }
-
-    public function execNagiosPlugin($command) {
-
-        $folder = new Folder(Configure::read('nagios.basepath') . Configure::read('nagios.libexec'));
-        $plugins = $folder->find();
-        $plugins[] = 'ls';
-        $plugins[] = 'ls -la';
-
-        if (strpos($command, ';') || strpos($command, '&&') || strpos($command, '$') || strpos($command, '|') || strpos($command, '`')) {
-            $this->send("\e[0;34mWARNING: This command contain illegal characters, to run this command is only allowed from real CLI!\e[0m\n");
-
-            return false;
-        }
-
-        if (strpos($command, './') === 0) {
-            //Parse ./ away
-            $_command = explode('./', $command);
-            //remove spaces to get raw command name
-            $_command = explode(' ', $_command[1], 2);
-            if (!isset($_command[0]) || !in_array($_command[0], $plugins)) {
-                $this->send("\e[0;31mERROR: Forbidden command!\e[0m\n");
-
-                return false;
-            }
-        } else {
-            $_command = explode(' ', $command, 2);
-            if (!isset($_command[0]) || !in_array($_command[0], $plugins)) {
-                $this->send("\e[0;31mERROR: Forbidden command!\e[0m\n");
-
-                return false;
-            }
-        }
-
-        $this->exec(escapeshellcmd("su " . Configure::read('nagios.user') . " -c '" . $command . "'"), [
-            'cwd' => Configure::read('nagios.basepath') . Configure::read('nagios.libexec'),
-        ]);
     }
 
     public function exec($command, $options = []) {

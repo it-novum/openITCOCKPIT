@@ -104,10 +104,6 @@
                     </a>
                 </div>
             </fieldset>
-            <?php if ($this->Acl->hasPermission('terminal')): ?>
-                <br/>
-                <div id="console"></div>
-            <?php endif; ?>
             <br/>
             <?php echo $this->Form->formActions(); ?>
         </div>
