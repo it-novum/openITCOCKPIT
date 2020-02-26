@@ -39,8 +39,8 @@ class LegacySchema extends CakeSchema {
         'acknowledgement_type' => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'object_id'            => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'state'                => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
-        'author_name'          => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'comment_data'         => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'author_name'          => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'comment_data'         => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'is_sticky'            => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'persistent_comment'   => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'notify_contacts'      => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
@@ -49,7 +49,7 @@ class LegacySchema extends CakeSchema {
             'entry_time'  => ['column' => 'entry_time', 'unique' => 0],
             'instance_id' => ['column' => ['instance_id', 'object_id'], 'unique' => 0]
         ],
-        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $commands = [
@@ -57,13 +57,13 @@ class LegacySchema extends CakeSchema {
         'instance_id'     => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
         'config_type'     => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'object_id'       => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'key' => 'index'],
-        'command_line'    => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 511, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'command_line'    => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 511, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'         => [
             'PRIMARY'     => ['column' => 'command_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'object_id', 'config_type'], 'unique' => 1],
             'object_id'   => ['column' => 'object_id', 'unique' => 0]
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $commenthistory = [
@@ -89,7 +89,7 @@ class LegacySchema extends CakeSchema {
             'object_id_internal_comment_id' => ['column' => ['object_id', 'internal_comment_id'], 'unique' => 1],
             'object_id'                     => ['column' => ['object_id'], 'unique' => 0]
         ],
-        'tableParameters'     => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB', 'comment' => 'Historical host and service comments']
+        'tableParameters'     => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB', 'comment' => 'Historical host and service comments']
     ];
 
     public $comments = [
@@ -102,8 +102,8 @@ class LegacySchema extends CakeSchema {
         'object_id'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'comment_time'        => ['type' => 'datetime', 'null' => false, 'default' => '1970-01-01 00:00:00'],
         'internal_comment_id' => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'author_name'         => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'comment_data'        => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'author_name'         => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'comment_data'        => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'is_persistent'       => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'comment_source'      => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'expires'             => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
@@ -112,32 +112,32 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'                       => ['column' => 'comment_id', 'unique' => 1],
             'object_id_internal_comment_id' => ['column' => ['object_id', 'internal_comment_id'], 'unique' => 1]
         ],
-        'tableParameters'     => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'     => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $configfiles = [
         'configfile_id'   => ['type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'],
         'instance_id'     => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
         'configfile_type' => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
-        'configfile_path' => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'configfile_path' => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'         => [
             'PRIMARY'     => ['column' => 'configfile_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'configfile_type', 'configfile_path'], 'unique' => 1]
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $configfilevariables = [
         'configfilevariable_id' => ['type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'],
         'instance_id'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
         'configfile_id'         => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'varname'               => ['type' => 'string', 'null' => false, 'length' => 255, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'varvalue'              => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8', 'length' => 1024],
+        'varname'               => ['type' => 'string', 'null' => false, 'length' => 255, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'varvalue'              => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'length' => 1024],
         'indexes'               => [
             'PRIMARY'     => ['column' => 'configfilevariable_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'configfile_id'], 'unique' => 0]
         ],
-        'tableParameters'       => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'       => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $contact_addresses = [
@@ -145,12 +145,12 @@ class LegacySchema extends CakeSchema {
         'instance_id'        => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'contact_id'         => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'key' => 'index'],
         'address_number'     => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
-        'address'            => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'address'            => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'            => [
             'PRIMARY'    => ['column' => 'contact_address_id', 'unique' => 1],
             'contact_id' => ['column' => ['contact_id', 'address_number'], 'unique' => 1]
         ],
-        'tableParameters'    => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'    => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $contact_notificationcommands = [
@@ -159,12 +159,12 @@ class LegacySchema extends CakeSchema {
         'contact_id'                     => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'key' => 'index'],
         'notification_type'              => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'command_object_id'              => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'command_args'                   => ['type' => 'string', 'null' => false, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'command_args'                   => ['type' => 'string', 'null' => false, 'length' => 1000, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'                        => [
             'PRIMARY'    => ['column' => 'contact_notificationcommand_id', 'unique' => 1],
             'contact_id' => ['column' => ['contact_id', 'notification_type', 'command_object_id'], 'unique' => 1]
         ],
-        'tableParameters'                => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'                => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $contactgroup_members = [
@@ -176,7 +176,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'contactgroup_member_id', 'unique' => 1],
             'instance_id' => ['column' => ['contactgroup_id', 'contact_object_id'], 'unique' => 1]
         ],
-        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $contactgroups = [
@@ -184,12 +184,12 @@ class LegacySchema extends CakeSchema {
         'instance_id'            => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
         'config_type'            => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'contactgroup_object_id' => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'alias'                  => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'alias'                  => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'                => [
             'PRIMARY'     => ['column' => 'contactgroup_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'config_type', 'contactgroup_object_id'], 'unique' => 1]
         ],
-        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     /*
@@ -202,13 +202,13 @@ class LegacySchema extends CakeSchema {
         'end_time' => array('type' => 'datetime', 'null' => false, 'default' => '1970-01-01 00:00:00'),
         'end_time_usec' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
         'command_object_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
-        'command_args' => array('type' => 'string', 'null' => true, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+        'command_args' => array('type' => 'string', 'null' => true, 'length' => 1000, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
         'indexes' => array(
             'PRIMARY' => array('column' => array('contactnotificationmethod_id', 'start_time'), 'unique' => 1),
             //'instance_id' => array('column' => array('instance_id', 'contactnotification_id', 'start_time', 'start_time_usec'), 'unique' => 1),
             'start_time' => array('column' => 'start_time', 'unique' => 0)
         ),
-        'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+        'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
     );
     */
 
@@ -226,7 +226,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY' => array('column' => array('contactnotification_id', 'start_time'), 'unique' => 1),
             'start_time' => array('column' => 'start_time', 'unique' => 0)
         ),
-        'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+        'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
     );
     */
 
@@ -235,9 +235,9 @@ class LegacySchema extends CakeSchema {
         'instance_id'                   => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
         'config_type'                   => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'contact_object_id'             => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'alias'                         => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'email_address'                 => ['type' => 'string', 'null' => true, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'pager_address'                 => ['type' => 'string', 'null' => true, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'alias'                         => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'email_address'                 => ['type' => 'string', 'null' => true, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'pager_address'                 => ['type' => 'string', 'null' => true, 'length' => 64, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'host_timeperiod_object_id'     => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'service_timeperiod_object_id'  => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'host_notifications_enabled'    => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
@@ -259,7 +259,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'contact_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'config_type', 'contact_object_id'], 'unique' => 1]
         ],
-        'tableParameters'               => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'               => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $contactstatus = [
@@ -279,7 +279,7 @@ class LegacySchema extends CakeSchema {
             'contact_object_id' => ['column' => 'contact_object_id', 'unique' => 1],
             //'instance_id' => array('column' => 'contactstatus_id', 'unique' => 0)
         ],
-        'tableParameters'               => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'               => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $customvariables = [
@@ -288,23 +288,23 @@ class LegacySchema extends CakeSchema {
         'object_id'         => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'key' => 'index'],
         'config_type'       => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'has_been_modified' => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
-        'varname'           => ['type' => 'string', 'null' => false, 'key' => 'index', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'varvalue'          => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'varname'           => ['type' => 'string', 'null' => false, 'key' => 'index', 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'varvalue'          => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'           => [
             'PRIMARY'     => ['column' => 'customvariable_id', 'unique' => 1],
             'object_id_2' => ['column' => ['object_id', 'config_type', 'varname'], 'unique' => 1],
             'varname'     => ['column' => 'varname', 'unique' => 0]
         ],
-        'tableParameters'   => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'   => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $dbversion = [
-        'name'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 12, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8', 'key' => 'primary'],
-        'version'         => ['type' => 'string', 'null' => false, 'length' => 10, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'name'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 12, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'key' => 'primary'],
+        'version'         => ['type' => 'string', 'null' => false, 'length' => 10, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'         => [
 
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $downtimehistory = [
@@ -313,8 +313,8 @@ class LegacySchema extends CakeSchema {
         'downtime_type'          => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'object_id'              => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'key' => 'index'],
         'entry_time'             => ['type' => 'datetime', 'null' => false, 'default' => '1970-01-01 00:00:00'],
-        'author_name'            => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'comment_data'           => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'author_name'            => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'comment_data'           => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'internal_downtime_id'   => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'triggered_by_id'        => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'is_fixed'               => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
@@ -334,7 +334,7 @@ class LegacySchema extends CakeSchema {
             'scheduled_end_time'   => ['column' => 'scheduled_end_time', 'unique' => 0],
             'object_id'            => ['column' => 'object_id', 'unique' => 0]
         ],
-        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $eventhandlers = [
@@ -349,18 +349,18 @@ class LegacySchema extends CakeSchema {
         'end_time'          => ['type' => 'datetime', 'null' => false, 'default' => '1970-01-01 00:00:00'],
         'end_time_usec'     => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'command_object_id' => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'command_args'      => ['type' => 'string', 'null' => true, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'command_line'      => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'command_args'      => ['type' => 'string', 'null' => true, 'length' => 1000, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'command_line'      => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'timeout'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'early_timeout'     => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'execution_time'    => ['type' => 'float', 'null' => false, 'default' => '0', 'unsigned' => false],
         'return_code'       => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
-        'output'            => ['type' => 'string', 'null' => true, 'length' => 4096, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'long_output'       => ['type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'output'            => ['type' => 'string', 'null' => true, 'length' => 4096, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'long_output'       => ['type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'           => [
             'PRIMARY' => ['column' => 'eventhandler_id', 'unique' => 1]
         ],
-        'tableParameters'   => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'   => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $externalcommands = [
@@ -368,14 +368,14 @@ class LegacySchema extends CakeSchema {
         'instance_id'        => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
         'entry_time'         => ['type' => 'datetime', 'null' => false, 'default' => '1970-01-01 00:00:00', 'key' => 'index'],
         'command_type'       => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
-        'command_name'       => ['type' => 'string', 'null' => false, 'length' => 128, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'command_args'       => ['type' => 'string', 'null' => true, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'command_name'       => ['type' => 'string', 'null' => false, 'length' => 128, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'command_args'       => ['type' => 'string', 'null' => true, 'length' => 1000, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'            => [
             'PRIMARY'     => ['column' => 'externalcommand_id', 'unique' => 1],
             'instance_id' => ['column' => 'instance_id', 'unique' => 0],
             'entry_time'  => ['column' => 'entry_time', 'unique' => 0]
         ],
-        'tableParameters'    => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'    => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $flappinghistory = [
@@ -397,7 +397,7 @@ class LegacySchema extends CakeSchema {
             'instance_id' => ['column' => ['instance_id', 'object_id'], 'unique' => 0],
             'object_id'   => ['column' => ['object_id'], 'unique' => 0]
         ],
-        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $host_contactgroups = [
@@ -409,7 +409,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'host_contactgroup_id', 'unique' => 1],
             'instance_id' => ['column' => ['host_id', 'contactgroup_object_id'], 'unique' => 1]
         ],
-        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $host_contacts = [
@@ -421,7 +421,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'host_contact_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'host_id', 'contact_object_id'], 'unique' => 1]
         ],
-        'tableParameters'   => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'   => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $host_parenthosts = [
@@ -433,7 +433,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'host_parenthost_id', 'unique' => 1],
             'instance_id' => ['column' => ['host_id', 'parent_host_object_id'], 'unique' => 1]
         ],
-        'tableParameters'       => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'       => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     /*
@@ -452,21 +452,21 @@ class LegacySchema extends CakeSchema {
         'end_time' => array('type' => 'datetime', 'null' => false, 'default' => '1970-01-01 00:00:00'),
         'end_time_usec' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
         'command_object_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
-        'command_args' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-        'command_line' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+        'command_args' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+        'command_line' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
         'timeout' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false),
         'early_timeout' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false),
         'execution_time' => array('type' => 'float', 'null' => false, 'default' => '0', 'unsigned' => false),
         'latency' => array('type' => 'float', 'null' => false, 'default' => '0', 'unsigned' => false),
         'return_code' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false),
-        'output' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-        'long_output' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-        'perfdata' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+        'output' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+        'long_output' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+        'perfdata' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
         'indexes' => array(
             'PRIMARY' => array('column' => array('hostcheck_id', 'start_time'), 'unique' => 1),
             'start_time' => array('column' => 'start_time', 'unique' => 0)
         ),
-        'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+        'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
     );
     */
 
@@ -486,7 +486,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'hostdependency_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'config_type', 'host_object_id', 'dependent_host_object_id', 'dependency_type', 'inherits_parent', 'fail_on_up', 'fail_on_down', 'fail_on_unreachable'], 'unique' => 1]
         ],
-        'tableParameters'          => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'          => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $hostescalation_contactgroups = [
@@ -498,7 +498,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'hostescalation_contactgroup_id', 'unique' => 1],
             'instance_id' => ['column' => ['hostescalation_id', 'contactgroup_object_id'], 'unique' => 1]
         ],
-        'tableParameters'                => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'                => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $hostescalation_contacts = [
@@ -510,7 +510,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'hostescalation_contact_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'hostescalation_id', 'contact_object_id'], 'unique' => 1]
         ],
-        'tableParameters'           => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'           => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $hostescalations = [
@@ -529,7 +529,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'hostescalation_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'config_type', 'host_object_id', 'timeperiod_object_id', 'first_notification', 'last_notification'], 'unique' => 1]
         ],
-        'tableParameters'         => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'         => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $hostgroup_members = [
@@ -541,7 +541,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'hostgroup_member_id', 'unique' => 1],
             'instance_id' => ['column' => ['hostgroup_id', 'host_object_id'], 'unique' => 1]
         ],
-        'tableParameters'     => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'     => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $hostgroups = [
@@ -549,12 +549,12 @@ class LegacySchema extends CakeSchema {
         'instance_id'         => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
         'config_type'         => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'hostgroup_object_id' => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'alias'               => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'alias'               => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'             => [
             'PRIMARY'     => ['column' => 'hostgroup_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'hostgroup_object_id'], 'unique' => 1]
         ],
-        'tableParameters'     => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'     => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $hosts = [
@@ -562,16 +562,16 @@ class LegacySchema extends CakeSchema {
         'instance_id'                       => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
         'config_type'                       => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'host_object_id'                    => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'key' => 'index'],
-        'alias'                             => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'display_name'                      => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'address'                           => ['type' => 'string', 'null' => false, 'length' => 128, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'alias'                             => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'display_name'                      => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'address'                           => ['type' => 'string', 'null' => false, 'length' => 128, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'check_command_object_id'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'check_command_args'                => ['type' => 'string', 'null' => true, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'check_command_args'                => ['type' => 'string', 'null' => true, 'length' => 1000, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'eventhandler_command_object_id'    => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'eventhandler_command_args'         => ['type' => 'string', 'null' => true, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'eventhandler_command_args'         => ['type' => 'string', 'null' => true, 'length' => 1000, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'notification_timeperiod_object_id' => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'check_timeperiod_object_id'        => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'failure_prediction_options'        => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'failure_prediction_options'        => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'check_interval'                    => ['type' => 'float', 'null' => false, 'default' => '0', 'unsigned' => false],
         'retry_interval'                    => ['type' => 'float', 'null' => false, 'default' => '0', 'unsigned' => false],
         'max_check_attempts'                => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
@@ -602,13 +602,13 @@ class LegacySchema extends CakeSchema {
         'notifications_enabled'             => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'obsess_over_host'                  => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'failure_prediction_enabled'        => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
-        'notes'                             => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'notes_url'                         => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'action_url'                        => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'icon_image'                        => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'icon_image_alt'                    => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'vrml_image'                        => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'statusmap_image'                   => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'notes'                             => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'notes_url'                         => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'action_url'                        => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'icon_image'                        => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'icon_image_alt'                    => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'vrml_image'                        => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'statusmap_image'                   => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'have_2d_coords'                    => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'x_2d'                              => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'y_2d'                              => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
@@ -622,7 +622,7 @@ class LegacySchema extends CakeSchema {
             'instance_id'    => ['column' => ['instance_id', 'config_type', 'host_object_id'], 'unique' => 1],
             'host_object_id' => ['column' => 'host_object_id', 'unique' => 0]
         ],
-        'tableParameters'                   => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'                   => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $hoststatus = [
@@ -630,9 +630,9 @@ class LegacySchema extends CakeSchema {
         'instance_id'                   => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
         'host_object_id'                => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'key' => 'unique'],
         'status_update_time'            => ['type' => 'datetime', 'null' => false, 'default' => '1970-01-01 00:00:00', 'key' => 'index'],
-        'output'                        => ['type' => 'string', 'null' => true, 'length' => 4096, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'long_output'                   => ['type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'perfdata'                      => ['type' => 'string', 'null' => true, 'length' => 4096, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'output'                        => ['type' => 'string', 'null' => true, 'length' => 4096, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'long_output'                   => ['type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'perfdata'                      => ['type' => 'string', 'null' => true, 'length' => 4096, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'current_state'                 => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
         'has_been_checked'              => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'should_be_scheduled'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
@@ -668,8 +668,8 @@ class LegacySchema extends CakeSchema {
         'process_performance_data'      => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'obsess_over_host'              => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'modified_host_attributes'      => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'event_handler'                 => ['type' => 'string', 'null' => true, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'check_command'                 => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'event_handler'                 => ['type' => 'string', 'null' => true, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'check_command'                 => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'normal_check_interval'         => ['type' => 'float', 'null' => false, 'default' => '0', 'unsigned' => false],
         'retry_check_interval'          => ['type' => 'float', 'null' => false, 'default' => '0', 'unsigned' => false],
         'check_timeperiod_object_id'    => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
@@ -678,17 +678,17 @@ class LegacySchema extends CakeSchema {
             'object_id_instance_id' => ['column' => ['host_object_id', 'instance_id'], 'unique' => 1],
             'hoststatus'            => ['column' => ['host_object_id', 'current_state'], 'unique' => 0]
         ],
-        'tableParameters'               => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'               => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $instances = [
         'instance_id'          => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 6, 'unsigned' => false, 'key' => 'primary'],
-        'instance_name'        => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'instance_description' => ['type' => 'string', 'null' => false, 'length' => 128, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'instance_name'        => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'instance_description' => ['type' => 'string', 'null' => false, 'length' => 128, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'              => [
             'PRIMARY' => ['column' => 'instance_id', 'unique' => 1]
         ],
-        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     /*
@@ -699,7 +699,7 @@ class LegacySchema extends CakeSchema {
         'entry_time' => array('type' => 'datetime', 'null' => false, 'default' => '1970-01-01 00:00:00', 'key' => 'index'),
         'entry_time_usec' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'key' => 'index'),
         'logentry_type' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
-        'logentry_data' => array('type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+        'logentry_data' => array('type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
         'realtime_data' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false),
         'inferred_data_extracted' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false),
         'indexes' => array(
@@ -709,7 +709,7 @@ class LegacySchema extends CakeSchema {
             'entry_time' => array('column' => 'entry_time', 'unique' => 0),
             'entry_time_usec' => array('column' => 'entry_time_usec', 'unique' => 0)
         ),
-        'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+        'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
     );
     */
 
@@ -725,15 +725,15 @@ class LegacySchema extends CakeSchema {
         'end_time' => array('type' => 'datetime', 'null' => false, 'default' => '1970-01-01 00:00:00'),
         'end_time_usec' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
         'state' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false),
-        'output' => array('type' => 'string', 'null' => true, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-        'long_output' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+        'output' => array('type' => 'string', 'null' => true, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+        'long_output' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
         'escalated' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false),
         'contacts_notified' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false),
         'indexes' => array(
             'PRIMARY' => array('column' => array('notification_id', 'start_time'), 'unique' => 1),
             'start_time' => array('column' => 'start_time', 'unique' => 0)
         ),
-        'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+        'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
     );
     */
 
@@ -741,15 +741,15 @@ class LegacySchema extends CakeSchema {
         'object_id'       => ['type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'],
         'instance_id'     => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'objecttype_id'   => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
-        'name1'           => ['type' => 'string', 'null' => false, 'length' => 128, 'key' => 'index', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'name2'           => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 128, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'name1'           => ['type' => 'string', 'null' => false, 'length' => 128, 'key' => 'index', 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'name2'           => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 128, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'is_active'       => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'indexes'         => [
             'PRIMARY'       => ['column' => 'object_id', 'unique' => 1],
             'hostobject'    => ['column' => ['name1', 'name2', 'objecttype_id'], 'unique' => 0],
             'serviceobject' => ['column' => ['name2', 'objecttype_id'], 'unique' => 0]
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $processevents = [
@@ -759,14 +759,14 @@ class LegacySchema extends CakeSchema {
         'event_time'      => ['type' => 'datetime', 'null' => false, 'default' => '1970-01-01 00:00:00', 'key' => 'index'],
         'event_time_usec' => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'process_id'      => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'program_name'    => ['type' => 'string', 'null' => false, 'length' => 16, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'program_version' => ['type' => 'string', 'null' => false, 'length' => 20, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'program_date'    => ['type' => 'string', 'null' => false, 'length' => 10, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'program_name'    => ['type' => 'string', 'null' => false, 'length' => 16, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'program_version' => ['type' => 'string', 'null' => false, 'length' => 20, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'program_date'    => ['type' => 'string', 'null' => false, 'length' => 10, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'         => [
             'PRIMARY'    => ['column' => 'processevent_id', 'unique' => 1],
             'event_time' => ['column' => ['event_time', 'event_time_usec'], 'unique' => 0]
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $programstatus = [
@@ -793,13 +793,13 @@ class LegacySchema extends CakeSchema {
         'obsess_over_services'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'modified_host_attributes'       => ['type' => 'integer', 'null' => true, 'default' => '0', 'unsigned' => false],
         'modified_service_attributes'    => ['type' => 'integer', 'null' => true, 'default' => '0', 'unsigned' => false],
-        'global_host_event_handler'      => ['type' => 'string', 'null' => true, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'global_service_event_handler'   => ['type' => 'string', 'null' => true, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'global_host_event_handler'      => ['type' => 'string', 'null' => true, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'global_service_event_handler'   => ['type' => 'string', 'null' => true, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'                        => [
             'PRIMARY'     => ['column' => 'programstatus_id', 'unique' => 1],
             'instance_id' => ['column' => 'instance_id', 'unique' => 1]
         ],
-        'tableParameters'                => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'                => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $scheduleddowntime = [
@@ -808,8 +808,8 @@ class LegacySchema extends CakeSchema {
         'downtime_type'          => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'object_id'              => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'entry_time'             => ['type' => 'datetime', 'null' => false, 'default' => '1970-01-01 00:00:00'],
-        'author_name'            => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'comment_data'           => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'author_name'            => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'comment_data'           => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'internal_downtime_id'   => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'triggered_by_id'        => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'is_fixed'               => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
@@ -823,7 +823,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY' => ['column' => 'scheduleddowntime_id', 'unique' => 1],
             //'instance_id' => array('column' => array('instance_id', 'object_id', 'entry_time', 'internal_downtime_id'), 'unique' => 1)
         ],
-        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $service_contactgroups = [
@@ -835,7 +835,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'service_contactgroup_id', 'unique' => 1],
             'instance_id' => ['column' => ['service_id', 'contactgroup_object_id'], 'unique' => 1]
         ],
-        'tableParameters'         => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'         => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $service_contacts = [
@@ -847,7 +847,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'service_contact_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'service_id', 'contact_object_id'], 'unique' => 1]
         ],
-        'tableParameters'    => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'    => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $service_parentservices = [
@@ -859,7 +859,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'service_parentservice_id', 'unique' => 1],
             'instance_id' => ['column' => ['service_id', 'parent_service_object_id'], 'unique' => 1]
         ],
-        'tableParameters'          => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'          => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     /*
@@ -877,23 +877,23 @@ class LegacySchema extends CakeSchema {
         'end_time' => array('type' => 'datetime', 'null' => false, 'default' => '1970-01-01 00:00:00'),
         'end_time_usec' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
         'command_object_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
-        'command_args' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-        'command_line' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+        'command_args' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+        'command_line' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
         'timeout' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false),
         'early_timeout' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false),
         'execution_time' => array('type' => 'float', 'null' => false, 'default' => '0', 'unsigned' => false),
         'latency' => array('type' => 'float', 'null' => false, 'default' => '0', 'unsigned' => false),
         'return_code' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false),
-        'output' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-        'long_output' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-        'perfdata' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+        'output' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 1000, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+        'long_output' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+        'perfdata' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 1000, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
         'indexes' => array(
             'PRIMARY' => array('column' => array('servicecheck_id', 'start_time'), 'unique' => 1),
             'start_time' => array('column' => 'start_time', 'unique' => 0),
             'service_object_id' => array('column' => 'service_object_id', 'unique' => 0),
             'start_time_2' => array('column' => 'start_time', 'unique' => 0),
         ),
-        'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+        'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
     );
     */
 
@@ -914,7 +914,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'servicedependency_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'config_type', 'service_object_id', 'dependent_service_object_id', 'dependency_type', 'inherits_parent', 'fail_on_ok', 'fail_on_warning', 'fail_on_unknown', 'fail_on_critical'], 'unique' => 1]
         ],
-        'tableParameters'             => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'             => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $serviceescalation_contactgroups = [
@@ -926,7 +926,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'serviceescalation_contactgroup_id', 'unique' => 1],
             'instance_id' => ['column' => ['serviceescalation_id', 'contactgroup_object_id'], 'unique' => 1]
         ],
-        'tableParameters'                   => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'                   => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $serviceescalation_contacts = [
@@ -938,7 +938,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'serviceescalation_contact_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'serviceescalation_id', 'contact_object_id'], 'unique' => 1]
         ],
-        'tableParameters'              => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'              => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $serviceescalations = [
@@ -958,7 +958,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'serviceescalation_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'config_type', 'service_object_id', 'timeperiod_object_id', 'first_notification', 'last_notification'], 'unique' => 1]
         ],
-        'tableParameters'       => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'       => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $servicegroup_members = [
@@ -970,7 +970,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'servicegroup_member_id', 'unique' => 1],
             'instance_id' => ['column' => ['servicegroup_id', 'service_object_id'], 'unique' => 1]
         ],
-        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $servicegroups = [
@@ -978,12 +978,12 @@ class LegacySchema extends CakeSchema {
         'instance_id'            => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
         'config_type'            => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'servicegroup_object_id' => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'alias'                  => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'alias'                  => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'                => [
             'PRIMARY'     => ['column' => 'servicegroup_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'config_type', 'servicegroup_object_id'], 'unique' => 1]
         ],
-        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $services = [
@@ -992,14 +992,14 @@ class LegacySchema extends CakeSchema {
         'config_type'                       => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'host_object_id'                    => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'service_object_id'                 => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'key' => 'index'],
-        'display_name'                      => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'display_name'                      => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'check_command_object_id'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'check_command_args'                => ['type' => 'string', 'null' => true, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'check_command_args'                => ['type' => 'string', 'null' => true, 'length' => 1000, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'eventhandler_command_object_id'    => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'eventhandler_command_args'         => ['type' => 'string', 'null' => true, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'eventhandler_command_args'         => ['type' => 'string', 'null' => true, 'length' => 1000, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'notification_timeperiod_object_id' => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'check_timeperiod_object_id'        => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'failure_prediction_options'        => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'failure_prediction_options'        => ['type' => 'string', 'null' => false, 'length' => 64, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'check_interval'                    => ['type' => 'float', 'null' => false, 'default' => '0', 'unsigned' => false],
         'retry_interval'                    => ['type' => 'float', 'null' => false, 'default' => '0', 'unsigned' => false],
         'max_check_attempts'                => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
@@ -1034,17 +1034,17 @@ class LegacySchema extends CakeSchema {
         'notifications_enabled'             => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'obsess_over_service'               => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'failure_prediction_enabled'        => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
-        'notes'                             => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'notes_url'                         => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'action_url'                        => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'icon_image'                        => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'icon_image_alt'                    => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'notes'                             => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'notes_url'                         => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'action_url'                        => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'icon_image'                        => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'icon_image_alt'                    => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'importance'                        => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'indexes'                           => [
             'PRIMARY'           => ['column' => 'service_id', 'unique' => 1],
             'service_object_id' => ['column' => 'service_object_id', 'unique' => 0]
         ],
-        'tableParameters'                   => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'                   => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $servicestatus = [
@@ -1052,9 +1052,9 @@ class LegacySchema extends CakeSchema {
         'instance_id'                   => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
         'service_object_id'             => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'key' => 'unique'],
         'status_update_time'            => ['type' => 'datetime', 'null' => false, 'default' => '1970-01-01 00:00:00', 'key' => 'index'],
-        'output'                        => ['type' => 'string', 'null' => true, 'length' => 4096, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'long_output'                   => ['type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'perfdata'                      => ['type' => 'string', 'null' => true, 'length' => 4096, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'output'                        => ['type' => 'string', 'null' => true, 'length' => 4096, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'long_output'                   => ['type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'perfdata'                      => ['type' => 'string', 'null' => true, 'length' => 4096, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'current_state'                 => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
         'has_been_checked'              => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'should_be_scheduled'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
@@ -1091,8 +1091,8 @@ class LegacySchema extends CakeSchema {
         'process_performance_data'      => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'obsess_over_service'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'modified_service_attributes'   => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'event_handler'                 => ['type' => 'string', 'null' => true, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'check_command'                 => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'event_handler'                 => ['type' => 'string', 'null' => true, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'check_command'                 => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'normal_check_interval'         => ['type' => 'float', 'null' => false, 'default' => '0', 'unsigned' => false],
         'retry_check_interval'          => ['type' => 'float', 'null' => false, 'default' => '0', 'unsigned' => false],
         'check_timeperiod_object_id'    => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
@@ -1101,7 +1101,7 @@ class LegacySchema extends CakeSchema {
             'object_id_instance_id' => ['column' => ['service_object_id', 'instance_id'], 'unique' => 1],
             'servicestatus'         => ['column' => ['service_object_id', 'current_state', 'last_check', 'next_check', 'last_hard_state_change', 'output', 'scheduled_downtime_depth', 'active_checks_enabled', 'state_type', 'problem_has_been_acknowledged', 'is_flapping'], 'unique' => 0, 'length' => ['output' => '255']]
         ],
-        'tableParameters'               => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'               => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     /*
@@ -1118,14 +1118,14 @@ class LegacySchema extends CakeSchema {
         'max_check_attempts' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false),
         'last_state' => array('type' => 'integer', 'null' => false, 'default' => '-1', 'length' => 6, 'unsigned' => false),
         'last_hard_state' => array('type' => 'integer', 'null' => false, 'default' => '-1', 'length' => 6, 'unsigned' => false),
-        'output' => array('type' => 'string', 'null' => true, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-        'long_output' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+        'output' => array('type' => 'string', 'null' => true, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+        'long_output' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
         'indexes' => array(
             'PRIMARY' => array('column' => array('statehistory_id', 'state_time'), 'unique' => 1),
             'state_time' => array('column' => array('state_time', 'state_time_usec'), 'unique' => 0),
             'object_id' => array('column' => array('object_id'), 'unique' => 0)
         ),
-        'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+        'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
     );
     */
 
@@ -1136,18 +1136,18 @@ class LegacySchema extends CakeSchema {
         'start_time_usec'  => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
         'end_time'         => ['type' => 'datetime', 'null' => false, 'default' => '1970-01-01 00:00:00'],
         'end_time_usec'    => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'command_line'     => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'command_line'     => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'timeout'          => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'early_timeout'    => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'execution_time'   => ['type' => 'float', 'null' => false, 'default' => '0', 'unsigned' => false],
         'return_code'      => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
-        'output'           => ['type' => 'string', 'null' => true, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'long_output'      => ['type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'output'           => ['type' => 'string', 'null' => true, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'long_output'      => ['type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'          => [
             'PRIMARY'     => ['column' => 'systemcommand_id', 'unique' => 1],
             'instance_id' => ['column' => 'instance_id', 'unique' => 0]
         ],
-        'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $timeperiod_timeranges = [
@@ -1161,7 +1161,7 @@ class LegacySchema extends CakeSchema {
             'PRIMARY'     => ['column' => 'timeperiod_timerange_id', 'unique' => 1],
             'instance_id' => ['column' => ['timeperiod_id', 'day', 'start_sec', 'end_sec'], 'unique' => 1]
         ],
-        'tableParameters'         => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'         => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
     public $timeperiods = [
@@ -1169,12 +1169,12 @@ class LegacySchema extends CakeSchema {
         'instance_id'          => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
         'config_type'          => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
         'timeperiod_object_id' => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false],
-        'alias'                => ['type' => 'string', 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'alias'                => ['type' => 'string', 'null' => false, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'indexes'              => [
             'PRIMARY'     => ['column' => 'timeperiod_id', 'unique' => 1],
             'instance_id' => ['column' => ['instance_id', 'config_type', 'timeperiod_object_id'], 'unique' => 1]
         ],
-        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB']
+        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB']
     ];
 
 }
