@@ -121,35 +121,140 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                     <div class="row padding-top-15">
                         <div class="col col-sm-12 col-lg-12">
                             <div ng-if="subcontainers" ng-nestable ng-model="subcontainers">
-
-
                                 <div>
-
                                     <div class="nodes-container-name" title="{{ $Container.name }}"
                                          ng-switch="$Container.containertype_id">
-
                                         <span class="ellipsis" ng-switch-when="<?php echo CT_GLOBAL; ?>">
                                             <i class="fa fa-globe"></i>
                                             {{ $Container.name }}
+
+                                            <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
+                                                <a class="txt-color-green padding-left-10 font-xs pointer"
+                                                   ng-click="openAddNodeModal($Container)">
+                                                    <i class="fa fa-plus"></i>
+                                                    <?php echo __('Add'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                         </span>
+
                                         <span class="ellipsis" ng-switch-when="<?php echo CT_TENANT; ?>">
                                             <i class="fa fa-home"></i>
                                             <?php if ($this->Acl->hasPermission('edit', 'containers')): ?>
-                                                <a ui-sref="TenantsEdit({id: $Container.id})"
+                                                <a ui-sref="TenantsEdit({id: $Container.linkedId})"
                                                    ng-if="$Container.allowEdit">
                                                     {{ $Container.name }}
                                                 </a>
+                                                <span ng-if="$Container.allowEdit === true">
+                                                    <a class="txt-color-red padding-left-10 font-xs pointer"
+                                                       ng-click="openEditNodeModal($Container)">
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                        <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </span>
                                                 <span ng-if="!$Container.allowEdit">
                                                     {{ $Container.name }}
                                                 </span>
                                             <?php else: ?>
                                                 {{ $Container.name }}
                                             <?php endif; ?>
+
+                                            <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
+                                                <a class="txt-color-green padding-left-10 font-xs pointer"
+                                                   ng-click="openAddNodeModal($Container)">
+                                                    <i class="fa fa-plus"></i>
+                                                    <?php echo __('Add'); ?>
+                                                </a>
+                                            <?php endif; ?>
+
+                                            <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
+                                                <a class="text-info padding-left-10 font-xs pointer"
+                                                   ui-sref="ContainersShowDetails({id:$Container.id, tenant:selectedContainer.id})">
+                                                    <i class="fa fa-info"></i>
+                                                    <?php echo __('Show details'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                         </span>
+
                                         <span class="ellipsis" ng-switch-when="<?php echo CT_LOCATION; ?>">
                                             <i class="fa fa-location-arrow"></i>
                                             <?php if ($this->Acl->hasPermission('edit', 'locations')): ?>
-                                                <a ui-sref="LocationsEdit({id: $Container.id})"
+                                                <a ui-sref="LocationsEdit({id: $Container.linkedId})"
+                                                   ng-if="$Container.allowEdit">
+                                                    {{ $Container.name }}
+                                                </a>
+                                                <span ng-if="$Container.allowEdit === true">
+                                                    <a class="txt-color-red padding-left-10 font-xs pointer"
+                                                       ng-click="openEditNodeModal($Container)">
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                        <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </span>
+                                                <span ng-if="!$Container.allowEdit">
+                                                    {{ $Container.name }}
+                                                </span>
+                                            <?php else: ?>
+                                                {{ $Container.name }}
+                                            <?php endif; ?>
+
+                                            <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
+                                                <a class="txt-color-green padding-left-10 font-xs pointer"
+                                                   ng-click="openAddNodeModal($Container)">
+                                                    <i class="fa fa-plus"></i>
+                                                    <?php echo __('Add'); ?>
+                                                </a>
+                                            <?php endif; ?>
+
+                                            <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
+                                                <a class="text-info padding-left-10 font-xs pointer"
+                                                   ui-sref="ContainersShowDetails({id:$Container.id, tenant:selectedContainer.id})">
+                                                    <i class="fa fa-info"></i>
+                                                    <?php echo __('Show details'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                        </span>
+
+                                        <span class="ellipsis" ng-switch-when="<?php echo CT_NODE; ?>">
+                                            <i class="fa fa-link"></i>
+                                            <?php if ($this->Acl->hasPermission('edit', 'containers')): ?>
+                                                <a ui-sref="ContainersIndex({id: $Container.linkedId})"
+                                                   ng-if="$Container.allowEdit">
+                                                    {{ $Container.name }}
+                                                </a>
+                                                <span ng-if="$Container.allowEdit === true">
+                                                    <a class="txt-color-red padding-left-10 font-xs pointer"
+                                                       ng-click="openEditNodeModal($Container)">
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                        <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </span>
+                                                <span ng-if="!$Container.allowEdit">
+                                                    {{ $Container.name }}
+                                                </span>
+                                            <?php else: ?>
+                                                {{ $Container.name }}
+                                            <?php endif; ?>
+
+                                            <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
+                                                <a class="txt-color-green padding-left-10 font-xs pointer"
+                                                   ng-click="openAddNodeModal($Container)">
+                                                    <i class="fa fa-plus"></i>
+                                                    <?php echo __('Add'); ?>
+                                                </a>
+                                            <?php endif; ?>
+
+                                            <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
+                                                <a class="text-info padding-left-10 font-xs pointer"
+                                                   ui-sref="ContainersShowDetails({id:$Container.id, tenant:selectedContainer.id})">
+                                                    <i class="fa fa-info"></i>
+                                                    <?php echo __('Show details'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                        </span>
+
+                                        <span class="ellipsis" ng-switch-when="<?php echo CT_CONTACTGROUP; ?>">
+                                            <i class="fa fa-users"></i>
+                                            <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
+                                                <a ui-sref="ContactgroupsEdit({id: $Container.linkedId})"
                                                    ng-if="$Container.allowEdit">
                                                     {{ $Container.name }}
                                                 </a>
@@ -161,54 +266,81 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                             <?php endif; ?>
                                         </span>
 
+                                        <span class="ellipsis" ng-switch-when="<?php echo CT_HOSTGROUP; ?>">
+                                            <i class="fa fa-server"></i>
+                                            <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
+                                                <a ui-sref="HostgroupsEdit({id: $Container.linkedId})"
+                                                   ng-if="$Container.allowEdit">
+                                                    {{ $Container.name }}
+                                                </a>
+                                                <span ng-if="!$Container.allowEdit">
+                                                    {{ $Container.name }}
+                                                </span>
+                                            <?php else: ?>
+                                                {{ $Container.name }}
+                                            <?php endif; ?>
+                                        </span>
 
+                                        <span class="ellipsis" ng-switch-when="<?php echo CT_SERVICEGROUP; ?>">
+                                            <i class="fa fa-cogs"></i>
+                                            <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
+                                                <a ui-sref="ServicegroupsEdit({id: $Container.linkedId})"
+                                                   ng-if="$Container.allowEdit">
+                                                    {{ $Container.name }}
+                                                </a>
+                                                <span ng-if="!$Container.allowEdit">
+                                                    {{ $Container.name }}
+                                                </span>
+                                            <?php else: ?>
+                                                {{ $Container.name }}
+                                            <?php endif; ?>
+                                        </span>
+
+                                        <span class="ellipsis" ng-switch-when="<?php echo CT_SERVICETEMPLATEGROUP; ?>">
+                                            <i class="fa fa-pencil-square-o"></i>
+                                            <?php if ($this->Acl->hasPermission('edit', 'servicetemplategroups')): ?>
+                                                <a ui-sref="ServicetemplategroupsEdit({id: $Container.linkedId})"
+                                                   ng-if="$Container.allowEdit">
+                                                    {{ $Container.name }}
+                                                </a>
+                                                <span ng-if="!$Container.allowEdit">
+                                                    {{ $Container.name }}
+                                                </span>
+                                            <?php else: ?>
+                                                {{ $Container.name }}
+                                            <?php endif; ?>
+                                        </span>
                                     </div>
 
-                                    <?php if ($this->Acl->hasPermission('edit', 'containers')): ?>
-                                        <span ng-if="$Container.allowEdit === true">
-                                            <a ng-if="$Container.containertype_id == <?php echo CT_NODE; ?> ||
-                                                    $Container.containertype_id == <?php echo CT_TENANT; ?> ||
-                                                    $Container.containertype_id == <?php echo CT_LOCATION; ?>"
-                                               class="txt-color-red padding-left-10 font-xs pointer"
-                                               ng-click="openEditNodeModal($Container)">
-                                                <i class="fas fa-pencil-alt"></i>
-                                                <?php echo __('Edit'); ?>
-                                            </a>
-                                        </span>
-                                    <?php endif; ?>
-
-                                    <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
-                                        <a ng-if="$Container.containertype_id == <?php echo CT_GLOBAL; ?> ||
-                                            $Container.containertype_id == <?php echo CT_NODE; ?> ||
-                                            $Container.containertype_id == <?php echo CT_TENANT; ?> ||
-                                            $Container.containertype_id == <?php echo CT_LOCATION; ?>"
-                                           class="txt-color-green padding-left-10 font-xs pointer"
-                                           ng-click="openAddNodeModal($Container)">
-                                            <i class="fa fa-plus"></i>
-                                            <?php echo __('Add'); ?>
-                                        </a>
-                                    <?php endif; ?>
-
-                                    <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
-                                        <a ng-if="$Container.containertype_id == <?php echo CT_NODE; ?> ||
-                                            $Container.containertype_id == <?php echo CT_TENANT; ?> ||
-                                            $Container.containertype_id == <?php echo CT_LOCATION; ?>"
-                                           class="text-info padding-left-10 font-xs pointer"
-                                           ui-sref="ContainersShowDetails({id:$Container.id, tenant:selectedContainer.id})">
-                                            <i class="fa fa-info"></i>
-                                            <?php echo __('Show details'); ?>
-                                        </a>
-                                    <?php endif; ?>
-
-
-                                    <i class="note pull-right"
-                                       ng-if="(($Container.rght-$Container.lft)/2-0.5) == 0">
-                                        <?php echo __('empty'); ?>
-                                    </i>
                                     <span class="badge bg-color-blue txt-color-white pull-right"
-                                          ng-if="(($Container.rght-$Container.lft)/2-0.5) > 0">{{
-                                        ($Container.rght-$Container.lft)/2-0.5 }}</span>
+                                          ng-if="($Container.containertype_id == <?php echo CT_GLOBAL; ?> ||
+                                                  $Container.containertype_id == <?php echo CT_TENANT; ?> ||
+                                                  $Container.containertype_id == <?php echo CT_LOCATION; ?> ||
+                                                  $Container.containertype_id == <?php echo CT_NODE; ?>)">
+                                        {{ $Container.elements }}
+                                    </span>
 
+                                    <span class="pull-right"
+                                          ng-if="$Container.containertype_id == <?php echo CT_CONTACTGROUP; ?>">
+                                        <i class="fa fa-user"></i> {{ $Container.contacts }}
+                                    </span>
+
+                                    <span class="pull-right"
+                                          ng-if="$Container.containertype_id == <?php echo CT_HOSTGROUP; ?>">
+                                        <i class="fa fa-desktop"></i> {{ $Container.hosts }}
+                                        <i class="fa fa-pencil-square-o"></i> {{ $Container.hosttemplates }}
+                                    </span>
+
+                                    <span class="pull-right"
+                                          ng-if="$Container.containertype_id == <?php echo CT_SERVICEGROUP; ?>">
+                                        <i class="fa fa-cog"></i> {{ $Container.services }}
+                                        <i class="fa fa-pencil-square-o"></i> {{ $Container.servicetemplates }}
+                                    </span>
+
+                                    <span class="pull-right"
+                                          ng-if="$Container.containertype_id == <?php echo CT_SERVICETEMPLATEGROUP; ?>">
+                                        <i class="fa fa-pencil-square-o"></i> {{ $Container.servicetemplates }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
