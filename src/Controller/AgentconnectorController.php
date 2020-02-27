@@ -210,8 +210,6 @@ class AgentconnectorController extends AppController {
         }
         $this->autoRender = false;
 
-        //require_once '/opt/openitcockpit-receiver/vendor/autoload.php';
-
         /** @var AgentconnectorTable $AgentconnectorTable */
         $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
         /** @var AgentCertificateData $AgentCertificateData */
@@ -241,6 +239,8 @@ class AgentconnectorController extends AppController {
     private function processUpdateCheckdata($hostuuid, $checkdata) {
         /** @var AgenthostscacheTable $AgenthostscacheTable */
         $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
+
+        //require_once '/opt/openitcockpit-receiver/vendor/autoload.php';
 
         if ($AgenthostscacheTable->existsByHostuuid($hostuuid)) {
             $Agenthostscache = $AgenthostscacheTable->getByHostUuid($hostuuid);
@@ -566,6 +566,7 @@ class AgentconnectorController extends AppController {
         );
         $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
         $serviceData['uuid'] = UUID::v4();
+        $serviceData['service_type'] = OITC_AGENT_SERVICE;
 
         //Add required fields for validation
         $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];

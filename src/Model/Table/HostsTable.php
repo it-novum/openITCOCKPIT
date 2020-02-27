@@ -2080,6 +2080,11 @@ class HostsTable extends Table {
                 ]);
                 return $query;
             })
+            ->contain([
+                'Agentconfigs' => function (Query $query) {
+                    return $query->enableAutoFields();
+                }
+            ])
             ->group([
                 'Hosts.id'
             ])
