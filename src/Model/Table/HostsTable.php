@@ -168,6 +168,16 @@ class HostsTable extends Table {
             'foreignKey' => 'host_id',
         ]);
 
+        $this->hasOne('Agenthostscache', [
+            'foreignKey' => 'hostuuid',
+            'bindingKey' => 'uuid'
+        ]);
+
+        $this->hasOne('Agentconnector', [
+            'foreignKey' => 'hostuuid',
+            'bindingKey' => 'uuid'
+        ]);
+
     }
 
     /**

@@ -291,7 +291,8 @@ angular.module('openITCOCKPIT')
             $http.post('/agentconnector/createServices.json?angular=true',
                 {
                     serviceConfigs: $scope.serviceQueue,
-                    hostId: $scope.host.id
+                    hostId: $scope.host.id,
+                    tryAutosslInPullMode: ($scope.pullMode && $scope.agentconfig["try-autossl"])
                 }
             ).then(function(){
                 $scope.finished = true;
@@ -302,7 +303,7 @@ angular.module('openITCOCKPIT')
                 $scope.finished = true;
                 console.warn(error);
                 NotyService.genericError({
-                    message: 'Error while saving service ' + service.name
+                    message: 'Error while saving services'
                 });
             });
         };
@@ -345,7 +346,7 @@ angular.module('openITCOCKPIT')
                     }else{
                         $scope.getServicesToCreateByHostUuid();
                     }
-                }, 5000);
+                }, 10000);
             }
         };
 
@@ -414,7 +415,7 @@ angular.module('openITCOCKPIT')
                                 $scope.seemsPushMode = true;
                                 $scope.seemsPullMode = false;
                             }
-                            if(result.data.mode === 'push'){
+                            if(result.data.mode === 'pull'){
                                 $scope.seemsPushMode = false;
                                 $scope.seemsPullMode = true;
                             }

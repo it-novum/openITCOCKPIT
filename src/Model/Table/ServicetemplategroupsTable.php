@@ -380,4 +380,39 @@ class ServicetemplategroupsTable extends Table {
         $result = $result->toArray();
         return $result['container']['name'];
     }
+
+    /**
+     * @param $containerId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServicetemplategroupByContainerId($containerId, $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->select([
+                'Servicetemplategroups.id'
+            ])
+            ->contain([
+                'Servicetemplates'    => function (Query $query) {
+                    return $query
+                        ->disableAutoFields()
+                        ->select(['id']);
+                }
+            ])
+            ->where([
+                'Servicetemplategroups.container_id' => $containerId
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+                }
+                return $q;
+            });
+        }
+        $result = $query->first();
+        if (empty($result)) {
+            return [];
+        }
+        return $result->toArray();
+    }
 }

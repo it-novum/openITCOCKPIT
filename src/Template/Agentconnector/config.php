@@ -80,7 +80,13 @@
                                     ng-model="host.id">
                                 </select>
                             </div>
-                            <div class="col-xs-12 col-md-2 col-md-offset-1"
+                            <div class="col-xs-12 col-md-4"
+                                 ng-show="remoteAgentConfig && pullMode && !installed && !configured">
+                                <p>
+                                    <?= __('If you changed some configuration, you should run the remote configuration update before you continue. Otherwise you are maybe not able to connect to the agent again threw the web interface. In that case you have to copy the configuration manually to the agent.'); ?>
+                                </p>
+                            </div>
+                            <div class="col-xs-12 col-md-2"
                                  ng-show="remoteAgentConfig && pullMode && !installed && !configured">
                                 <button
                                     type="button" style="min-height: 35px;"
@@ -460,7 +466,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="form-group col-12" ng-if="agentconfig.customchecks">
+                                                        <div class="form-group col-12 padding-left-0" ng-if="agentconfig.customchecks">
                                                             <label class="col-xs-12 col-md-3 control-label"
                                                                    for="agentconfigCustomchecks.max_worker_threads">
                                                                 <?php echo __('Set max custom check threads'); ?>
@@ -822,7 +828,7 @@
                                         <div class="row" style="border-bottom: none;">
                                             <div class="col-12">
                                                 <p ng-hide="servicesToCreate">
-                                                    <?= __('Be patient, a background job is asking the openITCOCKPIT Server (every 5 seconds) for agent check results.'); ?>
+                                                    <?= __('Be patient, a background job is asking the openITCOCKPIT Server (every 10 seconds) for agent check results.'); ?>
                                                     <br>
                                                     <?= __('Please make sure the agent is running and right configured.'); ?>
                                                 </p>
@@ -934,7 +940,7 @@
                                                                         chosen="servicesToCreate.DiskUsage"
                                                                         multiple
                                                                         ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.DiskUsage"
-                                                                        ng-model="choosenServicesToMonitor.DiskIO">
+                                                                        ng-model="choosenServicesToMonitor.DiskUsage">
                                                                     </select>
                                                                 </div>
                                                             </div>

@@ -726,4 +726,44 @@ class ServicegroupsTable extends Table {
 
         return false;
     }
+
+    /**
+     * @param $containerId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServicegroupByContainerId($containerId, $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->select([
+                'Servicegroups.id'
+            ])
+            ->contain([
+                'Services'    => function (Query $query) {
+                    return $query
+                        ->disableAutoFields()
+                        ->select(['id']);
+                },
+                'Servicetemplates'    => function (Query $query) {
+                    return $query
+                        ->disableAutoFields()
+                        ->select(['id']);
+                }
+            ])
+            ->where([
+                'Servicegroups.container_id' => $containerId
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+                }
+                return $q;
+            });
+        }
+        $result = $query->first();
+        if (empty($result)) {
+            return [];
+        }
+        return $result->toArray();
+    }
 }

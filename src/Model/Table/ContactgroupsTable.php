@@ -39,7 +39,7 @@ class ContactgroupsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('contactgroups');
@@ -67,7 +67,7 @@ class ContactgroupsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -101,7 +101,7 @@ class ContactgroupsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
         $rules->add($rules->existsIn(['container_id'], 'Containers'));
 
@@ -577,5 +577,40 @@ class ContactgroupsTable extends Table {
         $result = $query->all();
 
         return $this->emptyArrayIfNull($result->toArray());
+    }
+
+    /**
+     * @param $containerId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getContactgroupByContainerId($containerId, $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->select([
+                'Contactgroups.id'
+            ])
+            ->contain([
+                'Contacts'    => function (Query $query) {
+                    return $query
+                        ->disableAutoFields()
+                        ->select(['id']);
+                }
+            ])
+            ->where([
+                'Contactgroups.container_id' => $containerId
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+                }
+                return $q;
+            });
+        }
+        $result = $query->first();
+        if (empty($result)) {
+            return [];
+        }
+        return $result->toArray();
     }
 }

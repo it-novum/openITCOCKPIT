@@ -156,6 +156,7 @@ class AgentconfigsTable extends Table {
             'use_https'  => 0,
             'insecure'   => 1,
             'basic_auth' => 0,
+            'proxy'      => 1,
             'username'   => '',
             'password'   => ''
         ];
@@ -169,10 +170,12 @@ class AgentconfigsTable extends Table {
         if ($record !== null) {
             return [
                 'id'         => (int)$record->get('id'),
+                'host_id'    => (int)$record->get('host_id'),
                 'port'       => (int)$record->get('port'),
                 'use_https'  => (int)$record->get('use_https'),
                 'insecure'   => (int)$record->get('insecure'),
                 'basic_auth' => (int)$record->get('basic_auth'),
+                'proxy'      => (int)$record->get('proxy'),
                 'username'   => $record->get('username'),
                 'password'   => $record->get('password')
             ];

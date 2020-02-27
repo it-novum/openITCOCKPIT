@@ -205,29 +205,30 @@ class VersionFour extends AbstractMigration {
                     'null'    => true,
                 ])
                 ->addColumn('use_https', 'boolean', [
-                    'default' => true,
-                    'limit'   => null,
+                    'default' => false,
                     'null'    => false,
                 ])
                 ->addColumn('insecure', 'boolean', [
                     'default' => true,
-                    'limit'   => null,
-                    'null'    => false,
+                    'null'    => true,
                 ])
                 ->addColumn('basic_auth', 'boolean', [
+                    'default' => false,
+                    'null'    => true,
+                ])
+                ->addColumn('proxy', 'boolean', [
                     'default' => true,
-                    'limit'   => null,
                     'null'    => false,
                 ])
                 ->addColumn('username', 'string', [
                     'default' => null,
                     'limit'   => 255,
-                    'null'    => false,
+                    'null'    => true,
                 ])
                 ->addColumn('password', 'string', [
                     'default' => null,
                     'limit'   => 255,
-                    'null'    => false,
+                    'null'    => true,
                 ])
                 ->addColumn('created', 'datetime', [
                     'default' => null,
