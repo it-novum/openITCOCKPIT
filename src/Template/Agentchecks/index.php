@@ -23,233 +23,224 @@
 //  confirmation.
 ?>
 
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-cogs fa-fw "></i>
-            <?php echo __('openITCOCKPIT Agent'); ?>
-            <span>>
-                <?php echo __('Checks'); ?>
-            </span>
-            <div class="third_level">> <?php echo __('Overview'); ?></div>
-        </h1>
-    </div>
-</div>
-
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="AgentconnectorsAgent">
+            <i class="fa fa-user-secret"></i> <?php echo __('openITCOCKPIT Agent'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="AgentchecksIndex">
+            <?php echo __('Checks'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <?php echo __('Overview'); ?>
+    </li>
+</ol>
 
 <massdelete></massdelete>
 
-<section id="widget-grid" class="">
-    <div class="row">
-        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark">
-                <header>
-                    <div class="widget-toolbar" role="menu">
-                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
-                            <i class="fa fa-refresh"></i>
-                            <?php echo __('Refresh'); ?>
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Agent checks overview'); ?>
+                </h2>
+                <div class="panel-toolbar">
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
+                        <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
+                    </button>
+                    <?php if ($this->Acl->hasPermission('add', 'agentchecks')): ?>
+                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="AgentchecksAdd">
+                            <i class="fas fa-plus"></i> <?php echo __('New'); ?>
                         </button>
+                    <?php endif; ?>
+                    <button class="btn btn-xs btn-primary shadow-0" ng-click="triggerFilter()">
+                        <i class="fas fa-filter"></i> <?php echo __('Filter'); ?>
+                    </button>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
 
-                        <?php if ($this->Acl->hasPermission('add', 'agentchecks')): ?>
-                            <a class="btn btn-xs btn-success" ui-sref="AgentchecksAdd">
-                                <i class="fa fa-plus"></i>
-                                <?php echo __('New'); ?>
-                            </a>
-                        <?php endif; ?>
-
-                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
-                            <i class="fa fa-filter"></i>
-                            <?php echo __('Filter'); ?>
-                        </button>
-                    </div>
-
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-pencil-square-o"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Agent checks overview'); ?></h2>
-
-                </header>
-                <div>
-                    <div class="widget-body no-padding">
-                        <div class="list-filter well" ng-show="showFilter">
-                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                    <div class="list-filter card margin-bottom-10" ng-show="showFilter">
+                        <div class="card-header">
+                            <i class="fa fa-filter"></i> <?php echo __('Filter'); ?>
+                        </div>
+                        <div class="card-body">
                             <div class="row">
-
                                 <div class="col-xs-12 col-md-6">
-                                    <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                                            <input type="text" class="input-sm"
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by agent check name'); ?>"
                                                    ng-model="filter.Agentchecks.name"
                                                    ng-model-options="{debounce: 500}">
-                                        </label>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div class="col-xs-12 col-md-6">
-                                    <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                                            <input type="text" class="input-sm"
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by service template name'); ?>"
                                                    ng-model="filter.Servicetemplates.template_name"
                                                    ng-model-options="{debounce: 500}">
-                                        </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="mobile_table">
-                            <table class="table table-striped table-hover table-bordered smart-form">
-                                <thead>
-                                <tr>
-                                    <th class="no-sort sorting_disabled width-15">
-                                        <i class="fa fa-check-square-o fa-lg"></i>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Agentchecks.name')">
-                                        <i class="fa" ng-class="getSortClass('Agentchecks.name')"></i>
-                                        <?php echo __('Agent check name'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Agentchecks.plugin_name')">
-                                        <i class="fa" ng-class="getSortClass('Agentchecks.plugin_name')"></i>
-                                        <?php echo __('Plugin name'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Servicetemplates.template_name')">
-                                        <i class="fa" ng-class="getSortClass('Servicetemplates.template_name')"></i>
-                                        <?php echo __('Service template name'); ?>
-                                    </th>
-                                    <th class="no-sort text-center">
+                    <div class="frame-wrap">
+                        <table class="table table-striped m-0 table-hover table-bordered table-sm">
+                            <thead>
+                            <tr>
+                                <th class="no-sort sorting_disabled width-15">
+                                    <i class="fa fa-check-square fa-lg"></i>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Agentchecks.name')">
+                                    <i class="fa" ng-class="getSortClass('Agentchecks.name')"></i>
+                                    <?php echo __('Agent check name'); ?>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Agentchecks.plugin_name')">
+                                    <i class="fa" ng-class="getSortClass('Agentchecks.plugin_name')"></i>
+                                    <?php echo __('Plugin name'); ?>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Servicetemplates.template_name')">
+                                    <i class="fa" ng-class="getSortClass('Servicetemplates.template_name')"></i>
+                                    <?php echo __('Service template name'); ?>
+                                </th>
+                                <th class="no-sort text-center">
                                     <i class="fa fa-cog"></i>
-                                    </th>
-                                </tr>
-                                </thead>
+                                </th>
+                            </tr>
+                            </thead>
 
-                                <tbody>
-                                <tr ng-repeat="agentcheck in agentchecks">
-                                    <td class="text-center" class="width-15">
-                                        <?php if ($this->Acl->hasPermission('delete', 'agentchecks')): ?>
-                                            <input type="checkbox"
-                                                   ng-model="massChange[agentcheck.id]"
-                                                   ng-show="agentcheck.allow_edit">
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>{{agentcheck.name}}</td>
-                                    <td>{{agentcheck.plugin_name}}</td>
-                                    <td>
-                                        <?php if($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
-                                            <a ui-sref="ServicetemplatesEdit({id: agentcheck.servicetemplate.id})">
-                                                {{agentcheck.servicetemplate.template_name}}
+                            <tbody>
+                            <tr ng-repeat="agentcheck in agentchecks">
+                                <td class="text-center" class="width-15">
+                                    <?php if ($this->Acl->hasPermission('delete', 'agentchecks')): ?>
+                                        <input type="checkbox"
+                                               ng-model="massChange[agentcheck.id]"
+                                               ng-show="agentcheck.allow_edit">
+                                    <?php endif; ?>
+                                </td>
+                                <td>{{agentcheck.name}}</td>
+                                <td>{{agentcheck.plugin_name}}</td>
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
+                                        <a ui-sref="ServicetemplatesEdit({id: agentcheck.servicetemplate.id})">
+                                            {{agentcheck.servicetemplate.template_name}}
+                                        </a>
+                                    <?php else: ?>
+                                        {{agentcheck.servicetemplate.template_name}}
+                                    <?php endif; ?>
+                                </td>
+                                <td class="width-50">
+                                    <div class="btn-group btn-group-xs">
+                                        <?php if ($this->Acl->hasPermission('edit', 'agentchecks')): ?>
+                                            <a ui-sref="AgentchecksEdit({id: agentcheck.id})"
+                                               ng-if="agentcheck.allow_edit"
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i>
+                                            </a>
+                                            <a href="javascript:void(0);"
+                                               ng-if="!agentcheck.allow_edit"
+                                               class="btn btn-default btn-lower-padding disabled">
+                                                <i class="fa fa-cog"></i>
                                             </a>
                                         <?php else: ?>
-                                            {{agentcheck.servicetemplate.template_name}}
+                                            <a href="javascript:void(0);"
+                                               class="btn btn-default btn-lower-padding disabled">
+                                                <i class="fa fa-cog"></i>
+                                            </a>
                                         <?php endif; ?>
-                                    </td>
-                                    <td class="width-50">
-                                        <div class="btn-group">
+                                        <button data-toggle="dropdown" type="button"
+                                                class="btn btn-default dropdown-toggle btn-lower-padding"><i
+                                                class="caret"></i></button>
+                                        <div class="dropdown-menu dropdown-menu-right"
+                                            id="menuHack-{{agentcheck.id}}">
                                             <?php if ($this->Acl->hasPermission('edit', 'agentchecks')): ?>
-                                                <a ui-sref="AgentchecksEdit({id: agentcheck.id})"
-                                                   ng-if="agentcheck.allow_edit"
-                                                   class="btn btn-default">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                <a ui-sref="AgentchecksEdit({id:agentcheck.id})"
+                                                   ng-if="agentcheck.allow_edit" class="dropdown-item">
+                                                    <i class="fa fa-cog"></i>
+                                                    <?php echo __('Edit'); ?>
                                                 </a>
-                                                <a href="javascript:void(0);"
-                                                   ng-if="!agentcheck.allow_edit"
-                                                   class="btn btn-default disabled">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                </a>
-                                            <?php else: ?>
-                                                <a href="javascript:void(0);" class="btn btn-default disabled">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                             <?php endif; ?>
-                                            <a href="javascript:void(0);" data-toggle="dropdown"
-                                               class="btn btn-default dropdown-toggle"><span
-                                                        class="caret"></span></a>
-                                            <ul class="dropdown-menu pull-right"
-                                                id="menuHack-{{agentcheck.id}}">
-                                                <?php if ($this->Acl->hasPermission('edit', 'agentchecks')): ?>
-                                                    <li ng-if="agentcheck.allow_edit">
-                                                        <a ui-sref="AgentchecksEdit({id:agentcheck.id})">
-                                                            <i class="fa fa-cog"></i>
-                                                            <?php echo __('Edit'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
 
-
-                                                <?php if ($this->Acl->hasPermission('edit', 'agentchecks')): ?>
-                                                    <li ng-if="agentcheck.allow_edit">
-                                                        <?php /*echo $this->AdditionalLinks->renderAsListItems(
-                                                            $additionalLinksList,
-                                                            '{{agentcheck.id}}',
-                                                            [],
-                                                            true
-                                                        );*/ ?>
-                                                    </li>
-                                                <?php endif; ?>
-
-                                                <?php if ($this->Acl->hasPermission('delete', 'agentchecks')): ?>
-                                                    <li class="divider"
-                                                        ng-if="agentcheck.allow_edit"></li>
-                                                    <li ng-if="agentcheck.allow_edit">
-                                                        <a href="javascript:void(0);"
-                                                           class="txt-color-red"
-                                                           ng-click="confirmDelete(getObjectForDelete(agentcheck))">
-                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
-                                            </ul>
+                                            <?php if ($this->Acl->hasPermission('delete', 'agentchecks')): ?>
+                                                <a href="javascript:void(0);" ng-if="agentcheck.allow_edit"
+                                                   class="dropdown-item txt-color-red"
+                                                   ng-click="confirmDelete(getObjectForDelete(agentcheck))">
+                                                    <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                         </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="row margin-top-10 margin-bottom-10">
-                            <div class="row margin-top-10 margin-bottom-10" ng-show="agentchecks.length == 0">
-                                <div class="col-xs-12 text-center txt-color-red italic">
-                                    <?php echo __('No entries match the selection'); ?>
-                                </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row margin-top-10 margin-bottom-10">
+                        <div class="row margin-top-10 margin-bottom-10" ng-show="agentchecks.length == 0">
+                            <div class="col-xs-12 text-center txt-color-red italic">
+                                <?php echo __('No entries match the selection'); ?>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="row margin-top-10 margin-bottom-10">
-                            <div class="col-xs-12 col-md-2 text-muted text-center">
-                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
-                            </div>
-                            <div class="col-xs-12 col-md-2">
+                    <div class="row margin-top-10 margin-bottom-10">
+                        <div class="col-xs-12 col-md-2 text-muted text-center">
+                            <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                        </div>
+                        <div class="col-xs-12 col-md-2">
                             <span ng-click="selectAll()" class="pointer">
-                                <i class="fa fa-lg fa-check-square-o"></i>
+                                <i class="fa fa-lg fa-check-square"></i>
                                 <?php echo __('Select all'); ?>
                             </span>
-                            </div>
-                            <div class="col-xs-12 col-md-2">
+                        </div>
+                        <div class="col-xs-12 col-md-2">
                             <span ng-click="undoSelection()" class="pointer">
-                                <i class="fa fa-lg fa-square-o"></i>
+                                <i class="fa fa-lg fa-square"></i>
                                 <?php echo __('Undo selection'); ?>
                             </span>
-                            </div>
-                            <div class="col-xs-12 col-md-2">
-                                <a ui-sref="ServicetemplatesCopy({ids: linkForCopy()})" class="a-clean">
-                                    <i class="fa fa-lg fa-files-o"></i>
-                                    <?php echo __('Copy'); ?>
-                                </a>
-                            </div>
-                            <div class="col-xs-12 col-md-2 txt-color-red">
+                        </div>
+                        <div class="col-xs-12 col-md-2">
+                            <a ui-sref="ServicetemplatesCopy({ids: linkForCopy()})" class="a-clean">
+                                <i class="fas fa-lg fa-files-o"></i>
+                                <?php echo __('Copy'); ?>
+                            </a>
+                        </div>
+                        <div class="col-xs-12 col-md-2 txt-color-red">
                             <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                <i class="fa fa-lg fa-trash-o"></i>
+                                <i class="fa fa-lg fa-trash"></i>
                                 <?php echo __('Delete all'); ?>
                             </span>
-                            </div>
                         </div>
-
-                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
-                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
-                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
+
+                    <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                    <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                    <?php echo $this->element('paginator_or_scroll'); ?>
                 </div>
             </div>
-        </article>
+        </div>
     </div>
-</section>
-
-
-
+</div>
