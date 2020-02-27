@@ -121,30 +121,51 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                     <div class="row padding-top-15">
                         <div class="col col-sm-12 col-lg-12">
                             <div ng-if="subcontainers" ng-nestable ng-model="subcontainers">
-                                <div>
-                                    <i class="fa fa-globe"
-                                       ng-if="$Container.containertype_id == <?php echo CT_GLOBAL; ?>"></i>
-                                    <i class="fa fa-home"
-                                       ng-if="$Container.containertype_id == <?php echo CT_TENANT; ?>"></i>
-                                    <i class="fa fa-location-arrow"
-                                       ng-if="$Container.containertype_id == <?php echo CT_LOCATION; ?>"></i>
-                                    <i class="fa fa-link"
-                                       ng-if="$Container.containertype_id == <?php echo CT_NODE; ?>"></i>
-                                    <i class="fa fa-users"
-                                       ng-if="$Container.containertype_id == <?php echo CT_CONTACTGROUP; ?>"></i>
-                                    <i class="fa fa-sitemap"
-                                       ng-if="$Container.containertype_id == <?php echo CT_HOSTGROUP; ?>"></i>
-                                    <i class="fa fa-cogs"
-                                       ng-if="$Container.containertype_id == <?php echo CT_SERVICEGROUP; ?>"></i>
-                                    <i class="fa fa-pencil-square-o"
-                                       ng-if="$Container.containertype_id == <?php echo CT_SERVICETEMPLATEGROUP; ?>"></i>
 
-                                    <div class="nodes-container-name" title="{{ $Container.name }}">
-                                        <span class="ellipsis"">{{ $Container.name }}</span>
+
+                                <div>
+
+                                    <div class="nodes-container-name" title="{{ $Container.name }}"
+                                         ng-switch="$Container.containertype_id">
+
+                                        <span class="ellipsis" ng-switch-when="<?php echo CT_GLOBAL; ?>">
+                                            <i class="fa fa-globe"></i>
+                                            {{ $Container.name }}
+                                        </span>
+                                        <span class="ellipsis" ng-switch-when="<?php echo CT_TENANT; ?>">
+                                            <i class="fa fa-home"></i>
+                                            <?php if ($this->Acl->hasPermission('edit', 'containers')): ?>
+                                                <a ui-sref="TenantsEdit({id: $Container.id})"
+                                                   ng-if="$Container.allowEdit">
+                                                    {{ $Container.name }}
+                                                </a>
+                                                <span ng-if="!$Container.allowEdit">
+                                                    {{ $Container.name }}
+                                                </span>
+                                            <?php else: ?>
+                                                {{ $Container.name }}
+                                            <?php endif; ?>
+                                        </span>
+                                        <span class="ellipsis" ng-switch-when="<?php echo CT_LOCATION; ?>">
+                                            <i class="fa fa-location-arrow"></i>
+                                            <?php if ($this->Acl->hasPermission('edit', 'locations')): ?>
+                                                <a ui-sref="LocationsEdit({id: $Container.id})"
+                                                   ng-if="$Container.allowEdit">
+                                                    {{ $Container.name }}
+                                                </a>
+                                                <span ng-if="!$Container.allowEdit">
+                                                    {{ $Container.name }}
+                                                </span>
+                                            <?php else: ?>
+                                                {{ $Container.name }}
+                                            <?php endif; ?>
+                                        </span>
+
+
                                     </div>
 
                                     <?php if ($this->Acl->hasPermission('edit', 'containers')): ?>
-                                        <span ng-if="$Container.allow_edit === true">
+                                        <span ng-if="$Container.allowEdit === true">
                                             <a ng-if="$Container.containertype_id == <?php echo CT_NODE; ?> ||
                                                     $Container.containertype_id == <?php echo CT_TENANT; ?> ||
                                                     $Container.containertype_id == <?php echo CT_LOCATION; ?>"

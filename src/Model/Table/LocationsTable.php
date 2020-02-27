@@ -177,4 +177,26 @@ class LocationsTable extends Table {
     public function existsById($id) {
         return $this->exists(['Locations.id' => $id]);
     }
+
+    /**
+     * @param $containerId
+     * @param array $MY_RIGHTS
+     * @return bool|mixed
+     */
+    public function getLocationIdByContainerId($containerId, $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where([
+                'Locations.container_id' => $containerId
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
+        $result = $query->first();
+        if (empty($query)) {
+            return false;
+        }
+        return $result->get('id');
+    }
 }

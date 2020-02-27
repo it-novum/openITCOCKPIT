@@ -650,18 +650,18 @@ class ContainersTable extends Table {
             'nodes' => [],
             'edges' => []
         ];
-        $childrenContainers = $this->find('children', ['for' => $containerId])
-            ->select([
-                'Containers.id',
-                'Containers.parent_id',
-                'Containers.name',
-                'Containers.containertype_id',
-                'Containers.lft',
-                'Containers.rght'
-            ])
-            //    ->find('threaded')
-            ->disableHydration()
-            ->toArray();
+        $query = $this->find('children', ['for' => $containerId]);
+
+        $query->select([
+            'Containers.id',
+            'Containers.parent_id',
+            'Containers.name',
+            'Containers.containertype_id',
+            'Containers.lft',
+            'Containers.rght'
+        ])
+        ->disableHydration();
+        $childrenContainers = $query->toArray();
 
         debug($childrenContainers);
         /**

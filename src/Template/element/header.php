@@ -29,19 +29,19 @@
     <div class="hidden-md-down dropdown-icon-menu position-relative">
         <a href="#" class="header-btn btn js-waves-off" data-action="toggle"
            data-class="nav-function-hidden" title="Hide Navigation">
-            <i class="ni ni-menu"></i>
+            <i class="fas fa-bars"></i>
         </a>
         <ul>
             <li>
                 <a href="#" class="btn js-waves-off" data-action="toggle" data-class="nav-function-minify"
                    title="Minify Navigation">
-                    <i class="ni ni-minify-nav"></i>
+                    <i class="far fa-caret-square-left"></i>
                 </a>
             </li>
             <li>
                 <a href="#" class="btn js-waves-off" data-action="toggle" data-class="nav-function-fixed"
                    title="Lock Navigation">
-                    <i class="ni ni-lock-nav"></i>
+                    <i class="fas fa-lock"></i>
                 </a>
             </li>
         </ul>
