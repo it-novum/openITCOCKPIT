@@ -3118,10 +3118,12 @@ html body {
   text-align: center;
   display: inline;
   border: 0 !important;
-  font-family: 'Font Awesome 5 Pro';
+  font-family: 'Font Awesome 5 Free';
   content: "\f107" !important;
   vertical-align: top !important;
-  position: relative; }
+  position: relative;
+    font-weight: 900;
+}
 
 .dropup .dropdown-toggle:after {
   content: "\f106" !important; }

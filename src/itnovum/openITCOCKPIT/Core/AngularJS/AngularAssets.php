@@ -129,7 +129,7 @@ class AngularAssets implements AngularAssetsInterface {
         '/node_modules/vis-timeline/dist/vis-timeline-graph2d.css',
         '/node_modules/noty/lib/noty.css',
         '/node_modules/angular-flippy/dist/css/angular-flippy.min.css',
-        'legacy/css/vendor/image-picker.css',
+        '/legacy/css/vendor/image-picker.css',
         '/node_modules/angular-gridster/dist/angular-gridster.min.css',
         '/css/openitcockpit-colors.css',
         '/css/openitcockpit-utils.css',
