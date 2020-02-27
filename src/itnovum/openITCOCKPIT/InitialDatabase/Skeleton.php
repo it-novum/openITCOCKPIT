@@ -45,10 +45,7 @@ class Skeleton extends Importer {
             if (!$this->Table->existsById($record['id'])) {
 
                 $entity = $this->Table->newEmptyEntity();
-                $entity->setAccess('id', true);
-                $entity = $this->Table->patchEntity($entity, $record, [
-                    //'validate' => false,
-                ]);
+                $entity = $this->patchEntityAndKeepAllIds($entity, $record);
                 $this->Table->save($entity);
             }
         }

@@ -80,6 +80,30 @@ echo "---------------------------------------------------------------"
 echo "Import openITCOCKPIT Core database schema"
 oitc migrations migrate
 
+
+echo "---------------------------------------------------------------"
+echo "Load default database"
+oitc migrations seed
+
+echo "Running openITCOCKPIT Module database migration/s"
+for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do
+    if [[ "$PLUGIN" == *Module ]]; then
+        if [[ -d "${APPDIR}/plugins/${PLUGIN}/config/Migrations" ]]; then
+            echo "Running openITCOCKPIT ${PLUGIN} database migration"
+            oitc migrations migrate -p "${PLUGIN}"
+        fi
+
+        if [[ -d "${APPDIR}/plugins/${PLUGIN}/config/Seeds" ]]; then
+            num_files=$(find "${APPDIR}/plugins/${PLUGIN}/config/Seeds" -mindepth 1 -iname "*.php" -type f | wc -l)
+            if [[ "$num_files" -gt 0 ]]; then
+                echo "Importing default records for ${PLUGIN} into database"
+                oitc migrations seed -p "${PLUGIN}"
+            fi
+        fi
+
+    fi
+done
+
 echo "---------------------------------------------------------------"
 echo "Create new WebSocket Key"
 WEBSOCKET_KEY=$(php -r "echo bin2hex(openssl_random_pseudo_bytes(80, \$cstrong));")
@@ -95,10 +119,6 @@ if [[ $STATUSENGINE_VERSION == "Statusengine2" ]]; then
     chmod +x /opt/openitc/statusengine2/cakephp/app/Console/cake
     /opt/openitc/statusengine2/cakephp/app/Console/cake schema update --plugin Legacy --file legacy_schema_innodb.php --connection legacy --yes
 fi
-
-echo "---------------------------------------------------------------"
-echo "Load default database"
-oitc migrations seed
 
 echo "---------------------------------------------------------------"
 echo "Configure Grafana"
@@ -168,24 +188,6 @@ echo "---------------------------------------------------------------"
 echo "Scan and import ACL objects. This will take a while..."
 oitc Acl.acl_extras aco_sync
 
-echo "Running openITCOCKPIT Module database migration/s"
-for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do
-    if [[ "$PLUGIN" == *Module ]]; then
-        if [[ -d "${APPDIR}/plugins/${PLUGIN}/config/Migrations" ]]; then
-            echo "Running openITCOCKPIT ${PLUGIN} database migration"
-            oitc migrations migrate -p "${PLUGIN}"
-        fi
-
-        if [[ -d "${APPDIR}/plugins/${PLUGIN}/config/Seeds" ]]; then
-            num_files=$(find "${APPDIR}/plugins/${PLUGIN}/config/Seeds" -mindepth 1 -iname "*.php" -type f | wc -l)
-            if [[ "$num_files" -gt 0 ]]; then
-                echo "Importing default records for ${PLUGIN} into database"
-                oitc migrations seed -p "${PLUGIN}"
-            fi
-        fi
-
-    fi
-done
 
 #oitc compress
 
