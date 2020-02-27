@@ -26,7 +26,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker;
 
 /** @var GraphingDocker $GraphingDocker */
 
-$timezones = \Cake\I18n\FrozenTime::listTimezones();
+$timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
 ?>
 

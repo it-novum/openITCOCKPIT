@@ -55,7 +55,7 @@ class Systemsetting extends Importer {
         $data = [
             (int)0  => [
                 'key'      => 'SUDO_SERVER.API_KEY',
-                'value'    => '1fea123e07f730f76e661bced33a94152378611e',
+                'value'    => 'UNSAVE_DEFAULT_CHANGE_ASAP',
                 'info'     => 'API key for the sudoserver socket API',
                 'section'  => 'SUDO_SERVER',
                 'created'  => '2020-01-29 09:28:17',

@@ -35,12 +35,12 @@ class GraphiteWeb extends ConfigGenerator implements ConfigInterface {
     /**
      * @var string
      */
-    protected $linkedOutfile = '/opt/openitc/etc/frontend/core/graphite.php';
+    protected $linkedOutfile = CONFIG . 'graphite.php';
 
     /**
      * @var string
      */
-    protected $realOutfile = '/opt/openitc/etc/frontend/core/graphite.php';
+    protected $realOutfile = CONFIG . 'graphite.php';
 
     /**
      * @var string

@@ -287,32 +287,6 @@ class CommandsController extends AppController {
         return;
     }
 
-    public function terminal() {
-        if(!$this->isApiRequest()){
-            return;
-        }
-
-        $GearmanClient = new Gearman();
-        $gearmanReachable = $GearmanClient->ping();
-
-        if($this->request->is('get')){
-            $this->set('gearmanReachable', $gearmanReachable);
-            $this->viewBuilder()->setOption('serialize', ['gearmanReachable']);
-        }
-
-        if($this->request->is('post')){
-            $command = $this->request->getData('command', '');
-            if($command !== null){
-                $result = $GearmanClient->send('RunNagiosPlugin', [
-                    'command' => $command
-                ]);
-            }
-
-            $this->set('result', $result);
-            $this->viewBuilder()->setOption('serialize', ['result']);
-        }
-    }
-
     /**
      * @param null $id
      */
@@ -477,14 +451,5 @@ class CommandsController extends AppController {
         }
         $this->set('result', $postData);
         $this->viewBuilder()->setOption('serialize', ['result']);
-    }
-
-    public function getConsoleWelcome() {
-        $welcomeMessage = "This is a terminal connected to your " . $this->getSystemname() . " " .
-            "Server. It is very powerful to test and debug check plugins.\n" .
-            "User: \033[31mnagios\033[0m\nPWD: \033[35m/opt/openitc/nagios/libexec/\033[0m\nChange directory: \e[31mdisabled\e[0m\n\n\n";
-
-        $this->set('welcomeMessage', $welcomeMessage);
-        $this->viewBuilder()->setOption('serialize', ['welcomeMessage']);
     }
 }

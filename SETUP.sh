@@ -45,7 +45,7 @@ if [[ ! -f "$INIFILE" ]]; then
         mysql --defaults-extra-file=${DEBIANCNF} -e "SET GLOBAL sql_mode = '';"
 
         mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE USER '${MYSQL_DATABASE}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';" -B
-        mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_swedish_ci;" -B
+        mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;" -B
         mysql --defaults-extra-file=${DEBIANCNF} -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '\`${MYSQL_DATABASE}\`'@'localhost';" -B
 
         echo "# Automatically generated for openITCOCKPIT scripts. DO NOT TOUCH!" >$INIFILE
@@ -80,20 +80,45 @@ echo "---------------------------------------------------------------"
 echo "Import openITCOCKPIT Core database schema"
 oitc migrations migrate
 
+
+echo "---------------------------------------------------------------"
+echo "Load default database"
+oitc migrations seed
+
+echo "Running openITCOCKPIT Module database migration/s"
+for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do
+    if [[ "$PLUGIN" == *Module ]]; then
+        if [[ -d "${APPDIR}/plugins/${PLUGIN}/config/Migrations" ]]; then
+            echo "Running openITCOCKPIT ${PLUGIN} database migration"
+            oitc migrations migrate -p "${PLUGIN}"
+        fi
+
+        if [[ -d "${APPDIR}/plugins/${PLUGIN}/config/Seeds" ]]; then
+            num_files=$(find "${APPDIR}/plugins/${PLUGIN}/config/Seeds" -mindepth 1 -iname "*.php" -type f | wc -l)
+            if [[ "$num_files" -gt 0 ]]; then
+                echo "Importing default records for ${PLUGIN} into database"
+                oitc migrations seed -p "${PLUGIN}"
+            fi
+        fi
+
+    fi
+done
+
+echo "---------------------------------------------------------------"
+echo "Create new WebSocket Key"
+WEBSOCKET_KEY=$(php -r "echo bin2hex(openssl_random_pseudo_bytes(80, \$cstrong));")
+mysql "--defaults-extra-file=${INIFILE}" -e "UPDATE systemsettings SET \`systemsettings\`.\`value\`='${WEBSOCKET_KEY}' WHERE \`key\`='SUDO_SERVER.API_KEY';"
+
 oitc config_generator_shell --generate
 
 echo "---------------------------------------------------------------"
 echo "Load Statusengine DB Schema"
 STATUSENGINE_VERSION=$(oitc StatusengineVersion)
 if [[ $STATUSENGINE_VERSION == "Statusengine2" ]]; then
-    cp -r ${APPDIR}/system/Statusengine2/legacy_schema_innodb.php /opt/openitc/statusengine2/cakephp/app/Plugin/Legacy/Config/Schema/legacy_schema.php
+    cp -r ${APPDIR}/system/Statusengine2/legacy_schema_innodb.php /opt/openitc/statusengine2/cakephp/app/Plugin/Legacy/Config/Schema/legacy_schema_innodb.php
     chmod +x /opt/openitc/statusengine2/cakephp/app/Console/cake
     /opt/openitc/statusengine2/cakephp/app/Console/cake schema update --plugin Legacy --file legacy_schema_innodb.php --connection legacy --yes
 fi
-
-echo "---------------------------------------------------------------"
-echo "Load default database"
-oitc migrations seed
 
 echo "---------------------------------------------------------------"
 echo "Configure Grafana"
@@ -154,7 +179,7 @@ if [ -f /opt/openitc/etc/grafana/api_key ]; then
     COUNT=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT COUNT(*) FROM grafana_configurations;" -B -s 2>/dev/null)
     if [ "$?" == 0 ] && [ "$COUNT" == 0 ]; then
         echo "Create missing default configuration."
-        $(mysql "--defaults-extra-file=$INIFILE" -e "INSERT INTO grafana_configurations (api_url, api_key, graphite_prefix, use_https, use_proxy, ignore_ssl_certificate, dashboard_style, created, modified) VALUES('grafana.docker', '$API_KEY', 'openitcockpit', 1, 0, 1, 'light', '2018-12-05 08:42:55', '2018-12-05 08:42:55');" -B -s 2>/dev/null)
+        mysql --defaults-extra-file=${INIFILE} -e "INSERT INTO grafana_configurations (api_url, api_key, graphite_prefix, use_https, use_proxy, ignore_ssl_certificate, dashboard_style, created, modified) VALUES('grafana.docker', '${API_KEY}', 'openitcockpit', 1, 0, 1, 'light', '2018-12-05 08:42:55', '2018-12-05 08:42:55');"
     fi
     set -e
 fi
@@ -163,24 +188,6 @@ echo "---------------------------------------------------------------"
 echo "Scan and import ACL objects. This will take a while..."
 oitc Acl.acl_extras aco_sync
 
-echo "Running openITCOCKPIT Module database migration/s"
-for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do
-    if [[ "$PLUGIN" == *Module ]]; then
-        if [[ -d "${APPDIR}/plugins/${PLUGIN}/config/Migrations" ]]; then
-            echo "Running openITCOCKPIT ${PLUGIN} database migration"
-            oitc migrations migrate -p "${PLUGIN}"
-        fi
-
-        if [[ -d "${APPDIR}/plugins/${PLUGIN}/config/Seeds" ]]; then
-            num_files=$(find "${APPDIR}/plugins/${PLUGIN}/config/Seeds" -mindepth 1 -iname "*.php" -type f | wc -l)
-            if [[ "$num_files" -gt 0 ]]; then
-                echo "Importing default records for ${PLUGIN} into database"
-                oitc migrations seed -p "${PLUGIN}"
-            fi
-        fi
-
-    fi
-done
 
 #oitc compress
 

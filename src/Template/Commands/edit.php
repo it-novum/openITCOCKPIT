@@ -44,15 +44,6 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
     </li>
 </ol>
 
-<div class="alert alert-danger alert-block" ng-show="hasWebSocketError">
-    <a href="#" data-dismiss="alert" class="close">×</a>
-    <h5 class="alert-heading">
-        <i class="fa fa-warning"></i>
-        <?php echo __('Error'); ?>
-    </h5>
-    <?php echo __('Could not connect to SudoWebsocket Server'); ?>
-</div>
-
 <div class="row">
     <div class="col-xl-12">
         <div id="panel-1" class="panel">
@@ -224,12 +215,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                                 </a>
                             </div>
                         </div>
-                        <div class="row margin-top-25">
-                            <?php if ($this->Acl->hasPermission('terminal', 'commands')): ?>
-                                <br/>
-                                <div id="console"></div>
-                            <?php endif; ?>
-                        </div>
+
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">

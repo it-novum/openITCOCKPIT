@@ -36,12 +36,12 @@ class DbBackend extends ConfigGenerator implements ConfigInterface {
     /**
      * @var string
      */
-    protected $linkedOutfile = '/opt/openitc/etc/frontend/core/dbbackend.php';
+    protected $linkedOutfile = CONFIG . 'dbbackend.php';
 
     /**
      * @var string
      */
-    protected $realOutfile = '/opt/openitc/etc/frontend/core/dbbackend.php';
+    protected $realOutfile = CONFIG . 'dbbackend.php';
 
     /**
      * @var string

@@ -41,9 +41,8 @@ class Container extends Importer {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
-                $entity = $this->Table->newEntity($record, [
-                    'validate' => false
-                ]);
+                $entity = $this->Table->newEmptyEntity();
+                $entity = $this->patchEntityAndKeepAllIds($entity, $record);
                 $this->Table->save($entity);
             }
         }

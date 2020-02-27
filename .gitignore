@@ -6,6 +6,7 @@
 /tmp/*
 /vendor/*
 tmp_cli/
+logs_cli/
 
 # OS generated files #
 ######################

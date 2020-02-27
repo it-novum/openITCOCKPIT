@@ -39,9 +39,13 @@ class Commands extends Importer {
      * @throws \Exception
      */
     public function import() {
-        if ($this->isTableEmpty()) {
-            $entities = $this->Table->newEntities($this->getData());
-            $this->Table->saveMany($entities);
+        if ($this->isTableEmpty() || 1) {
+            $data = $this->getData();
+            foreach ($data as $record) {
+                $entity = $this->Table->newEmptyEntity();
+                $entity = $this->patchEntityAndKeepAllIds($entity, $record);
+                $this->Table->save($entity);
+            }
         }
 
         return true;

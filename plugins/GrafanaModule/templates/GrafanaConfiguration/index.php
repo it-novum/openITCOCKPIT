@@ -230,9 +230,11 @@
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">
-                                    <button class="btn btn-primary" ng-click="checkGrafanaConnection()">
-                                        <?php echo __('Check Grafana Connection'); ?>
-                                    </button>
+                                    <?php if ($this->Acl->hasPermission('testGrafanaConnection', 'GrafanaConfiguration', 'GrafanaModule')): ?>
+                                        <button class="btn btn-primary" ng-click="checkGrafanaConnection()">
+                                            <?php echo __('Check Grafana Connection'); ?>
+                                        </button>
+                                    <?php endif; ?>
                                     <input class="btn btn-primary" type="submit" value="<?= __('Save') ?>">&nbsp;
                                 </div>
                             </div>
