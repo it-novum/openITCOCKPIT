@@ -24,11 +24,11 @@
 
 ?>
 <div class="row no-padding">
-    <div class="col-xs-12 text-center">
+    <div class="col-xs-12 col-lg-12 text-center">
 
         <img ng-src="/angular/getPieChart/{{servicestatusCount[0]}}/{{servicestatusCount[1]}}/{{servicestatusCount[2]}}/{{servicestatusCount[3]}}.png">
 
-        <div class="col-xs-12 text-center padding-bottom-10 font-xs">
+        <div class="row text-center padding-bottom-10 font-xs">
 
             <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
                 <div class="col-xs-12 col-md-3 no-padding">

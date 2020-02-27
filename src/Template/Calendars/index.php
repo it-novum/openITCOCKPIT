@@ -23,171 +23,173 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-calendar" fa-fw "></i>
-            <?php echo __('Calendars'); ?>
-            <span>>
-                <?php echo __('Overview'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
-
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="CalendarsIndex">
+            <i class="fa fa-calendar"></i> <?php echo __('Calendars'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-list"></i> <?php echo __('index'); ?>
+    </li>
+</ol>
 <massdelete></massdelete>
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Calendars'); ?>
+                    <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
+                        <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
+                    </button>
+                    <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="CalendarsAdd">
+                        <i class="fas fa-plus"></i> <?php echo __('New'); ?>
+                    </button>
+                    <button class="btn btn-xs btn-primary shadow-0" ng-click="triggerFilter()">
+                        <i class="fas fa-filter"></i> <?php echo __('Filter'); ?>
+                    </button>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
 
-<section id="widget-grid" class="">
-    <div class="row">
-        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                <header>
-                    <div class="widget-toolbar" role="menu">
-                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
-                            <i class="fa fa-refresh"></i>
-                            <?php echo __('Refresh'); ?>
-                        </button>
-
-                        <?php if ($this->Acl->hasPermission('add', 'calendars')): ?>
-                            <a ui-sref="CalendarsAdd" class="btn btn-xs btn-success">
-                                <i class="fa fa-plus"></i>
-                                <?php echo __('New'); ?>
-                            </a>
-                        <?php endif; ?>
-                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
-                            <i class="fa fa-filter"></i>
-                            <?php echo __('Filter'); ?>
-                        </button>
-                    </div>
-
-                    <div class="jarviswidget-ctrls" role="menu">
-                    </div>
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-calendar-o"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Calendars overview'); ?></h2>
-                </header>
-                <div>
-                    <div class="widget-body no-padding">
-
-                        <div class="list-filter well" ng-show="showFilter">
-                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                    <!-- Start Filter -->
+                    <div class="list-filter card margin-bottom-10" ng-show="showFilter">
+                        <div class="card-header">
+                            <i class="fa fa-filter"></i> <?php echo __('Filter'); ?>
+                        </div>
+                        <div class="card-body">
                             <div class="row">
-                                <div class="col-xs-12 col-md-6">
-                                    <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                                            <input type="text" class="input-sm"
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by calendar name'); ?>"
                                                    ng-model="filter.calendars.name"
                                                    ng-model-options="{debounce: 500}">
-                                        </label>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-md-6">
-                                    <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                                            <input type="text" class="input-sm"
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by description'); ?>"
                                                    ng-model="filter.calendars.description"
                                                    ng-model-options="{debounce: 500}">
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12">
-                                    <div class="pull-right margin-top-10">
-                                        <button type="button" ng-click="resetFilter()"
-                                                class="btn btn-xs btn-danger">
-                                            <?php echo __('Reset Filter'); ?>
-                                        </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="mobile_table">
-                            <table id="calendar_list" class="table table-striped table-hover table-bordered smart-form">
-                                <thead>
-                                <tr>
-                                    <th class="no-sort sorting_disabled width-15">
-                                        <i class="fa fa-check-square-o fa-lg"></i>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Calendars.name')">
-                                        <i class="fa" ng-class="getSortClass('Calendars.name')"></i>
-                                        <?php echo __('Calendar name'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Calendars.description')">
-                                        <i class="fa" ng-class="getSortClass('Calendars.description')"></i>
-                                        <?php echo __('Description'); ?>
-                                    </th>
-                                    <th class="no-sort text-center">
-                                        <i class="fa fa-cog fa-lg"></i>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="calendar in calendars">
-                                        <td class="text-center" class="width-15">
-                                            <input type="checkbox"
-                                                   ng-model="massChange[calendar.id]"
-                                                   ng-show="calendar.allowEdit">
-                                        </td>
-                                        <td>
-                                            {{ calendar.name }}
-                                        </td>
-                                        <td>
-                                            {{ calendar.description }}
-                                        </td>
-                                        <td class="width-50">
-                                            <div class="btn-group smart-form">
-                                                <?php if ($this->Acl->hasPermission('edit', 'calendars')): ?>
-                                                    <a ui-sref="CalendarsEdit({id: calendar.id})"
-                                                       ng-if="calendar.allowEdit"
-                                                       class="btn btn-default">
-                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                    </a>
-                                                    <a href="javascript:void(0);"
-                                                       ng-if="!calendar.allowEdit"
-                                                       class="btn btn-default disabled">
-                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                    </a>
-                                                <?php else: ?>
-                                                    <a href="javascript:void(0);" class="btn btn-default disabled">
-                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-                                                <?php endif; ?>
-                                                <a href="javascript:void(0);" data-toggle="dropdown"
-                                                   class="btn btn-default dropdown-toggle"><span
-                                                            class="caret"></span></a>
-                                                <ul class="dropdown-menu pull-right"
-                                                    id="menuHack-{{calendar.id}}">
-                                                    <?php if ($this->Acl->hasPermission('edit', 'calendars')): ?>
-                                                        <li ng-if="calendar.allowEdit">
-                                                            <a ui-sref="CalendarsEdit({id: calendar.id})">
-                                                                <i class="fa fa-cog"></i>
-                                                                <?php echo __('Edit'); ?>
-                                                            </a>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('delete', 'calendars')): ?>
-                                                        <li class="divider" ng-if="calendar.allowEdit"></li>
-                                                        <li ng-if="calendar.allowEdit">
-                                                            <a href="javascript:void(0);"
-                                                               class="txt-color-red"
-                                                               ng-click="confirmDelete(getObjectForDelete(calendar))">
-                                                                <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
-                                                            </a>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr ng-show="calendars.length == 0">
-                                        <td colspan="4">
-                                            <div class="col-xs-12 text-center txt-color-red italic">
-                                                <?php echo __('No entries match the selection'); ?>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="float-right">
+                                <button type="button" ng-click="resetFilter()"
+                                        class="btn btn-xs btn-danger">
+                                    <?php echo __('Reset Filter'); ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Filter -->
+
+                    <div class="frame-wrap">
+                        <table class="table table-striped m-0 table-bordered table-hover table-sm">
+                            <thead>
+                            <tr>
+                                <th class="no-sort sorting_disabled width-15">
+                                    <i class="fa fa-check-square"></i>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Calendars.name')">
+                                    <i class="fa" ng-class="getSortClass('Calendars.name')"></i>
+                                    <?php echo __('Calendar name'); ?>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Calendars.description')">
+                                    <i class="fa" ng-class="getSortClass('Calendars.description')"></i>
+                                    <?php echo __('Description'); ?>
+                                </th>
+                                <th class="no-sort text-center">
+                                    <i class="fa fa-cog"></i>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="calendar in calendars">
+                                <td class="text-center" class="width-15">
+                                    <input type="checkbox"
+                                           ng-model="massChange[calendar.id]"
+                                           ng-show="calendar.allowEdit">
+                                </td>
+                                <td>
+                                    {{ calendar.name }}
+                                </td>
+                                <td>
+                                    {{ calendar.description }}
+                                </td>
+                                <td class="width-50">
+                                    <div class="btn-group btn-group-xs" role="group">
+                                        <?php if ($this->Acl->hasPermission('edit', 'calendars')): ?>
+                                            <a ui-sref="CalendarsEdit({id: calendar.id})"
+                                               ng-if="calendar.allowEdit"
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i>
+                                            </a>
+                                            <a href="javascript:void(0);"
+                                               ng-if="!calendar.allowEdit"
+                                               class="btn btn-default disabled btn-lower-padding">
+                                                <i class="fa fa-cog"></i>
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);"
+                                               class="btn btn-default disabled btn-lower-padding">
+                                                <i class="fa fa-cog"></i></a>
+                                        <?php endif; ?>
+                                        <button type="button"
+                                                class="btn btn-default dropdown-toggle btn-lower-padding"
+                                                data-toggle="dropdown">
+                                            <i class="caret"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <?php if ($this->Acl->hasPermission('edit', 'calendars')): ?>
+                                                <a ui-sref="CalendarsEdit({id: calendar.id})"
+                                                   ng-if="calendar.allowEdit"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-cog"></i>
+                                                    <?php echo __('Edit'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('delete', 'calendars')): ?>
+                                                <a href="javascript:void(0);"
+                                                   ng-if="calendar.allowEdit"
+                                                   class="txt-color-red dropdown-item"
+                                                   ng-click="confirmDelete(getObjectForDelete(calendar))">
+                                                    <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="margin-top-10" ng-show="calendars.length == 0">
+                            <div class="text-center text-danger italic">
+                                <?php echo __('No entries match the selection'); ?>
+                            </div>
                         </div>
                         <div class="row margin-top-10 margin-bottom-10">
                             <div class="col-xs-12 col-md-2 text-muted text-center">
@@ -195,19 +197,19 @@
                             </div>
                             <div class="col-xs-12 col-md-2">
                                 <span ng-click="selectAll()" class="pointer">
-                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <i class="fas fa-lg fa-check-square"></i>
                                     <?php echo __('Select all'); ?>
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
                                 <span ng-click="undoSelection()" class="pointer">
-                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <i class="fas fa-lg fa-square"></i>
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2 txt-color-red">
+                            <div class="col-xs-12 col-md-4 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <i class="fas fa-trash"></i>
                                     <?php echo __('Delete all'); ?>
                                 </span>
                             </div>
@@ -218,6 +220,6 @@
                     </div>
                 </div>
             </div>
-        </article>
+        </div>
     </div>
-</section>
+</div>

@@ -23,107 +23,115 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="DocumentationsWiki">
+            <i class="fa fa-book"></i> <?php echo __('Documentation'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-list"></i> <?php echo __('Wiki'); ?>
+    </li>
+</ol>
+
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-book fa-fw "></i>
-            <?php echo __('Documentation') ?>
-            <span>>
-                <?php echo __('Overview'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
-
-
-<div class="jarviswidget">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-book"></i> </span>
-        <h2><?php echo __('Documentation'); ?></h2>
-    </header>
-    <div>
-        <div class="widget-body">
-
-            <div class="row">
-                <div class="col-xs-12">
-                    <h2><?php echo __('New to openITCOCKPIT?'); ?></h2>
-                </div>
-                <div class="col-xs-12">
-                    <?php echo __('We recommend every new user to read our'); ?>
-                    <a href="https://openitcockpit.io/beginners/" target="'_blank">
-                        <?php echo __('beginners guide.'); ?>
-                    </a>
-                    <?php echo __('This guide provides information about the basic concept of openITCOCKPIT and how to monitor your first host.'); ?>
-                </div>
-                <div class="col-xs-12 text-center">
-                    <a href="https://openitcockpit.io/beginners/" class="btn btn-default" target="_blank">
-                        <i class="fa fa-external-link-square"></i>
-                        <?php echo __('Beginners guide.'); ?>
-                    </a>
-                </div>
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Documentation'); ?>
+                    <span class="fw-300"><i><?php echo __('wiki'); ?></i></span>
+                </h2>
             </div>
+            <div class="panel-container show">
+                <div class="panel-content">
 
-            <div class="row">
-                <div class="col-xs-12">
-                    <h2><?php echo __('Technical documentation'); ?></h2>
-                </div>
-                <div class="col-xs-12">
-                    <?php echo __('The technical documentation of openITCOCKPIT containers detailed information about additional Modules, background processes, the usage of the JSON-API and so on.'); ?>
-                </div>
-                <div class="col-xs-12 text-center">
-                    <div class="btn-group" role="group">
-                        <a href="https://docs.it-novum.com/display/ODE" class="btn btn-default" target="_blank">
-                            <i class="fa fa-external-link-square"></i>
-                            <?php echo __('Technical documentation (EN)'); ?>
-                        </a>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h2><?php echo __('New to openITCOCKPIT?'); ?></h2>
+                        </div>
+                        <div class="col-lg-12">
+                            <?php echo __('We recommend every new user to read our'); ?>
+                            <a href="https://openitcockpit.io/beginners/" target="_blank">
+                                <?php echo __('beginners guide.'); ?>
+                            </a>
+                            <?php echo __('This guide provides information about the basic concept of openITCOCKPIT and how to monitor your first host.'); ?>
+                        </div>
+                        <div class="col-lg-12 text-center">
+                            <a href="https://openitcockpit.io/beginners/" class="btn btn-default" target="_blank">
+                                <i class="fas fa-external-link-alt"></i>
+                                <?php echo __('Beginners guide.'); ?>
+                            </a>
+                        </div>
+                    </div>
 
-                        <a href="https://docs.it-novum.com/display/ODD" class="btn btn-default" target="_blank">
-                            <i class="fa fa-external-link-square"></i>
-                            <?php echo __('Technische Dokumentation (DE)'); ?>
-                        </a>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h2><?php echo __('Technical documentation'); ?></h2>
+                        </div>
+                        <div class="col-lg-12">
+                            <?php echo __('The technical documentation of openITCOCKPIT containers detailed information about additional Modules, background processes, the usage of the JSON-API and so on.'); ?>
+                        </div>
+                        <div class="col-lg-12 text-center">
+                            <div class="btn-group" role="group">
+                                <a href="https://docs.it-novum.com/display/ODE" class="btn btn-default" target="_blank">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    <?php echo __('Technical documentation (EN)'); ?>
+                                </a>
+
+                                <a href="https://docs.it-novum.com/display/ODD" class="btn btn-default" target="_blank">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    <?php echo __('Technische Dokumentation (DE)'); ?>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h2><?php echo __('Additional help'); ?></h2>
+                        </div>
+
+                        <div class="col-lg-12"
+                             ng-repeat="(key, documentation) in documentations.additional_help.children">
+                            <h4><a href="javascript:void(0);"
+                                   ng-click="showDocumentation('additional_help', key)">
+                                    {{documentation.name}}
+                                </a></h4>
+                            <div>
+                                <p class="description">
+                                    {{documentation.description}}
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-xs-12">
-                    <h2><?php echo __('Additional help'); ?></h2>
-                </div>
-
-                <div class="col-xs-12" ng-repeat="(key, documentation) in documentations.additional_help.children">
-                    <h4><a href="javascript:void(0);"
-                           ng-click="showDocumentation('additional_help', key)">
-                            {{documentation.name}}
-                        </a></h4>
-                    <div>
-                        <p class="description">
-                            {{documentation.description}}
-                        </p>
-                    </div>
-                </div>
-
-            </div>
-
         </div>
     </div>
 </div>
 
 
 <div id="angularDocumentationContentModal" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg" style="width: 80%;">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
+                <h5 class="modal-title">
                     <i class="{{currentDocumentation.icon}}"></i>
                     {{currentDocumentation.name}}
-                </h4>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
             </div>
             <div class="modal-body">
-                <div
-                        ng-bind-html="currentDocumentationHtml | trustAsHtml"></div>
+                <div ng-bind-html="currentDocumentationHtml | trustAsHtml"></div>
             </div>
-
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>

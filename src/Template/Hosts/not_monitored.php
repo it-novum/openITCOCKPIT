@@ -22,19 +22,22 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
 ?>
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-desktop fa-fw "></i>
-            <?php echo __('Hosts') ?>
-            <span>>
-                <?php echo __('Not monitored'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="DeletedHostsIndex">
+            <i class="fa fa-desktop"></i> <?php echo __('Hosts'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-user-md"></i> <?php echo __('Not monitored'); ?>
+    </li>
+</ol>
 
 
 <massdelete></massdelete>
@@ -43,110 +46,114 @@
     <add-hosts-to-hostgroup></add-hosts-to-hostgroup>
 <?php endif; ?>
 
-<section id="widget-grid" class="">
-
-    <div class="row">
-        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                <header>
-                    <div class="widget-toolbar" role="menu">
-                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
-                            <i class="fa fa-refresh"></i>
-                            <?php echo __('Refresh'); ?>
-                        </button>
-
-                        <?php if ($this->Acl->hasPermission('add', 'hosts')): ?>
-                            <a ui-sref="HostsAdd" class="btn btn-xs btn-success">
-                                <i class="fa fa-plus"></i>
-                                <?php echo __('New'); ?>
-                            </a>
-                        <?php endif; ?>
-                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
-                            <i class="fa fa-filter"></i>
-                            <?php echo __('Filter'); ?>
-                        </button>
-                    </div>
-
-                    <div class="jarviswidget-ctrls" role="menu"></div>
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-desktop"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Not monitored hosts overview'); ?></h2>
-                    <ul class="nav nav-tabs pull-right" id="widget-tab-1">
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Deleted hosts'); ?>
+                    <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
                         <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
-                            <li class="">
-                                <a ui-sref="HostsIndex"><i
-                                            class="fa fa-stethoscope"></i> <span
-                                            class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" ui-sref="HostsIndex" role="tab">
+                                    <i class="fa fa-stethoscope">&nbsp;</i> <?php echo __('Monitored'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
-                        <li class="active">
-                            <a ui-sref="HostsNotMonitored"><i
-                                        class="fa fa-user-md"></i> <span
-                                        class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
-                        </li>
+                        <?php if ($this->Acl->hasPermission('notMonitored', 'hosts')): ?>
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" ui-sref="HostsNotMonitored" role="tab">
+                                    <i class="fa fa-user-md">&nbsp;</i> <?php echo __('Not monitored'); ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('disabled', 'hosts')): ?>
-                            <li>
-                                <a ui-sref="HostsDisabled"><i
-                                            class="fa fa-power-off"></i> <span
-                                            class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" ui-sref="HostsDisabled" role="tab">
+                                    <i class="fa fa-power-off">&nbsp;</i> <?php echo __('Disabled'); ?>
+                                </a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('index', 'DeletedHosts')): ?>
-                            <li>
-                                <a ui-sref="DeletedHostsIndex"><i
-                                            class="fa fa-trash-o"></i> <span
-                                            class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" ui-sref="DeletedHostsIndex" role="tab">
+                                    <i class="fa fa-trash">&nbsp;</i> <?php echo __('Deleted'); ?>
+                                </a>
                             </li>
                         <?php endif; ?>
                     </ul>
-                </header>
-                <div>
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
+                        <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
+                    </button>
+                    <?php if ($this->Acl->hasPermission('add', 'hosts')): ?>
+                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="HostsAdd">
+                            <i class="fas fa-plus"></i> <?php echo __('New'); ?>
+                        </button>
+                    <?php endif; ?>
+                    <button class="btn btn-xs btn-primary shadow-0" ng-click="triggerFilter()">
+                        <i class="fas fa-filter"></i> <?php echo __('Filter'); ?>
+                    </button>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
 
-
-                    <div class="widget-body no-padding">
-
-                        <div class="list-filter well" ng-show="showFilter">
-                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                    <!-- Start Filter -->
+                    <div class="list-filter card margin-bottom-10" ng-show="showFilter">
+                        <div class="card-header">
+                            <i class="fa fa-filter"></i> <?php echo __('Filter'); ?>
+                        </div>
+                        <div class="card-body">
                             <div class="row">
-                                <div class="col-xs-12 col-md-6">
-                                    <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
-                                            <input type="text" class="input-sm"
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-desktop"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
-                                                   ng-model="filter.Host.name"
+                                                   ng-model="filter.Hosts.name"
                                                    ng-model-options="{debounce: 500}">
-                                        </label>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-md-6">
-                                    <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                                            <input type="text" class="input-sm"
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by IP address'); ?>"
                                                    ng-model="filter.Host.address"
                                                    ng-model-options="{debounce: 500}">
-                                        </label>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-md-6">
-                                    <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                                            <input type="text" class="input-sm"
-                                                   placeholder="<?php echo __('Filter by description'); ?>"
-                                                   ng-model="filter.Host.description"
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   placeholder="<?php echo __('Filter by output'); ?>"
+                                                   ng-model="filter.Hoststatus.output"
                                                    ng-model-options="{debounce: 500}">
-                                        </label>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="row">
-                                <?php if (sizeof($satellites) > 1): ?>
-                                    <div class="col-xs-12 col-md-3">
-                                        <fieldset>
-                                            <legend><?php echo __('Instance'); ?></legend>
-                                            <div class="form-group smart-form">
-                                                <select
+                                <div class="row">
+                                    <?php if (sizeof($satellites) > 1): ?>
+                                        <div class="col-xs-12 col-md-3">
+                                            <fieldset>
+                                                <legend><?php echo __('Instance'); ?></legend>
+                                                <div class="form-group smart-form">
+                                                    <select
                                                         id="Instance"
                                                         data-placeholder="<?php echo __('Filter by instance'); ?>"
                                                         class="form-control"
@@ -154,274 +161,252 @@
                                                         multiple
                                                         ng-model="filter.Host.satellite_id"
                                                         ng-model-options="{debounce: 500}">
-                                                    <?php
-                                                    foreach ($satellites as $satelliteId => $satelliteName):
-                                                        printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
-                                                    endforeach;
-                                                    ?>
-                                                </select>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                <?php endif; ?>
+                                                        <?php
+                                                        foreach ($satellites as $satelliteId => $satelliteName):
+                                                            printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
+                                                        endforeach;
+                                                        ?>
+                                                    </select>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    <?php endif; ?>
 
-                            </div>
-
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    <div class="pull-right margin-top-10">
-                                        <button type="button" ng-click="resetFilter()"
-                                                class="btn btn-xs btn-danger">
-                                            <?php echo __('Reset Filter'); ?>
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
-
+                            <div class="float-right">
+                                <button type="button" ng-click="resetFilter()"
+                                        class="btn btn-xs btn-danger">
+                                    <?php echo __('Reset Filter'); ?>
+                                </button>
+                            </div>
                         </div>
+                    </div>
+                    <!-- End Filter -->
 
-                        <div class="mobile_table">
-                            <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
-                                   style="">
-                                <thead>
-                                <tr>
-                                    <th class="no-sort sorting_disabled width-15">
-                                        <i class="fa fa-check-square-o fa-lg"></i>
-                                    </th>
-                                    <th class="no-sort"><?php echo __('Host status'); ?></th>
-                                    <th class="no-sort text-center"><strong>P</strong></th>
-                                    <th class="no-sort" ng-click="orderBy('Hosts.name')">
-                                        <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
-                                        <?php echo __('Host name'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Hosts.address')">
-                                        <i class="fa" ng-class="getSortClass('Hosts.address')"></i>
-                                        <?php echo __('IP address'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Hosts.satellite_id')">
-                                        <i class="fa" ng-class="getSortClass('Hosts.satellite_id')"></i>
-                                        <?php echo __('Instance'); ?>
-                                    </th>
-                                    <th class="no-sort text-center editItemWidth"><i class="fa fa-gear fa-lg"></i></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="host in hosts">
-                                    <td class="width-5">
-                                        <input type="checkbox"
-                                               ng-model="massChange[host.Host.id]"
-                                               ng-show="host.Host.allow_edit">
-                                    </td>
+                    <div class="frame-wrap">
+                        <table class="table table-striped m-0 table-bordered table-hover table-sm">
+                            <thead>
+                            <tr>
+                                <th class="no-sort sorting_disabled width-15">
+                                    <i class="fa fa-check-square"></i>
+                                </th>
+                                <th class="no-sort"><?php echo __('Host status'); ?></th>
+                                <th class="no-sort text-center"><strong>P</strong></th>
+                                <th class="no-sort" ng-click="orderBy('Hosts.name')">
+                                    <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
+                                    <?php echo __('Host name'); ?>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Hosts.address')">
+                                    <i class="fa" ng-class="getSortClass('Hosts.address')"></i>
+                                    <?php echo __('IP address'); ?>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Hosts.satellite_id')">
+                                    <i class="fa" ng-class="getSortClass('Hosts.satellite_id')"></i>
+                                    <?php echo __('Instance'); ?>
+                                </th>
+                                <th class="no-sort text-center editItemWidth"><i class="fa fa-gear"></i></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="host in hosts">
+                                <td class="width-5">
+                                    <input type="checkbox"
+                                           ng-model="massChange[host.Host.id]"
+                                           ng-show="host.Host.allow_edit">
+                                </td>
 
-                                    <td class="text-center width-90">
-                                        <hoststatusicon host="host"></hoststatusicon>
-                                    </td>
+                                <td class="text-center width-90">
+                                    <hoststatusicon host="host"></hoststatusicon>
+                                </td>
 
-                                    <td class="text-center">
-                                        <strong title="<?php echo __('Passively transferred host'); ?>"
-                                                ng-show="host.Host.active_checks_enabled === false || host.Host.is_satellite_host === true">
-                                            P
-                                        </strong>
-                                    </td>
+                                <td class="text-center">
+                                    <strong title="<?php echo __('Passively transferred host'); ?>"
+                                            ng-show="host.Host.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                        P
+                                    </strong>
+                                </td>
 
-                                    <td>
-                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                            <a ui-sref="HostsBrowser({id:host.Host.id})">
-                                                {{ host.Host.hostname }}
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                        <a ui-sref="HostsBrowser({id:host.Host.id})">
+                                            {{ host.Host.hostname }}
+                                        </a>
+                                    <?php else: ?>
+                                        {{ host.Host.hostname }}
+                                    <?php endif; ?>
+                                </td>
+
+                                <td>
+                                    {{ host.Host.address }}
+                                </td>
+
+                                <td>
+                                    {{ host.Host.satelliteName }}
+                                </td>
+
+                                <td class="width-50">
+                                    <div class="btn-group btn-group-xs" role="group">
+                                        <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                            <a ui-sref="HostsEdit({id:host.Host.id})"
+                                               ng-if="host.Host.allow_edit"
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i>
                                             </a>
                                         <?php else: ?>
-                                            {{ host.Host.hostname }}
+                                            <a href="javascript:void(0);"
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i></a>
                                         <?php endif; ?>
-                                    </td>
-
-                                    <td>
-                                        {{ host.Host.address }}
-                                    </td>
-
-                                    <td>
-                                        {{ host.Host.satelliteName }}
-                                    </td>
-
-                                    <td class="width-50">
-                                        <div class="btn-group">
+                                        <button type="button"
+                                                class="btn btn-default dropdown-toggle btn-lower-padding"
+                                                data-toggle="dropdown">
+                                            <i class="caret"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                 <a ui-sref="HostsEdit({id:host.Host.id})"
                                                    ng-if="host.Host.allow_edit"
-                                                   class="btn btn-default">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-cog"></i>
+                                                    <?php echo __('Edit'); ?>
                                                 </a>
-                                                <a href="javascript:void(0);"
-                                                   ng-if="!host.Host.allow_edit"
-                                                   class="btn btn-default disabled">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                </a>
-                                            <?php else: ?>
-                                                <a href="javascript:void(0);" class="btn btn-default disabled">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                             <?php endif; ?>
-                                            <a href="javascript:void(0);" data-toggle="dropdown"
-                                               class="btn btn-default dropdown-toggle">
-                                                <span class="caret"></span>
-                                            </a>
-                                            <ul class="dropdown-menu pull-right" id="menuHack-{{host.Host.uuid}}">
-                                                <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                    <li ng-if="host.Host.allow_edit">
-                                                        <a ui-sref="HostsEdit({id:host.Host.id})">
-                                                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('sharing', 'hosts')): ?>
-                                                    <li ng-if="host.Host.allow_sharing">
-                                                        <a ui-sref="HostsSharing({id:host.Host.id})">
-                                                            <i class="fa fa-sitemap fa-rotate-270"></i>
-                                                            <?php echo __('Sharing'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('deactivate', 'hosts')): ?>
-                                                    <li ng-if="host.Host.allow_edit">
-                                                        <a href="javascript:void(0);"
-                                                           ng-click="confirmDeactivate(getObjectForDelete(host))">
-                                                            <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                                    <li>
-                                                        <a ui-sref="ServicesServiceList({id: host.Host.id})">
-                                                            <i class="fa fa-list"></i> <?php echo __('Service List'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
-                                                    <li>
-                                                        <a ui-sref="ServicetemplategroupsAllocateToHost({id: 0, hostId: host.Host.id})">
-                                                            <i class="fa fa-external-link"></i>
-                                                            <?php echo __('Allocate service template group'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
-
-                                                <?php if ($this->Acl->hasPermission('scan', 'agentconfigs', '')): ?>
-                                                    <li>
-                                                        <a ui-sref="AgentconfigsConfig({hostId: host.Host.id})">
-                                                            <i class="fa fa-user-secret"></i>
-                                                            <?php echo __('openITCOCKPIT Agent discovery'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
-
-                                                <?php
-                                                $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
-                                                echo $AdditionalLinks->getLinksAsHtmlList('hosts', 'notMonitored', 'list');
-                                                ?>
-
-                                                <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
-                                                    <li>
-                                                        <a ng-click="confirmAddHostsToHostgroup(getObjectForDelete(host))"
-                                                           class="a-clean pointer">
-                                                            <i class="fa fa-sitemap"></i> <?php echo __('Append to host group'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
-
-                                                <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
-                                                    <li class="divider" ng-if="host.Host.allow_edit"></li>
-                                                    <li ng-if="host.Host.allow_edit">
-                                                        <a href="javascript:void(0);" class="txt-color-red"
-                                                           ng-click="confirmDelete(getObjectForDelete(host))">
-                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
-                                            </ul>
+                                            <?php if ($this->Acl->hasPermission('sharing', 'hosts')): ?>
+                                                <a ui-sref="HostsSharing({id:host.Host.id})"
+                                                   ng-if="host.Host.allow_sharing"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-sitemap fa-rotate-270"></i>
+                                                    <?php echo __('Sharing'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('deactivate', 'hosts')): ?>
+                                                <a ng-if="host.Host.allow_edit"
+                                                   class="dropdown-item"
+                                                   href="javascript:void(0);"
+                                                   ng-click="confirmDeactivate(getObjectForDelete(host))">
+                                                    <i class="fa fa-plug"></i>
+                                                    <?php echo __('Disable'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
+                                                <a ui-sref="ServicesServiceList({id: host.Host.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-sitemap fa-rotate-270"></i>
+                                                    <?php echo __('Service list'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
+                                                <a ui-sref="ServicetemplategroupsAllocateToHost({id: 0, hostId: host.Host.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-external-link-alt"></i>
+                                                    <?php echo __('Allocate service template group'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
+                                                <a class="dropdown-item"
+                                                   href="javascript:void(0);"
+                                                   ng-click="confirmAddHostsToHostgroup(getObjectForDelete(host))">
+                                                    <i class="fa fa-sitemap"></i>
+                                                    <?php echo __('Append to host group'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('scan', 'agentconfigs', '')): ?>
+                                                <a ui-sref="AgentconnectorsConfig({hostId: host.Host.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-user-secret"></i>
+                                                    <?php echo __('openITCOCKPIT Agent discovery'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php
+                                            $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                                            echo $AdditionalLinks->getLinksAsHtmlList('hosts', 'notMonitored', 'list');
+                                            ?>
+                                            <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
+                                                <a ng-click="confirmDelete(getObjectForDelete(host))"
+                                                   class="dropdown-item txt-color-red">
+                                                    <i class="fa fa-trash"></i>
+                                                    <?php echo __('Delete'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                         </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
 
-                        <div class="row margin-top-10 margin-bottom-10">
-                            <div class="row margin-top-10 margin-bottom-10" ng-show="hosts.length == 0">
-                                <div class="col-xs-12 text-center txt-color-red italic">
-                                    <?php echo __('No entries match the selection'); ?>
-                                </div>
+                        <div class="margin-top-10" ng-show="hosts.length == 0">
+                            <div class="text-center text-danger italic">
+                                <?php echo __('No entries match the selection'); ?>
                             </div>
                         </div>
-
-
                         <div class="row margin-top-10 margin-bottom-10">
                             <div class="col-xs-12 col-md-2 text-muted text-center">
                                 <span ng-show="selectedElements > 0">({{selectedElements}})</span>
                             </div>
                             <div class="col-xs-12 col-md-2">
                                 <span ng-click="selectAll()" class="pointer">
-                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <i class="fas fa-lg fa-check-square"></i>
                                     <?php echo __('Select all'); ?>
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
                                 <span ng-click="undoSelection()" class="pointer">
-                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <i class="fas fa-lg fa-square"></i>
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
-                                <a ui-sref="HostsCopy({ids: linkForCopy()})" class="a-clean">
-                                    <i class="fa fa-lg fa-files-o"></i>
+                                <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
+                                    <i class="fas fa-lg fa-files-o"></i>
                                     <?php echo __('Copy'); ?>
                                 </a>
                             </div>
                             <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fa fa-lg fa-trash-o"></i>
-                                    <?php echo __('Delete'); ?>
+                                    <i class="fas fa-trash"></i>
+                                    <?php echo __('Delete all'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2">
-                                <div class="btn-group">
-                                    <a href="javascript:void(0);" class="btn btn-default"><?php echo __('More'); ?></a>
-                                    <a href="javascript:void(0);" data-toggle="dropdown"
-                                       class="btn btn-default dropdown-toggle"><span
-                                                class="caret"></span></a>
-                                    <ul class="dropdown-menu">
-                                        <?php if ($this->Acl->hasPermission('edit_details', 'Hosts', '')): ?>
-                                            <li>
-                                                <a ng-href="{{ linkForEditDetails() }}" class="a-clean">
-                                                    <i class="fa fa-cog"></i> <?php echo __('Edit details'); ?>
-                                                </a>
-                                            </li>
-                                        <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('deactivate', 'Hosts', '')): ?>
-                                            <li>
-                                                <a ng-click="confirmDeactivate(getObjectsForDelete())"
-                                                   class="a-clean pointer">
-                                                    <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
-                                                </a>
-                                            </li>
-                                        <?php endif; ?>
-
-                                        <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
-                                            <li>
-                                                <a ng-click="confirmAddHostsToHostgroup(getObjectsForDelete())"
-                                                   class="a-clean pointer">
-                                                    <i class="fa fa-sitemap"></i> <?php echo __('Append to host group'); ?>
-                                                </a>
-                                            </li>
-                                        <?php endif; ?>
-                                    </ul>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-default dropdown-toggle waves-effect waves-themed" type="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <?php echo __('More actions'); ?>
+                                </button>
+                                <div class="dropdown-menu" x-placement="bottom-start"
+                                     style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
+                                    <?php if ($this->Acl->hasPermission('edit_details', 'Hosts', '')): ?>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ui-sref="HostsEditDetails({ids: linkForEditDetails()})">
+                                            <i class="fa fa-cog"></i>
+                                            <?php echo __('Edit details'); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('deactivate', 'Hosts', '')): ?>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="confirmDeactivate(getObjectsForDelete())">
+                                            <i class="fa fa-plug"></i>
+                                            <?php echo __('Disable'); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="confirmAddHostsToHostgroup(getObjectsForDelete())">
+                                            <i class="fa fa-sitemap"></i>
+                                            <?php echo __('Add to host group'); ?>
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
+
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                         <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>
-
-        </article>
+        </div>
     </div>
-</section>
+</div>

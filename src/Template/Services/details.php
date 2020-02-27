@@ -22,31 +22,30 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 ?>
-
 <div id="angularServiceStatusDetailsModal" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-
-                <button type="button" class="btn btn-default btn-xl pull-right"
-                        ng-click="loadServicestatusDetails(currentServiceDetailsId)">
-                    <i class="fa fa-refresh" ng-class="{'fa-spin': isLoading}"></i>
-                    <?php echo __('Refresh'); ?>
-                </button>
-
-                <h4 class="modal-title">
+                <h5 class="modal-title">
                     <i class="fa fa-cogs"></i>
                     <?php echo __('Service status details'); ?>
-                </h4>
+                </h5>
+                <div class="ml-auto">
+                    <button class="btn btn-default btn-xs" ng-click="loadServicestatusDetails(currentServiceDetailsId)">
+                        <i class="fa fa-refresh" ng-class="{'fa-spin': isLoading}"></i>
+                        <?php echo __('Refresh'); ?>
+                    </button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                    </button>
+                </div>
             </div>
             <div class="modal-body">
-
                 <div ng-init="flashMshStr='<?php echo __('Command sent successfully. Refresh in 5 seconds'); ?>'"></div>
 
-                <div class=""
+                <div class="txt-color-white padding-10"
                      ng-class="{'browser-state-green': stateIsOk(), 'browser-state-yellow': stateIsWarning(), 'browser-state-red': stateIsCritical(), 'browser-state-gray': stateIsUnknown(), 'browser-state-blue': stateIsNotInMonitoring()}"
                      ng-if="servicestatus">
-
 
                     <div class="row">
                         <div class="col-xs-12 col-md-2">
@@ -138,7 +137,7 @@
                             </div>
                         </div>
 
-                        <div class="row text-center padding-top-10 padding-bottom-10"
+                        <div class="row d-flex justify-content-center margin-top-10"
                              ng-show="canSubmitExternalCommands && mergedService.allowEdit">
                             <div class="btn-group" role="group" aria-label="Basic example">
                                 <button type="button"
@@ -189,13 +188,12 @@
                     </div>
                 </div>
 
-
                 <div class="row" ng-show="servicestatus.scheduledDowntimeDepth > 0">
-                    <div class="col-xs-12 margin-bottom-10 no-padding">
+                    <div class="col-lg-12 padding-10">
                         <div class="browser-border padding-10" style="width: 100%;">
 
                             <div class="row">
-                                <div class="col-xs-12 col-sm-11 no-padding">
+                                <div class="col-lg-12">
                                     <div>
                                         <h4 class="no-padding">
                                             <i class="fa fa-power-off"></i>
@@ -222,13 +220,13 @@
                                     </div>
                                 </div>
 
-                                <div class="col-xs-12 col-sm-1 no-padding">
+                                <div class="col-lg-12">
                                     <?php if ($this->Acl->hasPermission('delete', 'downtimes')): ?>
                                         <button
-                                                class="btn btn-xs btn-danger"
-                                                ng-if="downtime.allowEdit && downtime.isCancellable"
-                                                ng-click="confirmServiceDowntimeDelete(getObjectForDowntimeDelete())">
-                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                            class="btn btn-xs btn-danger"
+                                            ng-if="downtime.allowEdit && downtime.isCancellable"
+                                            ng-click="confirmServiceDowntimeDelete(getObjectForDowntimeDelete())">
+                                            <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
                                         </button>
                                     <?php endif; ?>
                                 </div>
@@ -238,16 +236,16 @@
                 </div>
 
                 <div class="row" ng-show="servicestatus.problemHasBeenAcknowledged">
-                    <div class="col-xs-12 margin-bottom-10 no-padding">
+                    <div class="col-lg-12 padding-10">
                         <div class="browser-border padding-10" style="width: 100%;">
                             <div>
                                 <h4 class="no-padding">
                                     <i class="fa fa-user" ng-show="!acknowledgement.is_sticky"></i>
-                                    <i class="fa fa-user-o" ng-show="acknowledgement.is_sticky"></i>
+                                    <i class="far fa-user" ng-show="acknowledgement.is_sticky"></i>
                                     <?php echo __('State of service is acknowledged'); ?>
                                     <span ng-show="acknowledgement.is_sticky">
-                                                            (<?php echo __('Sticky'); ?>)
-                                                        </span>
+                                        (<?php echo __('Sticky'); ?>)
+                                    </span>
                                 </h4>
                             </div>
                             <div class="padding-top-5">
@@ -267,7 +265,7 @@
 
 
                 <div class="row" ng-show="servicestatus.isFlapping">
-                    <div class="col-xs-12 margin-bottom-10 no-padding">
+                    <div class="col-lg-12 padding-10">
                         <div class="browser-border padding-10" style="width: 100%;">
                             <div>
                                 <h4 class="no-padding txt-color-orangeDark">
@@ -279,8 +277,8 @@
                     </div>
                 </div>
 
-                <div class="row" ng-show="mergedService.has_graph">
-                    <div class="col-xs-12">
+                <div class="row padding-top-10" ng-show="mergedService.has_graph">
+                    <div class="col-lg-12">
                         <h5>
                             <i class="fa fa-area-chart"></i>
                             <?php echo __('Service graph'); ?>
@@ -289,22 +287,19 @@
                 </div>
 
                 <div class="row" ng-show="mergedService.has_graph">
-                    <div class="col-xs-12">
+                    <div class="col-lg-12 padding-10">
                         <div id="graph_legend" class="graph_legend"></div>
                         <div id="graph_data_tooltip"></div>
                         <div id="graphCanvas" style="height: 150px;"></div>
                     </div>
                 </div>
-
-
             </div>
-
             <div class="modal-footer">
                 <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                    <a class="btn btn-primary" ui-sref="ServicesBrowser({id:currentServiceDetailsId})">
-                        <i class="fa fa-external-link"></i>
+                    <button type="button" class="btn btn-success"
+                            ui-sref="ServicesBrowser({id:currentServiceDetailsId})">
                         <?php echo __('Open details'); ?>
-                    </a>
+                    </button>
                 <?php endif; ?>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>
@@ -314,12 +309,12 @@
     </div>
 </div>
 
-
 <reschedule-service callback="showServiceDetailsFlashMsg"></reschedule-service>
 <service-downtime author="<?php echo h($username); ?>" callback="showServiceDetailsFlashMsg"></service-downtime>
 <mass-delete-service-downtimes delete-url="/downtimes/delete/"
                                callback="showServiceDetailsFlashMsg"></mass-delete-service-downtimes>
-<acknowledge-service author="<?php echo h($username); ?>" callback="showServiceDetailsFlashMsg"></acknowledge-service>
+<acknowledge-service author="<?php echo h($username); ?>"
+                     callback="showServiceDetailsFlashMsg"></acknowledge-service>
 <submit-service-result max-check-attempts="{{mergedService.max_check_attempts}}"
                        callback="showServiceDetailsFlashMsg"></submit-service-result>
 <enable-service-flap-detection callback="showServiceDetailsFlashMsg"></enable-service-flap-detection>

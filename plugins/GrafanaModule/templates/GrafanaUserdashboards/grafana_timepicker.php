@@ -33,10 +33,11 @@
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu dropdown-menu-right" style="width: 600px;">
-        <div class="row">
+        <div class="row no-margin">
             <div class="col-xs-12 col-md-3">
                 <fieldset>
-                    <legend><?php echo __('Auto refresh'); ?></legend>
+                    <h4><?php echo __('Auto refresh'); ?></h4>
+                    <hr>
                     <div ng-repeat="(urlKey, name) in timeranges.update_interval"
                          class="no-padding"
                          style="line-height: 25px;"
@@ -48,7 +49,8 @@
             </div>
             <div class="col-xs-12 col-md-3">
                 <fieldset>
-                    <legend><?php echo __('Long term'); ?></legend>
+                    <h4><?php echo __('Long term'); ?></h4>
+                    <hr>
                     <div ng-repeat="(urlKey, name) in timeranges.quick"
                          class="no-padding"
                          style="line-height: 25px;"
@@ -60,7 +62,8 @@
             </div>
             <div class="col-xs-12 col-md-3">
                 <fieldset>
-                    <legend><?php echo __('Unitl now'); ?></legend>
+                    <h4><?php echo __('Until now'); ?></h4>
+                    <hr>
                     <div ng-repeat="(urlKey, name) in timeranges.today"
                          class="no-padding"
                          style="line-height: 25px;"
@@ -72,7 +75,8 @@
             </div>
             <div class="col-xs-12 col-md-3">
                 <fieldset>
-                    <legend><?php echo __('Today'); ?></legend>
+                    <h4><?php echo __('Today'); ?></h4>
+                    <hr>
                     <div ng-repeat="(urlKey, name) in timeranges.last"
                          class="no-padding"
                          style="line-height: 25px;"

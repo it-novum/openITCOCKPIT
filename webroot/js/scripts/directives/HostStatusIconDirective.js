@@ -40,7 +40,7 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
                         $scope.flappingColor = 'txt-color-red';
                         return;
                     case 2:
-                        $scope.btnColor = 'default';
+                        $scope.btnColor = 'secondary';
                         $scope.flappingColor = 'txt-color-blueDark';
                         return;
                     default:

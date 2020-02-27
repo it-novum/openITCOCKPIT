@@ -23,123 +23,121 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="ContactsIndex">
+            <i class="fa fa-user"></i> <?php echo __('Contacts'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-copy"></i> <?php echo __('Copy'); ?>
+    </li>
+</ol>
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-user fa-fw "></i>
-            <?php echo __('Contacts'); ?>
-            <span>>
-                <?php echo __('Copy'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
-
-
-<div class="jarviswidget" id="wid-id-0">
-    <header>
-        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-copy"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet">
-            <?php echo __('Copy contact/s'); ?>
-        </h2>
-        <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
-            <?php if ($this->Acl->hasPermission('index', 'contacts')): ?>
-                <a back-button fallback-state='ContactsIndex' class="btn btn-default btn-xs">
-                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
-                </a>
-            <?php endif; ?>
-        </div>
-    </header>
-    <div>
-        <div class="widget-body">
-            <div class="row form-horizontal" ng-repeat="sourceContact in sourceContacts">
-                <div class="col-xs-12 col-md-9 col-lg-7">
-                    <fieldset>
-                        <legend>
-                            <span class="text-info"><?php echo __('Source contact:'); ?></span>
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Contacts'); ?>
+                    <span class="fw-300"><i><?php echo __('Copy contact/s'); ?></i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <?php if ($this->Acl->hasPermission('index', 'contacts')): ?>
+                        <a back-button fallback-state='ContactsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <div class="card margin-bottom-10" ng-repeat="sourceContact in sourceContacts">
+                        <div class="card-header">
+                            <i class="fa fa-cog"></i>
+                            <?php echo __('Source contact:'); ?>
                             {{sourceContact.Source.name}}
-                        </legend>
-
-                        <div class="form-group required" ng-class="{'has-error': sourceContact.Error.name}">
-                            <label for="Contact{{$index}}Name" class="col col-md-2 control-label">
-                                <?php echo('Contact name'); ?>
-                            </label>
-                            <div class="col col-xs-10 required">
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group required" ng-class="{'has-error': sourceContact.Error.name}">
+                                <label for="Contact{{$index}}Name" class="control-label">
+                                    <?php echo __('Contact name'); ?>
+                                </label>
                                 <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="sourceContact.Contact.name"
-                                        id="Contact{{$index}}Name">
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="sourceContact.Contact.name"
+                                    id="Contact{{$index}}Name">
                                 <span class="help-block">
-                                    <?php echo __('Name of the new contact'); ?>
+                                <?php echo __('Name of the new contact'); ?>
                                 </span>
                                 <div ng-repeat="error in sourceContact.Error.name">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group" ng-class="{'has-error': sourceContact.Error.description}">
-                            <label for="Contact{{$index}}Description" class="col col-md-2 control-label">
-                                <?php echo('Description'); ?>
-                            </label>
-                            <div class="col col-xs-10">
+                            <div class="form-group" ng-class="{'has-error': sourceContact.Error.description}">
+                                <label for="Contact{{$index}}Description" class="control-label">
+                                    <?php echo __('Description'); ?>
+                                </label>
                                 <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="sourceContact.Contact.description"
-                                        id="Contact{{$index}}Description">
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="sourceContact.Contact.description"
+                                    id="Contact{{$index}}Description">
                                 <div ng-repeat="error in sourceContact.Error.description">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="form-group required" ng-class="{'has-error': sourceContact.Error.email}">
-                            <label for="Contact{{$index}}Email" class="col col-md-2 control-label">
-                                <?php echo('Email'); ?>
-                            </label>
-                            <div class="col col-xs-10">
+                            <div class="form-group required" ng-class="{'has-error': sourceContact.Error.email}">
+                                <label for="Contact{{$index}}Email" class="control-label">
+                                    <?php echo __('Email'); ?>
+                                </label>
                                 <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="sourceContact.Contact.email"
-                                        id="Contact{{$index}}Email">
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="sourceContact.Contact.email"
+                                    id="Contact{{$index}}Email">
                                 <div ng-repeat="error in sourceContact.Error.email">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="form-group required" ng-class="{'has-error': sourceContact.Error.phone}">
-                            <label for="Contact{{$index}}Phone" class="col col-md-2 control-label">
-                                <?php echo('Phone'); ?>
-                            </label>
-                            <div class="col col-xs-10">
+                            <div class="form-group required" ng-class="{'has-error': sourceContact.Error.phone}">
+                                <label for="Contact{{$index}}Phone" class="control-label">
+                                    <?php echo __('Phone'); ?>
+                                </label>
                                 <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="sourceContact.Contact.phone"
-                                        id="Contact{{$index}}Phone">
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="sourceContact.Contact.phone"
+                                    id="Contact{{$index}}Phone">
                                 <div ng-repeat="error in sourceContact.Error.phone">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
                         </div>
-                    </fieldset>
+                    </div>
+
+                    <div class="card margin-top-10">
+                        <div class="card-body">
+                            <div class="float-right">
+                                <button class="btn btn-primary" ng-click="copy()">
+                                    <?php echo __('Copy'); ?>
+                                </button>
+                                <?php if ($this->Acl->hasPermission('index', 'Contacts')): ?>
+                                    <a back-button fallback-state='ContactsIndex'
+                                       class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="well formactions ">
-                <div class="pull-right">
-                    <button class="btn btn-primary" ng-click="copy()">
-                        <?php echo __('Copy'); ?>
-                    </button>
-                    <?php if ($this->Acl->hasPermission('index', 'Contacts')): ?>
-                        <a back-button fallback-state='ContactsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
-                    <?php endif; ?>
-                </div>
-            </div>
-
         </div>
     </div>
 </div>

@@ -23,125 +23,125 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="ContactgroupsIndex">
+            <i class="fa fa-users"></i> <?php echo __('Contact group'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-plus"></i> <?php echo __('Add'); ?>
+    </li>
+</ol>
+
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-users fa-fw "></i>
-            <?php echo __('Contact groups'); ?>
-            <span>>
-                <?php echo __('Add'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
-
-
-<div class="jarviswidget" id="wid-id-0">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-users"></i> </span>
-        <h2><?php echo __('Create new contact group'); ?></h2>
-        <div class="widget-toolbar" role="menu">
-            <?php if ($this->Acl->hasPermission('index', 'contactgroups')): ?>
-                <a back-button fallback-state='ContactgroupsIndex' class="btn btn-default btn-xs">
-                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
-                </a>
-            <?php endif; ?>
-        </div>
-    </header>
-    <div>
-        <div class="widget-body">
-            <form ng-submit="submit();" class="form-horizontal"
-                  ng-init="successMessage=
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Contact group'); ?>
+                    <span class="fw-300"><i><?php echo __('Create new contact group'); ?></i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <?php if ($this->Acl->hasPermission('index', 'contactgroups')): ?>
+                        <a back-button fallback-state='ContactgroupsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <form ng-submit="submit();" class="form-horizontal"
+                          ng-init="successMessage=
             {objectName : '<?php echo __('Contact group'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
-                <div class="row">
-                    <div class="form-group required" ng-class="{'has-error': errors.container.parent_id}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Container'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+
+                        <div class="form-group required" ng-class="{'has-error': errors.parent_id}">
+                            <label class="control-label" for="ContainersSelect">
+                                <?php echo __('Container'); ?>
+                            </label>
                             <select
-                                    id="ContainersSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="containers"
-                                    ng-options="container.key as container.value for container in containers"
-                                    ng-model="post.Contactgroup.container.parent_id">
+                                id="ContainersSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="containers"
+                                ng-options="container.key as container.value for container in containers"
+                                ng-model="post.Contactgroup.container.parent_id">
                             </select>
-                            <div ng-repeat="error in errors.container.parent_id">
+                            <div ng-repeat="error in errors.parent_id">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.container.name}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Name'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+                        <div class="form-group required" ng-class="{'has-error':errors.container.name}">
+                            <label class="control-label">
+                                <?php echo __('Name'); ?>
+                            </label>
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="post.Contactgroup.container.name">
+                                class="form-control"
+                                type="text"
+                                ng-model="post.Contactgroup.container.name">
                             <div ng-repeat="error in errors.container.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group" ng-class="{'has-error': errors.description}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Description'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+                        <div class="form-group required" ng-class="{'has-error':errors.container.description}">
+                            <label class="control-label">
+                                <?php echo __('Description'); ?>
+                            </label>
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="post.Contactgroup.description">
-                            <div ng-repeat="error in errors.description">
+                                class="form-control"
+                                type="text"
+                                ng-model="post.Contactgroup.description">
+                            <div ng-repeat="error in errors.container.description">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.contacts}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Contacts'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+                        <div class="form-group required" ng-class="{'has-error': errors.contacts}">
+                            <label class="control-label" for="ContactsSelect">
+                                <?php echo __('Contacts'); ?>
+                            </label>
                             <select
-                                    id="ContactsSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="contacts"
-                                    multiple
-                                    ng-options="contact.key as contact.value for contact in contacts"
-                                    ng-model="post.Contactgroup.contacts._ids">
+                                id="ContactsSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="contacts"
+                                multiple
+                                ng-options="contact.key as contact.value for contact in contacts"
+                                ng-model="post.Contactgroup.contacts._ids">
                             </select>
                             <div ng-repeat="error in errors.contacts">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-
-                <div class="col-xs-12 margin-top-10 margin-bottom-10">
-                    <div class="well formactions ">
-                        <div class="pull-right">
-
-                            <label>
-                                <input type="checkbox" ng-model="data.createAnother">
-                                <?php echo _('Create another'); ?>
-                            </label>
-
-                            <input class="btn btn-primary" type="submit" value="<?php echo __('Create contact group'); ?>">
-                            <a back-button fallback-state='ContactgroupsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        <div class="card margin-top-10">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <label>
+                                        <input type="checkbox" ng-model="data.createAnother">
+                                        <?php echo __('Create another'); ?>
+                                    </label>
+                                    <button class="btn btn-primary" type="submit">
+                                        <?php echo __('Create contact group'); ?>
+                                    </button>
+                                    <a back-button fallback-state='ContactgroupsIndex' class="btn btn-default">
+                                        <?php echo __('Cancel'); ?>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
-
-            </form>
+            </div>
         </div>
     </div>
 </div>

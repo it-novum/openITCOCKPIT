@@ -58,16 +58,16 @@ angular.module('openITCOCKPIT')
                 $scope.post.Servicedependency.container_id = $scope.servicedependency.container_id;
                 $scope.post.Servicedependency.inherits_parent = $scope.servicedependency.inherits_parent;
                 $scope.post.Servicedependency.timeperiod_id = $scope.servicedependency.timeperiod_id;
-                $scope.post.Servicedependency.execution_fail_on_up = $scope.servicedependency.execution_fail_on_ok;
-                $scope.post.Servicedependency.execution_fail_on_up = $scope.servicedependency.execution_fail_on_warning;
-                $scope.post.Servicedependency.execution_fail_on_down = $scope.servicedependency.execution_fail_on_critical;
-                $scope.post.Servicedependency.execution_fail_on_unreachable = $scope.servicedependency.execution_fail_on_unknown;
+                $scope.post.Servicedependency.execution_fail_on_ok = $scope.servicedependency.execution_fail_on_ok;
+                $scope.post.Servicedependency.execution_fail_on_warning = $scope.servicedependency.execution_fail_on_warning;
+                $scope.post.Servicedependency.execution_fail_on_critical = $scope.servicedependency.execution_fail_on_critical;
+                $scope.post.Servicedependency.execution_fail_on_unknown = $scope.servicedependency.execution_fail_on_unknown;
                 $scope.post.Servicedependency.execution_fail_on_pending = $scope.servicedependency.execution_fail_on_pending;
                 $scope.post.Servicedependency.execution_none = $scope.servicedependency.execution_none;
-                $scope.post.Servicedependency.notification_fail_on_up = $scope.servicedependency.notification_fail_on_ok;
-                $scope.post.Servicedependency.notification_fail_on_up = $scope.servicedependency.notification_fail_on_warning;
-                $scope.post.Servicedependency.notification_fail_on_down = $scope.servicedependency.notification_fail_on_critical;
-                $scope.post.Servicedependency.notification_fail_on_unreachable = $scope.servicedependency.notification_fail_on_unknown;
+                $scope.post.Servicedependency.notification_fail_on_ok = $scope.servicedependency.notification_fail_on_ok;
+                $scope.post.Servicedependency.notification_fail_on_warning = $scope.servicedependency.notification_fail_on_warning;
+                $scope.post.Servicedependency.notification_fail_on_critical = $scope.servicedependency.notification_fail_on_critical;
+                $scope.post.Servicedependency.notification_fail_on_unknown = $scope.servicedependency.notification_fail_on_unknown;
                 $scope.post.Servicedependency.notification_fail_on_pending = $scope.servicedependency.notification_fail_on_pending;
                 $scope.post.Servicedependency.notification_none = $scope.servicedependency.notification_none;
 

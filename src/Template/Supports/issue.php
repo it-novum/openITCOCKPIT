@@ -23,42 +23,44 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="SupportsIssue">
+            <i class="fa fa-bug"></i> <?php echo __('Support'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fas fa-clipboard-list"></i> <?php echo __('Issue'); ?>
+    </li>
+</ol>
+
+
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-bug fa-fw "></i>
-            <?php echo __('Support'); ?>
-            <span>>
-                <?php echo __('Report an issue'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
-
-
-<div class="jarviswidget" id="wid-id-0">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-bug"></i> </span>
-        <h2><?php echo __('Report an issue'); ?></h2>
-    </header>
-    <div>
-        <div class="widget-body">
-            <div class="row">
-
-                <?php if ($hasLicense): ?>
-                    <div class="col-xs-12 col-sm-6 col-md-3">
-                        <div class="panel panel-darken pricing-big">
-
-                            <div class="panel-heading">
-                                <h3 class="panel-title text-transform-none">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Support'); ?>
+                    <span class="fw-300"><i><?php echo __('Report an issue'); ?></i></span>
+                </h2>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <div class="card-deck">
+                        <?php if ($hasLicense): ?>
+                            <div class="card">
+                                <h3 class="card-header reportIssueCardCommercialSupportHeader">
                                     Commercial support
                                 </h3>
-                            </div>
-                            <div class="panel-body no-padding text-align-center">
-                                <div class="the-price">
-                                    <span class="subscript">it-novum GmbH</span>
-                                </div>
-                                <div class="price-features">
+                                <h3 class="card-header reportIssueCardSubheader">
+                                    it-novum GmbH
+                                </h3>
+                                <div class="card-body text-align-center">
                                     <ul class="list-unstyled text-left">
                                         <li><i class="fa fa-minus text-muted"></i> General questions about openITCOCKPIT
                                         </li>
@@ -70,30 +72,22 @@
                                         </li>
                                     </ul>
                                 </div>
+                                <div class="card-footer text-align-center">
+                                    <a href="mailto:support@itsm.it-novum.com" class="btn btn-primary btn-block"
+                                       role="button">
+                                        <i class="far fa-envelope"></i> Create a Ticket
+                                    </a>
+                                </div>
                             </div>
-                            <div class="panel-footer text-align-center">
-                                <a href="mailto:support@itsm.it-novum.com" class="btn btn-primary btn-block"
-                                   role="button">
-                                    <i class="fa fa-envelope"></i> Create a Ticket
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <div class="col-xs-12 col-sm-6 col-md-3">
-                    <div class="panel panel-purple pricing-big">
-
-                        <div class="panel-heading">
-                            <h3 class="panel-title text-transform-none">
+                        <?php endif; ?>
+                        <div class="card">
+                            <h3 class="card-header reportIssueCardCommunityHeader">
                                 GitHub
                             </h3>
-                        </div>
-                        <div class="panel-body no-padding text-align-center">
-                            <div class="the-price">
-                                <span class="subscript">Community</span>
-                            </div>
-                            <div class="price-features">
+                            <h3 class="card-header reportIssueCardSubheader">
+                                Community
+                            </h3>
+                            <div class="card-body text-align-center">
                                 <ul class="list-unstyled text-left">
                                     <li><i class="fa fa-minus text-muted"></i> System issues</li>
                                     <li><i class="fa fa-minus text-muted"></i> System crashes</li>
@@ -103,27 +97,25 @@
                                     </li>
                                 </ul>
                             </div>
+                            <div class="card-footer text-align-center">
+                                <a href="https://github.com/it-novum/openITCOCKPIT/issues" target="_blank"
+                                   class="btn btn-default btn-block" role="button">
+                                    <i class="fab fa-github"></i> Create an issue
+                                </a>
+                            </div>
                         </div>
-                        <div class="panel-footer text-align-center">
-                            <div class="row no-padding">
-                                <div class="col-xs-12">
-                                    <a href="https://github.com/it-novum/openITCOCKPIT/issues" target="_blank"
-                                       class="btn btn-default btn-block" role="button">
-                                        <i class="fa fa-github"></i> Create an issue
-                                    </a>
-                                </div>
+                        <div class="card">
+                            <h3 class="card-header reportIssueCardChatHeader">
+                                Want to chat?
+                            </h3>
+                            <div class="card-body text-align-center">
+                                <a href="http://webchat.freenode.net/?channels=openitcockpit" target="_blank">
+                                    Join #openITCOCKPIT on freenode.
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
-
-            <div class="col-xs-12">
-                <h3> Want to chat?</h3>
-                <a href="http://webchat.freenode.net/?channels=openitcockpit" target="_blank">
-                    Join #openITCOCKPIT on freenode.
-                </a>
-            </div>
-
             </div>
         </div>
     </div>

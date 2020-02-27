@@ -47,7 +47,7 @@
             </span>
         </h1>
     </div>
-    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6 margin-top-10">
+    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
 
         <div class="pull-right">
             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
@@ -68,15 +68,15 @@
             <?php if ($this->Acl->hasPermission('view', 'documentations')): ?>
                 <div style="display: inline; position:relative;">
                     <a
-                            ui-sref="DocumentationsView({uuid:config.serviceUuid, type:'service'})"
-                            title="<?php echo __('Object documentation'); ?>"
-                            class="btn btn-default btn-sm">
-                        <i class="fa fa-book fa-lg"></i>
+                        ui-sref="DocumentationsView({uuid:config.serviceUuid, type:'service'})"
+                        title="<?php echo __('Object documentation'); ?>"
+                        class="btn btn-default btn-sm">
+                        <i class="fa fa-book fa-lg">
+                            <span ng-show="config.docuExists" class="badge bg-up badge-icon">
+                                <i class="fa fa-check"></i>
+                            </span>
+                        </i>
                     </a>
-
-                    <span ng-show="config.docuExists" class="badge bg-ok docu-badge">
-            <i class="fa fa-check"></i>
-        </span>
                 </div>
             <?php endif; ?>
 
@@ -92,7 +92,7 @@
                 <a ui-sref="ServicechecksIndex({id:config.serviceId})"
                    title="<?php echo __('Check history'); ?>"
                    class="btn btn-default btn-sm">
-                    <i class="fa fa-check-square-o fa-lg"></i>
+                    <i class="fa fa-check-square fa-lg"></i>
                 </a>
             <?php endif; ?>
 
@@ -136,23 +136,22 @@
                 </a>
             <?php endif; ?>
 
-            <div class="btn-group">
-                <a href="javascript:void(0);" class="btn btn-default btn-sm"><?php echo __('More'); ?></a>
-                <a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle btn-sm">
-                    <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-right">
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-default dropdown-toggle waves-effect waves-themed" type="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <?php echo __('More actions'); ?>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-start"
+                     style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
                     <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                        <li>
-                            <a ui-sref="ServicesServiceList({id: config.serviceId})">
-                                <i class="fa fa-list"></i>
-                                <?php echo __('Service list'); ?>
-                            </a>
-                        </li>
+                        <a class="dropdown-item"
+                           ui-sref="ServicesServiceList({id: config.serviceId})">
+                            <i class="fa fa-list"></i>
+                            <?php echo __('Service list'); ?>
+                        </a>
                     <?php endif; ?>
-                </ul>
+                </div>
             </div>
-
         </div>
     </div>
 </div>

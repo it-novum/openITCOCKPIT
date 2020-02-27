@@ -11,8 +11,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use EventcorrelationModule\Model\Table\EventcorrelationsTable;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
-use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
 
@@ -208,7 +206,7 @@ class TenantsTable extends Table {
             }
         }
 
-        if(!empty($hostIds) || !empty($serviceIds)){
+        if (!empty($hostIds) || !empty($serviceIds)) {
             return false;
         }
 
@@ -287,5 +285,27 @@ class TenantsTable extends Table {
             )
             , 'list', 'container_id'
         );
+    }
+
+    /**
+     * @param $containerId
+     * @param $MY_RIGHTS
+     * @return bool|mixed
+     */
+    public function getTenantIdByContainerId($containerId, $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->where([
+                'Tenants.container_id' => $containerId
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
+        $result = $query->first();
+        if (empty($result)) {
+            return false;
+        }
+        return $result->get('id');
     }
 }

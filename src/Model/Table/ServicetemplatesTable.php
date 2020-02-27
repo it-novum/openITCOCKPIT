@@ -1235,18 +1235,35 @@ class ServicetemplatesTable extends Table {
                 'Servicetemplates.id' => $id
             ])
             ->contain([
-                'Servicetemplatecommandargumentvalues' => [
+                'Servicetemplatecommandargumentvalues'      => [
                     'Commandarguments'
                 ],
-                'CheckCommand'                         => [
+                'Servicetemplateeventcommandargumentvalues' => [
                     'Commandarguments'
-                ]
+                ],
+                'CheckCommand'                              => [
+                    'Commandarguments'
+                ],
+                'Contacts',
+                'Contactgroups',
+                'Servicegroups',
+                'Customvariables'
             ])
             ->disableHydration()
             ->first();
 
         $servicetemplate = $query;
         unset($servicetemplate['created'], $servicetemplate['modified']);
+
+        $servicetemplate['servicegroups'] = [
+            '_ids' => Hash::extract($query, 'servicegroups.{n}.id')
+        ];
+        $servicetemplate['contacts'] = [
+            '_ids' => Hash::extract($query, 'contacts.{n}.id')
+        ];
+        $servicetemplate['contactgroups'] = [
+            '_ids' => Hash::extract($query, 'contactgroups.{n}.id')
+        ];
 
         // Merge new command arguments that are missing in the service template to service template command arguments
         // and remove old command arguments that don't exists in the command anymore.
@@ -1273,13 +1290,15 @@ class ServicetemplatesTable extends Table {
             }
         }
 
-        $servicetemplate['servicetemplatecommandargumentvalues'] = $filteredCommandArgs;
+        $servicetemplate['serviceeventcommandargumentvalues'] = $servicetemplate['servicetemplateeventcommandargumentvalues'];
+        unset($servicetemplate['servicetemplateeventcommandargumentvalues']);
+        $servicetemplate['servicecommandargumentvalues'] = $filteredCommandArgs;
 
-        foreach ($servicetemplate['servicetemplatecommandargumentvalues'] as $i => $servicecommandargumentvalues) {
-            unset($servicetemplate['servicetemplatecommandargumentvalues'][$i]['id']);
+        foreach ($servicetemplate['servicecommandargumentvalues'] as $i => $servicecommandargumentvalues) {
+            unset($servicetemplate['servicecommandargumentvalues'][$i]['id']);
 
-            if (isset($servicetemplate['servicetemplatecommandargumentvalues'][$i]['servicetemplate_id'])) {
-                unset($servicetemplate['servicetemplatecommandargumentvalues'][$i]['servicetemplate_id']);
+            if (isset($servicetemplate['servicecommandargumentvalues'][$i]['servicetemplate_id'])) {
+                unset($servicetemplate['servicecommandargumentvalues'][$i]['servicetemplate_id']);
             }
         }
 

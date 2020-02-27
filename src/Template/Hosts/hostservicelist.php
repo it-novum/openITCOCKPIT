@@ -1,54 +1,36 @@
-<?php
-// Copyright (C) <2015>  <it-novum GmbH>
-//
-// This file is dual licensed
-//
-// 1.
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, version 3 of the License.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// 2.
-//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//  License agreement and license key will be shipped with the order
-//  confirmation.
-?>
-
-<table class="table table-striped table-hover table-bordered smart-form">
+<table class="table table-striped m-0 table-bordered table-hover table-sm">
+    <thead>
     <tr>
-        <td colspan="6">
-            <div class="form-group smart-form">
-                <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
-                    <input type="text" class="input-sm"
+        <td colspan="8" class="no-padding">
+            <div class="form-group">
+                <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa fa-cog"></i></span>
+                    </div>
+                    <input type="text" class="form-control form-control-sm"
                            placeholder="<?php echo __('Filter by service name'); ?>"
-                           ng-model="filter.Service.name"
+                           ng-model="filter.servicename"
                            ng-model-options="{debounce: 500}">
-                </label>
+                </div>
             </div>
         </td>
-        <td colspan="6">
-            <div ng-repeat="(servicestate, servicecount) in host.ServicestatusSummary.state track by $index"
-                 class="col-md-3 bg-{{servicestate}}">
-                <div class="padding-5 pull-right">
-                    <label class="checkbox small-checkbox-label txt-color-white">
-                        <input type="checkbox" name="checkbox" checked="checked"
+        <td colspan="6" class="no-padding">
+            <div class="row no-margin" style="height:32px; ">
+                <div class="col-lg-3 bg-{{state}}" style="padding-top: 7px;"
+                     ng-repeat="(state, stateCount) in host.ServicestatusSummary.state track by $index">
+                    <div class="custom-control custom-checkbox txt-color-white float-right">
+                        <input type="checkbox"
+                               id="statusFilter{{state}}"
+                               class="custom-control-input"
+                               name="checkbox"
+                               checked="checked"
                                ng-model-options="{debounce: 500}"
                                ng-model="servicesStateFilter[$index]"
                                ng-value="$index">
-                        <i class="checkbox-{{servicestate}}"></i>
-                        <strong>
-                            {{servicecount}} {{servicestate}}
-                        </strong>
-                    </label>
+                        <label
+                            class="custom-control-label custom-control-label-{{state}} no-margin"
+                            for="statusFilter{{state}}">{{stateCount}} {{state}}</label>
+                    </div>
                 </div>
             </div>
         </td>
@@ -57,66 +39,69 @@
         <th>
             <?php echo __('Status'); ?>
         </th>
-        <th class="no-sort text-center">
-            <i class="fa fa fa-area-chart fa-lg" title="<?php echo __('Grapher'); ?>"></i>
+        <th class="width-20 text-center">
+            <i class="fa fa-user fa-lg" title="is acknowledged"></i>
         </th>
-        <th class="no-sort text-center">
-            <i class="fa fa-user fa-lg" title="<?php echo __('is acknowledged'); ?>"></i>
+        <th class="width-20 text-center">
+            <i class="fa fa-power-off fa-lg" title="is in downtime"></i>
         </th>
-
-        <th class="no-sort text-center">
-            <i class="fa fa-power-off fa-lg"
-               title="<?php echo __('is in downtime'); ?>"></i>
+        <th class="width-20 text-center">
+            <i class="fa fa fa-area-chart fa-lg" title="Grapher"></i>
         </th>
-        <th class="no-sort text-center">
-            <strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
+        <th class="width-20 text-center">
+            <strong title="<?php echo __('Passively transferred service'); ?>">
+                <?php echo __('P'); ?>
+            </strong>
         </th>
-
-        <th class="no-sort">
+        <th>
             <?php echo __('Service name'); ?>
         </th>
-
-
-        <th class="no-sort tableStatewidth">
+        <th>
             <?php echo __('State since'); ?>
         </th>
-
-        <th class="no-sort tableStatewidth">
+        <th>
             <?php echo __('Last check'); ?>
         </th>
-
-        <th class="no-sort tableStatewidth">
+        <th>
             <?php echo __('Next check'); ?>
         </th>
-
-        <th class="no-sort">
-            <?php echo __('Service output'); ?>
+        <th class="width-240">
+            <?php echo __('Output'); ?>
         </th>
-
-        <th class="no-sort text-center editItemWidth">
-            <i class="fa fa-gear fa-lg"></i>
-        </th>
+        <th></th>
     </tr>
-    <tr ng-show="services.length == 0">
-        <td colspan="11" class="text-center txt-color-red italic">
-            <?php echo __('No entries match the selection'); ?>
-        </td>
-    </tr>
+    </thead>
+    <tbody>
     <tr ng-repeat="service in services" ng-show="servicesStateFilter[service.Servicestatus.currentState]">
         <td class="text-center">
             <servicestatusicon service="service"></servicestatusicon>
         </td>
         <td class="text-center">
+            <i class="fa fa-user"
+               ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+               ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
+
+            <i class="fa fa-user"
+               ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+               ng-if="service.Servicestatus.acknowledgement_type == 2"
+               title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+        </td>
+        <td class="text-center">
+            <i class="fa fa-power-off"
+               ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
+        </td>
+        <td class="text-center">
             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                <a ui-sref="ServicesBrowser({id:service.Service.id})" class="txt-color-blueDark">
-                    <i class="fa fa-lg fa-area-chart"
+                <a ui-sref="ServicesBrowser({id: service.Service.id})"
+                   class="txt-color-blueDark">
+                    <i class="fa fa-area-chart"
                        ng-mouseenter="mouseenter($event, service.Host, service)"
                        ng-mouseleave="mouseleave()"
                        ng-if="service.Service.has_graph">
                     </i>
                 </a>
             <?php else: ?>
-                <i class="fa fa-lg fa-area-chart"
+                <i class="fa fa-area-chart"
                    ng-mouseenter="mouseenter($event, service.Host, service)"
                    ng-mouseleave="mouseleave()"
                    ng-if="service.Service.has_graph">
@@ -124,102 +109,72 @@
             <?php endif; ?>
         </td>
         <td class="text-center">
-            <i class="fa fa-lg fa-user"
-               ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-               ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
-
-            <i class="fa fa-lg fa-user-o"
-               ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-               ng-if="service.Servicestatus.acknowledgement_type == 2"
-               title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
-        </td>
-
-        <td class="text-center">
-            <i class="fa fa-lg fa-power-off"
-               ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
-        </td>
-
-        <td class="text-center">
             <strong title="<?php echo __('Passively transferred service'); ?>"
-                    ng-show="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                    ng-show="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
                 P
             </strong>
         </td>
-
         <td>
             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                <a ui-sref="ServicesBrowser({id:service.Service.id})">
+                <a ui-sref="ServicesBrowser({id: service.Service.id})">
                     {{ service.Service.servicename }}
                 </a>
             <?php else: ?>
                 {{ service.Service.servicename }}
             <?php endif; ?>
         </td>
-
         <td>
             {{ service.Servicestatus.last_state_change }}
         </td>
-
         <td>
-            <span ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
-            <span ng-if="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
-            <?php echo __('n/a'); ?>
-        </span>
+            <span
+                ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
+            <span
+                ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
+                <?php echo __('n/a'); ?>
+            </span>
         </td>
-
         <td>
-            <span ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
-            <span ng-if="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
-            <?php echo __('n/a'); ?>
-        </span>
+            <span
+                ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
+            <span
+                ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
+                <?php echo __('n/a'); ?>
+            </span>
         </td>
-
         <td>
             {{ service.Servicestatus.output }}
         </td>
-
         <td class="width-50">
-            <div class="btn-group">
+            <div class="btn-group btn-group-xs" role="group">
                 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                     <a ui-sref="ServicesEdit({id: service.Service.id})"
                        ng-if="service.Service.allow_edit"
-                       class="btn btn-default">
-                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                       class="btn btn-default btn-lower-padding">
+                        <i class="fa fa-cog"></i>
                     </a>
                 <?php else: ?>
-                    <a href="javascript:void(0);" class="btn btn-default">
-                        &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                    <a href="javascript:void(0);"
+                       class="btn btn-default btn-lower-padding">
+                        <i class="fa fa-cog"></i></a>
                 <?php endif; ?>
-                <a href="javascript:void(0);" data-toggle="dropdown"
-                   class="btn btn-default dropdown-toggle"><span
-                        class="caret"></span></a>
-                <ul class="dropdown-menu pull-right" id="menuHack-{{service.Service.uuid}}">
+                <button type="button"
+                        class="btn btn-default dropdown-toggle btn-lower-padding"
+                        data-toggle="dropdown">
+                    <i class="caret"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right">
                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                        <li ng-if="service.Service.allow_edit">
-                            <a ui-sref="ServicesEdit({id: service.Service.id})">
-                                <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
-                            </a>
-                        </li>
+                        <a ui-sref="ServicesEdit({id: service.Service.id})"
+                           ng-if="service.Service.allow_edit"
+                           class="dropdown-item">
+                            <i class="fa fa-cog"></i>
+                            <?php echo __('Edit'); ?>
+                        </a>
                     <?php endif; ?>
-                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                        <li ng-if="service.Service.allow_edit">
-                            <?php
-                            /**
-                             * @todo AdditionalLinks
-                             */
-
-                            /*
-                            echo $this->AdditionalLinks->renderAsListItems(
-                            $additionalLinksList,
-                            '{{service.Service.id}}',
-                            [],
-                            true
-                            );*/
-                            ?>
-                        </li>
-                    <?php endif; ?>
-                </ul>
+                </div>
             </div>
         </td>
     </tr>
+    </tbody>
 </table>

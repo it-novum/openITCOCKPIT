@@ -1,3 +1,58 @@
+<div id="ApiKeyOverviewModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-key"></i>
+                    <?php echo __('API Keys Overview'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <?php echo __('Click on "Edit profile" in the top left corner.'); ?>
+                    </div>
+                    <div class="col-lg-12">
+                        <img src="/img/apikey_help/edit_profile.png" class="img-fluid" />
+                    </div>
+
+                    <div class="col-lg-12">
+                        <?php echo _('At the bottom of the page, you can find the "API Keys" section. Click on "Create new API key"'); ?>
+                    </div>
+
+                    <div class="col-lg-12">
+                        <?php
+                        echo $this->Html->image(
+                            '/img/apikey_help/create_api_key.png',
+                            ['class' => 'img-fluid']
+                        );
+                        ?>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
 <?php
 // Copyright (C) <2015>  <it-novum GmbH>
 //

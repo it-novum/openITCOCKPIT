@@ -31,39 +31,35 @@ use itnovum\openITCOCKPIT\ConfigGenerator\DbBackend;
 
 <form ng-submit="submit();" class="form-horizontal">
 
-    <div class="row">
-        <div class="form-group required"
-             ng-class="{'has-error': errors.Configfile.dbbackend}">
-            <label class="col col-md-2 control-label">
-                <?php echo __('Database backend'); ?>
-            </label>
-            <div class="col col-xs-10">
-                <select
-                        class="form-control"
-                        ng-model="post.string.dbbackend">
-                    <option value="Statusengine3"><?php echo __('Statusengine 3 - MySQL'); ?></option>
-                    <option value="Crate"><?php echo __('Statusengine 3 - CrateDB'); ?></option>
-                    <option value="Nagios"><?php echo __('Statusengine 2 / NDOUtils - MySQL'); ?></option>
-                </select>
-                <div ng-repeat="error in errors.Configfile.dbbackend">
-                    <div class="help-block text-danger">{{ error }}</div>
-                </div>
-            </div>
-            <div class="helpText text-muted col-md-offset-2 col-md-6">
-                <?php echo h($DbBackend->getHelpText('dbbackend')); ?>
-            </div>
+    <div class="form-group required" ng-class="{'has-error': errors.Configfile.dbbackend}">
+        <label class="control-label" for="dbBackend">
+            <?php echo __('Database backend'); ?>
+        </label>
+        <select
+            id="dbBackend"
+            data-placeholder="<?php echo __('Please choose'); ?>"
+            class="form-control"
+            chosen="{}"
+            ng-model="post.string.dbbackend">
+            <option value="Statusengine3"><?php echo __('Statusengine 3 - MySQL'); ?></option>
+            <option value="Crate"><?php echo __('Statusengine 3 - CrateDB'); ?></option>
+            <option value="Nagios"><?php echo __('Statusengine 2 / NDOUtils - MySQL'); ?></option>
+        </select>
+        <div ng-repeat="error in errors.Configfile.dbbackend">
+            <div class="help-block text-danger">{{ error }}</div>
+        </div>
+        <div class="help-block">
+            <?php echo h($DbBackend->getHelpText('dbbackend')); ?>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-xs-12 margin-top-10">
-            <div class="well formactions ">
-                <div class="pull-right">
-                    <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">&nbsp;
-                    <a ui-sref="ConfigurationFilesIndex" class="btn btn-default">
-                        <?php echo __('Cancel'); ?>
-                    </a>
-                </div>
+    <div class="card margin-top-10">
+        <div class="card-body">
+            <div class="float-right">
+                <button class="btn btn-primary"
+                        type="submit"><?php echo __('Save'); ?></button>
+                <a back-button fallback-state='ConfigurationFilesIndex'
+                   class="btn btn-default"><?php echo __('Cancel'); ?></a>
             </div>
         </div>
     </div>

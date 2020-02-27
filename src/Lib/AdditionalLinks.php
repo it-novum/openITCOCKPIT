@@ -131,7 +131,7 @@ class AdditionalLinks {
      */
     public function getLinksAsHtmlList(string $controller, string $action, string $position, ?string $template = null) {
         if ($template === null) {
-            $template = '<li><a ui-sref="%s" %s><i class="%s"></i> %s</a></li>';
+            $template = '<a ui-sref="%s" %s class="dropdown-item"><i class="%s"></i> %s</a>';
         }
 
         return $this->getLinksAsHtml($controller, $action, $position, $template);

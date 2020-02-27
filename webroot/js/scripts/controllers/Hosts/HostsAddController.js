@@ -74,6 +74,8 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
 
+        $scope.showRootAlert = false;
+
         var setValuesFromHosttemplate = function(){
             var fields = [
                 'description',
@@ -453,5 +455,12 @@ angular.module('openITCOCKPIT')
             LocalStorageService.setItem('HostsDnsLookUpEnabled', $scope.data.dnsLookUp);
         }, true);
 
+        $scope.$watch('post.Host.container_id', function(){
+            if($scope.post.Host.container_id == 1){
+                $scope.showRootAlert = true;
+            }else{
+                $scope.showRootAlert = false;
+            }
+        },true);
 
     });

@@ -111,7 +111,7 @@ angular.module('openITCOCKPIT')
                     var elements = $('[data-date="' + date('Y-m-d', info.event.start) + '"]');
 
                     var $editButton = $('<button>')
-                        .html('<i class="fa fa-pencil"></i>')
+                        .html('<i class="fas fa-pencil-alt"></i>')
                         .attr({
                             title: 'edit',
                             type: 'button',
@@ -129,7 +129,7 @@ angular.module('openITCOCKPIT')
                         );
 
                     var $deleteButton = $('<button>')
-                        .html('<i class="fa fa-trash-o"></i>')
+                        .html('<i class="fa fa-trash"></i>')
                         .attr({
                             title: 'delete',
                             type: 'button',
@@ -177,7 +177,7 @@ angular.module('openITCOCKPIT')
                     'aria-expanded': false,
                     'aria-haspopup': true
                 })
-                .append($('<img/>', {'class': 'flag flag-' + $scope.countryCode}))
+                .append($('<span/>', {'class': 'flag-icon flag-icon-' + $scope.countryCode}))
                 .append('<span class="caret caret-with-margin-left-5"></span>');
             $('.fc-holidays-button')
                 .parent().append(
@@ -197,8 +197,8 @@ angular.module('openITCOCKPIT')
                         $('<a/>', {
                             // 'class': 'dropdown-item'
                         }).append(
-                            $('<img/>', {
-                                'class': 'flag flag-' + key
+                            $('<span/>', {
+                                'class': 'flag-icon flag-icon-' + key
                             })
                         ).append(
                             $('<span/>', {

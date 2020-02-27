@@ -30,31 +30,31 @@
                 <?php echo __('Paginator disabled for better performance. Running in scroll mode.'); ?>
             </div>
         </div>
-        <div class="col-sm-6 text-right">
-            <div class="dataTables_paginate paging_bootstrap">
+        <div class="col-sm-6">
+            <div class="dataTables_paginate paging_bootstrap float-right">
                 <ul class="pagination">
-                    <li ng-show="scroll.hasPrevPage">
-                        <a href="javascript:void(0)" ng-click="changePage(1)">
-                            <?php echo __('First page') ?>
+                    <li ng-show="scroll.hasPrevPage" class="page-item">
+                        <a href="javascript:void(0)" ng-click="changePage(1)" class="page-link">
+                            <span aria-hidden="true"><<</span>
                         </a>
                     </li>
-                    <li ng-class="{ 'disabled': !scroll.hasPrevPage }">
-                        <a href="javascript:void(0)" ng-click="prevPage()">
-                            <?php echo __('Previous'); ?>
+                    <li ng-class="{ 'disabled': !scroll.hasPrevPage }" class="page-item">
+                        <a href="javascript:void(0)" ng-click="prevPage()" class="page-link">
+                            <span aria-hidden="true"><</span>
                         </a>
                     </li>
 
 
-                    <li class="current active">
-                        <a href="javascript:void(0)">
+                    <li class="page-item current active">
+                        <a href="javascript:void(0)" class="page-link">
                             {{scroll.current}}
                         </a>
                     </li>
 
 
-                    <li ng-class="{ 'disabled': scroll.hasNextPage === false }">
-                        <a href="javascript:void(0)" ng-click="nextPage()">
-                            <?php echo __('Next'); ?>
+                    <li ng-class="{ 'disabled': scroll.hasNextPage === false }" class="page-item">
+                        <a href="javascript:void(0)" ng-click="nextPage()" class="page-link">
+                            <span aria-hidden="true">></span>
                         </a>
                     </li>
                 </ul>

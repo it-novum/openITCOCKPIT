@@ -620,7 +620,9 @@ class ContainersTable extends Table {
             ->select([
                 'Containers.id',
                 'Containers.name',
-                'Containers.containertype_id'
+                'Containers.containertype_id',
+                'Containers.lft',
+                'Containers.rght'
             ])
             ->where([
                 'Containers.id' => $id
@@ -648,12 +650,51 @@ class ContainersTable extends Table {
             'nodes' => [],
             'edges' => []
         ];
-        $children = $this->find('children', ['for' => $containerId])
-            ->find('threaded')
-            ->toArray();
-        debug($children);
+        $query = $this->find('children', ['for' => $containerId]);
+
+        $query->select([
+            'Containers.id',
+            'Containers.parent_id',
+            'Containers.name',
+            'Containers.containertype_id',
+            'Containers.lft',
+            'Containers.rght'
+        ])
+        ->disableHydration();
+        $childrenContainers = $query->toArray();
+
+        debug($childrenContainers);
+        /**
+         * 'CT_GLOBAL'               => 1,
+         * 'CT_TENANT'               => 2,
+         * 'CT_LOCATION'             => 3,
+         * 'CT_NODE'                 => 5,
+         * 'CT_CONTACTGROUP'         => 6,
+         * 'CT_HOSTGROUP'            => 7,
+         * 'CT_SERVICEGROUP'         => 8,
+         * 'CT_SERVICETEMPLATEGROUP' => 9,
+         */
+
+        foreach ($childrenContainers as $childContainer) {
+            switch ($childContainer['containertype_id']) {
+                case CT_TENANT:
+                case CT_LOCATION:
+                case CT_NODE:
+                    break;
+                case CT_CONTACTGROUP:
+                    break;
+                case CT_HOSTGROUP:
+                    break;
+                case CT_SERVICEGROUP:
+                    break;
+                case CT_SERVICETEMPLATEGROUP:
+                    break;
+            }
+
+        }
+        debug($childrenContainers);
         die();
-        foreach ($children as $child) {
+        foreach ($childrenContainers as $child) {
             echo "<br />{$child->name} has " . ' --- ' . $child->containertype_id . ' ->>>> ' . count($child->children) . " direct children<br />";
             debug($child->children);
         }

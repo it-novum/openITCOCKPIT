@@ -312,7 +312,7 @@ class Systemsetting extends Importer {
             (int)32 => [
                 'key'      => 'FRONTEND.AUTH_METHOD',
                 'value'    => 'session',
-                'info'     => 'The authentication method that shoud be used for login',
+                'info'     => 'The authentication method that should be used for login',
                 'section'  => 'FRONTEND',
                 'created'  => '2020-01-29 09:28:17',
                 'modified' => '2020-01-29 09:28:17'
@@ -336,7 +336,7 @@ class Systemsetting extends Importer {
             (int)35 => [
                 'key'      => 'FRONTEND.LDAP.PORT',
                 'value'    => '389',
-                'info'     => 'The port where your LDAP server is listen to. Notice: If you want to use TLS the default port 389 shoud work as well! (SSL default Port is 636)',
+                'info'     => 'The port where your LDAP server is listen to. Notice: If you want to use TLS the default port 389 should work as well! (SSL default Port is 636)',
                 'section'  => 'FRONTEND',
                 'created'  => '2020-01-29 09:28:17',
                 'modified' => '2020-01-29 09:28:17'

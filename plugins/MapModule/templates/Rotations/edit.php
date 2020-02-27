@@ -23,49 +23,52 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fas fa-puzzle-piece"></i> <?php echo __('Map Module'); ?>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="RotationsIndex">
+            <i class="fa fa-retweet"></i> <?php echo __('Rotations'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-edit"></i> <?php echo __('Edit'); ?>
+    </li>
+</ol>
+
+
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-retweet fa-fw "></i>
-            <?php echo __('Map'); ?>
-            <span>>
-                <?php echo __('Rotation'); ?>
-            </span>
-            <div class="third_level"> <?php echo __('Edit'); ?></div>
-        </h1>
-    </div>
-</div>
-
-
-<confirm-delete></confirm-delete>
-
-<div class="jarviswidget" id="wid-id-0">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-retweet"></i> </span>
-        <h2><?php echo __('Edit map rotation'); ?></h2>
-        <div class="widget-toolbar" role="menu">
-            <?php if ($this->Acl->hasPermission('delete', 'rotations', 'MapModule')): ?>
-                <button type="button" class="btn btn-danger btn-xs" ng-click="confirmDelete(rotation)">
-                    <i class="fa fa-trash-o"></i>
-                    <?php echo __('Delete'); ?>
-                </button>
-            <?php endif; ?>
-            <a ui-sref="RotationsIndex" class="btn btn-default btn-xs" iconcolor="white">
-                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
-            </a>
-        </div>
-    </header>
-    <div>
-        <div class="widget-body">
-            <form ng-submit="submit();" class="form-horizontal">
-                <div class="row">
-                    <div class="form-group required" ng-class="{'has-error': errors.container_id}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Container'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Edit map rotation:'); ?>
+                    <span class="fw-300"><i>{{post.Rotation.name}}</i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <?php if ($this->Acl->hasPermission('index', 'rotations', 'MapModule')): ?>
+                        <a back-button fallback-state='RotationsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <form ng-submit="submit();" class="form-horizontal" ng-init="successMessage=
+            {objectName : '<?php echo __('Rotation'); ?>' , message: '<?php echo __('updated successfully'); ?>'}">
+                        <div class="form-group required" ng-class="{'has-error': errors.containers}">
+                            <label class="control-label" for="ContainersSelect">
+                                <?php echo __('Container'); ?>
+                            </label>
                             <select
-                                id="RotationContainer"
+                                id="ContainersSelect"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="containers"
@@ -73,17 +76,15 @@
                                 ng-model="post.Rotation.container_id"
                                 multiple>
                             </select>
-                            <div ng-repeat="error in errors.container_id">
+                            <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.name}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Rotation Name'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+                        <div class="form-group required" ng-class="{'has-error':errors.name}">
+                            <label class="control-label">
+                                <?php echo __('Rotation Name'); ?>
+                            </label>
                             <input
                                 class="form-control"
                                 type="text"
@@ -92,28 +93,28 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.interval}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Rotation interval'); ?>
-                        </label>
-                        <div class="col col-xs-10">
-                            <input class="form-control" type="number" ng-model="post.Rotation.interval" min="10"
-                                   step="5">
+                        <div class="form-group required" ng-class="{'has-error':errors.interval}">
+                            <label class="control-label">
+                                <?php echo __('Rotation interval'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="number"
+                                ng-model="post.Rotation.interval"
+                                min="10"
+                                step="5">
                             <div ng-repeat="error in errors.interval">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.Map}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Maps'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+                        <div class="form-group required" ng-class="{'has-error': errors.maps}">
+                            <label class="control-label" for="MapsSelect">
+                                <?php echo __('Maps'); ?>
+                            </label>
                             <select
-                                id="RotationMaps"
+                                id="MapsSelect"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="maps"
@@ -121,22 +122,25 @@
                                 ng-model="post.Rotation.Map"
                                 multiple>
                             </select>
-                            <div ng-repeat="error in errors.Map">
+                            <div ng-repeat="error in errors.maps">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="col-xs-12 margin-top-10">
-                        <div class="well formactions ">
-                            <div class="pull-right">
-                                <input class="btn btn-primary" type="submit" value="<?= __('Save') ?>">&nbsp;
-                                <a ui-sref="RotationsIndex" class="btn btn-default">Cancel</a>
+                        <div class="card margin-top-10">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <button class="btn btn-primary" type="submit">
+                                        <?php echo __('Update map rotation'); ?>
+                                    </button>
+                                    <a back-button fallback-state='RotationsIndex' class="btn btn-default">
+                                        <?php echo __('Cancel'); ?>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

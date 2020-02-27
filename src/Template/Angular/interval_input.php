@@ -86,28 +86,29 @@ $interval = [
 ];
 ?>
 
-
-<div class="col-xs-12 col-lg-7">
-    <div class="btn-group">
-        <?php foreach ($interval as $intervalArray): ?>
-            <button
+<div class="row">
+    <div class="col-xs-12 col-lg-6">
+        <div class="btn-group flex-wrap">
+            <?php foreach ($interval as $intervalArray): ?>
+                <button
                     type="button"
                     class="btn btn-default"
                     title="<?php echo h($intervalArray['long']); ?>"
                     ng-click="changeInterval(<?php echo h($intervalArray['interval']); ?>)"
                     ng-class="{'active': interval == <?php echo h($intervalArray['interval']); ?>}" )>
-                <?php echo h($intervalArray['short']); ?>
-            </button>
-        <?php endforeach; ?>
+                    <?php echo h($intervalArray['short']); ?>
+                </button>
+            <?php endforeach; ?>
+        </div>
     </div>
-</div>
-<div class="col-xs-12 col-lg-3">
-    <input
+    <div class="col-xs-12 col-lg-6">
+        <input
             class="form-control"
             type="number"
             placeholder="<?php echo __('Interval in seconds'); ?>"
             ng-model="interval">
-    <div class="help-block margin-bottom-0">
-        <human-time-directive seconds="interval"></human-time-directive>
+        <div class="help-block margin-bottom-0">
+            <human-time-directive seconds="interval"></human-time-directive>
+        </div>
     </div>
 </div>

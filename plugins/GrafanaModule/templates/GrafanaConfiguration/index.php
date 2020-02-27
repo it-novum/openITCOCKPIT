@@ -1,38 +1,64 @@
 <?php
 // Copyright (C) <2015>  <it-novum GmbH>
 //
-// This file is licensed under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-// The license agreement and license key were sent with the order confirmation.
-?>
-<div class="alert auto-hide alert-success" style="display:none;"
-     id="flashMessage"></div>
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-gears fa-fw "></i>
-            <?php echo __('Grafana'); ?>
-            <span>>
-                <?php echo __('Configuration'); ?>
-            </span>
-            <div class="third_level"> <?php echo __('Overview'); ?></div>
-        </h1>
-    </div>
-</div>
+// This file is dual licensed
+//
+// 1.
+//	This program is free software: you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, version 3 of the License.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
-<div class="jarviswidget">
-    <header>
-        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Edit configuration'); ?></h2>
-    </header>
-    <div>
-        <div class="widget-body">
-            <form ng-submit="submit();" class="form-horizontal">
-                <div class="row">
-                    <div class="form-group required" ng-class="{'has-error': errors.api_url}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Grafana URL'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+// 2.
+//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	License agreement and license key will be shipped with the order
+//	confirmation.
+?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fas fa-puzzle-piece"></i> <?php echo __('Grafana Module'); ?>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="GrafanaConfigurationIndex">
+            <i class="fa fa-gears"></i> <?php echo __('Configuration'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-edit"></i> <?php echo __('Edit'); ?>
+    </li>
+</ol>
+
+
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Grafana'); ?>
+                    <span class="fw-300"><i><?php echo __('Configuration'); ?></i></span>
+                </h2>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <form ng-submit="submit();" class="form-horizontal">
+                        <div class="form-group required" ng-class="{'has-error':errors.api_url}">
+                            <label class="control-label">
+                                <?php echo __('Grafana URL'); ?>
+                            </label>
                             <input
                                 class="form-control"
                                 type="text"
@@ -42,13 +68,11 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.api_key}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Grafana API Key'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+                        <div class="form-group required" ng-class="{'has-error':errors.api_key}">
+                            <label class="control-label">
+                                <?php echo __('Grafana API Key'); ?>
+                            </label>
                             <input
                                 class="form-control"
                                 type="text"
@@ -58,14 +82,11 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group required"
-                         ng-class="{'has-error': errors.graphite_prefix}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Grafana Prefix'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+                        <div class="form-group required" ng-class="{'has-error':errors.graphite_prefix}">
+                            <label class="control-label">
+                                <?php echo __('Grafana Prefix'); ?>
+                            </label>
                             <input
                                 class="form-control"
                                 type="text"
@@ -75,81 +96,71 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label class="col col-md-2 control-label" for="enableHttps">
-                            <?php echo __('Connect via HTTPS'); ?>
-                        </label>
+                        <div class="form-group" ng-class="{'has-error': errors.use_https}">
+                            <div class="custom-control custom-checkbox  margin-bottom-10"
+                                 ng-class="{'has-error': errors.use_https}">
 
-
-                        <div class="col-xs-10 smart-form">
-                            <label class="checkbox small-checkbox-label no-required">
-                                <input type="checkbox" name="checkbox"
+                                <input type="checkbox"
+                                       class="custom-control-input"
                                        id="enableHttps"
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        ng-model="post.use_https">
-                                <i class="checkbox-primary"></i>
-                            </label>
+                                <label class="custom-control-label" for="enableHttps">
+                                    <?php echo __('Connect via HTTPS'); ?>
+                                </label>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label class="col col-md-2 control-label" for="use_proxy">
-                            <?php echo __('Use Proxy'); ?>
-                        </label>
+                        <div class="form-group" ng-class="{'has-error': errors.use_proxy}">
+                            <div class="custom-control custom-checkbox  margin-bottom-10"
+                                 ng-class="{'has-error': errors.use_proxy}">
 
-
-                        <div class="col-xs-10 smart-form">
-                            <label class="checkbox small-checkbox-label no-required">
-                                <input type="checkbox" name="checkbox"
+                                <input type="checkbox"
+                                       class="custom-control-input"
                                        id="use_proxy"
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        ng-model="post.use_proxy">
-                                <i class="checkbox-primary"></i>
-                            </label>
-                            <div class="help-block">
-                                <?php
-                                if ($this->Acl->hasPermission('index', 'proxy', '')):
-                                    echo __('Determine if the <a ui-sref="ProxyIndex">configured proxy</a> shoud be used.');
-                                else:
-                                    echo __('Determine if the configured proxy shoud be used.');
-                                endif;
-                                ?>
+                                <label class="custom-control-label" for="use_proxy">
+                                    <?php echo __('Use Proxy'); ?>
+                                </label>
+                                <div class="help-block">
+                                    <?php
+                                    if ($this->Acl->hasPermission('index', 'proxy', '')):
+                                        echo __('Determine if the <a ui-sref="ProxyIndex">configured proxy</a> should be used.');
+                                    else:
+                                        echo __('Determine if the configured proxy should be used.');
+                                    endif;
+                                    ?>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label class="col col-md-2 control-label" for="ignore_ssl_certificate">
-                            <?php echo __('Ignore SSL certificate'); ?>
-                        </label>
+                        <div class="form-group" ng-class="{'has-error': errors.ignore_ssl_certificate}">
+                            <div class="custom-control custom-checkbox  margin-bottom-10"
+                                 ng-class="{'has-error': errors.ignore_ssl_certificate}">
 
-
-                        <div class="col-xs-10 smart-form">
-                            <label class="checkbox small-checkbox-label no-required">
-                                <input type="checkbox" name="checkbox"
+                                <input type="checkbox"
+                                       class="custom-control-input"
                                        id="ignore_ssl_certificate"
                                        ng-true-value="1"
                                        ng-false-value="0"
                                        ng-model="post.ignore_ssl_certificate">
-                                <i class="checkbox-primary"></i>
-                            </label>
-                            <div class="help-block">
-
-                                <?php echo __('Disable certificate validation to allow usage of self-signed certificates.'); ?>
+                                <label class="custom-control-label" for="ignore_ssl_certificate">
+                                    <?php echo __('Ignore SSL certificate'); ?>
+                                </label>
+                                <div class="help-block">
+                                    <?php echo __('Disable certificate validation to allow usage of self-signed certificates.'); ?>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group required"
-                         ng-class="{'has-error': errors.dashboard_style}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Dashboard Style'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+                        <div class="form-group required" ng-class="{'has-error': errors.dashboard_style}">
+                            <label class="control-label" for="dashboard_style">
+                                <?php echo __('Dashboard Style'); ?>
+                            </label>
                             <select
                                 id="dashboard_style"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
@@ -163,14 +174,13 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group" ng-class="{'has-error': errors.Hostgroup}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Hostgroups'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+                        <div class="form-group required" ng-class="{'has-error': errors.Hostgroup}">
+                            <label class="control-label" for="hostgroups">
+                                <?php echo __('Hostgroups'); ?>
+                            </label>
                             <select
+                                id="hostgroups"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="hostgroups"
@@ -178,22 +188,20 @@
                                 ng-model="post.Hostgroup"
                                 multiple>
                             </select>
-                            <div class="help-block">
-                                <?= __('Only generate dashboards for hosts in the selected host groups. If empty the system will generate a dashboard for all hosts.'); ?>
-                            </div>
                             <div ng-repeat="error in errors.Hostgroup">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                            <div class="help-block">
+                                <?= __('Only generate dashboards for hosts in the selected host groups. If empty the system will generate a dashboard for all hosts.'); ?>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-group"
-                         ng-class="{'has-error': errors.Hostgroup_excluded}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Hostgroups (excluded)'); ?>
-                        </label>
-                        <div class="col col-xs-10">
+                        <div class="form-group required" ng-class="{'has-error': errors.Hostgroup_excluded}">
+                            <label class="control-label" for="hostgroupsExcluded">
+                                <?php echo __('Hostgroups (excluded)'); ?>
+                            </label>
                             <select
+                                id="hostgroupsExcluded"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="hostgroups_excluded"
@@ -201,41 +209,39 @@
                                 ng-model="post.Hostgroup_excluded"
                                 multiple>
                             </select>
-                            <div class="help-block">
-                                <?= __('Do not generate dashboards for hosts in the selected host groups.'); ?>
-                            </div>
                             <div ng-repeat="error in errors.Hostgroup_excluded">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="alert alert-danger alert-block" ng-show="hasError">
-                        <h4 class="alert-heading">{{ grafanaErrors.status }} - {{ grafanaErrors.statusText }}</h4>
-                        {{ grafanaErrors.message }}
-                    </div>
-
-                    <div class="alert alert-success" ng-show="hasError === false">
-                        <i class="fa-fw fa fa-check"></i>
-                        <?php echo __('Connection established successfully.'); ?>
-                    </div>
-
-                    <div class="col-xs-12 margin-top-10">
-                        <div class="well formactions ">
-                            <div class="pull-right">
-                                <?php if ($this->Acl->hasPermission('testGrafanaConnection', 'GrafanaConfiguration', 'GrafanaModule')): ?>
-                                    <button type="button"
-                                            class="btn text-center btn-primary"
-                                            ng-click="checkGrafanaConnection()">
-                                        <?php echo __('Check Grafana Connection'); ?>
-                                    </button>
-                                <?php endif; ?>
-                                <input class="btn btn-primary" type="submit" value="<?= __('Save') ?>">&nbsp;
+                            <div class="help-block">
+                                <?= __('Only generate dashboards for hosts in the selected host groups. If empty the system will generate a dashboard for all hosts.'); ?>
                             </div>
                         </div>
-                    </div>
+
+                        <div class="alert alert-danger alert-block" ng-show="hasError">
+                            <h4 class="alert-heading">{{ grafanaErrors.status }} - {{ grafanaErrors.statusText }}</h4>
+                            {{ grafanaErrors.message }}
+                        </div>
+
+                        <div class="alert alert-success" ng-show="hasError === false">
+                            <i class="fa-fw fa fa-check"></i>
+                            <?php echo __('Connection established successfully.'); ?>
+                        </div>
+
+                        <div class="card margin-top-10">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <?php if ($this->Acl->hasPermission('testGrafanaConnection', 'GrafanaConfiguration', 'GrafanaModule')): ?>
+                                        <button class="btn btn-primary" ng-click="checkGrafanaConnection()">
+                                            <?php echo __('Check Grafana Connection'); ?>
+                                        </button>
+                                    <?php endif; ?>
+                                    <input class="btn btn-primary" type="submit" value="<?= __('Save') ?>">&nbsp;
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

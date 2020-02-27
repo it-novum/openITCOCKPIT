@@ -1,0 +1,793 @@
+{
+	"version": 4,
+	"lists": [
+		{
+			"title": "Application Intel",
+			"icon": "fal fa-info-circle",
+			"items": [
+				{
+					"title": "Analytics Dashboard",
+					"showOnSeed": false,
+					"href": "intel_analytics_dashboard.html"
+				},
+				{
+					"title": "Marketing Dashboard",
+					"showOnSeed": false,
+					"href": "intel_marketing_dashboard.html"
+				},
+				{
+					"title": "Introduction",
+					"href": "intel_introduction.html"
+				},
+				{
+					"title": "Privacy",
+					"href": "intel_privacy.html"
+				},
+				{
+					"title": "Build Notes",
+					"showOnSeed": false,
+					"href": "intel_build_notes.html",
+					"text": "Build Notes",
+					"span": {
+						"text": "v{{version}}"
+					}
+				}
+			]
+		},
+		{
+			"title": "Theme Settings",
+			"icon": "fal fa-cog",
+			"items": [
+				{
+					"title": "How it works",
+					"href": "settings_how_it_works.html"
+				},
+				{
+					"title": "Layout Options",
+					"href": "settings_layout_options.html"
+				},
+				{
+					"title": "Skin Options",
+					"href": "settings_skin_options.html"
+				},
+				{
+					"title": "Saving to Database",
+					"href": "settings_saving_db.html"
+				}
+			]
+		},
+		{
+			"title": "Package Info",
+			"icon": "fal fa-tag",
+			"items": [
+				{
+					"title": "Documentation",
+					"href": "info_app_docs.html",
+					"showOnSeed": false
+				},
+				{
+					"title": "Product Licensing",
+					"href": "info_app_licensing.html"
+				},
+				{
+					"title": "Different Flavors",
+					"href": "info_app_flavors.html",
+					"showOnSeed": false
+				}
+			]
+		},
+		{
+			"title": "Tools & Components"
+		},
+		{
+			"title": "UI Components",
+			"icon": "fal fa-window",
+			"items": [
+				{
+					"title": "Alerts",
+					"href": "ui_alerts.html"
+				},
+				{
+					"title": "Accordions",
+					"href": "ui_accordion.html"
+				},
+				{
+					"title": "Badges",
+					"href": "ui_badges.html"
+				},
+				{
+					"title": "Breadcrumbs",
+					"href": "ui_breadcrumbs.html"
+				},
+				{
+					"title": "Buttons",
+					"href": "ui_buttons.html"
+				},
+				{
+					"title": "Button Group",
+					"href": "ui_button_group.html"
+				},
+				{
+					"title": "Cards",
+					"href": "ui_cards.html"
+				},
+				{
+					"title": "Carousel",
+					"href": "ui_carousel.html"
+				},
+				{
+					"title": "Collapse",
+					"href": "ui_collapse.html"
+				},
+				{
+					"title": "Dropdowns",
+					"href": "ui_dropdowns.html"
+				},
+				{
+					"title": "List Filter",
+					"href": "ui_list_filter.html"
+				},
+				{
+					"title": "Modal",
+					"href": "ui_modal.html"
+				},
+				{
+					"title": "Navbars",
+					"href": "ui_navbars.html"
+				},
+				{
+					"title": "Panels",
+					"href": "ui_panels.html"
+				},
+				{
+					"title": "Pagination",
+					"href": "ui_pagination.html"
+				},
+				{
+					"title": "Popovers",
+					"href": "ui_popovers.html"
+				},
+				{
+					"title": "Progress Bars",
+					"href": "ui_progress_bars.html"
+				},
+				{
+					"title": "ScrollSpy",
+					"href": "ui_scrollspy.html"
+				},
+				{
+					"title": "Side Panel",
+					"href": "ui_side_panel.html"
+				},
+				{
+					"title": "Spinners",
+					"href": "ui_spinners.html"
+				},
+				{
+					"title": "Tabs & Pills",
+					"href": "ui_tabs_pills.html"
+				},
+				{
+					"title": "Toasts",
+					"href": "ui_toasts.html"
+				},
+				{
+					"title": "Tooltips",
+					"href": "ui_tooltips.html"
+				}
+			]
+		},
+		{
+			"title": "Utilities",
+			"icon": "fal fa-bolt",
+			"items": [
+				{
+					"title": "Borders",
+					"href": "utilities_borders.html"
+				},
+				{
+					"title": "Clearfix",
+					"href": "utilities_clearfix.html"
+				},
+				{
+					"title": "Color Pallet",
+					"href": "utilities_color_pallet.html"
+				},
+				{
+					"title": "Display Property",
+					"href": "utilities_display_property.html"
+				},
+				{
+					"title": "Fonts",
+					"href": "utilities_fonts.html"
+				},
+				{
+					"title": "Flexbox",
+					"href": "utilities_flexbox.html"
+				},
+				{
+					"title": "Helpers",
+					"href": "utilities_helpers.html"
+				},
+				{
+					"title": "Position",
+					"href": "utilities_position.html"
+				},
+				{
+					"title": "Responsive Grid",
+					"href": "utilities_responsive_grid.html"
+				},
+				{
+					"title": "Sizing",
+					"href": "utilities_sizing.html"
+				},
+				{
+					"title": "Spacing",
+					"href": "utilities_spacing.html"
+				},
+				{
+					"title": "Typography",
+					"tags": "fonts headings bold lead colors sizes link text states list styles truncate alignment",
+					"href": "utilities_typography.html"
+				},
+				{
+					"title": "Menu child",
+					"href": "javascript:void(0);",
+					"items": [
+						{
+							"title": "Sublevel Item",
+							"href": "javascript:void(0);"
+						},
+						{
+							"title": "Another Item",
+							"href": "javascript:void(0);"
+						}
+					]
+				},
+				{
+					"title": "Disabled item",
+					"disabled": true,
+					"href": "javascript:void(0);"
+				}
+			]
+		},
+		{
+			"title": "Font Icons",
+			"icon": "fal fa-map-marker-alt",
+			"span": {
+				"class": "dl-ref bg-primary-500 hidden-nav-function-minify hidden-nav-function-top",
+				"text": "2,500+"
+			},
+			"items": [
+				{
+					"title": "FontAwesome",
+					"text": "FontAwesome Pro",
+					"href": "javascript:void(0);",
+					"items": [
+						{
+							"title": "Light",
+							"href": "icons_fontawesome_light.html"
+						},
+						{
+							"title": "Regular",
+							"href": "icons_fontawesome_regular.html"
+						},
+						{
+							"title": "Solid",
+							"href": "icons_fontawesome_solid.html"
+						},
+						{
+							"title": "Brand",
+							"href": "icons_fontawesome_brand.html"
+						}
+					]
+				},
+				{
+					"title": "NextGen Icons",
+					"href": "javascript:void(0);",
+					"items": [
+						{
+							"title": "General",
+							"href": "icons_nextgen_general.html"
+						},
+						{
+							"title": "Base",
+							"href": "icons_nextgen_base.html"
+						}
+					]
+				},
+				{
+					"title": "Stack Icons",
+					"href": "javascript:void(0);",
+					"items": [
+						{
+							"title": "Showcase",
+							"href": "icons_stack_showcase.html"
+						},
+						{
+							"title": "Generate Stack",
+							"href": "icons_stack_generate.html?layers=3"
+						}
+					]
+				}
+			]
+		},
+		{
+			"title": "Tables",
+			"icon": "fal fa-th-list",
+			"items": [
+				{
+					"title": "Basic Tables",
+					"href": "tables_basic.html"
+				},
+				{
+					"title": "Generate Table Style",
+					"href": "tables_generate_style.html"
+				}
+			]
+		},
+		{
+			"title": "Form Stuff",
+			"icon": "fal fa-edit",
+			"items": [
+				{
+					"title": "Basic Inputs",
+					"href": "form_basic_inputs.html"
+				},
+				{
+					"title": "Checkbox & Radio",
+					"href": "form_checkbox_radio.html"
+				},
+				{
+					"title": "Input Groups",
+					"href": "form_input_groups.html"
+				},
+				{
+					"title": "Validation",
+					"href": "form_validation.html"
+				}
+			]
+		},
+		{
+			"title": "Plugins & Addons"
+		},
+		{
+			"title": "Plugins",
+			"text": "Core Plugins",
+			"icon": "fal fa-shield-alt",
+			"items": [
+				{
+					"title": "Plugins FAQ",
+					"href": "plugin_faq.html"
+				},
+				{
+					"title": "Waves",
+					"href": "plugin_waves.html",
+					"span": {
+						"class": "dl-ref label bg-primary-400 ml-2",
+						"text": "9 KB"
+					}
+				},
+				{
+					"title": "PaceJS",
+					"href": "plugin_pacejs.html",
+					"span": {
+						"class": "dl-ref label bg-primary-500 ml-2",
+						"text": "13 KB"
+					}
+				},
+				{
+					"title": "SmartPanels",
+					"href": "plugin_smartpanels.html",
+					"span": {
+						"class": "dl-ref label bg-primary-600 ml-2",
+						"text": "9 KB"
+					}
+				},
+				{
+					"title": "BootBox",
+					"tags": "alert sound",
+					"href": "plugin_bootbox.html",
+					"span": {
+						"class": "dl-ref label bg-primary-600 ml-2",
+						"text": "15 KB"
+					}
+				},
+				{
+					"title": "Slimscroll",
+					"href": "plugin_slimscroll.html",
+					"span": {
+						"class": "dl-ref label bg-primary-700 ml-2",
+						"text": "5 KB"
+					}
+				},
+				{
+					"title": "Throttle",
+					"href": "plugin_throttle.html",
+					"span": {
+						"class": "dl-ref label bg-primary-700 ml-2",
+						"text": "1 KB"
+					}
+				},
+				{
+					"title": "Navigation",
+					"href": "plugin_navigation.html",
+					"span": {
+						"class": "dl-ref label bg-primary-700 ml-2",
+						"text": "2 KB"
+					}
+				},
+				{
+					"title": "i18next",
+					"href": "plugin_i18next.html",
+					"span": {
+						"class": "dl-ref label bg-primary-700 ml-2",
+						"text": "10 KB"
+					}
+				},
+				{
+					"title": "App.Core",
+					"href": "plugin_appcore.html",
+					"span": {
+						"class": "dl-ref label bg-success-700 ml-2",
+						"text": "14 KB"
+					}
+				}
+			]
+		},
+		{
+			"title": "Datatables",
+			"tags": "datagrid",
+			"showOnSeed": false,
+			"icon": "fal fa-table",
+			"span": {
+				"class": "dl-ref bg-primary-500 hidden-nav-function-minify hidden-nav-function-top",
+				"text": "235 KB"
+			},
+			"items": [
+				{
+					"title": "Basic",
+					"href": "datatables_basic.html"
+				},
+				{
+					"title": "Autofill",
+					"href": "datatables_autofill.html"
+				},
+				{
+					"title": "Buttons",
+					"href": "datatables_buttons.html"
+				},
+				{
+					"title": "Export",
+					"tags": "tables pdf excel print csv",
+					"href": "datatables_export.html"
+				},
+				{
+					"title": "ColReorder",
+					"href": "datatables_colreorder.html"
+				},
+				{
+					"title": "ColumnFilter",
+					"href": "datatables_columnfilter.html"
+				},
+				{
+					"title": "FixedColumns",
+					"href": "datatables_fixedcolumns.html"
+				},
+				{
+					"title": "FixedHeader",
+					"href": "datatables_fixedheader.html"
+				},
+				{
+					"title": "KeyTable",
+					"href": "datatables_keytable.html"
+				},
+				{
+					"title": "Responsive",
+					"href": "datatables_responsive.html"
+				},
+				{
+					"title": "Responsive Alt",
+					"href": "datatables_responsive_alt.html"
+				},
+				{
+					"title": "RowGroup",
+					"href": "datatables_rowgroup.html"
+				},
+				{
+					"title": "RowReorder",
+					"href": "datatables_rowreorder.html"
+				},
+				{
+					"title": "Scroller",
+					"href": "datatables_scroller.html"
+				},
+				{
+					"title": "Select",
+					"href": "datatables_select.html"
+				},
+				{
+					"title": "AltEditor",
+					"href": "datatables_alteditor.html"
+				}
+			]
+		},
+		{
+			"title": "Statistics",
+			"tags": "chart, graphs",
+			"showOnSeed": false,
+			"icon": "fal fa-chart-pie",
+			"items": [
+				{
+					"title": "Flot",
+					"tags": "bar pie",
+					"href": "statistics_flot.html",
+					"span": {
+						"class": "dl-ref label bg-primary-500 ml-2",
+						"text": "36 KB"
+					}
+				},
+				{
+					"title": "Chart.js",
+					"tags": "bar pie",
+					"href": "statistics_chartjs.html",
+					"span": {
+						"class": "dl-ref label bg-primary-500 ml-2",
+						"text": "205 KB"
+					}
+				},
+				{
+					"title": "Chartist.js",
+					"href": "statistics_chartist.html",
+					"span": {
+						"class": "dl-ref label bg-primary-600 ml-2",
+						"text": "39 KB"
+					}
+				},
+				{
+					"title": "C3 Charts",
+					"href": "statistics_c3.html",
+					"span": {
+						"class": "dl-ref label bg-primary-600 ml-2",
+						"text": "197 KB"
+					}
+				},
+				{
+					"title": "Peity",
+					"tags": "small",
+					"href": "statistics_peity.html",
+					"span": {
+						"class": "dl-ref label bg-primary-700 ml-2",
+						"text": "4 KB"
+					}
+				},
+				{
+					"title": "Sparkline",
+					"tags": "small tiny",
+					"href": "statistics_sparkline.html",
+					"span": {
+						"class": "dl-ref label bg-primary-700 ml-2",
+						"text": "42 KB"
+					}
+				},
+				{
+					"title": "Easy Pie Chart",
+					"href": "statistics_easypiechart.html",
+					"span": {
+						"class": "dl-ref label bg-primary-700 ml-2",
+						"text": "4 KB"
+					}
+				},
+				{
+					"title": "Dygraph",
+					"tags": "complex",
+					"href": "statistics_dygraph.html",
+					"span": {
+						"class": "dl-ref label bg-primary-700 ml-2",
+						"text": "120 KB"
+					}
+				}
+			]
+		},
+		{
+			"title": "Notifications",
+			"showOnSeed": false,
+			"icon": "fal fa-exclamation-circle",
+			"items": [
+				{
+					"title": "SweetAlert2",
+					"href": "notifications_sweetalert2.html",
+					"span": {
+						"class": "dl-ref label bg-primary-500 ml-2",
+						"text": "40 KB"
+					}
+				},
+				{
+					"title": "Toastr",
+					"href": "notifications_toastr.html",
+					"span": {
+						"class": "dl-ref label bg-primary-600 ml-2",
+						"text": "5 KB"
+					}
+				}
+			]
+		},
+		{
+			"title": "Form Plugins",
+			"showOnSeed": false,
+			"icon": "fal fa-credit-card-front",
+			"items": [
+				{
+					"title": "Color Picker",
+					"href": "form_plugins_colorpicker.html"
+				},
+				{
+					"title": "Date Picker",
+					"href": "form_plugins_datepicker.html"
+				},
+				{
+					"title": "Date Range Picker",
+					"href": "form_plugins_daterange_picker.html"
+				},
+				{
+					"title": "Dropzone",
+					"href": "form_plugins_dropzone.html"
+				},
+				{
+					"title": "Ion.RangeSlider",
+					"href": "form_plugins_ionrangeslider.html"
+				},
+				{
+					"title": "Inputmask",
+					"href": "form_plugins_inputmask.html"
+				},
+				{
+					"title": "Image Cropper",
+					"href": "form_plugin_imagecropper.html"
+				},
+				{
+					"title": "Select2",
+					"href": "form_plugin_select2.html"
+				},
+				{
+					"title": "Summernote",
+					"tags": "texteditor editor",
+					"href": "form_plugin_summernote.html"
+				}
+			]
+		},
+		{
+			"title": "Miscellaneous",
+			"showOnSeed": false,
+			"icon": "fal fa-globe",
+			"items": [
+				{
+					"title": "FullCalendar",
+					"href": "miscellaneous_fullcalendar.html"
+				},
+				{
+					"title": "Light Gallery",
+					"href": "miscellaneous_lightgallery.html",
+					"span": {
+						"class": "dl-ref label bg-primary-500 ml-2",
+						"text": "61 KB"
+					}
+				}
+			]
+		},
+		{
+			"title": "Layouts & Apps"
+		},
+		{
+			"title": "Pages",
+			"text": "Page Views",
+			"icon": "fal fa-plus-circle",
+			"items": [
+				{
+					"title": "Chat",
+					"href": "page_chat.html"
+				},
+				{
+					"title": "Contacts",
+					"href": "page_contacts.html"
+				},
+				{
+					"title": "Forum",
+					"href": "javascript:void(0);",
+					"items": [
+						{
+							"title": "List",
+							"href": "page_forum_list.html"
+						},
+						{
+							"title": "Threads",
+							"href": "page_forum_threads.html"
+						},
+						{
+							"title": "Discussion",
+							"href": "page_forum_discussion.html"
+						}
+					]
+				},
+				{
+					"title": "Inbox",
+					"href": "javascript:void(0);",
+					"items": [
+						{
+							"title": "General",
+							"href": "page_inbox_general.html"
+						},
+						{
+							"title": "Read",
+							"href": "page_inbox_read.html"
+						},
+						{
+							"title": "Write",
+							"href": "page_inbox_write.html"
+						}
+					]
+				},
+				{
+					"title": "Invoice (printable)",
+					"href": "page_invoice.html"
+				},
+				{
+					"title": "Authentication",
+					"href": "javascript:void(0);",
+					"items": [
+						{
+							"title": "Forget Password",
+							"href": "page_forget.html"
+						},
+						{
+							"title": "Locked Screen",
+							"href": "page_locked.html"
+						},
+						{
+							"title": "Login",
+							"href": "page_login.html"
+						},
+						{
+							"title": "Login Alt",
+							"href": "page_login-alt.html"
+						},
+						{
+							"title": "Register",
+							"href": "page_register.html"
+						},
+						{
+							"title": "Confirmation",
+							"href": "page_confirmation.html"
+						}
+					]
+				},
+				{
+					"title": "Error Pages",
+					"href": "javascript:void(0);",
+					"items": [
+						{
+							"title": "General Error",
+							"href": "page_error.html"
+						},
+						{
+							"title": "Server Error",
+							"href": "page_error_404.html"
+						},
+						{
+							"title": "Announced Error",
+							"href": "page_error_announced.html"
+						}
+					]
+				},
+				{
+					"title": "Profile",
+					"href": "page_profile.html"
+				},
+				{
+					"title": "Search Results",
+					"href": "page_search.html"
+				}
+			]
+		}
+	]
+}

@@ -1,20 +1,20 @@
 <div class="padding-10" style="border: 1px solid #c3c3c3;">
 
     <div class="row">
-        <div class="col-xs-1">
+        <div class="col-lg-1">
             <a href="javascript:void(0);" ng-show="useScroll" ng-click="pauseScroll()"
                title="<?php echo __('Pause scrolling'); ?>"
-               class="btn btn-default btn-xs btn-primary">
+               class="btn btn-xs btn-primary">
                 <i class="fa fa-pause"></i>
             </a>
             <a href="javascript:void(0);" ng-show="!useScroll"
                ng-click="startScroll()" title="<?php echo __('Start scrolling'); ?>"
-               class="btn btn-default btn-xs btn-primary">
+               class="btn btn-xs btn-primary">
                 <i class="fa fa-play"></i>
             </a>
         </div>
 
-        <div class="col-xs-3 height-45px">
+        <div class="col-lg-3">
             <div class="form-group form-group-slider">
                 <label class="display-inline">
                     <?php echo __('Scroll interval:'); ?>
@@ -24,142 +24,162 @@
                 </label>
 
                 <div class="slidecontainer">
-                    <input type="range" step="5000" min="5000" max="300000" class="slider"
+                    <input type="range" step="5000" min="5000" max="300000" class="slider" style="width: 100%"
                            ng-model="scroll_interval" ng-model-options="{debounce: 500}">
                 </div>
             </div>
         </div>
 
-        <div class="col-xs-8">
+        <div class="col-lg-8">
             <div class="row">
-                <div class="form-group smart-form">
-                    <div class="col-xs-12 col-md-6 col-lg-2">
-                        <label class="checkbox small-checkbox-label display-inline margin-right-5">
-                            <input type="checkbox" name="checkbox" checked="checked"
-                                   ng-model="filter.Servicestatus.current_state.ok"
-                                   ng-model-options="{debounce: 500}">
-                            <i class="checkbox-success"></i>
-                            <?php echo __('Ok'); ?>
-                        </label>
-                    </div>
-
-                    <div class="col-xs-12 col-md-6 col-lg-3">
-                        <label class="checkbox small-checkbox-label display-inline margin-right-5">
-                            <input type="checkbox" name="checkbox" checked="checked"
-                                   ng-model="filter.Servicestatus.current_state.warning"
-                                   ng-model-options="{debounce: 500}">
-                            <i class="checkbox-warning"></i>
-                            <?php echo __('Warning'); ?>
-                        </label>
-                    </div>
-
-                    <div class="col-xs-12 col-md-6 col-lg-3">
-                        <label class="checkbox small-checkbox-label display-inline margin-right-5">
-                            <input type="checkbox" name="checkbox" checked="checked"
-                                   ng-model="filter.Servicestatus.acknowledged"
-                                   ng-model-options="{debounce: 500}">
-                            <i class="checkbox-primary"></i>
-                            <?php echo __('Acknowledged'); ?>
-                        </label>
-                    </div>
-
-                    <div class="col-xs-12 col-md-6 col-lg-3">
-                        <label class="checkbox small-checkbox-label display-inline margin-right-5">
-                            <input type="checkbox" name="checkbox" checked="checked"
-                                   ng-model="filter.Servicestatus.in_downtime"
-                                   ng-model-options="{debounce: 500}">
-                            <i class="checkbox-primary"></i>
-                            <?php echo __('In Downtime'); ?>
-                        </label>
-                    </div>
-
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="ok"
+                           ng-model="filter.Servicestatus.current_state.ok"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label custom-control-label-ok" for="ok">
+                        <?php echo __('Ok'); ?>
+                    </label>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-xs-8">
-            <div class="row">
-                <div class="form-group smart-form">
-                    <div class="col-xs-12 col-md-6 col-lg-2">
-                        <label class="checkbox small-checkbox-label display-inline margin-right-5">
-                            <input type="checkbox" name="checkbox" checked="checked"
-                                   ng-model="filter.Servicestatus.current_state.critical"
-                                   ng-model-options="{debounce: 500}">
-                            <i class="checkbox-critical"></i>
-                            <?php echo __('Critical'); ?>
-                        </label>
-                    </div>
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="warning"
+                           ng-model="filter.Servicestatus.current_state.warning"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label custom-control-label-warning" for="warning">
+                        <?php echo __('Warning'); ?>
+                    </label>
+                </div>
 
-                    <div class="col-xs-12 col-md-6 col-lg-3">
-                        <label class="checkbox small-checkbox-label display-inline margin-right-5">
-                            <input type="checkbox" name="checkbox" checked="checked"
-                                   ng-model="filter.Servicestatus.current_state.unknown"
-                                   ng-model-options="{debounce: 500}">
-                            <i class="checkbox-default"></i>
-                            <?php echo __('Unknown'); ?>
-                        </label>
-                    </div>
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="critical"
+                           ng-model="filter.Servicestatus.current_state.critical"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label custom-control-label-critical" for="critical">
+                        <?php echo __('Critical'); ?>
+                    </label>
+                </div>
 
-                    <div class="col-xs-12 col-md-6 col-lg-3">
-                        <label class="checkbox small-checkbox-label display-inline margin-right-5">
-                            <input type="checkbox" name="checkbox" checked="checked"
-                                   ng-model="filter.Servicestatus.not_acknowledged"
-                                   ng-model-options="{debounce: 500}">
-                            <i class="checkbox-primary"></i>
-                            <?php echo __('Not Acknowledged'); ?>
-                        </label>
-                    </div>
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="unknown"
+                           ng-model="filter.Servicestatus.current_state.unknown"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label custom-control-label-unknown" for="unknown">
+                        <?php echo __('Unknown'); ?>
+                    </label>
+                </div>
 
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="acknowledged"
+                           ng-model="filter.Servicestatus.acknowledged"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label" for="acknowledged">
+                        <?php echo __('Acknowledged'); ?>
+                    </label>
+                </div>
 
-                    <div class="col-xs-12 col-md-6 col-lg-3">
-                        <label class="checkbox small-checkbox-label display-inline margin-right-5">
-                            <input type="checkbox" name="checkbox" checked="checked"
-                                   ng-model="filter.Servicestatus.not_in_downtime"
-                                   ng-model-options="{debounce: 500}">
-                            <i class="checkbox-primary"></i>
-                            <?php echo __('Not in Downtime'); ?>
-                        </label>
-                    </div>
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="not_acknowledged"
+                           ng-model="filter.Servicestatus.not_acknowledged"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label" for="not_acknowledged">
+                        <?php echo __('Not Acknowledged'); ?>
+                    </label>
+                </div>
+
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="in_downtime"
+                           ng-model="filter.Servicestatus.in_downtime"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label" for="in_downtime">
+                        <?php echo __('In Downtime'); ?>
+                    </label>
+                </div>
+
+                <div class="custom-control custom-checkbox custom-control-left margin-right-10">
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           ng-true-value="1"
+                           ng-false-value="0"
+                           id="not_in_downtime"
+                           ng-model="filter.Servicestatus.not_in_downtime"
+                           ng-model-options="{debounce: 500}">
+                    <label class="custom-control-label" for="not_in_downtime">
+                        <?php echo __('Not in Downtime'); ?>
+                    </label>
                 </div>
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-12 col-md-6">
-            <div class="form-group smart-form">
-                <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                    <input type="text" class="input-sm"
-                           placeholder="<?php echo __('Filter by host name'); ?>"
-                           ng-model="filter.Host.name"
-                           ng-model-options="{debounce: 500}">
-                </label>
+        <div class="col-xs-12 col-lg-6 margin-bottom-5">
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="icon-prepend fa fa-desktop"></i></span>
+                </div>
+                <input type="text" class="form-control"
+                       placeholder="<?php echo __('Filter by host name'); ?>"
+                       ng-model="filter.Host.name"
+                       ng-model-options="{debounce: 500}">
             </div>
         </div>
-        <div class="col-xs-12 col-md-6">
-            <div class="form-group smart-form">
-                <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                    <input type="text" class="input-sm"
-                           placeholder="<?php echo __('Filter by service name'); ?>"
-                           ng-model="filter.Service.name"
-                           ng-model-options="{debounce: 500}">
-                </label>
+
+        <div class="col-xs-12 col-lg-6 margin-bottom-5">
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="icon-prepend fa fa-filter"></i></span>
+                </div>
+                <input type="text" class="form-control"
+                       placeholder="<?php echo __('Filter by service name'); ?>"
+                       ng-model="filter.Service.name"
+                       ng-model-options="{debounce: 500}">
             </div>
         </div>
-        <div class="col-xs-12 col-md-6">
-            <div class="form-group smart-form">
-                <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                    <input type="text" class="input-sm"
-                           placeholder="<?php echo __('Filter by service output'); ?>"
-                           ng-model="filter.Servicestatus.output"
-                           ng-model-options="{debounce: 500}">
-                </label>
+
+
+        <div class="col-xs-12 col-lg-6 margin-bottom-5">
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="icon-prepend fa fa-filter"></i></span>
+                </div>
+                <input type="text" class="form-control"
+                       placeholder="<?php echo __('Filter by service output'); ?>"
+                       ng-model="filter.Servicestatus.output"
+                       ng-model-options="{debounce: 500}">
             </div>
         </div>
     </div>
 </div>
 
-<div class="mobile_table margin-top-10">
-    <table class="table table-striped table-hover table-bordered smart-form">
+<div class="margin-top-10">
+    <table class="table table-striped m-0 table-bordered table-hover table-sm">
         <thead>
         <tr>
             <th class="no-sort" ng-click="orderBy('Servicestatus.current_state')">
@@ -240,6 +260,11 @@
         </tr>
         </tbody>
     </table>
+    <div class="margin-top-10" ng-show="services.length == 0">
+        <div class="text-center text-danger italic">
+            <?php echo __('No entries match the selection'); ?>
+        </div>
+    </div>
 
     <scroll scroll="scroll" click-action="changepage" only-buttons="true" ng-if="scroll"></scroll>
 

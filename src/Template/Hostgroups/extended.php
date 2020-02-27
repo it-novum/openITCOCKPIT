@@ -23,432 +23,415 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-sitemap fa-fw "></i>
-            <?php echo __('Host groups'); ?>
-            <span>>
-                <?php echo __('Extended overview'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="HostgroupsIndex">
+            <i class="fas fa-server"></i> <?php echo __('Host group'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-eye"></i> <?php echo __('Extended overview'); ?>
+    </li>
+</ol>
 
 <query-handler-directive></query-handler-directive>
+<massdelete></massdelete>
+<massdeactivate></massdeactivate>
+<massactivate></massactivate>
+<reschedule-host callback="showFlashMsg"></reschedule-host>
+<disable-host-notifications callback="showFlashMsg"></disable-host-notifications>
+<enable-host-notifications callback="showFlashMsg"></enable-host-notifications>
+<acknowledge-host author="<?php echo h($username); ?>" callback="showFlashMsg"></acknowledge-host>
+<host-downtime author="<?php echo h($username); ?>" callback="showFlashMsg"></host-downtime>
+
 
 <div class="alert alert-success alert-block" ng-show="showFlashSuccess">
     <a href="#" data-dismiss="alert" class="close">×</a>
-    <h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
+    <h4 class="alert-heading"><i class="far fa-check-circle"></i> <?php echo __('Command sent successfully'); ?></h4>
     <?php echo __('Data refresh in'); ?> {{ autoRefreshCounter }} <?php echo __('seconds...'); ?>
 </div>
 
-<div class="row padding-bottom-10">
-    <div class="col col-xs-11">
-        <select
-            class="form-control"
-            chosen="hostgroups"
-            ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
-            callback="loadHostgroupsCallback"
-            ng-model="post.Hostgroup.id">
-        </select>
-    </div>
-    <div class="col col-xs-1">
-        <div class="btn-group">
-            <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
-                <a ui-sref="HostgroupsEdit({id:post.Hostgroup.id})"
-                   class="btn btn-default btn-md" ng-show="hostgroup.Hostgroup.allowEdit">&nbsp;<i
-                        class="fa fa-md fa-cog"></i>
-                </a>
-            <?php else: ?>
-                <a href="javascript:void(0);" class="btn btn-default btn-md">&nbsp;<i class="fa fa-cog"></i>&nbsp;
-                </a>
-            <?php endif; ?>
-            <a href="javascript:void(0);" data-toggle="dropdown"
-               class="btn btn-default btn-md dropdown-toggle" ng-if="hostgroup.Hosts.length > 0">
-                <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-right" ng-if="hostgroup.Hosts.length > 0">
-                <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
-                    <li ng-show="hostgroup.Hostgroup.allowEdit">
-                        <a ui-sref="HostgroupsEdit({id:post.Hostgroup.id})">
-                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    {{(hostgroup.Hostgroup.container.name) && hostgroup.Hostgroup.container.name ||
+                    '<?php echo __('Host Groups (0)'); ?>'}}
+                    <span class="fw-300"><i><?php echo __('UUID: '); ?>{{hostgroup.Hostgroup.uuid}}</i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="loadHostsWithStatus()">
+                        <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
+                    </button>
+                    <?php if ($this->Acl->hasPermission('add', 'hostgroups')): ?>
+                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="HostgroupsAdd">
+                            <i class="fas fa-plus"></i> <?php echo __('New'); ?>
+                        </button>
+                    <?php endif; ?>
+                    <?php if ($this->Acl->hasPermission('index', 'hostgroups')): ?>
+                        <a back-button fallback-state='HostgroupsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
-                    </li>
-                <?php endif; ?>
-                <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
-                    <li class="divider"></li>
-                    <li>
-                        <a href="javascript:void(0);" data-toggle="modal"
-                           data-target="#nag_command_reschedule"
-                           ng-click="rescheduleHost(getObjectsForExternalCommand())">
-                            <i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0);" data-toggle="modal"
-                           data-target="#nag_command_schedule_downtime"
-                           ng-click="hostDowntime(getObjectsForExternalCommand())">
-                            <i class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0);" data-toggle="modal"
-                           data-target="#nag_command_ack_state"
-                           ng-click="acknowledgeHost(getObjectsForExternalCommand())">
-                            <i class="fa fa-user"></i> <?php echo __('Acknowledge host status'); ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0);" data-toggle="modal"
-                           data-target="#nag_command_disable_notifications"
-                           ng-click="disableHostNotifications(getObjectsForExternalCommand())">
-                            <i class="fa fa-envelope-o"></i> <?php echo __('Disable notification'); ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0);" data-toggle="modal"
-                           data-target="#nag_command_enable_notifications"
-                           ng-click="enableHostNotifications(getObjectsForExternalCommand())">
-                            <i class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?>
-                        </a>
-                    </li>
-                <?php endif; ?>
-            </ul>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <div class="row">
+                        <div class="form-group required col-lg-10">
+                            <label class="control-label" for="HostgroupSelect">
+                                <?php echo __('Host group'); ?>
+                            </label>
+                            <select
+                                id="HostgroupSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                chosen="hostgroups"
+                                ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+                                callback="loadHostgroupsCallback"
+                                ng-model="post.Hostgroup.id">
+                            </select>
+                        </div>
+
+                        <div class="col-lg-2">
+                            <div class="btn-group btn-group-sm" style="padding-top:23px;">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                    <?php echo __('Action'); ?>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
+                                        <button ui-sref="HostgroupsEdit({id:post.Hostgroup.id})"
+                                                ng-show="hostgroup.Hostgroup.allowEdit"
+                                                class="dropdown-item"
+                                                type="button">
+                                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                        </button>
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
+                                        <button data-toggle="modal"
+                                                data-target="#nag_command_reschedule"
+                                                ng-click="rescheduleHost(getObjectsForExternalCommand())"
+                                                class="dropdown-item"
+                                                type="button">
+                                            <i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?>
+                                        </button>
+                                        <button data-toggle="modal"
+                                                data-target="#nag_command_schedule_downtime"
+                                                ng-click="hostDowntime(getObjectsForExternalCommand())"
+                                                class="dropdown-item"
+                                                type="button">
+                                            <i class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?>
+                                        </button>
+                                        <button data-toggle="modal"
+                                                data-target="#nag_command_ack_state"
+                                                ng-click="acknowledgeHost(getObjectsForExternalCommand())"
+                                                class="dropdown-item"
+                                                type="button">
+                                            <i class="fa fa-user"></i> <?php echo __('Acknowledge host status'); ?>
+                                        </button>
+                                        <button data-toggle="modal"
+                                                data-target="#nag_command_disable_notifications"
+                                                ng-click="disableHostNotifications(getObjectsForExternalCommand())"
+                                                class="dropdown-item"
+                                                type="button">
+                                            <i class="far fa-envelope"></i> <?php echo __('Disable notification'); ?>
+                                        </button>
+                                        <button data-toggle="modal"
+                                                data-target="#nag_command_enable_notifications"
+                                                ng-click="enableHostNotifications(getObjectsForExternalCommand())"
+                                                class="dropdown-item"
+                                                type="button">
+                                            <i class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?>
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="frame-wrap">
+                        <table class="table table-striped m-0 table-bordered table-hover table-sm">
+                            <thead>
+                            <tr ng-if="hostgroup.Hosts.length > 0">
+                                <td colspan="8" class="no-padding">
+                                    <div class="form-group">
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-desktop"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   placeholder="<?php echo __('Filter by host name'); ?>"
+                                                   ng-model="filter.Host.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td colspan="6" class="no-padding">
+                                    <div class="row no-margin" style="height:32px; ">
+                                        <div class="col-lg-4 bg-{{state}}" style="padding-top: 7px;"
+                                             ng-repeat="(state,stateCount) in hostgroup.StatusSummary">
+                                            <div class="custom-control custom-checkbox txt-color-white float-right">
+                                                <input type="checkbox"
+                                                       id="statusFilter{{state}}"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model-options="{debounce: 500}"
+                                                       ng-model="hostgroupsStateFilter[$index]"
+                                                       ng-value="$index">
+                                                <label
+                                                    class="custom-control-label custom-control-label-{{state}} no-margin"
+                                                    for="statusFilter{{state}}">{{stateCount}} {{state}}</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th class="width-20 text-center">
+                                    <?php echo __('Status'); ?>
+                                </th>
+                                <th class="width-20 text-center"></th>
+                                <th class="width-20 text-center">
+                                    <i class="fa fa-user" title="is acknowledged"></i>
+                                </th>
+                                <th class="width-20 text-center">
+                                    <i class="fa fa-power-off" title="is in downtime"></i>
+                                </th>
+                                <th class="width-20 text-center">
+                                    <strong title="<?php echo __('Passively transferred service'); ?>">
+                                        <?php echo __('P'); ?>
+                                    </strong>
+                                </th>
+                                <th>
+                                    <?php echo __('Host name'); ?>
+                                </th>
+                                <th>
+                                    <?php echo __('State since'); ?>
+                                </th>
+                                <th>
+                                    <?php echo __('Last check'); ?>
+                                </th>
+                                <th>
+                                    <?php echo __('Next check'); ?>
+                                </th>
+                                <th>
+                                    <?php echo __('Service Summary '); ?>
+                                </th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tr ng-show="hostgroup.Hosts.length == 0">
+                                <td class="no-padding text-center" colspan="14">
+                                    <div class="col-xs-12 text-center txt-color-red italic padding-10">
+                                        <?php echo __('No entries match the selection'); ?>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr ng-show="hostgroupsStateFilter[host.Hoststatus.currentState]"
+                                ng-repeat-start="host in hostgroup.Hosts">
+                                <td class="width-20 text-center pointer fa-lg">
+                                    <i ng-class="(!showServices[host.Host.id]) ? 'fas fa-plus-square' : 'far fa-minus-square'"
+                                       ng-click="showServicesCallback(host.Host.id)"
+                                    ></i>
+                                </td>
+                                <td class="text-center">
+                                    <hoststatusicon host="host"></hoststatusicon>
+                                </td>
+                                <td class="text-center">
+                                    <servicecumulatedstatusicon state="host.ServicestatusSummary.cumulatedState">
+
+                                    </servicecumulatedstatusicon>
+                                </td>
+                                <td class="text-center">
+                                    <i class="far fa-user"
+                                       ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                       ng-if="host.Hoststatus.acknowledgement_type == 1"></i>
+
+                                    <i class="fas fa-user"
+                                       ng-show="host.Hoststatus.problemHasBeenAcknowledged"
+                                       ng-if="host.Hoststatus.acknowledgement_type == 2"
+                                       title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                </td>
+                                <td class="text-center">
+                                    <i class="fa fa-power-off"
+                                       ng-show="host.Hoststatus.scheduledDowntimeDepth > 0"></i>
+                                </td>
+                                <td class="text-center">
+                                    <strong title="<?php echo __('Passively transferred service'); ?>"
+                                            ng-show="host.Host.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                        P
+                                    </strong>
+                                </td>
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                        <a ui-sref="HostsBrowser({id:host.Host.id})">
+                                            {{ host.Host.hostname }}
+                                        </a>
+                                    <?php else: ?>
+                                        {{ host.Host.hostname }}
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    {{ host.Hoststatus.last_state_change }}
+                                </td>
+
+                                <td>
+                                <span
+                                    ng-if="host.Hoststatus.activeChecksEnabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.lastCheck }}</span>
+                                    <span
+                                        ng-if="host.Hoststatus.activeChecksEnabled === false || host.Host.is_satellite_host === true">
+                                    <?php echo __('n/a'); ?>
+                                </span>
+                                </td>
+                                <td>
+                                <span
+                                    ng-if="host.Hoststatus.activeChecksEnabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.nextCheck }}</span>
+                                    <span
+                                        ng-if="host.Hoststatus.activeChecksEnabled === false || host.Host.is_satellite_host === true">
+                                                <?php echo __('n/a'); ?>
+                                            </span>
+                                </td>
+                                <td class="width-160">
+                                    <div class="btn-group btn-group-justified btn-group-xs" role="group">
+                                        <?php if ($this->Acl->hasPermission('index', 'services')): ?>
+                                            <a class="btn btn-success state-button"
+                                               ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][0]=1">
+                                                {{host.ServicestatusSummary.state['ok']}}
+                                            </a>
+                                        <?php else: ?>
+                                            <a class="btn btn-success state-button">
+                                                {{host.ServicestatusSummary.state['ok']}}
+                                            </a>
+                                        <?php endif; ?>
+                                        <?php if ($this->Acl->hasPermission('index', 'services')): ?>
+                                            <a class="btn btn-warning state-button"
+                                               ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][1]=1">
+                                                {{host.ServicestatusSummary.state['warning']}}
+                                            </a>
+                                        <?php else: ?>
+                                            <a class="btn btn-warning state-button">
+                                                {{host.ServicestatusSummary.state['warning']}}
+                                            </a>
+                                        <?php endif; ?>
+                                        <?php if ($this->Acl->hasPermission('index', 'services')): ?>
+                                            <a class="btn btn-danger state-button"
+                                               ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][2]=1">
+                                                {{host.ServicestatusSummary.state['critical']}}
+                                            </a>
+                                        <?php else: ?>
+                                            <a class="btn btn-danger state-button">
+                                                {{host.ServicestatusSummary.state['critical']}}
+                                            </a>
+                                        <?php endif; ?>
+
+                                        <?php if ($this->Acl->hasPermission('index', 'services')): ?>
+                                            <a class="btn btn-default state-button"
+                                               ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][3]=1">
+                                                {{host.ServicestatusSummary.state['unknown']}}
+                                            </a>
+                                        <?php else: ?>
+                                            <a class="btn btn-default state-button">
+                                                {{host.ServicestatusSummary.state['unknown']}}
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                                <td class="width-50">
+                                    <div class="btn-group btn-group-xs" role="group">
+                                        <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                            <a ui-sref="HostsEdit({id:host.Host.id})"
+                                               ng-if="host.Host.allow_edit"
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i>
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);"
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i></a>
+                                        <?php endif; ?>
+                                        <button type="button"
+                                                class="btn btn-default dropdown-toggle btn-lower-padding"
+                                                data-toggle="dropdown">
+                                            <i class="caret"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                                <a ui-sref="HostsEdit({id:host.Host.id})"
+                                                   ng-if="host.Host.allow_edit"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-cog"></i>
+                                                    <?php echo __('Edit'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('deactivate', 'hosts')): ?>
+                                                <a ng-click="confirmDeactivate(getObjectForDelete(host))"
+                                                   ng-if="host.Host.allow_edit && !host.Host.disabled"
+                                                   href="javascript:void(0);"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-plug"></i>
+                                                    <?php echo __('Disable'); ?>
+                                                </a>
+                                            <?php endif; ?>
+
+                                            <?php if ($this->Acl->hasPermission('enable', 'hosts')): ?>
+                                                <a ng-click="confirmActivate(getObjectForDelete(host))"
+                                                   ng-if="host.Host.allow_edit && host.Host.disabled"
+                                                   href="javascript:void(0);"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-plug"></i>
+                                                    <?php echo __('Enable'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
+                                                <a ng-click="confirmDelete(getObjectForDelete(host))"
+                                                   ng-if="host.Host.allow_edit"
+                                                   class="dropdown-item txt-color-red">
+                                                    <i class="fa fa-trash"></i>
+                                                    <?php echo __('Delete'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr ng-show="showServices[host.Host.id]" ng-repeat-end="">
+                                <td colspan="12">
+                                    <host-service-list
+                                        host-id="host.Host.id"
+                                        show-services="showServices"
+                                        timezone="timezone"
+                                        host="host"
+                                        ng-if="timezone">
+                                    </host-service-list>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="margin-top-10" ng-show="hostgroup.Hosts.length == 0">
+                            <div class="text-center text-danger italic">
+                                <?php echo __('No entries match the selection'); ?>
+                            </div>
+                        </div>
+
+                        <div id="serviceGraphContainer" class="popup-graph-container">
+                            <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;"
+                                 ng-show="isLoadingGraph">
+                                <i class="fa fa-refresh fa-4x fa-spin"></i>
+                            </div>
+                            <div id="serviceGraphFlot"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
-<massdelete></massdelete>
-<massdeactivate></massdeactivate>
-
-
-<section id="widget-grid">
-    <div class="row">
-        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                <header>
-                    <div class="widget-toolbar" role="menu">
-
-                        <button type="button" class="btn btn-xs btn-default" ng-click="loadHostsWithStatus()"
-                                ng-if="hostgroup">
-                            <i class="fa fa-refresh"></i>
-                            <?php echo __('Refresh'); ?>
-                        </button>
-
-                        <?php if ($this->Acl->hasPermission('add', 'hostgroups')): ?>
-                            <a ui-sref="HostgroupsAdd" class="btn btn-xs btn-success">
-                                <i class="fa fa-plus"></i>
-                                <?php echo __('New'); ?>
-                            </a>
-                        <?php endif; ?>
-                    </div>
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-sitemap"></i> </span>
-                    <h2 class="hidden-mobile">
-                        {{(hostgroup.Hostgroup.container.name) && hostgroup.Hostgroup.container.name ||
-                        '<?php echo __('Host Groups (0)'); ?>'}}
-                    </h2>
-                    <?php if ($this->Acl->hasPermission('extended', 'hostgroups')): ?>
-                        <ul class="nav nav-tabs pull-right" id="widget-tab-1">
-                            <li>
-                                <a ui-sref="HostgroupsIndex"><i class="fa fa-minus-square"></i>
-                                    <span
-                                        class="hidden-mobile hidden-tablet"><?php echo __('Default overview'); ?></span></a>
-                            </li>
-                        </ul>
-                        <div class="widget-toolbar cursor-default hidden-xs hidden-sm hidden-md" ng-if="hostgroup">
-                            <?php echo __('UUID: '); ?>{{hostgroup.Hostgroup.uuid}}
-                        </div>
-                    <?php endif; ?>
-                </header>
-                <div>
-                    <table class="table table-striped table-hover table-bordered smart-form" ng-if="hostgroup">
-                        <thead>
-                        <tr>
-                            <td colspan="6">
-                                <div class="form-group smart-form">
-                                    <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
-                                        <input type="text" class="input-sm"
-                                               placeholder="<?php echo __('Filter by host name'); ?>"
-                                               ng-model="filter.Host.name"
-                                               ng-model-options="{debounce: 500}">
-                                    </label>
-                                </div>
-                            </td>
-                            <td colspan="6">
-                                <div ng-repeat="(state,stateCount) in hostgroup.StatusSummary"
-                                     class="col-md-4 bg-{{state}}">
-                                    <div class="padding-5 pull-right">
-                                        <label class="checkbox small-checkbox-label txt-color-white">
-                                            <input type="checkbox" name="checkbox" checked="checked"
-                                                   ng-model-options="{debounce: 500}"
-                                                   ng-model="hostgroupsStateFilter[$index]"
-                                                   ng-value="$index"
-                                                   class="ng-pristine ng-untouched ng-valid ng-empty">
-                                            <i class="checkbox-{{state}}"></i>
-                                            <strong>
-                                                {{stateCount}} {{state}}
-                                            </strong>
-                                        </label>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th></th>
-                            <th class="width-20 text-center">
-                                <?php echo __('Status'); ?>
-                            </th>
-                            <th class="width-20 text-center"></th>
-                            <th class="width-20 text-center">
-                                <i class="fa fa-user fa-lg" title="is acknowledged"></i>
-                            </th>
-                            <th class="width-20 text-center">
-                                <i class="fa fa-power-off fa-lg" title="is in downtime"></i>
-                            </th>
-                            <th class="width-20 text-center">
-                                <strong title="<?php echo __('Passively transferred service'); ?>">
-                                    <?php echo __('P'); ?>
-                                </strong>
-                            </th>
-                            <th>
-                                <?php echo __('Host name'); ?>
-                            </th>
-                            <th>
-                                <?php echo __('State since'); ?>
-                            </th>
-                            <th>
-                                <?php echo __('Last check'); ?>
-                            </th>
-                            <th>
-                                <?php echo __('Next check'); ?>
-                            </th>
-                            <th>
-                                <?php echo __('Service Summary '); ?>
-                            </th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tr ng-show="hostgroup.Hosts.length == 0">
-                            <td class="no-padding text-center" colspan="14">
-                                <div class="col-xs-12 text-center txt-color-red italic padding-10">
-                                    <?php echo __('No entries match the selection'); ?>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr ng-show="hostgroupsStateFilter[host.Hoststatus.currentState]"
-                            ng-repeat-start="host in hostgroup.Hosts">
-                            <td class="width-20 text-center pointer fa-lg">
-                                <i ng-class="(!showServices[host.Host.id]) ? 'fa fa-plus-square-o' : 'fa fa-minus-square-o'"
-                                   ng-click="showServicesCallback(host.Host.id)"
-                                ></i>
-                            </td>
-                            <td class="text-center">
-                                <hoststatusicon host="host"></hoststatusicon>
-                            </td>
-                            <td class="text-center">
-                                <servicecumulatedstatusicon state="host.ServicestatusSummary.cumulatedState">
-
-                                </servicecumulatedstatusicon>
-                            </td>
-                            <td class="text-center">
-                                <i class="fa fa-lg fa-user"
-                                   ng-show="host.Hoststatus.problemHasBeenAcknowledged"
-                                   ng-if="host.Hoststatus.acknowledgement_type == 1"></i>
-
-                                <i class="fa fa-lg fa-user-o"
-                                   ng-show="host.Hoststatus.problemHasBeenAcknowledged"
-                                   ng-if="host.Hoststatus.acknowledgement_type == 2"
-                                   title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
-                            </td>
-                            <td class="text-center">
-                                <i class="fa fa-lg fa-power-off"
-                                   ng-show="host.Hoststatus.scheduledDowntimeDepth > 0"></i>
-                            </td>
-                            <td class="text-center">
-                                <strong title="<?php echo __('Passively transferred service'); ?>"
-                                        ng-show="host.Host.active_checks_enabled === false || host.Host.is_satellite_host === true">
-                                    P
-                                </strong>
-                            </td>
-                            <td>
-                                <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                    <a ui-sref="HostsBrowser({id:host.Host.id})">
-                                        {{ host.Host.hostname }}
-                                    </a>
-                                <?php else: ?>
-                                    {{ host.Host.hostname }}
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                {{ host.Hoststatus.last_state_change }}
-                            </td>
-
-                            <td>
-                                <span
-                                    ng-if="host.Hoststatus.activeChecksEnabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.lastCheck }}</span>
-                                <span
-                                    ng-if="host.Hoststatus.activeChecksEnabled === false || host.Host.is_satellite_host === true">
-                                    <?php echo __('n/a'); ?>
-                                </span>
-                            </td>
-                            <td>
-                                <span
-                                    ng-if="host.Hoststatus.activeChecksEnabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.nextCheck }}</span>
-                                <span
-                                    ng-if="host.Hoststatus.activeChecksEnabled === false || host.Host.is_satellite_host === true">
-                                                <?php echo __('n/a'); ?>
-                                            </span>
-                            </td>
-                            <td class="width-160">
-                                <div class="btn-group btn-group-justified" role="group">
-                                    <?php if ($this->Acl->hasPermission('index', 'services')): ?>
-                                        <a class="btn btn-success state-button"
-                                           ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][0]=1">
-                                            {{host.ServicestatusSummary.state['ok']}}
-                                        </a>
-                                    <?php else: ?>
-                                        <a class="btn btn-success state-button">
-                                            {{host.ServicestatusSummary.state['ok']}}
-                                        </a>
-                                    <?php endif; ?>
-                                    <?php if ($this->Acl->hasPermission('index', 'services')): ?>
-                                        <a class="btn btn-warning state-button"
-                                           ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][1]=1">
-                                            {{host.ServicestatusSummary.state['warning']}}
-                                        </a>
-                                    <?php else: ?>
-                                        <a class="btn btn-warning state-button">
-                                            {{host.ServicestatusSummary.state['warning']}}
-                                        </a>
-                                    <?php endif; ?>
-                                    <?php if ($this->Acl->hasPermission('index', 'services')): ?>
-                                        <a class="btn btn-danger state-button"
-                                           ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][2]=1">
-                                            {{host.ServicestatusSummary.state['critical']}}
-                                        </a>
-                                    <?php else: ?>
-                                        <a class="btn btn-danger state-button">
-                                            {{host.ServicestatusSummary.state['critical']}}
-                                        </a>
-                                    <?php endif; ?>
-
-                                    <?php if ($this->Acl->hasPermission('index', 'services')): ?>
-                                        <a class="btn btn-default state-button"
-                                           ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][3]=1">
-                                            {{host.ServicestatusSummary.state['unknown']}}
-                                        </a>
-                                    <?php else: ?>
-                                        <a class="btn btn-default state-button">
-                                            {{host.ServicestatusSummary.state['unknown']}}
-                                        </a>
-                                    <?php endif; ?>
-                                </div>
-                            </td>
-                            <td class="width-50">
-                                <div class="btn-group">
-                                    <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                        <a ui-sref="HostsEdit({id:host.Host.id})"
-                                           ng-if="host.Host.allow_edit"
-                                           class="btn btn-default">
-                                            &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                        </a>
-                                    <?php else: ?>
-                                        <a href="javascript:void(0);" class="btn btn-default">
-                                            &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-                                    <?php endif; ?>
-                                    <a href="javascript:void(0);" data-toggle="dropdown"
-                                       class="btn btn-default dropdown-toggle"><span
-                                            class="caret"></span></a>
-                                    <ul class="dropdown-menu pull-right"
-                                        id="menuHack-{{hostgroup.Hostgroup.uuid}}-{{host.Host.uuid}}">
-                                        <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                            <li ng-if="host.Host.allow_edit">
-                                                <a ui-sref="HostsEdit({id:host.Host.id})">
-                                                    <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
-                                                </a>
-                                            </li>
-                                        <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('deactivate', 'hosts')): ?>
-                                            <li ng-if="host.Host.allow_edit && !host.Host.disabled">
-                                                <a href="javascript:void(0);"
-                                                   ng-click="confirmDeactivate(getObjectForDelete(host))">
-                                                    <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
-                                                </a>
-                                            </li>
-                                        <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('enable', 'hosts')): ?>
-                                            <li ng-if="host.Host.allow_edit && host.Host.disabled">
-                                                <a href="javascript:void(0);"
-                                                   ng-click="confirmActivate(getObjectForDelete(host))">
-                                                    <i class="fa fa-plug"></i> <?php echo __('Enable'); ?>
-                                                </a>
-                                            </li>
-                                        <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                            <li ng-if="service.Service.allow_edit">
-                                                <?php
-                                                /**
-                                                 * @todo AdditionalLinks
-                                                 */
-
-                                                /*
-                                                    echo $this->AdditionalLinks->renderAsListItems(
-                                                    $additionalLinksList,
-                                                    '{{host.Host.id}}',
-                                                    [],
-                                                    true
-                                                );*/ ?>
-                                            </li>
-                                        <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
-                                            <li class="divider"></li>
-                                            <li ng-if="host.Host.allow_edit">
-                                                <a href="javascript:void(0);" class="txt-color-red"
-                                                   ng-click="confirmDelete(getObjectForDelete(host))">
-                                                    <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
-                                                </a>
-                                            </li>
-                                        <?php endif; ?>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr ng-show="showServices[host.Host.id]" ng-repeat-end="">
-                            <td colspan="12">
-                                <host-service-list
-                                    host-id="host.Host.id"
-                                    show-services="showServices"
-                                    timezone="timezone"
-                                    host="host"
-                                    ng-if="timezone">
-                                </host-service-list>
-                            </td>
-                        </tr>
-                    </table>
-                    <div class="col-xs-12 text-center txt-color-red italic padding-10" ng-hide="hostgroup">
-                        <?php echo __('No entries match the selection'); ?>
-                    </div>
-                    <br/>
-
-                    <div id="serviceGraphContainer" class="popup-graph-container">
-                        <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;"
-                             ng-show="isLoadingGraph">
-                            <i class="fa fa-refresh fa-4x fa-spin"></i>
-                        </div>
-                        <div id="serviceGraphFlot"></div>
-                    </div>
-
-                </div>
-            </div>
-
-            <reschedule-host callback="showFlashMsg"></reschedule-host>
-            <disable-host-notifications callback="showFlashMsg"></disable-host-notifications>
-            <enable-host-notifications callback="showFlashMsg"></enable-host-notifications>
-            <acknowledge-host author="<?php echo h($username); ?>" callback="showFlashMsg"></acknowledge-host>
-            <host-downtime author="<?php echo h($username); ?>" callback="showFlashMsg"></host-downtime>
-        </article>
-    </div>
-</section>
-

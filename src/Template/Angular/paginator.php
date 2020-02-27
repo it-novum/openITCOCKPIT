@@ -36,27 +36,29 @@
                 <?php echo __('entries'); ?>
             </div>
         </div>
-        <div class="col-sm-6 text-right">
-            <div class="dataTables_paginate paging_bootstrap">
+        <div class="col-sm-6">
+            <div class="float-right">
                 <ul class="pagination">
-                    <li ng-class="{ 'disabled': !paging.prevPage }">
-                        <a href="javascript:void(0)" ng-click="changePage(1)">&lt;&lt;</a>
+                    <li ng-class="{ 'disabled': !paging.prevPage }" class="page-item">
+                        <a href="javascript:void(0)" ng-click="changePage(1)" class="page-link">&lt;&lt;</a>
                     </li>
-                    <li ng-class="{ 'disabled': !paging.prevPage }">
-                        <a href="javascript:void(0)" ng-click="prevPage()">&lt;</a>
-                    </li>
-
-
-                    <li ng-repeat="i in pageNumbers() track by $index" ng-class="{'current active': i == paging.page}">
-                        <a href="javascript:void(0);" ng-click="changePage(i)"> {{ i }} </a>
+                    <li ng-class="{ 'disabled': !paging.prevPage }" class="page-item">
+                        <a href="javascript:void(0)" ng-click="prevPage()" class="page-link">&lt;</a>
                     </li>
 
 
-                    <li ng-class="{ 'disabled': !paging.nextPage }">
-                        <a href="javascript:void(0)" ng-click="nextPage()">&gt;</a>
+                    <li ng-repeat="i in pageNumbers() track by $index" ng-class="{'current active': i == paging.page}"
+                        class="page-item">
+                        <a href="javascript:void(0);" ng-click="changePage(i)" class="page-link"> {{ i }} </a>
                     </li>
-                    <li ng-class="{ 'disabled': !paging.nextPage }">
-                        <a href="javascript:void(0)" ng-click="changePage(paging.pageCount)">&gt;&gt;</a>
+
+
+                    <li ng-class="{ 'disabled': !paging.nextPage }" class="page-item">
+                        <a href="javascript:void(0)" ng-click="nextPage()" class="page-link">&gt;</a>
+                    </li>
+                    <li ng-class="{ 'disabled': !paging.nextPage }" class="page-item">
+                        <a href="javascript:void(0)" ng-click="changePage(paging.pageCount)"
+                           class="page-link">&gt;&gt;</a>
                     </li>
                 </ul>
             </div>

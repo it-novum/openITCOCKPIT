@@ -24,60 +24,86 @@
 //	confirmation.
 
 ?>
-<header id="header">
-    <div id="logo-group">
-        <span id="logo">
-            <div id="logo-image"></div>
-            <p id="logo-text"><?php echo $systemname; ?></p>
-        </span>
-
-        <system-health></system-health>
+<!-- HEADER START -->
+<header id="header" class="page-header" role="banner">
+    <div class="hidden-md-down dropdown-icon-menu position-relative">
+        <a href="#" class="header-btn btn js-waves-off" data-action="toggle"
+           data-class="nav-function-hidden" title="Hide Navigation">
+            <i class="fas fa-bars"></i>
+        </a>
+        <ul>
+            <li>
+                <a href="#" class="btn js-waves-off" data-action="toggle" data-class="nav-function-minify"
+                   title="Minify Navigation">
+                    <i class="far fa-caret-square-left"></i>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="btn js-waves-off" data-action="toggle" data-class="nav-function-fixed"
+                   title="Lock Navigation">
+                    <i class="fas fa-lock"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="hidden-lg-up">
+        <a href="#" class="header-btn btn press-scale-down" data-action="toggle" data-class="mobile-nav-on">
+            <i class="ni ni-menu"></i>
+        </a>
     </div>
 
-    <div class="pull-left" top-search="">
+
+    <div class="search" top-search="">
         <!-- Content get loaded by AngularJS Directive -->
     </div>
 
 
-    <div class="pull-right">
-        <div class="btn-header pull-right">
-            <span>
-                <a href="/users/logout" data-original-title="<?php echo __('Sign out'); ?>" data-placement="left"
-                   rel="tooltip" data-container="body">
-                    <i class="fa fa-sign-out"></i>
-                </a>
-            </span>
-        </div>
-
-        <div id="hide-menu" class="btn-header pull-right">
-            <span>
-                <a href="javascript:void(0);" data-original-title="<?php echo __('Collapse menu'); ?>"
-                   data-placement="left" rel="tooltip" data-container="body">
-                    <i class="fa fa-arrow-circle-left"></i>
-                </a>
-            </span>
-        </div>
-
-        <div class="btn-header pull-right">
-                <span>
-                    <?php if ($exportRunningHeaderInfo === false): ?>
-                        <a ui-sref="ExportsIndex" sudo-server-connect=""
-                           data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
-                           data-placement="left" rel="tooltip" data-container="body">
-                            <i class="fa fa-retweet"></i>
-                        </a>
-                    <?php else: ?>
-                        <a ui-sref="ExportsIndex" export-status=""
-                           data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
-                           data-placement="left" rel="tooltip" data-container="body">
-                        <i class="fa fa-retweet" ng-hide="exportRunning"></i>
-                        <i class="fa fa-refresh fa-spin txt-color-red" ng-show="exportRunning"></i>
-                    </a>
-                    <?php endif; ?>
+    <div class="ml-auto d-flex">
+        <div class="header-icon">
+                <span id="global_ajax_loader">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
                 </span>
         </div>
-        <server-time></server-time>
-        <version-check></version-check>
+        <div class="header-icon">
+            <version-check></version-check>
+        </div>
+        <div >
+            <?php if ($showstatsinmenu): ?>
+                <menustats></menustats>
+            <?php endif; ?>
+        </div>
+        <div>
+            <system-health></system-health>
+        </div>
+        <div class="header-icon">
+            <server-time></server-time>
+        </div>
+        <div>
+            <?php if ($exportRunningHeaderInfo === false): ?>
+                <a ui-sref="ExportsIndex" sudo-server-connect=""
+                   data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
+                   data-placement="left" rel="tooltip" data-container="body" class="header-icon">
+                    <i class="fa fa-retweet"></i>
+                </a>
+            <?php else: ?>
+                <a ui-sref="ExportsIndex" export-status=""
+                   data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
+                   data-placement="left" rel="tooltip" data-container="body" class="header-icon">
+                    <i class="fa fa-retweet" ng-hide="exportRunning"></i>
+                    <i class="fa fa-refresh fa-spin txt-color-red" ng-show="exportRunning"></i>
+                </a>
+            <?php endif; ?>
+        </div>
+        <div>
+            <a href="/users/logout" data-original-title="<?php echo __('Sign out'); ?>"
+               data-placement="left"
+               rel="tooltip" data-container="body" class="header-icon">
+                <i class="fa fa-sign-out-alt"></i>
+            </a>
+        </div>
         <push-notifications></push-notifications>
     </div>
+
 </header>

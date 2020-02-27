@@ -24,11 +24,11 @@
 
 ?>
 <div class="row no-padding">
-    <div class="col-xs-12 text-center">
+    <div class="col-xs-12 col-lg-12 text-center">
 
         <img ng-src="/angular/getHalfPieChart/{{hoststatusCount[0]}}/{{hoststatusCount[1]}}/{{hoststatusCount[2]}}.png">
 
-        <div class="col-xs-12 text-center padding-bottom-10 font-xs">
+        <div class="row text-center padding-bottom-10 font-xs">
 
             <?php if ($this->Acl->hasPermission('index', 'Hosts', '')): ?>
                 <div class="col-xs-12 col-md-4 no-padding">

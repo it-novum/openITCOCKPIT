@@ -22,184 +22,152 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+$timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="TenantsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Tenants'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-edit"></i> <?php echo __('Edit'); ?>
+    </li>
+</ol>
+
+
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-home fa-fw "></i>
-            <?php echo __('Tenants'); ?>
-            <span>>
-                <?php echo __('Edit'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
-
-
-<div class="jarviswidget" id="wid-id-0">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-home"></i> </span>
-        <h2>
-            <?php echo __('Edit tenant:'); ?>
-            {{tenant.container.name}}
-        </h2>
-        <div class="widget-toolbar" role="menu">
-            <?php if ($this->Acl->hasPermission('index', 'tenants')): ?>
-                <a back-button fallback-state='TenantsIndex' class="btn btn-default btn-xs">
-                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
-                </a>
-            <?php endif; ?>
-        </div>
-    </header>
-    <div>
-        <div class="widget-body">
-            <form ng-submit="submit();" class="form-horizontal"
-                  ng-init="successMessage=
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Edit tenant:'); ?>
+                    <span class="fw-300"><i>{{ post.container.name }}</i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <?php if ($this->Acl->hasPermission('index', 'tenants')): ?>
+                        <a back-button fallback-state='TenantsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <form ng-submit="submit();" class="form-horizontal"
+                          ng-init="successMessage=
             {objectName : '<?php echo __('Tenant'); ?>' , message: '<?php echo __('updated successfully'); ?>'}">
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 
-                        <div class="row">
-
-                            <div class="form-group required" ng-class="{'has-error': errors.container.name}">
-                                <label class="col-xs-12 col-lg-2 control-label">
-                                    <?php echo __('Name'); ?>
-                                </label>
-                                <div class="col-xs-12 col-lg-10">
-                                    <div class="input-group" style="width: 100%;">
-                                        <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.container.name">
-                                    </div>
-                                    <div ng-repeat="error in errors.container.name">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
+                        <div class="form-group" ng-class="{'has-error': errors.name}">
+                            <label class="control-label">
+                                <?php echo __('Name'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                ng-model="post.container.name">
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
-
-                            <div class="form-group" ng-class="{'has-error': errors.description}">
-                                <label class="col-xs-12 col-lg-2 control-label">
-                                    <?php echo __('Description'); ?>
-                                </label>
-                                <div class="col-xs-12 col-lg-10">
-                                    <div class="input-group" style="width: 100%;">
-                                        <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.description">
-                                    </div>
-                                    <div ng-repeat="error in errors.description">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group" ng-class="{'has-error': errors.firstname}">
-                                <label class="col-xs-12 col-lg-2 control-label">
-                                    <?php echo __('First name'); ?>
-                                </label>
-                                <div class="col-xs-12 col-lg-10">
-                                    <div class="input-group" style="width: 100%;">
-                                        <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.firstname">
-                                    </div>
-                                    <div ng-repeat="error in errors.firstname">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group" ng-class="{'has-error': errors.lastname}">
-                                <label class="col-xs-12 col-lg-2 control-label">
-                                    <?php echo __('Last name'); ?>
-                                </label>
-                                <div class="col-xs-12 col-lg-10">
-                                    <div class="input-group" style="width: 100%;">
-                                        <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.lastname">
-                                    </div>
-                                    <div ng-repeat="error in errors.lastname">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group" ng-class="{'has-error': errors.street}">
-                                <label class="col-xs-12 col-lg-2 control-label">
-                                    <?php echo __('Street'); ?>
-                                </label>
-                                <div class="col-xs-12 col-lg-10">
-                                    <div class="input-group" style="width: 100%;">
-                                        <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.street">
-                                    </div>
-                                    <div ng-repeat="error in errors.street">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group" ng-class="{'has-error': errors.zipcode}">
-                                <label class="col-xs-12 col-lg-2 control-label">
-                                    <?php echo __('Zip code'); ?>
-                                </label>
-                                <div class="col-xs-12 col-lg-10">
-                                    <div class="input-group" style="width: 100%;">
-                                        <input
-                                                class="form-control"
-                                                type="number"
-                                                min="0"
-                                                ng-model="post.zipcode">
-                                    </div>
-                                    <div ng-repeat="error in errors.zipcode">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group" ng-class="{'has-error': errors.city}">
-                                <label class="col-xs-12 col-lg-2 control-label">
-                                    <?php echo __('City'); ?>
-                                </label>
-                                <div class="col-xs-12 col-lg-10">
-                                    <div class="input-group" style="width: 100%;">
-                                        <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.city">
-                                    </div>
-                                    <div ng-repeat="error in errors.city">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
 
-                    </div>
-                </div>
-
-
-                <div class="col-xs-12 margin-top-10 margin-bottom-10">
-                    <div class="well formactions ">
-                        <div class="pull-right">
-
-                            <button type="submit" class="btn btn-primary">
-                                <?php echo __('Update tenant'); ?>
-                            </button>
-                            <a back-button fallback-state='TenantsIndex'
-                               class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        <div class="form-group" ng-class="{'has-error': errors.description}">
+                            <label class="control-label">
+                                <?php echo __('Description'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                ng-model="post.description">
+                            <div ng-repeat="error in errors.description">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
                         </div>
-                    </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.firstname}">
+                            <label class="control-label">
+                                <?php echo __('First name'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                ng-model="post.firstname">
+                            <div ng-repeat="error in errors.firstname">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.lastname}">
+                            <label class="control-label">
+                                <?php echo __('Last name'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                ng-model="post.lastname">
+                            <div ng-repeat="error in errors.lastname">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.street}">
+                            <label class="control-label">
+                                <?php echo __('Street'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                ng-model="post.street">
+                            <div ng-repeat="error in errors.street">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.zipcode}">
+                            <label class="control-label">
+                                <?php echo __('Zip code'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="number"
+                                min="0"
+                                ng-model="post.zipcode">
+                            <div ng-repeat="error in errors.zipcode">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.city}">
+                            <label class="control-label">
+                                <?php echo __('City'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                ng-model="post.city">
+                            <div ng-repeat="error in errors.city">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <div class="card margin-top-10">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <button class="btn btn-primary"
+                                            type="submit"><?php echo __('Update tenant'); ?></button>
+                                    <a back-button fallback-state='TenantsIndex'
+                                       class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

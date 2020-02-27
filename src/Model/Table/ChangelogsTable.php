@@ -497,7 +497,7 @@ class ChangelogsTable extends Table {
             case 'add':
                 return 'fa fa-plus';
             case 'delete':
-                return 'fa fa-trash-o ';
+                return 'fa fa-trash ';
             case 'activate':
                 return 'fa fa-asterisk';
             case 'deactivate':
@@ -505,7 +505,7 @@ class ChangelogsTable extends Table {
             case 'copy':
                 return 'fa fa-files-o';
             default:
-                return 'fa fa-pencil';
+                return 'fas fa-edit';
         }
     }
 

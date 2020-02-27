@@ -153,7 +153,7 @@ class WidgetsTable extends Table {
             [
                 'type_id'   => 1,
                 'title'     => __('Welcome'),
-                'icon'      => 'fa-comment',
+                'icon'      => 'fas fa-comment',
                 'directive' => 'welcome-widget', //AngularJS directive,
                 'width'     => 6,
                 'height'    => 7,
@@ -165,7 +165,7 @@ class WidgetsTable extends Table {
             [
                 'type_id'   => 2,
                 'title'     => __('Parent outages'),
-                'icon'      => 'fa-exchange',
+                'icon'      => 'fas fa-exchange-alt',
                 'directive' => 'parent-outages-widget',
                 'width'     => 6,
                 'height'    => 7,
@@ -178,7 +178,7 @@ class WidgetsTable extends Table {
             [
                 'type_id'   => 3,
                 'title'     => __('Hosts pie chart'),
-                'icon'      => 'fa-pie-chart',
+                'icon'      => 'fa fa-pie-chart',
                 'directive' => 'hosts-piechart-widget',
                 'width'     => 6,
                 'height'    => 11,
@@ -190,7 +190,7 @@ class WidgetsTable extends Table {
             [
                 'type_id'   => 7,
                 'title'     => __('Hosts pie chart 180'),
-                'icon'      => 'fa-pie-chart',
+                'icon'      => 'fa fa-pie-chart',
                 'directive' => 'hosts-piechart-180-widget',
                 'width'     => 6,
                 'height'    => 11
@@ -198,7 +198,7 @@ class WidgetsTable extends Table {
             [
                 'type_id'   => 4,
                 'title'     => __('Services pie chart'),
-                'icon'      => 'fa-pie-chart',
+                'icon'      => 'fa fa-pie-chart',
                 'directive' => 'services-piechart-widget',
                 'width'     => 6,
                 'height'    => 11,
@@ -210,7 +210,7 @@ class WidgetsTable extends Table {
             [
                 'type_id'   => 8,
                 'title'     => __('Services pie chart 180'),
-                'icon'      => 'fa-pie-chart',
+                'icon'      => 'fa fa-pie-chart',
                 'directive' => 'services-piechart180-widget',
                 'width'     => 6,
                 'height'    => 11
@@ -218,7 +218,7 @@ class WidgetsTable extends Table {
             [
                 'type_id'   => 11,
                 'title'     => __('Traffic light'),
-                'icon'      => 'fa-road',
+                'icon'      => 'fas fa-road',
                 'directive' => 'trafficlight-widget',
                 'width'     => 3,
                 'height'    => 14
@@ -226,7 +226,7 @@ class WidgetsTable extends Table {
             [
                 'type_id'   => 12,
                 'title'     => __('Tachometer'),
-                'icon'      => 'fa-dashboard',
+                'icon'      => 'fas fa-tachometer-alt',
                 'directive' => 'tachometer-widget',
                 'width'     => 3,
                 'height'    => 14
@@ -234,7 +234,7 @@ class WidgetsTable extends Table {
             [
                 'type_id'   => 13,
                 'title'     => __('Notice'),
-                'icon'      => 'fa-pencil-square-o',
+                'icon'      => 'fas fa-pencil-square',
                 'directive' => 'notice-widget',
                 'width'     => 6,
                 'height'    => 13
@@ -256,7 +256,7 @@ class WidgetsTable extends Table {
             $widgets[] = [
                 'type_id'   => 5,
                 'title'     => __('Hosts in downtime'),
-                'icon'      => 'fa-power-off',
+                'icon'      => 'fas fa-power-off',
                 'directive' => 'hosts-downtime-widget',
                 'width'     => 12,
                 'height'    => 15,
@@ -271,7 +271,7 @@ class WidgetsTable extends Table {
             $widgets[] = [
                 'type_id'   => 6,
                 'title'     => __('Services in downtime'),
-                'icon'      => 'fa-power-off',
+                'icon'      => 'fas fa-power-off',
                 'directive' => 'services-downtime-widget',
                 'width'     => 12,
                 'height'    => 15,
@@ -286,7 +286,7 @@ class WidgetsTable extends Table {
             $widgets[] = [
                 'type_id'   => 9,
                 'title'     => __('Host status list'),
-                'icon'      => 'fa-list-alt',
+                'icon'      => 'far fa-list-alt',
                 'directive' => 'hosts-status-widget',
                 'width'     => 12,
                 'height'    => 16
@@ -294,7 +294,7 @@ class WidgetsTable extends Table {
             $widgets[] = [
                 'type_id'   => 16,
                 'title'     => __('Host status overview'),
-                'icon'      => 'fa-info-circle',
+                'icon'      => 'fas fa-info-circle',
                 'directive' => 'host-status-overview-widget',
                 'width'     => 3,
                 'height'    => 15
@@ -305,7 +305,7 @@ class WidgetsTable extends Table {
             $widgets[] = [
                 'type_id'   => 10,
                 'title'     => __('Service status list'),
-                'icon'      => 'fa-list-alt',
+                'icon'      => 'far fa-list-alt',
                 'directive' => 'services-status-widget',
                 'width'     => 12,
                 'height'    => 16
@@ -313,7 +313,7 @@ class WidgetsTable extends Table {
             $widgets[] = [
                 'type_id'   => 17,
                 'title'     => __('Service status overview'),
-                'icon'      => 'fa-info-circle',
+                'icon'      => 'fas fa-info-circle',
                 'directive' => 'service-status-overview-widget',
                 'width'     => 3,
                 'height'    => 15

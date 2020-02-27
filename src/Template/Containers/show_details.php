@@ -44,8 +44,7 @@
                     <h2><?php echo __('Objects overview'); ?> "{{containerDetails.Container.name}}"</h2>
                     <div class="widget-toolbar" role="menu">
                         <a back-button fallback-state='ContainersIndex' class="btn btn-default btn-xs">
-                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
-                        </a>
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                     </div>
                 </header>
                 <div class="widget-body">
@@ -342,7 +341,8 @@
                                         {{ servicetemplategroupContainer.name }}
                                     </a>
                                     <span ng-hide="servicetemplategroupContainer.Servicetemplategroup[0].id">
-                                            <span class="changelog_delete">{{ servicetemplategroupContainer.name }}</span>
+                                            <span
+                                                class="changelog_delete">{{ servicetemplategroupContainer.name }}</span>
                                             <i><?php echo __(' ... invalid service template group'); ?></i>
                                         </span>
                                 <?php else: ?>

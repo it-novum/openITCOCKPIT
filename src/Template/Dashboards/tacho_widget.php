@@ -24,7 +24,7 @@
 ?>
 <div>
     <flippy vertical
-            class="fancy"
+            class="col-lg-12"
             flip="['custom:FLIP_EVENT_OUT']"
             flip-back="['custom:FLIP_EVENT_IN']"
             duration="800"
@@ -53,66 +53,53 @@
             <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="hideConfig()">
                 <i class="fa fa-eye fa-sm"></i>
             </a>
-            <div class="padding-top-10">
+            <div class="col-lg-12">
+                <div class="form-group" style="width: 100%;">
+                    <label class="control-label">
+                        <?php echo __('Service'); ?>
+                    </label>
+                    <select data-placeholder="<?php echo __('Please choose'); ?>"
+                            class="form-control"
+                            chosen="services"
+                            callback="loadServices"
+                            ng-options="+(service.value.Service.id) as service.value.Host.name + '/' +((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) group by service.value.Host.name for service in services"
+                            ng-model="tacho.service_id">
+
+                    </select>
+                </div>
+
+                <div class="form-group" style="width: 100%;">
+                    <label class="control-label">
+                        <?php echo __('Select metric'); ?>
+                    </label>
+                    <select data-placeholder="<?php echo __('Please choose'); ?>"
+                            class="form-control"
+                            chosen="metrics"
+                            callback="loadServices"
+                            ng-options="key as value for (key , value) in metrics"
+                            ng-model="tacho.metric">
+
+                    </select>
+                </div>
+
                 <div class="form-group">
-                    <div class="row">
-                        <label class="col-xs-12 control-label">
-                            <?php echo __('Service'); ?>
+                    <div class="custom-control custom-checkbox  margin-bottom-10">
+                        <input type="checkbox"
+                               class="custom-control-input"
+                               ng-true-value="1"
+                               ng-false-value="0"
+                               id="showLabel"
+                               ng-model="tacho.show_label">
+                        <label class="custom-control-label" for="showLabel">
+                            <?php echo __('Show label'); ?>
                         </label>
-                        <div class="col-xs-12">
-                            <select data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="services"
-                                    callback="loadServices"
-                                    ng-options="+(service.value.Service.id) as service.value.Host.name + '/' +((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) group by service.value.Host.name for service in services"
-                                    ng-model="tacho.service_id">
-                            </select>
-
-                            <div ng-repeat="error in errors.Service">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
                     </div>
-                    <br/>
-
-                    <div class="row">
-                        <label class="col-xs-12 control-label">
-                            <?php echo __('Select metric'); ?>
-                        </label>
-                        <div class="col-xs-12">
-                            <select data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="metrics"
-                                    ng-options="key as value for (key , value) in metrics"
-                                    ng-model="tacho.metric">
-                            </select>
-                        </div>
-                    </div>
-                    <br/>
-
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group smart-form no-padding">
-                                <label class="checkbox small-checkbox-label">
-                                    <input type="checkbox" name="checkbox"
-                                           ng-model="tacho.show_label">
-                                    <i class="checkbox-primary"></i>
-                                    <?php echo __('Show label'); ?>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <br/>
-
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <button class="btn btn-primary pull-right"
-                                    ng-click="saveTacho()">
-                                <?php echo __('Save'); ?>
-                            </button>
-                        </div>
-                    </div>
-
+                </div>
+                <div class="col-xs-12">
+                    <button class="btn btn-primary float-right"
+                            ng-click="saveTacho()">
+                        <?php echo __('Save'); ?>
+                    </button>
                 </div>
             </div>
         </flippy-back>

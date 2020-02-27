@@ -45,7 +45,7 @@ angular.module('openITCOCKPIT').directive('disableServiceFlapDetection', functio
                 $timeout(function(){
                     $scope.isDisableingServiceFlapDetection = false;
                     $scope.percentage = 0;
-                    $('#angularDisableServiceFalpDetectionModal').modal('hide');
+                    $('#angularDisableServiceFlapDetectionModal').modal('hide');
                 }, 500);
             };
 
@@ -61,7 +61,7 @@ angular.module('openITCOCKPIT').directive('disableServiceFlapDetection', functio
                     $scope.setDisableServiceFlapDetectionCallback(attr.callback);
                 }
 
-                $('#angularDisableServiceFalpDetectionModal').modal('show');
+                $('#angularDisableServiceFlapDetectionModal').modal('show');
                 $scope.setDisableServiceFlapDetectionObjects(objects);
             };
         }

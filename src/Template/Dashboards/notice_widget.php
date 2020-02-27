@@ -24,7 +24,7 @@
 ?>
 <div>
     <flippy vertical
-            class="fancy"
+            class="col-lg-12"
             flip="['custom:FLIP_EVENT_OUT']"
             flip-back="['custom:FLIP_EVENT_IN']"
             duration="800"
@@ -43,13 +43,22 @@
             <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
                 <i class="fa fa-eye fa-sm"></i>
             </a>
-            <div class="padding-top-10">
-            <textarea name="notes" class="form-control notice-text" maxlength="4000" cols="30" rows="10"
-                      ng-model-options="{debounce: 500}" ng-model="widget.WidgetNotice.note">
-            </textarea>
-                <span class="note"><i class="fa fa-code text-primary"></i>
-                    <?php echo __('Insert text, html or markdown code'); ?>
-            </span>
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label class="form-label" for="noticeWidgetTextArea">
+                        <i class="fa fa-code text-primary"></i>
+                        <?php echo __('Insert text, html or markdown code'); ?>
+                    </label>
+                    <textarea class="form-control notice-text"
+                              type="text"
+                              ng-model="widget.WidgetNotice.note"
+                              ng-model-options="{debounce: 500}"
+                              maxlength="4000"
+                              cols="30"
+                              rows="6"
+                              id="noticeWidgetTextArea">
+                    </textarea>
+                </div>
             </div>
         </flippy-back>
     </flippy>

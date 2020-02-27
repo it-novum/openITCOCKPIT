@@ -45,7 +45,7 @@ angular.module('openITCOCKPIT').directive('servicestatusicon', function($interva
                         $scope.flappingColor = 'txt-color-red';
                         return;
                     case 3:
-                        $scope.btnColor = 'default';
+                        $scope.btnColor = 'secondary';
                         $scope.flappingColor = 'txt-color-blueDark';
                         return;
                     default:

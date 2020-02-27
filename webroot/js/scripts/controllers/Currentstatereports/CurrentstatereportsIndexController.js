@@ -134,52 +134,33 @@ angular.module('openITCOCKPIT')
 
         $scope.loadServices();
 
-        $scope.createBackgroundForPerfdataMeter = function(attributes){
-            var background = {
-                'background': 'none'
-            };
-
-            if(!(attributes.min && attributes.current && attributes.warning && attributes.critical && attributes.min && attributes.max)){
-                return background;
-            }
-            var linearGradientArray = ['to right'];
+        $scope.getProgressbarData = function(attributes, label){
             var start = (attributes.min !== null) ? attributes.min : 0;
             var end = (attributes.max !== null) ? attributes.max : (attributes.critical != null) ? attributes.critical : 0;
             var currentValue = Number(attributes.current);
             var warningValue = Number(attributes.warning);
             var criticalValue = Number(attributes.critical);
+            var okColor = 'ok';
+            var warningColor = 'warning';
+            var criticalColor = 'critical';
+            var backgroundColorClass = okColor;
+            var unit = (attributes.unit !== null) ? attributes.unit: '';
 
-            //if warning value < critical value, inverse
-            if(!isNaN(warningValue) && !isNaN(criticalValue) && warningValue < criticalValue){
-                var curValPosInPercent = currentValue / (end - start) * 100;
-                curValPosInPercent = (curValPosInPercent > 100) ? 100 : curValPosInPercent;
-                if((!isNaN(warningValue) && currentValue >= warningValue) &&
-                    (!isNaN(criticalValue) && currentValue < criticalValue)
-                ){
-                    //if current state > warning and current state < critical
-                    linearGradientArray.push(
-                        '#5CB85C 0%',
-                        '#F0AD4E ' + curValPosInPercent + '%'
-                    );
-                }else if((!isNaN(warningValue) && currentValue > warningValue) &&
-                    (!isNaN(criticalValue) && currentValue >= criticalValue)
-                ){
-                    //if current state > warning and current state > critical
-                    linearGradientArray.push(
-                        '#5CB85C 0%',
-                        '#F0AD4E ' + (warningValue / (end - start) * 100) + '%',
-                        '#D9534F ' + curValPosInPercent + '%'
-                    );
-                }else if(currentValue < warningValue){
-                    linearGradientArray.push('#5CB85C ' + curValPosInPercent + '%');
-                }
-                //set white color for gradient for empty area
-                if(curValPosInPercent > 0 && curValPosInPercent < 100){
-                    linearGradientArray.push('transparent ' + curValPosInPercent + '%');
-                }
+            var percentVal = currentValue/(end - start)*100;
+
+            if(currentValue >= warningValue){
+                backgroundColorClass = warningColor;
             }
+            if(currentValue >= criticalValue){
+                backgroundColorClass = criticalColor;
+            }
+
+            var perfdataString = label +' '+ currentValue +' '+ unit;
+
             return {
-                'background': 'linear-gradient(' + linearGradientArray.join(', ') + ')'
+                'currentPercentage': percentVal,
+                'backgroundColorClass': backgroundColorClass,
+                'perfdataString':perfdataString
             };
         }
     });

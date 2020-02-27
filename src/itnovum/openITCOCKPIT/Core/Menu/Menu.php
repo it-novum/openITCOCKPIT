@@ -59,7 +59,7 @@ class Menu {
                 'dashboards',
                 'index',
                 '',
-                'fa fa-dashboard',
+                'fas fa-tachometer-alt',
                 ['dashboard'],
                 1
             ))
@@ -70,7 +70,7 @@ class Menu {
                 'index',
                 '',
                 'fa fa-list',
-                [''],
+                ['browser'],
                 2
             ))
             ->addCategory(
@@ -106,7 +106,7 @@ class Menu {
                     'reports_category',
                     __('Reports'),
                     4,
-                    'fa fa-file-text-o'
+                    'fa fa-file-text'
                 ))
                     ->addLink(new MenuLink(
                         __('Instant reports'),
@@ -162,7 +162,7 @@ class Menu {
                         'logentries',
                         'index',
                         '',
-                        'fa fa-file-text-o',
+                        'fa fa-file-text',
                         [],
                         2
                     ))
@@ -309,7 +309,7 @@ class Menu {
                     'hostgroups',
                     'index',
                     '',
-                    'fa fa-sitemap',
+                    'fas fa-server',
                     [],
                     1
                 ))
@@ -527,7 +527,7 @@ class Menu {
                     'packetmanager',
                     'index',
                     '',
-                    'fa fa-cloud-download',
+                    'fa fa-cloud-download-alt',
                     [],
                     2
                 ))
@@ -579,14 +579,24 @@ class Menu {
                 'fa fa-user-secret'
             ))
                 ->addLink(new MenuLink(
-                    __('Agent Servicetemp.'),
-                    'ServicetemplatesAgent',
-                    'servicetemplates',
-                    'agent',
+                    __('Agent Configuration'),
+                    'AgentconnectorsConfig',
+                    'agentconnector',
+                    'config',
                     '',
-                    'fa fa-pencil-square-o',
+                    'fa fa-user-secret',
                     [],
                     1
+                ))
+                ->addLink(new MenuLink(
+                    __('Untrusted Agents'),
+                    'AgentconnectorsAgent',
+                    'agentconnector',
+                    'agents',
+                    '',
+                    'fa fa-user-secret',
+                    [],
+                    2
                 ))
                 ->addLink(new MenuLink(
                     __('Agent Checks'),
@@ -596,7 +606,7 @@ class Menu {
                     '',
                     'fa fa-cogs',
                     [],
-                    2
+                    3
                 ))
             );
         $Configuration = new MenuHeadline(self::MENU_CONFIGURATION, __('System Configuration'), 4);
@@ -629,7 +639,7 @@ class Menu {
                     'ConfigurationFiles',
                     'index',
                     '',
-                    'fa fa-file-text-o',
+                    'fa fa-file-text',
                     [],
                     1
                 ))
@@ -649,7 +659,7 @@ class Menu {
                     'registers',
                     'index',
                     '',
-                    'fa fa-check-square-o',
+                    'fa fa-check-square',
                     [],
                     3
                 ))

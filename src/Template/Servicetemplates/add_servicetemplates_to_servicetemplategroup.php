@@ -24,19 +24,24 @@
 ?>
 
 <div id="angularAddServicetemplatesToServicetemplategroups" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header bg-primary txt-color-white">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title"><?php echo __('Append service template/s to service template group'); ?></h4>
+                <h5 class="modal-title">
+                    <i class="fas fa-link"></i>
+                    <?php echo __('Append service template/s to service template group'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-xs-12">
+                    <div class="col-lg-12">
                         <?php echo __('Selected service templates'); ?>
                     </div>
 
-                    <div class="col-xs-12 margin-top-10">
+                    <div class="col-lg-12 margin-top-10">
                         <ul>
                             <li ng-repeat="(id, templateName) in objects">
                                 {{ templateName }}
@@ -45,7 +50,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" ui-sref="ServicetemplategroupsAdd({ids:servicetemplateIds})"
                         data-dismiss="modal">
@@ -58,10 +62,9 @@
                 </button>
 
                 <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <?php echo __('Cancel'); ?>
+                    <?php echo __('Close'); ?>
                 </button>
             </div>
         </div>
-
     </div>
 </div>
