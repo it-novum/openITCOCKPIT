@@ -12162,31 +12162,6 @@ readers do not read off random characters that represent icons */
   position: static;
   width: auto; }
 
-/*!
- * Font Awesome Pro 5.0.7 by @fontawesome - https://fontawesome.com
- * License - https://fontawesome.com/license (Commercial License)
- */
-@font-face {
-  font-family: 'Font Awesome 5 Pro';
-  font-style: normal;
-  font-weight: 300;
-  src: url("../webfonts/fa-light-300.eot");
-  src: url("../webfonts/fa-light-300.eot?#iefix") format("embedded-opentype"), url("../webfonts/fa-light-300.woff2") format("woff2"), url("../webfonts/fa-light-300.woff") format("woff"), url("../webfonts/fa-light-300.ttf") format("truetype"), url("../webfonts/fa-light-300.svg#fontawesome") format("svg"); }
-
-.fal {
-  font-family: 'Font Awesome 5 Pro';
-  font-weight: 300; }
-
-/*!
- * WebApp Icons
- */
-@font-face {
-  font-family: 'nextgen-icons';
-  src: url("../webfonts/nextgen-icons.eot");
-  src: url("../webfonts/nextgen-icons.eot?#iefix") format("embedded-opentype"), url("../webfonts/nextgen-icons.woff2") format("woff2"), url("../webfonts/webfonts/nextgen-icons.woff") format("woff"), url("../webfonts/webfonts/nextgen-icons.ttf") format("truetype"), url("../webfonts/webfonts/nextgen-icons.svg#nextgen-icons") format("svg");
-  font-weight: normal;
-  font-style: normal; }
-
 /* Use the following CSS code if you want to have a class per icon */
 .ni,
 [data-icon]:before,

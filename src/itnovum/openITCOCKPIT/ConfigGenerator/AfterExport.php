@@ -33,9 +33,9 @@ class AfterExport extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'after_export.php.tpl';
 
-    protected $realOutfile = '/opt/openitc/etc/frontend/core/after_export.php';
+    protected $realOutfile = CONFIG . 'after_export.php';
 
-    protected $linkedOutfile = '/opt/openitc/etc/frontend/core/after_export.php';
+    protected $linkedOutfile = CONFIG . 'after_export.php';
 
     /**
      * @var string
@@ -109,7 +109,7 @@ class AfterExport extends ConfigGenerator implements ConfigInterface {
             }
         }
 
-        $realFile = '/opt/openitc/etc/frontend/core/after_export.php';
+        $realFile = CONFIG . 'after_export.php';
         return $this->saveConfigFile($configToExport, $realFile);
     }
 

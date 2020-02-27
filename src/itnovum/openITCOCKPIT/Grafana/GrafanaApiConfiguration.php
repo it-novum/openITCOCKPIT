@@ -324,7 +324,7 @@ class GrafanaApiConfiguration {
                 $timerange
             );
         } else {
-            //Old Grfana URL <? 5.4
+            //Old Grfana URL < 5.4
             return sprintf(
                 '%s/dashboard/db/%s?theme=%s%s&from=%s&to=now&kiosk',
                 $uiUrl,
@@ -352,7 +352,7 @@ class GrafanaApiConfiguration {
             $uiUrl = $this->getDockerUrl();
         }
 
-        return sprintf(
+        $url = sprintf(
             '%s%s?theme=%s%s&from=%s&to=now&kiosk',
             $uiUrl,
             $url,
@@ -360,6 +360,13 @@ class GrafanaApiConfiguration {
             $autoRefreshUrlStr,
             $timerange
         );
+
+        if($this->isDockerGrafana()){
+            //Remove /grafana prefix to avoid /grafana/grafana
+            return substr($url, strlen($this->getDockerUrl()));
+        }
+
+        return $url;
     }
 
     public function isDockerGrafana() {

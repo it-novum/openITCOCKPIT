@@ -23,41 +23,48 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="AgentconnectorsAgent">
+            <i class="fa fa-user-secret"></i> <?php echo __('openITCOCKPIT Agent'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="AgentchecksIndex">
+            <?php echo __('Checks'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <?php echo __('Add'); ?>
+    </li>
+</ol>
+
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-cogs fa-fw "></i>
-            <?php echo __('openITCOCKPIT Agent'); ?>
-            <span>>
-                <?php echo __('Checks'); ?>
-            </span>
-            <div class="third_level">> <?php echo __('Edit'); ?></div>
-        </h1>
-    </div>
-</div>
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Edit openITCOCKPIT Agent check:'); ?>
+                    {{post.Agentcheck.name}}
+                </h2>
+                <div class="panel-toolbar">
+                    <button class="btn btn-xs btn-default shadow-0" ui-sref="AgentchecksIndex">
+                        <i class="fa fa-arrow-left"></i>
+                        <?php echo __('Back to list'); ?>
+                    </button>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
 
-<div class="jarviswidget" id="wid-id-0">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-cogs"></i> </span>
-        <h2>
-            <?php echo __('Edit openITCOCKPIT Agent check:'); ?>
-            {{post.Agentcheck.name}}
-        </h2>
-        <div class="widget-toolbar" role="menu">
-            <button class="btn btn-default" ui-sref="AgentchecksIndex">
-                <i class="fa fa-arrow-left"></i>
-                <?php echo __('Back to list'); ?>
-            </button>
-        </div>
-    </header>
-    <div>
-        <div class="widget-body">
-            <form ng-submit="submit();" class="form-horizontal"
-                  ng-init="successMessage=
+                    <form ng-submit="submit();" class="form-horizontal"
+                          ng-init="successMessage=
             {objectName : '<?php echo __('Agent check'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
-                <div class="row">
-
-                    <div class="col-xs-12 col-md-12 col-lg-8">
 
                         <div class="form-group required" ng-class="{'has-error': errors.name}">
                             <label class="col col-md-2 control-label">
@@ -111,21 +118,22 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-
-                    <div class="col-xs-12 margin-top-10 margin-bottom-10">
-                        <div class="well formactions ">
-                            <div class="pull-right">
-                                <input class="btn btn-primary" type="submit"
-                                       value="<?php echo __('Update agent check'); ?>">
-                                <a back-button fallback-state='AgentchecksIndex'
-                                   class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        <div class="card margin-top-20">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <button type="submit" class="btn btn-primary waves-effect waves-themed">
+                                        <?php echo __('Update agent check'); ?>
+                                    </button>
+                                    <a back-button fallback-state='AgentchecksIndex'
+                                       class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
 
-            </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

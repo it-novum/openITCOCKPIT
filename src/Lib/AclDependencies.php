@@ -265,9 +265,7 @@ class AclDependencies {
 
 
         $this
-            ->dependency('Commands', 'index', 'Commands', 'view')
-            ->dependency('Commands', 'add', 'Commands', 'getConsoleWelcome')
-            ->dependency('Commands', 'edit', 'Commands', 'getConsoleWelcome');
+            ->dependency('Commands', 'index', 'Commands', 'view');
 
 
         $this

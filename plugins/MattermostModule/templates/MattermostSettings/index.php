@@ -123,9 +123,9 @@
                                 <div class="help-block">
                                     <?php
                                     if ($this->Acl->hasPermission('index', 'proxy', '')):
-                                        echo __('Determine if the <a ui-sref="ProxyIndex">configured proxy</a> shoud be used.');
+                                        echo __('Determine if the <a ui-sref="ProxyIndex">configured proxy</a> should be used.');
                                     else:
-                                        echo __('Determine if the configured proxy shoud be used.');
+                                        echo __('Determine if the configured proxy should be used.');
                                     endif;
                                     ?>
                                 </div>

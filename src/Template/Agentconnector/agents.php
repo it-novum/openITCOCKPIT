@@ -103,8 +103,7 @@
                     </div>
 
                     <div class="frame-wrap">
-
-                        <table class="table table-striped m-0 table-hover table-bordered table-sm">
+                        <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
                                 <th class="no-sort sorting_disabled width-15">
@@ -152,49 +151,48 @@
                                 </td>
                                 <td>{{agent.Agentconnector.generation_date}}</td>
                                 <td class="width-50">
-                                    <div class="btn-group">
+                                    <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
                                             <a href="javascript:void(0);"
-                                               class="btn btn-default">
-                                                &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i>
                                             </a>
                                         <?php else: ?>
-                                            <a href="javascript:void(0);" class="btn btn-default disabled">
-                                                &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                            <a href="javascript:void(0);"
+                                               class="btn btn-default btn-lower-padding disabled">
+                                                <i class="fa fa-cog"></i>
+                                            </a>
                                         <?php endif; ?>
-                                        <a href="javascript:void(0);" data-toggle="dropdown"
-                                           class="btn btn-default dropdown-toggle"><span
-                                                class="caret"></span></a>
-                                        <ul class="dropdown-menu pull-right"
-                                            id="menuHack-{{agent.Agentconnector.id}}">
+                                        <button type="button"
+                                                class="btn btn-default dropdown-toggle btn-lower-padding"
+                                                data-toggle="dropdown">
+                                            <i class="caret"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right"
+                                             id="menuHack-{{agent.Agentconnector.id}}">
                                             <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
-                                                <li ng-hide="agent.Agentconnector.trusted">
-                                                    <a ng-click="changetrust(agent.Agentconnector.id, 1, true)"
-                                                       class="cursor-pointer">
-                                                        <i class="fa fa-check"></i>
-                                                        <?php echo __('Trust Agent'); ?>
-                                                    </a>
-                                                </li>
-                                                <li ng-show="agent.Agentconnector.trusted">
-                                                    <a ng-click="changetrust(agent.Agentconnector.id, 0, true)"
-                                                       class="cursor-pointer">
-                                                        <i class="fa fa-times-circle"></i>
-                                                        <?php echo __('Untrust Agent'); ?>
-                                                    </a>
-                                                </li>
+                                                <a ng-click="changetrust(agent.Agentconnector.id, 1, true)"
+                                                   ng-hide="agent.Agentconnector.trusted"
+                                                   href="javascript:void(0);" class="dropdown-item">
+                                                    <i class="fa fa-check"></i>
+                                                    <?php echo __('Trust Agent'); ?>
+                                                </a>
+                                                <a ng-click="changetrust(agent.Agentconnector.id, 0, true)"
+                                                   ng-show="agent.Agentconnector.trusted"
+                                                   href="javascript:void(0);" class="dropdown-item">
+                                                    <i class="fa fa-times-circle"></i>
+                                                    <?php echo __('Untrust Agent'); ?>
+                                                </a>
                                             <?php endif; ?>
 
                                             <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
-                                                <li class="divider"></li>
-                                                <li>
-                                                    <a href="javascript:void(0);"
-                                                       class="txt-color-red"
-                                                       ng-click="confirmDelete(getObjectForDelete(agent))">
-                                                        <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
-                                                    </a>
-                                                </li>
+                                                <a href="javascript:void(0);"
+                                                   class="dropdown-item txt-color-red"
+                                                   ng-click="confirmDelete(getObjectForDelete(agent))">
+                                                    <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
+                                                </a>
                                             <?php endif; ?>
-                                        </ul>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
