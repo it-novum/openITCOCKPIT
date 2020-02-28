@@ -38,6 +38,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
@@ -47,6 +48,7 @@ use itnovum\openITCOCKPIT\Agent\AgentServicesToCreate;
 use itnovum\openITCOCKPIT\Agent\HttpLoader;
 use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
+use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -79,7 +81,7 @@ class AgentconnectorController extends AppController {
 
     public function certificate() {
         if (!$this->isJsonRequest()) {
-            return;
+            throw new BadRequestException();
         }
         $this->autoRender = false;
 
@@ -89,41 +91,35 @@ class AgentconnectorController extends AppController {
         $AgentCertificateData = new AgentCertificateData();
 
         if (!empty($this->request->getData('csr')) && !empty($this->request->getData('hostuuid'))) {   //is certificate request
+            $hostuuid = $this->request->getData('hostuuid');
+
             if (!empty($this->request->getData('checksum'))) {  //maybe a request from an already known agent? (match checksum of old agent crt)
-                if ($AgentconnectorTable->trustIsValid($this->request->getData('checksum'), $this->request->getData('hostuuid'))) {
-                    $json = json_encode($AgentCertificateData->getAgentCsr($this->request->getData('hostuuid'), $this->request->getData('csr'), $AgentconnectorTable));
+                if ($AgentconnectorTable->trustIsValid($this->request->getData('checksum'), $hostuuid)) {
+                    $json = json_encode($AgentCertificateData->getAgentCsr($hostuuid, $this->request->getData('csr'), $AgentconnectorTable));
                     return $this->response->withType("application/json")->withStringBody($json);
                 } else {    //untrusted threw frontend / maybe an imitator / unknown error?
-                    echo json_encode(['unknown' => true]);
+                    return $this->response->withType("application/json")->withStringBody(json_encode(['unknown' => true]));
                 }
             } else {    //not a request from an agent that has received a predecessor certificate
-                if ($AgentconnectorTable->isTrustedFromUser($this->request->getData('hostuuid'))) {
-                    if ($AgentconnectorTable->certificateNotYetGenerated($this->request->getData('hostuuid'))) {
-                        $json = json_encode($AgentCertificateData->getAgentCsr($this->request->getData('hostuuid'), $this->request->getData('csr'), $AgentconnectorTable));
+                if ($AgentconnectorTable->isTrustedFromUser($hostuuid)) {
+                    if ($AgentconnectorTable->certificateNotYetGenerated($hostuuid)) {
+                        $json = json_encode($AgentCertificateData->getAgentCsr($hostuuid, $this->request->getData('csr'), $AgentconnectorTable));
                         return $this->response->withType("application/json")->withStringBody($json);
                     }
-                    echo json_encode(['checksum_missing' => true]);
+                    return $this->response->withType("application/json")->withStringBody(json_encode(['checksum_missing' => true]));
                 } else {    //definitely not a request from a known agent!
-                    if (!$AgentconnectorTable->getByHostUuid($this->request->getData('hostuuid'))) {
-                        $AgentConnectionEntity = $AgentconnectorTable->newEntity([
-                            'hostuuid'             => $this->request->getData('hostuuid'),
-                            'checksum'             => null,
-                            'ca_checksum'          => null,
-                            'generation_date'      => null,
-                            'remote_addr'          => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null,
-                            'http_x_forwarded_for' => isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : null,
-                            'trusted'              => 0
-                        ]);
-                        $AgentconnectorTable->save($AgentConnectionEntity);
-                        if ($AgentConnectionEntity->hasErrors()) {
-                            $this->set('error', 'could not save data');
-                            $this->viewBuilder()->setOption('serialize', ['error']);
-                            return;
-                        }
+                    $hadErrors = false;
+                    if (!$AgentconnectorTable->getByHostUuid($hostuuid)) {
+                        $hadErrors = $AgentconnectorTable->addAgent($hostuuid, $_SERVER['REMOTE_ADDR'] ?? null, $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null);
                     }
 
-                    //should return this if agent is unknown and needs to be confirmed by an user
-                    echo json_encode(['unknown' => true]);
+                    if ($hadErrors) {
+                        return $this->response->withType("application/json")->withStringBody(json_encode(['error' => 'could not save data']));
+                    } else {
+                        //should return ['unknown' => true] if agent is unknown and needs to be confirmed by an user
+                        //echo json_encode(['unknown' => true]);
+                        return $this->response->withType("application/json")->withStringBody(json_encode(['unknown' => true]));
+                    }
                 }
             }
         }
@@ -206,55 +202,88 @@ class AgentconnectorController extends AppController {
 
     public function updateCheckdata() {
         if (!$this->isJsonRequest()) {
-            return;
+            throw new BadRequestException();
         }
-        $this->autoRender = false;
 
         /** @var AgentconnectorTable $AgentconnectorTable */
         $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
-        /** @var AgentCertificateData $AgentCertificateData */
-        $AgentCertificateData = new AgentCertificateData();
+
+        $receivedChecks = 0;
 
         if (!empty($this->request->getData('checkdata')) && !empty($this->request->getData('hostuuid'))) {
             if ($AgentconnectorTable->isTrustedFromUser($this->request->getData('hostuuid'))) {
-                $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata'));
                 if (!$AgentconnectorTable->certificateNotYetGenerated($this->request->getData('hostuuid')) && !empty($this->request->getData('checksum'))) {  //should have a certificate!
                     if ($AgentconnectorTable->trustIsValid($this->request->getData('checksum'), $this->request->getData('hostuuid'))) {
-
-                        //if new ca ws generated, echo new_ca with old ca checksum
+                        $receivedChecks = $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata', '{}'));
+                        //if new ca certificate was generated, echo new_ca with old ca checksum
+                    } else {    //trusted, but certificate is not valid! do not process checkdata!
+                        //maybe frontend hint, that the agent certificate has changed (and if it should be trusted)
                     }
                 } else {    //does not have a certificate or autossl option was disabled after creation
-                    //$this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata'));
+                    $receivedChecks = $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata', '{}'));
                 }
             } else {
-                $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata'));
+                $receivedChecks = $this->processUpdateCheckdata($this->request->getData('hostuuid'), $this->request->getData('checkdata', '{}'));
             }
         }
+
+        $this->set('receivedChecks', $receivedChecks);
+        $this->viewBuilder()->setOption('serialize', ['receivedChecks']);
     }
 
     /**
      * @param $hostuuid
      * @param $checkdata
+     * @return int
      */
     private function processUpdateCheckdata($hostuuid, $checkdata) {
         /** @var AgenthostscacheTable $AgenthostscacheTable */
         $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
+        $AgenthostscacheTable->saveCacheData($hostuuid, $checkdata);
 
-        //require_once '/opt/openitcockpit-receiver/vendor/autoload.php';
+        require_once "/opt/openitc/receiver/vendor/autoload.php";
 
-        if ($AgenthostscacheTable->existsByHostuuid($hostuuid)) {
-            $Agenthostscache = $AgenthostscacheTable->getByHostUuid($hostuuid);
-            $Agenthostscache = $AgenthostscacheTable->patchEntity($Agenthostscache, ['checkdata' => $checkdata, 'modified' => FrozenTime::now()]);
-        } else {
-            $Agenthostscache = $AgenthostscacheTable->newEntity([
-                'hostuuid'  => $hostuuid,
-                'checkdata' => $checkdata,
-                'modified'  => FrozenTime::now(),
-                'created'   => FrozenTime::now()
-            ]);
+
+        $CheckConfig = new \itnovum\openITCOCKPIT\Checks\Receiver\CheckConfig('/opt/openitc/receiver/etc/production.json');
+        $config = $CheckConfig->getConfigByHostName($this->request->getData('hostuuid'));
+
+        $GearmanClient = new Gearman();
+        $receivedChecks = 0;
+
+        if (isset($config['checks']) && is_array($config['checks'])) {
+            foreach ($config['checks'] as $pluginConfig) {
+                $pluginName = $pluginConfig['plugin'];
+
+                $pluginClassName = sprintf('itnovum\openITCOCKPIT\Checks\Receiver\Plugins\%s', $pluginName);
+                if (!class_exists($pluginClassName)) {
+                    //Unknown Plugin
+                    continue;
+                }
+
+                /** @var  $Plugin \itnovum\openITCOCKPIT\Checks\Receiver\Plugins\PluginInterface */
+                $Plugin = new $pluginClassName($pluginConfig, json_decode($checkdata, true));
+
+                $pluginOutput = $Plugin->getOutput();
+                if (strlen($Plugin->getPerfdataSerialized()) > 0) {
+                    $pluginOutput .= '|' . $Plugin->getPerfdataSerialized();
+                }
+
+                $GearmanClient->sendBackground('cmd_external_command', [
+                    'command'     => 'PROCESS_SERVICE_CHECK_RESULT',
+                    'parameters'  => [
+                        $config['uuid'], //host_name
+                        $pluginConfig['uuid'], //service_description
+                        $Plugin->getStatuscode(),
+                        $pluginOutput
+                    ],
+                    'satelliteId' => 0,
+                    'timestamp'   => time()
+                ]);
+                $receivedChecks++;
+            }
         }
 
-        $AgenthostscacheTable->save($Agenthostscache);
+        return $receivedChecks;
     }
 
     /**
@@ -269,15 +298,9 @@ class AgentconnectorController extends AppController {
         if (empty($this->request->getData('config'))) {
             throw new MissingParameterExceptions('config is missing!');
         }
-        //debug($this->request->getData('config'));die();
-
 
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        /** @var ServicesTable $ServicesTable */
-        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-        /** @var $AgentchecksTable AgentchecksTable */
-        $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
         /** @var $AgentconfigsTable AgentconfigsTable */
         $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
 
@@ -320,9 +343,6 @@ class AgentconnectorController extends AppController {
         if (!$this->isAngularJsRequest()) {
             return;
         }
-
-        /** @var AgentconnectorTable $AgentconnectorTable */
-        $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
     }
 
     /**
@@ -585,7 +605,6 @@ class AgentconnectorController extends AppController {
             $this->serviceCreationErrors[] = $service->getErrors();
         } else {
             //No errors
-
             $User = new User($this->getUser());
 
             $extDataForChangelog = $ServicesTable->resolveDataForChangelog($request);
