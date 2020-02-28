@@ -141,6 +141,10 @@ openITCOCKPIT v4 Utilities
     padding-right: 23px;
 }
 
+.padding-right-30 {
+    padding-right: 30px;
+}
+
 .padding-20 {
     padding: 20px;
 }
@@ -365,6 +369,10 @@ openITCOCKPIT v4 Utilities
 
 .width-240 {
     width: 240px;
+}
+
+.width-complete {
+    width: 100%;
 }
 
 .small-btn {
