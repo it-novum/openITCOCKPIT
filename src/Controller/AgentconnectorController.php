@@ -511,7 +511,7 @@ class AgentconnectorController extends AppController {
                     $agentJsonOutput = $response['response'];
                 }
             } catch (\Exception | GuzzleException $e) {
-
+                throw new \Exception('Could not connect to agent to fetch current check data! - ' . $e->getMessage());
             }
         }
 
@@ -537,8 +537,7 @@ class AgentconnectorController extends AppController {
             $response = $HttpLoader->sendCertificateToAgent();
         }
 
-        if (isset($this->serviceCreationErrors) && !empty($this->serviceCreationErrors)) {
-            $this->serviceCreationErrors = [];
+        if (isset($this->serviceCreationErrors) && is_array($this->serviceCreationErrors) && !empty($this->serviceCreationErrors)) {
             $this->response = $this->response->withStatus(400);
             $this->set('error', $this->serviceCreationErrors);
             $this->viewBuilder()->setOption('serialize', ['error']);

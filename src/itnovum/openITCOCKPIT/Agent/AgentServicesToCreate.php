@@ -135,12 +135,15 @@ class AgentServicesToCreate {
                     if (isset($objects['result'])) {
                         foreach ($objects['result'] as $dockercontainer) {
                             foreach ($receiverPluginNames as $receiverPluginName) {
-                                $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
-                                $service['servicecommandargumentvalues'][0]['value'] = 'id';
-                                $service['servicecommandargumentvalues'][1]['value'] = $dockercontainer['id'];
-                                $service['agent_wizard_option_description'] = $dockercontainer['id'] . (isset($dockercontainer['name']) ? ' (' . $dockercontainer['name'] . ')' : '');
+                                //if is running check or container is really running for any other check
+                                if ($receiverPluginName === 'DockerContainerRunning' || (isset($dockercontainer['pids']) || isset($dockercontainer['cpu_percent']))) {
+                                    $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
+                                    $service['servicecommandargumentvalues'][0]['value'] = 'id';
+                                    $service['servicecommandargumentvalues'][1]['value'] = $dockercontainer['id'];
+                                    $service['agent_wizard_option_description'] = $dockercontainer['id'] . (isset($dockercontainer['name']) ? ' (' . $dockercontainer['name'] . ')' : '');
 
-                                $this->addServiceToCreate($service, $receiverPluginName, $services, $dockercontainer['id'], 1);
+                                    $this->addServiceToCreate($service, $receiverPluginName, $services, $dockercontainer['id'], 1);
+                                }
                             }
                         }
                     }
@@ -190,7 +193,7 @@ class AgentServicesToCreate {
 
                                 $this->addServiceToCreate($service, $receiverPluginName, $services, $tempsensorname, 3);
                             }
-                        } else if ($sensorType === 'battery') {
+                        } else if ($sensorType === 'battery' && !empty($sensor)) {
                             $receiverPluginName = 'Battery';
                             $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
 
