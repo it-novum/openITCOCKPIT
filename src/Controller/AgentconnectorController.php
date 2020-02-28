@@ -250,7 +250,7 @@ class AgentconnectorController extends AppController {
         $GearmanClient = new Gearman();
         $receivedChecks = 0;
 
-        if (isset($config['checks']) && is_array($config['checks'])) {
+        if (isset($config['checks']) && is_array($config['checks']) && isset($config['mode']) && $config['mode'] === 'push') {
             foreach ($config['checks'] as $pluginConfig) {
                 $pluginName = $pluginConfig['plugin'];
 

@@ -2738,23 +2738,34 @@ class NagiosConfigGenerator {
         foreach ($hosts as $hostId => $host) {
             $hostUuid = $host['uuid'];
 
-            if (!empty($host['agentconfig'])) {
+            if (!empty($host['agentconfig']) || !empty($host['agenthostscache'])) {
                 $services = $ServicesTable->getAllOitcAgentServicesByHostIdForExport($hostId);
 
                 if (!empty($services)) {
-                    $config[$hostUuid] = [
-                        'name'       => $host['name'],
-                        'address'    => $host['address'],
-                        'uuid'       => $hostUuid,
-                        'port'       => $host['agentconfig'] && $host['agentconfig']['port'] ? $host['agentconfig']['port'] : '',
-                        'proxy'      => $host['agentconfig'] && $host['agentconfig']['proxy'] && $host['agentconfig']['proxy'] == 1 ? $proxySettings['ipaddress'] . ':' . $proxySettings['port'] : '',
-                        'use_https'  => $host['agentconfig'] && $host['agentconfig']['use_https'] ? $host['agentconfig']['use_https'] : '',
-                        'insecure'   => $host['agentconfig'] && $host['agentconfig']['insecure'] ? $host['agentconfig']['insecure'] : '',
-                        'basic_auth' => $host['agentconfig'] && $host['agentconfig']['basic_auth'] ? $host['agentconfig']['basic_auth'] : '',
-                        'username'   => $host['agentconfig'] && $host['agentconfig']['username'] ? $host['agentconfig']['username'] : '',
-                        'password'   => $host['agentconfig'] && $host['agentconfig']['password'] ? $host['agentconfig']['password'] : '',
-                        'checks'     => []
-                    ];
+                    if (!empty($host['agentconfig'])) {
+                        $config[$hostUuid] = [
+                            'name'       => $host['name'],
+                            'address'    => $host['address'],
+                            'uuid'       => $hostUuid,
+                            'port'       => $host['agentconfig'] && $host['agentconfig']['port'] ? $host['agentconfig']['port'] : '',
+                            'proxy'      => $host['agentconfig'] && $host['agentconfig']['proxy'] && $host['agentconfig']['proxy'] == 1 ? $proxySettings['ipaddress'] . ':' . $proxySettings['port'] : '',
+                            'use_https'  => $host['agentconfig'] && $host['agentconfig']['use_https'] ? $host['agentconfig']['use_https'] : '',
+                            'insecure'   => $host['agentconfig'] && $host['agentconfig']['insecure'] ? $host['agentconfig']['insecure'] : '',
+                            'basic_auth' => $host['agentconfig'] && $host['agentconfig']['basic_auth'] ? $host['agentconfig']['basic_auth'] : '',
+                            'username'   => $host['agentconfig'] && $host['agentconfig']['username'] ? $host['agentconfig']['username'] : '',
+                            'password'   => $host['agentconfig'] && $host['agentconfig']['password'] ? $host['agentconfig']['password'] : '',
+                            'mode'       => 'pull',
+                            'checks'     => []
+                        ];
+                    } else if (!empty($host['agenthostscache'])) {
+                        $config[$hostUuid] = [
+                            'name'    => $host['name'],
+                            'address' => $host['address'],
+                            'uuid'    => $hostUuid,
+                            'mode'    => 'push',
+                            'checks'  => []
+                        ];
+                    }
 
                     foreach ($services as $service) {
                         $servicename = $service['name'];
