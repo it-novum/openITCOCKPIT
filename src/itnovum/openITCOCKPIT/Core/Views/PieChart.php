@@ -188,10 +188,10 @@ class PieChart {
         $set_start = false;
         $alpha = 30;
         $colors_host = [
-            [92, 184, 92, $alpha], [217, 83, 79, $alpha], [183, 183, 183, $alpha],
+            [0, 200, 81, $alpha], [204, 0, 0, $alpha], [114, 123, 132, $alpha],
         ];
         $colors_service = [
-            [92, 184, 92, $alpha], [240, 173, 78, $alpha], [217, 83, 79, $alpha], [183, 183, 183, $alpha],
+            [0, 200, 81, $alpha], [255, 187, 51, $alpha], [204, 0, 0, $alpha], [114, 123, 132, $alpha],
         ];
         $colorsNotInMonitoring = [66, 139, 202, $alpha];
         $state_total = array_sum($chart_data);

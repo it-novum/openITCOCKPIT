@@ -2381,6 +2381,7 @@ class HostsTable extends Table {
         $query
             ->select([
                 'count' => $query->newExpr('COUNT(DISTINCT Hoststatus.host_object_id)'),
+                'Hosts.id'
             ])
             ->where([
                 'HostObject.is_active' => 1,

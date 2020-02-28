@@ -85,7 +85,7 @@
 
 
                         <div class="form-group" ng-class="{'has-error': errors.recursive}">
-                            <div class="custom-control custom-checkbox  margin-bottom-10"
+                            <div class="custom-control custom-checkbox"
                                  ng-class="{'has-error': errors.recursive}">
 
                                 <input type="checkbox"
@@ -169,7 +169,7 @@
                                         <?php echo __('Filter and display options'); ?>
                                     </div>
                                     <div class="card-body">
-                                        <div class="custom-control custom-checkbox margin-bottom-10"
+                                        <div class="custom-control custom-checkbox padding-top-20"
                                              ng-class="{'has-error': errors.show_ok}">
                                             <input type="checkbox" class="custom-control-input"
                                                    ng-true-value="1"
@@ -184,7 +184,7 @@
                                             </label>
                                         </div>
 
-                                        <div class="custom-control custom-checkbox margin-bottom-10"
+                                        <div class="custom-control custom-checkbox"
                                              ng-class="{'has-error': errors.show_warning}">
                                             <input type="checkbox" class="custom-control-input"
                                                    ng-true-value="1"
@@ -199,7 +199,7 @@
                                             </label>
                                         </div>
 
-                                        <div class="custom-control custom-checkbox margin-bottom-10"
+                                        <div class="custom-control custom-checkbox"
                                              ng-class="{'has-error': errors.show_critical}">
                                             <input type="checkbox" class="custom-control-input"
                                                    ng-true-value="1"
@@ -214,7 +214,7 @@
                                             </label>
                                         </div>
 
-                                        <div class="custom-control custom-checkbox margin-bottom-10"
+                                        <div class="custom-control custom-checkbox"
                                              ng-class="{'has-error': errors.show_unknown}">
                                             <input type="checkbox" class="custom-control-input"
                                                    ng-true-value="1"
@@ -229,7 +229,7 @@
                                             </label>
                                         </div>
 
-                                        <div class="custom-control custom-checkbox margin-bottom-10"
+                                        <div class="custom-control custom-checkbox"
                                              ng-class="{'has-error': errors.show_downtime}">
                                             <input type="checkbox" class="custom-control-input"
                                                    ng-true-value="1"
@@ -244,7 +244,7 @@
                                             </label>
                                         </div>
 
-                                        <div class="custom-control custom-checkbox margin-bottom-10"
+                                        <div class="custom-control custom-checkbox"
                                              ng-class="{'has-error': errors.show_acknowledged}">
                                             <input type="checkbox" class="custom-control-input"
                                                    ng-true-value="1"
@@ -266,7 +266,7 @@
 
                                         <div class="form-group" ng-class="{'has-error': errors.show_label}">
                                             <div
-                                                class="custom-control custom-checkbox  margin-bottom-10"
+                                                class="custom-control custom-checkbox"
                                                 ng-class="{'has-error': errors.show_label}">
 
                                                 <input type="checkbox"
@@ -283,7 +283,7 @@
 
                                         <div class="form-group" ng-class="{'has-error': errors.group_by_host}">
                                             <div
-                                                class="custom-control custom-checkbox  margin-bottom-10"
+                                                class="custom-control custom-checkbox"
                                                 ng-class="{'has-error': errors.group_by_host}">
 
                                                 <input type="checkbox"
@@ -300,7 +300,7 @@
 
                                         <div class="form-group" ng-class="{'has-error': errors.use_paginator}">
                                             <div
-                                                class="custom-control custom-checkbox  margin-bottom-10"
+                                                class="custom-control custom-checkbox"
                                                 ng-class="{'has-error': errors.use_paginator}">
 
                                                 <input type="checkbox"
@@ -327,6 +327,7 @@
                                                 id="FontsizeSelect"
                                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                                 class="form-control"
+                                                chosen="{}"
                                                 ng-model="post.Automap.font_size">
                                                 <option value="1"><?php echo __('Smallest'); ?></option>
                                                 <option value="2"><?php echo __('Smaller'); ?></option>
@@ -356,7 +357,7 @@
                                         <div class="row"
                                              ng-if="post.Automap.show_label === 1 && post.Automap.group_by_host === 1">
 
-                                            <div class="col-lg-12">
+                                            <div class="col-lg-12 padding-top-20">
                                                 <h3 class="margin-bottom-5">
                                                     <i class="fa fa-desktop"></i>
                                                     <strong>
@@ -384,7 +385,7 @@
                                         <div class="row"
                                              ng-if="post.Automap.show_label === 0 && post.Automap.group_by_host === 1">
 
-                                            <div class="col-lg-12">
+                                            <div class="col-lg-12 padding-top-20">
                                                 <h3 class="margin-bottom-5">
                                                     <i class="fa fa-desktop"></i>
                                                     <strong>
@@ -404,7 +405,7 @@
                                         <div class="row"
                                              ng-if="post.Automap.show_label === 0 && post.Automap.group_by_host === 0">
 
-                                            <div class="col-lg-12 ellipsis" ng-style="getFontsize();">
+                                            <div class="col-lg-12 ellipsis padding-top-20" ng-style="getFontsize();">
                                                 <i class="fa fa-square up"
                                                    title="<?php echo __('Example host'); ?>/<?php echo __('Service 1'); ?>"></i>
                                                 <i class="fa fa-square critical"
@@ -415,14 +416,14 @@
                                         <div class="row"
                                              ng-if="post.Automap.show_label === 1 && post.Automap.group_by_host === 0">
 
-                                            <div class="col-lg-6 ellipsis" ng-style="getFontsize();">
+                                            <div class="col-lg-6 ellipsis padding-top-20" ng-style="getFontsize();">
                                                 <i class="fa fa-square up"></i>
                                                 <span
                                                     title="<?php echo __('Example host'); ?>/<?php echo __('Service 1'); ?>">
                                                 <?php echo __('Example host'); ?>/<?php echo __('Service 1'); ?>
                                             </span>
                                             </div>
-                                            <div class="col-lg-6 ellipsis" ng-style="getFontsize();">
+                                            <div class="col-lg-6 ellipsis padding-top-20" ng-style="getFontsize();">
                                                 <i class="fa fa-square critical"></i>
                                                 <span
                                                     title="<?php echo __('Example host'); ?>/<?php echo __('Service 2'); ?>">

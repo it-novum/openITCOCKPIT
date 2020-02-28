@@ -265,12 +265,12 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
 }
 
 .input-group-addon-no-focus-label-success {
-    background-color: #5cb85c !important;
+    background-color: #00C851 !important;
     border-color: #ccc;
 }
 
 .input-group-addon-no-focus-label-danger {
-    background-color: #d9534f !important;
+    background-color: #CC0000 !important;
     border-color: #ccc;
 }
 
@@ -602,15 +602,15 @@ https://www.color-hex.com/color/727b84
 
 /* Host / Service browser status colors */
 .browser-state-green {
-    background-color: #5cb85c;
+    background-color: #00C851;
 }
 
 .browser-state-yellow {
-    background-color: #de8201;
+    background-color: #ffbb33;
 }
 
 .browser-state-red {
-    background-color: #D9534F;
+    background-color: #CC0000;
 }
 
 .browser-state-gray {
@@ -643,4 +643,25 @@ https://www.color-hex.com/color/727b84
 .reportIssueCardSubheader {
     background-color: #333;
     color: #999;
+}
+
+.noty_theme__metroui.noty_type__info,
+.noty_theme__metroui.noty_type__information {
+    background-color: #4285F4;
+    color: #FFF;
+}
+
+.noty_theme__metroui.noty_type__success {
+    background-color: #00C851;
+    color: #FFF;
+}
+
+.noty_theme__metroui.noty_type__warning {
+    background-color: #ffbb33;
+    color: #fff;
+}
+
+.noty_theme__metroui.noty_type__error {
+    background-color: #CC0000;
+    color: #FFF;
 }
