@@ -38,6 +38,9 @@ class Disks {
                     if ($value[5] === '/run' || strpos($value[5], 'snapshot')) {
                         continue;
                     }
+                    if (substr($value[5], 0, 5) === '/snap') {
+                        continue;
+                    }
 
                     $percentage = (int)str_replace('%', '', $value[4]);
                     $state = 'ok';
