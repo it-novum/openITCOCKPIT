@@ -52,9 +52,9 @@
         </svg>
     </div>
     <h1><?php //echo __('Ooops...'); ?></h1>
-    <p>
+    <h2>
         <?php echo __('Looks like the object you are looking for has vanished'); ?>
         ¯\_(ツ)_/¯
-    </p>
+    </h2>
 </div>
 
