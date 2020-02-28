@@ -558,6 +558,8 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                         </div>
                     </fieldset>
                     <fieldset class="margin-top-10" ng-show="post.Container.containertype_id==2">
+                        <legend><?php echo __('Optional fields for tenant'); ?></legend>
+
                         <div class="row" ng-class="{'has-error': errors.container.name || errors.name}">
                             <div class="col-xs-12 col-md-12">
                                 <div class="form-group">
@@ -572,7 +574,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                         </div>
                                         <input type="text" class="form-control"
                                                placeholder="<?php echo __('Tenant name'); ?>"
-                                               ng-model="post.Location.container.name">
+                                               ng-model="post.Tenant.container.name">
                                     </div>
                                 </div>
                             </div>
@@ -585,8 +587,6 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                 </div>
                             </div>
                         </div>
-
-                        <legend><?php echo __('Optional fields for tenant'); ?></legend>
                         <div class="row">
                             <div class="col-xs-12 col-md-12">
                                 <div class="form-group">
