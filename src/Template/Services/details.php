@@ -297,6 +297,7 @@
             <div class="modal-footer">
                 <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                     <button type="button" class="btn btn-success"
+                            data-dismiss="modal"
                             ui-sref="ServicesBrowser({id:currentServiceDetailsId})">
                         <?php echo __('Open details'); ?>
                     </button>
