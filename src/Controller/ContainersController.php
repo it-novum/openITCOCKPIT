@@ -217,7 +217,7 @@ class ContainersController extends AppController {
                             if (!empty($hostGroup)) {
                                 $containers[$key]['linkedId'] = $hostGroup['id'];
                                 $containers[$key]['hosts'] = sizeof($hostGroup['hosts']);
-                                $containers[$key]['hosttemplates'] = sizeof($hostGroup['templates']);
+                                $containers[$key]['hosttemplates'] = sizeof($hostGroup['hosttemplates']);
                             }
                             break;
                         case CT_SERVICEGROUP:

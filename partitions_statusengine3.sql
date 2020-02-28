@@ -38,7 +38,7 @@ CREATE TABLE `statusengine_host_statehistory` (
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_swedish_ci
+  COLLATE = utf8_general_ci
   PARTITION BY RANGE ( state_time DIV 86400 ) (
   PARTITION p_max VALUES LESS THAN ( MAXVALUE )
   );
@@ -66,7 +66,7 @@ CREATE TABLE `statusengine_service_statehistory` (
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_swedish_ci
+  COLLATE = utf8_general_ci
   PARTITION BY RANGE ( state_time DIV 86400 ) (
   PARTITION p_max VALUES LESS THAN ( MAXVALUE )
   );
@@ -96,7 +96,7 @@ CREATE TABLE `statusengine_hostchecks` (
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_swedish_ci
+  COLLATE = utf8_general_ci
   PARTITION BY RANGE ( start_time DIV 86400 ) (
   PARTITION p_max VALUES LESS THAN ( MAXVALUE )
   );
@@ -127,7 +127,7 @@ CREATE TABLE `statusengine_servicechecks` (
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_swedish_ci
+  COLLATE = utf8_general_ci
   PARTITION BY RANGE ( start_time DIV 86400 ) (
   PARTITION p_max VALUES LESS THAN ( MAXVALUE )
   );
@@ -154,7 +154,7 @@ CREATE TABLE `statusengine_host_notifications` (
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_swedish_ci
+  COLLATE = utf8_general_ci
   PARTITION BY RANGE ( start_time DIV 86400 ) (
   PARTITION p_max VALUES LESS THAN ( MAXVALUE )
   );
@@ -182,7 +182,7 @@ CREATE TABLE `statusengine_service_notifications` (
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
-  COLLATE = utf8_swedish_ci
+  COLLATE = utf8_general_ci
   PARTITION BY RANGE ( start_time DIV 86400 ) (
   PARTITION p_max VALUES LESS THAN ( MAXVALUE )
   );

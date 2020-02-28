@@ -170,6 +170,7 @@ class SetupCommand extends Command {
             'timezone'               => $this->defaultConfig['timezone'],
             'is_active'              => 1,
             'usergroup_id'           => 1,
+            'dateformat'             => 'H:i:s - d.m.Y',
             'showstatsinmenu'        => 0,
             'dashboard_tab_rotation' => 0,
             'paginatorlength'        => 25,

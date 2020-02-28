@@ -43,6 +43,7 @@ use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
+use App\Model\Table\ProxiesTable;
 use App\Model\Table\ServicedependenciesTable;
 use App\Model\Table\ServiceescalationsTable;
 use App\Model\Table\ServicegroupsTable;
@@ -2276,7 +2277,7 @@ class NagiosConfigGenerator {
                             'hostUuid'    => $service->get('host')->get('uuid'),
                             'serviceUuid' => $service->get('uuid')
                         ];
-                    }else if (!empty($dependentServicegroupIds) && !$ServicegroupsTable->isServiceInServicegroup($service->get('id'), $dependentServicegroupIds)) {
+                    } else if (!empty($dependentServicegroupIds) && !$ServicegroupsTable->isServiceInServicegroup($service->get('id'), $dependentServicegroupIds)) {
                         $masterServicesForCfg[] = [
                             'hostUuid'    => $service->get('host')->get('uuid'),
                             'serviceUuid' => $service->get('uuid')
@@ -2288,7 +2289,7 @@ class NagiosConfigGenerator {
                             'hostUuid'    => $service->get('host')->get('uuid'),
                             'serviceUuid' => $service->get('uuid')
                         ];
-                    }else if (!empty($servicegroupIds) && !$ServicegroupsTable->isServiceInServicegroup($service->get('id'), $servicegroupIds)) {
+                    } else if (!empty($servicegroupIds) && !$ServicegroupsTable->isServiceInServicegroup($service->get('id'), $servicegroupIds)) {
                         $dependentServicesForCfg[] = [
                             'hostUuid'    => $service->get('host')->get('uuid'),
                             'serviceUuid' => $service->get('uuid')
@@ -2413,8 +2414,8 @@ class NagiosConfigGenerator {
      * @todo implement me
      */
     public function beforeExportExternalTasks() {
-        return;
         $this->createMissingOitcAgentActiveChecks();
+        return;
 
         foreach ($this->externalTasks as $pluginName => $taskName) {
             $_task = new TaskCollection($this);
@@ -2427,10 +2428,11 @@ class NagiosConfigGenerator {
      * @todo implement me
      */
     public function afterExportExternalTasks() {
-        return
-            //Restart oitc CMD to wipe old cached information
-            $this->createOitcAgentJsonConfig();
+        $this->createOitcAgentJsonConfig();
+        return;
+        //Restart oitc CMD to wipe old cached information
         exec('service oitc_cmd restart');
+
 
         foreach ($this->externalTasks as $pluginName => $taskName) {
             $_task = new TaskCollection($this);
@@ -2686,10 +2688,12 @@ class NagiosConfigGenerator {
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
         /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
         try {
             $servicetemplate = $ServicetemplatesTable->getServicetemplateByName('OITC_AGENT_ACTIVE', OITC_AGENT_SERVICE);
             $servicetemplateId = $servicetemplate->get('id');
             $hosts = $HostsTable->getHostsThatUseOitcAgentForExport();
+
             foreach ($hosts as $host) {
                 $hostId = $host['id'];
                 if (!$HostsTable->hasHostServiceFromServicetemplateId($hostId, $servicetemplateId)) {
@@ -2719,6 +2723,9 @@ class NagiosConfigGenerator {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var ProxiesTable $ProxiesTable */
+        $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
+        $proxySettings = $ProxiesTable->getSettings();
 
         $hosts = $HostsTable->getHostsThatUseOitcAgentForExport();
         if (empty($hosts)) {
@@ -2734,21 +2741,27 @@ class NagiosConfigGenerator {
 
             if (!empty($services)) {
                 $config[$hostUuid] = [
-                    'name'    => $host['name'],
-                    'address' => $host['address'],
-                    'uuid'    => $hostUuid,
-                    'checks'  => []
+                    'name'       => $host['name'],
+                    'address'    => $host['address'],
+                    'uuid'       => $hostUuid,
+                    'port'       => $host['agentconfig'] && $host['agentconfig']['port'] ? $host['agentconfig']['port'] : '',
+                    'proxy'      => $host['agentconfig'] && $host['agentconfig']['proxy'] && $host['agentconfig']['proxy'] == 1 ? $proxySettings['ipaddress'] . ':' . $proxySettings['port'] : '',
+                    'use_https'  => $host['agentconfig'] && $host['agentconfig']['use_https'] ? $host['agentconfig']['use_https'] : '',
+                    'insecure'   => $host['agentconfig'] && $host['agentconfig']['insecure'] ? $host['agentconfig']['insecure'] : '',
+                    'basic_auth' => $host['agentconfig'] && $host['agentconfig']['basic_auth'] ? $host['agentconfig']['basic_auth'] : '',
+                    'username'   => $host['agentconfig'] && $host['agentconfig']['username'] ? $host['agentconfig']['username'] : '',
+                    'password'   => $host['agentconfig'] && $host['agentconfig']['password'] ? $host['agentconfig']['password'] : '',
+                    'checks'     => []
                 ];
 
                 foreach ($services as $service) {
                     $servicename = $service['name'];
                     if ($servicename === null || $servicename === '') {
-                        $servicename = $service['Servicetemplates']['name'];
+                        $servicename = $service['servicetemplate']['name'];
                     }
 
-
                     $config[$hostUuid]['checks'][] = [
-                        'plugin'      => $service['Agentchecks']['plugin_name'],
+                        'plugin'      => $service['servicetemplate']['agentcheck']['plugin_name'],
                         'servicename' => $servicename,
                         'uuid'        => $service['uuid'],
                         'args'        => $service['args_for_config']

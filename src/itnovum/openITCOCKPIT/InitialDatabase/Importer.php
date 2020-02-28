@@ -24,7 +24,10 @@
 
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
+use Cake\Datasource\EntityInterface;
+use Cake\ORM\Entity;
 use Cake\ORM\Table;
+use Cake\Utility\Inflector;
 
 class Importer implements ImporterInterface {
 
@@ -53,6 +56,26 @@ class Importer implements ImporterInterface {
      */
     public function getData() {
         return [];
+    }
+
+    /**
+     * @param Entity $entity
+     * @param array $record
+     * @return \Cake\Datasource\EntityInterface
+     */
+    public function patchEntityAndKeepAllIds(EntityInterface $entity, array $record){
+        $associatedAccessibleFields = [];
+        foreach($this->Table->associations() as $association){
+            $associationKey = Inflector::underscore(strtolower($association->getName()));
+            $associatedAccessibleFields[$associationKey] = ['accessibleFields' => ['*' => true]];
+        }
+
+        $entity = $this->Table->patchEntity($entity, $record, [
+            'validate'         => false,
+            'accessibleFields' => ['*' => true],
+            'associated'       => $associatedAccessibleFields
+        ]);
+        return $entity;
     }
 
 }

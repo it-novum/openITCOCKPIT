@@ -2182,15 +2182,10 @@ class ServicesTable extends Table {
                 'Agentchecks.servicetemplate_id',
                 'Agentchecks.plugin_name'
             ])
-            ->innerJoin(
-                ['Servicetemplates' => 'servicetemplates'],
-                ['Services.servicetemplate_id = Servicetemplates.id']
-            )
-            ->innerJoin(
-                ['Agentchecks' => 'agentchecks'],
-                ['Servicetemplates.id = Agentchecks.servicetemplate_id']
-            )
             ->contain([
+                'Servicetemplates'             => [
+                    'Agentchecks',
+                ],
                 'Servicecommandargumentvalues' => [
                     'Commandarguments'
                 ]
@@ -2207,7 +2202,7 @@ class ServicesTable extends Table {
         $ServicetemplateArgsCache = new KeyValueStore();
 
         foreach ($services as $index => $service) {
-            if (!empty($servicecommandargumentvalues)) {
+            if (!empty($service['servicecommandargumentvalues'])) {
                 //Arguments from service
                 $servicecommandargumentvalues = $service['servicecommandargumentvalues'];
                 $servicecommandargumentvalues = Hash::sort($servicecommandargumentvalues, '{n}.commandargument.name', 'asc', 'natural');

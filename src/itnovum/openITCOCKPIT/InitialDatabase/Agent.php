@@ -227,7 +227,7 @@ class Agent extends Importer {
         $data = [
             [
                 'name'             => 'check_oitc_agent_active',
-                'command_line'     => '/opt/openitc/receiver/bin/poller.php poller -H $HOSTNAME$ -S -k -c /opt/openitc/etc/receiver/production.json',
+                'command_line'     => '/opt/openitc/receiver/bin/poller.php poller -H $HOSTNAME$ -c /opt/openitc/receiver/etc/production.json -C /opt/openitc/agent/server_ca.pem -K /opt/openitc/agent/server_ca.key',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'be116ff1-f797-4ccb-993c-b80ccb337de8',
@@ -380,7 +380,7 @@ class Agent extends Importer {
                     ],
                     [
                         'name'       => '$ARG4$',
-                        'human_name' => 'Percentage (0/1)'
+                        'human_name' => 'Unit GB or %'
                     ]
                 ]
             ],
@@ -1235,7 +1235,7 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG4$',
-                        'value'              => '1',
+                        'value'              => '%',
                     ]
                 ],
                 'customvariables'                           => [],
