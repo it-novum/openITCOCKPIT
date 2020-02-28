@@ -2,8 +2,10 @@ const path = require('path');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const webpack = require('webpack');
 
-module.exports = {
+module.exports = [{
     entry: path.resolve(__dirname, "./app.js"),
     optimization: {
         minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
@@ -46,4 +48,37 @@ module.exports = {
             }
         ],
     },
-};
+}, {
+    entry: path.resolve(__dirname, "./appScripts.js"),
+    devtool: "source-map",
+    output: {
+        path: "/usr/share/openitcockpit/webroot/dist/scripts",
+        filename: "[name].js"
+    },
+    plugins: [
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery',
+            angular: 'angular',
+            Dropzone: 'Dropzone',
+            dropzone: 'Dropzone'
+
+        })
+    ],
+    /*
+    optimization: {
+        minimizer: [
+            new UglifyJsPlugin({
+                cache: true,
+                parallel: false,
+                uglifyOptions: {
+                    compress: false,
+                    ecma: 6,
+                    mangle: false
+                },
+                sourceMap: true
+            })
+        ]
+    }*/
+}];
+
