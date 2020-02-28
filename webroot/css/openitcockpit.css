@@ -176,6 +176,24 @@ div.custom-control-right-badge .custom-control-label::after {
     border: 1px solid #f5f5f5;
 }
 
+#manyThanksForYourSupport {
+    background: rgba(71, 69, 68, 0.8);
+    color: #60fb62;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    border-radius: 16px;
+    width: 250px;
+    height: 250px;
+    z-index: 9999;
+    font-size: 20px;
+    text-align: center;
+    padding-top: 50px;
+    margin-top: -125px;
+    margin-left: -125px;
+    display: none;
+}
+
 
 /* Fullcalendar CSS */
 
