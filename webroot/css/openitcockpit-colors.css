@@ -28,15 +28,15 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
 }
 
 .ok-soft, .up-soft {
-    color: #8BC08B !important;
+    color: #00ea5f !important;
 }
 
 .warning-soft {
-    color: #f2c68a !important;
+    color: #f9d180 !important;
 }
 
 .critical-soft, .down-soft {
-    color: #C5706D !important;
+    color: #ff4444 !important;
 }
 
 .unknown-soft, .unreachable-soft {
@@ -132,7 +132,7 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
 }
 
 .bg-ok-soft, .bg-up-soft {
-    background-color: #8BC08B !important;
+    background-color: #00ea5f !important;
 }
 
 .bg-warning {
@@ -140,7 +140,7 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
 }
 
 .bg-warning-soft {
-    background-color: #f2c68a !important;
+    background-color: #f9d180 !important;
 }
 
 .bg-critical, .bg-down {
@@ -148,7 +148,7 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
 }
 
 .bg-critical-soft, .bg-down-soft {
-    background-color: #C5706D !important;
+    background-color: #ff4444 !important;
 }
 
 .bg-unknown, .bg-unreachable {
@@ -171,6 +171,7 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
     background-color: #774DFF !important;
     border-color: #3c00ff !important;
     z-index: 2 !important;
+    color: #ffffff;
 }
 
 .bg-color-black {
