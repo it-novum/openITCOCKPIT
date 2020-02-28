@@ -7,7 +7,8 @@ angular.module('openITCOCKPIT').directive('systemHealth', function($http, $inter
 
             $scope.systemHealthDefault = {
                 state: 'unknown',
-                update: 'n/a'
+                update: 'n/a',
+                errorCount: 0
             };
 
             $scope.class = 'not-monitored';
@@ -27,6 +28,7 @@ angular.module('openITCOCKPIT').directive('systemHealth', function($http, $inter
                     }
 
                     $scope.class = $scope.getHealthClass();
+                    $scope.bgClass = $scope.getHealthBgClass();
                 });
             };
 
@@ -43,6 +45,22 @@ angular.module('openITCOCKPIT').directive('systemHealth', function($http, $inter
 
                     default:
                         return 'not-monitored';
+                }
+            };
+
+            $scope.getHealthBgClass = function(){
+                switch($scope.systemHealth.state){
+                    case 'ok':
+                        return 'bg-up';
+
+                    case 'warning':
+                        return 'bg-warning';
+
+                    case 'critical':
+                        return 'bg-down';
+
+                    default:
+                        return 'bg-not-monitored';
                 }
             };
 

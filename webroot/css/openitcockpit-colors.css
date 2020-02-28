@@ -47,6 +47,10 @@ SECONDARY:                          #727b84; grey
     color: #4285F4 !important;
 }
 
+.bg-not-monitored, .text-primary {
+    color: #1468f5 !important;
+}
+
 .custom-control-input:checked ~ .custom-control-label-primary::before {
     color: #fff;
     border-color: #4285F4;

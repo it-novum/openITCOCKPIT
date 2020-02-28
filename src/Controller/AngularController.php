@@ -68,6 +68,8 @@ class AngularController extends AppController {
 
     private $state = 'unknown';
 
+    private $errorCount = 0;
+
     public function paginator() {
         //Return HTML Template for PaginatorDirective
         return;
@@ -666,11 +668,16 @@ class AngularController extends AppController {
         $UserTime = new UserTime($user->get('timezone'), $user->get('dateformat'));
         $cache['update'] = $UserTime->format($cache['update']);
         $cache['state'] = $this->state;
+        $cache['errorCount'] = $this->errorCount;
         $this->set('status', $cache);
         $this->viewBuilder()->setOption('serialize', ['status']);
     }
 
     private function setHealthState($state) {
+        if($state !== 'ok'){
+            $this->errorCount++;
+        }
+
         //Do not overwrite critical with ok or warning
         if ($this->state === 'critical') {
             return;

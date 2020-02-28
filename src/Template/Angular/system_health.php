@@ -2,7 +2,9 @@
     <a href="javascript:void(0);" class="header-icon" data-toggle="dropdown"
        data-original-title="<?php echo __('System health'); ?>">
         <i class="fa fa-lg fa-heartbeat {{ class }}"></i>
-        <span class="badge badge-icon">11</span>
+        <span class="badge badge-icon {{ bgClass }}">
+            {{systemHealth.errorCount}}
+        </span>
     </a>
 
 
@@ -10,7 +12,7 @@
         <div
             class="dropdown-header bg-trans-gradient d-flex justify-content-center align-items-center rounded-top mb-2">
             <h4 class="m-0 text-center color-white">
-                System Health
+                <?= __('System Health') ?>
             </h4>
         </div>
 
@@ -325,10 +327,6 @@
                     </span>
                 </span>
             </a>
-        </div>
-        <div
-            class="py-2 px-3 bg-faded d-block rounded-bottom text-right border-faded border-bottom-0 border-right-0 border-left-0">
-            <a href="#" class="fs-xs fw-500 ml-auto">view all notifications</a>
         </div>
     </div>
 </div>

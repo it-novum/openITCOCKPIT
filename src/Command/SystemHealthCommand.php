@@ -161,11 +161,11 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             $data['isNdoInstalled'] = true;
         }
 
-        if (file_exists('/opt/statusengine/cakephp/app/Console/Command/StatusengineLegacyShell.php')) {
+        if (file_exists('/opt/openitc/statusengine2/cakephp/app/Console/Command/StatusengineLegacyShell.php')) {
             $data['isStatusengineInstalled'] = true;
         }
 
-        $statusengineConfig = '/opt/statusengine/cakephp/app/Config/Statusengine.php';
+        $statusengineConfig = '/opt/openitc/statusengine2/cakephp/app/Config/Statusengine.php';
         if (file_exists($statusengineConfig)) {
             require_once $statusengineConfig;
             if (isset($config['process_perfdata'])) {
