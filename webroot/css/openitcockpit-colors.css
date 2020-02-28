@@ -665,3 +665,11 @@ https://www.color-hex.com/color/727b84
     background-color: #CC0000;
     color: #FFF;
 }
+
+.page-content {
+    color: #444444;
+}
+
+.nav .nav-link:not([class^="btn-"]):not([class*=" btn-"]) {
+    color: #727b84;
+}

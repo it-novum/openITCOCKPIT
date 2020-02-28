@@ -497,3 +497,7 @@ openITCOCKPIT v4 Utilities
     text-overflow: unset;
     overflow: unset;
 }
+
+input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:checked + .custom-control-label {
+    font-weight: normal;
+}
