@@ -126,7 +126,12 @@ class BrowsersController extends AppController {
             $currentContainer = $ContainersTable->get($containerId)->toArray();
 
             $breadcrumbs = [];
-            $parents = $ContainersTable->getPathByIdAndCacheResult($currentContainer['parent_id'], 'BrowsersIndex');
+            if($currentContainer['parent_id'] === null){
+                $parents = $ContainersTable->getPathByIdAndCacheResult(ROOT_CONTAINER, 'BrowsersIndex');
+            }else{
+                $parents = $ContainersTable->getPathByIdAndCacheResult($currentContainer['parent_id'], 'BrowsersIndex');
+            }
+
 
             foreach ($parents as $parentContainer) {
                 if (in_array((int)$parentContainer['id'], $this->MY_RIGHTS, true)) {
