@@ -644,3 +644,24 @@ https://www.color-hex.com/color/727b84
     background-color: #333;
     color: #999;
 }
+
+.noty_theme__metroui.noty_type__info,
+.noty_theme__metroui.noty_type__information {
+    background-color: #4285F4;
+    color: #FFF;
+}
+
+.noty_theme__metroui.noty_type__success {
+    background-color: #00C851;
+    color: #FFF;
+}
+
+.noty_theme__metroui.noty_type__warning {
+    background-color: #ffbb33;
+    color: #fff;
+}
+
+.noty_theme__metroui.noty_type__error {
+    background-color: #CC0000;
+    color: #FFF;
+}
