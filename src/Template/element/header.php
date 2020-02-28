@@ -66,9 +66,6 @@
                     </div>
                 </span>
         </div>
-        <div class="header-icon">
-            <version-check></version-check>
-        </div>
         <div >
             <?php if ($showstatsinmenu): ?>
                 <menustats></menustats>
@@ -79,6 +76,9 @@
         </div>
         <div class="header-icon">
             <server-time></server-time>
+        </div>
+        <div>
+            <version-check></version-check>
         </div>
         <div>
             <?php if ($exportRunningHeaderInfo === false): ?>
