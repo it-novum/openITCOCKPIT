@@ -62,6 +62,9 @@ webroot/img/charts
 ansible_settings.yml
 config/after_export.php
 config/openitcGrafanaTag.php
+config/datasource.php
+config/dbbackend.php
+config/perfdatabackend.php
 
 # Plugins #
 #######################
