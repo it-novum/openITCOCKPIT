@@ -1,0 +1,14 @@
+[Unit]
+Description=openITCOCKPIT naemon.cmd/nagios.cmd passthrough
+After=syslog.target network.target mysql.service
+
+[Service]
+User=root
+Group=www-data
+Type=simple
+Restart=on-failure
+ExecStart=/opt/openitc/frontend/bin/cake Cmd
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

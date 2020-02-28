@@ -1,0 +1,5 @@
+#Set PATH, otherwise restart-scripts won't find start-stop-daemon
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+#Regular cron jobs for openITCOCKPIT
+* * * * *	root	 sudo -g www-data /opt/openitc/frontend/bin/cake cronjobs -q
+

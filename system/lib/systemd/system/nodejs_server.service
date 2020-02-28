@@ -1,0 +1,16 @@
+[Unit]
+Description=Used by openITCOCKPIT to run JavaScript code on the server
+After=syslog.target network.target
+
+[Service]
+User=root
+Group=www-data
+Type=simple
+Restart=on-failure
+ExecStart=/usr/bin/nodejs --max-old-space-size=8192 /opt/openitc/frontend/node/ChartRenderer.js
+LimitNOFILE=10000
+LimitNOFILESoft=10000
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

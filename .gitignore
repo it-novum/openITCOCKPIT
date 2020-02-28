@@ -1,92 +1,75 @@
-tmp/*
-[Cc]onfig/core.php
-[Cc]onfig/database.php
-app/tmp/*
-app/[Cc]onfig/database.php
-app/[Cc]onfig/email.php
-/vendor
-build
-!empty
-lib/Cake/Console/Templates/skel/tmp/*
-._*
+# CakePHP specific files #
+##########################
+/config/app_local.php
+/config/.env
+/logs/*
+/tmp/*
+/vendor/*
+tmp_cli/
+logs_cli/
+
+# OS generated files #
+######################
 .DS_Store
-.AppleDouble
-.afp*
-app/tmp_cli/*
-.nfs*
-.idea
-.vagrant
-/nbproject/private/*
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+.directory
+
+# Tool specific files #
+#######################
+# PHPUnit
+.phpunit.result.cache
+# PHP Composer
+composer.lock
+# vim
+*~
 *.swp
 *.swo
-__Plugins
-__Plugins/*
-node_modules
-ansible/playbook.retry
-app/webroot/userimages/*
-app/webroot/img/graphs/*
-app/webroot/img/charts/*
-app/webroot/js/compressed_components.js
-app/webroot/js/compressed_controllers.js
-app/webroot/js/compressed_angular_controllers.js
-app/webroot/js/compressed_angular_directives.js
-app/webroot/js/compressed_angular_services.js
-app/Plugin/ArchiveMigration
-app/Plugin/AutoreportModule
-app/Plugin/AutoreportModule/webroot/tmp/*
-app/Plugin/AxiosAssyst
-app/Plugin/DiscoveryModule
-app/Plugin/DataExportModule
-app/Plugin/DesignModule
-app/Plugin/DistributeModule
-app/Plugin/EventcorrelationModule
-app/Plugin/IdoitModule
-app/Plugin/MapModule/webroot/img/backgrounds/*
-app/Plugin/MapModule/webroot/img/icons/*
-app/Plugin/MapModule/webroot/img/temp/
-app/Plugin/MassenversandDeModule
-app/Plugin/MkModule
-app/Plugin/SAPModule
-app/Plugin/SlackModule
-app/Plugin/MaximoModule
-app/Plugin/AlfrescoModule
-app/Plugin/LinuxBasicMonitoringModule
-app/Plugin/NWCModule
-app/Plugin/NrpeModule
-app/Plugin/PostgresModule
-app/Plugin/WMIModule
-app/Plugin/PagerdutyModule
-app/Plugin/OpenstreetmapModule
-app/Plugin/LinuxBasicMonitoringSSHModule
-app/Plugin/VMWAREModule
-app/Plugin/WindowsBasicMonitoringNSCPModule
-app/Plugin/MasterSelfMonitoringModule
-app/Plugin/SatelliteSelfMonitoringModule
-app/Plugin/ServicenowModule
-app/Plugin/UCSModule
-app/Lib/AvailableVersion.php
-app/docs/en/administration/systemsettings.md
-app/docs/en/api/systemsettings.md
-tests
-app/webroot/img/logo_custom.png
-app/webroot/img/logo_small_custom.png
+# sublime text & textmate
+*.sublime-*
+*.stTheme.cache
+*.tmlanguage.cache
+*.tmPreferences.cache
+# Eclipse
+.settings/*
+# JetBrains, aka PHPStorm, IntelliJ IDEA
+.idea/*
+# NetBeans
+nbproject/*
+# Visual Studio Code
+.vscode
+# Sass preprocessor
+.sass-cache/
 
-!app/Vendor/
-app/Vendor/*
-!app/Vendor/adldap
-!app/Vendor/Date
-!app/Vendor/Oauth2
-!app/Vendor/imageSmoothArc.php
-!app/Vendor/qqFileUploader.php
-app/composer.lock
+# npm modules #
+#######################
+webroot/package-lock.json
+webroot/node_modules
 
-Vendor
-Vendor/*
-app/.c9
-
+# openITCOCKPIT files #
+#######################
 docker
-app/Config/after_export.php
-app/Config/dbbackend.php
-app/Config/perfdatabackend.php
-app/Config/graphite.php
-app/Plugin/NagiosModule/Config/config.php
+schema-dump-default.lock
+config/graphite.php
+src/Lib/openITCOCKPIT_AvailableVersion.php
+webroot/img/userimages
+webroot/img/charts
+ansible_settings.yml
+
+# Plugins #
+#######################
+plugins/config
+plugins/AutoreportModule
+plugins/DistributeModule
+plugins/EventcorrelationModule
+plugins/MkModule
+plugins/OpenstreetmapModule
+plugins/SlackModule
+plugins/ServicenowModule
+plugins/PagerdutyModule
+plugins/AxiosAssystModule

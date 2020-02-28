@@ -85,11 +85,11 @@ echo 'deb https://packages.openitcockpit.com/repositories/stretch stretch main' 
 ````
 apt-get update
 apt-get install openitcockpit{,-common,-naemon,-statusengine-naemon,-message}
-/usr/share/openitcockpit/app/SETUP.sh
+/opt/openitc/frontend/SETUP.sh
 ````
 **openITCOCKPIT Nagios 4:**
 
-Please execute all commands as user `root` or via `sudo`. 
+Please execute all commands as user `root` or via `sudo`.
 ````
 apt-get install apt-transport-https curl
 curl https://packages.openitcockpit.com/072783CB.txt | apt-key add
@@ -120,7 +120,7 @@ echo 'deb https://packages.openitcockpit.com/repositories/stretch stretch main' 
 ````
 apt-get update
 apt-get install openitcockpit{,-common,-nagios,-statusengine-nagios,-message}
-/usr/share/openitcockpit/app/SETUP.sh
+/opt/openitc/frontend/SETUP.sh
 ````
 
 # Register openitcockpit community version:

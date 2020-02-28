@@ -1,1 +1,0 @@
-Data: <?php echo $data; ?>
