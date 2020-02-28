@@ -305,7 +305,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" ng-click="deleteCronjob()">
+                <button type="button" class="btn btn-danger mr-auto" ng-click="deleteCronjob()">
                     <?php echo __('Delete'); ?>
                 </button>
 
