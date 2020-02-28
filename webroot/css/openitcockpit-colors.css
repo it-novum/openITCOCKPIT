@@ -265,6 +265,18 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
     color: #774DFF !important;
 }
 
+.txt-downtime-cancelled{
+    color: #00c4d8;
+}
+
+.txt-timerange{
+    color: rgba(213, 221, 246, .4);
+}
+
+.txt-notification{
+    color: gold;
+}
+
 .input-group-addon-no-focus-label-success {
     background-color: #00C851 !important;
     border-color: #ccc;
