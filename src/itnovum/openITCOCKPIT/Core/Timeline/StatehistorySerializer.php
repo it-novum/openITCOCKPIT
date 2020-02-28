@@ -89,7 +89,6 @@ class StatehistorySerializer {
             if (isset($this->records[$i + 1])) {
                 $end = $this->records[$i + 1]->getStateTime();
             }
-
             $records[] = [
                 'start'     => $this->UserTime->customFormat('Y-m-d H:i:s', $this->records[$i]->getStateTime()),
                 'end'       => $this->UserTime->customFormat('Y-m-d H:i:s', $end),

@@ -2074,15 +2074,14 @@ class ServicesController extends AppController {
                 ];
 
                 $StatehistoryService = new StatehistoryService($record);
-                $statehistoryServiceRecords[] = $StatehistoryService;
+                $statehistoriesService[] = $StatehistoryService;
             }
         }
 
         foreach ($statehistoriesService as $statehistoryService) {
-            $StatehistoryService = new StatehistoryService($statehistoryService['StatehistoryService']);
+            $StatehistoryService = new StatehistoryService($statehistoryService);
             $statehistoryServiceRecords[] = $StatehistoryService;
         }
-
 
         $StatehistorySerializer = new StatehistorySerializer($statehistoryServiceRecords, $UserTime, $end, 'service');
         $this->set('servicestatehistory', $StatehistorySerializer->serialize());
