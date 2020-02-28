@@ -896,3 +896,68 @@ div.required .control-label::after {
 .form-group{
     margin-bottom: 0.5rem;
 }
+
+/*** Animated SVG Text ***/
+#notFoundSvg {
+    font-size: 18em;
+    position: relative;
+    padding: 0;
+    padding-bottom: 10%;
+}
+
+.textline {
+    font-size: .5em;
+}
+
+.scaling-svg {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 0;
+}
+
+.text-add {
+    stroke-width: 2px;
+    stroke-dasharray: 7% 28%;
+    stroke-linecap: square;
+    -webkit-animation: stroke-offset 2s ease-in-out;
+    animation: stroke-offset 2s ease-in-out;
+
+}
+
+.text-add:nth-child(1) {
+    stroke-dashoffset: 7%;
+}
+
+.text-add:nth-child(2) {
+    stroke-dashoffset: 14%;
+}
+
+.text-add:nth-child(3) {
+    stroke-dashoffset: 21%;
+}
+
+.text-add:nth-child(4) {
+    stroke-dashoffset: 28%;
+}
+
+.text-add:nth-child(5) {
+    stroke-dashoffset: 35%;
+}
+
+@-webkit-keyframes stroke-offset {
+    0% {
+        stroke-dashoffset: 35%;
+        stroke-dasharray: 20% 87.5%;
+        stroke-width: 35px;
+    }
+}
+
+@keyframes stroke-offset {
+    0% {
+        stroke-dashoffset: 35%;
+        stroke-dasharray: 20% 87.5%;
+        stroke-width: 35px;
+    }
+}
+/*** End of animated SVG text ***/

@@ -52,8 +52,8 @@
         </svg>
     </div>
     <h1><?php //echo __('Forbidden...'); ?></h1>
-    <p>
+    <h2>
         <?php echo __('You do not have the required permissions.'); ?>
-    </p>
+    </h2>
 </div>
 
