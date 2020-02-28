@@ -34,6 +34,12 @@
     </li>
 </ol>
 
+<?php if ($this->Acl->hasPermission('index', 'statistics')): ?>
+    <?php if (isset($askForHelp) && $askForHelp === true): ?>
+        <ask-anonymous-statistics></ask-anonymous-statistics>
+    <?php endif; ?>
+<?php endif; ?>
+
 <div class="row">
     <div class="col-xl-12">
         <div id="widget-container" class="panel">

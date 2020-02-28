@@ -23,18 +23,22 @@
 //  confirmation.
 ?>
 
+
 <div id="angulWeAskForYourHelpModal" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">
-                    <i class="fa fa-question-circle-o"></i>
+                <h5 class="modal-title">
+                    <i class="far fa-question-circle"></i>
                     <?php echo __('We ask for your help'); ?>
-                </h4>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-xs-12">
+                    <div class="col">
                         <?php echo __('
                         We are always interested to improve openITCOCKPIT with every new version.
                         You can help us, by submitting anonymous statistical information to us.
@@ -44,10 +48,10 @@
                 <br/>
 
                 <div class="row">
-                    <div class="col-xs-12 margin-top-10">
+                    <div class="col-12 margin-top-10">
                         <h4><?php echo __('What data do we collect?'); ?></h4>
                     </div>
-                    <div class="col-xs-12">
+                    <div class="col-12">
                         <p><?php echo __('We are not interested in who you are, in which company you work or any other personal data.'); ?></p>
                         <p>
                             <?php echo __('We just ask you, to provide us system metrics like:'); ?>
@@ -63,29 +67,29 @@
                             <li><?php echo __('MySQL usage statistics like number of select, insert and delete statements'); ?></li>
                         </ul>
                         <p>
-                            <a ui-sref="StatisticsIndex">
+                            <a ui-sref="StatisticsIndex" data-dismiss="modal">
                                 <?php echo __('Show me all metrics you like to collect.'); ?>
                             </a>
                         </p>
                     </div>
 
-                    <div class="col-xs-12 margin-top-10">
+                    <div class="col-12 margin-top-10">
                         <h4><?php echo __('Do you track users on the interface?'); ?></h4>
                     </div>
 
-                    <div class="col-xs-12">
+                    <div class="col-12">
                         <?php echo __('No. We are not interested in any user or user behavior data.'); ?>
                     </div>
 
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-12 margin-top-10">
+                    <div class="col-12 margin-top-10">
                         <h4><?php echo __('Why do you ask for this data?'); ?></h4>
                     </div>
 
 
-                    <div class="col-xs-12">
+                    <div class="col-12">
                         <p><?php echo __('
                             This information influences decisions such as which openITCOCKPIT modules should
                             get new features or which operating system is used by most of the users.
@@ -95,14 +99,12 @@
                         '); ?></p>
                     </div>
                 </div>
-
             </div>
-
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary pull-left" data-dismiss="modal" ng-click="save(2)">
+                <button type="button" class="btn btn-primary mr-auto" data-dismiss="modal" ng-click="save(2)">
                     <?php echo __('Ask me again'); ?>
                 </button>
-                <a ui-sref="StatisticsIndex" class="btn btn-default">
+                <a ui-sref="StatisticsIndex" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('I want more information'); ?>
                 </a>
                 <button type="button" class="btn btn-success" ng-click="save(1)">
@@ -117,7 +119,7 @@
 </div>
 
 <div id="manyThanksForYourSupport">
-    <i class="fa fa-smile-o" style="font-size: 100px;"></i>
+    <i class="fas fa-smile" style="font-size: 100px;"></i>
     <div style="width:100%;" class="padding-top-20">
         <?php echo __('Many thanks for your support!'); ?>
     </div>
