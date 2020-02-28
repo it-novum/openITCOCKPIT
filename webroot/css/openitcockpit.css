@@ -892,3 +892,7 @@ div.required .control-label::after {
 .card-body {
     padding: 0.3rem 1.0rem;
 }
+
+.form-group{
+    margin-bottom: 0.5rem;
+}
