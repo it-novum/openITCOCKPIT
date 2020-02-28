@@ -105,7 +105,7 @@ class MultipleBarChart {
         $alpha = 5;
         $textColor = imagecolorallocate($this->img, 50, 50, 50);
         $colorsHost = [
-            [92, 184, 92, $alpha], [217, 83, 79, $alpha], [183, 183, 183, $alpha],
+            [0, 200, 81, $alpha], [204, 0, 0, $alpha], [114, 123, 132, $alpha],
         ];
         $totalWidth = $this->width + $this->scale;
         $gapX = $totalWidth * 0.6 / $this->maxBars;
