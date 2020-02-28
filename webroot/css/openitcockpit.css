@@ -761,8 +761,8 @@ pre {
     display: inline-block;
 }
 
-.pointer{
-    cursor:pointer;
+.pointer {
+    cursor: pointer;
 }
 
 div.required .control-label::after {
@@ -780,13 +780,15 @@ div.required .control-label::after {
     -moz-border-radius: 4px;
     border-radius: 4px;
     *zoom: 1;
-    -webkit-box-shadow: 0 1px 4px rgba(0,0,0,.065);
-    -moz-box-shadow: 0 1px 4px rgba(0,0,0,.065);
-    box-shadow: 0 1px 4px rgba(0,0,0,.065);
+    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, .065);
+    -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, .065);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .065);
 }
+
 .fuelux .wizard ul {
     list-style: none outside none;
 }
+
 .fuelux .wizard ul li {
     position: relative;
     float: left;
@@ -800,6 +802,7 @@ div.required .control-label::after {
     cursor: default;
     background: #ededed;
 }
+
 .fuelux .wizard ul li .chevron {
     position: absolute;
     top: 0;
@@ -816,6 +819,7 @@ div.required .control-label::after {
     border-right: 0;
     border-left: 14px solid #d4d4d4;
 }
+
 .fuelux .wizard ul li .chevron::before {
     position: absolute;
     top: -24px;
@@ -832,17 +836,21 @@ div.required .control-label::after {
     border-left: 14px solid #ededed;
     content: "";
 }
+
 .fuelux .wizard ul li.active .chevron::before {
     border-left: 14px solid #f1f6fc;
 }
+
 .fuelux .wizard ul li:first-child {
     padding-left: 20px;
     border-radius: 4px 0 0 4px;
 }
+
 .fuelux .wizard ul li.active {
     color: #3a87ad;
     background: #f1f6fc;
 }
+
 .fuelux .wizard ul li .badge {
     margin-right: 8px;
     display: inline-block;
@@ -857,4 +865,12 @@ div.required .control-label::after {
     vertical-align: baseline;
     background-color: #777;
     border-radius: 10px;
+}
+
+.card-header {
+    padding: 0.3rem 1.0rem;
+}
+
+.card-body {
+    padding: 0.3rem 1.0rem;
 }
