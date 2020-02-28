@@ -1,8 +1,6 @@
-<div class="btn-header pull-right hidden-mobile hidden-tablet" ng-show="newVersionAvailable">
-    <span>
-        <a href="/packetmanager/index" data-original-title="<?php echo __('New version available!'); ?>"
-           data-placement="left" rel="tooltip" data-container="body">
-            <i class="txt-color-blue fa fa-fire"></i>
-        </a>
-    </span>
-</div>
+<a ui-sref="PackageManagerIndex" data-original-title="<?php echo __('New version available!'); ?>"
+   data-placement="left"
+   ng-show="newVersionAvailable"
+   rel="tooltip" data-container="body" class="header-icon">
+    <i class="text-primary fas fa-fire"></i>
+</a>

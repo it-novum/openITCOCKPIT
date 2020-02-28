@@ -1,4 +1,11 @@
+# openITCOCKPIT - next generation monitoring
+
+This is the **BETA VERSION** of openITCOCKPIT 4. [Click here](https://github.com/it-novum/openITCOCKPIT/tree/3.x-master) to get to the latest stable release.
+
+
 <img src="https://repo.it-novum.com/oitc/oitc2.svg" alt="openITCOCKPIT logo" width="auto" height="100">
+
+
 
 [![Chat on Matrix](https://img.shields.io/badge/style-matrix-blue.svg?style=flat&label=chat)](https://riot.im/app/#/room/#openitcockpit:matrix.org)
 [![IRC: #openitcockpit on chat.freenode.net](https://img.shields.io/badge/%23openitcockpit-freenode-blue.svg)](https://kiwiirc.com/client/chat.freenode.net/#openitcockpit)
@@ -28,7 +35,8 @@ Password: demo123
 ````
 
 # System requirements
-* Ubuntu Linux 64 bit (16.04 LTS "xenial" and 18.04 LTS "bionic"), Debian Linux 64 bit (9 "stretch")
+* Ubuntu Linux 64 bit (16.04 LTS "xenial" and 18.04 LTS "bionic"), Debian Linux 64 bit (10 "buster")
+* PHP >= 7.2
 * 2 CPU cores (x86-64)
 * 2 GB RAM
 * 15 GB space
@@ -38,10 +46,12 @@ Unfortunately there is no golden rule for the right sizing of a monitoring syste
 
 Please keep in mind that a monitoring system usually will create more I/O than your KVM farm!
 
+It's recommended to use SSD as main storage.
+
 A rough guide:
 * 32 GB RAM
 * 16 CPU Cores
-* 500GB space
+* 500 GB space
 
 # Installation
 openITCOCKPIT runs on Ubuntu and Debian Linux systems and is available for download/installation via apt repositories.
