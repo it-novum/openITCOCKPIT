@@ -6,7 +6,8 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = [{
-    entry: path.resolve(__dirname, "./app.js"),
+    mode: 'production',
+    entry: path.resolve(__dirname, './app.js'),
     optimization: {
         minimizer: [new TerserJSPlugin({}), new OptimizeCSSAssetsPlugin({})],
     },
@@ -48,24 +49,53 @@ module.exports = [{
             }
         ],
     },
+
 }, {
-    entry: path.resolve(__dirname, "./appScripts.js"),
-    devtool: "source-map",
+    mode: 'production',
+    entry: path.resolve(__dirname, './appScripts.js'),
+    devtool: 'source-map',
     output: {
-        path: "/usr/share/openitcockpit/webroot/dist/scripts",
-        filename: "[name].js"
+        path: '/opt/openitc/frontend/webroot/dist/scripts',
+        filename: '[name].js'
+    },
+    resolve: {
+        alias: {
+            '$': path.resolve(__dirname, './node_modules/jquery'),
+            'jQuery': path.resolve(__dirname, './node_modules/jquery'),
+            'angular': path.resolve(__dirname, './node_modules/angular'),
+            'Dropzone': path.resolve(__dirname, './node_modules/dropzone'),
+            'Raphael': path.resolve(__dirname, './node_modules/raphael'),
+        }
     },
     plugins: [
         new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery',
-            angular: 'angular',
+            jquery: 'jquery',
             Dropzone: 'Dropzone',
-            dropzone: 'Dropzone'
-
+            dropzone: 'Dropzone',
+            Raphael: 'Raphael'
         })
     ],
-    /*
+    module: {
+        rules: [
+            {
+                test: require.resolve('angular'),
+                loader: 'expose-loader?angular'
+            },
+            {
+                test: require.resolve('jquery'),
+                //loader: 'expose-loader?jquery'
+                use: [{
+                    loader: 'expose-loader',
+                    options: 'jQuery'
+                }, {
+                    loader: 'expose-loader',
+                    options: '$'
+                }]
+            }
+        ]
+    },
     optimization: {
         minimizer: [
             new UglifyJsPlugin({
@@ -79,6 +109,6 @@ module.exports = [{
                 sourceMap: true
             })
         ]
-    }*/
+    }
 }];
 
