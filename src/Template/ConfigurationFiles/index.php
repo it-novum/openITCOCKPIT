@@ -81,7 +81,7 @@
                                         </a>
                                     <?php else: ?>
                                         <a href="javascript:void(0);"
-                                           class="btn btn-default btn-lower-padding">
+                                           class="btn btn-default btn-lower-padding disabled">
                                             <i class="fa fa-cog"></i></a>
                                     <?php endif; ?>
                                 </td>
