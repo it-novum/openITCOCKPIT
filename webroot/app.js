@@ -1,4 +1,3 @@
-require('./node_modules/noty/lib/noty.css');
 require('./node_modules/jquery-ui-dist/jquery-ui.css');
 require('./node_modules/node-waves/dist/waves.css');
 require('./node_modules/bootstrap4-tagsinput/tagsinput.css');
