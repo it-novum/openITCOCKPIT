@@ -35,7 +35,7 @@ class phpNSTAMaster extends ConfigGenerator implements ConfigInterface {
 
     protected $linkedOutfile = '/opt/openitc/etc/phpnsta/config.php';
 
-    protected $realOutfile = '/opt/openitc/etc/phpnsta/config.php';
+    protected $realOutfile = '/opt/openitc/phpNSTA/config.php';
 
     /**
      * @var string
