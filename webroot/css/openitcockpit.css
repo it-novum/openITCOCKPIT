@@ -893,7 +893,7 @@ div.required .control-label::after {
     padding: 0.3rem 1.0rem;
 }
 
-.form-group{
+.form-group {
     margin-bottom: 0.5rem;
 }
 
@@ -960,4 +960,13 @@ div.required .control-label::after {
         stroke-width: 35px;
     }
 }
+
 /*** End of animated SVG text ***/
+
+.breadcrumb > li.breadcrumb-item {
+    max-width: none;
+}
+
+.breadcrumb > li.breadcrumb-item:hover {
+    max-width: none !important;
+}
