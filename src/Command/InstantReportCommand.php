@@ -193,57 +193,8 @@ class InstantReportCommand extends Command implements CronjobInterface {
                     $Mailer->deliver();
                 }
 
-
-
-
-
-                /**
-                 * $attachmentArray[preg_replace('[^0-9a-zA-Z_\s]', '_', $mInstantReport['Instantreport']['name']) . '.pdf'] = [
-                 * 'file'     => $InstantreportsController->cronPdfName,
-                 * 'mimetype' => 'application/pdf'
-                 * ];
-                 */
-
-
-
-                //$pdfReportCronPdfName = APP . 'tmp/InstantReport_' . $instantreport->get('id') . '.pdf';
-
-                //debug($hasToBeSend);
-                /*
-
-                App::uses('CakePdf', 'CakePdf.Pdf');
-                App::import('Controller', 'Instantreports');
-                $InstantreportsController = new InstantreportsController();
-                $InstantreportsController->cronFromDate = $this->Instantreport->reportStartTime($mInstantReport['Instantreport']['send_interval']);
-                $InstantreportsController->cronToDate = $this->Instantreport->reportEndTime($mInstantReport['Instantreport']['send_interval']);
-                $InstantreportsController->cronPdfName = APP . 'tmp/InstantReport_' . $mInstantReport['Instantreport']['id'] . '.pdf';
-                $InstantreportsController->generate($mInstantReport['Instantreport']['id']);
-                $attachmentArray[preg_replace('[^0-9a-zA-Z_\s]', '_', $mInstantReport['Instantreport']['name']) . '.pdf'] = [
-                    'file'     => $InstantreportsController->cronPdfName,
-                    'mimetype' => 'application/pdf'
-                ];
-                $sendIntervals = $this->Instantreport->getSendIntervals();
-                $subject = $sendIntervals[$mInstantReport['Instantreport']['send_interval']] . ' Instant Report ' . $mInstantReport['Instantreport']['name'];
-                $Email = new CakeEmail();
-                $Email->config('default');
-                $Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $this->_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
-                $Email->to($emailsToSend);
-                $Email->subject($subject);
-                $Email->attachments($attachmentArray);
-                $toSend = true;
-
-                if ($Email->send('Attached you find the automatically generated Instant Report!')) {
-                    $this->out('Report "' . $mInstantReport['Instantreport']['id'] . '" sent to mail address "' . implode(', ', $emailsToSend) . '"', false);
-                    $this->Instantreport->id = $mInstantReport['Instantreport']['id'];
-                    $this->Instantreport->saveField('last_send_date', date('Y-m-d H:i:s'));
-                    $io->success('    Ok');
-                } else {
-                    $this->out('ERROR sending report  "' . $mInstantReport['Instantreport']['id'] . '" to mail address "' . implode(', ', $emailsToSend) . '" !', false);
-                    $io->out('<red>    Error</red>');
-                }
-                */
-                //$instantreport->set('last_send_date', date('Y-m-d H:i:s'));
-                //$InstantreportsTable->save($instantreport);
+                $instantreport->set('last_send_date', date('Y-m-d H:i:s'));
+                $InstantreportsTable->save($instantreport);
 
                 $io->success('Report "' . $instantreport->get('id') . '" sent to mail address "' . implode(', ', $emailsToSend) . '"');
 
