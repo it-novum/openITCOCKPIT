@@ -431,6 +431,10 @@ openITCOCKPIT v4 Utilities
     font-size: 400% !important;
 }
 
+.font-size-50 {
+    font-size: 50px;
+}
+
 .bordered-vertical-on-left {
     border-left: 5px inset #428bca;
     border-radius: 7px;
@@ -496,4 +500,8 @@ openITCOCKPIT v4 Utilities
     max-width: none;
     text-overflow: unset;
     overflow: unset;
+}
+
+input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:checked + .custom-control-label {
+    font-weight: normal;
 }

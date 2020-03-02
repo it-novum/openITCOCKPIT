@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
+use Cake\I18n\FrozenTime;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
@@ -89,5 +90,24 @@ class AgenthostscacheTable extends Table {
                 'hostuuid' => $uuid,
             ])->first();
         return $query;
+    }
+
+    /**
+     * @param string $hostuuid
+     * @param string $checkdata
+     */
+    public function saveCacheData(string $hostuuid, string $checkdata) {
+        if ($this->existsByHostuuid($hostuuid)) {
+            $Agenthostscache = $this->getByHostUuid($hostuuid);
+            $Agenthostscache = $this->patchEntity($Agenthostscache, ['checkdata' => $checkdata, 'modified' => FrozenTime::now()]);
+        } else {
+            $Agenthostscache = $this->newEntity([
+                'hostuuid'  => $hostuuid,
+                'checkdata' => $checkdata,
+                'modified'  => FrozenTime::now(),
+                'created'   => FrozenTime::now()
+            ]);
+        }
+        $this->save($Agenthostscache);
     }
 }

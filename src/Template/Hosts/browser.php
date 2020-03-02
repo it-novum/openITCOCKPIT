@@ -71,20 +71,20 @@ use Cake\Core\Plugin;
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean flex-column flex-sm-row" role="tablist">
-                        <li class="nav-item">
+                        <li class="nav-item pointer">
                             <a class="nav-link active" data-toggle="tab" ng-click="selectedTab = 'tab1'; hideTimeline()"
                                role="tab">
                                 <i class="fa fa-info">&nbsp;</i> <?php echo __('Status information'); ?>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item pointer">
                             <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab2'; hideTimeline()"
                                role="tab">
                                 <i class="fa fa-hdd-o">&nbsp;</i> <?php echo __('Device information'); ?>
                             </a>
                         </li>
                         <?php if ($this->Acl->hasPermission('timeline', 'hosts')): ?>
-                            <li class="nav-item">
+                            <li class="nav-item pointer">
                                 <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab3'; showTimeline()"
                                    role="tab">
                                     <i class="fa fa-clock-o">&nbsp;</i> <?php echo __('Timeline'); ?>
@@ -92,7 +92,7 @@ use Cake\Core\Plugin;
                             </li>
                         <?php endif; ?>
                         <?php if (Plugin::isLoaded('ServicenowModule')): ?>
-                            <li class="nav-item">
+                            <li class="nav-item pointer">
                                 <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab4'; hideTimeline()"
                                    role="tab">
                                     <i class="fa fa-user-circle">&nbsp;</i> <?php echo __('ServiceNow'); ?>
@@ -100,7 +100,7 @@ use Cake\Core\Plugin;
                             </li>
                         <?php endif; ?>
                         <?php if (Plugin::isLoaded('GrafanaModule')): ?>
-                            <li class="nav-item" ng-show="GrafanaDashboardExists">
+                            <li class="nav-item pointer" ng-show="GrafanaDashboardExists">
                                 <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab5'; hideTimeline()"
                                    role="tab">
                                     <i class="fa fa-area-chart">&nbsp;</i> <?php echo __('Grafana'); ?>

@@ -187,11 +187,11 @@
                 <?php echo __('State'); ?>
             </th>
             <th class="no-sort text-center">
-                <i class="fa fa-user fa-lg" title="<?php echo __('is acknowledged'); ?>"></i>
+                <i class="fa fa-user" title="<?php echo __('is acknowledged'); ?>"></i>
             </th>
 
             <th class="no-sort text-center">
-                <i class="fa fa-power-off fa-lg"
+                <i class="fa fa-power-off"
                    title="<?php echo __('is in downtime'); ?>"></i>
             </th>
             <th class="no-sort" ng-click="orderBy('Host.name')">
@@ -219,18 +219,18 @@
             </td>
 
             <td class="text-center">
-                <i class="fa fa-lg fa-user"
+                <i class="far fa-user"
                    ng-show="service.Servicestatus.problemHasBeenAcknowledged"
                    ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
 
-                <i class="fa fa-lg fa-user-o"
+                <i class="fa fa-user"
                    ng-show="service.Servicestatus.problemHasBeenAcknowledged"
                    ng-if="service.Servicestatus.acknowledgement_type == 2"
                    title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
             </td>
 
             <td class="text-center">
-                <i class="fa fa-lg fa-power-off"
+                <i class="fa fa-power-off"
                    ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
             </td>
             <td class="table-color-{{(service.Hoststatus.currentState !== null)?service.Hoststatus.currentState:'disabled'}}">
