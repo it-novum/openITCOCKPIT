@@ -15,7 +15,7 @@ angular.module('openITCOCKPIT').directive('serviceAvailabilityBarChart', functio
                         [$scope.data.reportData[2]],
                         [$scope.data.reportData[3]]
                     ], {
-                        colors: ["#3FC837", "#DF8F1D", "#C9302C", "#92A2A8"],
+                        colors: ["#00C851", "#ffbb33", "#CC0000", "#727b84"],
                         values: [
                             55, 10, 20, 10
                         ],
