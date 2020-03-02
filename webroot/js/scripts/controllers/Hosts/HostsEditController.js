@@ -341,7 +341,7 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                if($state.previous.name !== "" && $state.previous.url !== "^"){
+                if($state.hasOwnProperty('previous') && $state.previous.name !== "" && $state.previous.url !== "^"){
                     $state.go($state.previous.name, $state.previous.params).then(function(){
                         NotyService.scrollTop();
                     });

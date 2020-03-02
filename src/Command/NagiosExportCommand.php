@@ -128,9 +128,9 @@ class NagiosExportCommand extends Command {
 
         $MonitoringEngine = new MonitoringEngine();
         $io->success('Monitoring configuration successfully generated.');
-        if($MonitoringEngine->isNaemon()) {
+        if ($MonitoringEngine->isNaemon()) {
             $io->success('Execute "systemctl reload naemon" to load the new configuration');
-        }else{
+        } else {
             $io->success('Execute "systemctl reload nagios" to load the new configuration');
         }
         exit(0);

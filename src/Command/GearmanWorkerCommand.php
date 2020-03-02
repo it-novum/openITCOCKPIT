@@ -28,6 +28,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\itnovum\openITCOCKPIT\Core\MonitoringEngine\SatelliteCopy;
 use App\itnovum\openITCOCKPIT\Database\Backup;
 use App\itnovum\openITCOCKPIT\Monitoring\Naemon\ExternalCommands;
 use App\Model\Table\ExportsTable;
@@ -41,6 +42,7 @@ use Cake\Core\Plugin;
 use Cake\Filesystem\Folder;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigDefaults;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigGenerator;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
@@ -118,8 +120,21 @@ class GearmanWorkerCommand extends Command {
 
         $pidfile = $gearmanConfig['pidfile'];
         if (file_exists($pidfile)) {
-            Log::error(sprintf('GearmanWorker: Pidfile "%s" allready exists.', $pidfile));
-            exit(3);
+            $pid = trim(file_get_contents($gearmanConfig['pidfile']));
+            if (is_numeric($pid)) {
+                //We got a pid. Is this a gearman_worker or is this a pid from an died process?
+                exec('ps -eaf | grep ' . escapeshellarg($pid) . '| grep gearman_worker |grep -v grep', $output);
+
+                if (!empty($output)) {
+                    Log::error(sprintf('GearmanWorker: Pidfile "%s" allready exists.', $pidfile));
+                    exit(3);
+                }
+            }
+
+            //This is not a gearman_worker process
+            Log::info(sprintf('GearmanWorker: Deleted orphaned Pidfile "%s". Did the gearman_worker died?', $pidfile));
+            unlink($pidfile);
+
         }
 
         $pidfd = fopen($pidfile, 'w+');
@@ -484,7 +499,7 @@ class GearmanWorkerCommand extends Command {
                 $file = fopen('/etc/apt/sources.list.d/openitcockpit.list', 'w+');
                 if ($usesAuthConfig) {
 
-                    if(!is_dir('/etc/apt/auth.conf.d')){
+                    if (!is_dir('/etc/apt/auth.conf.d')) {
                         mkdir('/etc/apt/auth.conf.d');
                     }
 
@@ -663,15 +678,7 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'export_sync_sat_config':
-
-                //@todo implement me
-
-                //This task is part of a plugin, so we need to load it v
                 $NagiosConfigGenerator = new NagiosConfigGenerator();
-                //$_task = new TaskCollection($this);
-                //$AfterExportTask = $_task->load('AfterExport');
-                //$AfterExportTask->beQuiet();
-                //$AfterExportTask->init();
 
                 /** @var ExportsTable $ExportsTable */
                 $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
@@ -682,8 +689,11 @@ class GearmanWorkerCommand extends Command {
                     ->first();
                 if (!empty($entity)) {
                     $entity->set('finished', 1);
-                    //$entity->set('successfully', AfterExportTask->copy($payload['Satellite']) ? 1 : 0);
-                    $entity->set('successfully', 0);
+
+                    $SatelliteCopy = new SatelliteCopy($payload['Satellite']);
+                    $copyResult = $SatelliteCopy->copy();
+                    $entity->set('successfully', (int)$copyResult);
+
                     $ExportsTable->save($entity);
                 }
                 unset($entity);
@@ -1217,9 +1227,6 @@ class GearmanWorkerCommand extends Command {
             } else {
                 // Synchronize new config to ALL satellites
                 $query = $SatellitesTable->find()
-                    ->where([
-                        'Satellites.sync_instance' => 1
-                    ])
                     ->all();
             }
 
