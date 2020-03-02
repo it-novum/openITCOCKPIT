@@ -30,7 +30,7 @@ use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 
 /**
  * @var \App\View\AppView $this
- * @var array $downtimeReport
+ * @var array $instantReport
  * @var int $fromDate
  * @var int $toDate
  * @var \itnovum\openITCOCKPIT\Core\Views\UserTime $UserTime
