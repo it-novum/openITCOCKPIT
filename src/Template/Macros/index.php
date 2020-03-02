@@ -341,11 +341,11 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-danger mr-auto" ng-click="deleteMacro()">
+                    <?php echo __('Delete'); ?>
+                </button>
                 <button type="button" class="btn btn-primary" ng-click="editMacro()">
                     <?php echo __('Save'); ?>
-                </button>
-                <button type="button" class="btn btn-danger" ng-click="deleteMacro()">
-                    <?php echo __('Delete'); ?>
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>
