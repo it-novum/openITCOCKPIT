@@ -868,7 +868,8 @@ class ExternalCommands {
      */
     public function runCmdCommand($payload) {
         $payload['parameters'] = (array)$payload['parameters'];
-        $this->_write($payload['command'] . ';' . implode(';', $payload['parameters']), isset($payload['satelliteId']) ? $payload['satelliteId'] : 0);
+        $timestamp = $payload['timestamp'] ?? time();
+        $this->_write($payload['command'] . ';' . implode(';', $payload['parameters']), $payload['satelliteId'] ?? 0, $timestamp);
     }
 
 
@@ -905,7 +906,11 @@ class ExternalCommands {
      * @param int $satelliteId
      * @return bool
      */
-    private function _write($content = '', $satelliteId = 0) {
+    private function _write($content = '', $satelliteId = 0, $timestamp = null) {
+        if ($timestamp === null) {
+            $timestamp = time();
+        }
+
         if ($satelliteId > 0) {
             if (Plugin::isLoaded('DistributeModule')) {
                 // DistributeModule is installed and loaded...
@@ -920,7 +925,7 @@ class ExternalCommands {
                     return false;
                 }
                 $file = fopen('/opt/openitc/nagios/var/rw/' . md5($satellite->get('name')) . '_nagios.cmd', 'a+');
-                fwrite($file, sprintf('[%s] %s%s', time(), $content, PHP_EOL));
+                fwrite($file, sprintf('[%s] %s%s', $timestamp, $content, PHP_EOL));
                 fclose($file);
                 return true;
             }
@@ -930,14 +935,14 @@ class ExternalCommands {
         } else {
             // Host or service from master system or command for master naemon.cmd
             if ($this->open()) {
-                fwrite($this->NaemonCmd, sprintf('[%s] %s%s', time(), $content, PHP_EOL));
+                fwrite($this->NaemonCmd, sprintf('[%s] %s%s', $timestamp, $content, PHP_EOL));
                 // If the naemon.cmd is missing (due to Naemon restart or so) the file descripter gets lost.
                 // To avoid any errors, we fclose the file naeon.cmd
                 $this->close();
                 return true;
             }
             Log::error(
-                sprintf('SudoServer: Lost external command "%s"', sprintf('[%s] %s', time(), $content))
+                sprintf('SudoServer: Lost external command "%s"', sprintf('[%s] %s', $timestamp, $content))
             );
         }
         return false;

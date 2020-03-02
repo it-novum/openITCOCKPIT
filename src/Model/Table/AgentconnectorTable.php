@@ -182,4 +182,25 @@ class AgentconnectorTable extends Table {
     public function certificateNotYetGenerated(string $hostuuid) {
         return $this->exists(['hostuuid' => $hostuuid, 'checksum IS' => null]);
     }
+
+    /**
+     * @param string $hostuuid
+     * @param null $remote_addr
+     * @param null $http_x_forwarded_for
+     * @return bool
+     */
+    public function addAgent(string $hostuuid, $remote_addr = null, $http_x_forwarded_for = null) {
+        $AgentConnectionEntity = $this->newEntity([
+            'hostuuid'             => $hostuuid,
+            'checksum'             => null,
+            'ca_checksum'          => null,
+            'generation_date'      => null,
+            'remote_addr'          => $remote_addr,
+            'http_x_forwarded_for' => $http_x_forwarded_for,
+            'trusted'              => 0
+        ]);
+        $this->save($AgentConnectionEntity);
+
+        return $AgentConnectionEntity->hasErrors();
+    }
 }

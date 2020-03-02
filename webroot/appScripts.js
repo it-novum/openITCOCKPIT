@@ -7,16 +7,16 @@ require('./legacy/smartadmin/js/plugin/throttle-debounce/jquery.ba-throttle-debo
 require('./js/jquery-snippets.js');
 require('./node_modules/jquery-slimscroll/jquery.slimscroll.js');
 require('./node_modules/node-waves/dist/waves.js');
-//require('./node_modules/angular/angular.min.js');
-//require('./node_modules/angular-ui-router/release/angular-ui-router.min.js');
+require('./node_modules/angular/angular.min.js');
+require('./node_modules/angular-ui-router/release/angular-ui-router.min.js');
 require('./legacy/smartadmin/js/plugin/jquery-nestable/jquery.nestable.js');
-//require('./legacy/js/lib/angular-nestable.js');
-import angular from 'angular';
+require('./legacy/js/lib/angular-nestable.js');
+
+/*import angular from 'angular';
 import uiRouter from 'angular-ui-router';
 import gridster from 'angular-gridster';
-import ngNestable from 'ng-nestable';
-angular.module('openITCOCKPIT', ['gridster', 'uiRouter', 'ngNestable']);
-
+angular.module('openITCOCKPIT', ['gridster', 'uiRouter', 'ng-nestable']);
+*/
 
 
 
@@ -38,7 +38,8 @@ require('./node_modules/flot/jquery.flot.threshold.js');
 require('./node_modules/flot/jquery.flot.selection.js');
 
 require('./legacy/js/lib/parseuri.js');
-require('./node_modules/moment/min/moment.min.js');
+//require('./node_modules/moment/min/moment.min.js');
+import moment from 'moment/moment';
 require('./node_modules/vis-data/dist/umd.js');
 require('./node_modules/vis-network/dist/vis-network.js');
 require('./node_modules/vis-timeline/peer/umd/vis-timeline-graph2d.js');
@@ -49,9 +50,10 @@ require('./node_modules/noty/lib/noty.min.js');
 require('./legacy/js/vendor/gauge.min.js');
 require('./legacy/js/lib/jquery.svg.min.js');
 require('./legacy/js/lib/jquery.svgfilter.min.js');
-require('./node_modules/dropzone/dist/min/dropzone.min.js');
+//require('./node_modules/dropzone/dist/min/dropzone.min.js');
+
 require('./node_modules/rangyinputs/rangyinputs-jquery.js');
-//require('./node_modules/angular-gridster/dist/angular-gridster.min.js');
+require('./node_modules/angular-gridster/dist/angular-gridster.min.js');
 require('./legacy/js/lib/GraphDefaults.js');
 require('./legacy/js/lib/jqconsole.min.js');
 require('./node_modules/jquery-blockui/jquery.blockUI.js');
