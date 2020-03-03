@@ -25,6 +25,8 @@
 
 namespace itnovum\openITCOCKPIT\Core\MonitoringEngine;
 
+use App\Lib\ExportTasks;
+use App\Lib\PluginExportTasks;
 use App\Model\Entity\CalendarHoliday;
 use App\Model\Entity\Host;
 use App\Model\Entity\Hostdependency;
@@ -111,9 +113,6 @@ class NagiosConfigGenerator {
         $this->_systemsettings = $SystemsettingsTable->findAsArray();
         $this->FRESHNESS_THRESHOLD_ADDITION = (int)$this->_systemsettings['MONITORING']['MONITORING.FRESHNESS_THRESHOLD_ADDITION'];
 
-        //Loading external tasks of plugins and 3rd party modules
-        $this->loadExternTasks();
-
         //Loading distributed Monitoring support, if plugin is loaded
         $this->dm = Plugin::isLoaded('DistributeModule');
 
@@ -137,9 +136,6 @@ class NagiosConfigGenerator {
             /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
             $query = $SatellitesTable->find()
-                ->where([
-                    'Satellites.sync_instance' => 1
-                ])
                 ->all();
 
             $satellites = $query->toArray();
@@ -2381,63 +2377,26 @@ class NagiosConfigGenerator {
         $file->close();
     }
 
-    /**
-     * This function load export tasks from external modules
-     * @todo implement me
-     */
-    private function loadExternTasks() {
-        $this->externalTasks = [];
-        return;
-        $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
-            return strpos($value, 'Module') !== false;
-        });
-        foreach ($modulePlugins as $pluginName) {
-            if (file_exists(OLD_APP . 'Plugin/' . $pluginName . '/Console/Command/Task/' . $pluginName . 'NagiosExportTask.php')) {
-                $this->externalTasks[$pluginName] = $pluginName . 'NagiosExport';
-            }
-        }
-    }
-
-    /**
-     * @todo implement me
-     */
-    public function exportExternalTasks() {
-        return;
-        foreach ($this->externalTasks as $pluginName => $taskName) {
-            $_task = new TaskCollection($this);
-            $extTask = $_task->load($pluginName . '.' . $taskName);
-            $extTask->export();
-        }
-    }
-
-    /**
-     * @todo implement me
-     */
     public function beforeExportExternalTasks() {
         $this->createMissingOitcAgentActiveChecks();
-        return;
 
-        foreach ($this->externalTasks as $pluginName => $taskName) {
-            $_task = new TaskCollection($this);
-            $extTask = $_task->load($pluginName . '.' . $taskName);
-            $extTask->beforeExport();
+        $ExportTasks = new ExportTasks();
+        foreach ($ExportTasks->getTasks() as $task) {
+            /** @var PluginExportTasks $task */
+            $task->beforeExport();
         }
     }
 
-    /**
-     * @todo implement me
-     */
     public function afterExportExternalTasks() {
         $this->createOitcAgentJsonConfig();
-        return;
+
         //Restart oitc CMD to wipe old cached information
-        exec('service oitc_cmd restart');
+        exec('systemctl restart oitc_cmd');
 
-
-        foreach ($this->externalTasks as $pluginName => $taskName) {
-            $_task = new TaskCollection($this);
-            $extTask = $_task->load($pluginName . '.' . $taskName);
-            $extTask->afterExport();
+        $ExportTasks = new ExportTasks();
+        foreach ($ExportTasks->getTasks() as $task) {
+            /** @var PluginExportTasks $task */
+            $task->afterExport();
         }
     }
 
@@ -2578,11 +2537,27 @@ class NagiosConfigGenerator {
     public function deleteAllConfigfiles() {
         $result = scandir($this->conf['path'] . DS . 'config');
         foreach ($result as $filename) {
-            if (!in_array($filename, ['.', '..'])) {
+            if (!in_array($filename, ['.', '..'], true)) {
                 if (is_dir($this->conf['path'] . DS . 'config' . DS . $filename)) {
                     $folder = new Folder($this->conf['path'] . DS . 'config' . DS . $filename);
                     $folder->delete();
                     unset($folder);
+                }
+            }
+        }
+
+        //Delete all SAT Configs
+        foreach ($this->Satellites as $satellite) {
+            if (is_dir($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config')) {
+                $result = scandir($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config');
+                foreach ($result as $dirname) {
+                    if (!in_array($dirname, ['.', '..'], true)) {
+                        if (is_dir($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config' . DS . $dirname)) {
+                            $folder = new Folder($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config' . DS . $dirname);
+                            $folder->delete();
+                            unset($folder);
+                        }
+                    }
                 }
             }
         }

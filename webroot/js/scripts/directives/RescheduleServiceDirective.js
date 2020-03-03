@@ -24,7 +24,7 @@ angular.module('openITCOCKPIT').directive('rescheduleService', function($http, S
                     SudoService.send(SudoService.toJson('rescheduleService', [
                         object.Host.uuid,
                         object.Service.uuid,
-                        object.Host.satelliteId
+                        object.Host.satelliteId || object.Host.satellite_id
                     ]));
                 }
                 //Call callback function if given

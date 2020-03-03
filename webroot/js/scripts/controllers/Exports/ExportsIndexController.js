@@ -129,7 +129,6 @@ angular.module('openITCOCKPIT')
 
             $http.post("/exports/launchExport.json?angular=true", post).then(
                 function(result){
-                    console.log(result);
                     $scope.loadStatus();
                     interval = setInterval($scope.loadStatus, 1000);
                 });

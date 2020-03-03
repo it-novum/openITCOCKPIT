@@ -525,9 +525,14 @@
                                                class="btn btn-default btn-lower-padding">
                                                 <i class="fa fa-cog"></i>
                                             </a>
+                                            <a href="javascript:void(0);"
+                                               ng-if="!service.Service.allow_edit"
+                                               class="btn btn-default btn-lower-padding disabled">
+                                                <i class="fa fa-cog"></i>
+                                            </a>
                                         <?php else: ?>
                                             <a href="javascript:void(0);"
-                                               class="btn btn-default btn-lower-padding">
+                                               class="btn btn-default btn-lower-padding disabled">
                                                 <i class="fa fa-cog"></i></a>
                                         <?php endif; ?>
                                         <button type="button"

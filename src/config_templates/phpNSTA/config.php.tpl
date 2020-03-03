@@ -7,7 +7,7 @@
  * This is the phpNSTA configuration file.
  * Please be careful when you change something in this file!
  * You can check for any syntax errors with the following command:
- *   php --syntax-check /opt/phpNSTA/config.php
+ *   php --syntax-check /opt/openitc/phpNSTA/config.php
  */
 
 /**

@@ -333,7 +333,7 @@
                                     <ul class="list-unstyled">
                                         <ul class="list-unstyled">
                                             <li ng-repeat="user in instantreport.User">
-                                                <span ng-if="!user.allowEdit">
+                                                <span>
                                                     {{ user.firstname }} {{ user.lastname }}
                                                 </span>
                                             </li>
@@ -344,12 +344,18 @@
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'instantreports')): ?>
                                             <a ui-sref="InstantreportsEdit({id:instantreport.Instantreport.id})"
+                                               ng-if="instantreport.allowEdit"
                                                class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i>
+                                            </a>
+                                            <a href="javascript:void(0);"
+                                               ng-if="!instantreport.allowEdit"
+                                               class="btn btn-default btn-lower-padding disabled">
                                                 <i class="fa fa-cog"></i>
                                             </a>
                                         <?php else: ?>
                                             <a href="javascript:void(0);"
-                                               class="btn btn-default btn-lower-padding">
+                                               class="btn btn-default btn-lower-padding disabled">
                                                 <i class="fa fa-cog"></i></a>
                                         <?php endif; ?>
                                         <button type="button"
@@ -360,6 +366,7 @@
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('edit', 'instantreports')): ?>
                                                 <a ui-sref="InstantreportsEdit({id:instantreport.Instantreport.id})"
+                                                   ng-if="instantreport.allowEdit"
                                                    class="dropdown-item">
                                                     <i class="fa fa-cog"></i>
                                                     <?php echo __('Edit'); ?>
@@ -374,6 +381,7 @@
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'instantreports')): ?>
                                                 <a ng-click="confirmDelete(getObjectForDelete(instantreport))"
+                                                   ng-if="instantreport.allowEdit"
                                                    href="javascript:void(0);"
                                                    class="dropdown-item txt-color-red">
                                                     <i class="fa fa-trash"></i>

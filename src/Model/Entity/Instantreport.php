@@ -60,8 +60,6 @@ class Instantreport extends Entity {
     ];
 
     /**
-     * @param $lastSendDate
-     * @param $sendInterval
      * @return bool
      */
     public function hasToBeSend() {
@@ -69,8 +67,6 @@ class Instantreport extends Entity {
         $hasToBeSend = false;
         $lastSendDate = $this->get('last_send_date');
         $sendInterval = $this->get('send_interval');
-        print_r('LAST SEND DATE !!!! ' . $lastSendDate);
-        print_r('SEND INTERVAL !!!!' . $sendInterval);
         if ($lastSendDate == '0000-00-00 00:00:00') {
             return true;
         }
@@ -99,5 +95,55 @@ class Instantreport extends Entity {
         }
 
         return $hasToBeSend;
+    }
+
+    /**
+     * @return int
+     * @throws \Exception
+     */
+    public function reportStartTime() {
+        $sendInterval = $this->get('send_interval');
+        $now = $this->reportEndTime();
+        $dateNow = new \DateTime(date('d.m.Y H:i:s', $now));
+        switch ($sendInterval) {
+            case 2: //weekly
+                $dateNow->modify('last Monday');
+                break;
+            case 3: //monthly
+                $dateNow->modify('first day of this month');
+                break;
+            case 4: //yearly
+                $dateNow->modify('first day of this year');
+                break;
+        }
+        $dateNow->setTime(0, 0, 0);
+        return $dateNow->getTimestamp();
+    }
+
+    /**
+     * @param $sendInterval
+     * @return int
+     * @throws \Exception
+     */
+    public function reportEndTime() {
+        $dateNow = new \DateTime(date('d.m.o H:i', time()));
+        $sendInterval = $this->get('send_interval');
+        switch ($sendInterval) {
+            case 1: //daily
+                $dateNow->modify('yesterday');
+                break;
+            case 2: //weekly
+                $dateNow->modify('last Sunday');
+                break;
+            case 3: //monthly
+                $dateNow->modify('last day of last month');
+                break;
+            case 4: //yearly
+                $dateNow->modify('31 December last year');
+                break;
+        }
+
+        $dateNow->setTime(23, 59, 59);
+        return $dateNow->getTimestamp();
     }
 }

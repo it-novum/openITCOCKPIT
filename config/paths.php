@@ -53,7 +53,7 @@ define('CONFIG', ROOT . DS . 'config' . DS);
  *
  * `define('WWW_ROOT', rtrim($_SERVER['DOCUMENT_ROOT'], DS) . DS);`
  */
-if(!defined('WWW_ROOT')) {
+if (!defined('WWW_ROOT')) {
     //@todo remove the if and always define the WWW_ROOT.
     //This is to load cake2 and cake4 at the same time.
     define('WWW_ROOT', ROOT . DS . 'webroot' . DS);
@@ -69,9 +69,9 @@ define('TESTS', ROOT . DS . 'tests' . DS);
 /*
  * Path to the temporary files directory.
  */
-if($isCli === false) {
+if ($isCli === false) {
     define('TMP', ROOT . DS . 'tmp' . DS);
-}else{
+} else {
     // www-data
     define('TMP', ROOT . DS . 'tmp_cli' . DS);
 }
@@ -79,19 +79,15 @@ if($isCli === false) {
 /*
  * Path to the logs directory.
  */
-if($isCli === false) {
-    define('LOGS', ROOT . DS . 'logs' . DS);
-}else{
-    // www-data
-    define('LOGS', ROOT . DS . 'logs_cli' . DS);
-}
+define('LOGS', ROOT . DS . 'logs' . DS);
+
 
 /*
  * Path to the cache files directory. It can be shared between hosts in a multi-server setup.
  */
-if($isCli === false) {
+if ($isCli === false) {
     define('CACHE', TMP . 'cache' . DS);
-}else{
+} else {
     // www-data
     define('CACHE', TMP . 'cache_cli' . DS);
 }
