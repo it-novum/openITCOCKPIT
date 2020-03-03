@@ -23,100 +23,107 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-database fa-fw "></i>
-            <?php echo __('Backup / Restore'); ?>
-        </h1>
-    </div>
-</div>
-<div class="jarviswidget" id="wid-id-0">
-    <header>
-        <h2><?php echo __('Backup management'); ?></h2>
-    </header>
-    <div>
-        <div class="widget-body">
-            <div class="row">
-                <div id="backupSuccessfully" class="col-xs-10 padding-top-20" style="display:none;">
-                    <div class="alert alert-success alert-block">
-                        <h4 class="alert-heading"><i class="fa fa-check"></i> <?php echo __('Success'); ?>
-                        </h4>
-                        <div id="successMessage"></div>
-                    </div>
-                </div>
-                <div id="backupError" class="col-xs-10 padding-top-20" style="display:none;">
-                    <div class="alert alert-danger alert-block">
-                        <h4 class="alert-heading"><i class="fa fa-close"></i> <?php echo __('Error'); ?>
-                        </h4>
-                        <div id="errorMessage"></div>
-                    </div>
-                </div>
-                <div id="backupWarning" class="col-xs-10 padding-top-20" style="display:none;">
-                    <div class="alert alert-warning alert-block">
-                        <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Warning'); ?>
-                        </h4>
-                        <div id="warningMessage"></div>
-                    </div>
-                </div>
-            </div>
-            <?php
-            echo $this->Form->input('backupfile', [
-                    'options'   => $backup_files,
-                    'multiple'  => false,
-                    'class'     => 'chosen',
-                    'style'     => 'width: 80%',
-                    'label'     => ['text' => __('Backupfile for Restore'), 'class' => 'col col-xs-2 col-md-2 col-lg-2'],
-                    'wrapInput' => 'col col-xs-8 col-md-8 col-lg-8',
-                ]
-            );
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="BackupsIndex">
+            <i class="fa fa-database"></i> <?php echo __('Backups'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <?php echo __('Backup / Restore'); ?>
+    </li>
+</ol>
 
-            ?>
-            <br><br>
-            <div class="row">
-                <span class="col col-md-2 hidden-tablet hidden-mobile"><!-- spacer for nice layout --></span>
-                <?php
-                echo "<div class='col col-xs-6 col-md-6 col-lg-6'> </div>";
-                echo "<div class=' col col-xs-2 col-md-2 col-lg-2'><div class='pull-right'>";
-                ?>
-                <a href="javascript:void(0);" id="delete" class="btn btn-primary"><?php echo __('Delete file'); ?></a>
-                <a href="javascript:void(0);" id="restore"
-                   class="btn btn-primary"><?php echo __('Start Restore'); ?></a>
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Backup management'); ?>
+                </h2>
+            </div>
+            <div class="panel-container show margin-bottom-25">
+                <div class="panel-content">
+
+                    <form ng-submit="restore()" class="form-horizontal col-xl-9">
+
+                        <div class="form-group required">
+                            <label class="col-xs-12 control-label" for="backupFiles">
+                                <?php echo __('Backupfile for Restore'); ?>
+                            </label>
+                            <div class="col-xs-12">
+                                <select
+                                    id="backupFiles"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="backupFiles"
+                                    ng-options="key as value for (key, value) in backupFiles"
+                                    ng-model="selectedBackup">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="margin-top-20">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <a ng-click="delete()"
+                                       class="btn btn-danger waves-effect waves-themed txt-color-white" ng-disabled="isActionRunning">
+                                        <?php echo __('Delete file'); ?>
+                                    </a>
+                                    <a ng-click="download()"
+                                       class="btn btn-primary waves-effect waves-themed txt-color-white" ng-disabled="isActionRunning">
+                                        <?php echo __('Download file'); ?>
+                                    </a>
+                                    <button type="submit" class="btn btn-primary waves-effect waves-themed" ng-disabled="isActionRunning">
+                                        <i class="fa fa-spin fa-spinner" ng-show="restoreRunning"></i>
+                                        <?php echo __('Start Restore'); ?>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+
+
+                    <form ng-submit="backup()" class="form-horizontal margin-top-50 col-xl-9">
+
+                        <div class="form-group">
+                            <label class="col-xs-12 control-label"
+                                   for="filenameForBackup">
+                                <?php echo __('Filename for Backup'); ?>
+                            </label>
+
+                            <div class="col-xs-12">
+                                <input
+                                    id="filenameForBackup"
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="filenameForBackup">
+                            </div>
+                        </div>
+
+                        <div class="margin-top-20">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <button type="submit" class="btn btn-primary waves-effect waves-themed" ng-disabled="isActionRunning">
+                                        <i class="fa fa-spin fa-spinner" ng-show="backupRunning"></i>
+                                        <?php echo __('Start Backup'); ?>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
             </div>
         </div>
     </div>
 </div>
-<hr>
-<div class="widget-body">
-    <?php
-    echo $this->Form->input('filenameForBackup', [
-            'label'     => ['text' => __('Filename for Backup'), 'class' => 'col col-xs-2 col-md-2 col-lg-2'],
-            'style'     => 'width: 100%',
-            'value'     => 'mysql_oitc_bkp',
-            'wrapInput' => 'col col-xs-8 col-md-8 col-lg-8',
-        ]
-    );
-    ?>
-    <br><br>
-    <div class="row">
-        <span class="col col-md-2 hidden-tablet hidden-mobile"><!-- spacer for nice layout --></span>
-        <?php
 
-        echo "<div class='col col-xs-6 col-md-6 col-lg-6'> </div>";
-        echo "<div class=' col col-xs-2 col-md-2 col-lg-2'><div class='pull-right'>";
-        ?>
-        <a href="javascript:void(0);" id="backup" class="btn btn-primary"><?php echo __('Start Backup'); ?></a>
-    </div>
-</div>
-
-<br><br>
-<hr>
-<div class="col-xs-2">
-    State of choosen Action
-</div>
-<div class="col-xs-8">
-    <div class="well" id="backupLog"></div>
-</div>
-<br><br><br><br>
-</div>
-</div>
+<reload-required></reload-required>

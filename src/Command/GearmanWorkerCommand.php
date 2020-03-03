@@ -105,7 +105,7 @@ class GearmanWorkerCommand extends Command {
         $systemsettings = $SystemsettingsTable->findAsArray();
 
         Configure::load('gearman');
-
+        Configure::load('nagios');
         Configure::load('NagiosModule.config');
         $naemonExternalCommandsFile = Configure::read('NagiosModule.PREFIX') . Configure::read('NagiosModule.NAGIOS_CMD');
         $this->ExternalCommands = new ExternalCommands($naemonExternalCommandsFile);
@@ -484,7 +484,7 @@ class GearmanWorkerCommand extends Command {
                 $file = fopen('/etc/apt/sources.list.d/openitcockpit.list', 'w+');
                 if ($usesAuthConfig) {
 
-                    if(!is_dir('/etc/apt/auth.conf.d')){
+                    if (!is_dir('/etc/apt/auth.conf.d')) {
                         mkdir('/etc/apt/auth.conf.d');
                     }
 
@@ -639,7 +639,6 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'export_verify_config':
-                Configure::load('nagios');
 
                 /** @var SystemsettingsTable $SystemsettingsTable */
                 $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
@@ -709,7 +708,7 @@ class GearmanWorkerCommand extends Command {
 
                 $MysqlBackup = new Backup();
                 $return = $MysqlBackup->createMysqlDump($filename);
-                exec('touch /opt/openitc/nagios/backup/finishBackup.txt');
+                exec('touch /opt/openitc/nagios/backup/finishBackup.txt.sql');
                 break;
 
             case 'restore_sql_backup':
@@ -726,7 +725,7 @@ class GearmanWorkerCommand extends Command {
 
                 $MysqlBackup = new Backup();
                 $return = $MysqlBackup->restoreMysqlDump($filename);
-                exec('touch /opt/openitc/nagios/backup/finishRestore.txt');
+                exec('touch /opt/openitc/nagios/backup/finishRestore.txt.sql');
                 break;
 
             case 'delete_sql_backup':
@@ -740,9 +739,9 @@ class GearmanWorkerCommand extends Command {
 
                 $fileToDelete = $payload['path'];
 
-                $return = false;
+                $return = ['success' => false];
                 if (isset($backup_files[$fileToDelete]) && is_file($fileToDelete)) {
-                    $return = unlink($fileToDelete);
+                    $return = ['success' => unlink($fileToDelete)];
                 }
 
                 break;
@@ -1027,7 +1026,6 @@ class GearmanWorkerCommand extends Command {
             'text' => __('Verifying new configuration')
         ]);
         $ExportsTable->save($verifyEntity);
-        Configure::load('nagios');
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemsettings = $SystemsettingsTable->findAsArray();

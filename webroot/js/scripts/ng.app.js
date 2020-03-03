@@ -201,6 +201,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AgentconnectorsAgentController"
             })
 
+            .state('BackupsIndex', {
+                url: '/backups/index',
+                templateUrl: "/backups/index.html",
+                controller: "BackupsIndexController"
+            })
+
             .state('BrowsersIndex', {
                 url: '/browsers/index?containerId',
                 params: {

@@ -27,8 +27,11 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
+use itnovum\openITCOCKPIT\Core\System\Gearman;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+
 class BackupsController extends AppController {
-    public $components = ['GearmanClient'];
 
     public function index() {
         $backup_files = $this->getBackupFiles();
@@ -38,8 +41,15 @@ class BackupsController extends AppController {
     }
 
     public function backup() {
-        $filenameForBackup = $this->request->getQuery('filename') . "_" . date("Y-m-d_His") . ".sql";
-        if (preg_match('/^[a-zA-Z0-9_\-]*$/', $this->request->getQuery('filename'))) {
+        if (!$this->isJsonRequest()) {
+            return;
+        }
+        if (empty($this->request->getData('filename'))) {
+            throw new MissingParameterExceptions('filename is missing');
+        }
+
+        $filenameForBackup = $this->request->getData('filename') . "_" . date("Y-m-d_His") . ".sql";
+        if (preg_match('/^[a-zA-Z0-9_\-]*$/', $this->request->getData('filename'))) {
             $error = false;
             $backupRunning = true;
         } else {
@@ -48,9 +58,8 @@ class BackupsController extends AppController {
         }
 
         if (!$error) {
-            Configure::load('gearman');
-            $this->Config = Configure::read('gearman');
-            $this->GearmanClient->client->doBackground("oitc_gearman", serialize(['task' => 'make_sql_backup', 'filename' => $filenameForBackup]));
+            $GearmanClient = new Gearman();
+            $GearmanClient->sendBackground("make_sql_backup", ['filename' => $filenameForBackup]);
         }
 
         $backup = [
@@ -63,10 +72,16 @@ class BackupsController extends AppController {
     }
 
     public function restore() {
-        $pathForRestore = $this->request->getQuery('backupfile');
-        Configure::load('gearman');
-        $this->Config = Configure::read('gearman');
-        $this->GearmanClient->client->doBackground("oitc_gearman", serialize(['task' => 'restore_sql_backup', 'path' => $pathForRestore]));
+        if (!$this->isJsonRequest()) {
+            return;
+        }
+        if (empty($this->request->getData('backupfile'))) {
+            throw new MissingParameterExceptions('backupfile is missing');
+        }
+
+        $pathForRestore = $this->request->getData('backupfile');
+        $GearmanClient = new Gearman();
+        $GearmanClient->sendBackground("restore_sql_backup", ['path' => $pathForRestore]);
         $backup = [
             'backupRunning' => true,
         ];
@@ -75,23 +90,25 @@ class BackupsController extends AppController {
     }
 
     public function checkBackupFinished() {
-        $this->allowOnlyAjaxRequests();
+        if (!$this->isJsonRequest()) {
+            return;
+        }
+
         $backup_files = $this->getBackupFiles();
+        $GearmanClient = new Gearman();
         $backupFinished = [];
         $finished = false;
         $error = false;
-        $fileBackup = "/opt/openitc/nagios/backup/finishBackup.txt";
-        $fileRestore = "/opt/openitc/nagios/backup/finishRestore.txt";
+        $fileBackup = "/opt/openitc/nagios/backup/finishBackup.txt.sql";
+        $fileRestore = "/opt/openitc/nagios/backup/finishRestore.txt.sql";
         if (file_exists($fileBackup)) {
             $finished = true;
             $error = false;
-            $this->Config = Configure::read('gearman');
-            $this->GearmanClient->client->doNormal("oitc_gearman", serialize(['task' => 'delete_sql_backup', 'path' => $fileBackup]));
+            $GearmanClient->send("delete_sql_backup", ['path' => $fileBackup]);
         } else if (file_exists($fileRestore)) {
             $finished = true;
             $error = false;
-            $this->Config = Configure::read('gearman');
-            $this->GearmanClient->client->doNormal("oitc_gearman", serialize(['task' => 'delete_sql_backup', 'path' => $fileRestore]));
+            $GearmanClient->send("delete_sql_backup", ['path' => $fileRestore]);
         } else {
             $finished = false;
             $error = false;
@@ -108,29 +125,58 @@ class BackupsController extends AppController {
     }
 
     public function deleteBackupFile() {
-        $fileToDelete = $this->request->getQuery('fileToDelete');
+        if (!$this->isJsonRequest()) {
+            return;
+        }
+        if (empty($this->request->getData('filename'))) {
+            throw new MissingParameterExceptions('filename is missing');
+        }
 
-        $this->Config = Configure::read('gearman');
-        $result = $this->GearmanClient->client->doNormal("oitc_gearman", serialize(['task' => 'delete_sql_backup', 'path' => $fileToDelete]));
+        $fileToDelete = $this->request->getData('filename');
 
-        $result = unserialize($result);
+        $GearmanClient = new Gearman();
+        $result = $GearmanClient->send("delete_sql_backup", ['path' => $fileToDelete]);
+
         $backup_files = $this->getBackupFiles();
 
-        $success = [
+        $deleteFinished = [
             'result'       => $result,
             'backup_files' => $backup_files,
         ];
 
+        $this->set('deleteFinished', $deleteFinished);
+        $this->viewBuilder()->setOption('serialize', ['deleteFinished']);
+    }
 
-        $this->set('success', $success);
-        $this->viewBuilder()->setOption('serialize', ['success']);
+    public function downloadBackupFile() {
+        if (empty($this->request->getQuery('filename'))) {
+            throw new MissingParameterExceptions('filename is missing');
+        }
+        $this->autoRender = false;
+
+        $backup_files = $this->getBackupFiles();
+        $dl_file = null;
+
+        foreach ($backup_files as $key => $backup_file) {
+            if ($backup_file === $this->request->getQuery('filename')) {
+                $dl_file = $key;
+            }
+        }
+        if ($dl_file === null) {
+            throw new FileNotFoundException();
+        }
+
+        $this->response->setTypeMap('sql', 'application/octet-stream');
+        $this->response->withType('sql');
+        $response = $this->response->withFile($dl_file, ['download' => true, 'name' => $this->request->getQuery('filename')]);
+        return $response;
     }
 
     private function getBackupFiles() {
         $backup_files = [];
         $files = scandir("/opt/openitc/nagios/backup/");
         foreach ($files as $file) {
-            if (strstr($file, ".sql")) {
+            if (strstr($file, ".sql") && !strstr($file, ".txt.sql")) {
                 $backup_files["/opt/openitc/nagios/backup/" . $file] = $file;
             }
         }
