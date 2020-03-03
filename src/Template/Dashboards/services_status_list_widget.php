@@ -37,10 +37,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="ok"
+                           id="ok_{{widget.id}}"
                            ng-model="filter.Servicestatus.current_state.ok"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label custom-control-label-ok" for="ok">
+                    <label class="custom-control-label custom-control-label-ok" for="ok_{{widget.id}}">
                         <?php echo __('Ok'); ?>
                     </label>
                 </div>
@@ -50,10 +50,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="warning"
+                           id="warning_{{widget.id}}"
                            ng-model="filter.Servicestatus.current_state.warning"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label custom-control-label-warning" for="warning">
+                    <label class="custom-control-label custom-control-label-warning" for="warning_{{widget.id}}">
                         <?php echo __('Warning'); ?>
                     </label>
                 </div>
@@ -63,10 +63,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="critical"
+                           id="critical_{{widget.id}}"
                            ng-model="filter.Servicestatus.current_state.critical"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label custom-control-label-critical" for="critical">
+                    <label class="custom-control-label custom-control-label-critical" for="critical_{{widget.id}}">
                         <?php echo __('Critical'); ?>
                     </label>
                 </div>
@@ -76,10 +76,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="unknown"
+                           id="unknown_{{widget.id}}"
                            ng-model="filter.Servicestatus.current_state.unknown"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label custom-control-label-unknown" for="unknown">
+                    <label class="custom-control-label custom-control-label-unknown" for="unknown_{{widget.id}}">
                         <?php echo __('Unknown'); ?>
                     </label>
                 </div>
@@ -89,10 +89,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="acknowledged"
+                           id="acknowledged_{{widget.id}}"
                            ng-model="filter.Servicestatus.acknowledged"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label" for="acknowledged">
+                    <label class="custom-control-label" for="acknowledged_{{widget.id}}">
                         <?php echo __('Acknowledged'); ?>
                     </label>
                 </div>
@@ -102,10 +102,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="not_acknowledged"
+                           id="not_acknowledged_{{widget.id}}"
                            ng-model="filter.Servicestatus.not_acknowledged"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label" for="not_acknowledged">
+                    <label class="custom-control-label" for="not_acknowledged_{{widget.id}}">
                         <?php echo __('Not Acknowledged'); ?>
                     </label>
                 </div>
@@ -115,10 +115,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="in_downtime"
+                           id="in_downtime_{{widget.id}}"
                            ng-model="filter.Servicestatus.in_downtime"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label" for="in_downtime">
+                    <label class="custom-control-label" for="in_downtime_{{widget.id}}">
                         <?php echo __('In Downtime'); ?>
                     </label>
                 </div>
@@ -128,10 +128,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="not_in_downtime"
+                           id="not_in_downtime_{{widget.id}}"
                            ng-model="filter.Servicestatus.not_in_downtime"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label" for="not_in_downtime">
+                    <label class="custom-control-label" for="not_in_downtime_{{widget.id}}">
                         <?php echo __('Not in Downtime'); ?>
                     </label>
                 </div>

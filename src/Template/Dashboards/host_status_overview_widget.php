@@ -22,7 +22,7 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 ?>
-<div class="row">
+<div>
     <flippy vertical
             class="col-lg-12"
             flip="['custom:FLIP_EVENT_OUT']"
@@ -37,7 +37,7 @@
             </a>
             <div class="padding-5" style="font-size:{{fontSize}}px;">
                 <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
-                    <a href="javascript:void(0);" ng-click="goToState()">
+                    <a ng-click="goToState()" class="pointer">
                         <div class="row text-center">
                             <div class="col col-lg-12 txt-color-white">
                                 {{ statusCount | number }}
@@ -121,10 +121,10 @@
                                        class="custom-control-input"
                                        ng-true-value="1"
                                        ng-false-value="0"
-                                       id="not_acknowledged"
+                                       id="not_acknowledged_{{widget.id}}"
                                        ng-model="filter.Hoststatus.not_acknowledged"
                                        ng-model-options="{debounce: 500}">
-                                <label class="custom-control-label" for="not_acknowledged">
+                                <label class="custom-control-label" for="not_acknowledged_{{widget.id}}">
                                     <?php echo __('Not Acknowledged'); ?>
                                 </label>
                             </div>
@@ -134,10 +134,10 @@
                                        class="custom-control-input"
                                        ng-true-value="1"
                                        ng-false-value="0"
-                                       id="not_in_downtime"
+                                       id="not_in_downtime_{{widget.id}}"
                                        ng-model="filter.Hoststatus.not_in_downtime"
                                        ng-model-options="{debounce: 500}">
-                                <label class="custom-control-label" for="not_in_downtime">
+                                <label class="custom-control-label" for="not_in_downtime_{{widget.id}}">
                                     <?php echo __('Not in Downtime'); ?>
                                 </label>
                             </div>

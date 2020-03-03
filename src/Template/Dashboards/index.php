@@ -175,7 +175,7 @@
                                     <div role="heading"
                                          class="ui-sortable-handle card-header d-flex"
                                          style="cursor: move;">
-                                        <div class="card-title mr-auto">
+                                        <div class="card-title mr-auto padding-top-0_2-rem">
                                             <i class="{{widget.icon}}"></i>
                                             {{widget.title}}
                                         </div>

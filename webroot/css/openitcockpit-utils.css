@@ -25,6 +25,10 @@ openITCOCKPIT v4 Utilities
     padding-top: 2px;
 }
 
+.padding-top-0_2-rem {
+    padding-top: 0.2rem !important;
+}
+
 .padding-left-2 {
     padding-left: 2px;
 }
