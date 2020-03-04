@@ -1028,3 +1028,10 @@ div.required .control-label::after {
 #statusmap-progress-icon span {
     text-align: center;
 }
+
+@media (min-width: 768px) {
+    .oitc-modal-xl {
+        width: 80%;
+        max-width:2500px;
+    }
+}
