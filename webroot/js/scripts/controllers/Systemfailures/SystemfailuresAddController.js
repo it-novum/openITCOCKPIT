@@ -55,10 +55,10 @@ angular.module('openITCOCKPIT')
 
         jQuery(function(){
             $('#SystemfailureFromDate').datepicker({
-                format: 'dd.mm.yy'
+                format: 'dd.mm.yyyy'
             });
             $('#SystemfailureToDate').datepicker({
-                format: 'dd.mm.yy'
+                format: 'dd.mm.yyyy'
             });
         });
 
