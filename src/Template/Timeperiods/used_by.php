@@ -77,7 +77,7 @@
                             <tr ng-repeat="contact in objects.Contacts">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
-                                        <a ui-sref="ContactsEdit({id: contact.id})" target="_blank">
+                                        <a ui-sref="ContactsEdit({id: contact.id})">
                                             {{ contact.name }}
                                         </a>
                                     <?php else: ?>
@@ -94,7 +94,7 @@
                             <tr ng-repeat="hostdependency in objects.Hostdependencies">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'hostdependencies')): ?>
-                                        <a ui-sref="HostdependenciesEdit({id:hostdependency.id})" target="_blank">
+                                        <a ui-sref="HostdependenciesEdit({id:hostdependency.id})">
                                             <?php echo __('Host dependency'); ?> #{{ $index +1 }}
                                         </a>
                                     <?php else: ?>
@@ -111,7 +111,7 @@
                             <tr ng-repeat="hostescalation in objects.Hostescalations">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
-                                        <a ui-sref="HostescalationsEdit({id:hostescalation.id})" target="_blank">
+                                        <a ui-sref="HostescalationsEdit({id:hostescalation.id})">
                                             <?php echo __('Host escalation'); ?> #{{ $index +1 }}
                                         </a>
                                     <?php else: ?>
@@ -129,7 +129,7 @@
                             <tr ng-repeat="host in objects.Hosts">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                        <a ui-sref="HostsEdit({id:host.id})" target="_blank">
+                                        <a ui-sref="HostsEdit({id:host.id})">
                                             {{ host.name }}
                                         </a>
                                     <?php else: ?>
@@ -147,7 +147,7 @@
                             <tr ng-repeat="hosttemplate in objects.Hosttemplates">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
-                                        <a ui-sref="HosttemplatesEdit({id: hosttemplate.id})" target="_blank">
+                                        <a ui-sref="HosttemplatesEdit({id: hosttemplate.id})">
                                             {{ hosttemplate.name }}
                                         </a>
                                     <?php else: ?>
@@ -164,7 +164,7 @@
                             <tr ng-repeat="instantreport in objects.Instantreports">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'instantreports')): ?>
-                                        <a ui-sref="InstantreportsEdit({id: instantreport.id})" target="_blank">
+                                        <a ui-sref="InstantreportsEdit({id: instantreport.id})">
                                             {{ instantreport.name }}
                                         </a>
                                     <?php else: ?>
@@ -181,7 +181,7 @@
                             <tr ng-repeat="servicedependency in objects.Servicedependencies">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'servicedependencies')): ?>
-                                        <a ui-sref="ServicedependenciesEdit({id:servicedependency.id})" target="_blank">
+                                        <a ui-sref="ServicedependenciesEdit({id:servicedependency.id})">
                                             <?php echo __('Service dependency'); ?> #{{ $index +1 }}
                                         </a>
                                     <?php else: ?>
@@ -198,7 +198,7 @@
                             <tr ng-repeat="serviceescalation in objects.Serviceescalations">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'serviceescalations')): ?>
-                                        <a ui-sref="ServiceescalationsEdit({id:serviceescalation.id})" target="_blank">
+                                        <a ui-sref="ServiceescalationsEdit({id:serviceescalation.id})">
                                             <?php echo __('Service escalation'); ?> #{{ $index +1 }}
                                         </a>
                                     <?php else: ?>
@@ -215,7 +215,7 @@
                             <tr ng-repeat="service in objects.Services">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                        <a ui-sref="ServicesEdit({id:service.id})" target="_blank">
+                                        <a ui-sref="ServicesEdit({id:service.id})">
                                             {{ service._matchingData.Hosts.name }} / {{ service.servicename }}
                                         </a>
                                     <?php else: ?>
@@ -232,7 +232,7 @@
                             <tr ng-repeat="servicetemplate in objects.Servicetemplates">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
-                                        <a ui-sref="ServicetemplatesEdit({id: servicetemplate.id})" target="_blank">
+                                        <a ui-sref="ServicetemplatesEdit({id: servicetemplate.id})">
                                             {{ servicetemplate.name }}
                                         </a>
                                     <?php else: ?>
@@ -249,7 +249,7 @@
                             <tr ng-repeat="autoreport in objects.Autoreports">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'autoreports', 'AutoreportModule')): ?>
-                                        <a ui-sref="AutoreportsEditStepOne({id: autoreport.id})" target="_blank">
+                                        <a ui-sref="AutoreportsEditStepOne({id: autoreport.id})">
                                             {{ autoreport.name }}
                                         </a>
                                     <?php else: ?>
