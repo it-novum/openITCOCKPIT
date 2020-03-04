@@ -38,10 +38,7 @@ use App\Model\Table\ServicetemplatesTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Hash;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
-use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -69,11 +66,7 @@ class CommandsController extends AppController {
         $all_commands = $CommandsTable->getCommandsIndex($CommandFilter, $PaginateOMat);
 
         $this->set('all_commands', $all_commands);
-        $toJson = ['all_commands', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['all_commands', 'scroll'];
-        }
-        $this->viewBuilder()->setOption('serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', ['all_commands']);
     }
 
     /**
