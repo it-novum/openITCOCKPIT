@@ -140,7 +140,7 @@
                                     <div class="card-body">
                                         <div class="float-right">
                                             <button class="btn btn-primary" ng-click="createInstantReport()"
-                                                    type="submit"><?php echo __('Create report'); ?></button>
+                                                    type="submit"><?php echo __('Generate report'); ?></button>
                                         </div>
                                     </div>
                                 </div>

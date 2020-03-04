@@ -970,3 +970,9 @@ div.required .control-label::after {
 .breadcrumb > li.breadcrumb-item:hover {
     max-width: none !important;
 }
+
+.bordered-vertical-on-right {
+    border-right: 5px inset
+    #428bca;
+    border-radius: 7px;
+}
