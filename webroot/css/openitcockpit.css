@@ -73,7 +73,7 @@ div.custom-control-down {
 }
 
 .custom-control-label {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 div.custom-control-down .custom-control-label::before,
