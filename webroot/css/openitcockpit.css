@@ -73,7 +73,7 @@ div.custom-control-down {
 }
 
 .custom-control-label {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 div.custom-control-down .custom-control-label::before,
@@ -1027,4 +1027,12 @@ div.required .control-label::after {
 
 #statusmap-progress-icon span {
     text-align: center;
+}
+
+.dropdown-item {
+    padding: 0.30rem 1.0rem;
+}
+
+.dropdown-divider{
+    margin: 0.2rem 0;
 }
