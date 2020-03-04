@@ -990,3 +990,41 @@ div.required .control-label::after {
 .breadcrumb > li.breadcrumb-item:hover {
     max-width: none !important;
 }
+
+/** Statusmaps **/
+#statusmap-progress-icon {
+    position: absolute;
+    top: 300px;
+    left: 45%;
+    display: none;
+}
+
+.statusmap-progress-dots:after {
+    content: ' .';
+    animation: dots 1s steps(5, end) infinite;
+}
+
+@keyframes dots {
+    0%, 20% {
+        color: rgba(0, 0, 0, 0);
+        text-shadow: .25em 0 0 rgba(0, 0, 0, 0),
+        .5em 0 0 rgba(0, 0, 0, 0);
+    }
+    40% {
+        color: #449D44;
+        text-shadow: .25em 0 0 rgba(0, 0, 0, 0),
+        .5em 0 0 rgba(0, 0, 0, 0);
+    }
+    60% {
+        text-shadow: .25em 0 0 #449D44,
+        .5em 0 0 rgba(0, 0, 0, 0);
+    }
+    80%, 100% {
+        text-shadow: .25em 0 0 #449D44,
+        .5em 0 0 #449D44;
+    }
+}
+
+#statusmap-progress-icon span {
+    text-align: center;
+}
