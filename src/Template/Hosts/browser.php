@@ -949,7 +949,7 @@ use Cake\Core\Plugin;
                     <!-- Servicenow Module start -->
                     <div class="" ng-show="selectedTab == 'tab4'">
                         <div class="jarviswidget margin-bottom-0 padding-10" id="wid-id-0">
-                            <?php if ($this->Acl->hasPermission('host_configuration', 'elements', 'servicenowModule') && Plugin::isLoaded('ServicenowModule')): ?>
+                            <?php if (Plugin::isLoaded('ServicenowModule') && $this->Acl->hasPermission('host_configuration', 'elements', 'servicenowModule')): ?>
                                 <servicenow-host-element last-load="{{ lastLoadDate }}"
                                                          host-uuid="{{ mergedHost.uuid }}"
                                                          editable="<?php echo $this->Acl->hasPermission('edit', 'hosts'); ?>">

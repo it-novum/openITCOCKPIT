@@ -200,6 +200,9 @@ class ServicesController extends AppController {
         }
 
         $hostContainers = [];
+        foreach ($services as $index => $service) {
+            $services[$index]['allow_edit'] = $this->hasRootPrivileges;
+        }
         if ($this->hasRootPrivileges === false) {
             if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
                 foreach ($services as $index => $service) {
@@ -211,11 +214,6 @@ class ServicesController extends AppController {
                     $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
                     $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
                 }
-            }
-        } else {
-            //Root user
-            foreach ($services as $index => $service) {
-                $services[$index]['allow_edit'] = $this->hasRootPrivileges;
             }
         }
 
@@ -1383,7 +1381,7 @@ class ServicesController extends AppController {
 
         //Check permissions
         $host = $HostsTable->getHostForServiceEdit($service['host_id']);
-        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'], false)) {
             $this->render403();
             return;
         }
