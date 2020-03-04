@@ -128,7 +128,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(servicedependency){
             var object = {};
-            object[servicedependency.id] = $scope.objectName + servicedependency.id;
+            object[servicedependency.id] = servicedependency.id;
             return object;
         };
 
@@ -139,7 +139,7 @@ angular.module('openITCOCKPIT')
                 for(var id in selectedObjects){
                     if(id == $scope.servicedependencies[key].id){
                         if($scope.servicedependencies[key].allowEdit === true){
-                            objects[id] = $scope.objectName + $scope.servicedependencies[key].id;
+                            objects[id] = $scope.servicedependencies[key].id;
                         }
                     }
                 }
