@@ -67,7 +67,7 @@
                         <tr ng-repeat="contactgroup in objects.Contactgroups">
                             <td>
                                 <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
-                                    <a ui-sref="ContactgroupsEdit({id: contactgroup.id})" target="_blank">
+                                    <a ui-sref="ContactgroupsEdit({id: contactgroup.id})">
                                         {{ contactgroup.container.name }}
                                     </a>
                                 <?php else: ?>
@@ -86,7 +86,7 @@
                         <tr ng-repeat="hosttemplate in objects.Hosttemplates">
                             <td>
                                 <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
-                                    <a ui-sref="HosttemplatesEdit({id: hosttemplate.id})" target="_blank">
+                                    <a ui-sref="HosttemplatesEdit({id: hosttemplate.id})">
                                         {{ hosttemplate.name }}
                                     </a>
                                 <?php else: ?>
@@ -104,7 +104,7 @@
                         <tr ng-repeat="servicetemplate in objects.Servicetemplates">
                             <td>
                                 <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
-                                    <a ui-sref="ServicetemplatesEdit({id: servicetemplate.id})" target="_blank">
+                                    <a ui-sref="ServicetemplatesEdit({id: servicetemplate.id})">
                                         {{ servicetemplate.name }}
                                     </a>
                                 <?php else: ?>
@@ -122,7 +122,7 @@
                         <tr ng-repeat="host in objects.Hosts">
                             <td>
                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                    <a ui-sref="HostsEdit({id:host.id})" target="_blank">
+                                    <a ui-sref="HostsEdit({id:host.id})">
                                         {{ host.name }}
                                     </a>
                                 <?php else: ?>
@@ -140,7 +140,7 @@
                         <tr ng-repeat="service in objects.Services">
                             <td>
                                 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                    <a ui-sref="ServicesEdit({id:service.id})" target="_blank">
+                                    <a ui-sref="ServicesEdit({id:service.id})">
                                         {{ service._matchingData.Hosts.name }} / {{ service.servicename }}
                                     </a>
                                 <?php else: ?>
@@ -158,7 +158,7 @@
                         <tr ng-repeat="hostescalation in objects.Hostescalations">
                             <td>
                                 <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
-                                    <a ui-sref="HostescalationsEdit({id:hostescalation.id})" target="_blank">
+                                    <a ui-sref="HostescalationsEdit({id:hostescalation.id})">
                                         <?php echo __('Host escalation'); ?> #{{ $index +1 }}
                                     </a>
                                 <?php else: ?>
@@ -176,7 +176,7 @@
                         <tr ng-repeat="serviceescalation in objects.Serviceescalations">
                             <td>
                                 <?php if ($this->Acl->hasPermission('edit', 'serviceescalations')): ?>
-                                    <a ui-sref="ServiceescalationsEdit({id:serviceescalation.id})" target="_blank">
+                                    <a ui-sref="ServiceescalationsEdit({id:serviceescalation.id})">
                                         <?php echo __('Service escalation'); ?> #{{ $index +1 }}
                                     </a>
                                 <?php else: ?>

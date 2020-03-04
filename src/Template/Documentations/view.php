@@ -43,11 +43,9 @@
 
     <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6 margin-top-10">
         <div class="pull-right">
-            <button
-                    back-button fallback-state='HosttemplatesIndex'
-                    class="btn btn-primary">
-                <i class="fa fa-arrow-circle-left"></i> <?php echo __('Back to overview'); ?>
-            </button>
+            <a back-button fallback-state='HosttemplatesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </div>
 </div>
@@ -61,11 +59,9 @@
 
     <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6 margin-top-10">
         <div class="pull-right">
-            <button
-                    back-button fallback-state='ServicetemplatesIndex'
-                    class="btn btn-primary">
-                <i class="fa fa-arrow-circle-left"></i> <?php echo __('Back to overview'); ?>
-            </button>
+            <a back-button fallback-state='ServicetemplatesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </div>
 </div>
@@ -83,7 +79,7 @@
                 <div class="panel-toolbar">
                     <div>
                         <?php echo __('Last update'); ?>: {{ lastUpdate }}
-                    </div>
+                    </div>&nbsp;
                     <button class="btn btn-xs btn-default mr-1 shadow-0"  ng-show="allowEdit" ng-click="showEdit()">
                         <i class="fas fa-pencil-alt"></i> <?php echo __('Edit'); ?>
                     </button>

@@ -1049,7 +1049,7 @@ use Cake\Core\Plugin;
                     <!-- ServiceNow tab start -->
                     <div ng-show="selectedTab == 'tab4'">
                         <div class="jarviswidget margin-bottom-0 padding-10" id="wid-id-0">
-                            <?php if ($this->Acl->hasPermission('service_configuration', 'elements', 'servicenowModule') && Plugin::isLoaded('ServicenowModule')): ?>
+                            <?php if (Plugin::isLoaded('ServicenowModule') && $this->Acl->hasPermission('service_configuration', 'elements', 'servicenowModule')): ?>
                                 <servicenow-service-element last-load="{{ lastLoadDate }}"
                                                             service-uuid="{{ mergedService.uuid }}"
                                                             editable="<?php echo $this->Acl->hasPermission('edit', 'services'); ?>">

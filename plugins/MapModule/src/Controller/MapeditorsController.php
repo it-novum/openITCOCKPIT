@@ -100,7 +100,7 @@ class MapeditorsController extends AppController {
             ]
         ])->toArray();
 
-        $containerIdsToCheck = Hash::extract($map, 'Containers.{n}.MapsToContainers.container_id');
+        $containerIdsToCheck = Hash::extract($map, 'containers.{n}.id');
         if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
             $this->render403();
             return;
@@ -1896,7 +1896,7 @@ class MapeditorsController extends AppController {
             ]
         ])->toArray();
 
-        $containerIdsToCheck = Hash::extract($map, 'Containers.{n}.MapsToContainers.container_id');
+        $containerIdsToCheck = Hash::extract($map, 'containers.{n}.id');
         if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
             $this->render403();
             return;

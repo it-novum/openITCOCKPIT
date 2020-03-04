@@ -73,7 +73,7 @@ div.custom-control-down {
 }
 
 .custom-control-label {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 div.custom-control-down .custom-control-label::before,
@@ -991,6 +991,11 @@ div.required .control-label::after {
     max-width: none !important;
 }
 
+.bordered-vertical-on-right {
+    border-right: 5px inset #428bca;
+    border-radius: 7px;
+}
+
 /** Statusmaps **/
 #statusmap-progress-icon {
     position: absolute;
@@ -1027,6 +1032,14 @@ div.required .control-label::after {
 
 #statusmap-progress-icon span {
     text-align: center;
+}
+
+.dropdown-item {
+    padding: 0.30rem 1.0rem;
+}
+
+.dropdown-divider{
+    margin: 0.2rem 0;
 }
 
 @media (min-width: 768px) {
