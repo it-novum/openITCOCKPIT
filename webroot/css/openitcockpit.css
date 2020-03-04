@@ -991,6 +991,11 @@ div.required .control-label::after {
     max-width: none !important;
 }
 
+.bordered-vertical-on-right {
+    border-right: 5px inset #428bca;
+    border-radius: 7px;
+}
+
 /** Statusmaps **/
 #statusmap-progress-icon {
     position: absolute;
