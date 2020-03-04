@@ -56,7 +56,7 @@
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
-                    <?php if ($this->Acl->hasPermission('view', 'mapeditors', 'mapmodule')): ?>
+                    <?php if ($this->Acl->hasPermission('edit', 'mapeditors', 'mapmodule')): ?>
                         <button class="btn btn-default btn-xs mr-1 shadow-0" ui-sref="MapeditorsEdit({id: map.Map.id})">
                             <i class="fa fa-edit"></i> <?php echo __('Edit'); ?>
                         </button>
