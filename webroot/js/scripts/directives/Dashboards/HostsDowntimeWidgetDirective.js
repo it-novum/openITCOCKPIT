@@ -28,14 +28,14 @@ angular.module('openITCOCKPIT').directive('hostsDowntimeWidget', function($http,
             $scope.filter = {
                 DowntimeHost: {
                     comment_data: '',
-                    was_cancelled: false,
-                    was_not_cancelled: false
+                    was_cancelled: 0,
+                    was_not_cancelled: 0
                 },
                 Host: {
                     name: ''
                 },
-                isRunning: false,
-                hideExpired: true
+                isRunning: 0,
+                hideExpired: 1
             };
             /*** Filter end ***/
 
@@ -43,8 +43,10 @@ angular.module('openITCOCKPIT').directive('hostsDowntimeWidget', function($http,
                 $http.get("/dashboards/hostsDowntimeWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
                     $scope.filter.DowntimeHost = result.data.config.DowntimeHost;
-                    $scope.filter.isRunning = result.data.config.isRunning;
-                    $scope.filter.hideExpired = result.data.config.hideExpired;
+                    $scope.filter.DowntimeHost.was_cancelled = result.data.config.DowntimeHost.was_cancelled ? 1 : 0;
+                    $scope.filter.DowntimeHost.was_not_cancelled = result.data.config.DowntimeHost.was_not_cancelled ? 1 : 0;
+                    $scope.filter.isRunning = result.data.config.isRunning  ? 1 : 0;
+                    $scope.filter.hideExpired = result.data.config.hideExpired  ? 1 : 0;
                     $scope.direction = result.data.config.direction;
                     $scope.sort = result.data.config.sort;
                     $scope.useScroll = result.data.config.useScroll;
@@ -66,9 +68,9 @@ angular.module('openITCOCKPIT').directive('hostsDowntimeWidget', function($http,
                 options = options || {};
                 options.save = options.save || false;
 
-                var wasCancelled = '';
+                var wasCancelled = 0;
                 if($scope.filter.DowntimeHost.was_cancelled ^ $scope.filter.DowntimeHost.was_not_cancelled){
-                    wasCancelled = $scope.filter.DowntimeHost.was_cancelled === true;
+                    wasCancelled = $scope.filter.DowntimeHost.was_cancelled === 1 ? 1 : 0;
                 }
 
                 var params = {

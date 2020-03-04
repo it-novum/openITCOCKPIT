@@ -265,15 +265,15 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
     color: #774DFF !important;
 }
 
-.txt-downtime-cancelled{
+.txt-downtime-cancelled {
     color: #00c4d8;
 }
 
-.txt-timerange{
+.txt-timerange {
     color: rgba(213, 221, 246, .4);
 }
 
-.txt-notification{
+.txt-notification {
     color: gold;
 }
 
@@ -685,4 +685,77 @@ https://www.color-hex.com/color/727b84
 
 .nav .nav-link:not([class^="btn-"]):not([class*=" btn-"]) {
     color: #727b84;
+}
+
+.btn-unknown {
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, .2);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 1px rgba(0, 0, 0, .075);
+}
+
+.btn-unknown :active {
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+}
+
+.btn-unknown.disabled
+fieldset[disabled] .btn-unknown {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.btn-unknown .badge {
+    text-shadow: none;
+}
+
+.btn:active,
+.btn.active {
+    background-image: none;
+}
+
+.btn-unknown {
+    text-shadow: 0 1px 0 #fff;
+    background-image: -webkit-linear-gradient(top, #fff 0%, #727b84 100%);
+    background-image: -o-linear-gradient(top, #fff 0%, #727b84 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#727b84));
+    background-image: linear-gradient(to bottom, #fff 0%, #727b84 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ff727b84', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+    background-repeat: repeat-x;
+    border-color: #dbdbdb;
+    border-color: #ccc;
+}
+
+.btn-unknown:hover,
+.btn-unknown:focus {
+    background-color: #e0e0e0;
+    background-position: 0 -15px;
+}
+
+.btn-unknown:active,
+.btn-unknown.active {
+    background-color: #727b84;
+    border-color: #dbdbdb;
+}
+
+.btn-unknown.disabled,
+.btn-unknown[disabled],
+fieldset[disabled] .btn-unknown,
+.btn-unknown.disabled:hover,
+.btn-unknown[disabled]:hover,
+fieldset[disabled] .btn-unknown:hover,
+.btn-unknown.disabled:focus,
+.btn-unknown[disabled]:focus,
+fieldset[disabled] .btn-unknown:focus,
+.btn-unknown.disabled.focus,
+.btn-unknown[disabled].focus,
+fieldset[disabled] .btn-unknown.focus,
+.btn-unknown.disabled:active,
+.btn-unknown[disabled]:active,
+fieldset[disabled] .btn-unknown:active,
+.btn-unknown.disabled.active,
+.btn-unknown[disabled].active,
+fieldset[disabled] .btn-unknown.active {
+    background-color: #727b84;
+    background-image: none;
 }

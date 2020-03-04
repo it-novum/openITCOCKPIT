@@ -28,8 +28,8 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
             $scope.filter = {
                 DowntimeService: {
                     comment_data: '',
-                    was_cancelled: false,
-                    was_not_cancelled: false
+                    was_cancelled: 0,
+                    was_not_cancelled: 0
                 },
                 Host: {
                     name: ''
@@ -37,8 +37,8 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
                 Service: {
                     name: ''
                 },
-                isRunning: false,
-                hideExpired: true
+                isRunning: 0,
+                hideExpired: 1
             };
             /*** Filter end ***/
 
@@ -47,8 +47,10 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
                     $scope.filter.Host = result.data.config.Host;
                     $scope.filter.Service = result.data.config.Service;
                     $scope.filter.DowntimeService = result.data.config.DowntimeService;
-                    $scope.filter.isRunning = result.data.config.isRunning;
-                    $scope.filter.hideExpired = result.data.config.hideExpired;
+                    $scope.filter.DowntimeService.was_cancelled = result.data.config.DowntimeService.was_cancelled ? 1 : 0;
+                    $scope.filter.DowntimeService.was_not_cancelled = result.data.config.DowntimeService.was_not_cancelled ? 1 : 0;
+                    $scope.filter.isRunning = result.data.config.isRunning ? 1 : 0;
+                    $scope.filter.hideExpired = result.data.config.hideExpired ? 1 : 0;
                     $scope.direction = result.data.config.direction;
                     $scope.sort = result.data.config.sort;
                     $scope.useScroll = result.data.config.useScroll;
@@ -70,9 +72,9 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
                 options = options || {};
                 options.save = options.save || false;
 
-                var wasCancelled = '';
+                var wasCancelled = 0;
                 if($scope.filter.DowntimeService.was_cancelled ^ $scope.filter.DowntimeService.was_not_cancelled){
-                    wasCancelled = $scope.filter.DowntimeService.was_cancelled === true;
+                    wasCancelled = $scope.filter.DowntimeService.was_cancelled === 1 ? 1 : 0;
                 }
 
                 var params = {

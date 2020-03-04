@@ -37,10 +37,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="up"
+                           id="up_{{widget.id}}"
                            ng-model="filter.Hoststatus.current_state.up"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label custom-control-label-up" for="up">
+                    <label class="custom-control-label custom-control-label-up" for="up_{{widget.id}}">
                         <?php echo __('Up'); ?>
                     </label>
                 </div>
@@ -50,10 +50,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="isDown"
+                           id="isDown_{{widget.id}}"
                            ng-model="filter.Hoststatus.current_state.down"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label custom-control-label-down" for="isDown">
+                    <label class="custom-control-label custom-control-label-down" for="isDown_{{widget.id}}">
                         <?php echo __('Down'); ?>
                     </label>
                 </div>
@@ -63,10 +63,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="unreachable"
+                           id="unreachable_{{widget.id}}"
                            ng-model="filter.Hoststatus.current_state.unreachable"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label custom-control-label-unreachable" for="unreachable">
+                    <label class="custom-control-label custom-control-label-unreachable" for="unreachable_{{widget.id}}">
                         <?php echo __('Unreachable'); ?>
                     </label>
                 </div>
@@ -76,10 +76,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="isAck"
+                           id="isAck_{{widget.id}}"
                            ng-model="filter.Hoststatus.acknowledged"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label" for="isAck">
+                    <label class="custom-control-label" for="isAck_{{widget.id}}">
                         <?php echo __('Acknowledged'); ?>
                     </label>
                 </div>
@@ -89,10 +89,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="isDown"
+                           id="isNotAck_{{widget.id}}"
                            ng-model="filter.Hoststatus.not_acknowledged"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label" for="isDown">
+                    <label class="custom-control-label" for="isNotAck_{{widget.id}}">
                         <?php echo __('Not Acknowledged'); ?>
                     </label>
                 </div>
@@ -102,10 +102,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="inDowntime"
+                           id="inDowntime_{{widget.id}}"
                            ng-model="filter.Hoststatus.in_downtime"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label" for="inDowntime">
+                    <label class="custom-control-label" for="inDowntime_{{widget.id}}">
                         <?php echo __('In Downtime'); ?>
                     </label>
                 </div>
@@ -115,10 +115,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="isDown"
+                           id="notInDowntime_{{widget.id}}"
                            ng-model="filter.Hoststatus.not_in_downtime"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label" for="isDown">
+                    <label class="custom-control-label" for="notInDowntime_{{widget.id}}">
                         <?php echo __('Not in Downtime'); ?>
                     </label>
                 </div>

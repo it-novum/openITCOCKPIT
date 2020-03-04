@@ -1502,7 +1502,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
         $rootScope.currentStateForApi = function(current_state){
             var states = [];
             for(var key in current_state){
-                if(current_state[key] === true){
+                if(current_state[key] === true || current_state[key] === 1){
                     states.push(key);
                 }
             }

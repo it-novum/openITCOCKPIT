@@ -79,10 +79,10 @@ angular.module('openITCOCKPIT')
             $scope.edges.clear();
             var network = null;
 
-            var colorUp = '#449D44';
-            var colorDown = '#C9302C';
-            var colorUnreachable = '#92A2A8';
-            var colorNotMonitored = '#428bca';
+            var colorUp = '#00C851';
+            var colorDown = '#CC0000';
+            var colorUnreachable = '#727b84';
+            var colorNotMonitored = '#4285F4';
 
             var options = {
                 clickToUse: false,
