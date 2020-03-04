@@ -562,6 +562,31 @@ class ContainersTable extends Table {
     }
 
     /**
+     * @param $browserAsNest
+     * @param $MY_RIGHTS
+     * @param $containerTypes
+     * @return array
+     */
+    public function getFirstContainers($browserAsNest, $MY_RIGHTS, $containerTypes) {
+        $containers = [];
+        foreach ($browserAsNest as $container) {
+            if (in_array($container['id'], $MY_RIGHTS) && in_array($container['containertype_id'], $containerTypes)) {
+                $containers[] = $container;
+                continue;
+            }
+
+            foreach ($container['children'] as $childContainer) {
+                $results = $this->getFirstContainers([$childContainer], $MY_RIGHTS, $containerTypes);
+                foreach ($results as $result) {
+                    $containers[] = $result;
+                }
+            }
+        }
+
+        return $containers;
+    }
+
+    /**
      * !!! ONLY USE THIS FOR DISPLAY PURPOSE !!!
      *
      * @param int $hostPrimaryContainerId
@@ -660,7 +685,7 @@ class ContainersTable extends Table {
             'Containers.lft',
             'Containers.rght'
         ])
-        ->disableHydration();
+            ->disableHydration();
         $childrenContainers = $query->toArray();
 
         debug($childrenContainers);
