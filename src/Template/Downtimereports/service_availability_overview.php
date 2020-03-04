@@ -42,7 +42,7 @@
             </div>
         </div>
         <div class="row no-padding">
-            <div class="col-lg-12 btn-unknown downtime-report-state-overview padding-left-2">
+            <div class="col-lg-12 btn-dark downtime-report-state-overview padding-left-2">
                 {{data.pieChartData.widgetOverview[3].percent}} % ({{data.pieChartData.widgetOverview[3].human}})
             </div>
         </div>

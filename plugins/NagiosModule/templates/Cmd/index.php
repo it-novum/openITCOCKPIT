@@ -53,12 +53,6 @@
                     <?php echo __('External commands'); ?>
                     <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
                 </h2>
-                <div class="panel-toolbar">
-                    <a back-button fallback-state='ExternalCommandsIndex'
-                       class="btn btn-default btn-xs mr-1 shadow-0">
-                        <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
-                    </a>
-                </div>
             </div>
             <div class="panel-container show">
                 <div class="panel-content">

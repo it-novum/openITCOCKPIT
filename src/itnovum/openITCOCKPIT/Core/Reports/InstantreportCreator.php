@@ -168,6 +168,7 @@ class InstantreportCreator {
         $instantReportObjects['Hosts'] = Hash::sort($instantReportObjects['Hosts'], '{n}.name', 'ASC');
         foreach ($instantReportObjects['Hosts'] as $hostId => $instantReportHostData) {
             $hostUuid = $instantReportHostData['uuid'];
+            $allStatehistories = [];
 
             if ($reportDetails['evaluation'] !== $evalutionTypes['only_services'] ||
                 ($reportDetails['evaluation'] === $evalutionTypes['only_services'] && !empty($instantReportHostData['Services']))) {
@@ -314,6 +315,7 @@ class InstantreportCreator {
             if (!empty($instantReportHostData['Services'])) {
                 $instantReportHostData['Services'] = Hash::sort($instantReportHostData['Services'], '{n}.name', 'ASC');
                 foreach ($instantReportHostData['Services'] as $serviceId => $service) {
+                    $allStatehistories = [];
                     if ($instantReport->get('downtimes') === 1) {
                         $DowntimeServiceConditions = new DowntimeServiceConditions();
                         $DowntimeServiceConditions->setFrom($fromDate);

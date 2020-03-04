@@ -23,9 +23,9 @@ angular.module('openITCOCKPIT').directive('hostAvailabilityOverview', function($
                         labels: $scope.data.pieChartData.labels,
                         datasets: [{
                             backgroundColor: [
-                                '#449D44',
-                                '#C9302C',
-                                '#92A2A8'],
+                                '#00C851',
+                                '#CC0000',
+                                '#727b84'],
                             data: $scope.data.pieChartData.data,
                             datalabels: {
                                 display: false //<---- values in chart

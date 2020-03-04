@@ -27,12 +27,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use Acl\Model\Table\AcosTable;
-use Acl\Model\Table\ArosTable;
 use App\itnovum\openITCOCKPIT\Core\Permissions\MyRightsFactory;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\SystemsettingsTable;
-use App\Model\Table\UsersTable;
 use Authentication\Controller\Component\AuthenticationComponent;
 use Authentication\IdentityInterface;
 use Authorization\Identity;
@@ -40,8 +37,8 @@ use Cake\Cache\Cache;
 use Cake\Controller\Controller;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\EventInterface;
+use Cake\Http\Exception\ForbiddenException;
 use Cake\I18n\I18n;
-use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
@@ -172,7 +169,7 @@ class AppController extends Controller {
             }
         }
 
-        if ($this->isApiRequest()) {
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             throw new ForbiddenException('403 Forbidden');
         }
 

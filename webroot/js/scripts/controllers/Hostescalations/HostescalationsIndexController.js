@@ -114,7 +114,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(hostescalation){
             var object = {};
-            object[hostescalation.id] = $scope.objectName + hostescalation.id;
+            object[hostescalation.id] = hostescalation.id;
             return object;
         };
 
@@ -125,7 +125,7 @@ angular.module('openITCOCKPIT')
                 for(var id in selectedObjects){
                     if(id == $scope.hostescalations[key].id){
                         if($scope.hostescalations[key].allowEdit === true){
-                            objects[id] = $scope.objectName + $scope.hostescalations[key].id;
+                            objects[id] = $scope.hostescalations[key].id;
                         }
                     }
                 }

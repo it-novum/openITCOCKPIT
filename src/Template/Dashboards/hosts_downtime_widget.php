@@ -36,10 +36,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="isRunning"
+                           id="isRunning_{{widget.id}}"
                            ng-model="filter.isRunning"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label" for="isRunning">
+                    <label class="custom-control-label" for="isRunning_{{widget.id}}">
                         <?php echo __('Is running'); ?>
                     </label>
                 </div>
@@ -49,10 +49,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="notCancelled"
+                           id="notCancelled_{{widget.id}}"
                            ng-model="filter.DowntimeHost.was_not_cancelled"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label" for="notCancelled">
+                    <label class="custom-control-label" for="notCancelled_{{widget.id}}">
                         <?php echo __('Was not cancelled'); ?>
                     </label>
                 </div>
@@ -62,10 +62,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="cancelled"
+                           id="cancelled_{{widget.id}}"
                            ng-model="filter.DowntimeHost.was_cancelled"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label" for="cancelled">
+                    <label class="custom-control-label" for="cancelled_{{widget.id}}">
                         <?php echo __('Was cancelled'); ?>
                     </label>
                 </div>
@@ -75,10 +75,10 @@
                            class="custom-control-input"
                            ng-true-value="1"
                            ng-false-value="0"
-                           id="cancelled"
+                           id="hideExpired_{{widget.id}}"
                            ng-model="filter.hideExpired"
                            ng-model-options="{debounce: 500}">
-                    <label class="custom-control-label" for="cancelled">
+                    <label class="custom-control-label" for="hideExpired_{{widget.id}}">
                         <?php echo __('Hide expired'); ?>
                     </label>
                 </div>
@@ -158,7 +158,7 @@
 
             <td>
                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                    <a href="/ng/#!/hosts/browser/{{ downtime.Host.id }}">
+                    <a ui-sref="HostsBrowser({id: downtime.Host.id})">
                         {{ downtime.Host.hostname }}
                     </a>
                 <?php else: ?>

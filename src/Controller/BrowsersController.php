@@ -105,7 +105,7 @@ class BrowsersController extends AppController {
                 $browser = Hash::extract($children, '{n}[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/]');
             } else {
                 $containerNest = $ContainersTable->getChildren($containerId, true);
-                $browser = $this->Browser->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
+                $browser = $ContainersTable->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
             }
 
             $browser = Hash::sort($browser, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
@@ -126,9 +126,9 @@ class BrowsersController extends AppController {
             $currentContainer = $ContainersTable->get($containerId)->toArray();
 
             $breadcrumbs = [];
-            if($currentContainer['parent_id'] === null){
+            if ($currentContainer['parent_id'] === null) {
                 $parents = $ContainersTable->getPathByIdAndCacheResult(ROOT_CONTAINER, 'BrowsersIndex');
-            }else{
+            } else {
                 $parents = $ContainersTable->getPathByIdAndCacheResult($currentContainer['parent_id'], 'BrowsersIndex');
             }
 

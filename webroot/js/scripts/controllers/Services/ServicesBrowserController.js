@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesBrowserController', function($scope, $http, QueryStringService, $interval, $stateParams, UuidService){
+    .controller('ServicesBrowserController', function($scope, $http, QueryStringService, $interval, $stateParams, UuidService, $state){
 
         $scope.id = $stateParams.id;
 

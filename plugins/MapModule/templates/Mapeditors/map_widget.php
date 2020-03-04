@@ -24,13 +24,13 @@
 ?>
 <div>
     <flippy vertical
-            class="fancy"
+            class="col-lg-12"
             flip="['custom:FLIP_EVENT_OUT']"
             flip-back="['custom:FLIP_EVENT_IN']"
             duration="800"
             timing-function="ease-in-out">
 
-        <flippy-front>
+        <flippy-front class="fixFlippy">
             <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
                 <i class="fa fa-cog fa-sm"></i>
             </a>
@@ -44,17 +44,17 @@
                 map-id="map.map_id"
                 ng-if="map.map_id"></div>
         </flippy-front>
-        <flippy-back>
+        <flippy-back class="fixFlippy">
             <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="hideConfig()">
                 <i class="fa fa-eye fa-sm"></i>
             </a>
             <div class="padding-top-10">
                 <div class="form-group">
                     <div class="row">
-                        <label class="col-xs-12 control-label">
+                        <label class="col-xs-12 col-lg-12 control-label">
                             <?php echo __('Map'); ?>
                         </label>
-                        <div class="col-xs-12">
+                        <div class="col-xs-12 col-lg-12">
                             <select data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="availableMaps"
@@ -71,9 +71,8 @@
                     <br/>
 
                     <div class="row">
-                        <div class="col-xs-12">
-                            <button class="btn btn-primary pull-right"
-                                    ng-click="saveMap()">
+                        <div class="col-lg-12">
+                            <button class="btn btn-primary pull-right" ng-click="saveMap()">
                                 <?php echo __('Save'); ?>
                             </button>
                         </div>

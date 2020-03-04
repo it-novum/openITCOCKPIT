@@ -39,6 +39,8 @@
     </li>
 </ol>
 
+<massdelete></massdelete>
+
 <div class="row">
     <div class="col-xl-12">
         <div id="panel-1" class="panel">

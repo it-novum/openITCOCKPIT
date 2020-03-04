@@ -25,6 +25,10 @@ openITCOCKPIT v4 Utilities
     padding-top: 2px;
 }
 
+.padding-top-0_2-rem {
+    padding-top: 0.2rem !important;
+}
+
 .padding-left-2 {
     padding-left: 2px;
 }
@@ -201,6 +205,14 @@ openITCOCKPIT v4 Utilities
     padding: 80px;
 }
 
+.margin-0 {
+    margin: 0;
+}
+
+.margin-2 {
+    margin: 2px;
+}
+
 .margin-5 {
     margin: 5px;
 }
@@ -247,6 +259,10 @@ openITCOCKPIT v4 Utilities
 
 .margin-top-30 {
     margin-top: 30px;
+}
+
+.margin-top-50 {
+    margin-top: 50px;
 }
 
 .margin-left-0 {

@@ -916,19 +916,19 @@ body {
 }
 
 .ok, .up {
-    color: #449D44 !important;
+    color: #00C851 !important;
 }
 
 .warning {
-    color: #DF8F1D !important;
+    color: #ffbb33 !important;
 }
 
 .critical, .down {
-    color: #C9302C !important;
+    color: #CC0000 !important;
 }
 
 .unknown, .unreachable {
-    color: #92A2A8 !important;
+    color: #727b84 !important;
 }
 
 .ok-soft, .up-soft {
@@ -948,7 +948,7 @@ body {
 }
 
 .bg-ok, .bg-up {
-    background-color: #449D44 !important;
+    background-color: #00C851 !important;
 }
 
 .bg-ok-soft, .bg-up-soft {
@@ -956,7 +956,7 @@ body {
 }
 
 .bg-warning {
-    background-color: #DF8F1D !important;
+    background-color: #ffbb33 !important;
 }
 
 .bg-warning-soft {
@@ -964,7 +964,7 @@ body {
 }
 
 .bg-critical, .bg-down {
-    background-color: #C9302C !important;
+    background-color: #CC0000 !important;
 }
 
 .bg-critical-soft, .bg-down-soft {
@@ -972,7 +972,7 @@ body {
 }
 
 .bg-unknown, .bg-unreachable {
-    background-color: #92A2A8 !important;
+    background-color: #727b84 !important;
 }
 
 .bg-unknown-soft, .bg-unreachable-soft {
@@ -1026,15 +1026,15 @@ body {
 }
 
 rect.ok {
-    fill: #449D44;
+    fill: #00C851;
 }
 
 rect.critical {
-    fill: #C9302C;
+    fill: #CC0000;
 }
 
 rect.unknown {
-    fill: #92A2A8;
+    fill: #727b84;
 }
 
 .parentstatus {
@@ -1762,7 +1762,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 }
 
 .checkbox-success {
-    border-color: #409240 !important;
+    border-color: #00C851 !important;
 }
 
 .checkbox-success:after {
@@ -1786,11 +1786,11 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 }
 
 .checkbox-ok, .checkbox-up {
-    border-color: #409240 !important;
+    border-color: #00C851 !important;
 }
 
 .checkbox-ok:after, .checkbox-up:after {
-    color: #5cb85c !important;
+    color: #00C851 !important;
 }
 
 .checkbox-critical, .checkbox-down {
@@ -1802,7 +1802,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 }
 
 .checkbox-unknown, .checkbox-unreachable {
-    border-color: #4c4f53 !important;
+    border-color: #727b84 !important;
 }
 
 .checkbox-unknown:after, .checkbox-unreachable:after {
@@ -1953,23 +1953,23 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 }
 
 .browser-state-green {
-    background-color: #5cb85c;
+    background-color: #00C851;
 }
 
 .browser-state-yellow {
-    background-color: #de8201;
+    background-color: #ffbb33;
 }
 
 .browser-state-red {
-    background-color: #D9534F;
+    background-color: #CC0000;
 }
 
 .browser-state-gray {
-    background-color: #92a2a8;
+    background-color: #727b84;
 }
 
 .browser-state-blue {
-    background-color: #3276B1;
+    background-color: #4285F4;
 }
 
 .browser-border {
@@ -2172,15 +2172,15 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 
 /* dashboards host/service status overview */
 .bg-host-0, .bg-service-0 {
-    background-color: #449D44 !important;
+    background-color: #00C851 !important;
 }
 
 .bg-service-1 {
-    background-color: #DF8F1D !important;
+    background-color: #ffbb33 !important;
 }
 
 .bg-host-1, .bg-service-2 {
-    background-color: #C9302C !important;
+    background-color: #CC0000 !important;
 }
 
 .bg-host-2, .bg-service-3 {
@@ -2815,10 +2815,10 @@ fc-left .dropdown {
 .not-edit-area {
     -webkit-filter: opacity(.5);
     filter: opacity(.5);
-    pointer-events:none;
+    pointer-events: none;
 }
 
-.serviceBarChart{
+.serviceBarChart {
     height: 30px;
 }
 
@@ -2829,7 +2829,7 @@ fc-left .dropdown {
     display: -webkit-flex;
 }
 
-.barchart-legend-container ul li{
+.barchart-legend-container ul li {
     -webkit-flex: 1 0 0px;
     overflow: hidden;
 }
@@ -2840,13 +2840,13 @@ fc-left .dropdown {
     margin-right: 15px;
 }
 
-.input-group-flex{
+.input-group-flex {
     position: relative;
     display: flex;
     border-collapse: separate;
 }
 
-.enterprise-module{
+.enterprise-module {
     position: absolute;
     top: -21px;
     left: 4px;

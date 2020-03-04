@@ -1,9 +1,9 @@
 angular.module('openITCOCKPIT')
     .service('AvailabilityColorCalculationService', function(){
         var defaultColors = {
-            green: '#449D44',
-            orange: '#eaba0b',
-            red: '#C9302C'
+            green: '#00C851',
+            orange: '#ffbb33',
+            red: '#CC0000'
         };
 
         //from #ff0000 to array [255, 0, 0]

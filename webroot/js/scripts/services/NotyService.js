@@ -59,12 +59,23 @@ angular.module('openITCOCKPIT')
 
                 NotyMsg(options);
             },
+
             deleteError: function(options){
                 options = options || {};
                 options.message = options.message || 'Error while deleting record';
                 options.timeout = options.timeout || 3500;
 
                 options.type = 'error';
+
+                NotyMsg(options);
+            },
+
+            info: function(options){
+                options = options || {};
+                options.message = options.message || 'Please wait while processing ...';
+                options.timeout = options.timeout || 3500;
+
+                options.type = 'info';
 
                 NotyMsg(options);
             }

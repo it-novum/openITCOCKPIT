@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('MapeditorsViewController', function($scope, $http, QueryStringService, $timeout, $interval, $stateParams){
+    .controller('MapeditorsViewController', function($scope, $http, QueryStringService, $timeout, $interval, $stateParams, $state){
 
         $scope.init = true;
         $scope.id = $stateParams.id;
@@ -24,6 +24,14 @@ angular.module('openITCOCKPIT')
                     $scope.refreshInterval = 5000;
                 }
                 $scope.init = false;
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
             });
         };
 
