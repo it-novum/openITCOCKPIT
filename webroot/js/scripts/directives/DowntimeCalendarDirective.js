@@ -84,7 +84,7 @@ angular.module('openITCOCKPIT').directive('downtimecalendar', function($http){
                 events: $scope.events,
                 eventRender: function(info){
                     var nonStandardFields = info.event.extendedProps; //description,...
-                    if(info.view.view.type !== 'listWeek'){
+                    if(info.view.type !== 'listWeek'){
                         if(nonStandardFields.type === 'host'){
                             $(info.el).addClass('bg-color-blueDark');
                             $(info.el).find('.fc-title').before('<i class="fa fa-desktop fa-md"></i> ');
