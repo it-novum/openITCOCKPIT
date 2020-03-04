@@ -205,6 +205,14 @@ openITCOCKPIT v4 Utilities
     padding: 80px;
 }
 
+.margin-0 {
+    margin: 0;
+}
+
+.margin-2 {
+    margin: 2px;
+}
+
 .margin-5 {
     margin: 5px;
 }

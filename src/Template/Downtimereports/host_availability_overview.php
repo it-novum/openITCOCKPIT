@@ -1,20 +1,20 @@
 <div class="card margin-top-10" style="width: 100%">
-    <div class="card-header" ng-style="{'background':  color}">
-        <h2 class="txt-color-white">
+    <div class="card-header">
+        <h4 ng-style="{'color':  color}">
             <strong>
-                <i class="fa fa-desktop"></i>
+                <i class="fa fa-desktop" ></i>
                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                    <a ui-sref="HostsBrowser({id:data.Host.id})" class="txt-color-white">
+                    <a ui-sref="HostsBrowser({id:data.Host.id})">
                         {{data.Host.name}}
                     </a>
                 <?php else: ?>
                     {{data.Host.name}}
                 <?php endif; ?>
             </strong>
-        </h2>
+        </h4>
     </div>
     <div class="card-body">
-        <div class="row">
+        <div class="row margin-0">
             <div class="col-lg-1 no-padding">
                 <canvas id="hostPieChart-{{data.Host.id}}"></canvas>
             </div>
@@ -51,7 +51,7 @@
                             ({{data.pieChartData.widgetOverview[1].human}})
                         </strong>
                     </div>
-                    <div class="col-lg-3 btn-unknown downtime-report-state-overview font-sm padding-5">
+                    <div class="col-lg-3 btn-dark downtime-report-state-overview font-sm padding-5">
                         <strong>
                             {{data.pieChartData.widgetOverview[2].percent}} %
                             ({{data.pieChartData.widgetOverview[2].human}})
@@ -60,7 +60,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row margin-0">
             <service-availability-overview data="service"
                                            dynamic-color="dynamicColor"
                                            ng-repeat="service in data.Services"

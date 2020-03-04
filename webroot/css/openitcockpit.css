@@ -731,6 +731,26 @@ pre {
     user-select: none;
 }
 
+.badge-medium {
+    color: #ffffff;
+    text-align: center;
+    padding: 1px 4px;
+    width: 40px;
+    font-size: 10px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 0;
+    white-space: nowrap;
+    vertical-align: middle;
+    border: 1px solid transparent;
+    border-radius: 2px !important;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
 .downtime-report-state-overview {
     border: 1px solid #fff;
     /*text-shadow: 2px 4px 3px rgba(0, 0, 0, 0.3);*/
@@ -969,4 +989,42 @@ div.required .control-label::after {
 
 .breadcrumb > li.breadcrumb-item:hover {
     max-width: none !important;
+}
+
+/** Statusmaps **/
+#statusmap-progress-icon {
+    position: absolute;
+    top: 300px;
+    left: 45%;
+    display: none;
+}
+
+.statusmap-progress-dots:after {
+    content: ' .';
+    animation: dots 1s steps(5, end) infinite;
+}
+
+@keyframes dots {
+    0%, 20% {
+        color: rgba(0, 0, 0, 0);
+        text-shadow: .25em 0 0 rgba(0, 0, 0, 0),
+        .5em 0 0 rgba(0, 0, 0, 0);
+    }
+    40% {
+        color: #449D44;
+        text-shadow: .25em 0 0 rgba(0, 0, 0, 0),
+        .5em 0 0 rgba(0, 0, 0, 0);
+    }
+    60% {
+        text-shadow: .25em 0 0 #449D44,
+        .5em 0 0 rgba(0, 0, 0, 0);
+    }
+    80%, 100% {
+        text-shadow: .25em 0 0 #449D44,
+        .5em 0 0 #449D44;
+    }
+}
+
+#statusmap-progress-icon span {
+    text-align: center;
 }

@@ -201,17 +201,17 @@
                                             <i class="checkbox-primary"></i>
                                             <?php echo __('Yes'); ?>
                                             <span class="margin-left-10 label-group-width-auto">
-                                        <span class="badge-small" style="background:#449d44;">100%</span>
-                                        <span class="badge-small" style="background:#55a03e;">90%</span>
-                                        <span class="badge-small" style="background:#65a339;">80%</span>
-                                        <span class="badge-small" style="background:#76a633;">70%</span>
-                                        <span class="badge-small" style="background:#86a92d;">60%</span>
-                                        <span class="badge-small" style="background:#97ac28;">50%</span>
-                                        <span class="badge-small" style="background:#d6671f;">40%</span>
-                                        <span class="badge-small" style="background:#d35922;">30%</span>
-                                        <span class="badge-small" style="background:#d04c25;">20%</span>
-                                        <span class="badge-small" style="background:#cc3e29;">10%</span>
-                                        <span class="badge-small" style="background:#c9302c;">0%</span>
+                                        <span class="badge-medium" style="background:#00c851;">100%</span>
+                                        <span class="badge-medium" style="background:#33c54b;">90%</span>
+                                        <span class="badge-medium" style="background:#66c345;">80%</span>
+                                        <span class="badge-medium" style="background:#94c140;">70%</span>
+                                        <span class="badge-medium" style="background:#cabe3a;">60%</span>
+                                        <span class="badge-medium" style="background:#ffbb33;">50%</span>
+                                        <span class="badge-medium" style="background:#f79d2b;">40%</span>
+                                        <span class="badge-medium" style="background:#eb721f;">30%</span>
+                                        <span class="badge-medium" style="background:#e14c15;">20%</span>
+                                        <span class="badge-medium" style="background:#d7260b;">10%</span>
+                                        <span class="badge-medium" style="background:#cc0000;">0%</span>
                                     </span>
                                         </label>
                                     </div>
