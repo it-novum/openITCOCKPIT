@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('BackupsIndexController', function($scope, $http, $interval, NotyService){
+    .controller('BackupsIndexController', function($scope, $http, $interval, NotyService, $state){
 
         $scope.reset = function(){
             $scope.backupFiles = {};
@@ -32,6 +32,14 @@ angular.module('openITCOCKPIT')
                 $scope.isActionRunning = true;
                 $scope.restoreRunning = true;
                 $scope.startCheckInterval(true, 'restore');
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
             });
         };
 
@@ -46,6 +54,14 @@ angular.module('openITCOCKPIT')
                 NotyService.genericSuccess({message: 'Backup deleted successfully.'});
                 if(result.data.deleteFinished.backup_files){
                     $scope.backupFiles = result.data.deleteFinished.backup_files;
+                }
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
                 }
             });
         };
@@ -63,6 +79,14 @@ angular.module('openITCOCKPIT')
                 $scope.isActionRunning = true;
                 $scope.backupRunning = true;
                 $scope.startCheckInterval(false, 'backup');
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
             });
         };
 
