@@ -2081,7 +2081,7 @@ class HostsTable extends Table {
                 return $query;
             })
             ->contain([
-                'Agentconfigs' => function (Query $query) {
+                'Agentconfigs'    => function (Query $query) {
                     return $query->enableAutoFields();
                 },
                 'Agenthostscache' => function (Query $query) {
@@ -2802,11 +2802,13 @@ class HostsTable extends Table {
 
         if (!empty($containerIds)) {
             $query->contain([
-                'HostsToContainersSharing'
-            ])->where([
-                'HostsToContainers.container_id IN' => $containerIds
+                'HostsToContainersSharing' => function (Query $query) use ($containerIds) {
+                    return $query->where([
+                        'HostsToContainersSharing.id IN' => $containerIds
+                    ]);
+                }
             ])->group([
-                'Host.id'
+                'Hosts.id'
             ]);
         }
         if (!empty($allHostIds)) {
