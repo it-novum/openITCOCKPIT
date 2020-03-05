@@ -29,14 +29,11 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\ProxiesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\WidgetsTable;
-use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
-use GrafanaModule\Model\Entity\GrafanaUserdashboardPanel;
 use GrafanaModule\Model\Table\GrafanaConfigurationsTable;
-use GrafanaModule\Model\Table\GrafanaDashboardsTable;
 use GrafanaModule\Model\Table\GrafanaUserdashboardMetricsTable;
 use GrafanaModule\Model\Table\GrafanaUserdashboardPanelsTable;
 use GrafanaModule\Model\Table\GrafanaUserdashboardsTable;
@@ -44,12 +41,10 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Psr7\Request;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\GrafanaUserDashboardFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Grafana\GrafanaDashboard;
@@ -822,6 +817,7 @@ class GrafanaUserdashboardsController extends AppController {
             $widget = $WidgetsTable->getWidgetByIdAsCake2($widgetId);
 
             $grafanaDashboardId = null;
+            $iframeUrl = '';
             if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
                 $json = @json_decode($widget['Widget']['json_data'], true);
                 if (isset($json['GrafanaUserdashboard']['id'])) {
@@ -829,20 +825,20 @@ class GrafanaUserdashboardsController extends AppController {
                 }
             }
 
-            $dashboard = $GrafanaUserdashboardsTable->get($grafanaDashboardId);
+            if (!empty($grafanaDashboardId)) {
+                $dashboard = $GrafanaUserdashboardsTable->get($grafanaDashboardId);
 
-            $iframeUrl = '';
-            if (!empty($grafanaDashboardId) && !empty($dashboard)) {
-                $grafanaConfiguration = $GrafanaConfigurationsTable->getGrafanaConfiguration();
-                /** @var ProxiesTable $ProxiesTable */
-                $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
+                if (!empty($dashboard)) {
+                    $grafanaConfiguration = $GrafanaConfigurationsTable->getGrafanaConfiguration();
+                    /** @var ProxiesTable $ProxiesTable */
+                    $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
 
-                $GrafanaConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
-                if ($GrafanaConfigurationsTable->existsUserDashboard($GrafanaConfiguration, $ProxiesTable->getSettings(), $dashboard->get('grafana_uid'))) {
-                    $iframeUrl = $GrafanaConfiguration->getIframeUrlForUserDashboard($dashboard->get('grafana_url'));
+                    $GrafanaConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+                    if ($GrafanaConfigurationsTable->existsUserDashboard($GrafanaConfiguration, $ProxiesTable->getSettings(), $dashboard->get('grafana_uid'))) {
+                        $iframeUrl = $GrafanaConfiguration->getIframeUrlForUserDashboard($dashboard->get('grafana_url'));
+                    }
                 }
             }
-
 
             $this->set('grafana_userdashboard_id', $grafanaDashboardId);
             $this->set('iframe_url', $iframeUrl);
