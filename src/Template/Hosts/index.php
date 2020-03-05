@@ -572,6 +572,14 @@
                                                     <?php echo __('Sharing'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'hosts')): ?>
+                                                <a ui-sref="HostsCopy({ids: host.Host.id})"
+                                                   ng-if="host.Host.allow_sharing"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('deactivate', 'hosts')): ?>
                                                 <a ng-if="host.Host.allow_edit"
                                                    class="dropdown-item"
