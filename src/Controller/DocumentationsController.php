@@ -36,7 +36,9 @@ use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
+use Exception;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use ParsedownExtra;
 
 /**
  * Class DocumentationsController
@@ -46,7 +48,7 @@ class DocumentationsController extends AppController {
     /**
      * @param null $uuid
      * @param string $type
-     * @throws \Exception
+     * @throws Exception
      */
     public function view($uuid = null, $type = 'host') {
         if (!$this->isAngularJsRequest()) {
@@ -61,7 +63,6 @@ class DocumentationsController extends AppController {
 
         /** @var $DocumentationsTable DocumentationsTable */
         $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
-        $allowEdit = false;
 
         switch ($type) {
             case 'host':
@@ -215,7 +216,7 @@ class DocumentationsController extends AppController {
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function wiki() {
         if (!$this->isAngularJsRequest()) {
@@ -232,19 +233,13 @@ class DocumentationsController extends AppController {
                         'name'        => __('MySQL performance'),
                         'description' => 'A few tips to optimize your MySQL performance.',
                         'file'        => 'mysql_performance',
-                        'icon'        => 'fa fa-database',
+                        'icon'        => 'fas fa-database',
                     ],
                     'browser_push_notifications' => [
                         'name'        => __('Browser Push Notifications'),
                         'description' => 'How to setup openITCOCKPIT browser push notifications',
                         'file'        => 'browser_push_notifications',
-                        'icon'        => 'fa fa-bell-o',
-                    ],
-                    'markdown'                   => [
-                        'name'        => __('Markdown'),
-                        'description' => 'A cheatsheet to help writing markdown formatted texts. ',
-                        'file'        => 'markdown',
-                        'icon'        => 'fa fa-pencil',
+                        'icon'        => 'fas fa-bell',
                     ],
                 ],
             ],
@@ -265,12 +260,12 @@ class DocumentationsController extends AppController {
                 throw new NotFoundException();
             }
 
-            $file = OLD_APP . 'docs' . DS . 'en' . DS . $documentations[$category]['directory'] . DS . $documentations[$category]['children'][$documentation]['file'] . '.md';
+            $file = ROOT . DS . 'docs' . DS . 'en' . DS . $documentations[$category]['directory'] . DS . $documentations[$category]['children'][$documentation]['file'] . '.md';
             if (!file_exists($file)) {
                 throw new NotFoundException('Markdown file not found!');
             }
 
-            $parsedown = new \ParsedownExtra();
+            $parsedown = new ParsedownExtra();
             $html = $parsedown->text(file_get_contents($file));
 
             $this->set('documentation', $documentations[$category]['children'][$documentation]);
