@@ -74,13 +74,12 @@ class ErrorImage {
         $this->errorText = $errorText;
     }
 
-
     /**
      * @return bool|string
      */
     public function getImageAsPngStream() {
         $fileName = md5(rand() . time() . rand()) . '.png';
-        $tmp = OLD_APP . 'tmp';
+        $tmp = ROOT . DS . 'tmp';
         if (!is_writable($tmp)) {
             $tmp = '/tmp';
         }

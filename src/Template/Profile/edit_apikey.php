@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="row padding-top-10">
-                    <div class="col-lg-12 no-padding">
+                    <div class="col-lg-12 padding-bottom-5">
                         <span class="bold">
                             <code>curl</code> <?php echo __('example'); ?>:
                         </span>
@@ -52,13 +52,13 @@
 "Authorization: X-OITC-API {{currentApiKey.apikey}}" \
 "https://<?php echo h($_SERVER['SERVER_ADDR']); ?>/hosts/index.json?angular=true"</pre>
                     </div>
-                    <div class="col-lg-12 no-padding">
+                    <div class="col-lg-12">
                         <?php echo __('For self-signed certificates, add'); ?><code>-k</code>.
                     </div>
                 </div>
 
                 <div class="row padding-top-10" >
-                    <div class="col-lg-12 no-padding">
+                    <div class="col-lg-12 padding-bottom-5">
                         <span class="bold">
                             <code>curl</code> <?php echo __('example with JSON processor'); ?>:
                         </span>

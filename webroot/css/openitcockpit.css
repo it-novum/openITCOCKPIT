@@ -1041,3 +1041,10 @@ div.required .control-label::after {
 .dropdown-divider{
     margin: 0.2rem 0;
 }
+
+@media (min-width: 768px) {
+    .oitc-modal-xl {
+        width: 80%;
+        max-width:2500px;
+    }
+}

@@ -540,7 +540,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 </div>
 
                 <div class="row padding-top-10" ng-show="newApiKey">
-                    <div class="col-lg-12 no-padding">
+                    <div class="col-lg-12 padding-bottom-5">
                         <span class="bold">
                             <code>curl</code> <?php echo __('example'); ?>:
                         </span>
@@ -550,13 +550,13 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 "Authorization: X-OITC-API {{post.Apikey.apikey}}" \
 "https://<?php echo h($_SERVER['SERVER_ADDR']); ?>/hosts/index.json?angular=true"</pre>
                     </div>
-                    <div class="col-lg-12 no-padding">
+                    <div class="col-lg-12">
                         <?php echo __('For self-signed certificates, add'); ?><code>-k</code>.
                     </div>
                 </div>
 
                 <div class="row padding-top-10" ng-show="newApiKey">
-                    <div class="col-lg-12 no-padding">
+                    <div class="col-lg-12 padding-bottom-5">
                         <span class="bold">
                             <code>curl</code> <?php echo __('example with JSON processor'); ?>:
                         </span>

@@ -24,8 +24,7 @@
 
 namespace itnovum\openITCOCKPIT\Core\ValueObjects;
 
-
-use Authorization\IdentityInterface;
+use Authentication\IdentityInterface;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class User {
