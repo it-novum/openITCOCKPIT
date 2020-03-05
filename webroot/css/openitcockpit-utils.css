@@ -49,6 +49,10 @@ openITCOCKPIT v4 Utilities
     padding-top: 3px;
 }
 
+.padding-bottom-3 {
+    padding-bottom: 3px;
+}
+
 .padding-bottom-5 {
     padding-bottom: 5px;
 }
@@ -537,4 +541,8 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 .chosen-container-single .chosen-single {
     height: 100%;
     line-height: calc(2.6em);
+}
+
+.border-color-error {
+    border-color: #A90329;
 }
