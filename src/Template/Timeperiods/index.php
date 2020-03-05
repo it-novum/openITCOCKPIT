@@ -172,6 +172,14 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'timeperiods')): ?>
+                                                <a ui-sref="TimeperiodsCopy({ids: timeperiod.Timeperiod.id})"
+                                                   ng-if="timeperiod.Timeperiod.allow_edit"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-files-o"></i>
+                                                    <?php echo __('Copy'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('usedBy', 'timeperiods')): ?>
                                                 <a ui-sref="TimeperiodsUsedBy({id:timeperiod.Timeperiod.id})"
                                                    class="dropdown-item">

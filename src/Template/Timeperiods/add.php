@@ -176,13 +176,13 @@ $weekdays = [
                                     </div>
                                     <div class="display-inline-flex col-lg-10">
                                         <input id="tp_start_{{$index}}" class="form-control"
-                                            ng-class="{'state-error': errors.validate_timeranges[$index] ||
+                                               ng-class="{'state-error': errors.validate_timeranges[$index] ||
                                                        errors.timeperiod_timeranges[$index].start}"
-                                            placeholder="<?php echo __('00:00'); ?>"
-                                            type="text"
-                                            size="5"
-                                            maxlength="5"
-                                            ng-model="range.start">
+                                               placeholder="<?php echo __('00:00'); ?>"
+                                               type="text"
+                                               size="5"
+                                               maxlength="5"
+                                               ng-model="range.start">
                                         <div ng-repeat="error in errors.timeperiod_timeranges[$index].start">
                                             <div class="help-block text-danger font-xs">{{ error }}</div>
                                         </div>
@@ -199,13 +199,13 @@ $weekdays = [
                                     </div>
                                     <div class="display-inline-flex col-lg-10">
                                         <input id="tp_end_{{$index}}" class="form-control"
-                                            ng-class="{'state-error': errors.validate_timeranges[$index] ||
+                                               ng-class="{'state-error': errors.validate_timeranges[$index] ||
                                                        errors.timeperiod_timeranges[$index].end}"
-                                            placeholder="<?php echo __('24:00'); ?>"
-                                            type="text"
-                                            size="5"
-                                            maxlength="5"
-                                            ng-model="range.end">
+                                               placeholder="<?php echo __('24:00'); ?>"
+                                               type="text"
+                                               size="5"
+                                               maxlength="5"
+                                               ng-model="range.end">
                                         <div ng-repeat="error in errors.timeperiod_timeranges[$index].end">
                                             <div class="help-block text-danger font-xs">{{ error }}</div>
                                         </div>
@@ -222,7 +222,7 @@ $weekdays = [
                             </div>
                         </div>
                         <div class="col-lg-12 text-right">
-                            <a  href="javascript:void(0);" class="btn btn-success btn-sm" ng-click="addTimerange()">
+                            <a href="javascript:void(0);" class="btn btn-success btn-sm" ng-click="addTimerange()">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('Add'); ?>
                             </a>
