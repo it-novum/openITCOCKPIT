@@ -1718,7 +1718,7 @@ msgstr ""
 msgid "Send interval"
 msgstr ""
 
-msgid "Min. allowed availability"
+msgid "Guaranteed availability"
 msgstr ""
 
 msgid " in %"

@@ -1718,7 +1718,7 @@ msgstr "du quotidien"
 msgid "Send interval"
 msgstr "Intervalle d'envoi"
 
-msgid "Min. allowed availability"
+msgid "Guaranteed availability"
 msgstr "Min. disponibilité autorisée"
 
 msgid " in %"

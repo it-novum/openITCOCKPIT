@@ -232,9 +232,11 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
 
     /**
      * @param DowntimeHostConditions $DowntimeHostConditions
+     * @param bool $enableHydration
+     * @param bool $disableResultsCasting
      * @return array
      */
-    public function getDowntimesForReporting(DowntimeHostConditions $DowntimeHostConditions) {
+    public function getDowntimesForReporting(DowntimeHostConditions $DowntimeHostConditions, $enableHydration = true, $disableResultsCasting = false) {
         $query = $this->find()
             ->select([
                 'DowntimeHosts.author_name',
@@ -313,6 +315,10 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
             ->bind(':start2', $startDateSqlFormat, 'date')
             ->bind(':end2', $endDateSqlFormat, 'date');
 
+        $query->enableHydration($enableHydration);
+        if($disableResultsCasting) {
+            $query->disableResultsCasting();
+        }
         $query->all();
 
         return $this->emptyArrayIfNull($query->toArray());

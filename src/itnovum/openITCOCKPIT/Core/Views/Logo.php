@@ -29,7 +29,7 @@ class Logo {
     private $logoName = 'logo.png';
     private $smallLogoName = 'logo_small.png';
 
-    private $logoBasePath = '%s/img/%s';
+    private $logoBasePath = '%s/img/logos/%s';
 
     private $customLogoName = 'logo_custom.png';
     private $customSmallLogoName = 'logo_small_custom.png';
@@ -60,8 +60,22 @@ class Logo {
     /**
      * @return string
      */
+    public function getLogoForHtml() {
+        return sprintf($this->logoBasePath, '', $this->getLogoName());
+    }
+
+    /**
+     * @return string
+     */
     public function getLogoForHtmlHelper() {
         return $this->getLogoName();
+    }
+
+    /**
+     * @return string
+     */
+    public function getSmallLogoForHtml() {
+        return sprintf($this->logoBasePath, '', $this->getSmallLogoName());
     }
 
     /**

@@ -253,7 +253,13 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
         return Hash::extract($result, '{n}.internal_downtime_id');
     }
 
-    public function getDowntimesForReporting(DowntimeServiceConditions $DowntimeServiceConditions) {
+    /**
+     * @param DowntimeServiceConditions $DowntimeServiceConditions
+     * @param bool $enableHydration
+     * @param bool $disableResultsCasting
+     * @return array
+     */
+    public function getDowntimesForReporting(DowntimeServiceConditions $DowntimeServiceConditions, $enableHydration = true, $disableResultsCasting = false) {
         $query = $this->find();
         $query->select([
             'DowntimeServices.author_name',
@@ -357,6 +363,10 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
             ->bind(':start2', $startDateSqlFormat, 'date')
             ->bind(':end2', $endDateSqlFormat, 'date');
 
+        $query->enableHydration($enableHydration);
+        if($disableResultsCasting){
+            $query->disableResultsCasting();
+        }
         $query->all();
 
         return $this->emptyArrayIfNull($query->toArray());
