@@ -474,16 +474,18 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
+                <h5 class="modal-title">
                     <i class="fa fa-code-fork"></i>
                     <?php echo __('For your dashboard is an update available'); ?>
-                </h4>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
             </div>
             <div class="modal-body">
 
                 <div class="row">
-                    <div class="col-xs-12 text-info">
+                    <div class="col-lg-12 text-info">
                         <i class="fa fa-info-circle"></i>
                         <?php echo __('You created this dashboard out of an "shared" dashboard. The original dashboard was updated.'); ?>
                         <br/>
