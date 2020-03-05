@@ -208,8 +208,8 @@
 
                                         <button class="btn btn-success" type="button"
                                                 ng-disabled="exportRunning" ng-click="launchExport();">
-                                            <i class="fa fa-rocket" ng-show="!exportRunning"></i>
-                                            <i class="fa fa-spin fa-spinner" ng-show="exportRunning"></i>
+                                            <i class="fa fa-rocket" ng-if="!exportRunning"></i>
+                                            <i class="fa fa-spin fa-spinner" ng-if="exportRunning"></i>
                                             <?= __('Launch refresh'); ?>
                                         </button>
                                     </div>

@@ -91,8 +91,8 @@
                 <a ui-sref="ExportsIndex" export-status=""
                    data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
                    data-placement="left" rel="tooltip" data-container="body" class="header-icon">
-                    <i class="fa fa-retweet" ng-hide="exportRunning"></i>
-                    <i class="fa fa-refresh fa-spin txt-color-red" ng-show="exportRunning"></i>
+                    <i class="fa fa-retweet" ng-if="!exportRunning"></i>
+                    <i class="fa fa-refresh fa-spin txt-color-red" ng-if="exportRunning"></i>
                 </a>
             <?php endif; ?>
         </div>
