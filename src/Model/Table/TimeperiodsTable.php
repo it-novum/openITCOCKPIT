@@ -352,7 +352,6 @@ class TimeperiodsTable extends Table {
         foreach ($timeranges as $key => $timerange) {
             $check_timerange_array[$timerange['day']][] = ['start' => $timerange['start'], 'end' => $timerange['end']];
         }
-        $error_arr = [];
         foreach ($check_timerange_array as $day => $timerange_data) {
             if (sizeof($timerange_data) > 1) {
                 $intern_counter = 0;
@@ -369,13 +368,15 @@ class TimeperiodsTable extends Table {
                             } else {
                                 $input_key--;
                             }
-                            $error_arr[$intern_counter]['Timeperiod'][$day] = 'state-error';
+                            $error_arr[$day]['state-error'][] = [
+                                'start' => $timerange_data[$intern_counter]['start'],
+                                'end' => $timerange_data[$intern_counter]['end']
+                            ];
                             $timeranges[$intern_counter] = 'error';
                         } else {
                             $tmp_start = $timerange_data[$intern_counter]['start'];
                             $tmp_end = $timerange_data[$intern_counter]['end'];
                             $input_key++;
-
                         }
                     }
                 }

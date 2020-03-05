@@ -48,7 +48,7 @@
     </div>
     <div class="hidden-lg-up">
         <a href="#" class="header-btn btn press-scale-down" data-action="toggle" data-class="mobile-nav-on">
-            <i class="ni ni-menu"></i>
+            <i class="fas fa-bars"></i>
         </a>
     </div>
 

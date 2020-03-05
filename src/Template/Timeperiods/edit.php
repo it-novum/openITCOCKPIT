@@ -140,7 +140,7 @@ $weekdays = [
                             </span>
                         </div>
 
-                        <legend class="font-sm">
+                        <legend class="font-sm margin-top-30">
                             <div>
                                 <label ng-class="{'text-danger': errors.validate_timeranges}">
                                     <?php echo __('Time ranges:'); ?>
@@ -150,63 +150,70 @@ $weekdays = [
                                 <?php echo __('Do not enter overlapping timeframes'); ?>
                             </div>
                         </legend>
-                        <div ng-repeat="range in timeperiod.ranges" class="row">
+                        <hr>
+                        <div ng-repeat="range in timeperiod.ranges" class="row margin-bottom-5">
                             <div class="col-lg-4">
                                 <div class="form-group">
-                                    <label class="control-label">
-                                        <i class="fas fa-calendar-day"> </i>
-                                        <?php echo __('Day'); ?>
-                                    </label>
-                                    <select class="form-control input-sm select"
-                                            ng-model="timeperiod.ranges[$index].day">
-                                        <?php foreach ($weekdays as $day => $weekday):
-                                            printf('<option value="%s">%s</option>>', $day, $weekday);
-                                        endforeach; ?>
-                                    </select>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i
+                                                    class="fas fa-calendar-day padding-top-3 padding-bottom-3"></i></span>
+                                        </div>
+                                        <select class="form-control input-sm select" chosen="" id="tp_day_{{$index}}"
+                                                ng-model="range.day">
+                                            <?php foreach ($weekdays as $day => $weekday):
+                                                printf('<option value="%s">%s</option>>', $day, $weekday);
+                                            endforeach; ?>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-3">
-                                <div class="form-group" ng-class="{'has-error': errors.name}">
-                                    <label class="control-label">
-                                        <i class="fa fa-clock-o"> </i>
-                                        <?php echo __('Start'); ?>
-                                    </label>
-                                    <input
-                                        class="form-control"
-                                        ng-class="{'state-error': errors.validate_timeranges[$index] ||
-                                                   errors.timeperiod_timeranges[$index].start}"
-                                        placeholder="<?php echo __('00:00'); ?>"
-                                        type="text"
-                                        size="5"
-                                        maxlength="5"
-                                        ng-model="range.start">
-                                    <div ng-repeat="error in errors.timeperiod_timeranges[$index].start">
+                                <div class="form-group has-error">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="far fa-clock-o"></i></span>
+                                        </div>
+                                        <input id="tp_start_{{$index}}" class="form-control" required
+                                               ng-class="{'border-color-error': hasTimeRange(errors, range) ||
+                                                       errors.timeperiod_timeranges[range.index].start}"
+                                               placeholder="<?php echo __('Start');
+                                               echo ' ';
+                                               echo __('(00:00)'); ?>"
+                                               type="text"
+                                               size="5"
+                                               maxlength="5"
+                                               ng-model="range.start">
+                                    </div>
+                                    <div ng-repeat="error in errors.timeperiod_timeranges[range.index].start">
+                                        <div class="help-block text-danger font-xs">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="far fa-clock-o"></i></span>
+                                        </div>
+                                        <input id="tp_end_{{$index}}" class="form-control" required
+                                               ng-class="{'border-color-error': hasTimeRange(errors, range) ||
+                                                       errors.timeperiod_timeranges[range.index].end}"
+                                               placeholder="<?php echo __('End');
+                                               echo ' ';
+                                               echo __('(24:00)'); ?>"
+                                               type="text"
+                                               size="5"
+                                               maxlength="5"
+                                               ng-model="range.end">
+                                    </div>
+                                    <div ng-repeat="error in errors.timeperiod_timeranges[range.index].end">
                                         <div class="help-block text-danger font-xs">{{ error }}</div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="col-lg-3">
-                                <div class="form-group" ng-class="{'has-error': errors.name}">
-                                    <label class="control-label">
-                                        <i class="fa fa-clock-o"> </i>
-                                        <?php echo __('End'); ?>
-                                    </label>
-                                    <input
-                                        class="form-control"
-                                        ng-class="{'state-error': errors.validate_timeranges[$index] ||
-                                                   errors.timeperiod_timeranges[$index].end}"
-                                        placeholder="<?php echo __('24:00'); ?>"
-                                        type="text"
-                                        size="5"
-                                        maxlength="5"
-                                        ng-model="range.end">
-                                    <div ng-repeat="error in errors.timeperiod_timeranges[$index].end">
-                                        <div class="help-block text-danger font-xs">{{ error }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-1 padding-top-25">
+                            <div class="col-lg-1 padding-top-3">
                                 <a class="btn btn-default btn-sm txt-color-red"
                                    href="javascript:void(0);"
                                    ng-click="removeTimerange($index|number)">
