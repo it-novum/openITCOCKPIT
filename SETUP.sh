@@ -247,3 +247,5 @@ fi
 oitc roles --enable-defaults --admin
 
 chown -R www-data:www-data /opt/openitc/frontend
+
+date > /opt/openitc/etc/.installation_done

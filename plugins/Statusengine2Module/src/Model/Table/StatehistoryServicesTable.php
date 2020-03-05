@@ -108,10 +108,11 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
 
     /**
      * @param StatehistoryServiceConditions $StatehistoryServiceConditions
-     * @param PaginateOMat|null $PaginateOMat
+     * @param null $PaginateOMat
+     * @param bool $enableHydration
      * @return array
      */
-    public function getStatehistoryIndex(StatehistoryServiceConditions $StatehistoryServiceConditions, $PaginateOMat = null) {
+    public function getStatehistoryIndex(StatehistoryServiceConditions $StatehistoryServiceConditions, $PaginateOMat = null, $enableHydration = true) {
         $query = $this->find()
             ->contain([
                 'Objects'
@@ -148,6 +149,7 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
                 ]
             ]);
         }
+        $query->enableHydration($enableHydration);
 
 
         if ($PaginateOMat === null) {

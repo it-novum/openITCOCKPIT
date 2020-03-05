@@ -34,14 +34,15 @@ interface StatehistoryServiceTableInterface {
     /**
      * @param StatehistoryServiceConditions $StatehistoryServiceConditions
      * @param PaginateOMat|null $PaginateOMat
+     * @param bool $enableHydration
      * @return array
      */
-    public function getStatehistoryIndex(StatehistoryServiceConditions $StatehistoryServiceConditions, $PaginateOMat = null);
+    public function getStatehistoryIndex(StatehistoryServiceConditions $StatehistoryServiceConditions, $PaginateOMat = null, $enableHydration = true);
 
     /**
      * @param StatehistoryServiceConditions $StatehistoryServiceConditions
      * @param bool $enableHydration
-     * @return Entity
+     * @return Entity|array
      */
     public function getLastRecord(StatehistoryServiceConditions $StatehistoryServiceConditions, $enableHydration = true);
 }

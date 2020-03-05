@@ -34,14 +34,15 @@ interface StatehistoryHostTableInterface {
     /**
      * @param StatehistoryHostConditions $StatehistoryHostConditions
      * @param PaginateOMat|null $PaginateOMat
+     * @param bool $enableHydration
      * @return array
      */
-    public function getStatehistoryIndex(StatehistoryHostConditions $StatehistoryHostConditions, $PaginateOMat = null);
+    public function getStatehistoryIndex(StatehistoryHostConditions $StatehistoryHostConditions, $PaginateOMat = null, $enableHydration = true);
 
     /**
      * @param StatehistoryHostConditions $StatehistoryHostConditions
      * @param bool $enableHydration
-     * @return Entity
+     * @return Entity|array
      */
     public function getLastRecord(StatehistoryHostConditions $StatehistoryHostConditions, $enableHydration = true);
 }

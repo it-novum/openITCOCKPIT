@@ -44,9 +44,11 @@ interface DowntimehistoryHostsTableInterface {
 
     /**
      * @param DowntimeHostConditions $DowntimeHostConditions
+     * @param bool $enableHydration
+     * @param bool $disableResultsCasting
      * @return array
      */
-    public function getDowntimesForReporting(DowntimeHostConditions $DowntimeHostConditions);
+    public function getDowntimesForReporting(DowntimeHostConditions $DowntimeHostConditions, $enableHydration = true, $disableResultsCasting = false);
 
     /**
      * @param null $uuid
