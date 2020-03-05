@@ -45,6 +45,10 @@ openITCOCKPIT v4 Utilities
     padding: 3px;
 }
 
+.padding-top-3 {
+    padding-top: 3px;
+}
+
 .padding-bottom-5 {
     padding-bottom: 5px;
 }
@@ -520,4 +524,17 @@ openITCOCKPIT v4 Utilities
 
 input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:checked + .custom-control-label {
     font-weight: normal;
+}
+
+.display-inline {
+    display: inline;
+}
+
+.display-inline-flex {
+    display: inline-flex;
+}
+
+.chosen-container-single .chosen-single {
+    height: 100%;
+    line-height: calc(2.6em);
 }
