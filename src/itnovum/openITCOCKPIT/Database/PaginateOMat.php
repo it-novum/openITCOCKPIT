@@ -60,10 +60,16 @@ class PaginateOMat {
         $this->Controller = $Controller;
         $this->isScrollRequest = $isScrollRequest;
 
+        $limit = $this->Controller->Authentication->getIdentity()->getOriginalData()->paginatorlength;
+
+        if ($this->Controller->getRequest()->getQuery('limit', 0) > 0) {
+            $limit = (int)$this->Controller->getRequest()->getQuery('limit');
+        }
+
         if ($this->isScrollRequest) {
-            $this->PaginatorOrScrollIndex = new ScrollIndex($Controller, $page);
+            $this->PaginatorOrScrollIndex = new ScrollIndex($Controller, $page, $limit);
         } else {
-            $this->PaginatorOrScrollIndex = new Cake4Paginator($Controller, $page);
+            $this->PaginatorOrScrollIndex = new Cake4Paginator($Controller, $page, $limit);
         }
 
         $this->page = $page;
