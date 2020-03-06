@@ -30,7 +30,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="SystemdowntimesHost">
+        <a ui-sref="SystemdowntimesHostgroup">
             <i class="fa fa-power-off fa-fw"></i> <?php echo __('Create downtime'); ?>
         </a>
     </li>
@@ -47,11 +47,10 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Host group downtime'); ?>
-                    <span class="fw-300"><i><?php echo __('Create new host group downtime'); ?></i></span>
+                    <?php echo __('Create new host group downtime'); ?>
                 </h2>
                 <div class="panel-toolbar">
-                    <a back-button fallback-state='DowntimesHost'
+                    <a back-button fallback-state='SystemdowntimesHostgroup'
                        class="btn btn-default btn-xs mr-1 shadow-0">
                         <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                     </a>
@@ -283,7 +282,7 @@
                                         <?php echo _('Create another'); ?>
                                     </label>
                                     <button class="btn btn-primary"
-                                            type="submit"><?php echo __('Create host downtime'); ?></button>
+                                            type="submit"><?php echo __('Create host group downtime'); ?></button>
                                     <a back-button fallback-state='SystemdowntimesHost'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>

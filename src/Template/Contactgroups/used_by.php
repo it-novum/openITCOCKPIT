@@ -44,7 +44,7 @@
             <div class="panel-hdr">
                 <h2>
                     <?php echo __('Contact group'); ?>
-                    <span class="fw-300"><i><?php echo __('Contact group'); ?>
+                    <span class="fw-300"><i>
                         <strong>
                             »{{ contactgroupWithRelations.container.name }}«
                         </strong>

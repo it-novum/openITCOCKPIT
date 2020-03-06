@@ -56,10 +56,9 @@ $weekdays = [
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Time period'); ?>
+                    <?php echo __('Edit time period:'); ?>
                     <span class="fw-300">
                         <i>
-                            <?php echo __('Edit Time period'); ?>
                             {{post.Timeperiod.name}}
                         </i>
                     </span>
@@ -232,7 +231,7 @@ $weekdays = [
                             <div class="card-body">
                                 <div class="float-right">
                                     <button class="btn btn-primary" type="submit">
-                                        <?php echo __('Update Time period'); ?>
+                                        <?php echo __('Update time period'); ?>
                                     </button>
                                     <a back-button fallback-state='TimeperiodsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?>

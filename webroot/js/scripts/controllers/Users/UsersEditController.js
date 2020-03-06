@@ -3,6 +3,7 @@ angular.module('openITCOCKPIT')
 
         $scope.id = $stateParams.id;
         $scope.isLdapUser = false;
+        $scope.localeOptions = [];
 
         var getContainerName = function(containerId){
             containerId = parseInt(containerId, 10);
@@ -79,6 +80,16 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.containers = result.data.containers;
+            });
+        };
+
+        $scope.loadLocaleOptions = function(){
+            return $http.get("/users/getLocaleOptions.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.localeOptions = result.data.localeOptions;
             });
         };
 
@@ -218,8 +229,9 @@ angular.module('openITCOCKPIT')
 
         var promise1 = $scope.loadUserContaineRoles();
         var promise2 = $scope.loadContainer();
+        var promise3 = $scope.loadLocaleOptions();
 
-        $q.all([promise1, promise2]).then(function(result){
+        $q.all([promise1, promise2, promise3]).then(function(result){
             //Load user config
             $scope.load();
         });

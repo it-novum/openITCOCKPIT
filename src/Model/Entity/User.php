@@ -18,6 +18,7 @@ use Cake\ORM\Entity;
  * @property string|null $company
  * @property string|null $phone
  * @property string|null $timezone
+ * @property string|null $i18n
  * @property string|null $dateformat
  * @property string|null $image
  * @property string|null $onetimetoken
@@ -62,6 +63,7 @@ class User extends Entity {
         'company'                     => true,
         'phone'                       => true,
         'timezone'                    => true,
+        'i18n'                        => true,
         'dateformat'                  => true,
         'image'                       => true,
         'onetimetoken'                => true,

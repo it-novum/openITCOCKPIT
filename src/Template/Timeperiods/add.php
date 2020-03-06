@@ -56,8 +56,7 @@ $weekdays = [
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Time period'); ?>
-                    <span class="fw-300"><i><?php echo __('Create new Time period'); ?></i></span>
+                    <?php echo __('Create new time period'); ?>
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'timeperiods')): ?>
@@ -228,7 +227,7 @@ $weekdays = [
                             <div class="card-body">
                                 <div class="float-right">
                                     <button class="btn btn-primary" type="submit">
-                                        <?php echo __('Create Time period'); ?>
+                                        <?php echo __('Create time period'); ?>
                                     </button>
                                     <a back-button fallback-state='TimeperiodsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?>

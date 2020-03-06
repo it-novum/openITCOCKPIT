@@ -439,7 +439,7 @@
                             <div class="card-body">
                                 <div class="float-right">
                                     <button class="btn btn-primary"
-                                            type="submit"><?php echo __('Update Auto Map'); ?></button>
+                                            type="submit"><?php echo __('Update auto map'); ?></button>
                                     <a back-button fallback-state='AutomapsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>

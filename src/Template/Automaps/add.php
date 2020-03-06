@@ -45,8 +45,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Auto Maps'); ?>
-                    <span class="fw-300"><i><?php echo __('Create new Auto Map'); ?></i></span>
+                    <?php echo __('Create new auto map'); ?>
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'automap')): ?>
@@ -442,7 +441,7 @@
                                         <?php echo _('Create another'); ?>
                                     </label>
                                     <button class="btn btn-primary"
-                                            type="submit"><?php echo __('Create Auto Map'); ?></button>
+                                            type="submit"><?php echo __('Create auto map'); ?></button>
                                     <a back-button fallback-state='AutomapsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>

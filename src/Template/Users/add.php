@@ -46,8 +46,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Users'); ?>
-                    <span class="fw-300"><i><?php echo __('Create new local user'); ?></i></span>
+                    <?php echo __('Create new local user'); ?>
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'users')): ?>
@@ -369,6 +368,28 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <strong>
                                     <?php echo date('d.m.Y H:i:s'); ?>
                                 </strong>
+                            </div>
+                        </div>
+
+                        <div class="form-group required" ng-class="{'has-error': errors.i18n}">
+                            <label class="control-label" for="frontendLanguage">
+                                <?php echo __('Frontend language'); ?>
+                            </label>
+                            <select
+                                id="frontendLanguage"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="localeOptions"
+                                ng-options="value.i18n as value.name for (key, value) in localeOptions"
+                                ng-model="post.User.i18n">
+                            </select>
+                            <div ng-repeat="error in errors.i18n">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block">
+                                <?php echo _('Manual logout and login again required for changes to take effect.'); ?>
+                                <br>
+                                <?php echo _('These options are community translations. Feel free to extend them and open a github pull request.'); ?>
                             </div>
                         </div>
 

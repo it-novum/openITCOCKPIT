@@ -49,8 +49,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Command'); ?>
-                    <span class="fw-300"><i><?php echo __('Create new command'); ?></i></span>
+                    <?php echo __('Create new command'); ?>
                 </h2>
                 <div class="panel-toolbar">
                     <button ng-click="showDefaultMacros()"

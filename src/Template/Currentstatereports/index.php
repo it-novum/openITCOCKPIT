@@ -44,8 +44,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Current state report'); ?>
-                    <span class="fw-300"><i><?php echo __('Create new current state report'); ?></i></span>
+                    <?php echo __('Create new current state report'); ?>
                 </h2>
             </div>
             <div class="panel-container show">

@@ -48,8 +48,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Map'); ?>
-                    <span class="fw-300"><i><?php echo __('Create new Map'); ?></i></span>
+                    <?php echo __('Create new map'); ?>
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'maps', 'mapmodule')): ?>
