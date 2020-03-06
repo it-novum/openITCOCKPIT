@@ -209,10 +209,10 @@ class Servicestatus {
 
         if ($this->isFlapping() === true) {
             if ($this->currentState !== null) {
-                return '<span class="flapping_airport ' . $class . ' ' . $stateColors[$this->currentState] . '"><i class="fa fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span>';
+                return '<span class="flapping_airport ' . $class . ' ' . $stateColors[$this->currentState] . '"><i class="fas fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fas fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span>';
             }
 
-            return '<span class="flapping_airport text-primary ' . $class . '"><i class="fa fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span>';
+            return '<span class="flapping_airport text-primary ' . $class . '"><i class="fas fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fas fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span>';
         }
 
         return '';
@@ -471,10 +471,10 @@ class Servicestatus {
 
         if ($this->isFlapping()) {
             if ($this->currentState !== null && $this->currentState >= 0) {
-                return '<span class="' . $stateColors[$this->currentState] . '"><span class="flapping_airport ' . $class . ' ' . $stateColors[$this->currentState] . '"><i class="fa fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span></span>';
+                return '<span class="' . $stateColors[$this->currentState] . '"><span class="flapping_airport ' . $class . ' ' . $stateColors[$this->currentState] . '"><i class="fas fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fas fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span></span>';
             }
 
-            return '<span class="' . $stateColors[$this->currentState] . '"><span class="flapping_airport text-primary ' . $class . '"><i class="fa fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span></span>';
+            return '<span class="' . $stateColors[$this->currentState] . '"><span class="flapping_airport text-primary ' . $class . '"><i class="fas fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fas fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span></span>';
         }
 
         return '';

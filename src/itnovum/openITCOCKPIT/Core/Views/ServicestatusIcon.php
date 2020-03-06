@@ -58,11 +58,11 @@ class ServicestatusIcon {
     ];
 
     private $stateIcons = [
-        0 => 'glyphicon glyphicon-ok',
-        1 => 'fa fa-exclamation',
-        2 => 'fa fa-exclamation',
-        3 => 'fa fa-question-circle',
-        4 => 'fa fa-question-circle' //Not found in monitoring
+        0 => 'fas fa-check',
+        1 => 'fas fa-exclamation',
+        2 => 'fas fa-exclamation',
+        3 => 'fas fa-question-circle',
+        4 => 'fas fa-question-circle' //Not found in monitoring
     ];
 
     private $pushIcon = [
@@ -179,7 +179,7 @@ class ServicestatusIcon {
      * @return string
      */
     public function getPdfIcon() {
-        $template = '<i class="fa fa-square %s"></i>';
+        $template = '<i class="fas fa-square %s"></i>';
         return sprintf($template, $this->getTextColor());
     }
 
