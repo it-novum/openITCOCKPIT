@@ -47,8 +47,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Host downtime'); ?>
-                    <span class="fw-300"><i><?php echo __('Create new host downtime'); ?></i></span>
+                    <?php echo __('Create new host downtime'); ?>
                 </h2>
                 <div class="panel-toolbar">
                     <a back-button fallback-state='DowntimesHost'

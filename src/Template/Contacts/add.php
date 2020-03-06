@@ -43,8 +43,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Contacts'); ?>
-                    <span class="fw-300"><i><?php echo __('Create new contact'); ?></i></span>
+                    <?php echo __('Create new contact'); ?>
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'contacts')): ?>

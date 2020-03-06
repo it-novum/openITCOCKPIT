@@ -45,8 +45,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('User roles'); ?>
-                    <span class="fw-300"><i><?php echo __('Create new user role'); ?></i></span>
+                    <?php echo __('Create new user role'); ?>
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'usergroups')): ?>

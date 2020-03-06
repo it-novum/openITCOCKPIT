@@ -44,7 +44,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Edit host group'); ?>
+                    <?php echo __('Edit host group:'); ?>
                     <span class="fw-300"><i>{{post.Hostgroup.container.name}}</i></span>
                 </h2>
                 <div class="panel-toolbar">

@@ -45,7 +45,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Update service templates'); ?>
+                    <?php echo __('Edit service template:'); ?>
                     <span class="fw-300"><i>{{ post.Servicetemplate.template_name }}</i></span>
                 </h2>
                 <div class="panel-toolbar">

@@ -46,7 +46,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Edit user conatiner role:'); ?>
+                    <?php echo __('Edit user container role:'); ?>
                     <span class="fw-300"><i> {{post.Usercontainerrole.name}}</i></span>
                 </h2>
                 <div class="panel-toolbar">

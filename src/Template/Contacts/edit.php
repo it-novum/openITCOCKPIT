@@ -43,8 +43,8 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Contacts'); ?>
-                    <span class="fw-300"><i><?php echo __('Update contact'); ?></i></span>
+                    <?php echo __('Edit contact: '); ?>
+                    <span class="fw-300"><i>{{post.Contact.name}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
                     <div class="text-muted cursor-default d-none d-sm-none d-md-none d-lg-block margin-right-10">
