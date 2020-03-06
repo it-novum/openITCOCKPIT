@@ -418,17 +418,17 @@ class BackgroundUploadsController extends AppController {
                 if (!empty($missingIcons) || !empty($notAPng)) {
                     $error = '';
                     if (!empty($missingIcons)) {
-                        $error .= __(sprintf(
+                        $error .= sprintf(
                             'Thow following icons are missing in uploaded zip archive: %s',
                             implode(', ', $missingIcons)
-                        ));
+                        );
                     }
 
                     if (!empty($notAPng)) {
-                        $error .= __(sprintf(
+                        $error .= sprintf(
                             'The following icons are not a PNG image: %s',
                             implode(', ', $notAPng)
-                        ));
+                        );
                     }
 
                     //Remove tmp directory

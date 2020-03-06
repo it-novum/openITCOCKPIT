@@ -549,7 +549,7 @@ class SetupCommand extends Command {
         $entity->set('value', $hostname);
 
         $SystemsettingsTable->save($entity);
-        $this->io->success(__(__('Hostname was set to "{0}"', $hostname)));
+        $this->io->success(__('Hostname was set to "{0}"', $hostname));
         return $entity;
     }
 
@@ -565,7 +565,7 @@ class SetupCommand extends Command {
         $entity->set('value', $sender);
 
         $SystemsettingsTable->save($entity);
-        $this->io->success(__(__('E-Mail sender was set to "{0}"', $sender)));
+        $this->io->success(__('E-Mail sender was set to "{0}"', $sender));
         return $entity;
     }
 
