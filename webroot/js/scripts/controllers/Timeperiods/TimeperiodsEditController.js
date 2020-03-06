@@ -39,7 +39,6 @@ angular.module('openITCOCKPIT')
                     });
                 }
 
-                /*
                 $scope.timeperiod.ranges = _($scope.timeperiod.ranges)
                     .chain()
                     .flatten()
@@ -48,8 +47,6 @@ angular.module('openITCOCKPIT')
                             return [range.day, range.start];
                         })
                     .value();
-
-                 */
 
                 $scope.post.Timeperiod.name = $scope.timeperiod.name;
                 $scope.post.Timeperiod.description = $scope.timeperiod.description;
@@ -94,7 +91,7 @@ angular.module('openITCOCKPIT')
         $scope.removeTimerange = function(rangeIndex){
             var timeperiodranges = [];
             for(var i in $scope.timeperiod.ranges){
-                if(i !== rangeIndex){
+                if($scope.timeperiod.ranges[i]['index'] !== rangeIndex){
                     timeperiodranges.push($scope.timeperiod.ranges[i])
                 }
             }
@@ -114,7 +111,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.addTimerange = function(){
-            console.log(Object.keys($scope.timeperiod.ranges).length);
             $scope.timeperiod.ranges.push({
                 id: null,
                 day: '1',
@@ -122,7 +118,7 @@ angular.module('openITCOCKPIT')
                 end: '',
                 index: Object.keys($scope.timeperiod.ranges).length
             });
-            console.log($scope.timeperiod);
+
             if(typeof $scope.errors.validate_timeranges !== 'undefined' ||
                 typeof $scope.errors.timeperiod_timeranges !== 'undefined'){
                 $scope.timeperiod.ranges = $scope.timeperiod.ranges;
@@ -156,6 +152,7 @@ angular.module('openITCOCKPIT')
 
         $scope.submit = function(){
             var index = 0;
+            $scope.post.Timeperiod.timeperiod_timeranges = [];
             for(var i in $scope.timeperiod.ranges){
                 for(var j in $scope.timeperiod.ranges){
                     if(parseInt($scope.timeperiod.ranges[j].index) === parseInt(i)){

@@ -212,7 +212,7 @@ $weekdays = [
                             <div class="col-lg-1 padding-top-3">
                                 <a class="btn btn-default btn-sm txt-color-red"
                                    href="javascript:void(0);"
-                                   ng-click="removeTimerange($index|number)">
+                                   ng-click="removeTimerange(range.index)">
                                     <i class="fa fa-trash fa-lg"></i>
                                 </a>
                             </div>
