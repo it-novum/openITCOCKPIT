@@ -267,6 +267,8 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
             'DowntimeServices.entry_time',
             'DowntimeServices.scheduled_start_time',
             'DowntimeServices.scheduled_end_time',
+            'DowntimeServices.actual_start_time',
+            'DowntimeServices.actual_end_time',
             'DowntimeServices.duration',
             'DowntimeServices.was_started',
             'DowntimeServices.internal_downtime_id',
