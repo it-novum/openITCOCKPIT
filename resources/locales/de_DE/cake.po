@@ -5,6 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2020-03-06 17:36+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -13,15 +14,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
+#: src/Template/Error/error400.php:36
+#: src/Template/Error/error500.php:40
+#: src/Template/Errors/error400.php:18
+#: src/Template/Errors/error500.php:18
 msgid "Not Found"
 msgstr ""
 
+#: src/Template/Error/error400.php:36
+#: src/Template/Error/error500.php:40
+#: src/Template/Errors/error400.php:18
+#: src/Template/Errors/error500.php:18
 msgid "Error"
 msgstr ""
 
+#: src/Template/Errors/error400.php:20
 msgid "The requested address %s was not found on this server."
 msgstr ""
 
+#: src/Template/Errors/error500.php:19
 msgid "An Internal Error Has Occurred."
 msgstr ""
 
@@ -69,11 +80,6 @@ msgstr ""
 
 msgid "%s TB"
 msgstr ""
-
-msgid "%d Byte"
-msgid_plural "%d Bytes"
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "and"
 msgstr ""
@@ -161,41 +167,6 @@ msgstr ""
 
 msgid "days"
 msgstr ""
-
-msgid "%d year"
-msgid_plural "%d years"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "%d month"
-msgid_plural "%d months"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "%d week"
-msgid_plural "%d weeks"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "%d day"
-msgid_plural "%d days"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "%d hour"
-msgid_plural "%d hours"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "%d minute"
-msgid_plural "%d minutes"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "%d second"
-msgid_plural "%d seconds"
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "A view block with the name '%s' is already/still open."
 msgstr ""
@@ -297,5 +268,13 @@ msgid "Delete %s"
 msgstr ""
 
 msgid "Related %s"
+msgstr ""
+
+#: src/Template/Error/error400.php:37
+msgid "The requested address {0} was not found on this server."
+msgstr ""
+
+#: src/Template/Error/error500.php:38
+msgid "An Internal Error Has Occurred"
 msgstr ""
 

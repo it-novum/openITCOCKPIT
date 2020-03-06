@@ -5,6 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2020-03-06 17:36+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -13,6 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
+#: src/Template/Layouts/error.php:16
 msgid "Cannot load configuration files with ../ in them."
 msgstr "Impossible de charger les fichiers de configuration contenant ../."
 
@@ -22,9 +24,11 @@ msgstr "Aucune variable %s trouvée dans %s"
 msgid "Encountered unexpected %s. Cannot generate SQL log."
 msgstr "Inopinément rencontré %s. Impossible de générer le journal SQL."
 
+#: src/Template/Layouts/error.php:16
 msgid "CakePHP: the rapid development php framework"
 msgstr "CakePHP : le framework PHP de développement rapide"
 
+#: src/itnovum/openITCOCKPIT/Core/Security/CSRF.php:176
 msgid "The request has been black-holed"
 msgstr "La demande a été détruite"
 

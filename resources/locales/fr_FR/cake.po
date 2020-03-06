@@ -5,6 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2020-03-06 17:36+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -13,15 +14,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
+#: src/Template/Error/error400.php:36
+#: src/Template/Error/error500.php:40
+#: src/Template/Errors/error400.php:18
+#: src/Template/Errors/error500.php:18
 msgid "Not Found"
 msgstr "Introuvable"
 
+#: src/Template/Error/error400.php:36
+#: src/Template/Error/error500.php:40
+#: src/Template/Errors/error400.php:18
+#: src/Template/Errors/error500.php:18
 msgid "Error"
 msgstr "Erreur"
 
+#: src/Template/Errors/error400.php:20
 msgid "The requested address %s was not found on this server."
 msgstr "L'adresse demandée %s n'a pas été trouvée sur ce serveur."
 
+#: src/Template/Errors/error500.php:19
 msgid "An Internal Error Has Occurred."
 msgstr "Une erreur interne s'est produite."
 
@@ -69,11 +80,6 @@ msgstr "%s GB"
 
 msgid "%s TB"
 msgstr "%s TB"
-
-msgid "%d Byte"
-msgid_plural "%d Bytes"
-msgstr[0] "%d octet"
-msgstr[1] "%d octet"
 
 msgid "and"
 msgstr "et"
@@ -161,41 +167,6 @@ msgstr "Il ya environ un an"
 
 msgid "days"
 msgstr "journées"
-
-msgid "%d year"
-msgid_plural "%d years"
-msgstr[0] "%d année"
-msgstr[1] "%d année"
-
-msgid "%d month"
-msgid_plural "%d months"
-msgstr[0] "%d mois"
-msgstr[1] "%d mois"
-
-msgid "%d week"
-msgid_plural "%d weeks"
-msgstr[0] "%d semaine"
-msgstr[1] "%d semaine"
-
-msgid "%d day"
-msgid_plural "%d days"
-msgstr[0] "%d jour"
-msgstr[1] "%d jour"
-
-msgid "%d hour"
-msgid_plural "%d hours"
-msgstr[0] "%d heure"
-msgstr[1] "%d heure"
-
-msgid "%d minute"
-msgid_plural "%d minutes"
-msgstr[0] "%d minute"
-msgstr[1] "%d minute"
-
-msgid "%d second"
-msgid_plural "%d seconds"
-msgstr[0] "%d seconde"
-msgstr[1] "%d seconde"
 
 msgid "A view block with the name '%s' is already/still open."
 msgstr "Un bloc de vue portant le nom '%s' est déjà/toujours ouvert."
@@ -298,4 +269,12 @@ msgstr "Supprimer %s"
 
 msgid "Related %s"
 msgstr "%s liés"
+
+#: src/Template/Error/error400.php:37
+msgid "The requested address {0} was not found on this server."
+msgstr ""
+
+#: src/Template/Error/error500.php:38
+msgid "An Internal Error Has Occurred"
+msgstr ""
 

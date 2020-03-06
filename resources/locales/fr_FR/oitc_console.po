@@ -5,6 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2020-03-06 17:36+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -13,6 +14,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:137
+#: src/Command/NagiosNotificationCommand.php:150
+#: src/Command/PushoverNotificationCommand.php:98
+#: src/Command/SendPushNotificationCommand.php:66
+#: src/Command/SmsNotificationCommand.php:69
+#: src/Command/CronjobsCommand.php:67
 msgid "All cronjobs will be forced to execute!"
 msgstr "Tous les cronjobs seront exécuté !"
 
@@ -121,90 +128,140 @@ msgstr "Resturn le statut du démon"
 msgid "Pacemaker likes this, but we dont know why :) (it's recommended to use with -q e.g.: gearman_worker -p -q)"
 msgstr "Pacemaker aime ça, mais on ne sait pas pourquoi :) (il est recommandé de l'utiliser avec -q exemple: gearman_worker -p -q)"
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:137
+#: src/Command/NagiosNotificationCommand.php:150
+#: src/Command/PushoverNotificationCommand.php:98
+#: src/Command/SendPushNotificationCommand.php:66
+#: src/Command/SmsNotificationCommand.php:69
 msgid "Type of the notification host or service"
 msgstr "Type de l'hôte ou du service de notification"
 
+#: src/Command/NagiosNotificationCommand.php:151
+#: src/Command/SmsNotificationCommand.php:70
 msgid "Notification type of monitoring engine"
 msgstr "Type de notification du moteur de surveillance"
 
+#: src/Command/NagiosNotificationCommand.php:152
+#: src/Command/SmsNotificationCommand.php:72
 msgid "Host uuid you want to send a notification"
 msgstr "Uuid de l'hôte auquel vous souhaitez envoyer une notification"
 
+#: src/Command/NagiosNotificationCommand.php:153
 msgid "Host description you want to send a notification"
 msgstr "Description de l'hôte auquel vous souhaitez envoyer une notification"
 
+#: src/Command/NagiosNotificationCommand.php:154
 msgid "current host state"
 msgstr "état de l'hôte actuel"
 
+#: src/Command/NagiosNotificationCommand.php:155
 msgid "host address"
 msgstr "adresse de l'hôte"
 
+#: src/Command/NagiosNotificationCommand.php:156
 msgid "host output"
 msgstr "sortie de l'hôte"
 
+#: src/Command/NagiosNotificationCommand.php:157
 msgid "host long output"
 msgstr "sortie longue hôte"
 
+#: src/Command/NagiosNotificationCommand.php:158
 msgid "host acknowledgement author"
 msgstr "auteur accusé de réception"
 
+#: src/Command/NagiosNotificationCommand.php:159
 msgid "host acknowledgement comment"
 msgstr "commentaire d'accusé de réception"
 
+#: src/Command/NagiosNotificationCommand.php:160
+#: src/Command/SmsNotificationCommand.php:73
 msgid "recivers mail address"
 msgstr "adresse mail du receveur"
 
+#: src/Command/NagiosNotificationCommand.php:161
 msgid "human name of the contact"
 msgstr "nom humain du contact"
 
+#: src/Command/NagiosNotificationCommand.php:162
+#: src/Command/SmsNotificationCommand.php:74
 msgid "Service uuid you want to notify"
 msgstr "Uuid du service que vous souhaitez notifier"
 
+#: src/Command/NagiosNotificationCommand.php:163
 msgid "service state"
 msgstr "état du service"
 
+#: src/Command/NagiosNotificationCommand.php:164
 msgid "service output"
 msgstr "sortie de service"
 
+#: src/Command/NagiosNotificationCommand.php:165
 msgid "service long output"
 msgstr "sortie longue du service"
 
+#: src/Command/NagiosNotificationCommand.php:166
 msgid "service acknowledgement author"
 msgstr "auteur de l'accusé de réception de service"
 
+#: src/Command/NagiosNotificationCommand.php:167
 msgid "service acknowledgement comment"
 msgstr "commentaire d'accusé de réception de service"
 
+#: src/Command/NagiosNotificationCommand.php:168
 msgid "Email type for notifications [text, html, both]"
 msgstr "Type de courrier électronique pour les notifications [texte, html, les deux]"
 
 msgid "Email without attachments"
 msgstr "Email sans pièces jointes"
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:138
+#: src/Command/PushoverNotificationCommand.php:99
+#: src/Command/SendPushNotificationCommand.php:67
 msgid "Notification type of monitoring engine => $NOTIFICATIONTYPE$ "
 msgstr "Type de notification du moteur de surveillance => $NOTIFICATIONTYPE$ "
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:139
+#: src/Command/PushoverNotificationCommand.php:100
+#: src/Command/SendPushNotificationCommand.php:68
 msgid "Host uuid you want to send a notification => $HOSTNAME$"
 msgstr "Uuid de l'hôte auquel vous souhaitez envoyer une notification => $HOSTNAME$"
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:140
+#: src/Command/PushoverNotificationCommand.php:101
+#: src/Command/SendPushNotificationCommand.php:69
 msgid "Service uuid you want to send a notification => $SERVICEDESC$"
 msgstr "Uuid du service auquel vous voulez envoyer une notification => $SERVICEDESC$"
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:141
+#: src/Command/PushoverNotificationCommand.php:102
+#: src/Command/SendPushNotificationCommand.php:70
 msgid "current host state => $HOSTSTATEID$/$SERVICESTATEID$"
 msgstr "Etat hôte actuel => $HOSTSTATEID$/$SERVICESTATEID$"
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:142
+#: src/Command/PushoverNotificationCommand.php:103
+#: src/Command/SendPushNotificationCommand.php:71
 msgid "host output => $HOSTOUTPUT$/$SERVICEOUTPUT$"
 msgstr "sortie de l'hôte => $HOSTOUTPUT$/$SERVICEOUTPUT$"
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:143
+#: src/Command/PushoverNotificationCommand.php:104
+#: src/Command/SendPushNotificationCommand.php:72
 msgid "host acknowledgement author => $NOTIFICATIONAUTHOR$"
 msgstr "auteur de l'accusé de réception => $NOTIFICATIONAUTHOR$"
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:144
+#: src/Command/PushoverNotificationCommand.php:105
+#: src/Command/SendPushNotificationCommand.php:73
 msgid "host acknowledgement comment => $NOTIFICATIONCOMMENT$"
 msgstr "commentaire d'accusé de réception hôte => $NOTIFICATIONCOMMENT$"
 
+#: src/Command/PushoverNotificationCommand.php:106
 msgid "API Token of your Pushover Application => $_CONTACTPUSHOVERAPP$"
 msgstr "Jeton d'API de votre application Pushover => $_CONTACTPUSHOVERAPP$"
 
+#: src/Command/PushoverNotificationCommand.php:107
 msgid "Your Pushover User Key => $_CONTACTPUSHOVERUSER$"
 msgstr "Votre clé d'utilisateur Pushover => $_CONTACTPUSHOVERUSER$"
 
@@ -223,33 +280,42 @@ msgstr "Démarrer un serveur WebSocket pour rendre le journal de requête access
 msgid "The uuid of the host"
 msgstr "L'uuid de l'hôte"
 
+#: src/Command/SendPushNotificationCommand.php:74
 msgid "openITCOCKPIT User Id"
 msgstr "ID utilisateur openITCOCKPIT"
 
+#: src/Command/SetupCommand.php:133
 msgid "[Y]es I want to continue the setup of openITCOCKPIT"
 msgstr "[Y] Oui je veux continuer la configuration de openITCOCKPIT"
 
+#: src/Command/SetupCommand.php:134
 msgid "[N]o and exit shell"
 msgstr "[N]on et quitter le shell"
 
 msgid "Are you sure to continue?"
 msgstr "Êtes-vous sûr de vouloir continuer ?"
 
+#: src/Command/SetupCommand.php:145
 msgid "You have made an invalid selection. Please choose by entering Y or N."
 msgstr "Vous avez fait une sélection non valide. Veuillez choisir en entrant Y ou N."
 
+#: src/Command/SetupCommand.php:260
 msgid "Please enter your first name"
 msgstr "Veuillez entrer votre prénom"
 
+#: src/Command/SetupCommand.php:272
 msgid "Please enter your last name"
 msgstr "Veuillez entrer votre nom de famille"
 
+#: src/Command/SetupCommand.php:284
 msgid "Please enter your email address. This will be the username for the login."
 msgstr "S'il vous plaît entrez votre adresse email. Ce sera le nom d'utilisateur pour la connexion."
 
+#: src/Command/SetupCommand.php:299
 msgid "Please enter a password for the login."
 msgstr "Veuillez saisir un mot de passe pour vous connecter."
 
+#: src/Command/SetupCommand.php:302
 msgid "Please confirm your password"
 msgstr "Veuillez confirmer votre mot de passe"
 
@@ -259,21 +325,26 @@ msgstr "Veuillez entrer le nom de domaine complet ou l'adresse IP de votre serve
 msgid "Please enter your return mail address"
 msgstr "Veuillez entrer votre adresse mail de retour"
 
+#: src/Command/SetupCommand.php:372
 msgid "Please enter the address of your mail server (e.g. mail.example.org)"
 msgstr "Veuillez saisir l'adresse de votre serveur de messagerie (par exemple, mail.example.org)"
 
+#: src/Command/SetupCommand.php:384
 msgid "Please enter the port of your mail server"
 msgstr "Veuillez entrer le port de votre serveur de messagerie"
 
 msgid "Please enter your username, or leave it blank if you don't need a user"
 msgstr "Veuillez entrer votre nom d'utilisateur ou laissez le champ vide si vous n'avez pas besoin d'un utilisateur."
 
+#: src/Command/SetupCommand.php:408
 msgid "Please enter your password, or leave it blank if you don't need a password"
 msgstr "Veuillez entrer votre mot de passe ou laissez le champ vide si vous n'avez pas besoin de mot de passe."
 
+#: src/Command/SmsNotificationCommand.php:68
 msgid "IP address of the SMS gateway"
 msgstr "Adresse IP de la passerelle SMS"
 
+#: src/Command/SmsNotificationCommand.php:71
 msgid "Transport method for example NRPE"
 msgstr "Méthode de transport par exemple NRPE"
 
@@ -378,4 +449,61 @@ msgstr "sortie"
 
 msgid "comment"
 msgstr "commentaire"
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:145
+#: src/Command/NagiosNotificationCommand.php:170
+msgid "Disable emojis in subject"
+msgstr ""
+
+#: src/Command/ConnectToAgentCommand.php:59
+msgid "IP of Host with the Agent to connect to"
+msgstr ""
+
+#: src/Command/ConnectToAgentCommand.php:60
+msgid "Port of Host with the Agent to connect to"
+msgstr ""
+
+#: src/Command/ConnectToAgentCommand.php:61
+msgid "Basic-Auth username from Agent"
+msgstr ""
+
+#: src/Command/ConnectToAgentCommand.php:62
+msgid "Basic-Auth password from Agent"
+msgstr ""
+
+#: src/Command/ConnectToAgentCommand.php:63
+msgid "Disable proxy"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:169
+msgid "disable email attachments"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:171
+msgid "E-Mail layout/template that should be used"
+msgstr ""
+
+#: src/Command/PushoverNotificationCommand.php:108
+msgid "If set, connection will be established using the proxy server defined in openITCOCKPIT interface."
+msgstr ""
+
+#: src/Command/SetupCommand.php:136
+msgid "Are you sure you want to continue?"
+msgstr ""
+
+#: src/Command/SetupCommand.php:142
+msgid "Setup aborted!"
+msgstr ""
+
+#: src/Command/SetupCommand.php:324
+msgid "System Address or FQDN?"
+msgstr ""
+
+#: src/Command/SetupCommand.php:358
+msgid "Please enter a sender email address"
+msgstr ""
+
+#: src/Command/SetupCommand.php:398
+msgid "If required, set a username, or leave it blank if you don't need a user"
+msgstr ""
 
