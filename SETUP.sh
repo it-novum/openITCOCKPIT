@@ -27,7 +27,7 @@ cp -r ${APPDIR}/system/usr/. /usr/
 chmod +x /usr/bin/oitc
 
 echo "Create required system folders"
-mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,phpnsta,statusengine}
+mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,phpnsta,statusengine} /opt/openitc/etc/statusengine/Config
 
 echo "Enable new systemd services"
 systemctl daemon-reload
