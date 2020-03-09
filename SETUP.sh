@@ -72,6 +72,15 @@ if [[ ! -f "$INIFILE" ]]; then
         echo "dbc_dbport='3306'" >>$BASHCONF
         echo "dbc_dbname='${MYSQL_DATABASE}'" >>$BASHCONF
 
+        chown www-data:nagios $INIFILE
+        chmod 660 $INIFILE
+
+        chown www-data:nagios $DUMPINIFILE
+        chmod 660 $DUMPINIFILE
+
+        chown www-data:nagios $BASHCONF
+        chmod 660 $BASHCONF
+
     else
         echo "Unsupported distribution or $DEBIANCNF is missing!"
         exit 1
