@@ -121,6 +121,11 @@ echo "Create new WebSocket Key"
 WEBSOCKET_KEY=$(php -r "echo bin2hex(openssl_random_pseudo_bytes(80, \$cstrong));")
 mysql "--defaults-extra-file=${INIFILE}" -e "UPDATE systemsettings SET \`systemsettings\`.\`value\`='${WEBSOCKET_KEY}' WHERE \`key\`='SUDO_SERVER.API_KEY';"
 
+if [ ! -f /opt/openitc/etc/grafana/admin_password ]; then
+    echo "Generate new Grafana password for user 'admin'"
+    pwgen 10 1 > /opt/openitc/etc/grafana/admin_password
+fi
+
 oitc config_generator_shell --generate
 
 echo "---------------------------------------------------------------"
