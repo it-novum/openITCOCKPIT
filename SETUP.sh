@@ -137,6 +137,10 @@ if [[ $STATUSENGINE_VERSION == "Statusengine2" ]]; then
     /opt/openitc/statusengine2/cakephp/app/Console/cake schema update --plugin Legacy --file legacy_schema_innodb.php --connection legacy --yes
 fi
 
+if [[ $STATUSENGINE_VERSION == "Statusengine3" ]]; then
+  echo "Setup Statusengine 3"
+fi
+
 echo "---------------------------------------------------------------"
 echo "Configure Grafana"
 systemctl restart openitcockpit-graphing.service
