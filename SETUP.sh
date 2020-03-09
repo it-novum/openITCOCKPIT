@@ -51,7 +51,7 @@ if [[ ! -f "$INIFILE" ]]; then
         mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;" -B
         mysql --defaults-extra-file=${DEBIANCNF} -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '\`${MYSQL_DATABASE}\`'@'localhost';" -B
 
-        echo "# Automatically generated for openITCOCKPIT scripts. DO NOT TOUCH!" >$INIFILE
+        echo "; Automatically generated for openITCOCKPIT scripts. DO NOT TOUCH!" >$INIFILE
         echo "[client]" >>$INIFILE
         echo "database = ${MYSQL_DATABASE}" >>$INIFILE
         echo "host = localhost" >>$INIFILE
@@ -59,7 +59,7 @@ if [[ ! -f "$INIFILE" ]]; then
         echo "password = ${MYSQL_PASSWORD}" >>$INIFILE
         echo "port = 3306" >>$INIFILE
 
-        echo " # Automatically generated for mysqldump. DO NOT TOUCH!" >$DUMPINIFILE
+        echo "; Automatically generated for mysqldump. DO NOT TOUCH!" >$DUMPINIFILE
         echo "[client]" >>$DUMPINIFILE
         echo "host     = localhost" >>$DUMPINIFILE
         echo "user     = ${MYSQL_USER}" >>$DUMPINIFILE
