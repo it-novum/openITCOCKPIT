@@ -88,8 +88,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                         <!-- User Container Roles permissions read/write -->
                         <div class="row" ng-repeat="userContainerRole in userContainerRoleContainerPermissions">
-                            <div class="col col-md-2"></div>
-                            <div class="col col-md-10">
+                            <div class="col col-12 padding-left-30">
                                 <legend class="no-padding font-sm txt-ack">
                                     {{userContainerRole.path}}
                                 </legend>
@@ -131,8 +130,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                         <!-- Container permissions read/write -->
                         <div class="row" ng-repeat="userContainer in selectedUserContainerWithPermission">
-                            <div class="col col-md-2"></div>
-                            <div class="col col-md-10">
+                            <div class="col col-12 padding-left-30">
                                 <legend class="no-padding font-sm text-primary">
                                     {{userContainer.name}}
                                 </legend>
