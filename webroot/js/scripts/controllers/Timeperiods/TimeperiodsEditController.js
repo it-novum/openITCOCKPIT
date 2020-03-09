@@ -34,9 +34,19 @@ angular.module('openITCOCKPIT')
                         id: $scope.timeperiod.timeperiod_timeranges[key].id,
                         day: $scope.timeperiod.timeperiod_timeranges[key].day.toString(),
                         start: $scope.timeperiod.timeperiod_timeranges[key].start,
-                        end: $scope.timeperiod.timeperiod_timeranges[key].end
+                        end: $scope.timeperiod.timeperiod_timeranges[key].end,
+                        index: key
                     });
                 }
+
+                $scope.timeperiod.ranges = _($scope.timeperiod.ranges)
+                    .chain()
+                    .flatten()
+                    .sortBy(
+                        function(range){
+                            return [range.day, range.start];
+                        })
+                    .value();
 
                 $scope.post.Timeperiod.name = $scope.timeperiod.name;
                 $scope.post.Timeperiod.description = $scope.timeperiod.description;
@@ -81,7 +91,7 @@ angular.module('openITCOCKPIT')
         $scope.removeTimerange = function(rangeIndex){
             var timeperiodranges = [];
             for(var i in $scope.timeperiod.ranges){
-                if(i !== rangeIndex){
+                if($scope.timeperiod.ranges[i]['index'] !== rangeIndex){
                     timeperiodranges.push($scope.timeperiod.ranges[i])
                 }
             }
@@ -105,9 +115,10 @@ angular.module('openITCOCKPIT')
                 id: null,
                 day: '1',
                 start: '',
-                end: ''
-
+                end: '',
+                index: Object.keys($scope.timeperiod.ranges).length
             });
+
             if(typeof $scope.errors.validate_timeranges !== 'undefined' ||
                 typeof $scope.errors.timeperiod_timeranges !== 'undefined'){
                 $scope.timeperiod.ranges = $scope.timeperiod.ranges;
@@ -123,17 +134,38 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.hasTimeRange = function(errors, range){
+            if(errors.validate_timeranges){
+                errors = errors.validate_timeranges;
+                if(errors[parseInt(range['day'])] && errors[parseInt(range['day'])]['state-error']){
+                    const stateErrors = errors[parseInt(range['day'])]['state-error'];
+                    for(var i in stateErrors){
+                        if(stateErrors[i]['start'] === range['start'] && stateErrors[i]['end'] === range['end']){
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        };
 
         $scope.submit = function(){
             var index = 0;
+            $scope.post.Timeperiod.timeperiod_timeranges = [];
             for(var i in $scope.timeperiod.ranges){
-                $scope.post.Timeperiod.timeperiod_timeranges[index] = {
-                    'id': $scope.timeperiod.ranges[i].id,
-                    'day': $scope.timeperiod.ranges[i].day,
-                    'start': $scope.timeperiod.ranges[i].start,
-                    'end': $scope.timeperiod.ranges[i].end
-                };
-                index++;
+                for(var j in $scope.timeperiod.ranges){
+                    if(parseInt($scope.timeperiod.ranges[j].index) === parseInt(i)){
+                        $scope.post.Timeperiod.timeperiod_timeranges[index] = {
+                            'id': $scope.timeperiod.ranges[j].id,
+                            'day': $scope.timeperiod.ranges[j].day,
+                            'start': $scope.timeperiod.ranges[j].start,
+                            'end': $scope.timeperiod.ranges[j].end
+                        };
+                        index++;
+                        break;
+                    }
+                }
             }
 
             $http.post("/timeperiods/edit/" + $scope.id + ".json?angular=true",

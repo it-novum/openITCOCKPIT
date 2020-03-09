@@ -26,6 +26,9 @@ cp -r ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/
 cp -r ${APPDIR}/system/usr/. /usr/
 chmod +x /usr/bin/oitc
 
+echo "Create required system folders"
+mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,phpnsta,statusengine} /opt/openitc/etc/statusengine/Config
+
 echo "Enable new systemd services"
 systemctl daemon-reload
 systemctl enable sudo_server
@@ -48,7 +51,7 @@ if [[ ! -f "$INIFILE" ]]; then
         mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;" -B
         mysql --defaults-extra-file=${DEBIANCNF} -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '\`${MYSQL_DATABASE}\`'@'localhost';" -B
 
-        echo "# Automatically generated for openITCOCKPIT scripts. DO NOT TOUCH!" >$INIFILE
+        echo "; Automatically generated for openITCOCKPIT scripts. DO NOT TOUCH!" >$INIFILE
         echo "[client]" >>$INIFILE
         echo "database = ${MYSQL_DATABASE}" >>$INIFILE
         echo "host = localhost" >>$INIFILE
@@ -56,7 +59,7 @@ if [[ ! -f "$INIFILE" ]]; then
         echo "password = ${MYSQL_PASSWORD}" >>$INIFILE
         echo "port = 3306" >>$INIFILE
 
-        echo " # Automatically generated for mysqldump. DO NOT TOUCH!" >$DUMPINIFILE
+        echo "; Automatically generated for mysqldump. DO NOT TOUCH!" >$DUMPINIFILE
         echo "[client]" >>$DUMPINIFILE
         echo "host     = localhost" >>$DUMPINIFILE
         echo "user     = ${MYSQL_USER}" >>$DUMPINIFILE
@@ -68,6 +71,15 @@ if [[ ! -f "$INIFILE" ]]; then
         echo "dbc_dbserver='127.0.0.1'" >>$BASHCONF
         echo "dbc_dbport='3306'" >>$BASHCONF
         echo "dbc_dbname='${MYSQL_DATABASE}'" >>$BASHCONF
+
+        chown www-data:nagios $INIFILE
+        chmod 660 $INIFILE
+
+        chown www-data:nagios $DUMPINIFILE
+        chmod 660 $DUMPINIFILE
+
+        chown www-data:nagios $BASHCONF
+        chmod 660 $BASHCONF
 
     else
         echo "Unsupported distribution or $DEBIANCNF is missing!"
@@ -108,6 +120,11 @@ echo "---------------------------------------------------------------"
 echo "Create new WebSocket Key"
 WEBSOCKET_KEY=$(php -r "echo bin2hex(openssl_random_pseudo_bytes(80, \$cstrong));")
 mysql "--defaults-extra-file=${INIFILE}" -e "UPDATE systemsettings SET \`systemsettings\`.\`value\`='${WEBSOCKET_KEY}' WHERE \`key\`='SUDO_SERVER.API_KEY';"
+
+if [ ! -f /opt/openitc/etc/grafana/admin_password ]; then
+    echo "Generate new Grafana password for user 'admin'"
+    pwgen 10 1 > /opt/openitc/etc/grafana/admin_password
+fi
 
 oitc config_generator_shell --generate
 
@@ -247,3 +264,5 @@ fi
 oitc roles --enable-defaults --admin
 
 chown -R www-data:www-data /opt/openitc/frontend
+
+date > /opt/openitc/etc/.installation_done

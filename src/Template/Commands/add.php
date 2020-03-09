@@ -49,8 +49,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Command'); ?>
-                    <span class="fw-300"><i><?php echo __('Create new command'); ?></i></span>
+                    <?php echo __('Create new command'); ?>
                 </h2>
                 <div class="panel-toolbar">
                     <button ng-click="showDefaultMacros()"
@@ -149,7 +148,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                             endif;
                             ?>
 
-                            <?php echo __('A $-sign needs to be escaped manually (\$). Semicolons (;) needs to be defined as %s.', $link); ?>
+                            <?php echo __('A $-sign needs to be escaped manually (\$). Semicolons (;) needs to be defined as {0}.', $link); ?>
                             <br/>
                             <?php echo __('Nagios supports up to 32 $ARGx$ macros ($ARG1$ through $ARG32$)'); ?>
                         </div>

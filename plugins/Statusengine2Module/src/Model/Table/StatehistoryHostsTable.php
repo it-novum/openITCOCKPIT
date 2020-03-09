@@ -108,10 +108,11 @@ class StatehistoryHostsTable extends Table implements StatehistoryHostTableInter
 
     /**
      * @param StatehistoryHostConditions $StatehistoryHostConditions
-     * @param PaginateOMat|null $PaginateOMat
+     * @param null $PaginateOMat
+     * @param bool $enableHydration
      * @return array
      */
-    public function getStatehistoryIndex(StatehistoryHostConditions $StatehistoryHostConditions, $PaginateOMat = null) {
+    public function getStatehistoryIndex(StatehistoryHostConditions $StatehistoryHostConditions, $PaginateOMat = null, $enableHydration = true) {
         $query = $this->find()
             ->contain([
                 'Objects'
@@ -148,6 +149,7 @@ class StatehistoryHostsTable extends Table implements StatehistoryHostTableInter
                 ]
             ]);
         }
+        $query->enableHydration($enableHydration);
 
         if ($PaginateOMat === null) {
             //Just execute query

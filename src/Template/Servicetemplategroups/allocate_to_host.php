@@ -45,7 +45,7 @@
             <div class="panel-hdr">
                 <h2>
                     <?php echo __('Allocate service template group'); ?>
-                    <span class="fw-300"><i><?php echo __('to host group'); ?></i></span>
+                    <span class="fw-300"><i><?php echo __('to host'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'servicetemplategroups')): ?>

@@ -3,6 +3,7 @@ angular.module('openITCOCKPIT')
         $scope.data = {
             createAnother: false
         };
+        $scope.localeOptions = [];
 
         var clearForm = function(){
             $scope.selectedUserContainers = [];
@@ -21,6 +22,7 @@ angular.module('openITCOCKPIT')
                     recursive_browser: 0,
                     dateformat: '%H:%M:%S - %d.%m.%Y',
                     timezone: 'Europe/Berlin',
+                    i18n: 'en_US',
                     password: '',
                     confirm_password: '',
 
@@ -74,6 +76,16 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.usergroups = result.data.usergroups;
+            });
+        };
+
+        $scope.loadLocaleOptions = function(){
+            return $http.get("/users/getLocaleOptions.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.localeOptions = result.data.localeOptions;
             });
         };
 
@@ -201,6 +213,6 @@ angular.module('openITCOCKPIT')
         $scope.loadContainer();
         $scope.loadUsergroups();
         $scope.loadDateformats();
-
+        $scope.loadLocaleOptions();
     });
 

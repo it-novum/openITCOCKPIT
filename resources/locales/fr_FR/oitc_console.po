@@ -5,6 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2020-03-09 10:19+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -13,369 +14,259 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-msgid "All cronjobs will be forced to execute!"
-msgstr "Tous les cronjobs seront exécuté !"
-
-msgid "Interactive openITCOCKPIT debugging shell"
-msgstr "Shell de débogage openITCOCKPIT interactif"
-
-msgid "[D]ebug Monitoring Configuration"
-msgstr "[D]éboguer la configuration de surveillance"
-
-msgid "[Q]uit"
-msgstr "[Q]uitter"
-
-msgid "What would you like to debug?"
-msgstr "Que voudriez-vous déboguer ?"
-
-msgid "You have made an invalid selection. Please choose by entering D or C."
-msgstr "Vous avez fait une sélection non valide. Veuillez choisir en entrant D ou C."
-
-msgid "Tail and parse monitoring logfile"
-msgstr "Fichier journal de surveillance de suivi et d'analyse"
-
-msgid "Tailf and parse monitoring logfile"
-msgstr "Tailf et parser le journal de surveillance"
-
-msgid "Read and translate from stdin. Example cat file.cfg | oitc debug -s"
-msgstr "Lire et traduire de stdin. Exemple cat file.cfg | oitc debug -s"
-
-msgid "Debuging menu"
-msgstr "Menu de débogage"
-
-msgid "[T]ail and parse monitoring log file"
-msgstr "[T]ail et analyser le fichier journal de surveillance"
-
-msgid "[TF] Tail -f and parse monitoring log file"
-msgstr "[TF] Tail -f et parser le journal de surveillance"
-
-msgid "[H] Debug host configuratgion files"
-msgstr "[H] Déboguer les fichiers de configuration de l'hôte"
-
-msgid "[HT] Debug host template configuration files"
-msgstr "[HT] Fichiers de configuration du modèle d'hôte de débogage"
-
-msgid "[S] Debug service configuration files"
-msgstr "[S] Déboguer les fichiers de configuration de service"
-
-msgid "[ST] Debug service template configuration files"
-msgstr "[ST] Déboguer les fichiers de configuration du modèle de service"
-
-msgid "[TP] Debug timeperiod configuration files"
-msgstr "[TP] Déboguer les fichiers de configuration de la période de temps"
-
-msgid "[CM] Debug command configuration files"
-msgstr "[CM] Déboguer les fichiers de configuration de commande"
-
-msgid "[C] Debug contact configuration files"
-msgstr "[C] Déboguer les fichiers de configuration des contacts"
-
-msgid "[CG] Debug contact group configuration files"
-msgstr "[CG] Déboguer les fichiers de configuration du groupe de contacts"
-
-msgid "[HE] Debug host escalation configuration files"
-msgstr "[HE] Déboguer les fichiers de configuration d'escalade d'hôtes"
-
-msgid "[SE] Debug service escalation configuration files"
-msgstr "[SE] Déboguer les fichiers de configuration d'escalade de service"
-
-msgid "[HD] Debug host dependency configuration files"
-msgstr "[HD] Déboguer les fichiers de configuration de la dépendance de l'hôte"
-
-msgid "[SD] Debug service dependency configuration files"
-msgstr "[SD] Déboguer les fichiers de configuration de la dépendance du service"
-
-msgid "[UUID] Search object by UUID"
-msgstr "[UUID] Rechercher un objet par UUID"
-
-msgid "[B]ack"
-msgstr "[B] Retour"
-
-msgid "What would you like to do?"
-msgstr "Que voulez-vous faire ?"
-
-msgid "You have made an invalid selection. Please choose by entering T or B."
-msgstr "Vous avez fait une sélection non valide. Veuillez choisir en entrant T ou B."
-
-msgid "Hopefully i was helpful"
-msgstr "J'espère que j'ai été utile"
-
-msgid "Thanks for using me, bye"
-msgstr "Merci de m'avoir utilisé, au revoir"
-
-msgid "Starts GearmanWorker in forground mode and fork worker processes"
-msgstr "Démarre GearmanWorker en avant-plan et duplique les processus des workers"
-
-msgid "Start GearmanWorker in daemon mode and and fork the process in the background the daemon"
-msgstr "Démarre GearmanWorker en arrière-plan (démon) et duplique le processus en arrière-plan."
-
-msgid "Stops the daemon"
-msgstr "Arrête le démon"
-
-msgid "Restart the daemon"
-msgstr "Redémarrer le démon"
-
-msgid "Resturn the status of the daemon"
-msgstr "Resturn le statut du démon"
-
-msgid "Pacemaker likes this, but we dont know why :) (it's recommended to use with -q e.g.: gearman_worker -p -q)"
-msgstr "Pacemaker aime ça, mais on ne sait pas pourquoi :) (il est recommandé de l'utiliser avec -q exemple: gearman_worker -p -q)"
-
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:137
+#: src/Command/NagiosNotificationCommand.php:150
+#: src/Command/PushoverNotificationCommand.php:98
+#: src/Command/SendPushNotificationCommand.php:66
+#: src/Command/SmsNotificationCommand.php:69
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:137
+#: src/Command/NagiosNotificationCommand.php:150
+#: src/Command/PushoverNotificationCommand.php:98
+#: src/Command/SendPushNotificationCommand.php:66
+#: src/Command/SmsNotificationCommand.php:69
 msgid "Type of the notification host or service"
 msgstr "Type de l'hôte ou du service de notification"
 
-msgid "Notification type of monitoring engine"
-msgstr "Type de notification du moteur de surveillance"
-
-msgid "Host uuid you want to send a notification"
-msgstr "Uuid de l'hôte auquel vous souhaitez envoyer une notification"
-
-msgid "Host description you want to send a notification"
-msgstr "Description de l'hôte auquel vous souhaitez envoyer une notification"
-
-msgid "current host state"
-msgstr "état de l'hôte actuel"
-
-msgid "host address"
-msgstr "adresse de l'hôte"
-
-msgid "host output"
-msgstr "sortie de l'hôte"
-
-msgid "host long output"
-msgstr "sortie longue hôte"
-
-msgid "host acknowledgement author"
-msgstr "auteur accusé de réception"
-
-msgid "host acknowledgement comment"
-msgstr "commentaire d'accusé de réception"
-
-msgid "recivers mail address"
-msgstr "adresse mail du receveur"
-
-msgid "human name of the contact"
-msgstr "nom humain du contact"
-
-msgid "Service uuid you want to notify"
-msgstr "Uuid du service que vous souhaitez notifier"
-
-msgid "service state"
-msgstr "état du service"
-
-msgid "service output"
-msgstr "sortie de service"
-
-msgid "service long output"
-msgstr "sortie longue du service"
-
-msgid "service acknowledgement author"
-msgstr "auteur de l'accusé de réception de service"
-
-msgid "service acknowledgement comment"
-msgstr "commentaire d'accusé de réception de service"
-
-msgid "Email type for notifications [text, html, both]"
-msgstr "Type de courrier électronique pour les notifications [texte, html, les deux]"
-
-msgid "Email without attachments"
-msgstr "Email sans pièces jointes"
-
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:138
+#: src/Command/PushoverNotificationCommand.php:99
+#: src/Command/SendPushNotificationCommand.php:67
 msgid "Notification type of monitoring engine => $NOTIFICATIONTYPE$ "
 msgstr "Type de notification du moteur de surveillance => $NOTIFICATIONTYPE$ "
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:139
+#: src/Command/PushoverNotificationCommand.php:100
+#: src/Command/SendPushNotificationCommand.php:68
 msgid "Host uuid you want to send a notification => $HOSTNAME$"
 msgstr "Uuid de l'hôte auquel vous souhaitez envoyer une notification => $HOSTNAME$"
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:140
+#: src/Command/PushoverNotificationCommand.php:101
+#: src/Command/SendPushNotificationCommand.php:69
 msgid "Service uuid you want to send a notification => $SERVICEDESC$"
 msgstr "Uuid du service auquel vous voulez envoyer une notification => $SERVICEDESC$"
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:141
+#: src/Command/PushoverNotificationCommand.php:102
+#: src/Command/SendPushNotificationCommand.php:70
 msgid "current host state => $HOSTSTATEID$/$SERVICESTATEID$"
 msgstr "Etat hôte actuel => $HOSTSTATEID$/$SERVICESTATEID$"
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:142
+#: src/Command/PushoverNotificationCommand.php:103
+#: src/Command/SendPushNotificationCommand.php:71
 msgid "host output => $HOSTOUTPUT$/$SERVICEOUTPUT$"
 msgstr "sortie de l'hôte => $HOSTOUTPUT$/$SERVICEOUTPUT$"
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:143
+#: src/Command/PushoverNotificationCommand.php:104
+#: src/Command/SendPushNotificationCommand.php:72
 msgid "host acknowledgement author => $NOTIFICATIONAUTHOR$"
 msgstr "auteur de l'accusé de réception => $NOTIFICATIONAUTHOR$"
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:144
+#: src/Command/PushoverNotificationCommand.php:105
+#: src/Command/SendPushNotificationCommand.php:73
 msgid "host acknowledgement comment => $NOTIFICATIONCOMMENT$"
 msgstr "commentaire d'accusé de réception hôte => $NOTIFICATIONCOMMENT$"
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:145
+#: src/Command/NagiosNotificationCommand.php:170
+msgid "Disable emojis in subject"
+msgstr ""
+
+#: src/Command/ConnectToAgentCommand.php:59
+msgid "IP of Host with the Agent to connect to"
+msgstr ""
+
+#: src/Command/ConnectToAgentCommand.php:60
+msgid "Port of Host with the Agent to connect to"
+msgstr ""
+
+#: src/Command/ConnectToAgentCommand.php:61
+msgid "Basic-Auth username from Agent"
+msgstr ""
+
+#: src/Command/ConnectToAgentCommand.php:62
+msgid "Basic-Auth password from Agent"
+msgstr ""
+
+#: src/Command/ConnectToAgentCommand.php:63
+msgid "Disable proxy"
+msgstr ""
+
+#: src/Command/CronjobsCommand.php:67
+msgid "All cronjobs will be forced to execute!"
+msgstr "Tous les cronjobs seront exécuté !"
+
+#: src/Command/NagiosNotificationCommand.php:151
+#: src/Command/SmsNotificationCommand.php:70
+msgid "Notification type of monitoring engine"
+msgstr "Type de notification du moteur de surveillance"
+
+#: src/Command/NagiosNotificationCommand.php:152
+#: src/Command/SmsNotificationCommand.php:72
+msgid "Host uuid you want to send a notification"
+msgstr "Uuid de l'hôte auquel vous souhaitez envoyer une notification"
+
+#: src/Command/NagiosNotificationCommand.php:153
+msgid "Host description you want to send a notification"
+msgstr "Description de l'hôte auquel vous souhaitez envoyer une notification"
+
+#: src/Command/NagiosNotificationCommand.php:154
+msgid "current host state"
+msgstr "état de l'hôte actuel"
+
+#: src/Command/NagiosNotificationCommand.php:155
+msgid "host address"
+msgstr "adresse de l'hôte"
+
+#: src/Command/NagiosNotificationCommand.php:156
+msgid "host output"
+msgstr "sortie de l'hôte"
+
+#: src/Command/NagiosNotificationCommand.php:157
+msgid "host long output"
+msgstr "sortie longue hôte"
+
+#: src/Command/NagiosNotificationCommand.php:158
+msgid "host acknowledgement author"
+msgstr "auteur accusé de réception"
+
+#: src/Command/NagiosNotificationCommand.php:159
+msgid "host acknowledgement comment"
+msgstr "commentaire d'accusé de réception"
+
+#: src/Command/NagiosNotificationCommand.php:160
+#: src/Command/SmsNotificationCommand.php:73
+msgid "recivers mail address"
+msgstr "adresse mail du receveur"
+
+#: src/Command/NagiosNotificationCommand.php:161
+msgid "human name of the contact"
+msgstr "nom humain du contact"
+
+#: src/Command/NagiosNotificationCommand.php:162
+#: src/Command/SmsNotificationCommand.php:74
+msgid "Service uuid you want to notify"
+msgstr "Uuid du service que vous souhaitez notifier"
+
+#: src/Command/NagiosNotificationCommand.php:163
+msgid "service state"
+msgstr "état du service"
+
+#: src/Command/NagiosNotificationCommand.php:164
+msgid "service output"
+msgstr "sortie de service"
+
+#: src/Command/NagiosNotificationCommand.php:165
+msgid "service long output"
+msgstr "sortie longue du service"
+
+#: src/Command/NagiosNotificationCommand.php:166
+msgid "service acknowledgement author"
+msgstr "auteur de l'accusé de réception de service"
+
+#: src/Command/NagiosNotificationCommand.php:167
+msgid "service acknowledgement comment"
+msgstr "commentaire d'accusé de réception de service"
+
+#: src/Command/NagiosNotificationCommand.php:168
+msgid "Email type for notifications [text, html, both]"
+msgstr "Type de courrier électronique pour les notifications [texte, html, les deux]"
+
+#: src/Command/NagiosNotificationCommand.php:169
+msgid "disable email attachments"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:171
+msgid "E-Mail layout/template that should be used"
+msgstr ""
+
+#: src/Command/PushoverNotificationCommand.php:106
 msgid "API Token of your Pushover Application => $_CONTACTPUSHOVERAPP$"
 msgstr "Jeton d'API de votre application Pushover => $_CONTACTPUSHOVERAPP$"
 
+#: src/Command/PushoverNotificationCommand.php:107
 msgid "Your Pushover User Key => $_CONTACTPUSHOVERUSER$"
 msgstr "Votre clé d'utilisateur Pushover => $_CONTACTPUSHOVERUSER$"
 
-msgid "If set, connection will be established using the proxy server defined in openITCOCKPIT interface. (1/0)"
-msgstr "Si défini, la connexion sera établie en utilisant le serveur proxy défini dans l'interface openITCOCKPIT. (1/0)"
+#: src/Command/PushoverNotificationCommand.php:108
+msgid "If set, connection will be established using the proxy server defined in openITCOCKPIT interface."
+msgstr ""
 
-msgid "Pretty print sql queries"
-msgstr "Requêtes SQL formattées"
-
-msgid "Hide ARO and ACO queries"
-msgstr "Masquer les requêtes ARO et ACO"
-
-msgid "Start a WebSocket server to make the query log accessible from openITCOCKPIT web interface"
-msgstr "Démarrer un serveur WebSocket pour rendre le journal de requête accessible à partir de l'interface Web openITCOCKPIT"
-
-msgid "The uuid of the host"
-msgstr "L'uuid de l'hôte"
-
+#: src/Command/SendPushNotificationCommand.php:74
 msgid "openITCOCKPIT User Id"
 msgstr "ID utilisateur openITCOCKPIT"
 
+#: src/Command/SetupCommand.php:133
 msgid "[Y]es I want to continue the setup of openITCOCKPIT"
 msgstr "[Y] Oui je veux continuer la configuration de openITCOCKPIT"
 
+#: src/Command/SetupCommand.php:134
 msgid "[N]o and exit shell"
 msgstr "[N]on et quitter le shell"
 
-msgid "Are you sure to continue?"
-msgstr "Êtes-vous sûr de vouloir continuer ?"
+#: src/Command/SetupCommand.php:136
+msgid "Are you sure you want to continue?"
+msgstr ""
 
+#: src/Command/SetupCommand.php:142
+msgid "Setup aborted!"
+msgstr ""
+
+#: src/Command/SetupCommand.php:145
 msgid "You have made an invalid selection. Please choose by entering Y or N."
 msgstr "Vous avez fait une sélection non valide. Veuillez choisir en entrant Y ou N."
 
+#: src/Command/SetupCommand.php:260
 msgid "Please enter your first name"
 msgstr "Veuillez entrer votre prénom"
 
+#: src/Command/SetupCommand.php:272
 msgid "Please enter your last name"
 msgstr "Veuillez entrer votre nom de famille"
 
+#: src/Command/SetupCommand.php:284
 msgid "Please enter your email address. This will be the username for the login."
 msgstr "S'il vous plaît entrez votre adresse email. Ce sera le nom d'utilisateur pour la connexion."
 
+#: src/Command/SetupCommand.php:299
 msgid "Please enter a password for the login."
 msgstr "Veuillez saisir un mot de passe pour vous connecter."
 
+#: src/Command/SetupCommand.php:302
 msgid "Please confirm your password"
 msgstr "Veuillez confirmer votre mot de passe"
 
-msgid "Please enter the FQDN or IP address of your openITCOCKPIT Server. If you do not know your IP address enter a random one and change it via the interface later."
-msgstr "Veuillez entrer le nom de domaine complet ou l'adresse IP de votre serveur openITCOCKPIT. Si vous ne connaissez pas votre adresse IP, entrez une adresse aléatoire et modifiez-la ultérieurement via l'interface."
+#: src/Command/SetupCommand.php:324
+msgid "System Address or FQDN?"
+msgstr ""
 
-msgid "Please enter your return mail address"
-msgstr "Veuillez entrer votre adresse mail de retour"
+#: src/Command/SetupCommand.php:358
+msgid "Please enter a sender email address"
+msgstr ""
 
+#: src/Command/SetupCommand.php:372
 msgid "Please enter the address of your mail server (e.g. mail.example.org)"
 msgstr "Veuillez saisir l'adresse de votre serveur de messagerie (par exemple, mail.example.org)"
 
+#: src/Command/SetupCommand.php:384
 msgid "Please enter the port of your mail server"
 msgstr "Veuillez entrer le port de votre serveur de messagerie"
 
-msgid "Please enter your username, or leave it blank if you don't need a user"
-msgstr "Veuillez entrer votre nom d'utilisateur ou laissez le champ vide si vous n'avez pas besoin d'un utilisateur."
+#: src/Command/SetupCommand.php:398
+msgid "If required, set a username, or leave it blank if you don't need a user"
+msgstr ""
 
+#: src/Command/SetupCommand.php:408
 msgid "Please enter your password, or leave it blank if you don't need a password"
 msgstr "Veuillez entrer votre mot de passe ou laissez le champ vide si vous n'avez pas besoin de mot de passe."
 
+#: src/Command/SmsNotificationCommand.php:68
 msgid "IP address of the SMS gateway"
 msgstr "Adresse IP de la passerelle SMS"
 
+#: src/Command/SmsNotificationCommand.php:71
 msgid "Transport method for example NRPE"
 msgstr "Méthode de transport par exemple NRPE"
-
-msgid "Starts SudoServer in daemon mode, instead of as a forground process"
-msgstr "Démarre SudoServer en mode démon, plutôt qu'en tant que processus en avant-plan"
-
-msgid "Pacemaker likes this, but we dont know why :) (it's recommended to use with -q e.g.: sudo_server -p -q)"
-msgstr "Pacemaker aime ça, mais on ne sait pas pourquoi :) (il est recommandé de l'utiliser avec -q exemple: sudo_server -p -q)"
-
-msgid "Fix Hosts and Services where a flag is assigned but not in use by any module"
-msgstr "Correction des hôtes et des services pour lesquels un indicateur est attribué mais n'est utilisé par aucun module"
-
-msgid "Please enter the name of the "
-msgstr "Veuillez entrer le nom de la "
-
-msgid "No name field for "
-msgstr "Pas de nom de champ pour "
-
-msgid "I found "
-msgstr "J'ai trouvé "
-
-msgid "Please select one "
-msgstr "S'il vous plait sélectionner un "
-
-msgid "Your choice please"
-msgstr "Votre choix s'il vous plait"
-
-msgid " not found"
-msgstr " pas trouvé"
-
-msgid "Please enter your UUID"
-msgstr "S'il vous plaît entrer votre UUID"
-
-msgid "No result for given UUID"
-msgstr "Aucun résultat pour UUID donné"
-
-msgid "Notice: This is not the real nagios configuration file. This is a human readable version of the config."
-msgstr "Notice : Ce n'est pas le vrai fichier de configuration de nagios. C'est une version lisible par l'homme."
-
-msgid "<error>File not found! ("
-msgstr "<error>Fichier non trouvé ! ("
-
-msgid "<error>Folder %s is empty!</error>"
-msgstr "<error>Le dossier %s est vide !</error>"
-
-msgid "verifying configuration files, please standby..."
-msgstr "vérification des fichiers de configuration, veuillez patienter…"
-
-msgid "Host or Service"
-msgstr "Hôte ou service"
-
-msgid "PROBLEM"
-msgstr "PROBLÈME"
-
-msgid "The Host UUID"
-msgstr "UUID de l'hôte"
-
-msgid "The Host output"
-msgstr "La sortie de l'hôte"
-
-msgid "The Service UUID"
-msgstr "L'UUID de service"
-
-msgid "The Service output"
-msgstr "La sortie du service"
-
-msgid "The Receiver of the message in international format eg. 0049123456789"
-msgstr "Le destinataire du message au format international, par exemple. 0049123456789"
-
-msgid "The Sender of the message"
-msgstr "L'expéditeur du message"
-
-msgid "The ID of your massenversand.de account"
-msgstr "L'identifiant de votre compte massenversand.de"
-
-msgid "The Password of your massenversand.de account"
-msgstr "Le mot de passe de votre compte massenversand.de"
-
-msgid "The time to send the Message 0 = now or hhmmddmmyyyy"
-msgstr "L'heure d'envoi du message 0 = maintenant ou hhmmddmmyyyy"
-
-msgid "t = text sms, c = oversize sms, f = flash sms, utf8 = utf8 sms 70 digits per sms "
-msgstr "t = texte sms, c = sms surdimensionné, f = sms flash, utf8 = sms utf8 70 chiffres par sms "
-
-msgid "1 = no SMS will be created but the server will respond like it would be"
-msgstr "1 = aucun SMS ne sera créé mais le serveur répondra comme si c'était le cas"
-
-msgid "host or service"
-msgstr "hôte ou service"
-
-msgid "The date and time the problem occoured"
-msgstr "La date et l'heure du problème"
-
-msgid "State of the Host"
-msgstr "Etat de l'hôte"
-
-msgid "State of the Service"
-msgstr "Etat du service"
-
-msgid "output"
-msgstr "sortie"
-
-msgid "comment"
-msgstr "commentaire"
 

@@ -44,8 +44,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Registration'); ?>
-                    <span class="fw-300"><i><?php echo __('Register this openICOCKPIT instance'); ?></i></span>
+                    <?php echo __('Register this openICOCKPIT instance'); ?>
                 </h2>
                 <div class="panel-toolbar">
                     <button type="button" class="btn btn-xs btn-default mr-1 shadow-0"
@@ -81,7 +80,7 @@
                         </div>
 
 
-                        <div class="row" ng-show="valid">
+                        <div ng-show="valid">
                             <div class="col-xs-12 col-md-12 col-lg-12">
 
                                 <div class="row" ng-show="hasLicense">

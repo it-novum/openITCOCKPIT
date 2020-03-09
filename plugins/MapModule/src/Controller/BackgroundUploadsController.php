@@ -80,7 +80,7 @@ class BackgroundUploadsController extends AppController {
             if (!$MapUploadsTable->isFileExtensionSupported($fileExtension)) {
                 $response = [
                     'success' => false,
-                    'message' => __('File extension ".%s" not supported!', $fileExtension)
+                    'message' => __('File extension ".{0}" not supported!', $fileExtension)
                 ];
                 $this->set('response', $response);
                 $this->viewBuilder()->setOption('serialize', ['response']);
@@ -119,7 +119,7 @@ class BackgroundUploadsController extends AppController {
             } catch (Exception $e) {
                 $response = [
                     'success' => false,
-                    'message' => __('Upload failed: %s', $e->getMessage())
+                    'message' => __('Upload failed: {0}', $e->getMessage())
                 ];
             }
         }
@@ -212,7 +212,7 @@ class BackgroundUploadsController extends AppController {
             if (!$MapUploadsTable->isFileExtensionSupported($fileExtension)) {
                 $response = [
                     'success' => false,
-                    'message' => __('File extension ".%s" not supported!', $fileExtension)
+                    'message' => __('File extension ".{0}" not supported!', $fileExtension)
                 ];
                 $this->set('response', $response);
                 $this->viewBuilder()->setOption('serialize', ['response']);
@@ -239,7 +239,7 @@ class BackgroundUploadsController extends AppController {
             } catch (Exception $e) {
                 $response = [
                     'success' => false,
-                    'message' => __('Upload failed: %s', $e->getMessage())
+                    'message' => __('Upload failed: {0}', $e->getMessage())
                 ];
             }
         }
@@ -418,17 +418,17 @@ class BackgroundUploadsController extends AppController {
                 if (!empty($missingIcons) || !empty($notAPng)) {
                     $error = '';
                     if (!empty($missingIcons)) {
-                        $error .= __(sprintf(
+                        $error .= sprintf(
                             'Thow following icons are missing in uploaded zip archive: %s',
                             implode(', ', $missingIcons)
-                        ));
+                        );
                     }
 
                     if (!empty($notAPng)) {
-                        $error .= __(sprintf(
+                        $error .= sprintf(
                             'The following icons are not a PNG image: %s',
                             implode(', ', $notAPng)
-                        ));
+                        );
                     }
 
                     //Remove tmp directory
@@ -473,7 +473,7 @@ class BackgroundUploadsController extends AppController {
             } catch (Exception $e) {
                 $response = [
                     'success' => false,
-                    'message' => __('Upload failed: %s', $e->getMessage())
+                    'message' => __('Upload failed: {0}', $e->getMessage())
                 ];
             }
         }

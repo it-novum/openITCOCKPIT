@@ -47,11 +47,10 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Container downtime'); ?>
-                    <span class="fw-300"><i><?php echo __('Create new container downtime'); ?></i></span>
+                    <?php echo __('Create new container downtime'); ?>
                 </h2>
                 <div class="panel-toolbar">
-                    <a back-button fallback-state='DowntimesHost'
+                    <a back-button fallback-state='SystemdowntimesNode'
                        class="btn btn-default btn-xs mr-1 shadow-0">
                         <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                     </a>

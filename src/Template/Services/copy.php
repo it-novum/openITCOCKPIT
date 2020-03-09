@@ -43,8 +43,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Services'); ?>
-                    <span class="fw-300"><i><?php echo __('Copy service/s'); ?></i></span>
+                    <?php echo __('Copy service/s'); ?>
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'services')): ?>
@@ -108,12 +107,12 @@
                                 <span class="help-block">
                                 <?php echo __('Name of the new host'); ?>
                                 </span>
-                                <div ng-repeat="error in sourceService.Service.name">
+                                <div ng-repeat="error in sourceService.Error.name">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
 
-                            <div class="form-group required" ng-class="{'has-error': sourceService.Service.description}">
+                            <div class="form-group" ng-class="{'has-error': sourceService.Service.description}">
                                 <label for="Service{{$index}}Description" class="control-label required">
                                     <?php echo __('Description'); ?>
                                 </label>
@@ -122,7 +121,7 @@
                                     type="text"
                                     ng-model="sourceService.Service.description"
                                     id="Service{{$index}}Description">
-                                <div ng-repeat="error in sourceService.Service.description">
+                                <div ng-repeat="error in sourceService.Error.description">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>

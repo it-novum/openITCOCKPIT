@@ -50,7 +50,7 @@ var myapp_config = {
 	DEBUGGING MODE
 	debugState = true; will spit all debuging message inside browser console.
 	*/
-	debugState: true, // outputs debug information on browser console
+	debugState: false, // outputs debug information on browser console
 	/*
 	Turn on ripple effect for buttons and touch events
 	Dependency:

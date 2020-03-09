@@ -78,7 +78,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
         <?php echo __('Official end of life of Ubuntu Trusty scheduled for April 2019.'); ?>
         <?php echo __('Therefore openITCOCKPIT 3.5 will be the last release for Ubuntu Trusty. Please update to Ubuntu Xenial to receive further updates.'); ?>
         <br/>
-        <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support %s.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
+        <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
     </div>
 <?php endif; ?>
 
@@ -92,7 +92,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
         <?php echo __('Debian Jessie is not supported by the Debian security team anymore!'); ?>
         <?php echo __('Therefore openITCOCKPIT 3.5 will be the last release for Debian Jessie. Please update to Debian Stretch to receive further updates.'); ?>
         <br/>
-        <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support %s.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
+        <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
     </div>
 <?php endif; ?>
 

@@ -30,7 +30,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fa fa-tachometer-alt"></i> <?php echo __('Dashboard'); ?>
+        <i class="fa fa-tachometer-alt"></i> <?php echo __('Dashboard'); echo __('Please uncomment line {0} in {1}. Detailed output is disabled due to security reasons.', 'nullll', 'einss');?>
     </li>
 </ol>
 
@@ -316,7 +316,6 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-lg-12">
-
                         <div class="form-group padding-bottom-10">
                             <label class="control-label">
                                 <?php echo __('Tab name'); ?>
@@ -328,36 +327,42 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary float-right" ng-click="addNewTab()">
-                    <?php echo __('Create new tab'); ?>
-                </button>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <button type="button" class="btn btn-primary float-right" ng-click="addNewTab()">
+                            <?php echo __('Create new tab'); ?>
+                        </button>
+                    </div>
+                </div>
                 <hr/>
                 <div class="row">
-                    <h5 class="modal-title">
+                    <h5 class="modal-title margin-left-12">
                         <i class="fa fa-plus"></i>
                         <?php echo __('Create from shared tab'); ?>
                     </h5>
                 </div>
                 <div class="row">
-                    <div class="form-group col-lg-12 margin-top-20">
-                        <label class="control-label">
-                            <?php echo __('Select shared tab'); ?>
-                        </label>
-                        <select
-                            data-placeholder="<?php echo __('Please choose'); ?>"
-                            class="form-control"
-                            chosen="sharedTabs"
-                            ng-options="sharedTab.id as sharedTab.name for sharedTab in sharedTabs"
-                            ng-model="data.createTabFromSharedTabId">
-                        </select>
+                    <div class="col-lg-12">
+                        <div class="form-group margin-top-20 padding-bottom-10">
+                            <label class="control-label">
+                                <?php echo __('Select shared tab'); ?>
+                            </label>
+                            <select
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="sharedTabs"
+                                ng-options="sharedTab.id as sharedTab.name for sharedTab in sharedTabs"
+                                ng-model="data.createTabFromSharedTabId">
+                            </select>
+                        </div>
                     </div>
-
-
                 </div>
-                <div class="col-lg-12 padding-top-10">
-                    <button type="button" class="btn btn-primary float-right" ng-click="addFromSharedTab()">
-                        <?php echo __('Create from shared tab'); ?>
-                    </button>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <button type="button" class="btn btn-primary float-right" ng-click="addFromSharedTab()">
+                            <?php echo __('Create from shared tab'); ?>
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -469,16 +474,18 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
+                <h5 class="modal-title">
                     <i class="fa fa-code-fork"></i>
                     <?php echo __('For your dashboard is an update available'); ?>
-                </h4>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
             </div>
             <div class="modal-body">
 
                 <div class="row">
-                    <div class="col-xs-12 text-info">
+                    <div class="col-lg-12 text-info">
                         <i class="fa fa-info-circle"></i>
                         <?php echo __('You created this dashboard out of an "shared" dashboard. The original dashboard was updated.'); ?>
                         <br/>

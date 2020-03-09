@@ -26,6 +26,7 @@ namespace itnovum\openITCOCKPIT\Core\Reports;
 
 
 use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class StatehistoryConverter {
 
@@ -95,7 +96,7 @@ class StatehistoryConverter {
      * @param bool $outagesSummary
      * @return mixed
      */
-    public function generateReportDataWithOutages($timeSlices, $stateHistoryArray, $checkHardState, $isHost = false) {
+    public static function generateReportDataWithOutages($timeSlices, $stateHistoryArray, $checkHardState, $isHost = false) {
         $stateArray = array_fill(0, ($isHost) ? 3 : 4, 0); // host states => 0,1,2; service statea => 0,1,2,3
         $stateOk = 0;
         $stateUnknown = ($isHost) ? 2 : 3;//if the end of date in the future
@@ -181,10 +182,10 @@ class StatehistoryConverter {
                 }
             }
         }
-        $evaluationData['outages_summarized_in_downtime'] = $this->mergeOutages(
+        $evaluationData['outages_summarized_in_downtime'] = self::mergeOutages(
             Hash::extract($evaluationData, 'outages.{n}[is_downtime=1]')
         );
-        $evaluationData['outages'] = $this->mergeOutages(
+        $evaluationData['outages'] = self::mergeOutages(
             Hash::extract($evaluationData, 'outages.{n}[is_downtime=0]')
         );
         if (!empty($evaluationData['outages'])) {
@@ -204,7 +205,7 @@ class StatehistoryConverter {
      * @param $outageArray
      * @return array
      */
-    public function mergeOutages($outageArray) {
+    public static function mergeOutages($outageArray) {
         $newOutagesArray = [];
         $tmpOutageStart = 0;
         $tmpOutageEnd = 0;

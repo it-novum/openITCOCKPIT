@@ -492,11 +492,13 @@ class AclDependencies {
             ->dependency('Users', 'add', 'Users', 'loadUsergroups')
             ->dependency('Users', 'add', 'Users', 'loadContainerRoles')
             ->dependency('Users', 'add', 'Users', 'loadContainerPermissions')
+            ->dependency('Users', 'add', 'Users', 'getLocaleOptions')
             ->dependency('Users', 'edit', 'Users', 'resetPassword')
             ->dependency('Users', 'edit', 'Users', 'loadDateformats')
             ->dependency('Users', 'edit', 'Users', 'loadUsergroups')
             ->dependency('Users', 'edit', 'Users', 'loadContainerRoles')
-            ->dependency('Users', 'edit', 'Users', 'loadContainerPermissions');
+            ->dependency('Users', 'edit', 'Users', 'loadContainerPermissions')
+            ->dependency('Users', 'edit', 'Users', 'getLocaleOptions');
 
 
         $this

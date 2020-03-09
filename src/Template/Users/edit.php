@@ -88,8 +88,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                         <!-- User Container Roles permissions read/write -->
                         <div class="row" ng-repeat="userContainerRole in userContainerRoleContainerPermissions">
-                            <div class="col col-md-2"></div>
-                            <div class="col col-md-10">
+                            <div class="col col-12 padding-left-30">
                                 <legend class="no-padding font-sm txt-ack">
                                     {{userContainerRole.path}}
                                 </legend>
@@ -131,8 +130,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                         <!-- Container permissions read/write -->
                         <div class="row" ng-repeat="userContainer in selectedUserContainerWithPermission">
-                            <div class="col col-md-2"></div>
-                            <div class="col col-md-10">
+                            <div class="col col-12 padding-left-30">
                                 <legend class="no-padding font-sm text-primary">
                                     {{userContainer.name}}
                                 </legend>
@@ -372,6 +370,28 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <strong>
                                     <?php echo date('d.m.Y H:i:s'); ?>
                                 </strong>
+                            </div>
+                        </div>
+
+                        <div class="form-group required" ng-class="{'has-error': errors.i18n}">
+                            <label class="control-label" for="frontendLanguage">
+                                <?php echo __('Frontend language'); ?>
+                            </label>
+                            <select
+                                id="frontendLanguage"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="localeOptions"
+                                ng-options="value.i18n as value.name for (key, value) in localeOptions"
+                                ng-model="post.User.i18n">
+                            </select>
+                            <div ng-repeat="error in errors.i18n">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block">
+                                <?php echo _('Manual logout and login again required for changes to take effect.'); ?>
+                                <br>
+                                <?php echo _('These options are community translations. Feel free to extend them and open a github pull request.'); ?>
                             </div>
                         </div>
 
