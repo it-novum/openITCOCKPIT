@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2020-03-06 17:36+0100\n"
+"POT-Creation-Date: 2020-03-09 10:19+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -22,15 +22,12 @@ msgid "Error"
 msgstr ""
 
 #: src/Template/Error/error400.php:37
+#: src/Template/Errors/error400.php:20
 msgid "The requested address {0} was not found on this server."
 msgstr ""
 
 #: src/Template/Error/error500.php:38
 msgid "An Internal Error Has Occurred"
-msgstr ""
-
-#: src/Template/Errors/error400.php:20
-msgid "The requested address %s was not found on this server."
 msgstr ""
 
 #: src/Template/Errors/error500.php:19

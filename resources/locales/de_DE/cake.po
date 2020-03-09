@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2020-03-06 17:36+0100\n"
+"POT-Creation-Date: 2020-03-09 10:19+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -18,263 +18,19 @@ msgstr ""
 #: src/Template/Error/error500.php:40
 #: src/Template/Errors/error400.php:18
 #: src/Template/Errors/error500.php:18
-msgid "Not Found"
-msgstr ""
-
-#: src/Template/Error/error400.php:36
-#: src/Template/Error/error500.php:40
-#: src/Template/Errors/error400.php:18
-#: src/Template/Errors/error500.php:18
 msgid "Error"
 msgstr ""
 
-#: src/Template/Errors/error400.php:20
-msgid "The requested address %s was not found on this server."
-msgstr ""
-
-#: src/Template/Errors/error500.php:19
-msgid "An Internal Error Has Occurred."
-msgstr ""
-
-msgid "Scaffold :: "
-msgstr ""
-
-msgid "Invalid %s"
-msgstr ""
-
-msgid "updated"
-msgstr ""
-
-msgid "saved"
-msgstr ""
-
-msgid "The %1$s has been %2$s"
-msgstr ""
-
-msgid "Please correct errors below."
-msgstr ""
-
-msgid "The %1$s with id: %2$s has been deleted."
-msgstr ""
-
-msgid "There was an error deleting the %1$s with id: %2$s"
-msgstr ""
-
-msgid "You are not authorized to access that location."
-msgstr ""
-
-msgid "This field cannot be left blank"
-msgstr ""
-
-msgid "The requested file was not found"
-msgstr ""
-
-msgid "%s KB"
-msgstr ""
-
-msgid "%s MB"
-msgstr ""
-
-msgid "%s GB"
-msgstr ""
-
-msgid "%s TB"
-msgstr ""
-
-msgid "and"
-msgstr ""
-
-msgid "Today, %s"
-msgstr ""
-
-msgid "Yesterday, %s"
-msgstr ""
-
-msgid "Tomorrow, %s"
-msgstr ""
-
-msgid "Sunday"
-msgstr ""
-
-msgid "Monday"
-msgstr ""
-
-msgid "Tuesday"
-msgstr ""
-
-msgid "Wednesday"
-msgstr ""
-
-msgid "Thursday"
-msgstr ""
-
-msgid "Friday"
-msgstr ""
-
-msgid "Saturday"
-msgstr ""
-
-msgid "On %s %s"
-msgstr ""
-
-msgid "%s ago"
-msgstr ""
-
-msgid "in %s"
-msgstr ""
-
-msgid "on %s"
-msgstr ""
-
-msgid "just now"
-msgstr ""
-
-msgid "in about a second"
-msgstr ""
-
-msgid "in about a minute"
-msgstr ""
-
-msgid "in about an hour"
-msgstr ""
-
-msgid "in about a day"
-msgstr ""
-
-msgid "in about a week"
-msgstr ""
-
-msgid "in about a year"
-msgstr ""
-
-msgid "about a second ago"
-msgstr ""
-
-msgid "about a minute ago"
-msgstr ""
-
-msgid "about an hour ago"
-msgstr ""
-
-msgid "about a day ago"
-msgstr ""
-
-msgid "about a week ago"
-msgstr ""
-
-msgid "about a year ago"
-msgstr ""
-
-msgid "days"
-msgstr ""
-
-msgid "A view block with the name '%s' is already/still open."
-msgstr ""
-
-msgid "Error in field %s"
-msgstr ""
-
-msgid "New %s"
-msgstr ""
-
-msgid "Edit %s"
-msgstr ""
-
-msgid "empty"
-msgstr ""
-
-msgid "Submit"
-msgstr ""
-
-msgid "January"
-msgstr ""
-
-msgid "February"
-msgstr ""
-
-msgid "March"
-msgstr ""
-
-msgid "April"
-msgstr ""
-
-msgid "May"
-msgstr ""
-
-msgid "June"
-msgstr ""
-
-msgid "July"
-msgstr ""
-
-msgid "August"
-msgstr ""
-
-msgid "September"
-msgstr ""
-
-msgid "October"
-msgstr ""
-
-msgid "November"
-msgstr ""
-
-msgid "December"
-msgstr ""
-
-msgid "Home"
-msgstr ""
-
-msgid "Unable to find the requested image to output as base64!"
-msgstr ""
-
-msgid " of "
-msgstr ""
-
-msgid "Actions"
-msgstr ""
-
-msgid "Delete"
-msgstr ""
-
-msgid "Are you sure you want to delete # %s?"
-msgstr ""
-
-msgid "List"
-msgstr ""
-
-msgid "List %s"
-msgstr ""
-
-msgid "View"
-msgstr ""
-
-msgid "Edit"
-msgstr ""
-
-msgid "Page {:page} of {:pages}, showing {:current} records out of {:count} total, starting on record {:start}, ending on {:end}"
-msgstr ""
-
-msgid "previous"
-msgstr ""
-
-msgid "next"
-msgstr ""
-
-msgid "View %s"
-msgstr ""
-
-msgid "Delete %s"
-msgstr ""
-
-msgid "Related %s"
-msgstr ""
-
 #: src/Template/Error/error400.php:37
+#: src/Template/Errors/error400.php:20
 msgid "The requested address {0} was not found on this server."
 msgstr ""
 
 #: src/Template/Error/error500.php:38
 msgid "An Internal Error Has Occurred"
+msgstr ""
+
+#: src/Template/Errors/error500.php:19
+msgid "An Internal Error Has Occurred."
 msgstr ""
 

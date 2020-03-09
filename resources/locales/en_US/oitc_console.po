@@ -5,6 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2020-03-09 10:19+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -13,369 +14,254 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-msgid "All cronjobs will be forced to execute!"
-msgstr ""
-
-msgid "Interactive openITCOCKPIT debugging shell"
-msgstr ""
-
-msgid "[D]ebug Monitoring Configuration"
-msgstr ""
-
-msgid "[Q]uit"
-msgstr ""
-
-msgid "What would you like to debug?"
-msgstr ""
-
-msgid "You have made an invalid selection. Please choose by entering D or C."
-msgstr ""
-
-msgid "Tail and parse monitoring logfile"
-msgstr ""
-
-msgid "Tailf and parse monitoring logfile"
-msgstr ""
-
-msgid "Read and translate from stdin. Example cat file.cfg | oitc debug -s"
-msgstr ""
-
-msgid "Debuging menu"
-msgstr ""
-
-msgid "[T]ail and parse monitoring log file"
-msgstr ""
-
-msgid "[TF] Tail -f and parse monitoring log file"
-msgstr ""
-
-msgid "[H] Debug host configuratgion files"
-msgstr ""
-
-msgid "[HT] Debug host template configuration files"
-msgstr ""
-
-msgid "[S] Debug service configuration files"
-msgstr ""
-
-msgid "[ST] Debug service template configuration files"
-msgstr ""
-
-msgid "[TP] Debug timeperiod configuration files"
-msgstr ""
-
-msgid "[CM] Debug command configuration files"
-msgstr ""
-
-msgid "[C] Debug contact configuration files"
-msgstr ""
-
-msgid "[CG] Debug contact group configuration files"
-msgstr ""
-
-msgid "[HE] Debug host escalation configuration files"
-msgstr ""
-
-msgid "[SE] Debug service escalation configuration files"
-msgstr ""
-
-msgid "[HD] Debug host dependency configuration files"
-msgstr ""
-
-msgid "[SD] Debug service dependency configuration files"
-msgstr ""
-
-msgid "[UUID] Search object by UUID"
-msgstr ""
-
-msgid "[B]ack"
-msgstr ""
-
-msgid "What would you like to do?"
-msgstr ""
-
-msgid "You have made an invalid selection. Please choose by entering T or B."
-msgstr ""
-
-msgid "Hopefully i was helpful"
-msgstr ""
-
-msgid "Thanks for using me, bye"
-msgstr ""
-
-msgid "Starts GearmanWorker in forground mode and fork worker processes"
-msgstr ""
-
-msgid "Start GearmanWorker in daemon mode and and fork the process in the background the daemon"
-msgstr ""
-
-msgid "Stops the daemon"
-msgstr ""
-
-msgid "Restart the daemon"
-msgstr ""
-
-msgid "Resturn the status of the daemon"
-msgstr ""
-
-msgid "Pacemaker likes this, but we dont know why :) (it's recommended to use with -q e.g.: gearman_worker -p -q)"
-msgstr ""
-
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:137
+#: src/Command/NagiosNotificationCommand.php:150
+#: src/Command/PushoverNotificationCommand.php:98
+#: src/Command/SendPushNotificationCommand.php:66
+#: src/Command/SmsNotificationCommand.php:69
 msgid "Type of the notification host or service"
 msgstr ""
 
-msgid "Notification type of monitoring engine"
-msgstr ""
-
-msgid "Host uuid you want to send a notification"
-msgstr ""
-
-msgid "Host description you want to send a notification"
-msgstr ""
-
-msgid "current host state"
-msgstr ""
-
-msgid "host address"
-msgstr ""
-
-msgid "host output"
-msgstr ""
-
-msgid "host long output"
-msgstr ""
-
-msgid "host acknowledgement author"
-msgstr ""
-
-msgid "host acknowledgement comment"
-msgstr ""
-
-msgid "recivers mail address"
-msgstr ""
-
-msgid "human name of the contact"
-msgstr ""
-
-msgid "Service uuid you want to notify"
-msgstr ""
-
-msgid "service state"
-msgstr ""
-
-msgid "service output"
-msgstr ""
-
-msgid "service long output"
-msgstr ""
-
-msgid "service acknowledgement author"
-msgstr ""
-
-msgid "service acknowledgement comment"
-msgstr ""
-
-msgid "Email type for notifications [text, html, both]"
-msgstr ""
-
-msgid "Email without attachments"
-msgstr ""
-
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:138
+#: src/Command/PushoverNotificationCommand.php:99
+#: src/Command/SendPushNotificationCommand.php:67
 msgid "Notification type of monitoring engine => $NOTIFICATIONTYPE$ "
 msgstr ""
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:139
+#: src/Command/PushoverNotificationCommand.php:100
+#: src/Command/SendPushNotificationCommand.php:68
 msgid "Host uuid you want to send a notification => $HOSTNAME$"
 msgstr ""
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:140
+#: src/Command/PushoverNotificationCommand.php:101
+#: src/Command/SendPushNotificationCommand.php:69
 msgid "Service uuid you want to send a notification => $SERVICEDESC$"
 msgstr ""
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:141
+#: src/Command/PushoverNotificationCommand.php:102
+#: src/Command/SendPushNotificationCommand.php:70
 msgid "current host state => $HOSTSTATEID$/$SERVICESTATEID$"
 msgstr ""
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:142
+#: src/Command/PushoverNotificationCommand.php:103
+#: src/Command/SendPushNotificationCommand.php:71
 msgid "host output => $HOSTOUTPUT$/$SERVICEOUTPUT$"
 msgstr ""
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:143
+#: src/Command/PushoverNotificationCommand.php:104
+#: src/Command/SendPushNotificationCommand.php:72
 msgid "host acknowledgement author => $NOTIFICATIONAUTHOR$"
 msgstr ""
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:144
+#: src/Command/PushoverNotificationCommand.php:105
+#: src/Command/SendPushNotificationCommand.php:73
 msgid "host acknowledgement comment => $NOTIFICATIONCOMMENT$"
 msgstr ""
 
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:145
+#: src/Command/NagiosNotificationCommand.php:170
+msgid "Disable emojis in subject"
+msgstr ""
+
+#: src/Command/ConnectToAgentCommand.php:59
+msgid "IP of Host with the Agent to connect to"
+msgstr ""
+
+#: src/Command/ConnectToAgentCommand.php:60
+msgid "Port of Host with the Agent to connect to"
+msgstr ""
+
+#: src/Command/ConnectToAgentCommand.php:61
+msgid "Basic-Auth username from Agent"
+msgstr ""
+
+#: src/Command/ConnectToAgentCommand.php:62
+msgid "Basic-Auth password from Agent"
+msgstr ""
+
+#: src/Command/ConnectToAgentCommand.php:63
+msgid "Disable proxy"
+msgstr ""
+
+#: src/Command/CronjobsCommand.php:67
+msgid "All cronjobs will be forced to execute!"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:151
+#: src/Command/SmsNotificationCommand.php:70
+msgid "Notification type of monitoring engine"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:152
+#: src/Command/SmsNotificationCommand.php:72
+msgid "Host uuid you want to send a notification"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:153
+msgid "Host description you want to send a notification"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:154
+msgid "current host state"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:155
+msgid "host address"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:156
+msgid "host output"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:157
+msgid "host long output"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:158
+msgid "host acknowledgement author"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:159
+msgid "host acknowledgement comment"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:160
+#: src/Command/SmsNotificationCommand.php:73
+msgid "recivers mail address"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:161
+msgid "human name of the contact"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:162
+#: src/Command/SmsNotificationCommand.php:74
+msgid "Service uuid you want to notify"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:163
+msgid "service state"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:164
+msgid "service output"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:165
+msgid "service long output"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:166
+msgid "service acknowledgement author"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:167
+msgid "service acknowledgement comment"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:168
+msgid "Email type for notifications [text, html, both]"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:169
+msgid "disable email attachments"
+msgstr ""
+
+#: src/Command/NagiosNotificationCommand.php:171
+msgid "E-Mail layout/template that should be used"
+msgstr ""
+
+#: src/Command/PushoverNotificationCommand.php:106
 msgid "API Token of your Pushover Application => $_CONTACTPUSHOVERAPP$"
 msgstr ""
 
+#: src/Command/PushoverNotificationCommand.php:107
 msgid "Your Pushover User Key => $_CONTACTPUSHOVERUSER$"
 msgstr ""
 
-msgid "If set, connection will be established using the proxy server defined in openITCOCKPIT interface. (1/0)"
+#: src/Command/PushoverNotificationCommand.php:108
+msgid "If set, connection will be established using the proxy server defined in openITCOCKPIT interface."
 msgstr ""
 
-msgid "Pretty print sql queries"
-msgstr ""
-
-msgid "Hide ARO and ACO queries"
-msgstr ""
-
-msgid "Start a WebSocket server to make the query log accessible from openITCOCKPIT web interface"
-msgstr ""
-
-msgid "The uuid of the host"
-msgstr ""
-
+#: src/Command/SendPushNotificationCommand.php:74
 msgid "openITCOCKPIT User Id"
 msgstr ""
 
+#: src/Command/SetupCommand.php:133
 msgid "[Y]es I want to continue the setup of openITCOCKPIT"
 msgstr ""
 
+#: src/Command/SetupCommand.php:134
 msgid "[N]o and exit shell"
 msgstr ""
 
-msgid "Are you sure to continue?"
+#: src/Command/SetupCommand.php:136
+msgid "Are you sure you want to continue?"
 msgstr ""
 
+#: src/Command/SetupCommand.php:142
+msgid "Setup aborted!"
+msgstr ""
+
+#: src/Command/SetupCommand.php:145
 msgid "You have made an invalid selection. Please choose by entering Y or N."
 msgstr ""
 
+#: src/Command/SetupCommand.php:260
 msgid "Please enter your first name"
 msgstr ""
 
+#: src/Command/SetupCommand.php:272
 msgid "Please enter your last name"
 msgstr ""
 
+#: src/Command/SetupCommand.php:284
 msgid "Please enter your email address. This will be the username for the login."
 msgstr ""
 
+#: src/Command/SetupCommand.php:299
 msgid "Please enter a password for the login."
 msgstr ""
 
+#: src/Command/SetupCommand.php:302
 msgid "Please confirm your password"
 msgstr ""
 
-msgid "Please enter the FQDN or IP address of your openITCOCKPIT Server. If you do not know your IP address enter a random one and change it via the interface later."
+#: src/Command/SetupCommand.php:324
+msgid "System Address or FQDN?"
 msgstr ""
 
-msgid "Please enter your return mail address"
+#: src/Command/SetupCommand.php:358
+msgid "Please enter a sender email address"
 msgstr ""
 
+#: src/Command/SetupCommand.php:372
 msgid "Please enter the address of your mail server (e.g. mail.example.org)"
 msgstr ""
 
+#: src/Command/SetupCommand.php:384
 msgid "Please enter the port of your mail server"
 msgstr ""
 
-msgid "Please enter your username, or leave it blank if you don't need a user"
+#: src/Command/SetupCommand.php:398
+msgid "If required, set a username, or leave it blank if you don't need a user"
 msgstr ""
 
+#: src/Command/SetupCommand.php:408
 msgid "Please enter your password, or leave it blank if you don't need a password"
 msgstr ""
 
+#: src/Command/SmsNotificationCommand.php:68
 msgid "IP address of the SMS gateway"
 msgstr ""
 
+#: src/Command/SmsNotificationCommand.php:71
 msgid "Transport method for example NRPE"
-msgstr ""
-
-msgid "Starts SudoServer in daemon mode, instead of as a forground process"
-msgstr ""
-
-msgid "Pacemaker likes this, but we dont know why :) (it's recommended to use with -q e.g.: sudo_server -p -q)"
-msgstr ""
-
-msgid "Fix Hosts and Services where a flag is assigned but not in use by any module"
-msgstr ""
-
-msgid "Please enter the name of the "
-msgstr ""
-
-msgid "No name field for "
-msgstr ""
-
-msgid "I found "
-msgstr ""
-
-msgid "Please select one "
-msgstr ""
-
-msgid "Your choice please"
-msgstr ""
-
-msgid " not found"
-msgstr ""
-
-msgid "Please enter your UUID"
-msgstr ""
-
-msgid "No result for given UUID"
-msgstr ""
-
-msgid "Notice: This is not the real nagios configuration file. This is a human readable version of the config."
-msgstr ""
-
-msgid "<error>File not found! ("
-msgstr ""
-
-msgid "<error>Folder %s is empty!</error>"
-msgstr ""
-
-msgid "verifying configuration files, please standby..."
-msgstr ""
-
-msgid "Host or Service"
-msgstr ""
-
-msgid "PROBLEM"
-msgstr ""
-
-msgid "The Host UUID"
-msgstr ""
-
-msgid "The Host output"
-msgstr ""
-
-msgid "The Service UUID"
-msgstr ""
-
-msgid "The Service output"
-msgstr ""
-
-msgid "The Receiver of the message in international format eg. 0049123456789"
-msgstr ""
-
-msgid "The Sender of the message"
-msgstr ""
-
-msgid "The ID of your massenversand.de account"
-msgstr ""
-
-msgid "The Password of your massenversand.de account"
-msgstr ""
-
-msgid "The time to send the Message 0 = now or hhmmddmmyyyy"
-msgstr ""
-
-msgid "t = text sms, c = oversize sms, f = flash sms, utf8 = utf8 sms 70 digits per sms "
-msgstr ""
-
-msgid "1 = no SMS will be created but the server will respond like it would be"
-msgstr ""
-
-msgid "host or service"
-msgstr ""
-
-msgid "The date and time the problem occoured"
-msgstr ""
-
-msgid "State of the Host"
-msgstr ""
-
-msgid "State of the Service"
-msgstr ""
-
-msgid "output"
-msgstr ""
-
-msgid "comment"
 msgstr ""
 
