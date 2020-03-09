@@ -26,6 +26,9 @@ cp -r ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/
 cp -r ${APPDIR}/system/usr/. /usr/
 chmod +x /usr/bin/oitc
 
+echo "Create required system folders"
+mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,phpnsta,statusengine}
+
 echo "Enable new systemd services"
 systemctl daemon-reload
 systemctl enable sudo_server
