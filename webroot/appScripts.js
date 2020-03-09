@@ -1,9 +1,8 @@
 require('./node_modules/jquery/dist/jquery.min.js');
 require('./node_modules/jquery-ui-dist/jquery-ui.min.js');
-require('./node_modules/popper.js/dist/umd/popper.min.js');
-require('./node_modules/popper.js/dist/umd/popper-utils.min.js');
 require('./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js');
-require('./legacy/smartadmin/js/plugin/throttle-debounce/jquery.ba-throttle-debounce.min.js');
+//require('./node_modules/bootstrap/dist/js/bootstrap.min.js');
+//require('./legacy/smartadmin/js/plugin/throttle-debounce/jquery.ba-throttle-debounce.min.js');
 require('./js/jquery-snippets.js');
 require('./node_modules/jquery-slimscroll/jquery.slimscroll.js');
 require('./node_modules/node-waves/dist/waves.js');
@@ -11,17 +10,6 @@ require('./node_modules/angular/angular.min.js');
 require('./node_modules/angular-ui-router/release/angular-ui-router.min.js');
 require('./legacy/smartadmin/js/plugin/jquery-nestable/jquery.nestable.js');
 require('./legacy/js/lib/angular-nestable.js');
-
-/*import angular from 'angular';
-import uiRouter from 'angular-ui-router';
-import gridster from 'angular-gridster';
-angular.module('openITCOCKPIT', ['gridster', 'uiRouter', 'ng-nestable']);
-*/
-
-
-
-
-
 require('./node_modules/jquery.cookie/jquery.cookie.js');
 require('./legacy/js/vendor/chosen.jquery.min.js');
 require('./node_modules/bootstrap4-tagsinput/tagsinput.js');
@@ -37,8 +25,6 @@ require('./node_modules/flot/jquery.flot.resize.js');
 require('./node_modules/flot/jquery.flot.threshold.js');
 require('./node_modules/flot/jquery.flot.selection.js');
 
-require('./legacy/js/lib/parseuri.js');
-//require('./node_modules/moment/min/moment.min.js');
 import moment from 'moment/moment';
 require('./node_modules/vis-data/dist/umd.js');
 require('./node_modules/vis-network/dist/vis-network.js');
@@ -50,7 +36,6 @@ require('./node_modules/noty/lib/noty.min.js');
 require('./legacy/js/vendor/gauge.min.js');
 require('./legacy/js/lib/jquery.svg.min.js');
 require('./legacy/js/lib/jquery.svgfilter.min.js');
-//require('./node_modules/dropzone/dist/min/dropzone.min.js');
 
 require('./node_modules/rangyinputs/rangyinputs-jquery.js');
 require('./node_modules/angular-gridster/dist/angular-gridster.min.js');
