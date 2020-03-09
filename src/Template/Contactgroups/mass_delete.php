@@ -71,7 +71,7 @@ endif;
                         <ul class="list-group">
                             <li class="list-group-item group-item-danger">
                                 <i class="fa fa-trash-o"></i>
-                                <strong><?php echo __('The following %s will deleted', $this->Utils->pluralize($count, __('contactgroup'), __('contactgroups'))); ?>
+                                <strong><?php echo __('The following {0} will deleted', $this->Utils->pluralize($count, __('contactgroup'), __('contactgroups'))); ?>
                                     :</strong>
                             </li>
                             <?php foreach ($contactgroupsToDelete as $key => $contactgroupToDelete): ?>
@@ -90,7 +90,7 @@ endif;
                     <?php if (!empty($contactgroupsCanotDelete)): ?>
                         <ul class="list-group">
                             <li class="list-group-item active">
-                                <strong><i class="fa fa-info-circle"></i> <?php echo __('The following %s can\'t be deleted.', $this->Utils->pluralize($count, __('contactgroup'), __('contactgroups'))); ?>
+                                <strong><i class="fa fa-info-circle"></i> <?php echo __('The following {0} can\'t be deleted.', $this->Utils->pluralize($count, __('contactgroup'), __('contactgroups'))); ?>
                                 </strong> <i><?php echo __('(Used by other object)'); ?>:</i>
                             </li>
                             <?php foreach ($contactgroupsCanotDelete as $contactgroupId => $contactgroupCanotDelete): ?>

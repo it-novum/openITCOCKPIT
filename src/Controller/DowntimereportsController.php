@@ -124,7 +124,7 @@ class DowntimereportsController extends AppController {
             $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'no_downtimes' => [
-                    'empty' => __('No downtimes within specified time found (%s - %s) !',
+                    'empty' => __('No downtimes within specified time found ({0} - {1}) !',
                         date('d.m.Y', $fromDate),
                         date('d.m.Y', $toDate)
                     )
@@ -217,7 +217,7 @@ class DowntimereportsController extends AppController {
         if ($downtimeReport === null) {
             $this->set('error', [
                 'no_downtimes' => [
-                    'empty' => __('! No downtimes within specified time found (%s - %s) !',
+                    'empty' => __('! No downtimes within specified time found ({0} - {1}) !',
                         date('d.m.Y', $fromDate),
                         date('d.m.Y', $toDate)
                     )
