@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2020-03-06 17:36+0100\n"
+"POT-Creation-Date: 2020-03-09 10:19+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -18,9 +18,6 @@ msgstr ""
 #: src/Template/Error/error500.php:40
 #: src/Template/Errors/error400.php:18
 #: src/Template/Errors/error500.php:18
-msgid "Not Found"
-msgstr "Introuvable"
-
 #: src/Template/Error/error400.php:36
 #: src/Template/Error/error500.php:40
 #: src/Template/Errors/error400.php:18
@@ -28,253 +25,16 @@ msgstr "Introuvable"
 msgid "Error"
 msgstr "Erreur"
 
-#: src/Template/Errors/error400.php:20
-msgid "The requested address %s was not found on this server."
-msgstr "L'adresse demandée %s n'a pas été trouvée sur ce serveur."
-
-#: src/Template/Errors/error500.php:19
-msgid "An Internal Error Has Occurred."
-msgstr "Une erreur interne s'est produite."
-
-msgid "Scaffold :: "
-msgstr "Échafaudage :: "
-
-msgid "Invalid %s"
-msgstr "%s non valide"
-
-msgid "updated"
-msgstr "mis à jour"
-
-msgid "saved"
-msgstr "enregistré"
-
-msgid "The %1$s has been %2$s"
-msgstr "Le %1$s a été %2$s"
-
-msgid "Please correct errors below."
-msgstr "Veuillez corriger les erreurs ci-dessous."
-
-msgid "The %1$s with id: %2$s has been deleted."
-msgstr "Le %1$s avec l'id : %2$s a été supprimé."
-
-msgid "There was an error deleting the %1$s with id: %2$s"
-msgstr "Une erreur s'est produite lors de la suppression de %1$s avec l'id : %2$s"
-
-msgid "You are not authorized to access that location."
-msgstr "Vous n'êtes pas autorisé à accéder à cet emplacement."
-
-msgid "This field cannot be left blank"
-msgstr "Cette case ne peut pas être laissée vide"
-
-msgid "The requested file was not found"
-msgstr "Le fichier demandé n'a pas été trouvé"
-
-msgid "%s KB"
-msgstr "%s KB"
-
-msgid "%s MB"
-msgstr "%s MB"
-
-msgid "%s GB"
-msgstr "%s GB"
-
-msgid "%s TB"
-msgstr "%s TB"
-
-msgid "and"
-msgstr "et"
-
-msgid "Today, %s"
-msgstr "Aujourd'hui, %s"
-
-msgid "Yesterday, %s"
-msgstr "Hier, %s"
-
-msgid "Tomorrow, %s"
-msgstr "Demain, %s"
-
-msgid "Sunday"
-msgstr "Dimanche"
-
-msgid "Monday"
-msgstr "Lundi"
-
-msgid "Tuesday"
-msgstr "Mardi"
-
-msgid "Wednesday"
-msgstr "Mercredi"
-
-msgid "Thursday"
-msgstr "Jeudi"
-
-msgid "Friday"
-msgstr "Vendredi"
-
-msgid "Saturday"
-msgstr "Samedi"
-
-msgid "On %s %s"
-msgstr "Sur %s %s"
-
-msgid "%s ago"
-msgstr "Il y a %s"
-
-msgid "in %s"
-msgstr "dans %s"
-
-msgid "on %s"
-msgstr "sur %s"
-
-msgid "just now"
-msgstr "juste maintenant"
-
-msgid "in about a second"
-msgstr "dans environ une seconde"
-
-msgid "in about a minute"
-msgstr "dans environ une minute"
-
-msgid "in about an hour"
-msgstr "dans environ une heure"
-
-msgid "in about a day"
-msgstr "dans environ un jour"
-
-msgid "in about a week"
-msgstr "dans environ une semaine"
-
-msgid "in about a year"
-msgstr "dans environ un an"
-
-msgid "about a second ago"
-msgstr "il y a environ une seconde"
-
-msgid "about a minute ago"
-msgstr "Il y a environ une minute"
-
-msgid "about an hour ago"
-msgstr "il y a environ une heure"
-
-msgid "about a day ago"
-msgstr "il y a environ un jour"
-
-msgid "about a week ago"
-msgstr "il y a environ une semaine"
-
-msgid "about a year ago"
-msgstr "Il ya environ un an"
-
-msgid "days"
-msgstr "journées"
-
-msgid "A view block with the name '%s' is already/still open."
-msgstr "Un bloc de vue portant le nom '%s' est déjà/toujours ouvert."
-
-msgid "Error in field %s"
-msgstr "Erreur dans le champ %s"
-
-msgid "New %s"
-msgstr "Nouveau %s"
-
-msgid "Edit %s"
-msgstr "Modifier %s"
-
-msgid "empty"
-msgstr "vide"
-
-msgid "Submit"
-msgstr "Soumettre"
-
-msgid "January"
-msgstr "Janvier"
-
-msgid "February"
-msgstr "Février"
-
-msgid "March"
-msgstr "Mars"
-
-msgid "April"
-msgstr "Avril"
-
-msgid "May"
-msgstr "Mai"
-
-msgid "June"
-msgstr "Juin"
-
-msgid "July"
-msgstr "Juillet"
-
-msgid "August"
-msgstr "Août"
-
-msgid "September"
-msgstr "Septembre"
-
-msgid "October"
-msgstr "Octobre"
-
-msgid "November"
-msgstr "Novembre"
-
-msgid "December"
-msgstr "Décembre"
-
-msgid "Home"
-msgstr "Accueil"
-
-msgid "Unable to find the requested image to output as base64!"
-msgstr "Impossible de trouver l'image demandée en base64 !"
-
-msgid " of "
-msgstr " de "
-
-msgid "Actions"
-msgstr "Actions"
-
-msgid "Delete"
-msgstr "Effacer"
-
-msgid "Are you sure you want to delete # %s?"
-msgstr "Êtes-vous sûr de vouloir supprimer # %s ?"
-
-msgid "List"
-msgstr "Liste"
-
-msgid "List %s"
-msgstr "Liste %s"
-
-msgid "View"
-msgstr "Vue"
-
-msgid "Edit"
-msgstr "Modifier"
-
-msgid "Page {:page} of {:pages}, showing {:current} records out of {:count} total, starting on record {:start}, ending on {:end}"
-msgstr "Page {:page} de {:pages}, affichant les enregistrements {:current} sur {:count}, commençant par l'enregistrement {:start} et se terminant par {:end}"
-
-msgid "previous"
-msgstr "précédent"
-
-msgid "next"
-msgstr "suivant"
-
-msgid "View %s"
-msgstr "Voir %s"
-
-msgid "Delete %s"
-msgstr "Supprimer %s"
-
-msgid "Related %s"
-msgstr "%s liés"
-
 #: src/Template/Error/error400.php:37
+#: src/Template/Errors/error400.php:20
 msgid "The requested address {0} was not found on this server."
 msgstr ""
 
 #: src/Template/Error/error500.php:38
 msgid "An Internal Error Has Occurred"
 msgstr ""
+
+#: src/Template/Errors/error500.php:19
+msgid "An Internal Error Has Occurred."
+msgstr "Une erreur interne s'est produite."
 

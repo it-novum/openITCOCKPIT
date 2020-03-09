@@ -217,7 +217,7 @@ class InstantreportsController extends AppController {
             $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'no_data' => [
-                    'empty' => __('No report data specified time found (%s - %s) !',
+                    'empty' => __('No report data specified time found ({0} - {1}) !',
                         date('d.m.Y', $fromDate),
                         date('d.m.Y', $toDate)
                     )
@@ -325,7 +325,7 @@ class InstantreportsController extends AppController {
         if ($instantReport === null) {
             $this->set('error', [
                 'no_data' => [
-                    'empty' => __('! No data within specified time found (%s - %s) !',
+                    'empty' => __('! No data within specified time found ({0} - {1}) !',
                         date('d.m.Y', $fromDate),
                         date('d.m.Y', $toDate)
                     )
