@@ -30,7 +30,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fa fa-tachometer-alt"></i> <?php echo __('Dashboard'); ?>
+        <i class="fa fa-tachometer-alt"></i> <?php echo __('Dashboard'); echo __('Please uncomment line {0} in {1}. Detailed output is disabled due to security reasons.', 'nullll', 'einss');?>
     </li>
 </ol>
 

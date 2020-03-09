@@ -149,7 +149,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                             endif;
                             ?>
 
-                            <?php echo __('A $-sign needs to be escaped manually (\$). Semicolons (;) needs to be defined as %s.', $link); ?>
+                            <?php echo __('A $-sign needs to be escaped manually (\$). Semicolons (;) needs to be defined as {0}.', $link); ?>
                             <br/>
                             <?php echo __('Nagios supports up to 32 $ARGx$ macros ($ARG1$ through $ARG32$)'); ?>
                         </div>
@@ -321,13 +321,13 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
             <div class="modal-body">
                 <div class="row">
                     <div class="col-xs-12">
-                        <?php echo __('Different amount of used %s variables compared to defined arguments!', '<code>$ARGn$</code>'); ?>
+                        <?php echo __('Different amount of used {0} variables compared to defined arguments!', '<code>$ARGn$</code>'); ?>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-xs-12">
-                        <?php echo __('Number of used %s variables:', '<code>$ARGn$</code>'); ?> <strong>{{usedCommandLineArgs}}</strong>
+                        <?php echo __('Number of used {0} variables:', '<code>$ARGn$</code>'); ?> <strong>{{usedCommandLineArgs}}</strong>
                     </div>
                     <div class="col-xs-12">
                         <?php echo __('Number of defined arguments:'); ?> <strong>{{definedCommandArguments}}</strong>

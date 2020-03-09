@@ -148,7 +148,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                             endif;
                             ?>
 
-                            <?php echo __('A $-sign needs to be escaped manually (\$). Semicolons (;) needs to be defined as %s.', $link); ?>
+                            <?php echo __('A $-sign needs to be escaped manually (\$). Semicolons (;) needs to be defined as {0}.', $link); ?>
                             <br/>
                             <?php echo __('Nagios supports up to 32 $ARGx$ macros ($ARG1$ through $ARG32$)'); ?>
                         </div>

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2020-03-06 17:36+0100\n"
+"POT-Creation-Date: 2020-03-09 10:19+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -19,7 +19,7 @@ msgid "Error while connecting to Grafana server."
 msgstr ""
 
 #: plugins/GrafanaModule/src/Controller/GrafanaConfigurationController.php:154
-msgid "For detailed information, please uncomment line %s in %s. Detailed output is disabled due to security reasons."
+msgid "For detailed information, please uncomment line {0} in {1}. Detailed output is disabled due to security reasons."
 msgstr ""
 
 #: plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:163
@@ -494,11 +494,11 @@ msgstr ""
 #: src/Template/Users/add_from_ldap.php:395
 #: src/Template/Users/add_from_ldap.php:412
 #: src/Template/Users/edit.php:74
-#: src/Template/Users/edit.php:116
-#: src/Template/Users/edit.php:163
-#: src/Template/Users/edit.php:332
-#: src/Template/Users/edit.php:349
-#: src/Template/Users/edit.php:384
+#: src/Template/Users/edit.php:115
+#: src/Template/Users/edit.php:161
+#: src/Template/Users/edit.php:330
+#: src/Template/Users/edit.php:347
+#: src/Template/Users/edit.php:382
 msgid "Please choose"
 msgstr ""
 
@@ -1181,7 +1181,7 @@ msgstr ""
 #: src/Template/Usercontainerroles/edit.php:80
 #: src/Template/Users/add.php:108
 #: src/Template/Users/add_from_ldap.php:109
-#: src/Template/Users/edit.php:112
+#: src/Template/Users/edit.php:111
 #: src/Template/element/Systemdowntimes/tabs.php:54
 msgid "Container"
 msgstr ""
@@ -1306,7 +1306,7 @@ msgstr ""
 #: src/Template/Usergroups/edit.php:277
 #: src/Template/Users/add.php:438
 #: src/Template/Users/add_from_ldap.php:484
-#: src/Template/Users/edit.php:445
+#: src/Template/Users/edit.php:443
 msgid "Cancel"
 msgstr ""
 
@@ -2279,7 +2279,7 @@ msgstr ""
 
 #: plugins/MapModule/src/Controller/BackgroundUploadsController.php:83
 #: plugins/MapModule/src/Controller/BackgroundUploadsController.php:215
-msgid "File extension \".%s\" not supported!"
+msgid "File extension \".{0}\" not supported!"
 msgstr ""
 
 #: plugins/MapModule/src/Controller/BackgroundUploadsController.php:95
@@ -2298,7 +2298,7 @@ msgstr ""
 #: plugins/MapModule/src/Controller/BackgroundUploadsController.php:122
 #: plugins/MapModule/src/Controller/BackgroundUploadsController.php:242
 #: plugins/MapModule/src/Controller/BackgroundUploadsController.php:476
-msgid "Upload failed: %s"
+msgid "Upload failed: {0}"
 msgstr ""
 
 #: plugins/MapModule/src/Controller/BackgroundUploadsController.php:175
@@ -4024,11 +4024,11 @@ msgid "Browser Push Notifications"
 msgstr ""
 
 #: src/Controller/DowntimereportsController.php:127
-msgid "No downtimes within specified time found (%s - %s) !"
+msgid "No downtimes within specified time found ({0} - {1}) !"
 msgstr ""
 
 #: src/Controller/DowntimereportsController.php:220
-msgid "! No downtimes within specified time found (%s - %s) !"
+msgid "! No downtimes within specified time found ({0} - {1}) !"
 msgstr ""
 
 #: src/Controller/DowntimereportsController.php:236
@@ -4229,11 +4229,11 @@ msgid "Instant report not found"
 msgstr ""
 
 #: src/Controller/InstantreportsController.php:220
-msgid "No report data specified time found (%s - %s) !"
+msgid "No report data specified time found ({0} - {1}) !"
 msgstr ""
 
 #: src/Controller/InstantreportsController.php:328
-msgid "! No data within specified time found (%s - %s) !"
+msgid "! No data within specified time found ({0} - {1}) !"
 msgstr ""
 
 #: src/Controller/LocationsController.php:94
@@ -5602,7 +5602,9 @@ msgstr ""
 
 #: src/Template/Administrators/debug.php:81
 #: src/Template/Administrators/debug.php:95
-msgid "Need help updating your system? Please don't hesitate to contact our enterprise support %s."
+#: src/Template/Packetmanager/index.php:63
+#: src/Template/Packetmanager/index.php:77
+msgid "Need help updating your system? Please don't hesitate to contact our enterprise support {0}."
 msgstr ""
 
 #: src/Template/Administrators/debug.php:90
@@ -8671,7 +8673,7 @@ msgstr ""
 
 #: src/Template/Commands/add.php:151
 #: src/Template/Commands/edit.php:152
-msgid "A $-sign needs to be escaped manually (\\$). Semicolons (;) needs to be defined as %s."
+msgid "A $-sign needs to be escaped manually (\\$). Semicolons (;) needs to be defined as {0}."
 msgstr ""
 
 #: src/Template/Commands/add.php:153
@@ -8729,10 +8731,12 @@ msgid "Mismatch in number of defined arguments detected"
 msgstr ""
 
 #: src/Template/Commands/add.php:323
+#: src/Template/Commands/edit.php:324
 msgid "Different amount of used {0} variables compared to defined arguments!"
 msgstr ""
 
 #: src/Template/Commands/add.php:329
+#: src/Template/Commands/edit.php:330
 msgid "Number of used {0} variables:"
 msgstr ""
 
@@ -8779,14 +8783,6 @@ msgstr ""
 
 #: src/Template/Commands/edit.php:223
 msgid "Update command"
-msgstr ""
-
-#: src/Template/Commands/edit.php:324
-msgid "Different amount of used %s variables compared to defined arguments!"
-msgstr ""
-
-#: src/Template/Commands/edit.php:330
-msgid "Number of used %s variables:"
 msgstr ""
 
 #: src/Template/Commands/index.php:38
@@ -8902,7 +8898,7 @@ msgstr ""
 #: src/Template/Profile/edit.php:256
 #: src/Template/Users/add.php:363
 #: src/Template/Users/add_from_ldap.php:431
-#: src/Template/Users/edit.php:367
+#: src/Template/Users/edit.php:365
 msgid "Server timezone is:"
 msgstr ""
 
@@ -8910,7 +8906,7 @@ msgstr ""
 #: src/Template/Profile/edit.php:260
 #: src/Template/Users/add.php:367
 #: src/Template/Users/add_from_ldap.php:435
-#: src/Template/Users/edit.php:371
+#: src/Template/Users/edit.php:369
 msgid "Current server time:"
 msgstr ""
 
@@ -9156,7 +9152,7 @@ msgid "Back"
 msgstr ""
 
 #: src/Template/Contactgroups/mass_delete.php:74
-msgid "The following %s will deleted"
+msgid "The following {0} will deleted"
 msgstr ""
 
 #: src/Template/Contactgroups/mass_delete.php:74
@@ -9165,7 +9161,7 @@ msgid "contactgroup"
 msgstr ""
 
 #: src/Template/Contactgroups/mass_delete.php:93
-msgid "The following %s can't be deleted."
+msgid "The following {0} can't be deleted."
 msgstr ""
 
 #: src/Template/Contactgroups/mass_delete.php:94
@@ -9713,7 +9709,7 @@ msgstr ""
 #: src/Template/Profile/edit.php:233
 #: src/Template/Users/add.php:341
 #: src/Template/Users/add_from_ldap.php:408
-#: src/Template/Users/edit.php:345
+#: src/Template/Users/edit.php:343
 msgid "Timezone"
 msgstr ""
 
@@ -9733,7 +9729,7 @@ msgstr ""
 #: src/Template/Tenants/edit.php:94
 #: src/Template/Users/add.php:201
 #: src/Template/Users/add_from_ldap.php:258
-#: src/Template/Users/edit.php:205
+#: src/Template/Users/edit.php:203
 msgid "First name"
 msgstr ""
 
@@ -9749,7 +9745,7 @@ msgstr ""
 #: src/Template/Tenants/edit.php:107
 #: src/Template/Users/add.php:214
 #: src/Template/Users/add_from_ldap.php:276
-#: src/Template/Users/edit.php:218
+#: src/Template/Users/edit.php:216
 msgid "Last name"
 msgstr ""
 
@@ -10322,6 +10318,10 @@ msgstr ""
 msgid "Filter by host output"
 msgstr ""
 
+#: src/Template/Dashboards/index.php:33
+msgid "Please uncomment line {0} in {1}. Detailed output is disabled due to security reasons."
+msgstr ""
+
 #: src/Template/Dashboards/index.php:82
 msgid "Rename"
 msgstr ""
@@ -10394,7 +10394,7 @@ msgstr ""
 #: src/Template/Dashboards/index.php:387
 #: src/Template/Users/add.php:311
 #: src/Template/Users/add_from_ldap.php:378
-#: src/Template/Users/edit.php:315
+#: src/Template/Users/edit.php:313
 msgid "Tab rotation interval"
 msgstr ""
 
@@ -12739,11 +12739,6 @@ msgstr ""
 msgid "Package manager"
 msgstr ""
 
-#: src/Template/Packetmanager/index.php:63
-#: src/Template/Packetmanager/index.php:77
-msgid "Need help updating your system? Please don't hesitate to contact our enterprise support {0}."
-msgstr ""
-
 #: src/Template/Packetmanager/index.php:87
 msgid "Packagemanager"
 msgstr ""
@@ -12831,35 +12826,35 @@ msgstr ""
 #: src/Template/Profile/edit.php:111
 #: src/Template/Users/add.php:188
 #: src/Template/Users/add_from_ldap.php:240
-#: src/Template/Users/edit.php:192
+#: src/Template/Users/edit.php:190
 msgid "Email address"
 msgstr ""
 
 #: src/Template/Profile/edit.php:128
 #: src/Template/Users/add.php:253
 #: src/Template/Users/add_from_ldap.php:320
-#: src/Template/Users/edit.php:257
+#: src/Template/Users/edit.php:255
 msgid "Phone Number"
 msgstr ""
 
 #: src/Template/Profile/edit.php:152
 #: src/Template/Users/add.php:288
 #: src/Template/Users/add_from_ldap.php:355
-#: src/Template/Users/edit.php:292
+#: src/Template/Users/edit.php:290
 msgid "Show status badges in menu"
 msgstr ""
 
 #: src/Template/Profile/edit.php:168
 #: src/Template/Users/add.php:304
 #: src/Template/Users/add_from_ldap.php:371
-#: src/Template/Users/edit.php:308
+#: src/Template/Users/edit.php:306
 msgid "Recursive Browser"
 msgstr ""
 
 #: src/Template/Profile/edit.php:175
 #: src/Template/Users/add.php:266
 #: src/Template/Users/add_from_ldap.php:333
-#: src/Template/Users/edit.php:270
+#: src/Template/Users/edit.php:268
 msgid "Length of lists"
 msgstr ""
 
@@ -12874,7 +12869,7 @@ msgstr ""
 #: src/Template/Profile/edit.php:216
 #: src/Template/Users/add.php:324
 #: src/Template/Users/add_from_ldap.php:391
-#: src/Template/Users/edit.php:328
+#: src/Template/Users/edit.php:326
 msgid "Date format"
 msgstr ""
 
@@ -12918,14 +12913,14 @@ msgstr ""
 #: src/Template/Profile/edit.php:391
 #: src/Template/Users/add.php:402
 #: src/Template/Users/add_from_ldap.php:448
-#: src/Template/Users/edit.php:406
+#: src/Template/Users/edit.php:404
 msgid "New password"
 msgstr ""
 
 #: src/Template/Profile/edit.php:405
 #: src/Template/Users/add.php:416
 #: src/Template/Users/add_from_ldap.php:462
-#: src/Template/Users/edit.php:420
+#: src/Template/Users/edit.php:418
 msgid "Confirm new password"
 msgstr ""
 
@@ -13048,7 +13043,7 @@ msgstr ""
 #: src/Template/Registers/index.php:109
 #: src/Template/Users/add.php:227
 #: src/Template/Users/add_from_ldap.php:294
-#: src/Template/Users/edit.php:231
+#: src/Template/Users/edit.php:229
 #: src/Template/Users/index.php:186
 msgid "Company"
 msgstr ""
@@ -14390,8 +14385,8 @@ msgstr ""
 #: src/Template/Users/add.php:141
 #: src/Template/Users/add_from_ldap.php:97
 #: src/Template/Users/add_from_ldap.php:142
-#: src/Template/Users/edit.php:100
-#: src/Template/Users/edit.php:145
+#: src/Template/Users/edit.php:99
+#: src/Template/Users/edit.php:143
 msgid "read"
 msgstr ""
 
@@ -14401,8 +14396,8 @@ msgstr ""
 #: src/Template/Users/add.php:149
 #: src/Template/Users/add_from_ldap.php:103
 #: src/Template/Users/add_from_ldap.php:150
-#: src/Template/Users/edit.php:106
-#: src/Template/Users/edit.php:153
+#: src/Template/Users/edit.php:105
+#: src/Template/Users/edit.php:151
 msgid "read/write"
 msgstr ""
 
@@ -14433,7 +14428,7 @@ msgstr ""
 #: src/Template/Usergroups/edit.php:65
 #: src/Template/Users/add.php:155
 #: src/Template/Users/add_from_ldap.php:156
-#: src/Template/Users/edit.php:159
+#: src/Template/Users/edit.php:157
 #: src/Template/Users/index.php:194
 msgid "User role"
 msgstr ""
@@ -14548,19 +14543,19 @@ msgstr ""
 
 #: src/Template/Users/add.php:181
 #: src/Template/Users/add_from_ldap.php:182
-#: src/Template/Users/edit.php:185
+#: src/Template/Users/edit.php:183
 #: src/Template/Users/index.php:190
 msgid "Is active"
 msgstr ""
 
 #: src/Template/Users/add.php:240
 #: src/Template/Users/add_from_ldap.php:307
-#: src/Template/Users/edit.php:244
+#: src/Template/Users/edit.php:242
 msgid "Company position"
 msgstr ""
 
 #: src/Template/Users/add.php:376
-#: src/Template/Users/edit.php:380
+#: src/Template/Users/edit.php:378
 msgid "Frontend language"
 msgstr ""
 
@@ -14588,7 +14583,7 @@ msgstr ""
 msgid "Edit local user:"
 msgstr ""
 
-#: src/Template/Users/edit.php:443
+#: src/Template/Users/edit.php:441
 msgid "Update user"
 msgstr ""
 
