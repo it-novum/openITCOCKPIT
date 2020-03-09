@@ -46,95 +46,95 @@ $UserTime = $User->getUserTime();
     <?php endforeach; ?>
 </head>
 <body>
-    <div class="row">
-        <div class="col-6 padding-left-15 font-lg">
-            <i class="fas fa-desktop" style="font-size: 20px!important;"></i>
-            <?php echo __('Hosts Overview'); ?>
-        </div>
-        <div class="col-6">
-            <img class="float-right" src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
-        </div>
+<div class="row">
+    <div class="col-6 padding-left-15 font-lg">
+        <i class="fas fa-desktop" style="font-size: 20px!important;"></i>
+        <?php echo __('Hosts Overview'); ?>
     </div>
-    <div class="col-12 no-padding">
-        <div class="text-left padding-left-5">
-            <i class="fa fa-calendar txt-color-blueDark"></i> <?php echo date('F d, Y H:i:s'); ?>
-        </div>
+    <div class="col-6">
+        <img class="float-right" src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
     </div>
-    <div class="col-12 no-padding">
-        <div class="text-left padding-left-5">
-            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hosts: ' . sizeof($all_hosts)); ?>
-        </div>
+</div>
+<div class="col-12 no-padding">
+    <div class="text-left padding-left-5">
+        <i class="fa fa-calendar txt-color-blueDark"></i> <?php echo date('F d, Y H:i:s'); ?>
     </div>
-    <div class="padding-top-10">
-        <table class="table table-striped m-0 table-bordered table-hover table-sm">
-            <thead>
-            <tr>
-                <th class="width-50"><?php echo __('Status'); ?></th>
-                <th class="no-sort text-center width-20"><i class="fa fa-user"></i></th>
-                <th class="no-sort text-center width-20"><i class="fa fa-power-off"></i></th>
-                <th><?php echo __('Host'); ?></th>
-                <th class="width-160"><?php echo __('Last state change'); ?></th>
-                <th class="width-160"><?php echo __('Last check'); ?></th>
-                <th><?php echo __('Output'); ?></th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($all_hosts as $host): ?>
-                <?php
-                /** @var \itnovum\openITCOCKPIT\Core\Hoststatus $Hoststatus */
-                $Hoststatus = $host['Hoststatus'];
-                $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
-                ?>
+</div>
+<div class="col-12 no-padding">
+    <div class="text-left padding-left-5">
+        <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hosts: ' . sizeof($all_hosts)); ?>
+    </div>
+</div>
+<div class="padding-top-10">
+    <table class="table table-striped m-0 table-bordered table-hover table-sm">
+        <thead>
+        <tr>
+            <th class="width-50"><?php echo __('Status'); ?></th>
+            <th class="no-sort text-center width-20"><i class="fa fa-user"></i></th>
+            <th class="no-sort text-center width-20"><i class="fa fa-power-off"></i></th>
+            <th><?php echo __('Host'); ?></th>
+            <th class="width-160"><?php echo __('Last state change'); ?></th>
+            <th class="width-160"><?php echo __('Last check'); ?></th>
+            <th><?php echo __('Output'); ?></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($all_hosts as $host): ?>
+            <?php
+            /** @var \itnovum\openITCOCKPIT\Core\Hoststatus $Hoststatus */
+            $Hoststatus = $host['Hoststatus'];
+            $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
+            ?>
 
-                <tr>
-                    <td class="text-center">
-                        <?php
-                        if ($Hoststatus->isFlapping()):
-                            echo $Hoststatus->getHostFlappingIconColored();
-                        else:
-                            echo $HoststatusIcon->getPdfIcon();
-                        endif;
-                        ?>
-                    </td>
-                    <td class="text-center">
-                        <?php if ($Hoststatus->isAcknowledged()): ?>
-                            <i class="fa fa-user"></i>
-                        <?php endif; ?>
-                    </td>
-                    <td class="text-center">
-                        <?php if ($Hoststatus->isInDowntime()): ?>
-                            <i class="fa fa-power-off"></i>
-                        <?php endif; ?>
+            <tr>
+                <td class="text-center">
+                    <?php
+                    if ($Hoststatus->isFlapping()):
+                        echo $Hoststatus->getHostFlappingIconColored();
+                    else:
+                        echo $HoststatusIcon->getPdfIcon();
+                    endif;
+                    ?>
+                </td>
+                <td class="text-center">
+                    <?php if ($Hoststatus->isAcknowledged()): ?>
+                        <i class="fa fa-user"></i>
+                    <?php endif; ?>
+                </td>
+                <td class="text-center">
+                    <?php if ($Hoststatus->isInDowntime()): ?>
+                        <i class="fa fa-power-off"></i>
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <?= h($host['Host']['name']); ?>
+                </td>
+                <?php if ($Hoststatus->isInMonitoring()): ?>
+                    <td>
+                        <?= h($UserTime->format($Hoststatus->getLastStateChange())) ?>
                     </td>
                     <td>
-                        <?= h($host['Host']['name']); ?>
+                        <?= h($UserTime->format($Hoststatus->getLastCheck())) ?>
                     </td>
-                    <?php if ($Hoststatus->isInMonitoring()): ?>
-                        <td>
-                            <?= h($UserTime->format($Hoststatus->getLastStateChange())) ?>
-                        </td>
-                        <td>
-                            <?= h($UserTime->format($Hoststatus->getLastCheck())) ?>
-                        </td>
-                        <td>
-                            <?= h($Hoststatus->getOutput()) ?>
-                        </td>
-                    <?php else: ?>
-                        <td><?php echo __('n/a'); ?></td>
-                        <td><?php echo __('n/a'); ?></td>
-                        <td><?php echo __('n/a'); ?></td>
-                    <?php endif; ?>
-                </tr>
-            <?php endforeach; ?>
+                    <td>
+                        <?= h($Hoststatus->getOutput()) ?>
+                    </td>
+                <?php else: ?>
+                    <td><?php echo __('n/a'); ?></td>
+                    <td><?php echo __('n/a'); ?></td>
+                    <td><?php echo __('n/a'); ?></td>
+                <?php endif; ?>
+            </tr>
+        <?php endforeach; ?>
 
-            <?php if (empty($all_hosts)): ?>
-                <div class="noMatch">
-                    <center>
-                        <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                    </center>
-                </div>
-            <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
+        <?php if (empty($all_hosts)): ?>
+            <div class="noMatch">
+                <center>
+                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
+                </center>
+            </div>
+        <?php endif; ?>
+        </tbody>
+    </table>
+</div>
 </body>
