@@ -47,7 +47,7 @@ $UserTime = $User->getUserTime();
 </head>
 <body>
 <div class="row">
-    <div class="col-6 font-lg">
+    <div class="col-6 padding-left-15 font-lg">
         <i class="fa fa-cog" style="font-size: 20px!important;"></i>
         <?php echo __('Services Overview'); ?>
     </div>
