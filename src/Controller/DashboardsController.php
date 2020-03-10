@@ -1442,9 +1442,10 @@ class DashboardsController extends AppController {
             }
 
             if ($this->DbBackend->isStatusengine3()) {
-                throw new MissingDbBackendException('MissingDbBackendException');
-                //$query = $this->Host->getHoststatusBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
-                //$modelName = 'Host';
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+                $count = $HostsTable->getHoststatusCountBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
             }
             $this->set('config', $config);
             $this->set('statusCount', $count);
@@ -1516,9 +1517,10 @@ class DashboardsController extends AppController {
             }
 
             if ($this->DbBackend->isStatusengine3()) {
-                throw new MissingDbBackendException('MissingDbBackendException');
-                //$query = $this->Service->getServicestatusBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
-                //$modelName = 'Service';
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+                $count = $ServicesTable->getServicestatusCountBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
             }
             $this->set('config', $config);
             $this->set('statusCount', $count);

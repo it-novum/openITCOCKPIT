@@ -102,7 +102,9 @@ class DbBackend {
         }
 
         if ($this->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            /** @var $HoststatusTable HoststatusTableInterface */
+            $HoststatusTable = TableRegistry::getTableLocator()->get('Statusengine3Module.Hoststatus');
+            return $HoststatusTable;
         }
     }
 
@@ -122,7 +124,9 @@ class DbBackend {
         }
 
         if ($this->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            /** @var $ServicestatusTable ServicestatusTableInterface */
+            $ServicestatusTable = TableRegistry::getTableLocator()->get('Statusengine3Module.Servicestatus');
+            return $ServicestatusTable;
         }
     }
 
@@ -142,7 +146,9 @@ class DbBackend {
         }
 
         if ($this->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            /** @var $HostchecksTable HostchecksTableInterface */
+            $HostchecksTable = TableRegistry::getTableLocator()->get('Statusengine3Module.Hostchecks');
+            return $HostchecksTable;
         }
     }
 
@@ -162,7 +168,9 @@ class DbBackend {
         }
 
         if ($this->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            /** @var $ServicechecksTable ServicechecksTableInterface */
+            $ServicechecksTable = TableRegistry::getTableLocator()->get('Statusengine3Module.Servicechecks');
+            return $ServicechecksTable;
         }
     }
 
@@ -182,7 +190,9 @@ class DbBackend {
         }
 
         if ($this->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            /** @var $StatehistoryHostsTable StatehistoryHostTableInterface */
+            $StatehistoryHostsTable = TableRegistry::getTableLocator()->get('Statusengine3Module.StatehistoryHosts');
+            return $StatehistoryHostsTable;
         }
     }
 
@@ -202,7 +212,9 @@ class DbBackend {
         }
 
         if ($this->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            /** @var $StatehistoryServicesTable StatehistoryServiceTableInterface */
+            $StatehistoryServicesTable = TableRegistry::getTableLocator()->get('Statusengine3Module.StatehistoryServices');
+            return $StatehistoryServicesTable;
         }
     }
 
@@ -222,7 +234,9 @@ class DbBackend {
         }
 
         if ($this->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            /** @var $AcknowledgementHostsTable AcknowledgementHostsTableInterface */
+            $AcknowledgementHostsTable = TableRegistry::getTableLocator()->get('Statusengine3Module.AcknowledgementHosts');
+            return $AcknowledgementHostsTable;
         }
     }
 
@@ -242,7 +256,9 @@ class DbBackend {
         }
 
         if ($this->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            /** @var $AcknowledgementServicesTable AcknowledgementServicesTableInterface */
+            $AcknowledgementServicesTable = TableRegistry::getTableLocator()->get('Statusengine3Module.AcknowledgementServices');
+            return $AcknowledgementServicesTable;
         }
     }
 
@@ -262,7 +278,9 @@ class DbBackend {
         }
 
         if ($this->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            /** @var $NotificationHostsTable NotificationHostsTableInterface */
+            $NotificationHostsTable = TableRegistry::getTableLocator()->get('Statusengine3Module.NotificationHosts');
+            return $NotificationHostsTable;
         }
     }
 
@@ -282,7 +300,9 @@ class DbBackend {
         }
 
         if ($this->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            /** @var $NotificationServicesTable NotificationServicesTableInterface */
+            $NotificationServicesTable = TableRegistry::getTableLocator()->get('Statusengine3Module.NotificationServices');
+            return $NotificationServicesTable;
         }
     }
 
@@ -302,7 +322,9 @@ class DbBackend {
         }
 
         if ($this->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            /** @var $DowntimehistoryHostsTable DowntimehistoryHostsTableInterface */
+            $DowntimehistoryHostsTable = TableRegistry::getTableLocator()->get('Statusengine3Module.DowntimeHosts');
+            return $DowntimehistoryHostsTable;
         }
     }
 
@@ -322,7 +344,9 @@ class DbBackend {
         }
 
         if ($this->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            /** @var $DowntimehistoryServicesTable DowntimehistoryServicesTableInterface */
+            $DowntimehistoryServicesTable = TableRegistry::getTableLocator()->get('Statusengine3Module.DowntimeServices');
+            return $DowntimehistoryServicesTable;
         }
     }
 
@@ -342,7 +366,9 @@ class DbBackend {
         }
 
         if ($this->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            /** @var LogentriesTableInterface $LogentriesTable */
+            $LogentriesTable = TableRegistry::getTableLocator()->get('Statusengine3Module.Logentries');
+            return $LogentriesTable;
         }
     }
 

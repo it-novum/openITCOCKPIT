@@ -923,6 +923,124 @@ class HostsTable extends Table {
      * @param null|PaginateOMat $PaginateOMat
      * @return array
      */
+    public function getHostsIndexStatusengine3(HostFilter $HostFilter, HostConditions $HostConditions, $PaginateOMat = null) {
+        $MY_RIGHTS = $HostConditions->getContainerIds();
+
+        $query = $this->find('all');
+        $query->select([
+            'Hosts.id',
+            'Hosts.uuid',
+            'Hosts.name',
+            'Hosts.description',
+            'Hosts.active_checks_enabled',
+            'Hosts.address',
+            'Hosts.satellite_id',
+            'Hosts.container_id',
+            'Hosts.tags',
+
+            //'keywords'     => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+            //'not_keywords' => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+
+            'Hoststatus.current_state',
+            'Hoststatus.last_check',
+            'Hoststatus.next_check',
+            'Hoststatus.last_hard_state_change',
+            'Hoststatus.last_state_change',
+            'Hoststatus.output',
+            'Hoststatus.scheduled_downtime_depth',
+            'Hoststatus.active_checks_enabled',
+            'Hoststatus.is_hardstate',
+            'Hoststatus.is_flapping',
+            'Hoststatus.problem_has_been_acknowledged',
+            'Hoststatus.acknowledgement_type'
+        ]);
+
+        $query->join([
+            'b' => [
+                'table'      => 'statusengine_hoststatus',
+                'type'       => 'LEFT OUTER',
+                'alias'      => 'Hoststatus',
+                'conditions' => 'Hoststatus.hostname = Hosts.uuid',
+            ]
+        ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->contain([
+            'HostsToContainersSharing',
+            'Hosttemplates' => [
+                'fields' => [
+                    'Hosttemplates.id',
+                    'Hosttemplates.uuid',
+                    'Hosttemplates.name',
+                    'Hosttemplates.description',
+                    'Hosttemplates.active_checks_enabled',
+                    'Hosttemplates.tags'
+                ]
+            ]
+        ]);
+
+        $where = $HostFilter->indexFilter();
+        $where['Hosts.disabled'] = (int)$HostConditions->includeDisabled();
+        if ($HostConditions->getHostIds()) {
+            $hostIds = $HostConditions->getHostIds();
+            if (!is_array($hostIds)) {
+                $hostIds = [$hostIds];
+            }
+
+            $where['Hosts.id IN'] = $hostIds;
+        }
+
+        if (isset($where['Hosts.keywords rlike'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $where['Hosts.keywords rlike'],
+                'string',
+                'RLIKE'
+            );
+            unset($where['Hosts.keywords rlike']);
+        }
+
+        if (isset($where['Hosts.not_keywords not rlike'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $where['Hosts.not_keywords not rlike'],
+                'string',
+                'NOT RLIKE'
+            );
+            unset($where['Hosts.not_keywords not rlike']);
+        }
+
+
+        $query->where($where);
+
+        $query->disableHydration();
+        $query->group(['Hosts.id']);
+        $query->order($HostFilter->getOrderForPaginator('Hoststatus.current_state', 'desc'));
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->formatResultAsCake2($query->toArray(), false);
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param HostFilter $HostFilter
+     * @param HostConditions $HostConditions
+     * @param null|PaginateOMat $PaginateOMat
+     * @return array
+     */
     public function getHostsNotMonitored(HostFilter $HostFilter, HostConditions $HostConditions, $PaginateOMat = null) {
         $MY_RIGHTS = $HostConditions->getContainerIds();
 
@@ -988,6 +1106,76 @@ class HostsTable extends Table {
         return $result;
     }
 
+    /**
+     * @param HostFilter $HostFilter
+     * @param HostConditions $HostConditions
+     * @param null|PaginateOMat $PaginateOMat
+     * @return array
+     */
+    public function getHostsNotMonitoredStatusengine3(HostFilter $HostFilter, HostConditions $HostConditions, $PaginateOMat = null) {
+        $MY_RIGHTS = $HostConditions->getContainerIds();
+
+        $query = $this->find('all');
+        $query->select([
+            'Hosts.id',
+            'Hosts.uuid',
+            'Hosts.name',
+            'Hosts.description',
+            'Hosts.address',
+            'Hosts.satellite_id',
+            'Hosts.container_id'
+        ]);
+
+        $query->join([
+            'a' => [
+                'table'      => 'statusengine_hoststatus',
+                'type'       => 'LEFT OUTER',
+                'alias'      => 'Hoststatus',
+                'conditions' => 'Hosts.uuid = Hoststatus.hostname'
+            ]
+        ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->contain([
+            'HostsToContainersSharing',
+            'Hosttemplates' => [
+                'fields' => [
+                    'Hosttemplates.id',
+                    'Hosttemplates.uuid',
+                    'Hosttemplates.name',
+                    'Hosttemplates.description',
+                    'Hosttemplates.active_checks_enabled',
+                ]
+            ]
+
+        ]);
+
+        $where = $HostFilter->disabledFilter();
+        $where['Hosts.disabled'] = (int)$HostConditions->includeDisabled();
+        $where[] = 'Hoststatus.hostname IS NULL';
+        $query->where($where);
+
+        $query->disableHydration();
+        $query->group(['Hosts.id']);
+        $query->order($HostFilter->getOrderForPaginator('Hosts.name', 'asc'));
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->formatResultAsCake2($query->toArray(), false);
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
+        }
+        return $result;
+    }
 
     /**
      * @param HostFilter $HostFilter
@@ -2375,6 +2563,136 @@ class HostsTable extends Table {
 
     /**
      * @param array $MY_RIGHTS
+     * @param bool $includeOkState
+     * @return array
+     */
+    public function getHoststatusCountStatusengine3($MY_RIGHTS, $includeOkState = false) {
+        $hoststatusCount = [
+            '1' => 0,
+            '2' => 0,
+        ];
+        if ($includeOkState === true) {
+            $hoststatusCount['0'] = 0;
+        }
+
+        $query = $this->find();
+        $query
+            ->select([
+                'Hoststatus.current_state',
+                'Hosts.id',
+                'count' => $query->newExpr('COUNT(DISTINCT Hoststatus.hostname)'),
+            ])
+            ->where([
+                'Hosts.disabled'       => 0
+            ])
+            ->join([
+                'b' => [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.hostname = Hosts.uuid',
+                ]
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query
+                ->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                    'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                ]);
+        }
+
+        $query
+            ->contain([
+                'HostsToContainersSharing'
+            ])
+            ->group([
+                'Hoststatus.current_state',
+            ])
+            ->disableHydration();
+
+        if ($includeOkState === false) {
+            $query->andWhere([
+                'Hoststatus.current_state >' => 0
+            ]);
+        }
+
+
+        $hoststatusCountResult = $query->all();
+
+        foreach ($hoststatusCountResult as $hoststatus) {
+            $hoststatusCount[$hoststatus['Hoststatus']['current_state']] = (int)$hoststatus['count'];
+        }
+        return $hoststatusCount;
+    }
+
+    /**
+     * @param array $MY_RIGHTS
+     * @param bool $includeOkState
+     * @return array
+     */
+    public function getServicestatusCountStatusengine3($MY_RIGHTS, $includeOkState = false) {
+        $servicestatusCount = [
+            '1' => 0,
+            '2' => 0,
+            '3' => 0,
+        ];
+        if ($includeOkState === true) {
+            $servicestatusCount['0'] = 0;
+        }
+
+        $query = $this->find();
+        $query
+            ->select([
+                'Servicestatus.current_state',
+                'Hosts.id',
+                'count' => $query->newExpr('COUNT(DISTINCT Servicestatus.service_description)'),
+            ])
+            ->where([
+                'Services.disabled'       => 0
+            ])
+            ->join([
+                'a' => [
+                    'table'      => 'services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Services',
+                    'conditions' => 'Services.uuid = Hosts.id',
+                ],
+                'c' => [
+                    'table'      => 'statusengine_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_description = Services.uuid',
+                ],
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->contain([
+            'HostsToContainersSharing'
+        ])
+            ->group([
+                'Servicestatus.current_state',
+            ])
+            ->disableHydration();
+
+        if ($includeOkState === false) {
+            $query->andWhere([
+                'Servicestatus.current_state >' => 0
+            ]);
+        }
+
+        $servicestatusCountResult = $query->all();
+
+        foreach ($servicestatusCountResult as $servicestatus) {
+            $servicestatusCount[$servicestatus['Servicestatus']['current_state']] = (int)$servicestatus['count'];
+        }
+        return $servicestatusCount;
+    }
+
+    /**
+     * @param array $MY_RIGHTS
      * @param array $conditions
      * @return int
      */
@@ -2402,6 +2720,66 @@ class HostsTable extends Table {
                     'type'       => 'INNER',
                     'alias'      => 'Hoststatus',
                     'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                ]
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->contain([
+            'HostsToContainersSharing'
+        ])
+            ->disableHydration();
+
+        $where = [];
+        if (!empty($conditions['Host']['name'])) {
+            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+
+        $where['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
+
+        if ($where['Hoststatus.current_state'] > 0) {
+            if ($conditions['Hoststatus']['problem_has_been_acknowledged'] === false) {
+                $where['Hoststatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Hoststatus']['scheduled_downtime_depth'] === false) {
+                $where['Hoststatus.scheduled_downtime_depth'] = false;
+            }
+        }
+
+        $query->andWhere($where);
+        $result = $query->first();
+
+        if ($result === null) {
+            return 0;
+        }
+
+        return $result['count'];
+    }
+
+    /**
+     * @param array $MY_RIGHTS
+     * @param array $conditions
+     * @return int
+     */
+    public function getHoststatusCountBySelectedStatusStatusengine3($MY_RIGHTS, $conditions) {
+
+        $query = $this->find();
+        $query
+            ->select([
+                'count' => $query->newExpr('COUNT(DISTINCT Hoststatus.hostname)'),
+                'Hosts.id'
+            ])
+            ->where([
+                'Hosts.disabled'       => 0
+            ])
+            ->join([
+                'b' => [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.hostname = Hosts.uuid',
                 ]
             ]);
         if (!empty($MY_RIGHTS)) {

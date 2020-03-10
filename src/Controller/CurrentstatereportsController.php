@@ -209,7 +209,7 @@ class CurrentstatereportsController extends AppController {
         }
 
         if ($this->DbBackend->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            $services = $ServicesTable->getServiceForCurrentReportStatusengine3($ServiceConditions, $ServicestatusConditions);
         }
 
         $hostContainers = [];

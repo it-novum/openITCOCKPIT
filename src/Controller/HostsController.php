@@ -181,13 +181,12 @@ class HostsController extends AppController {
         }
 
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostFilter->getPage());
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         if ($this->DbBackend->isNdoUtils()) {
-            /** @var $HostsTable HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
-            /** @var $ServicestatusTable ServicestatusTableInterface */
-            $ServicestatusTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Servicestatus');
             $hosts = $HostsTable->getHostsIndex($HostFilter, $HostCondition, $PaginateOMat);
         }
 
@@ -198,10 +197,7 @@ class HostsController extends AppController {
         }
 
         if ($this->DbBackend->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
-            //$query = $this->Host->getHostIndexQueryStatusengine3($HostCondition, $HostFilter->indexFilter());
-            //$this->Host->virtualFieldsForIndex();
-            //$modelName = 'Host';
+            $hosts = $HostsTable->getHostsIndexStatusengine3($HostFilter, $HostCondition, $PaginateOMat);
         }
 
 
@@ -312,19 +308,8 @@ class HostsController extends AppController {
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->wildcard();
 
-        if ($this->DbBackend->isNdoUtils()) {
-            /** @var $HoststatusTable HoststatusTableInterface */
-            $HoststatusTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Hoststatus');
-            $hoststatus = $HoststatusTable->byUuid($host->get('uuid'), $HoststatusFields);
-        }
-
-        if ($this->DbBackend->isCrateDb()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
-        }
-
-        if ($this->DbBackend->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
-        }
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+        $hoststatus = $HoststatusTable->byUuid($host->get('uuid'), $HoststatusFields);
 
         if (empty($hoststatus)) {
             $hoststatus = [
@@ -415,9 +400,7 @@ class HostsController extends AppController {
         }
 
         if ($this->DbBackend->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
-            //$query = $this->Host->getHostNotMonitoredQuery($HostCondition, $HostFilter->notMonitoredFilter());
-            //$modelName = 'Host';
+            $hosts = $HostsTable->getHostsNotMonitoredStatusengine3($HostFilter, $HostCondition, $PaginateOMat);
         }
 
 
@@ -2104,12 +2087,10 @@ class HostsController extends AppController {
             }
         }
 
-        if ($this->DbBackend->isNdoUtils()) {
-            /** @var $HostsTable HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-            /** @var $ServicestatusTable ServicestatusTableInterface */
-            $ServicestatusTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Servicestatus');
+        if ($this->DbBackend->isNdoUtils()) {
             $hosts = $HostsTable->getHostsIndex($HostFilter, $HostCondition);
         }
 
@@ -2120,10 +2101,7 @@ class HostsController extends AppController {
         }
 
         if ($this->DbBackend->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
-            //$query = $this->Host->getHostIndexQueryStatusengine3($HostCondition, $HostFilter->indexFilter());
-            //$this->Host->virtualFieldsForIndex();
-            //$modelName = 'Host';
+            $hosts = $HostsTable->getHostsIndexStatusengine3($HostFilter, $HostCondition);
         }
 
 
@@ -2262,7 +2240,7 @@ class HostsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var HostsTable $HostsTable  */
+        /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         if (!$HostsTable->existsById($id)) {
@@ -2357,11 +2335,11 @@ class HostsController extends AppController {
             $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
             if (!empty($hoststatus)) {
                 $isHardstate = false;
-                if(isset($hoststatus['Hoststatus']['state_type'])){
+                if (isset($hoststatus['Hoststatus']['state_type'])) {
                     $isHardstate = ($hoststatus['Hoststatus']['state_type']) ? true : false;
                 }
 
-                if(isset($hoststatus['Hoststatus']['is_hardstate'])){
+                if (isset($hoststatus['Hoststatus']['is_hardstate'])) {
                     $isHardstate = ($hoststatus['Hoststatus']['is_hardstate']) ? true : false;
                 }
 
