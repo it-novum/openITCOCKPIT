@@ -105,6 +105,7 @@ class HoststatusTable extends Table implements HoststatusTableInterface {
         }
 
         $select = $HoststatusFields->getFields();
+        $select[] = 'Hoststatus.hostname';
 
         $query = $this->find()
             ->select($select)

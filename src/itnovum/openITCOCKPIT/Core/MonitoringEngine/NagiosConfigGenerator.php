@@ -2547,15 +2547,17 @@ class NagiosConfigGenerator {
         }
 
         //Delete all SAT Configs
-        foreach ($this->Satellites as $satellite) {
-            if (is_dir($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config')) {
-                $result = scandir($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config');
-                foreach ($result as $dirname) {
-                    if (!in_array($dirname, ['.', '..'], true)) {
-                        if (is_dir($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config' . DS . $dirname)) {
-                            $folder = new Folder($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config' . DS . $dirname);
-                            $folder->delete();
-                            unset($folder);
+        if(is_array($this->Satellites) && !empty($this->Satellites)) {
+            foreach ($this->Satellites as $satellite) {
+                if (is_dir($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config')) {
+                    $result = scandir($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config');
+                    foreach ($result as $dirname) {
+                        if (!in_array($dirname, ['.', '..'], true)) {
+                            if (is_dir($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config' . DS . $dirname)) {
+                                $folder = new Folder($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config' . DS . $dirname);
+                                $folder->delete();
+                                unset($folder);
+                            }
                         }
                     }
                 }
