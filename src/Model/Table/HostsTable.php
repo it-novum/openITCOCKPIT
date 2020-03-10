@@ -958,7 +958,7 @@ class HostsTable extends Table {
         $query->join([
             'b' => [
                 'table'      => 'statusengine_hoststatus',
-                'type'       => 'LEFT OUTER',
+                'type'       => 'INNER',
                 'alias'      => 'Hoststatus',
                 'conditions' => 'Hoststatus.hostname = Hosts.uuid',
             ]
