@@ -31,12 +31,8 @@ mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,phpnsta,statusen
 
 echo "Enable new systemd services"
 systemctl daemon-reload
-systemctl enable sudo_server
-systemctl enable oitc_cmd
-systemctl enable gearman_worker
-systemctl enable push_notification
-systemctl enable nodejs_server
-systemctl enable openitcockpit-graphing.service
+systemctl enable sudo_server.service oitc_cmd.service gearman_worker.service push_notification.service\
+ nodejs_server.service openitcockpit-graphing.service
 
 if [[ ! -f "$INIFILE" ]]; then
     echo "Create local MySQL configuration and database"
@@ -224,35 +220,9 @@ oitc setup
 
 oitc nagios_export
 
-CODENAME=$(lsb_release -sc)
-if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "bionic" ] || [ $CODENAME = "stretch" ]; then
-    systemctl restart statusengine
-    systemctl restart nagios
-    systemctl restart nginx
+systemctl restart statusengine.service nagios.service nginx.service sudo_server.service\
+ oitc_cmd.service gearman_worker.service push_notification.service nodejs_server.service
 
-    systemctl restart sudo_server
-    systemctl restart oitc_cmd
-    systemctl restart gearman_worker
-    systemctl restart push_notification
-    systemctl restart nodejs_server
-fi
-
-if [ $CODENAME = "trusty" ]; then
-    service statusengine restart
-    service nagios restart
-    service nginx restart
-
-    service sudo_server stop
-    service sudo_server start
-
-    service oitc_cmd restart
-
-    service gearman_worker stop
-    service gearman_worker stop
-
-    service push_notification restart
-    service nodejs_server restart
-fi
 
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
