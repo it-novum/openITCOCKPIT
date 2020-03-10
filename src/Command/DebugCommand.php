@@ -1,0 +1,202 @@
+<?php
+// Copyright (C) <2015>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//	This program is free software: you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, version 3 of the License.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+// 2.
+//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	License agreement and license key will be shipped with the order
+//	confirmation.
+
+declare(strict_types=1);
+
+namespace App\Command;
+
+use App\Lib\DebugConfigNagiosTask;
+use Cake\Console\Arguments;
+use Cake\Console\Command;
+use Cake\Console\ConsoleIo;
+use Cake\Console\ConsoleOptionParser;
+use Cake\Core\Configure;
+use itnovum\openITCOCKPIT\Core\DbBackend;
+
+/**
+ * Dump command.
+ */
+class DebugCommand extends Command {
+
+    /**
+     * @var DbBackend
+     */
+    private $DbBackend;
+
+    /**
+     * @var ConsoleIo
+     */
+    private $io;
+
+    private $conf = [];
+
+    /**
+     * @var DebugConfigNagiosTask
+     */
+    private $DebugConfigNagios;
+
+    /**
+     * Hook method for defining this command's option parser.
+     *
+     * @see https://book.cakephp.org/3.0/en/console-and-shells/commands.html#defining-arguments-and-options
+     *
+     * @param \Cake\Console\ConsoleOptionParser $parser The parser to be defined
+     * @return \Cake\Console\ConsoleOptionParser The built parser.
+     */
+    public function buildOptionParser(ConsoleOptionParser $parser): ConsoleOptionParser {
+        $parser = parent::buildOptionParser($parser);
+
+        $parser->addOptions([
+            'tail'  => ['boolean' => true, 'help' => __d('oitc_console', 'Tail and parse monitoring logfile')],
+            'tailf' => ['short' => 't', 'boolean' => true, 'help' => __d('oitc_console', 'Tailf and parse monitoring logfile')],
+            'stdin' => ['short' => 's', 'boolean' => true, 'help' => __d('oitc_console', 'Read and translate from stdin. Example: cat file.cfg | oitc debug -s')],
+            'debug' => ['short' => 'd', 'boolean' => true, 'help' => __d('oitc_console', 'Debugging menu')],
+        ]);
+
+        return $parser;
+    }
+
+    /**
+     * Implement this method with your command's logic.
+     *
+     * @param \Cake\Console\Arguments $args The command arguments.
+     * @param \Cake\Console\ConsoleIo $io The console io
+     * @return null|void|int The exit code or null for success
+     */
+    public function execute(Arguments $args, ConsoleIo $io) {
+        $io->setStyle('red_bold', ['text' => 'red', 'bold' => true]);
+        $this->io = $io;
+
+        Configure::load('nagios');
+        $this->conf = Configure::read('nagios.export');
+
+        /** @var DebugConfigNagiosTask DebugConfigNagios */
+        $this->DebugConfigNagios = new DebugConfigNagiosTask($io);
+
+        if ($args->getOption('stdin')) {
+            $this->DebugConfigNagios->setup($this->conf);
+            $this->DebugConfigNagios->translateStdin();
+            exit(0);
+        }
+        if ($args->getOption('debug')) {
+            $this->monitoringMenu();
+        }
+        if ($args->getOption('tail')) {
+            $this->DebugConfigNagios->setup($this->conf);
+            $this->DebugConfigNagios->parseMonitoringLogfile();
+        }
+        if ($args->getOption('tailf')) {
+            $this->DebugConfigNagios->setup($this->conf);
+            $this->DebugConfigNagios->tailf();
+        }
+
+        $this->main();
+    }
+
+    private function main() {
+        $menuSelection = strtoupper($this->io->askChoice(__d('oitc_console', 'What would you like to debug?'), ['D', 'Q']));
+        switch ($menuSelection) {
+            case 'D':
+                $this->monitoringMenu();
+                break;
+            case 'Q':
+                $this->_exit();
+                break;
+            default:
+                $this->io->out(__d('oitc_console', 'You have made an invalid selection. Please choose by entering D or Q.'));
+        }
+    }
+
+    private function monitoringMenu() {
+        $this->io->out(__d('oitc_console', '[T]ail and parse monitoring log file'));
+        $this->io->out(__d('oitc_console', '[TF] Tail -f and parse monitoring log file'));
+        $this->io->out(__d('oitc_console', '[H] Debug host configuratgion files'));
+        $this->io->out(__d('oitc_console', '[HT] Debug host template configuration files'));
+        $this->io->out(__d('oitc_console', '[S] Debug service configuration files'));
+        $this->io->out(__d('oitc_console', '[ST] Debug service template configuration files'));
+        $this->io->out(__d('oitc_console', '[TP] Debug timeperiod configuration files'));
+        $this->io->out(__d('oitc_console', '[CM] Debug command configuration files'));
+        $this->io->out(__d('oitc_console', '[C] Debug contact configuration files'));
+        $this->io->out(__d('oitc_console', '[CG] Debug contact group configuration files'));
+        $this->io->out(__d('oitc_console', '[HE] Debug host escalation configuration files'));
+        $this->io->out(__d('oitc_console', '[UUID] Search object by UUID'));
+        $this->io->out(__d('oitc_console', '[B]ack'));
+
+        $menuSelection = strtoupper($this->io->askChoice(__d('oitc_console', 'What would you like to do?'), ['T', 'TF', 'H', 'HT', 'S', 'ST', 'TP', 'CM', 'C', 'CG', 'HE', 'UUID', 'B']));
+        $this->DebugConfigNagios->setup($this->conf);
+        switch ($menuSelection) {
+            case 'T':
+                $this->DebugConfigNagios->parseMonitoringLogfile();
+                break;
+            case 'TF':
+                $this->DebugConfigNagios->tailf();
+                break;
+            case 'H':
+                $this->DebugConfigNagios->debug('Hosts', 'hosts');
+                break;
+            case 'HT':
+                $this->DebugConfigNagios->debug('Hosttemplates', 'hosttemplates');
+                break;
+            case 'S':
+                $this->DebugConfigNagios->debug('Services', 'services');
+                break;
+            case 'ST':
+                $this->DebugConfigNagios->debug('Servicetemplates', 'servicetemplates');
+                break;
+            case 'TP':
+                $this->DebugConfigNagios->debug('Timeperiods', 'timeperiods');
+                break;
+            case 'CM':
+                $this->DebugConfigNagios->debug('Commands', 'commands');
+                break;
+            case 'C':
+                $this->DebugConfigNagios->debug('Contacts', 'contacts');
+                break;
+            case 'CG':
+                $this->DebugConfigNagios->debug('Contactgroups', 'contactgroups');
+                break;
+            case 'HE':
+                $this->DebugConfigNagios->debug('Hostescalations', 'hostescalations');
+                break;
+            case 'UUID':
+                $this->DebugConfigNagios->debugByUuid();
+                break;
+            case 'B':
+                return $this->main();
+            default:
+                $this->io->out(__d('oitc_console', 'You have made an invalid selection. Please choose by entering T or B.'));
+        }
+
+        $this->io->hr();
+        $this->monitoringMenu();
+    }
+
+    private function _exit() {
+        $this->io->out(__d('oitc_console', 'Hopefully i was helpful'));
+        $this->io->out(__d('oitc_console', 'Thanks for using me, bye'));
+        exit();
+    }
+
+}
