@@ -37,14 +37,12 @@ $Logo = new Logo();
 <head>
     <?php
     $css = [
-        '/legacy/css/vendor/bootstrap/css/bootstrap.css',
-        '/legacy//css/vendor/bootstrap/css/bootstrap-theme.css',
-        '/legacy//smartadmin/css/font-awesome.css',
-        '/legacy//smartadmin/css/smartadmin-production.css',
-        '/legacy//smartadmin/css/your_style.css',
-        '/legacy//css/app.css',
-        '/legacy//css/pdf_list_style.css',
-        '/legacy//css/bootstrap_pdf.css',
+        '/css/lib/bootstrap/css/bootstrap.css',
+        '/css/lib/font-awesome.css',
+        '/css/lib/your_style.css',
+        '/css/lib/app.css',
+        '/css/lib/pdf_list_style.css',
+        '/css/lib/bootstrap_pdf.css',
     ];
     ?>
     <?php
