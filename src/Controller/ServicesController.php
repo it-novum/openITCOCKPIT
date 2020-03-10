@@ -196,7 +196,7 @@ class ServicesController extends AppController {
         }
 
         if ($this->DbBackend->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            $services = $ServicesTable->getServiceIndexStatusengine3($ServiceConditions, $PaginateOMat);
         }
 
         $hostContainers = [];
@@ -290,19 +290,8 @@ class ServicesController extends AppController {
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
         $ServicestatusFields->wildcard();
 
-        if ($this->DbBackend->isNdoUtils()) {
-            /** @var $ServicestatusTable ServicestatusTableInterface */
-            $ServicestatusTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Servicestatus');
-            $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
-        }
-
-        if ($this->DbBackend->isCrateDb()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
-        }
-
-        if ($this->DbBackend->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
-        }
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+        $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
 
         if (empty($servicestatus)) {
             $servicestatus = [
@@ -368,7 +357,7 @@ class ServicesController extends AppController {
         }
 
         if ($this->DbBackend->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            $services = $ServicesTable->getServiceNotMonitoredStatusengine3($ServiceConditions, $PaginateOMat);
         }
 
         $hostContainers = [];
@@ -1736,7 +1725,7 @@ class ServicesController extends AppController {
         }
 
         if ($this->DbBackend->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            $services = $ServicesTable->getServiceIndexStatusengine3($ServiceConditions);
         }
 
         $HoststatusTable = $this->DbBackend->getHoststatusTable();

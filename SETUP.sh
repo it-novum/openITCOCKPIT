@@ -139,6 +139,8 @@ fi
 if [[ $STATUSENGINE_VERSION == "Statusengine3" ]]; then
     echo "Setup Statusengine 3"
 
+    cp -r ${APPDIR}/system/Statusengine3/mysql.php /opt/openitc/statusengine3/worker/lib/mysql.php
+
     chmod +x /opt/openitc/statusengine3/worker/bin/Console.php
     chmod +x /opt/openitc/statusengine3/worker/bin/StatusengineWorker.php
 

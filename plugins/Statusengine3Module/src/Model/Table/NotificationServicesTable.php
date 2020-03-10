@@ -23,10 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-namespace Statusengine2Module\Model\Table;
+declare(strict_types=1);
+
+namespace Statusengine3Module\Model\Table;
 
 use App\Lib\Interfaces\NotificationServicesTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -34,21 +37,21 @@ use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
- * NotificationServices Model
+ * NotificationServicess Model
  *
- * @link http://nagios.sourceforge.net/docs/ndoutils/NDOUtils_DB_Model.pdf
- *
- * @property \Statusengine2Module\Model\Table\ObjectsTable|\Cake\ORM\Association\BelongsTo $Objects
- *
- * @method \Statusengine2Module\Model\Entity\NotificationServices get($primaryKey, $options = [])
- * @method \Statusengine2Module\Model\Entity\NotificationServices newEntity($data = null, array $options = [])
- * @method \Statusengine2Module\Model\Entity\NotificationServices[] newEntities(array $data, array $options = [])
- * @method \Statusengine2Module\Model\Entity\NotificationServices|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \Statusengine2Module\Model\Entity\NotificationServices saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \Statusengine2Module\Model\Entity\NotificationServices patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \Statusengine2Module\Model\Entity\NotificationServices[] patchEntities($entities, array $data, array $options = [])
- * @method \Statusengine2Module\Model\Entity\NotificationServices findOrCreate($search, callable $callback = null, $options = [])
- *
+ * @method \Statusengine3Module\Model\Entity\NotificationServices newEmptyEntity()
+ * @method \Statusengine3Module\Model\Entity\NotificationServices newEntity(array $data, array $options = [])
+ * @method \Statusengine3Module\Model\Entity\NotificationServices[] newEntities(array $data, array $options = [])
+ * @method \Statusengine3Module\Model\Entity\NotificationServices get($primaryKey, $options = [])
+ * @method \Statusengine3Module\Model\Entity\NotificationServices findOrCreate($search, ?callable $callback = null, $options = [])
+ * @method \Statusengine3Module\Model\Entity\NotificationServices patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \Statusengine3Module\Model\Entity\NotificationServices[] patchEntities(iterable $entities, array $data, array $options = [])
+ * @method \Statusengine3Module\Model\Entity\NotificationServices|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \Statusengine3Module\Model\Entity\NotificationServices saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \Statusengine3Module\Model\Entity\NotificationServices[]|\Cake\Datasource\ResultSetInterface|false saveMany(iterable $entities, $options = [])
+ * @method \Statusengine3Module\Model\Entity\NotificationServices[]|\Cake\Datasource\ResultSetInterface saveManyOrFail(iterable $entities, $options = [])
+ * @method \Statusengine3Module\Model\Entity\NotificationServices[]|\Cake\Datasource\ResultSetInterface|false deleteMany(iterable $entities, $options = [])
+ * @method \Statusengine3Module\Model\Entity\NotificationServices[]|\Cake\Datasource\ResultSetInterface deleteManyOrFail(iterable $entities, $options = [])
  */
 class NotificationServicesTable extends Table implements NotificationServicesTableInterface {
 
@@ -67,18 +70,12 @@ class NotificationServicesTable extends Table implements NotificationServicesTab
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
-        $this->setTable('nagios_notifications');
-        $this->setDisplayField('notification_id');
-        $this->setPrimaryKey(['notification_id', 'start_time']);
-
-        $this->belongsTo('Objects', [
-            'foreignKey' => 'object_id',
-            'joinType'   => 'INNER',
-            'className'  => 'Statusengine2Module.Objects'
-        ]);
+        $this->setTable('statusengine_service_notifications');
+        $this->setDisplayField('id');
+        $this->setPrimaryKey(['id', 'start_time']);
     }
 
     /**
@@ -87,21 +84,9 @@ class NotificationServicesTable extends Table implements NotificationServicesTab
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         //Readonly table
         return $validator;
-    }
-
-    /**
-     * Returns a rules checker object that will be used for validating
-     * application integrity.
-     *
-     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
-     * @return \Cake\ORM\RulesChecker
-     */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
-        //Readonly table
-        return $rules;
     }
 
     /**
@@ -112,8 +97,9 @@ class NotificationServicesTable extends Table implements NotificationServicesTab
     public function getNotifications(ServiceNotificationConditions $ServiceNotificationConditions, $PaginateOMat = null) {
         $query = $this->find();
         $query->select([
-            'NotificationServices.object_id',
-            'NotificationServices.notification_type',
+            'NotificationServices.id',
+            'NotificationServices.hostname',
+            'NotificationServices.service_description',
             'NotificationServices.start_time',
             'NotificationServices.state',
             'NotificationServices.output',
@@ -130,10 +116,6 @@ class NotificationServicesTable extends Table implements NotificationServicesTab
             'Servicetemplates.uuid',
             'Servicetemplates.name',
 
-            'Contactnotifications.notification_id',
-            'Contactnotifications.contact_object_id',
-            'Contactnotifications.start_time',
-
             'Contacts.id',
             'Contacts.uuid',
             'Contacts.name',
@@ -147,62 +129,36 @@ class NotificationServicesTable extends Table implements NotificationServicesTab
             'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
         ])
             ->innerJoin(
-                ['Objects' => 'nagios_objects'],
-                ['Objects.object_id = NotificationServices.object_id']
-            )
-            ->innerJoin(
-                ['Hosts' => 'hosts'],
-                ['Objects.name1 = Hosts.uuid']
-            )
-            ->innerJoin(
                 ['Services' => 'services'],
-                ['Objects.name2 = Services.uuid']
+                ['Services.uuid = NotificationServices.service_description']
             )
             ->innerJoin(
                 ['Servicetemplates' => 'servicetemplates'],
-                ['Services.servicetemplate_id = Servicetemplates.id']
+                ['Servicetemplates.id = Services.servicetemplate_id']
             )
             ->innerJoin(
-                ['Contactnotifications' => 'nagios_contactnotifications'],
-                ['NotificationServices.notification_id = Contactnotifications.notification_id']
-            )
-            ->innerJoin(
-                ['ContactObjects' => 'nagios_objects'],
-                ['Contactnotifications.contact_object_id = ContactObjects.object_id']
-            )
-            ->innerJoin(
-                ['Contacts' => 'contacts'],
-                ['ContactObjects.name1 = Contacts.uuid']
-            )
-            ->innerJoin(
-                ['Contactnotificationmethods' => 'nagios_contactnotificationmethods'],
-                ['Contactnotificationmethods.contactnotification_id = Contactnotifications.contactnotification_id']
-            )
-            ->innerJoin(
-                ['CommandObjects' => 'nagios_objects'],
-                ['Contactnotificationmethods.command_object_id = CommandObjects.object_id']
-            )
-            ->innerJoin(
-                ['Commands' => 'commands'],
-                ['CommandObjects.name1 = Commands.uuid']
+                ['Hosts' => 'hosts'],
+                ['Hosts.uuid = NotificationServices.hostname']
             )
             ->leftJoin(
                 ['HostsToContainers' => 'hosts_to_containers'],
                 ['HostsToContainers.host_id = Hosts.id']
             )
-            ->where([
-                'NotificationServices.start_time >'        => date('Y-m-d H:i:s', $ServiceNotificationConditions->getFrom()),
-                'NotificationServices.start_time <'        => date('Y-m-d H:i:s', $ServiceNotificationConditions->getTo()),
-                'NotificationServices.notification_type'   => 1,
-                'NotificationServices.contacts_notified >' => 0
-            ])
+            ->innerJoin(
+                ['Contacts' => 'contacts'],
+                ['Contacts.uuid = NotificationServices.contact_name']
+            )
+            ->innerJoin(
+                ['Commands' => 'commands'],
+                ['Commands.uuid = NotificationServices.command_name']
+            )
             ->order($ServiceNotificationConditions->getOrder())
-            ->group(['Contactnotifications.contactnotification_id']);
+            ->group(['NotificationServices.id']);
 
 
         if ($ServiceNotificationConditions->getServiceUuid()) {
             $query->andWhere([
-                'Objects.name2' => $ServiceNotificationConditions->getServiceUuid()
+                'Services.uuid' => $ServiceNotificationConditions->getServiceUuid()
             ]);
         }
 

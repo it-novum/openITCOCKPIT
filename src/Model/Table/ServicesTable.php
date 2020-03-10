@@ -1627,6 +1627,93 @@ class ServicesTable extends Table {
      * @param null|PaginateOMat $PaginateOMat
      * @return array
      */
+    public function getServiceNotMonitoredStatusengine3(ServiceConditions $ServiceConditions, $PaginateOMat = null) {
+        $where = $ServiceConditions->getConditions();
+        $where['Services.disabled'] = 0;
+
+        $having = null;
+        if (isset($where['servicename LIKE'])) {
+            $having = [
+                'servicename LIKE' => $where['servicename LIKE']
+            ];
+            unset($where['servicename LIKE']);
+        }
+
+
+        if ($ServiceConditions->getHostId()) {
+            $where['Services.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        $query = $this->find();
+        $query
+            ->select([
+                'Services.id',
+                'Services.uuid',
+                'Services.name',
+                'Services.host_id',
+                'Services.disabled',
+                'Services.active_checks_enabled',
+                'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+
+                'Servicetemplates.id',
+                'Servicetemplates.uuid',
+                'Servicetemplates.name',
+                'Servicetemplates.active_checks_enabled',
+
+                'Hosts.name',
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.description',
+                'Hosts.address',
+                'Hosts.disabled',
+            ])
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+                if (!empty($ServiceConditions->getContainerIds())) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
+                    ]);
+                }
+                return $q;
+            })
+            ->innerJoinWith('Servicetemplates')
+            ->leftJoin(['Servicestatus' => 'statusengine_servicestatus'], [
+                'Servicestatus.service_description = Services.uuid'
+            ])
+            ->whereNull('Servicestatus.service_description');
+
+        if (!empty($where)) {
+            $query->where($where);
+        }
+
+        $query->disableHydration();
+        $query->group(['Services.id']);
+
+        if (!empty($having)) {
+            $query->having($having);
+        }
+
+        $query->order($ServiceConditions->getOrder());
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param null|PaginateOMat $PaginateOMat
+     * @return array
+     */
     public function getServiceIndex(ServiceConditions $ServiceConditions, $PaginateOMat = null) {
         $where = $ServiceConditions->getConditions();
 
@@ -1712,6 +1799,143 @@ class ServicesTable extends Table {
             ])
             ->innerJoin(['Servicestatus' => 'nagios_servicestatus'], [
                 'Servicestatus.service_object_id = Objects.object_id',
+            ]);
+
+        if (isset($where['keywords rlike'])) {
+            $query->where(new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $where['keywords rlike'],
+                'string',
+                'rlike'
+            ));
+            unset($where['keywords rlike']);
+        }
+
+        if (isset($where['not_keywords not rlike'])) {
+            $query->andWhere(new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $where['not_keywords not rlike'],
+                'string',
+                'not rlike'
+            ));
+            unset($where['not_keywords not rlike']);
+        }
+
+        if (!empty($where)) {
+            $query->andWhere($where);
+        }
+
+
+        $query->disableHydration();
+        $query->group(['Services.id']);
+
+        if (!empty($having)) {
+            $query->having($having);
+        }
+
+        $query->order($ServiceConditions->getOrder());
+
+        //FileDebugger::dieQuery($query);
+
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param null|PaginateOMat $PaginateOMat
+     * @return arrayStatusengine3(
+     */
+    public function getServiceIndexStatusengine3(ServiceConditions $ServiceConditions, $PaginateOMat = null) {
+        $where = $ServiceConditions->getConditions();
+
+        $where['Services.disabled'] = 0;
+        if ($ServiceConditions->getServiceIds()) {
+            $serviceIds = $ServiceConditions->getServiceIds();
+            if (!is_array($serviceIds)) {
+                $serviceIds = [$serviceIds];
+            }
+
+            $where['Services.id IN'] = $serviceIds;
+        }
+
+        $having = null;
+        if (isset($where['servicename LIKE'])) {
+            $having = [
+                'servicename LIKE' => $where['servicename LIKE']
+            ];
+            unset($where['servicename LIKE']);
+        }
+
+
+        if ($ServiceConditions->getHostId()) {
+            $where['Services.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        $query = $this->find();
+        $query
+            ->select([
+                'Services.id',
+                'Services.uuid',
+                'Services.name',
+                'Services.host_id',
+                'Services.description',
+                'Services.disabled',
+                'Services.active_checks_enabled',
+                'Services.tags',
+                'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+
+                'Servicetemplates.id',
+                'Servicetemplates.uuid',
+                'Servicetemplates.name',
+                'Servicetemplates.description',
+                'Servicetemplates.active_checks_enabled',
+                'Servicetemplates.tags',
+
+                'Servicestatus.current_state',
+                'Servicestatus.last_check',
+                'Servicestatus.next_check',
+                'Servicestatus.last_hard_state_change',
+                'Servicestatus.last_state_change',
+                'Servicestatus.output',
+                'Servicestatus.scheduled_downtime_depth',
+                'Servicestatus.active_checks_enabled',
+                'Servicestatus.is_hardstate',
+                'Servicestatus.problem_has_been_acknowledged',
+                'Servicestatus.acknowledgement_type',
+                'Servicestatus.is_flapping',
+                'Servicestatus.perfdata',
+
+                'Hosts.name',
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.description',
+                'Hosts.address',
+                'Hosts.disabled',
+            ])
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+                if (!empty($ServiceConditions->getContainerIds())) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
+                    ]);
+                }
+                return $q;
+            })
+            ->innerJoinWith('Servicetemplates')
+            ->innerJoin(['Servicestatus' => 'statusengine_servicestatus'], [
+                'Servicestatus.service_description = Services.uuid'
             ]);
 
         if (isset($where['keywords rlike'])) {
@@ -2162,6 +2386,166 @@ class ServicesTable extends Table {
         return $result;
     }
 
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param ServicestatusConditions $ServicestatusConditions
+     * @param null $PaginateOMat
+     * @return array
+     */
+    public function getServiceForCurrentReportStatusengine3(ServiceConditions $ServiceConditions, ServicestatusConditions $ServicestatusConditions, $PaginateOMat = null) {
+        $where = $ServiceConditions->getConditions();
+
+        $where['Services.disabled'] = 0;
+        if ($ServiceConditions->getServiceIds()) {
+            $serviceIds = $ServiceConditions->getServiceIds();
+            if (!is_array($serviceIds)) {
+                $serviceIds = [$serviceIds];
+            }
+
+            $where['Services.id IN'] = $serviceIds;
+        }
+
+        $having = null;
+        if (isset($where['servicename LIKE'])) {
+            $having = [
+                'servicename LIKE' => $where['servicename LIKE']
+            ];
+            unset($where['servicename LIKE']);
+        }
+
+
+        if ($ServiceConditions->getHostId()) {
+            $where['Services.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        $query = $this->find();
+        $query
+            ->select([
+                'Services.id',
+                'Services.uuid',
+                'Services.name',
+                'Services.host_id',
+                'Services.description',
+                'Services.disabled',
+                'Services.active_checks_enabled',
+                'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+
+                'Servicetemplates.name',
+                'Servicetemplates.active_checks_enabled',
+
+                'Servicestatus.current_state',
+                'Servicestatus.last_check',
+                'Servicestatus.next_check',
+                'Servicestatus.last_hard_state_change',
+                'Servicestatus.last_state_change',
+                'Servicestatus.output',
+                'Servicestatus.perfdata',
+                'Servicestatus.scheduled_downtime_depth',
+                'Servicestatus.active_checks_enabled',
+                'Servicestatus.is_hardstate',
+                'Servicestatus.problem_has_been_acknowledged',
+                'Servicestatus.acknowledgement_type',
+                'Servicestatus.is_flapping',
+                'Servicestatus.current_check_attempt',
+                'Servicestatus.max_check_attempts',
+
+                'Hosts.name',
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.description',
+                'Hosts.address',
+                'Hosts.disabled',
+            ])
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+                if (!empty($ServiceConditions->getContainerIds())) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
+                    ]);
+                }
+                return $q;
+            })
+            ->innerJoinWith('Servicetemplates')
+            ->innerJoin(['Servicestatus' => 'statusengine_servicestatus'], [
+                'Servicestatus.service_description = Services.uuid'
+            ]);
+
+        if (isset($where['keywords rlike'])) {
+            $query->where(new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $where['keywords rlike'],
+                'string',
+                'rlike'
+            ));
+            unset($where['keywords rlike']);
+        }
+
+        if (isset($where['not_keywords not rlike'])) {
+            $query->andWhere(new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $where['not_keywords not rlike'],
+                'string',
+                'not rlike'
+            ));
+            unset($where['not_keywords not rlike']);
+        }
+
+        if ($ServicestatusConditions->hasConditions()) {
+            $whereServicestatusConditions = $ServicestatusConditions->getConditions();
+            if (isset($whereServicestatusConditions['Servicestatus.current_state'])) {
+                $query->andWhere([
+                    'Servicestatus.current_state IN ' => array_values($whereServicestatusConditions['Servicestatus.current_state'])
+                ]);
+            }
+            if (isset($whereServicestatusConditions['Servicestatus.scheduled_downtime_depth'])) {
+                $query->andWhere([
+                    'Servicestatus.scheduled_downtime_depth' => 0
+                ]);
+            }
+            if (isset($whereServicestatusConditions['Servicestatus.scheduled_downtime_depth > '])) {
+                $query->andWhere([
+                    'Servicestatus.scheduled_downtime_depth > ' => 0
+                ]);
+            }
+            if (isset($whereServicestatusConditions['Servicestatus.problem_has_been_acknowledged'])) {
+                $query->andWhere([
+                    'Servicestatus.problem_has_been_acknowledged' => $whereServicestatusConditions['Servicestatus.problem_has_been_acknowledged']
+                ]);
+            }
+            if (isset($whereServicestatusConditions['Servicestatus.active_checks_enabled'])) {
+                $query->andWhere([
+                    'Servicestatus.active_checks_enabled' => $whereServicestatusConditions['Servicestatus.active_checks_enabled']
+                ]);
+            }
+        }
+
+        if (!empty($where)) {
+            $query->andWhere($where);
+        }
+
+        $query->disableHydration();
+        $query->group(['Services.id']);
+
+        if (!empty($having)) {
+            $query->having($having);
+        }
+
+        $query->order($ServiceConditions->getOrder());
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
+    }
+
     public function getAllOitcAgentServicesByHostIdForExport($hostId) {
         /** @var $ServicetemplatesTable ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
@@ -2451,6 +2835,74 @@ class ServicesTable extends Table {
                     'type'       => 'INNER',
                     'alias'      => 'Servicestatus',
                     'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
+                ],
+            ])
+            ->innerJoinWith('Servicetemplates')
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                return $q->where([
+                    'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                ]);
+            })
+            ->group([
+                'Servicestatus.current_state',
+            ])
+            ->disableHydration();
+
+        $where = [];
+        if (!empty($conditions['Host']['name'])) {
+            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+        if (!empty($conditions['Service']['name'])) {
+            $query->andWhere(
+                $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name) LIKE :servicename')
+            );
+            $query->bind(':servicename', sprintf('%%%s%%', $conditions['Service']['name']));
+        }
+
+
+        $where['Servicestatus.current_state'] = $conditions['Servicestatus']['current_state'];
+
+        if ($where['Servicestatus.current_state'] > 0) {
+            if ($conditions['Servicestatus']['problem_has_been_acknowledged'] === false) {
+                $where['Servicestatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Servicestatus']['scheduled_downtime_depth'] === false) {
+                $where['Servicestatus.scheduled_downtime_depth'] = false;
+            }
+        }
+
+        $query->andWhere($where);
+        //FileDebugger::dieQuery($query);
+        $result = $query->first();
+
+        if ($result === null) {
+            return 0;
+        }
+
+        return $result['count'];
+    }
+
+    /**
+     * @param array $MY_RIGHTS
+     * @param array $conditions
+     * @return int
+     */
+    public function getServicestatusCountBySelectedStatusStatusengine3($MY_RIGHTS, $conditions) {
+        $query = $this->find();
+        $query
+            ->select([
+                'count' => $query->newExpr('COUNT(DISTINCT Servicestatus.service_description)')
+            ])
+            ->where([
+                'Services.disabled'       => 0
+            ])
+            ->join([
+                'b' => [
+                    'table'      => 'statusengine_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_description = Services.uuid',
                 ],
             ])
             ->innerJoinWith('Servicetemplates')

@@ -528,7 +528,7 @@ class ServicegroupsController extends AppController {
                 }
 
                 if ($this->DbBackend->isStatusengine3()) {
-                    throw new MissingDbBackendException('MissingDbBackendException');
+                    $services = $ServicesTable->getServiceIndexStatusengine3($ServiceConditions);
                 }
 
                 if ($this->DbBackend->isCrateDb()) {
@@ -695,7 +695,9 @@ class ServicegroupsController extends AppController {
             }
 
             if ($this->DbBackend->isStatusengine3()) {
-                throw new MissingDbBackendException('MissingDbBackendException');
+                /** @var $ServicesTable ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                $services = $ServicesTable->getServiceIndexStatusengine3($ServiceConditions);
             }
 
             if ($this->DbBackend->isCrateDb()) {
