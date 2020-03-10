@@ -483,6 +483,9 @@ class AclDependencies {
 
 
         $this
+            ->dependency('Profile', 'edit', 'Users', 'getLocaleOptions');
+
+        $this
             ->dependency('Users', 'index', 'Users', 'view')
             ->dependency('Users', 'index', 'Users', 'loadUsersByContainerId')
             ->dependency('Users', 'index', 'Users', 'loadUsergroups')
