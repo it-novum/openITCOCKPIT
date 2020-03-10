@@ -203,7 +203,7 @@
 
                                         <label class="text-info padding-right-10" ng-show="exportRunning">
                                             <i class="fa fa-info-circle"></i>
-                                            <?= _('Refresh in progress '); ?>
+                                            <?= __('Refresh in progress '); ?>
                                         </label>
 
                                         <button class="btn btn-success" type="button"

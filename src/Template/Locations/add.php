@@ -179,7 +179,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                 <div class="float-right">
                                     <label>
                                         <input type="checkbox" ng-model="data.createAnother">
-                                        <?php echo _('Create another'); ?>
+                                        <?php echo __('Create another'); ?>
                                     </label>
                                     <button class="btn btn-primary"
                                             type="submit"><?php echo __('Create location'); ?></button>

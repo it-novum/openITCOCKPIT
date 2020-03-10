@@ -74,7 +74,7 @@ class AutomapsTable extends Table {
 
         $validator
             ->requirePresence('container_id', 'create')
-            ->greaterThan('container_id', 0, _('You need to select at least one container'))
+            ->greaterThan('container_id', 0, __('You need to select at least one container'))
             ->numeric('container_id')
             ->allowEmptyString('container_id', __('You need to select at least one container'), false);
 
