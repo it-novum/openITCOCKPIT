@@ -104,7 +104,9 @@ class ServicestatusTable extends Table implements ServicestatusTableInterface {
         }
 
         $select = $ServicestatusFields->getFields();
-        $select[] = 'Servicestatus.service_description';
+        if(!empty($select)) {
+            $select[] = 'Servicestatus.service_description';
+        }
 
         $query = $this->find()
             ->select($select)
