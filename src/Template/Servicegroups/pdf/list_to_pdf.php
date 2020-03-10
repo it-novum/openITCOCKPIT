@@ -58,7 +58,7 @@ $UserTime = $User->getUserTime();
         <?php echo __('Service groups'); ?>
     </div>
     <div class="col-6">
-        <img src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
+        <img class="float-right" src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
     </div>
 </div>
 <div class="col-12 no-padding">
