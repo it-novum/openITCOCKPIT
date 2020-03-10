@@ -92,7 +92,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     -->
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script data-pace-options='{ "ajax": false }' src='/legacy/smartadmin/js/plugin/pace/pace.min.js'></script>
+    <script data-pace-options='{ "ajax": false }' src='/js/lib/pace/pace.min.js'></script>
     <title>
         Monitoring powered by openITCOCKPIT
     </title>

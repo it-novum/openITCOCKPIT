@@ -15,7 +15,6 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: plugins/GrafanaModule/src/Controller/GrafanaConfigurationController.php:153
-#: plugins/GrafanaModule/src/Controller/GrafanaConfigurationController.php:153
 msgid "Error while connecting to Grafana server."
 msgstr "Erreur lors de la connexion au serveur Grafana."
 
@@ -3585,7 +3584,7 @@ msgid "is not required in the URL and can be removed."
 msgstr ""
 
 #: plugins/NagiosModule/templates/Cmd/index.php:234
-msgid "External documentaition"
+msgid "External documentation"
 msgstr ""
 
 #: src/Command/AcknowledgePerMailCommand.php:171

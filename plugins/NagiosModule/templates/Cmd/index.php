@@ -231,7 +231,7 @@
                                             <div class="col-lg-12 help-block">
                                                 <a href="https://www.naemon.org/documentation/developer/externalcommands/<?= strtolower($key) ?>.html"
                                                    target="_blank">
-                                                    <?= __('External documentaition') ?>
+                                                    <?= __('External documentation') ?>
                                                 </a>
                                                 <i class="fas fa-external-link-alt"></i>
                                             </div>

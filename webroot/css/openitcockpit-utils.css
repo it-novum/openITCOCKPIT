@@ -133,6 +133,10 @@ openITCOCKPIT v4 Utilities
     padding: 10px;
 }
 
+.padding-left-15 {
+    padding-left: 15px;
+}
+
 .padding-bottom-20 {
     padding-bottom: 20px;
 }
@@ -387,12 +391,20 @@ openITCOCKPIT v4 Utilities
     min-width: 130px;
 }
 
+.width-140 {
+    width: 140px;
+}
+
 .width-150 {
     width: 150px;
 }
 
 .width-160 {
     width: 160px;
+}
+
+.width-180{
+    width: 180px;
 }
 
 .width-240 {
