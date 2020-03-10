@@ -189,7 +189,7 @@ fi
 CODENAME=$(lsb_release -sc)
 if [[ "$1" == "install" ]]; then
   if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "bionic" ] || [ $CODENAME = "stretch" ]; then
-    systemctl restart gearman_worker
+    systemctl restart gearman_worker.service
   fi
   echo "Update successfully finished"
 else

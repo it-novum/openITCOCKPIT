@@ -20,7 +20,7 @@
                     </div>
 
                     <div class="col-lg-12">
-                        <?php echo _('At the bottom of the page, you can find the "API Keys" section. Click on "Create new API key"'); ?>
+                        <?php echo __('At the bottom of the page, you can find the "API Keys" section. Click on "Create new API key"'); ?>
                     </div>
 
                     <div class="col-lg-12">
@@ -99,7 +99,7 @@
                     </div>
 
                     <div class="col-xs-12">
-                        <?php echo _('At the bottom of the page, you can find the "API Keys" section. Click on "Create new API key"'); ?>
+                        <?php echo __('At the bottom of the page, you can find the "API Keys" section. Click on "Create new API key"'); ?>
                     </div>
 
                     <div class="col-xs-12">
