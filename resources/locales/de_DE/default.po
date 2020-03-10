@@ -855,12 +855,12 @@ msgstr "Benutze Proxy"
 #: plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:132
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:126
 msgid "Determine if the <a ui-sref=\"ProxyIndex\">configured proxy</a> should be used."
-msgstr ""
+msgstr "Bestimme, ob der <a ui-sref=\"ProxyIndex\">konfigurierte Proxy</a> verwendet werden soll."
 
 #: plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:134
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:128
 msgid "Determine if the configured proxy should be used."
-msgstr "Bestimme, ob der <a ui-sref=\"ProxyIndex\">konfigurierte Proxy</a> verwendet werden soll."
+msgstr "Bestimme, ob der konfigurierte Proxy verwendet werden soll."
 
 #: plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:152
 msgid "Ignore SSL certificate"
@@ -4025,11 +4025,11 @@ msgstr "Browser Push-Benachrichtigungen"
 
 #: src/Controller/DowntimereportsController.php:127
 msgid "No downtimes within specified time found ({0} - {1}) !"
-msgstr "Keine Ausfallzeiten innerhalb der angegebenen Zeit gefunden ({0} - {1}) !"
+msgstr "Keine Wartungszeiten innerhalb der angegebenen Zeit gefunden ({0} - {1}) !"
 
 #: src/Controller/DowntimereportsController.php:220
 msgid "! No downtimes within specified time found ({0} - {1}) !"
-msgstr "! Keine Ausfallzeiten innerhalb der angegebenen Zeit gefunden ({0} - {1}) !"
+msgstr "! Keine Wartungszeiten innerhalb der angegebenen Zeit gefunden ({0} - {1}) !"
 
 #: src/Controller/DowntimereportsController.php:236
 msgid "Downtimereport_"
@@ -4207,20 +4207,20 @@ msgstr "Hostvorlage nicht gefunden"
 
 #: src/Controller/HosttemplatesController.php:314
 msgid "Issue while deleting host template"
-msgstr ""
+msgstr "Problem beim Löschen der Hostvorlage"
 
 #: src/Controller/HosttemplatesController.php:324
 msgid "Host template successfully deleted"
-msgstr ""
+msgstr "Hostvorlage erfolgreich gelöscht"
 
 #: src/Controller/HosttemplatesController.php:330
 msgid "Error while deleting host template"
-msgstr ""
+msgstr "Fehler beim Löschen der Hostvorlage"
 
 #: src/Controller/HosttemplatesController.php:533
 #: src/Controller/ServicetemplatesController.php:846
 msgid "Invalid Container"
-msgstr ""
+msgstr "Ungültiger Container"
 
 #: src/Controller/InstantreportsController.php:142
 #: src/Controller/InstantreportsController.php:245
@@ -4240,7 +4240,7 @@ msgstr ""
 #: src/Controller/LocationsController.php:178
 #: src/Controller/LocationsController.php:268
 msgid "Invalid location"
-msgstr ""
+msgstr "Ungültiger Ort"
 
 #: src/Controller/ProfileController.php:60
 #: src/Controller/UsersController.php:258
@@ -4251,37 +4251,37 @@ msgstr "Benutzer nicht gefunden"
 
 #: src/Controller/ProfileController.php:138
 msgid "Current password is incorrect"
-msgstr ""
+msgstr "Das Passwort ist falsch"
 
 #: src/Controller/ProfileController.php:157
 msgid "Password changed successfully."
-msgstr ""
+msgstr "Das Passwort wurde erfolgreich geändert."
 
 #: src/Controller/ProfileController.php:219
 msgid "File Upload success!"
-msgstr ""
+msgstr "Hochladen der Datei war erfolgreich!"
 
 #: src/Controller/ProfileController.php:225
 #: src/Controller/ProfileController.php:226
 msgid "Could not save image data, may be wrong data type. Allowed types are .png, .jpg and .gif"
-msgstr ""
+msgstr "Bilddaten konnten nicht gespeichert werden, möglicherweise falscher Datentyp. Zulässige Typen sind .png, .jpg und .gif"
 
 #: src/Controller/ProfileController.php:250
 #: src/Controller/ProfileController.php:283
 msgid "Invalid API key"
-msgstr ""
+msgstr "Ungültiger API-Key"
 
 #: src/Controller/ProfileController.php:295
 msgid "API key updated successfully"
-msgstr ""
+msgstr "API-Key erfolgreich aktualisiert"
 
 #: src/Controller/ProfileController.php:362
 msgid "API key created successfully"
-msgstr ""
+msgstr "API-Key erfolgreich erstellt"
 
 #: src/Controller/ProfileController.php:388
 msgid "Api key deleted successfully"
-msgstr ""
+msgstr "API-Key erfolgreich gelöscht"
 
 #: src/Controller/ProfileController.php:394
 msgid "Could not delete api key"
@@ -4289,24 +4289,24 @@ msgstr ""
 
 #: src/Controller/ProfileController.php:443
 msgid "File deleted sucessfully"
-msgstr ""
+msgstr "Datei erfolgreich gelöscht"
 
 #: src/Controller/ServicedependenciesController.php:92
 #: src/Controller/ServicedependenciesController.php:215
 msgid "Service dependency not found"
-msgstr ""
+msgstr "Serviceabhängigkeit nicht gefunden"
 
 #: src/Controller/ServiceescalationsController.php:90
 #: src/Controller/ServiceescalationsController.php:223
 msgid "Service escalation not found"
-msgstr ""
+msgstr "Serviceeskalation nicht gefunden"
 
 #: src/Controller/ServicegroupsController.php:122
 #: src/Controller/ServicegroupsController.php:216
 #: src/Controller/ServicegroupsController.php:296
 #: src/Controller/ServicegroupsController.php:377
 msgid "Invalid Servicegroup"
-msgstr ""
+msgstr "Ungültige Servicegruppe"
 
 #: src/Controller/ServicegroupsController.php:582
 msgid "Servicegroups_"
@@ -4317,39 +4317,39 @@ msgstr ""
 #: src/Controller/ServicesController.php:1376
 #: src/Controller/ServicesController.php:1906
 msgid "Service not found"
-msgstr ""
+msgstr "Service nicht gefunden"
 
 #: src/Controller/ServicesController.php:850
 msgid "Issue while deleting service"
-msgstr ""
+msgstr "Problem beim Löschen des Service"
 
 #: src/Controller/ServicesController.php:860
 msgid "Service successfully deleted"
-msgstr ""
+msgstr "Service erfolgreich gelöscht"
 
 #: src/Controller/ServicesController.php:866
 msgid "Error while deleting service"
-msgstr ""
+msgstr "Fehler beim Löschen des Service"
 
 #: src/Controller/ServicesController.php:1209
 msgid "Issue while disabling service"
-msgstr ""
+msgstr "Problem beim Deaktivieren des Service"
 
 #: src/Controller/ServicesController.php:1238
 msgid "Service successfully disabled"
-msgstr ""
+msgstr "Service erfolgreich deaktiviert"
 
 #: src/Controller/ServicesController.php:1274
 msgid "Could not enable service, because associated host is also disabled."
-msgstr ""
+msgstr "Service konnte nicht aktiviert werden, da der zugeordnete Host ebenfalls deaktiviert ist."
 
 #: src/Controller/ServicesController.php:1285
 msgid "Issue while enabling service"
-msgstr ""
+msgstr "Problem beim Aktivieren des Service"
 
 #: src/Controller/ServicesController.php:1314
 msgid "Service successfully enabled"
-msgstr ""
+msgstr "Service erfolgreich aktiviert"
 
 #: src/Controller/ServicesController.php:1782
 msgid "Services_"
@@ -4361,70 +4361,70 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:63
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:64
 msgid "None"
-msgstr ""
+msgstr "Keiner"
 
 #: src/Controller/ServicetemplategroupsController.php:108
 #: src/Controller/ServicetemplategroupsController.php:295
 msgid "Invalid service template group"
-msgstr ""
+msgstr "Ungültige Servicevorlagengruppe"
 
 #: src/Controller/ServicetemplategroupsController.php:197
 #: src/Controller/ServicetemplategroupsController.php:416
 msgid "Service template group not found"
-msgstr ""
+msgstr "Servicevorlagengruppe nicht gefunden"
 
 #: src/Controller/ServicetemplategroupsController.php:550
 #: src/Controller/ServicetemplategroupsController.php:727
 msgid "No service template ids set"
-msgstr ""
+msgstr "Keine Servicevorlagen IDs gesetzt"
 
 #: src/Controller/ServicetemplategroupsController.php:859
 msgid "No matching host group \"{0}\" found."
-msgstr ""
+msgstr "Keine passende Hostgruppe \"{0}\" gefunden."
 
 #: src/Controller/ServicetemplategroupsController.php:976
 msgid "Created {0} new services"
-msgstr ""
+msgstr "Erstelle {0} neue Services"
 
 #: src/Controller/ServicetemplategroupsController.php:1021
 msgid "Invalid container id"
-msgstr ""
+msgstr "Ungültige Contaier ID"
 
 #: src/Controller/ServicetemplatesController.php:225
 #: src/Controller/ServicetemplatesController.php:321
 msgid "Service template not found"
-msgstr ""
+msgstr "Servicevorlage nicht gefunden"
 
 #: src/Controller/ServicetemplatesController.php:344
 msgid "Issue while deleting service template"
-msgstr ""
+msgstr "Problem beim Löschen der Servicevorlage"
 
 #: src/Controller/ServicetemplatesController.php:354
 msgid "Service template successfully deleted"
-msgstr ""
+msgstr "Servicevorlage erfolgreich gelöscht"
 
 #: src/Controller/ServicetemplatesController.php:360
 msgid "Error while deleting service template"
-msgstr ""
+msgstr "Fehler beim Löschen der Servicevorlage"
 
 #: src/Controller/StatisticsController.php:108
 msgid "Error while saving data"
-msgstr ""
+msgstr "Fehler beim Speichern der Daten"
 
 #: src/Controller/StatisticsController.php:113
 msgid "Record successfully saved"
-msgstr ""
+msgstr "Datensatz erfolgreich gespeichert"
 
 #: src/Controller/StatusmapsController.php:202
 msgid "Invalid request parameters"
-msgstr ""
+msgstr "Ungültige Anforderungsparameter"
 
 #: src/Controller/SystemdowntimesController.php:321
 #: src/Controller/SystemdowntimesController.php:428
 #: src/Controller/SystemdowntimesController.php:535
 #: src/Controller/SystemdowntimesController.php:646
 msgid "You have to select at least on object."
-msgstr ""
+msgstr "Sie müssen mindestens ein Objekt auswählen."
 
 #: src/Controller/SystemdowntimesController.php:778
 msgid "Invalide Systemdowntime"
@@ -4440,7 +4440,7 @@ msgstr ""
 
 #: src/Controller/SystemfailuresController.php:146
 msgid "System failure not found"
-msgstr ""
+msgstr "Systemfehler nicht gefunden"
 
 #: src/Controller/TenantsController.php:93
 #: src/Controller/TenantsController.php:179
@@ -4463,36 +4463,36 @@ msgstr ""
 #: src/Controller/TimeperiodsController.php:115
 #: src/Controller/TimeperiodsController.php:445
 msgid "Invalid timeperiod"
-msgstr ""
+msgstr "Ungültiger Zeitraum"
 
 #: src/Controller/TimeperiodsController.php:262
 msgid "Timeperiod not found"
-msgstr ""
+msgstr "Zeitraum nicht gefunden"
 
 #: src/Controller/TimeperiodsController.php:285
 msgid "Issue while deleting timeperiod"
-msgstr ""
+msgstr "Problem beim Löschen des Zeitraums"
 
 #: src/Controller/UsergroupsController.php:90
 msgid "Invalid usergroup"
-msgstr ""
+msgstr "Ungültige Benutzergruppe"
 
 #: src/Controller/UsergroupsController.php:199
 #: src/Controller/UsergroupsController.php:289
 msgid "User group not found"
-msgstr ""
+msgstr "Benutzergruppe nicht gefunden"
 
 #: src/Controller/UsersController.php:115
 msgid "Invalid username or password"
-msgstr ""
+msgstr "Ungültiger Benutzername oder Passwort"
 
 #: src/Controller/UsersController.php:450
 msgid "Your "
-msgstr ""
+msgstr "Ihr "
 
 #: src/Controller/UsersController.php:450
 msgid " got reset!"
-msgstr ""
+msgstr " wurde zurückgesetzt!"
 
 #: src/Controller/UsersController.php:474
 msgid "Password reset successfully. The new password was send to {0}"
@@ -4710,7 +4710,7 @@ msgstr "Ungültige E-Mail-Adresse"
 #: src/Model/Table/ContactsTable.php:159
 #: src/Model/Table/ContactsTable.php:165
 msgid "You have to choose at least one command."
-msgstr ""
+msgstr "Sie müssen mindestens ein Kommando auswählen."
 
 #: src/Model/Table/ContainersTable.php:259
 msgid "This name already exists."
@@ -4871,32 +4871,32 @@ msgstr "Sie müssen mindestens eine Flattererkennungsoption angeben."
 
 #: src/Model/Table/InstantreportsTable.php:119
 msgid "You must specify at least one user"
-msgstr ""
+msgstr "Sie müssen mindestens einen Benutzer angeben"
 
 #: src/Model/Table/InstantreportsTable.php:124
 msgid "Please select a valid interval type"
-msgstr ""
+msgstr "Bitte wählen Sie einen gültigen Intervalltyp"
 
 #: src/Model/Table/InstantreportsTable.php:133
 msgid "You must specify at least one host group"
-msgstr ""
+msgstr "Sie müssen mindestens eine Hostgruppe angeben"
 
 #: src/Model/Table/InstantreportsTable.php:139
 msgid "You must specify at least one host"
-msgstr ""
+msgstr "Sie müssen mindestens einen Host angeben"
 
 #: src/Model/Table/InstantreportsTable.php:145
 msgid "You must specify at least one service group"
-msgstr ""
+msgstr "Sie müssen mindestens eine Servicegruppe angeben"
 
 #: src/Model/Table/InstantreportsTable.php:151
 msgid "You must specify at least one service"
-msgstr ""
+msgstr "Sie müssen mindestens einen Service angeben"
 
 #: src/Model/Table/LocationsTable.php:94
 #: src/Model/Table/LocationsTable.php:104
 msgid "It is required to specify valid values for LONGITUDE and LATITUDE"
-msgstr ""
+msgstr "Es ist erforderlich, gültige Werte für LONGITUDE und LATITUDE anzugeben"
 
 #: src/Model/Table/ProxiesTable.php:55
 msgid "This field needs to be numeric."
@@ -4965,11 +4965,11 @@ msgstr ""
 
 #: src/Model/Table/SystemdowntimesTable.php:97
 msgid "Please select at least on object."
-msgstr ""
+msgstr "Bitte wählen Sie mindestens ein Objekt aus."
 
 #: src/Model/Table/SystemdowntimesTable.php:102
 msgid "You have to select at least one weekday"
-msgstr ""
+msgstr "Sie müssen mindestens einen Wochentag auswählen"
 
 #: src/Model/Table/SystemdowntimesTable.php:131
 msgid "Weekdays needs to be in range (1-7)."
@@ -4989,15 +4989,15 @@ msgstr "Die Endzeit muss ein gültiges Datum sein."
 
 #: src/Model/Table/SystemdowntimesTable.php:254
 msgid "\"From\" date should be greater then \"to\" date."
-msgstr ""
+msgstr "Das \"von\" Datum sollte größer sein, als das \"bis\" Datum. "
 
 #: src/Model/Table/SystemdowntimesTable.php:259
 msgid "Duration needs to be greater than zero."
-msgstr ""
+msgstr "Die Dauer muss größer als 0 sein."
 
 #: src/Model/Table/SystemdowntimesTable.php:286
 msgid "This field needs to be 0 or 1"
-msgstr ""
+msgstr "Dieses Feld muss 0 oder 1 sein"
 
 #: src/Model/Table/SystemfailuresTable.php:71
 #: src/Model/Table/SystemfailuresTable.php:81
@@ -5007,20 +5007,20 @@ msgstr "Bitte gib ein korrektes Datum an"
 #: src/Model/Table/SystemfailuresTable.php:74
 #: src/Model/Table/SystemfailuresTable.php:84
 msgid "Start time must be before end time."
-msgstr ""
+msgstr "Die Startzeit muss vor der Endzeit liegen."
 
 #: src/Model/Table/TimeperiodTimerangesTable.php:72
 msgid "The start time must be before the end time."
-msgstr ""
+msgstr "Die Startzeit muss vor der Endzeit liegen."
 
 #: src/Model/Table/TimeperiodTimerangesTable.php:87
 msgid "The end time must be after the start time."
-msgstr ""
+msgstr "Die Endzeit muss nach der Startzeit liegen."
 
 #: src/Model/Table/UsercontainerrolesTable.php:78
 #: src/Model/Table/UsercontainerrolesTable.php:82
 msgid "You have to choose at least one container."
-msgstr ""
+msgstr "Sie müssen mindestens einen Container auswählen."
 
 #: src/Model/Table/UsersTable.php:103
 #: src/Model/Table/UsersTable.php:108
@@ -5098,11 +5098,11 @@ msgstr "Notiz"
 
 #: src/Model/Table/WidgetsTable.php:258
 msgid "Hosts in downtime"
-msgstr "Hosts in Ausfallzeiten"
+msgstr "Hosts in Wartungszeiten"
 
 #: src/Model/Table/WidgetsTable.php:273
 msgid "Services in downtime"
-msgstr "Services in Ausfallzeiten"
+msgstr "Services in Wartungszeiten"
 
 #: src/Model/Table/WidgetsTable.php:288
 msgid "Host status list"
@@ -5125,7 +5125,7 @@ msgstr "Servicestatus Übersicht"
 #: src/Template/Acknowledgements/host.php:38
 #: src/Template/Acknowledgements/service.php:38
 msgid "acknowledgement history"
-msgstr ""
+msgstr "Bestätigungsverlauf"
 
 #: src/Template/Acknowledgements/host.php:64
 #: src/Template/Acknowledgements/service.php:64
@@ -5214,7 +5214,7 @@ msgstr "Filter nach Ausgabe"
 #: src/Template/Systemdowntimes/add.php:202
 #: src/Template/Systemfailures/add.php:133
 msgid "To"
-msgstr "Zu"
+msgstr "Bis"
 
 #: src/Template/Acknowledgements/host.php:96
 #: src/Template/Acknowledgements/service.php:96
@@ -5701,7 +5701,7 @@ msgstr ""
 #: src/Template/Downtimes/host.php:280
 #: src/Template/Downtimes/service.php:293
 msgid "Running"
-msgstr ""
+msgstr "Läuft"
 
 #: src/Template/Administrators/debug.php:189
 #: src/Template/Administrators/debug.php:202
@@ -5714,7 +5714,7 @@ msgstr ""
 #: src/Template/Administrators/debug.php:303
 #: src/Template/Administrators/debug.php:317
 msgid "Not running!"
-msgstr ""
+msgstr "Läuft nicht!"
 
 #: src/Template/Administrators/debug.php:196
 msgid "Database connector"
@@ -6715,32 +6715,32 @@ msgstr "Nicht vertrauenswürdigen Agenten anzeigen"
 #: src/Template/Hosts/index.php:714
 #: src/Template/element/host_mass_changes.php:87
 msgid "Acknowledge host status"
-msgstr ""
+msgstr "Bestätige Hoststatus"
 
 #: src/Template/Angular/acknowledge_host.php:19
 #: src/Template/Angular/disable_host_notifications.php:19
 #: src/Template/Angular/enable_host_notifications.php:19
 #: src/Template/Angular/reschedule_host.php:16
 msgid "Select method"
-msgstr ""
+msgstr "Methode auswählen"
 
 #: src/Template/Angular/acknowledge_host.php:27
 #: src/Template/Angular/disable_host_notifications.php:27
 #: src/Template/Angular/downtime_host.php:26
 #: src/Template/Angular/enable_host_notifications.php:27
 msgid "Individual hosts"
-msgstr ""
+msgstr "Einzele Hosts"
 
 #: src/Template/Angular/acknowledge_host.php:28
 #: src/Template/Angular/disable_host_notifications.php:28
 #: src/Template/Angular/downtime_host.php:27
 #: src/Template/Angular/enable_host_notifications.php:28
 msgid "Hosts including services"
-msgstr ""
+msgstr "Hosts einschließlich Services"
 
 #: src/Template/Angular/acknowledge_host.php:60
 msgid "Sticky acknowledgements will be stay until the host is back in state Up"
-msgstr ""
+msgstr "Sticky-Bestätigungen bleiben so lange bestehen, bis der Host wieder im Status Up ist"
 
 #: src/Template/Angular/acknowledge_host.php:65
 #: src/Template/Angular/acknowledge_service.php:46
@@ -6753,7 +6753,7 @@ msgstr ""
 #: src/Template/Angular/submit_host_result.php:53
 #: src/Template/Angular/submit_service_result.php:54
 msgid "Executing command"
-msgstr ""
+msgstr "Kommando ausführen"
 
 #: src/Template/Angular/acknowledge_service.php:8
 #: src/Template/Servicegroups/extended.php:137
@@ -6788,11 +6788,11 @@ msgstr ""
 #: src/Template/element/tenant_mass_changes.php:44
 #: src/Template/element/timeperiod_mass_changes.php:51
 msgid "Attention!"
-msgstr ""
+msgstr "Achtung!"
 
 #: src/Template/Angular/confirm_deactivate.php:11
 msgid "Do you really want deactivate the selected object?"
-msgstr ""
+msgstr "Möchten Sie das ausgewählte Objekt wirklich deaktivieren?"
 
 #: src/Template/Angular/confirm_deactivate.php:20
 #: src/Template/Angular/mass_deactivate.php:46
@@ -6815,7 +6815,7 @@ msgstr ""
 #: src/Template/element/host_mass_changes.php:61
 #: src/Template/element/service_mass_changes.php:47
 msgid "Disable"
-msgstr ""
+msgstr "Deaktivieren"
 
 #: src/Template/Angular/confirm_delete.php:11
 #: src/Template/Angular/mass_delete.php:16
@@ -6852,11 +6852,11 @@ msgstr ""
 #: src/Template/Angular/enable_service_notifications.php:42
 #: src/Template/Angular/reschedule_host.php:39
 msgid "Execute"
-msgstr ""
+msgstr "Ausführen"
 
 #: src/Template/Angular/disable_host_notifications.php:7
 msgid "Disable host notification"
-msgstr ""
+msgstr "Deaktiviere Hostbenachrichtigungen"
 
 #: src/Template/Angular/disable_host_notifications.php:36
 #: src/Template/Angular/disable_service_notifications.php:19
@@ -6869,7 +6869,7 @@ msgstr ""
 
 #: src/Template/Angular/disable_service_notifications.php:7
 msgid "Disable service notifications"
-msgstr ""
+msgstr "Deaktiviere Servicebenachrichtigungen"
 
 #: src/Template/Angular/downtime_host.php:7
 #: src/Template/Angular/downtime_service.php:7
@@ -6882,7 +6882,7 @@ msgstr ""
 #: src/Template/element/host_mass_changes.php:83
 #: src/Template/element/service_mass_changes.php:62
 msgid "Set planned maintenance times"
-msgstr ""
+msgstr "Stelle eine geplante Wartungszeit ein"
 
 #: src/Template/Angular/downtime_host.php:18
 #: src/Template/Systemdowntimes/add.php:80
@@ -6891,7 +6891,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/add_hostdowntime.php:85
 #: src/Template/Systemdowntimes/add_hostgroupdowntime.php:85
 msgid "Maintenance period for"
-msgstr ""
+msgstr "Wartungszeitraum für"
 
 #: src/Template/Angular/downtime_host.php:28
 msgid "Hosts and dependent Hosts (triggered)"
@@ -6906,7 +6906,7 @@ msgstr ""
 #: src/Template/Angular/downtime_service.php:23
 #: src/Template/Angular/downtime_service.php:26
 msgid "In progress"
-msgstr ""
+msgstr "In Bearbeitung"
 
 #: src/Template/Angular/duration_input.php:28
 #: src/Template/Angular/interval_input.php:33
@@ -7172,7 +7172,7 @@ msgstr "Service Liste"
 #: src/Template/Servicetemplategroups/allocate_to_host.php:47
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:47
 msgid "Allocate service template group"
-msgstr ""
+msgstr "Servicevorlagengruppe zuordnen"
 
 #: src/Template/Angular/host_browser_menu.php:151
 #: src/Template/Hosts/index.php:618
@@ -7284,11 +7284,11 @@ msgstr "Löschen..."
 
 #: src/Template/Angular/mass_delete_host_downtimes.php:15
 msgid "Do you really want to cancel the selected host downtimes?"
-msgstr "Möchten Sie die ausgewählten Host-Ausfallzeiten wirklich abbrechen?"
+msgstr "Möchten Sie die ausgewählten Host-Wartungszeiten wirklich abbrechen?"
 
 #: src/Template/Angular/mass_delete_host_downtimes.php:27
 msgid "Also cancel corresponding service downtimes."
-msgstr "Brechen Sie auch entsprechende Service-Ausfallzeiten ab."
+msgstr "Brechen Sie auch entsprechende Service-Wartungszeiten ab."
 
 #: src/Template/Angular/mass_delete_host_downtimes.php:33
 #: src/Template/Angular/mass_delete_service_downtimes.php:19
@@ -7298,11 +7298,11 @@ msgstr "Abbrechen..."
 #: src/Template/Angular/mass_delete_host_downtimes.php:45
 #: src/Template/Angular/mass_delete_service_downtimes.php:31
 msgid "Cancel downtime"
-msgstr "Ausfallzeit abbrechen"
+msgstr "Wartungszeit abbrechen"
 
 #: src/Template/Angular/mass_delete_service_downtimes.php:15
 msgid "Do you really want to cancel the selected service downtimes?"
-msgstr "Möchten Sie die ausgewählten Service-Ausfallzeiten wirklich abbrechen?"
+msgstr "Möchten Sie die ausgewählten Service-Wartungszeiten wirklich abbrechen?"
 
 #: src/Template/Angular/not_found.php:56
 msgid "Looks like the object you are looking for has vanished"
@@ -7681,20 +7681,20 @@ msgstr ""
 
 #: src/Template/Angular/top_search.php:64
 msgid "Type to search"
-msgstr ""
+msgstr "Tippe zum Suchen"
 
 #: src/Template/Angular/user_timezone.php:4
 msgid "Server time"
-msgstr ""
+msgstr "Server Zeit"
 
 #: src/Template/Angular/user_timezone.php:14
 msgid "Your local time"
-msgstr ""
+msgstr "Ihre lokale Zeit"
 
 #: src/Template/Angular/version_check.php:1
 #: src/Template/Packetmanager/index.php:149
 msgid "New version available!"
-msgstr ""
+msgstr "Neue Version verfügbar!"
 
 #: src/Template/Automaps/add.php:34
 #: src/Template/Automaps/edit.php:34
@@ -7978,7 +7978,7 @@ msgstr ""
 #: src/Template/Services/index.php:292
 #: src/Template/Statusmaps/index.php:156
 msgid "In downtime"
-msgstr ""
+msgstr "In Wartungszeit"
 
 #: src/Template/Automaps/index.php:203
 #: src/Template/Automaps/view.php:84
@@ -8003,7 +8003,7 @@ msgstr ""
 #: src/Template/Statusmaps/index.php:149
 #: src/Template/Users/index.php:216
 msgid "Disabled"
-msgstr ""
+msgstr "Deaktiviert"
 
 #: src/Template/Automaps/index.php:207
 #: src/Template/Automaps/view.php:88
@@ -8013,7 +8013,7 @@ msgstr ""
 #: src/Template/Cronjobs/index.php:201
 #: src/Template/Cronjobs/index.php:298
 msgid "Enabled"
-msgstr ""
+msgstr "Aktiviert"
 
 #: src/Template/Automaps/view.php:49
 msgid "View auto map: "
@@ -8029,7 +8029,7 @@ msgstr ""
 
 #: src/Template/Backups/index.php:34
 msgid "Backups"
-msgstr ""
+msgstr "Sicherungen"
 
 #: src/Template/Backups/index.php:38
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:555
@@ -8071,7 +8071,7 @@ msgstr ""
 
 #: src/Template/Browsers/index.php:65
 msgid "Type to filter..."
-msgstr ""
+msgstr "Tippe zum Filtern ..."
 
 #: src/Template/Browsers/index.php:100
 msgid "No hosts associated with this node"
@@ -8161,14 +8161,14 @@ msgstr "Nicht bestätigt"
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:349
 #: src/itnovum/openITCOCKPIT/Core/Timeline/Groups.php:44
 msgid "Downtimes"
-msgstr "Ausfallzeiten"
+msgstr "Wartungszeiten"
 
 #: src/Template/Browsers/index.php:387
 #: src/Template/Currentstatereports/index.php:206
 #: src/Template/Hosts/index.php:308
 #: src/Template/Services/index.php:304
 msgid "Not in downtime"
-msgstr "Nicht in Ausfallzeit"
+msgstr "Nicht in Wartungszeit"
 
 #: src/Template/Browsers/index.php:410
 #: src/Template/Hosts/index.php:354
@@ -9390,7 +9390,7 @@ msgstr "Flattern"
 #: src/Template/Systemdowntimes/add_hostgroupdowntime.php:63
 #: src/Template/Systemdowntimes/add_servicedowntime.php:63
 msgid "Downtime"
-msgstr "Ausfallzeit"
+msgstr "Wartungszeit"
 
 #: src/Template/Contacts/add.php:265
 #: src/Template/Contacts/add_from_ldap.php:335
@@ -10222,21 +10222,21 @@ msgstr ""
 #: src/Template/Dashboards/services_downtime_widget.php:20
 #: src/Template/Dashboards/services_status_list_widget.php:20
 msgid "Scroll interval:"
-msgstr ""
+msgstr "Scroll Intervall:"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:43
 #: src/Template/Dashboards/services_downtime_widget.php:44
 #: src/Template/Downtimes/host.php:223
 #: src/Template/Downtimes/service.php:236
 msgid "Is running"
-msgstr ""
+msgstr "Läuft"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:56
 #: src/Template/Dashboards/services_downtime_widget.php:57
 #: src/Template/Downtimes/host.php:235
 #: src/Template/Downtimes/service.php:248
 msgid "Was not cancelled"
-msgstr ""
+msgstr "Wurde nicht storniert"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:69
 #: src/Template/Dashboards/hosts_downtime_widget.php:149
@@ -10247,14 +10247,14 @@ msgstr ""
 #: src/Template/Downtimes/service.php:260
 #: src/Template/Downtimes/service.php:329
 msgid "Was cancelled"
-msgstr ""
+msgstr "Wurde storniert"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:82
 #: src/Template/Dashboards/services_downtime_widget.php:83
 #: src/Template/Downtimes/host.php:259
 #: src/Template/Downtimes/service.php:272
 msgid "Hide expired"
-msgstr ""
+msgstr "Abgelaufene ausblenden"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:106
 #: src/Template/Dashboards/services_downtime_widget.php:121
@@ -10266,14 +10266,14 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:204
 #: src/Template/Systemfailures/index.php:85
 msgid "Filter by comment"
-msgstr ""
+msgstr "Filter nach Kommentar"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:133
 #: src/Template/Dashboards/services_downtime_widget.php:153
 #: src/Template/Downtimes/host.php:295
 #: src/Template/Downtimes/service.php:312
 msgid "Created"
-msgstr ""
+msgstr "Erstellt"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:137
 #: src/Template/Dashboards/services_downtime_widget.php:157
@@ -10292,7 +10292,7 @@ msgstr ""
 #: src/Template/Timeperiods/add.php:197
 #: src/Template/Timeperiods/edit.php:201
 msgid "End"
-msgstr ""
+msgstr "Ende"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:145
 #: src/Template/Dashboards/services_downtime_widget.php:165
@@ -10307,16 +10307,16 @@ msgstr ""
 #: src/Template/Systemdowntimes/node.php:240
 #: src/Template/Systemdowntimes/service.php:258
 msgid "Duration"
-msgstr ""
+msgstr "Dauer"
 
 #: src/Template/Dashboards/hosts_status_list_widget.php:109
 #: src/Template/Dashboards/services_status_list_widget.php:122
 msgid "In Downtime"
-msgstr ""
+msgstr "In Wartungszeit"
 
 #: src/Template/Dashboards/hosts_status_list_widget.php:147
 msgid "Filter by host output"
-msgstr ""
+msgstr "Filter nach Hostausgabe"
 
 #: src/Template/Dashboards/index.php:33
 msgid "Please uncomment line {0} in {1}. Detailed output is disabled due to security reasons."
@@ -10328,11 +10328,11 @@ msgstr "Umbenennen"
 
 #: src/Template/Dashboards/index.php:89
 msgid "Start sharing"
-msgstr ""
+msgstr "Starte Teilen"
 
 #: src/Template/Dashboards/index.php:96
 msgid "Stop sharing"
-msgstr ""
+msgstr "Stoppe Teilen"
 
 #: src/Template/Dashboards/index.php:113
 msgid "Setup tab rotation"
@@ -11880,7 +11880,7 @@ msgstr "Der Host befindet sich derzeit in einem geplanten Wartungszeitraum"
 #: src/Template/Services/browser.php:375
 #: src/Template/Services/details.php:204
 msgid "Downtime was set by"
-msgstr "Ausfallzeit wurde festgelegt von"
+msgstr "Wartungszeit wurde festgelegt von"
 
 #: src/Template/Hosts/browser.php:273
 #: src/Template/Services/browser.php:267
@@ -12108,7 +12108,7 @@ msgstr "Benachrichtigung"
 #: src/Template/Hosts/browser.php:940
 #: src/Template/Services/browser.php:1040
 msgid "Downtime cancelled"
-msgstr "Ausfallzeit abgebrochen"
+msgstr "Wartungszeit abgebrochen"
 
 #: src/Template/Hosts/browser.php:959
 #: src/Template/Services/browser.php:1059
@@ -12127,7 +12127,7 @@ msgstr "Bestätigung"
 
 #: src/Template/Hosts/browser.php:1040
 msgid "in Downtime"
-msgstr "in Ausfallzeit"
+msgstr "in Wartungszeit"
 
 #: src/Template/Hosts/browser.php:1316
 #: src/Template/Hosts/browser.php:1411
@@ -12220,29 +12220,29 @@ msgstr "Nur unbehandelte"
 #: src/Template/Hosts/index.php:197
 #: src/Template/Services/index.php:181
 msgid "Filter by excluded tags"
-msgstr ""
+msgstr "Filter nach ausgeschlossenen Tags"
 
 #: src/Template/Hosts/index.php:700
 #: src/Template/Hosts/not_monitored.php:397
 #: src/Template/element/host_mass_changes.php:67
 msgid "Add to host group"
-msgstr ""
+msgstr "Hinzufügen zu Hostgruppe"
 
 #: src/Template/Hosts/pdf/list_to_pdf.php:55
 msgid "Hosts Overview"
-msgstr ""
+msgstr "Hosts Übersicht"
 
 #: src/Template/Hosts/sharing.php:46
 msgid "Sharing for"
-msgstr ""
+msgstr "Geteilt für"
 
 #: src/Template/Hosts/sharing.php:63
 msgid "Host sharing"
-msgstr ""
+msgstr "Host teilen"
 
 #: src/Template/Hosts/sharing.php:63
 msgid "edit successfully"
-msgstr ""
+msgstr "bearbeiten erfolgreich"
 
 #: src/Template/Hosts/sharing.php:66
 msgid "Primary container"
@@ -12538,7 +12538,7 @@ msgstr ""
 #: src/Template/Logentries/index.php:47
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:160
 msgid "Log entries"
-msgstr ""
+msgstr "Protokolleinträge"
 
 #: src/Template/Logentries/index.php:76
 msgid "Filter by record and UUID"
@@ -12684,11 +12684,11 @@ msgstr ""
 
 #: src/Template/Nagiostats/index.php:202
 msgid "Total hosts"
-msgstr ""
+msgstr "Gesamte Hosts"
 
 #: src/Template/Nagiostats/index.php:206
 msgid "Total services"
-msgstr ""
+msgstr "Gesamte Services"
 
 #: src/Template/Nagiostats/index.php:210
 msgid "Program uptime"
@@ -12721,93 +12721,93 @@ msgstr ""
 #: src/Template/Notifications/host_notification.php:38
 #: src/Template/Notifications/service_notification.php:38
 msgid "notifications"
-msgstr ""
+msgstr "Benachrichtigungen"
 
 #: src/Template/Notifications/host_notification.php:177
 #: src/Template/Notifications/index.php:246
 #: src/Template/Notifications/service_notification.php:189
 #: src/Template/Notifications/services.php:277
 msgid "Notification Method"
-msgstr ""
+msgstr "Benachrichtigungsmethode"
 
 #: src/Template/Notifications/index.php:135
 #: src/Template/Notifications/services.php:135
 msgid "Filter by notification method"
-msgstr ""
+msgstr "Filter nach Benachrichtigungsmethode"
 
 #: src/Template/Packetmanager/index.php:42
 msgid "Package manager"
-msgstr ""
+msgstr "Paketmanager"
 
 #: src/Template/Packetmanager/index.php:87
 msgid "Packagemanager"
-msgstr ""
+msgstr "Paketmanager"
 
 #: src/Template/Packetmanager/index.php:96
 msgid "Connection error."
-msgstr ""
+msgstr "Verbindungsfehler."
 
 #: src/Template/Packetmanager/index.php:111
 msgid "Your system is on the latest version!"
-msgstr ""
+msgstr "Ihr System ist auf der neuesten Version!"
 
 #: src/Template/Packetmanager/index.php:134
 #: src/Template/Packetmanager/index.php:183
 #: src/Template/Packetmanager/index.php:271
 #: src/Template/Packetmanager/index.php:319
 msgid "Changelog"
-msgstr ""
+msgstr "Änderungsprotokoll"
 
 #: src/Template/Packetmanager/index.php:158
 msgid "Please update your {0} installation to the latest version to get new features and latest security fixes."
-msgstr ""
+msgstr "Bitte aktualisieren Sie Ihre {0} Installation auf die neueste Version, um neue Funktionen und die neuesten Sicherheitskorrekturen zu erhalten."
 
 #: src/Template/Packetmanager/index.php:173
 msgid "How to Update"
-msgstr ""
+msgstr "So aktualisieren Sie"
 
 #: src/Template/Packetmanager/index.php:230
 msgid "This module is already installed"
-msgstr ""
+msgstr "Dieses Modul ist bereits installiert"
 
 #: src/Template/Packetmanager/index.php:236
 msgid "Installed"
-msgstr ""
+msgstr "Installiert"
 
 #: src/Template/Packetmanager/index.php:250
 msgid "Install"
-msgstr ""
+msgstr "Installieren"
 
 #: src/Template/Packetmanager/index.php:282
 #: src/Template/Packetmanager/index.php:327
 msgid "Latest version"
-msgstr ""
+msgstr "Letzte Version"
 
 #: src/Template/Packetmanager/index.php:359
 msgid "Install packages"
-msgstr ""
+msgstr "Installiere Pakete"
 
 #: src/Template/Packetmanager/index.php:368
 msgid "To install the selected packages, please execute the following command on your {0} system."
-msgstr ""
+msgstr "Führen Sie zum Installieren der ausgewählten Pakete den folgenden Befehl auf Ihrem {0} System aus."
 
 #: src/Template/Packetmanager/index.php:378
 msgid "Installation done. Please reload your {0} web interface."
-msgstr ""
+msgstr "Installation abgeschlossen. Bitte laden Sie Ihre {0} Weboberfläche neu."
 
 #: src/Template/Packetmanager/index.php:385
 msgid "To install two or more packages at once, close this window and select the next module you like to install. All selected modules will be added to the installation command."
-msgstr ""
+msgstr "Um zwei oder mehr Pakete gleichzeitig zu installieren, schließen Sie dieses Fenster und wählen Sie das nächste Modul aus, das Sie installieren möchten. Alle ausgewählten Module werden dem Installationsbefehl hinzugefügt."
 
 #: src/Template/Profile/edit.php:35
 #: src/Template/Profile/edit.php:51
 #: src/Template/Profile/edit.php:289
 msgid "Profile"
-msgstr ""
+msgstr "Profil"
 
 #: src/Template/Profile/edit.php:52
 msgid "information"
-msgstr ""
+msgstr "Information"
 
 #: src/Template/Profile/edit.php:71
 #: src/Template/Profile/edit.php:88
@@ -12817,128 +12817,128 @@ msgstr ""
 #: src/Template/Users/add_from_ldap.php:270
 #: src/Template/Users/add_from_ldap.php:288
 msgid "Value imported from LDAP Server"
-msgstr ""
+msgstr "Vom LDAP-Server importierter Wert"
 
 #: src/Template/Profile/edit.php:105
 msgid "Username for the login"
-msgstr ""
+msgstr "Benutzername für die Anmeldung"
 
 #: src/Template/Profile/edit.php:111
 #: src/Template/Users/add.php:188
 #: src/Template/Users/add_from_ldap.php:240
 #: src/Template/Users/edit.php:190
 msgid "Email address"
-msgstr ""
+msgstr "E-Mail Adresse"
 
 #: src/Template/Profile/edit.php:128
 #: src/Template/Users/add.php:253
 #: src/Template/Users/add_from_ldap.php:320
 #: src/Template/Users/edit.php:255
 msgid "Phone Number"
-msgstr ""
+msgstr "Telefonnummer"
 
 #: src/Template/Profile/edit.php:152
 #: src/Template/Users/add.php:288
 #: src/Template/Users/add_from_ldap.php:355
 #: src/Template/Users/edit.php:290
 msgid "Show status badges in menu"
-msgstr ""
+msgstr "Statuszeichen im Menü anzeigen"
 
 #: src/Template/Profile/edit.php:168
 #: src/Template/Users/add.php:304
 #: src/Template/Users/add_from_ldap.php:371
 #: src/Template/Users/edit.php:306
 msgid "Recursive Browser"
-msgstr ""
+msgstr "Rekursiver Browser"
 
 #: src/Template/Profile/edit.php:175
 #: src/Template/Users/add.php:266
 #: src/Template/Users/add_from_ldap.php:333
 #: src/Template/Users/edit.php:268
 msgid "Length of lists"
-msgstr ""
+msgstr "Länge der Listen"
 
 #: src/Template/Profile/edit.php:185
 msgid "This value defines how many records will load per list. You can choose between 1 and 1000"
-msgstr ""
+msgstr "Dieser Wert definiert, wie viele Datensätze pro Liste geladen werden. Sie können zwischen 1 und 1000 wählen."
 
 #: src/Template/Profile/edit.php:194
 msgid "Language"
-msgstr ""
+msgstr "Sprache"
 
 #: src/Template/Profile/edit.php:216
 #: src/Template/Users/add.php:324
 #: src/Template/Users/add_from_ldap.php:391
 #: src/Template/Users/edit.php:326
 msgid "Date format"
-msgstr ""
+msgstr "Datumsformat"
 
 #: src/Template/Profile/edit.php:270
 msgid "Update Profile"
-msgstr ""
+msgstr "Aktualisiere Profil"
 
 #: src/Template/Profile/edit.php:290
 msgid "picture"
-msgstr ""
+msgstr "Bild"
 
 #: src/Template/Profile/edit.php:298
 msgid "Current image"
-msgstr ""
+msgstr "Altuelles Bild"
 
 #: src/Template/Profile/edit.php:308
 msgid "You have no own image uploaded yet"
-msgstr ""
+msgstr "Sie haben noch kein eigenes Bild hochgeladen"
 
 #: src/Template/Profile/edit.php:323
 msgid "Delete my image"
-msgstr ""
+msgstr "Lösche mein Bild"
 
 #: src/Template/Profile/edit.php:330
 msgid "Select image"
-msgstr ""
+msgstr "Wähle Bild"
 
 #: src/Template/Profile/edit.php:360
 #: src/Template/Profile/edit.php:424
 msgid "Change Password"
-msgstr ""
+msgstr "Ändere Passwort"
 
 #: src/Template/Profile/edit.php:370
 msgid "LDAP users need to change their password through the operating system or an LDAP account manager tool."
-msgstr ""
+msgstr "LDAP-Benutzer müssen ihr Kennwort über das Betriebssystem oder ein LDAP-Account-Manager-Tool ändern."
 
 #: src/Template/Profile/edit.php:377
 msgid "Current password"
-msgstr ""
+msgstr "Aktuelles Passwort"
 
 #: src/Template/Profile/edit.php:391
 #: src/Template/Users/add.php:402
 #: src/Template/Users/add_from_ldap.php:448
 #: src/Template/Users/edit.php:404
 msgid "New password"
-msgstr ""
+msgstr "Neues Passwort"
 
 #: src/Template/Profile/edit.php:405
 #: src/Template/Users/add.php:416
 #: src/Template/Users/add_from_ldap.php:462
 #: src/Template/Users/edit.php:418
 msgid "Confirm new password"
-msgstr ""
+msgstr "Bestätige neues Passwort"
 
 #: src/Template/Profile/edit.php:442
 msgid "API keys"
-msgstr ""
+msgstr "API-Keys"
 
 #: src/Template/Profile/edit.php:452
 msgid "Create new API key"
-msgstr ""
+msgstr "Erstelle neuen API-Key"
 
 #: src/Template/Profile/edit.php:461
 msgid "No API keys created yet. You can still use the api using your username and password."
-msgstr ""
+msgstr "Es wurden noch keine API-Keys erstellt. Sie können die API weiterhin mit Ihrem Benutzernamen und Passwort verwenden."
 
 #: src/Template/Profile/edit.php:463
 msgid "It's recommended to create a own API key for every external application."
-msgstr ""
+msgstr "Es wird empfohlen, für jede externe Anwendung einen eigenen API-Key zu erstellen."
 
 #: src/Template/Profile/edit.php:468
 msgid "ID"
@@ -12947,21 +12947,21 @@ msgstr ""
 #: src/Template/Profile/edit.php:474
 #: src/Template/Profile/edit.php:487
 msgid "Show"
-msgstr ""
+msgstr "Zeigen"
 
 #: src/Template/Profile/edit.php:507
 msgid "Create API key"
-msgstr ""
+msgstr "Erstelle API-Key"
 
 #: src/Template/Profile/edit.php:530
 #: src/Template/Profile/edit_apikey.php:32
 msgid "API key (read-only)"
-msgstr ""
+msgstr "API key (nur lesbar)"
 
 #: src/Template/Profile/edit.php:545
 #: src/Template/Profile/edit_apikey.php:47
 msgid "example"
-msgstr ""
+msgstr "Beispiel"
 
 #: src/Template/Profile/edit.php:554
 #: src/Template/Profile/edit_apikey.php:56
@@ -12975,11 +12975,11 @@ msgstr ""
 
 #: src/Template/Profile/edit.php:574
 msgid "Generate new key"
-msgstr ""
+msgstr "Generiere neuen API-Key"
 
 #: src/Template/Profile/edit_apikey.php:9
 msgid "Edit API key"
-msgstr ""
+msgstr "Bearbeite API-Key"
 
 #: src/Template/Proxy/index.php:34
 #: src/Template/Proxy/index.php:47
@@ -12992,23 +12992,23 @@ msgstr ""
 
 #: src/Template/Proxy/index.php:58
 msgid "Proxy configuration"
-msgstr ""
+msgstr "Proxy Konfiguration"
 
 #: src/Template/Proxy/index.php:62
 msgid "Proxy address and Port"
-msgstr ""
+msgstr "Proxy Adresse und Port"
 
 #: src/Template/Proxy/index.php:100
 msgid "Enable proxy"
-msgstr ""
+msgstr "Aktiviere Proxy"
 
 #: src/Template/Proxy/index.php:105
 msgid "If disabled the proxy server will not be used."
-msgstr ""
+msgstr "Wenn deaktiviert, wird der Proxyserver nicht verwendet."
 
 #: src/Template/Proxy/index.php:113
 msgid "Update Configuration"
-msgstr ""
+msgstr "Aktualisiere Konfiguration"
 
 #: src/Template/Registers/index.php:34
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:657
@@ -13054,7 +13054,7 @@ msgstr "Registrieren"
 
 #: src/Template/Servicedependencies/add.php:49
 msgid "Create new service dependency"
-msgstr ""
+msgstr "Erstelle neue Service Abhängigkeit"
 
 #: src/Template/Servicedependencies/add.php:76
 #: src/Template/Servicedependencies/edit.php:76
@@ -13067,27 +13067,27 @@ msgstr ""
 #: src/Template/Servicedependencies/edit.php:549
 #: src/Template/Servicedependencies/index.php:397
 msgid "Dependent services"
-msgstr ""
+msgstr "Abhängige Services"
 
 #: src/Template/Servicedependencies/add.php:152
 #: src/Template/Servicedependencies/edit.php:152
 #: src/Template/Servicedependencies/edit.php:599
 #: src/Template/Servicedependencies/index.php:399
 msgid "Dependent service groups"
-msgstr ""
+msgstr "Abhängige Servicegruppen"
 
 #: src/Template/Servicedependencies/add.php:401
 msgid "Create service dependency"
-msgstr ""
+msgstr "Erstelle Service Abhängigkeit"
 
 #: src/Template/Servicedependencies/edit.php:49
 #: src/Template/Servicedependencies/edit.php:478
 msgid "Edit service dependency"
-msgstr ""
+msgstr "Bearbeite Service Abhängigkeit"
 
 #: src/Template/Servicedependencies/edit.php:401
 msgid "Update service dependency"
-msgstr ""
+msgstr "Aktualisiere Service Abhängigkeit"
 
 #: src/Template/Servicedependencies/edit.php:775
 msgid "'Execution none' option"
@@ -13140,13 +13140,13 @@ msgstr ""
 #: src/Template/Serviceescalations/edit.php:109
 #: src/Template/Serviceescalations/index.php:304
 msgid "Excluded services"
-msgstr ""
+msgstr "Ausgeschlossene Services"
 
 #: src/Template/Serviceescalations/add.php:153
 #: src/Template/Serviceescalations/edit.php:152
 #: src/Template/Serviceescalations/index.php:306
 msgid "Excluded service groups"
-msgstr ""
+msgstr "Ausgeschlossene Servicegruppen"
 
 #: src/Template/Serviceescalations/add.php:201
 #: src/Template/Serviceescalations/edit.php:200
@@ -13176,7 +13176,7 @@ msgstr ""
 
 #: src/Template/Serviceescalations/index.php:112
 msgid "Filter by excluded service name"
-msgstr ""
+msgstr "Filter nach ausgeschlossenem Servicenamen"
 
 #: src/Template/Serviceescalations/index.php:138
 msgid "You can either search for  <b>\"service group\"</b> OR <b>\"excluded service group\"</b>.  Opposing Field will be reset automatically"
@@ -13184,13 +13184,13 @@ msgstr ""
 
 #: src/Template/Serviceescalations/index.php:153
 msgid "Filter by excluded service group"
-msgstr ""
+msgstr "Filter nach ausgeschlossener Servicegruppe"
 
 #: src/Template/Servicegroups/add.php:47
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:81
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:132
 msgid "Create new service group"
-msgstr ""
+msgstr "Erstelle neue Servicegruppe"
 
 #: src/Template/Servicegroups/add.php:111
 #: src/Template/Servicegroups/edit.php:112
@@ -13204,7 +13204,7 @@ msgstr "Erstelle Servicegruppe"
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:57
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:111
 msgid "Append services/s to service group"
-msgstr ""
+msgstr "Hänge Service(s) an Servicegruppe an"
 
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:66
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:116
@@ -13214,102 +13214,102 @@ msgstr "Ausgewählte Services"
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:86
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:137
 msgid "Append existing service group"
-msgstr ""
+msgstr "Vorhandene Servicegruppe anhängen"
 
 #: src/Template/Servicegroups/append.php:38
 msgid "Append services to service group"
-msgstr ""
+msgstr "Hänge Services an Servicegruppe an"
 
 #: src/Template/Servicegroups/append.php:47
 msgid "Append services"
-msgstr ""
+msgstr "Hänge Services"
 
 #: src/Template/Servicegroups/append.php:48
 msgid "to service group"
-msgstr ""
+msgstr "an Servicegruppe an"
 
 #: src/Template/Servicegroups/append.php:87
 msgid "Services that could not be assigned to the selected service group due to container permissions, will be removed automatically"
-msgstr ""
+msgstr "Services, die aufgrund von Containerberechtigungen nicht der ausgewählten Servicesgruppe zugewiesen werden konnten, werden automatisch entfernt"
 
 #: src/Template/Servicegroups/append.php:95
 msgid "Append to service group"
-msgstr ""
+msgstr "An Servicegruppe anhängen"
 
 #: src/Template/Servicegroups/edit.php:47
 msgid "Edit service group:"
-msgstr ""
+msgstr "Bearbeite Servicegruppe"
 
 #: src/Template/Servicegroups/edit.php:164
 msgid "Update service group"
-msgstr ""
+msgstr "Aktualisiere Servicegruppe"
 
 #: src/Template/Servicegroups/extended.php:66
 msgid "Service Groups (0)"
-msgstr ""
+msgstr "Servicegruppen (0)"
 
 #: src/Template/Servicegroups/index.php:85
 msgid "Filter by service group name"
-msgstr ""
+msgstr "Filter nach Servicegruppenname"
 
 #: src/Template/Servicegroups/pdf/list_to_pdf.php:72
 msgid "Number of Servicegroups: "
-msgstr ""
+msgstr "Anzahl an Servicegruppen: "
 
 #: src/Template/Servicegroups/pdf/list_to_pdf.php:82
 #: src/Template/Services/pdf/list_to_pdf.php:68
 msgid "Number of Services: "
-msgstr ""
+msgstr "Anzahl an Services: "
 
 #: src/Template/Servicegroups/pdf/list_to_pdf.php:108
 msgid "Service group: "
-msgstr ""
+msgstr "Servicegruppe: "
 
 #: src/Template/Servicegroups/pdf/list_to_pdf.php:186
 msgid "There are no services defined"
-msgstr ""
+msgstr "Es sind keine Services definiert"
 
 #: src/Template/Services/add.php:48
 msgid "Create new service"
-msgstr ""
+msgstr "Erstelle neuen Service"
 
 #: src/Template/Services/add.php:86
 #: src/Template/Servicetemplategroups/allocate_to_host.php:95
 #: src/Template/Servicetemplates/add.php:85
 #: src/Template/Servicetemplates/edit.php:89
 msgid "Please select a host."
-msgstr ""
+msgstr "Bitte wähle einen Host."
 
 #: src/Template/Services/add.php:108
 #: src/Template/Services/edit.php:130
 msgid "Please select a service template."
-msgstr ""
+msgstr "Bitte wähle eine Servicevorlage."
 
 #: src/Template/Services/add.php:288
 #: src/Template/Services/edit.php:350
 #: src/Template/Servicetemplates/add.php:273
 #: src/Template/Servicetemplates/edit.php:277
 msgid "Enable freshness check"
-msgstr ""
+msgstr "Aktiviere die Frischeprüfung"
 
 #: src/Template/Services/add.php:303
 #: src/Template/Services/edit.php:365
 #: src/Template/Servicetemplates/add.php:285
 #: src/Template/Servicetemplates/edit.php:289
 msgid "Freshness threshold"
-msgstr ""
+msgstr "Frische-Schwelle"
 
 #: src/Template/Services/add.php:440
 #: src/Template/Services/edit.php:509
 #: src/Template/Servicetemplates/add.php:410
 #: src/Template/Servicetemplates/edit.php:413
 msgid "Number of failed attempts before the service will switch into hard state."
-msgstr ""
+msgstr "Anzahl der fehlgeschlagenen Versuche, bevor der Service in den harten Zustand wechselt."
 
 #: src/Template/Services/add.php:513
 #: src/Template/Services/edit.php:587
 msgid "Disable inheritance"
-msgstr ""
+msgstr "Vererbung deaktivieren"
 
 #: src/Template/Services/add.php:524
 #: src/Template/Services/add.php:527
@@ -13318,7 +13318,7 @@ msgstr ""
 #: src/Template/Services/edit.php:597
 #: src/Template/Services/edit.php:600
 msgid "service template"
-msgstr ""
+msgstr "Servicevorlage"
 
 #: src/Template/Services/add.php:704
 #: src/Template/Services/edit.php:774
@@ -15378,7 +15378,7 @@ msgstr "Berichte"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:122
 msgid "Downtime reports"
-msgstr "Ausfallzeitberichte"
+msgstr "Wartungszeitberichte"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:132
 msgid "Current State reports"
@@ -15430,19 +15430,19 @@ msgstr "Servicevorlagengruppen"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:354
 msgid "Host Downtimes"
-msgstr "Hostausfallzeiten"
+msgstr "HostWartungszeiten"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:364
 msgid "Service Downtimes"
-msgstr "Serviceausfallzeiten"
+msgstr "ServiceWartungszeiten"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:374
 msgid "Recurring Host Downtimes"
-msgstr "Wiederkehrende Hostausfallzeiten"
+msgstr "Wiederkehrende HostWartungszeiten"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:384
 msgid "Recurring Service Downtimes"
-msgstr "Wiederkehrende Serviceausfallzeiten"
+msgstr "Wiederkehrende ServiceWartungszeiten"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:394
 msgid "System Failures"

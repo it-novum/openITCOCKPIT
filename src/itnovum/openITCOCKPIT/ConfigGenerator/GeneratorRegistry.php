@@ -40,6 +40,7 @@ class GeneratorRegistry {
             new PerfdataBackend(),
             new GraphingDocker(),
             new StatusengineCfg(),
+            new Statusengine3Cfg(),
             new GraphiteWeb()
         ];
     }
@@ -60,7 +61,8 @@ class GeneratorRegistry {
                 new NagiosCfg()
             ],
             __('Statusengine')                                => [
-                new StatusengineCfg()
+                new StatusengineCfg(),
+                new Statusengine3Cfg()
             ],
             __('phpNSTA')                                     => [
                 new phpNSTAMaster()
