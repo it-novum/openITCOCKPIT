@@ -158,7 +158,6 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
                 </div>
             </main>
         </div>
-        <?php //printf('<script src="/%s"></script>', 'legacy/smartadmin/js/app.js'); ?>
     </div>
 </div>
 <?= $this->element('shortcut_links') ?>
