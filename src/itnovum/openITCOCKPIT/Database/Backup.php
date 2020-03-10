@@ -89,7 +89,28 @@ class Backup {
         'nagios_timedeventqueue',
         'nagios_timedevents',
         'nagios_timeperiod_timeranges',
-        'nagios_timeperiods'
+        'nagios_timeperiods',
+
+        'statusengine_dbversion',
+        'statusengine_host_acknowledgements',
+        'statusengine_host_downtimehistory',
+        'statusengine_host_notifications',
+        'statusengine_host_scheduleddowntimes',
+        'statusengine_host_statehistory',
+        'statusengine_hostchecks',
+        'statusengine_hoststatus',
+        'statusengine_logentries',
+        'statusengine_nodes',
+        'statusengine_perfdata',
+        'statusengine_service_acknowledgements',
+        'statusengine_service_downtimehistory',
+        'statusengine_service_notifications',
+        'statusengine_service_scheduleddowntimes',
+        'statusengine_service_statehistory',
+        'statusengine_servicechecks',
+        'statusengine_servicestatus',
+        'statusengine_tasks',
+        'statusengine_users'
     ];
 
     /**
@@ -148,7 +169,7 @@ class Backup {
      * @throws \Exception
      */
     public function restoreMysqlDump($dumpFile) {
-        if(!file_exists($dumpFile)){
+        if (!file_exists($dumpFile)) {
             throw new \Exception(sprintf('File "%s" does not exists', $dumpFile));
         }
 

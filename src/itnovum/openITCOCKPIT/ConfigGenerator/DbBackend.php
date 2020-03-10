@@ -50,8 +50,8 @@ class DbBackend extends ConfigGenerator implements ConfigInterface {
 
     protected $defaults = [
         'string' => [
-            'dbbackend' => 'Nagios'
-            /* @todo change me to Statusengine3 */
+            //'dbbackend' => 'Nagios', // Statusengine 2 / NDOUtils
+            'dbbackend' => 'Statusengine3' // Statusengine 3
         ]
     ];
 
