@@ -169,16 +169,13 @@ fi
 CODENAME=$(lsb_release -sc)
 if [[ "$1" == "install" ]]; then
     if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "bionic" ] || [ $CODENAME = "stretch" ]; then
-        systemctl restart gearman_worker
+        systemctl restart gearman_worker.service
     fi
     echo "Update successfully finished"
 else
 
-    systemctl restart sudo_server
-    systemctl restart oitc_cmd
-    systemctl restart gearman_worker
-    systemctl restart push_notification
-    systemctl restart nodejs_server
+    systemctl restart sudo_server.service oitc_cmd.service gearman_worker.service\
+     push_notification.service nodejs_server.service
 
     PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
     echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"

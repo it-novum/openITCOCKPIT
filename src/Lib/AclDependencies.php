@@ -562,6 +562,7 @@ class AclDependencies {
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'PerfdataBackend')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'GraphingDocker')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'StatusengineCfg')
+            ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'Statusengine3Cfg')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'GraphiteWeb')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'restorDefault')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'dynamicDirective');

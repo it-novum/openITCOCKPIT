@@ -153,6 +153,13 @@ class ConfigurationFilesController extends AppController {
     /**
      * @throws \Exception
      */
+    public function Statusengine3Cfg() {
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\Statusengine3Cfg', 'Statusengine3Cfg');
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function GraphiteWeb() {
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\GraphiteWeb', 'GraphiteWeb');
     }
@@ -184,7 +191,6 @@ class ConfigurationFilesController extends AppController {
 
         if ($ConfigurationFilesTable->saveConfigurationValuesForConfigFile($ConfigurationObjectClassName->getDbKey(), $config)) {
             $configHasChanged = $ConfigurationFilesTable->hasChanged($currentConfig, $config);
-            $configHasChanged = true;
 
             if ($configHasChanged) {
                 //Require rewirte of configuration file on disk?
