@@ -21,4 +21,5 @@ $btnHelper = (new ButtonGroupHelper('Display of system health notifications'))
 
 $html = $btnHelper->getHtml();
 echo $html;
+
 ob_get_flush();
