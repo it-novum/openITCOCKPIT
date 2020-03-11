@@ -26,6 +26,8 @@
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 
+$Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
+
 /** @var RepositoryChecker $RepositoryChecker */
 /** @var LsbRelease $LsbRelease */
 ?>
@@ -107,6 +109,13 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
+
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <img class="img-fluid" alt="Logo" src="<?= $Logo->getLogoForHtml() ?>" style="max-height: 209px;">
+                        </div>
+                    </div>
+
                     <div class="frame-wrap">
                         <dl class="dl-horizontal dl-inline">
                             <dt><?php echo __('System name'); ?>:</dt>
@@ -179,149 +188,202 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
                             <div class="widget-body padding-10"
                                  ng-show="processInformation.gearmanReachable && processInformation.isGearmanWorkerRunning"
                                  style="min-height: 215px;">
-                                <dl class="dl-horizontal dl-inline">
-                                    <dt><?php echo __('Monitoring engine'); ?>:</dt>
-                                    <dd>
-                    <span ng-show="processInformation.backgroundProcesses.isNagiosRunning"
-                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
-                                        <span ng-hide="processInformation.backgroundProcesses.isNagiosRunning"
-                                              class="critical"><i
-                                                class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
-                                        <a data-original-title="{{interfaceInformation.monitoring_engine}}"
-                                           data-placement="right"
-                                           rel="tooltip" class="text-info" href="javascript:void(0);"><i
-                                                class="fa fa-info-circle"></i></a>
-                                    </dd>
+                                <table class="table table-bordered table-sm">
+                                    <thead>
+                                    <tr>
+                                        <th><?= __('Process'); ?></th>
+                                        <th><?= __('State'); ?></th>
+                                        <th class="text-center"><i class="fas fa-info-circle"></i></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td><?= __('Monitoring engine'); ?></td>
+                                        <td>
+                                                <span class="badge border border-success text-success"
+                                                      ng-show="processInformation.backgroundProcesses.isNagiosRunning">
+                                                <?= __('Running') ?>
+                                            </span>
+                                            <span class="badge border border-danger text-danger"
+                                                  ng-hide="processInformation.backgroundProcesses.isNagiosRunning">
+                                                <?= __('Stopped') ?>
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a data-original-title="{{interfaceInformation.monitoring_engine}}"
+                                               data-placement="right"
+                                               rel="tooltip" class="text-info" href="javascript:void(0);">
+                                                <i class="fas fa-info-circle"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
 
-                                    <dt><?php echo __('Database connector'); ?>:</dt>
-                                    <dd ng-if="processInformation.isStatusengineInstalled">
-                    <span ng-show="processInformation.backgroundProcesses.isStatusengineRunning"
-                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
-                                        <span ng-hide="processInformation.backgroundProcesses.isStatusengineRunning"
-                                              class="critical"><i
-                                                class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
+                                    <tr>
+                                        <td><?= __('Database connector'); ?></td>
+                                        <td>
+                                                <span class="badge border border-success text-success"
+                                                      ng-show="processInformation.backgroundProcesses.isStatusengineRunning">
+                                                <?= __('Running') ?>
+                                            </span>
+                                            <span class="badge border border-danger text-danger"
+                                                  ng-hide="processInformation.backgroundProcesses.isStatusengineRunning">
+                                                <?= __('Stopped') ?>
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a data-original-title="<?= __('Statusengine') ?>"
+                                               data-placement="right"
+                                               rel="tooltip" class="text-info" href="javascript:void(0);">
+                                                <i class="fas fa-info-circle"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
 
-                                        <a data-original-title="<?php echo __('Statusengine'); ?>"
-                                           data-placement="right"
-                                           rel="tooltip" class="text-info" href="javascript:void(0);"><i
-                                                class="fa fa-info-circle"></i></a>
-                                    </dd>
-                                    <dd ng-if="processInformation.isNdoInstalled">
-                    <span ng-show="processInformation.backgroundProcesses.isNdoRunning"
-                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
-                                        <span ng-hide="processInformation.backgroundProcesses.isNdoRunning"
-                                              class="critical"><i
-                                                class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
+                                    <tr>
+                                        <td><?= __('Perfdata processor'); ?></td>
+                                        <td>
+                                            <span class="badge border border-success text-success"
+                                                  ng-show="processInformation.backgroundProcesses.isStatusengineRunning">
+                                                <?= __('Running') ?>
+                                            </span>
+                                            <span class="badge border border-danger text-danger"
+                                                  ng-hide="processInformation.backgroundProcesses.isStatusengineRunning">
+                                                <?= __('Stopped') ?>
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a data-original-title="<?= __('Statusengine') ?>"
+                                               data-placement="right"
+                                               rel="tooltip" class="text-info" href="javascript:void(0);">
+                                                <i class="fas fa-info-circle"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
 
-                                        <a data-original-title="<?php echo __('NDOUtils'); ?>" data-placement="right"
-                                           rel="tooltip" class="text-info" href="javascript:void(0);"><i
-                                                class="fa fa-info-circle"></i></a>
-                                    </dd>
+                                    <tr>
+                                        <td><?= __('Queuing engine'); ?></td>
+                                        <td>
+                                            <span class="badge border border-success text-success">
+                                                <?= __('Running') ?>
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a data-original-title="<?php echo h('openITCOCKPIT uses the Gearman Job Server to run different background tasks'); ?>"
+                                               data-placement="right" rel="tooltip" class="text-info"
+                                               href="javascript:void(0);">
+                                                <i class="fa fa-info-circle"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
 
-                                    <dt><?php echo __('Perfdata processor'); ?>:</dt>
-                                    <dd ng-if="processInformation.isStatusengineInstalled">
-                    <span ng-show="processInformation.backgroundProcesses.isStatusengineRunning"
-                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
-                                        <span ng-hide="processInformation.backgroundProcesses.isStatusengineRunning"
-                                              class="critical"><i
-                                                class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
+                                    <tr>
+                                        <td><?= __('Gearman Worker'); ?></td>
+                                        <td>
+                                            <span class="badge border border-success text-success"
+                                                  ng-show="processInformation.backgroundProcesses.isGearmanWorkerRunning">
+                                                <?= __('Running') ?>
+                                            </span>
+                                            <span class="badge border border-danger text-danger"
+                                                  ng-hide="processInformation.backgroundProcesses.isGearmanWorkerRunning">
+                                                <?= __('Stopped') ?>
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a data-original-title="<?php echo h('Execute background jobs like refresh of monitoring configuration.'); ?>"
+                                               data-placement="right" rel="tooltip" class="text-info"
+                                               href="javascript:void(0);">
+                                                <i class="fa fa-info-circle"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
 
-                                        <a data-original-title="<?php echo __('Statusengine'); ?>"
-                                           data-placement="right"
-                                           rel="tooltip" class="text-info" href="javascript:void(0);"><i
-                                                class="fa fa-info-circle"></i></a>
-                                    </dd>
-                                    <dd ng-if="!processInformation.isStatusenginePerfdataProcessor">
-                    <span ng-show="processInformation.backgroundProcesses.isNpcdRunning"
-                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
-                                        <span ng-hide="processInformation.backgroundProcesses.isNpcdRunning"
-                                              class="critical"><i
-                                                class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
+                                    <tr>
+                                        <td><?= __('OITC Cmd'); ?></td>
+                                        <td>
+                                            <span class="badge border border-success text-success"
+                                                  ng-show="processInformation.backgroundProcesses.isOitcCmdRunning">
+                                                <?= __('Running') ?>
+                                            </span>
+                                            <span class="badge border border-danger text-danger"
+                                                  ng-hide="processInformation.backgroundProcesses.isOitcCmdRunning">
+                                                <?= __('Stopped') ?>
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a data-original-title="<?php echo h('External command interface used by Check_MK to pass check results.'); ?>"
+                                               data-placement="right" rel="tooltip" class="text-info"
+                                               href="javascript:void(0);">
+                                                <i class="fa fa-info-circle"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
 
-                                        <a data-original-title="<?php echo __('NPCD'); ?>" data-placement="right"
-                                           rel="tooltip" class="text-info" href="javascript:void(0);"><i
-                                                class="fa fa-info-circle"></i></a>
-                                    </dd>
+                                    <tr>
+                                        <td><?= __('phpNSTA'); ?></td>
+                                        <td>
+                                            <span class="badge border border-success text-success"
+                                                  ng-show="processInformation.backgroundProcesses.isPhpNstaRunning">
+                                                <?= __('Running') ?>
+                                            </span>
+                                            <span class="badge border border-danger text-danger"
+                                                  ng-hide="processInformation.backgroundProcesses.isPhpNstaRunning">
+                                                <?= __('Stopped') ?>
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a data-original-title="<?php echo h('phpNSTA is only installed and running if you are using Distributed Monitoring.'); ?>"
+                                               data-placement="right" rel="tooltip" class="text-info"
+                                               href="javascript:void(0);">
+                                                <i class="fa fa-info-circle"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
 
-                                    <dt><?php echo __('Queuing engine'); ?>:</dt>
-                                    <dd>
-                                        <span class="ok"><i class="fa fa-check"></i> <?php echo __('Running'); ?></span>
-                                        <a data-original-title="<?php echo h('openITCOCKPIT uses the Gearman Job Server to run different background tasks'); ?>"
-                                           data-placement="right" rel="tooltip" class="text-info"
-                                           href="javascript:void(0);"><i
-                                                class="fa fa-info-circle"></i></a>
-                                    </dd>
+                                    <tr>
+                                        <td><?= __('Push notification service'); ?></td>
+                                        <td>
+                                            <span class="badge border border-success text-success"
+                                                  ng-show="processInformation.backgroundProcesses.isPushNotificationRunning">
+                                                <?= __('Running') ?>
+                                            </span>
+                                            <span class="badge border border-danger text-danger"
+                                                  ng-hide="processInformation.backgroundProcesses.isPushNotificationRunning">
+                                                <?= __('Stopped') ?>
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a data-original-title="<?php echo h('Service required to send push notifications to your browser window.'); ?>"
+                                               data-placement="right" rel="tooltip" class="text-info"
+                                               href="javascript:void(0);">
+                                                <i class="fa fa-info-circle"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
 
-                                    <dt><?php echo __('Gearman Worker'); ?>:</dt>
-                                    <dd>
-                    <span ng-show="processInformation.backgroundProcesses.isGearmanWorkerRunning"
-                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
-                                        <span ng-hide="processInformation.backgroundProcesses.isGearmanWorkerRunning"
-                                              class="critical"><i
-                                                class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
+                                    <tr>
+                                        <td><?= __('NodeJS Server'); ?></td>
+                                        <td>
+                                            <span class="badge border border-success text-success"
+                                                  ng-show="processInformation.backgroundProcesses.isNodeJsServerRunning">
+                                                <?= __('Running') ?>
+                                            </span>
+                                            <span class="badge border border-danger text-danger"
+                                                  ng-hide="processInformation.backgroundProcesses.isNodeJsServerRunning">
+                                                <?= __('Stopped') ?>
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a data-original-title="<?php echo h('Service required to run server side JavaScript to render charts to email notifications and PDF reports.'); ?>"
+                                               data-placement="right" rel="tooltip" class="text-info"
+                                               href="javascript:void(0);">
+                                                <i class="fa fa-info-circle"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
 
-                                        <a data-original-title="<?php echo __('Execute background jobs like refresh of monitoring configuration.'); ?>"
-                                           data-placement="right"
-                                           rel="tooltip" class="text-info" href="javascript:void(0);"><i
-                                                class="fa fa-info-circle"></i></a>
-                                    </dd>
+                                    </tbody>
+                                </table>
 
-                                    <dt><?php echo __('OITC Cmd'); ?>:</dt>
-                                    <dd>
-                    <span ng-show="processInformation.backgroundProcesses.isOitcCmdRunning"
-                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
-                                        <span ng-hide="processInformation.backgroundProcesses.isOitcCmdRunning"
-                                              class="critical"><i
-                                                class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
-
-                                        <a data-original-title="<?php echo __('External command interface used by Check_MK to pass check results.'); ?>"
-                                           data-placement="right"
-                                           rel="tooltip" class="text-info" href="javascript:void(0);"><i
-                                                class="fa fa-info-circle"></i></a>
-                                    </dd>
-
-                                    <dt><?php echo __('phpNSTA'); ?>:</dt>
-                                    <dd>
-                    <span ng-show="processInformation.backgroundProcesses.isPhpNstaRunning"
-                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
-                                        <span ng-hide="processInformation.backgroundProcesses.isPhpNstaRunning"
-                                              class="critical"><i
-                                                class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
-
-                                        <a data-original-title="<?php echo __('phpNSTA is only installed and running if you are using Distributed Monitoring.'); ?>"
-                                           data-placement="right"
-                                           rel="tooltip" class="text-info" href="javascript:void(0);"><i
-                                                class="fa fa-info-circle"></i></a>
-                                    </dd>
-
-                                    <dt><?php echo __('Push notification service'); ?>:</dt>
-                                    <dd>
-                    <span ng-show="processInformation.backgroundProcesses.isPushNotificationRunning"
-                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
-                                        <span ng-hide="processInformation.backgroundProcesses.isPushNotificationRunning"
-                                              class="critical"><i
-                                                class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
-
-                                        <a data-original-title="<?php echo __('Service required to send push notifications to your browser window.'); ?>"
-                                           data-placement="right"
-                                           rel="tooltip" class="text-info" href="javascript:void(0);"><i
-                                                class="fa fa-info-circle"></i></a>
-                                    </dd>
-
-                                    <dt><?php echo __('NodeJS Server'); ?>:</dt>
-                                    <dd>
-                    <span ng-show="processInformation.backgroundProcesses.isNodeJsServerRunning"
-                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
-                                        <span ng-hide="processInformation.backgroundProcesses.isNodeJsServerRunning"
-                                              class="critical"><i
-                                                class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
-
-                                        <a data-original-title="<?php echo __('Service required to run server side JavaScript to render charts to email notifications and PDF reports.'); ?>"
-                                           data-placement="right"
-                                           rel="tooltip" class="text-info" href="javascript:void(0);"><i
-                                                class="fa fa-info-circle"></i></a>
-                                    </dd>
-                                </dl>
                             </div>
                         </div>
                     </div>
@@ -716,7 +778,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
         #phpinfo .center {text-align: center;}
         #phpinfo .center table {margin: 1em auto; text-align: left;}
         #phpinfo .center th {text-align: center !important;}
-        #phpinfo td, th {border: 1px solid #eee; font-size: 75%; vertical-align: baseline; padding: 4px 5px;}
+        #phpinfo td, th {border: 1px solid #eee; font-size: 0.8125rem; vertical-align: baseline; padding: 4px 5px;}
         #phpinfo h1 {font-size: 150%;}
         #phpinfo h2 {font-size: 125%;}
         #phpinfo .p {text-align: left;}

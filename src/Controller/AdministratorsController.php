@@ -121,16 +121,8 @@ class AdministratorsController extends AppController {
             $isStatusengineInstalled = true;
         }
 
-        $isStatusenginePerfdataProcessor = false;
-        $statusengineConfig = '/opt/openitc/statusengine2/cakephp/app/Config/Statusengine.php';
-        if (file_exists($statusengineConfig)) {
-            require_once $statusengineConfig;
-            if (isset($config['process_perfdata'])) {
-                if ($config['process_perfdata'] === true) {
-                    $isStatusenginePerfdataProcessor = true;
-                }
-            }
-        }
+        //NPCD is not supported anymore!
+        $isStatusenginePerfdataProcessor = true;
 
         $processInformation = [
             'gearmanReachable'                => $gearmanReachable,
