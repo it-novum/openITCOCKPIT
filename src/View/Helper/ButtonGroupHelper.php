@@ -26,11 +26,11 @@ namespace App\View\Helper;
 
 class ButtonGroupHelper implements ButtonGroupHelperInterface {
 
-    private $templateData = [];
     private $groupElements = [];
+    private $buttonGroupAriaLabel = '';
 
-    public function __construct($templateData) {
-        $this->templateData = $templateData;
+    public function __construct(string $buttonGroupAriaLabel = '') {
+        $this->buttonGroupAriaLabel = $buttonGroupAriaLabel;
     }
 
     private function  createButtonGroupWithContent(): string {
@@ -38,44 +38,17 @@ class ButtonGroupHelper implements ButtonGroupHelperInterface {
 
         $html .= $this->iterateOverManuallyAddedElements();
 
-        if (isset($this->templateData['GroupElement'])) {
-            foreach ($this->templateData['GroupElement'] as $element) {
-                $html .= $this->buttonElement($element);
-            }
-        }
-
         $html .= $this->buttonGroupCloses();
 
         return $html;
     }
 
     private function buttonGroupOpens(): string {
-        return '<div class="btn-group btn-group-xs mr-2" role="group" aria-label="' . $this->templateData['GroupAriaLabel'] . '">';
-    }
-
-    private function buttonElement($element): string {
-
-        if (! isset($element['data-original-title'])) {
-            return PHP_EOL .'    <button
-        class="btn ' . $element['class'] . '"
-    >' . $element['innerHTML'] . '</button>
-';
-        } else {
-            return PHP_EOL .'    <button
-        class="btn ' . $element['class'] . '"
-        ' . $this->appendDataAttributesToHtmlTag($element['data-original-title']) . '>' . $element['innerHTML'] . '</button>
-';
-        }
-
-
-    }
-
-    private function appendDataAttributesToHtmlTag(string $titleToBeDisplayed): string {
-        return 'data-original-title="' . $titleToBeDisplayed . '" data-placement="bottom" rel="tooltip" data-container="body"';
+        return '<div class="btn-group btn-group-xs mr-2" role="group" aria-label="' . $this->buttonGroupAriaLabel . '">';
     }
 
     private function buttonGroupCloses(): string {
-        return '</div>';
+        return PHP_EOL . '</div>';
     }
 
     public function getHtml(): string {
@@ -83,19 +56,19 @@ class ButtonGroupHelper implements ButtonGroupHelperInterface {
     }
 
     public function addIconButton(string $iconCssSelector, string $dataOriginalTitle=''): ButtonGroupHelperInterface {
-        $this->groupElements[] = PHP_EOL . '    <button class="btn btn-default" data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body"><i class="' . $iconCssSelector . '"></i></button>';
+        $this->groupElements[] = '<button class="btn btn-default" data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body"><i class="' . $iconCssSelector . '"></i></button>';
 
         return $this;
     }
 
     public function addButton(string $innerHtml, string $cssSelector = 'btn-default'): ButtonGroupHelperInterface {
-        $this->groupElements[] = PHP_EOL . '    <button class="btn ' . $cssSelector . '">' . $innerHtml . '</button>';
+        $this->groupElements[] = '<button class="btn ' . $cssSelector . '">' . $innerHtml . '</button>';
 
         return $this;
     }
 
-    public function addButtonWithData(string $innerHtml, string $cssSelector = 'btn-default', $dataOriginalTitle = ''): ButtonGroupHelperInterface {
-        $this->groupElements[] = PHP_EOL . '    <button class="btn ' . $cssSelector . '" data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body">' . $innerHtml . '</button>';
+    public function addButtonWithTooltip(string $innerHtml, string $cssSelector = 'btn-default', $dataOriginalTitle = ''): ButtonGroupHelperInterface {
+        $this->groupElements[] = '<button class="btn ' . $cssSelector . '" data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body">' . $innerHtml . '</button>';
 
         return $this;
     }
@@ -104,14 +77,14 @@ class ButtonGroupHelper implements ButtonGroupHelperInterface {
         $html = '';
 
         foreach ($this->groupElements as $element) {
-            $html.= $element;
+            $html.= PHP_EOL . $this->indent() . $element;
         }
 
         return $html;
     }
 
     public function addButtonWithTogglingMenu(string $iconCssSelector, string $dataOriginalTitle = '', string $htmlMenu = ''): ButtonGroupHelperInterface {
-        $this->groupElements[] = PHP_EOL . '    <a href="javascript:void(0);" class="btn btn-default" data-toggle="dropdown" data-original-title="' . $dataOriginalTitle . '"  data-placement="bottom" rel="tooltip"><i class="' . $iconCssSelector . '"></i></a>';
+        $this->groupElements[] = '<a href="javascript:void(0);" class="btn btn-default" data-toggle="dropdown" data-original-title="' . $dataOriginalTitle . '"  data-placement="bottom" rel="tooltip"><i class="' . $iconCssSelector . '"></i></a>';
         $this->groupElements[] = $this->attachDropDownMenu($htmlMenu);
 
         return $this;
@@ -121,9 +94,23 @@ class ButtonGroupHelper implements ButtonGroupHelperInterface {
         return $html;
     }
 
-    public function addButtonWithDataAndSRef(string $innerHtml, string $cssSelector = 'btn-default', $dataOriginalTitle = '',$sRef = ''): ButtonGroupHelperInterface {
-        $this->groupElements[] = PHP_EOL . '    <button class="btn ' . $cssSelector . '" data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body" ui-sref="' . $sRef . '">' . $innerHtml . '</button>';
+    public function addButtonWithTooltipAndSRef(string $innerHtml, string $cssSelector = 'btn-default', $dataOriginalTitle = '', $sRef = ''): ButtonGroupHelperInterface {
+        $this->groupElements[] = '<button class="btn ' . $cssSelector . '" data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body" ui-sref="' . $sRef . '">' . $innerHtml . '</button>';
 
         return $this;
     }
+
+    public function addIconButtonWithSRef(string $iconCssSelector, string $dataOriginalTitle='', string $sRef = ''): ButtonGroupHelperInterface {
+        $this->groupElements[] = '<button class="btn btn-default" data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body" ui-sref="' . $sRef . '"><i class="' . $iconCssSelector . '"></i></button>';
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    private function indent(): string {
+        return '    ';
+    }
+
 }

@@ -29,8 +29,9 @@ namespace App\View\Helper;
 interface ButtonGroupHelperInterface {
     public function getHtml(): string;
     public function addIconButton(string $iconCssSelector, string $dataOriginalTitle=''): ButtonGroupHelperInterface;
-    public function addButtonWithData(string $innerHtml, string $cssSelector = 'btn-default', $dataOriginalTitle = ''): ButtonGroupHelperInterface;
+    public function addIconButtonWithSRef(string $iconCssSelector, string $dataOriginalTitle='', string $sRef = ''): ButtonGroupHelperInterface;
     public function addButton(string $innerHtml, string $cssSelector = 'btn-default'): ButtonGroupHelperInterface;
+    public function addButtonWithTooltip(string $innerHtml, string $cssSelector = 'btn-default', $dataOriginalTitle = ''): ButtonGroupHelperInterface;
     public function addButtonWithTogglingMenu(string $iconCssSelector, string $dataOriginalTitle = '', string $htmlMenu = ''): ButtonGroupHelperInterface;
-    public function addButtonWithDataAndSRef(string $innerHtml, string $cssSelector = 'btn-default', $dataOriginalTitle = '',$href = ''): ButtonGroupHelperInterface;
+    public function addButtonWithTooltipAndSRef(string $innerHtml, string $cssSelector = 'btn-default', $dataOriginalTitle = '', $href = ''): ButtonGroupHelperInterface;
 }

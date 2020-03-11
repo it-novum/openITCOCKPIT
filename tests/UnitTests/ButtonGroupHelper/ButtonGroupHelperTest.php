@@ -39,12 +39,7 @@ class ButtonGroupHelperTest extends TestCase {
     private $sut;
 
     public function setUp(): void {
-        $templateData = [];
-        $templateData['GroupAriaLabel'] = 'unit testing';
-        $templateData['GroupElement']['first']['class'] = 'test-added-css-class';
-        $templateData['GroupElement']['first']['innerHTML'] = 'unimportant text';
-
-        $this->sut = new ButtonGroupHelper($templateData);
+        $this->sut = new ButtonGroupHelper('unit testing');
     }
 
     public function test_classCanBeInitialized() {
@@ -54,12 +49,9 @@ class ButtonGroupHelperTest extends TestCase {
     public function test_addIconButton() {
         $iconCssSelector = 'fas fa-cog';
 
-        $expected = '<div class="btn-group btn-group-xs mr-2" role="group" aria-label="unit testing">'. PHP_EOL .
-            '    <button class="btn btn-default" data-original-title="" data-placement="bottom" rel="tooltip" data-container="body"><i class="fas fa-cog"></i></button>' . PHP_EOL .
-            '    <button
-        class="btn test-added-css-class"
-    >unimportant text</button>
-</div>';
+        $expected = $this->getExpectedOpeningButtonGroupTag()
+            . '    <button class="btn btn-default" data-original-title="" data-placement="bottom" rel="tooltip" data-container="body"><i class="fas fa-cog"></i></button>'
+            . $this->getExpectedClosingButtonGroupTag();
 
         $this->sut->addIconButton($iconCssSelector);
 
@@ -73,12 +65,9 @@ class ButtonGroupHelperTest extends TestCase {
         $iconCssSelector = 'fas fa-cog';
         $dataOriginalTitle = 'test related title';
 
-        $expected = '<div class="btn-group btn-group-xs mr-2" role="group" aria-label="unit testing">'. PHP_EOL .
-            '    <button class="btn btn-default" data-original-title="test related title" data-placement="bottom" rel="tooltip" data-container="body"><i class="fas fa-cog"></i></button>' . PHP_EOL .
-            '    <button
-        class="btn test-added-css-class"
-    >unimportant text</button>
-</div>';
+        $expected = $this->getExpectedOpeningButtonGroupTag()
+            . '    <button class="btn btn-default" data-original-title="test related title" data-placement="bottom" rel="tooltip" data-container="body"><i class="fas fa-cog"></i></button>'
+            . $this->getExpectedClosingButtonGroupTag();
 
         $this->sut->addIconButton($iconCssSelector,$dataOriginalTitle);
 
@@ -92,12 +81,9 @@ class ButtonGroupHelperTest extends TestCase {
         $cssSelector = 'btn-danger';
         $innerHtml = 'test related unimportant text';
 
-        $expected = '<div class="btn-group btn-group-xs mr-2" role="group" aria-label="unit testing">'. PHP_EOL .
-            '    <button class="btn btn-danger">test related unimportant text</button>' .PHP_EOL .
-            '    <button
-        class="btn test-added-css-class"
-    >unimportant text</button>
-</div>';
+        $expected = $this->getExpectedOpeningButtonGroupTag()
+            . '    <button class="btn btn-danger">test related unimportant text</button>'
+            . $this->getExpectedClosingButtonGroupTag();
 
         $this->sut->addButton($innerHtml, $cssSelector);
 
@@ -111,14 +97,11 @@ class ButtonGroupHelperTest extends TestCase {
         $innerHtml = 'test related unimportant text';
         $dataOriginalTitle = 'test related data original title';
 
-        $expected = '<div class="btn-group btn-group-xs mr-2" role="group" aria-label="unit testing">'. PHP_EOL .
-            '    <button class="btn btn-danger" data-original-title="test related data original title" data-placement="bottom" rel="tooltip" data-container="body">test related unimportant text</button>' .PHP_EOL .
-            '    <button
-        class="btn test-added-css-class"
-    >unimportant text</button>
-</div>';
+        $expected = $this->getExpectedOpeningButtonGroupTag()
+            . '    <button class="btn btn-danger" data-original-title="test related data original title" data-placement="bottom" rel="tooltip" data-container="body">test related unimportant text</button>'
+            . $this->getExpectedClosingButtonGroupTag();
 
-        $this->sut->addButtonWithData($innerHtml, $cssSelector, $dataOriginalTitle);
+        $this->sut->addButtonWithTooltip($innerHtml, $cssSelector, $dataOriginalTitle);
 
         $actual = $this->sut->getHtml();
 
@@ -127,11 +110,8 @@ class ButtonGroupHelperTest extends TestCase {
 
 
     public function test_getView_returnsHtmlTemplate() {
-        $expected = '<div class="btn-group btn-group-xs mr-2" role="group" aria-label="unit testing">'. PHP_EOL .
-'    <button
-        class="btn test-added-css-class"
-    >unimportant text</button>
-</div>';
+        $expected = $this->getExpectedOpeningButtonGroupTag()
+            . $this->getExpectedClosingButtonGroupTagWithoutLineBreak();
 
         $actual = $this->sut->getHtml();
 
@@ -139,17 +119,61 @@ class ButtonGroupHelperTest extends TestCase {
     }
 
     public function test_addButtonWithTogglingMenu() {
-        $expected = '<div class="btn-group btn-group-xs mr-2" role="group" aria-label="unit testing">
-    <a href="javascript:void(0);" class="btn btn-default" data-toggle="dropdown" data-original-title="test related title"  data-placement="bottom" rel="tooltip"><i class="css selector"></i></a><div>attachedMenu</div>
-    <button
-        class="btn test-added-css-class"
-    >unimportant text</button>
-</div>';
+        $expected = $this->getExpectedOpeningButtonGroupTag()
+        . '    <a href="javascript:void(0);" class="btn btn-default" data-toggle="dropdown" data-original-title="test related title"  data-placement="bottom" rel="tooltip"><i class="css selector"></i></a>' . PHP_EOL
+        . '    <div>attachedMenu</div>'
+        . $this->getExpectedClosingButtonGroupTag();
+
         $this->sut->addButtonWithTogglingMenu('css selector','test related title', '<div>attachedMenu</div>');
 
         $actual = $this->sut->getHtml();
 
         $this->assertEquals($expected,$actual);
 
+    }
+
+    public function test_addButtonWithTooltipAndSRef() {
+        $expected = $this->getExpectedOpeningButtonGroupTag()
+            . '    <button class="btn btn-danger" data-original-title="test related data original title" data-placement="bottom" rel="tooltip" data-container="body" ui-sref="/an/url/reference">test related text</button>'
+            . $this->getExpectedClosingButtonGroupTag();
+
+        $this->sut->addButtonWithTooltipAndSRef('test related text','btn-danger','test related data original title','/an/url/reference');
+
+        $actual = $this->sut->getHtml();
+
+        $this->assertEquals($expected,$actual);
+    }
+
+    public function test_addIconButtonWithSRef() {
+        $expected = $this->getExpectedOpeningButtonGroupTag()
+        . '    <button class="btn btn-default" data-original-title="test related tooltip" data-placement="bottom" rel="tooltip" data-container="body" ui-sref="/an/url/reference/for/icons"><i class="fas fa-question"></i></button>'
+        . $this->getExpectedClosingButtonGroupTag();
+
+        $this->sut->addIconButtonWithSRef('fas fa-question','test related tooltip','/an/url/reference/for/icons');
+
+        $actual = $this->sut->getHtml();
+
+        $this->assertEquals($expected,$actual);
+    }
+
+    /**
+     * @return string
+     */
+    private function getExpectedOpeningButtonGroupTag(): string {
+        return '<div class="btn-group btn-group-xs mr-2" role="group" aria-label="unit testing">'. PHP_EOL ;
+    }
+
+    /**
+     * @return string
+     */
+    private function getExpectedClosingButtonGroupTag(): string {
+        return PHP_EOL . '</div>';
+    }
+
+    /**
+     * @return string
+     */
+    private function getExpectedClosingButtonGroupTagWithoutLineBreak(): string {
+        return '</div>';
     }
 }
