@@ -172,13 +172,13 @@
                     <div class="row padding-top-15" ng-show="hostgroupId > 0">
                         <div class="col-xs-6 col-md-2">
                                 <span ng-click="selectAll()" class="pointer">
-                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <i class="fa fa-check-square"></i>
                                     <?php echo __('Select all'); ?>
                                 </span>
                         </div>
                         <div class="col-xs-6 col-md-2">
                                 <span ng-click="undoSelection()" class="pointer">
-                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <i class="fa fa-square"></i>
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                         </div>

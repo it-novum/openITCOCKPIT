@@ -29,7 +29,7 @@
                         </a>
                     </li>
                     <!-- static button -->
-                    <li>
+                    <li style="display: none;">
                         <a href="javascript:void(0);" class="app-list-item linkListAddMore text-white border-0 m-0">
                             <div class="icon-stack">
                                 <i class="base base-7 icon-stack-3x opacity-100 color-primary-300"></i>
