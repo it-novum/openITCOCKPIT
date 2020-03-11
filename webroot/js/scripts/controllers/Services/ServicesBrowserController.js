@@ -48,7 +48,6 @@ angular.module('openITCOCKPIT')
         $scope.showTimelineTab = false;
         $scope.timelineIsLoading = false;
         $scope.failureDurationInPercent = null;
-        $scope.lastLoadDate = Date.now();
 
         $scope.graph = {
             graphAutoRefresh: true,
@@ -90,7 +89,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
-            //$scope.lastLoadDate = Date.now();
             $q.all([
                 $http.get("/services/browser/" + $scope.id + ".json", {
                     params: {
@@ -146,8 +144,8 @@ angular.module('openITCOCKPIT')
 
                 $scope.serverTimeDateObject = new Date($scope.timezone.server_time);
 
-                var graphStart = (parseInt($scope.serverTimeDateObject.getTime() / 1000, 10) - (3 * 3600));
-                var graphEnd = parseInt($scope.serverTimeDateObject.getTime() / 1000, 10);
+                graphStart = (parseInt($scope.serverTimeDateObject.getTime() / 1000, 10) - (3 * 3600));
+                graphEnd = parseInt($scope.serverTimeDateObject.getTime() / 1000, 10);
 
                 $scope.dataSources = [];
                 for(var dsName in results[0].data.mergedService.Perfdata){
@@ -158,8 +156,7 @@ angular.module('openITCOCKPIT')
                 }
 
                 if($scope.mergedService.has_graph){
-                    loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, graphStart, graphEnd, true);
-                }
+                    loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, graphStart, graphEnd, true);                }
 
                 if(typeof $scope.serviceBrowserMenuConfig === "undefined"){
                     $scope.serviceBrowserMenuConfig = {
@@ -287,7 +284,6 @@ angular.module('openITCOCKPIT')
 
 
         var loadGraph = function(hostUuid, serviceuuid, appendData, start, end, saveStartAndEnd){
-
             if(saveStartAndEnd){
                 lastGraphStart = start;
                 lastGraphEnd = end;
@@ -295,6 +291,7 @@ angular.module('openITCOCKPIT')
 
             //The last timestamp in the y-axe
             graphRenderEnd = end;
+
             if($scope.dataSources.length > 0){
                 $scope.isLoadingGraph = true;
                 $http.get('/Graphgenerators/getPerfdataByUuid.json', {
@@ -332,6 +329,7 @@ angular.module('openITCOCKPIT')
                             };
                         }
                     }
+
                     if(appendData === true){
                         if(result.data.performance_data.length > 0){
                             //Append new data to current graph
@@ -341,12 +339,9 @@ angular.module('openITCOCKPIT')
                             }
                         }
                     }
-
-
                     if($scope.graph.graphAutoRefresh === true && $scope.graphAutoRefreshInterval > 1000){
                         enableGraphAutorefresh();
                     }
-
                     renderGraph($scope.perfdata);
                 });
             }
@@ -404,7 +399,7 @@ angular.module('openITCOCKPIT')
             var self = this;
             var $graph_data_tooltip = $('#graph_data_tooltip');
 
-            var fooJS = new Date(timestamp + ($scope.timezone.user_offset * 1000));
+            var fooJS = new Date(timestamp);
             var fixTime = function(value){
                 if(value < 10){
                     return '0' + value;
@@ -412,7 +407,7 @@ angular.module('openITCOCKPIT')
                 return value;
             };
 
-            var humanTime = fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
+            var humanTime = fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
 
             $graph_data_tooltip
                 .html('<i class="fa fa-clock-o"></i> ' + humanTime + '<br /><strong>' + contents + '</strong>')
@@ -484,7 +479,7 @@ angular.module('openITCOCKPIT')
 
             var graph_data = [];
             for(var timestamp in performance_data.data){
-                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_offset * 1000));
+                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
                 graph_data.push([frontEndTimestamp, performance_data.data[timestamp]]);
             }
 
@@ -527,8 +522,10 @@ angular.module('openITCOCKPIT')
             if(zoomCallbackWasBind === false){
                 $("#graphCanvas").bind("plotselected", function(event, ranges){
                     var start = parseInt(ranges.xaxis.from / 1000, 10);
-                    var end = parseInt(ranges.xaxis.to / 1000);
+                    var end = parseInt(ranges.xaxis.to / 1000, 10);
 
+                    start -= $scope.timezone.user_time_to_server_offset;
+                    end -= $scope.timezone.user_time_to_server_offset;
 
                     //Zoomed from right to left?
                     if(start > end){
@@ -537,7 +534,7 @@ angular.module('openITCOCKPIT')
                         start = tmpStart;
                     }
 
-                    var currentTimestamp = Math.floor(Date.now() / 1000);
+                    var currentTimestamp = Math.floor($scope.serverTimeDateObject.getTime() / 1000);
                     var graphAutoRefreshIntervalInSeconds = $scope.graphAutoRefreshInterval / 1000;
 
                     //Only enable autorefresh, if graphEnd timestamp is near to now
@@ -777,7 +774,8 @@ angular.module('openITCOCKPIT')
                     lastTimestampInCurrentData = lastTimestampInCurrentData / 1000;
 
                     var start = lastTimestampInCurrentData;
-                    var end = Math.floor(Date.now() / 1000);
+                    $scope.serverTimeDateObject = new Date($scope.serverTimeDateObject.getTime() + $scope.graphAutoRefreshInterval);
+                    var end = Math.floor($scope.serverTimeDateObject.getTime() / 1000);
                     if(start > 0){
                         loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, true, start, end, false);
                     }
