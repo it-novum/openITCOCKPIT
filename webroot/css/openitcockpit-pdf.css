@@ -1,0 +1,13 @@
+.pdf-card {
+    border: 1px solid #ccc;
+    margin: 15px;
+}
+
+.pdf-card-header{
+    border-bottom: 1px solid #ccc;
+    padding: 4px 5px 2px 5px;
+}
+
+.pdf-card-body {
+    padding: 5px 10px;
+}
