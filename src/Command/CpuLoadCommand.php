@@ -64,8 +64,9 @@ class CpuLoadCommand extends Command implements CronjobInterface {
             $io->out('Fetch current CPU load...', 0);
             $load = file('/proc/loadavg');
             $records = [];
-            if (file_exists(TMP . 'loadavg')) {
-                $records = file(TMP . 'loadavg');
+            //do not use TMP constant because CLI uses tmp_cli not tmp folder!
+            if (file_exists(ROOT . DS . 'tmp' . DS . 'loadavg')) {
+                $records = file(ROOT . DS . 'tmp' . DS . 'loadavg');
             }
             $newLoad = [];
             if (sizeof($records) > 15) {
@@ -80,7 +81,7 @@ class CpuLoadCommand extends Command implements CronjobInterface {
             }
             $newLoad[] = time() . ' ' . $load[0];
             unset($records);
-            $file = fopen(TMP . 'loadavg', 'w+');
+            $file = fopen(ROOT . DS . 'tmp' . DS . 'loadavg', 'w+');
             foreach ($newLoad as $line) {
                 fwrite($file, $line);
             }
