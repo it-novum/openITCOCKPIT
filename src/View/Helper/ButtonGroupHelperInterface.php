@@ -29,7 +29,7 @@ namespace App\View\Helper;
 interface ButtonGroupHelperInterface {
     public function getHtml(): string;
     public function addIconButton(string $iconCssSelector, string $dataOriginalTitle=''): ButtonGroupHelperInterface;
-    public function addIconButtonWithSRef(string $iconCssSelector, string $dataOriginalTitle='', string $sRef = ''): ButtonGroupHelperInterface;
+    public function addIconButtonWithSRef(string $iconCssSelector, string $dataOriginalTitle='', string $sRef = '', string $additionalHtmlAttributes = ''): ButtonGroupHelperInterface;
     public function addIconButtonWithHRef(string $iconCssSelector, string $dataOriginalTitle='', string $hRef = ''): ButtonGroupHelperInterface;
     public function addButton(string $innerHtml, string $cssSelector = 'btn-default'): ButtonGroupHelperInterface;
     public function addButtonWithTooltip(string $innerHtml, string $cssSelector = 'btn-default', $dataOriginalTitle = ''): ButtonGroupHelperInterface;

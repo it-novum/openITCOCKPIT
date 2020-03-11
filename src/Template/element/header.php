@@ -88,22 +88,33 @@ private function translate($singular) {
  * @return string
  */
 private function displayExportRunningNotificationIfEnabledInSettings($exportRunningHeaderInfo): string {
+
+    $html = '';
+
+    $exportButtonGroupHelper = new ButtonGroupHelper('Export currently running notification');
+
     if ($exportRunningHeaderInfo === false) {
-        return
+        $exportButtonGroupHelper->addIconButtonWithSRef('fa fa-retweet',$this->translate('Refresh monitoring configuration'),'ExportsIndex','sudo-server-connect=""');
+        $html .=
             '<a ui-sref="ExportsIndex" sudo-server-connect=""
                 data-original-title="' . $this->translate('Refresh monitoring configuration') . '"
-                data-placement="left" rel="tooltip" data-container="body" class="header-icon">
+                data-placement="left" rel="tooltip" data-container="body">
                     <i class="fa fa-retweet"></i>
              </a>';
     } else {
-        return
+        $exportButtonGroupHelper->addIconButtonWithSRef('fa fa-retweet',$this->translate('Refresh monitoring configuration'),'ExportsIndex','export-status=""');
+        $html .=
             '<a ui-sref="ExportsIndex" export-status=""
                 data-original-title="' . $this->translate('Refresh monitoring configuration') . '"
-                data-placement="left" rel="tooltip" data-container="body" class="header-icon">
+                data-placement="left" rel="tooltip" data-container="body">
                     <i class="fa fa-retweet" ng-if="!exportRunning"></i>
-                    <i class="fa fa-refresh fa-spin txt-color-red" ng-if="exportRunning"></i>
+                    <i class="fas fa-sync txt-color-red" ng-if="exportRunning"></i>
              </a>';
     }
+
+    $html = $exportButtonGroupHelper->getHtml();
+
+    return $this->surroundWithHeaderIcon($html);
 }
 
 private function displayMenuStatisticsIfEnabledInSettings($showstatsinmenu): string {
@@ -139,17 +150,19 @@ private function menuStatistics($exportRunningHeaderInfo, $showstatsinmenu): voi
                 <system-health></system-health>
             </div>';
 
-        $html .= $this->menuHeaderClockDisplay();
+
 
         $html .= '<div class="header-icon">
             <version-check></version-check>
         </div>';
 
-    $html .= '<div>' . $this->displayExportRunningNotificationIfEnabledInSettings($exportRunningHeaderInfo) . '</div>';
+    $html .= $this->displayExportRunningNotificationIfEnabledInSettings($exportRunningHeaderInfo);
 
     $html .= $this->menuHeaderSignOut();
 
     $html .= $this->menuNotifications();
+
+    $html .= $this->menuHeaderClockDisplay();
 
     $html .= '</div>';
 

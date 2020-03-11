@@ -34,6 +34,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
@@ -288,8 +289,8 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
             $query->andWhere($DowntimeHostConditions->getConditions());
         }
 
-        $startDateSqlFormat = $DowntimeHostConditions->getFrom();
-        $endDateSqlFormat = $DowntimeHostConditions->getTo();
+        $startTimestamp = $DowntimeHostConditions->getFrom();
+        $endTimestamp = $DowntimeHostConditions->getTo();
 
         $query->where([
             'OR' => [
@@ -299,10 +300,10 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
 
             ]
         ])
-            ->bind(':start1', $startDateSqlFormat, 'date')
-            ->bind(':end1', $endDateSqlFormat, 'date')
-            ->bind(':start2', $startDateSqlFormat, 'date')
-            ->bind(':end2', $endDateSqlFormat, 'date');
+            ->bind(':start1', $startTimestamp, 'integer')
+            ->bind(':end1', $endTimestamp, 'integer')
+            ->bind(':start2', $startTimestamp, 'integer')
+            ->bind(':end2', $endTimestamp, 'integer');
 
         $query->enableHydration($enableHydration);
         if ($disableResultsCasting) {

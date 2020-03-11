@@ -146,10 +146,10 @@ class ButtonGroupHelperTest extends TestCase {
 
     public function test_addIconButtonWithSRef() {
         $expected = $this->getExpectedOpeningButtonGroupTag()
-        . '    <button class="btn btn-default" data-original-title="test related tooltip" data-placement="bottom" rel="tooltip" data-container="body" ui-sref="/an/url/reference/for/icons"><i class="fas fa-question"></i></button>'
+        . '    <button class="btn btn-default" data-original-title="test related tooltip" data-placement="bottom" rel="tooltip" data-container="body" ui-sref="/an/url/reference/for/icons" customHtmlAttribute="unimportant value><i class="fas fa-question"></i></button>'
         . $this->getExpectedClosingButtonGroupTag();
 
-        $this->sut->addIconButtonWithSRef('fas fa-question','test related tooltip','/an/url/reference/for/icons');
+        $this->sut->addIconButtonWithSRef('fas fa-question','test related tooltip','/an/url/reference/for/icons','customHtmlAttribute="unimportant value');
 
         $actual = $this->sut->getHtml();
 

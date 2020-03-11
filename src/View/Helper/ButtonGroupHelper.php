@@ -100,8 +100,8 @@ class ButtonGroupHelper implements ButtonGroupHelperInterface {
         return $this;
     }
 
-    public function addIconButtonWithSRef(string $iconCssSelector, string $dataOriginalTitle='', string $sRef = ''): ButtonGroupHelperInterface {
-        $this->groupElements[] = '<button class="btn btn-default" data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body" ui-sref="' . $sRef . '"><i class="' . $iconCssSelector . '"></i></button>';
+    public function addIconButtonWithSRef(string $iconCssSelector, string $dataOriginalTitle='', string $sRef = '', string $additionalHtmlAttributes = ''): ButtonGroupHelperInterface {
+        $this->groupElements[] = '<button class="btn btn-default" data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body" ui-sref="' . $sRef . '" ' . $additionalHtmlAttributes . '><i class="' . $iconCssSelector . '"></i></button>';
 
         return $this;
     }
