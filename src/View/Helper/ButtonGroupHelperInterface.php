@@ -44,4 +44,6 @@ interface ButtonGroupHelperInterface {
     public function addButtonWithTooltipAndSRef(string $innerHtml, string $cssSelector = 'btn-default', $dataOriginalTitle = '', $href = ''): ButtonGroupHelperInterface;
 
     public function addButtonWithTooltipAndDisplayConditional(string $innerHtml, string $cssSelector = 'btn-default', string $dataOriginalTitle = '', string $conditional = ''): ButtonGroupHelperInterface;
+
+    public function addRaw(string $html): ButtonGroupHelperInterface;
 }

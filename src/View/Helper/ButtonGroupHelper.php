@@ -79,6 +79,12 @@ class ButtonGroupHelper implements ButtonGroupHelperInterface {
         return $this;
     }
 
+    public function addRaw($html): ButtonGroupHelperInterface {
+        $this->groupElements[] = $html;
+
+        return $this;
+    }
+
     private function iterateOverManuallyAddedElements(): string {
         $html = '';
 
