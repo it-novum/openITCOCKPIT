@@ -4,185 +4,187 @@
 
 DROP TABLE IF EXISTS `statusengine_logentries`;
 
-CREATE TABLE IF NOT EXISTS `statusengine_logentries` (
-  `entry_time`    BIGINT(13) NOT NULL,
-  `logentry_type` INT(11)      DEFAULT '0',
-  `logentry_data` VARCHAR(255) DEFAULT NULL,
-  `node_name`     VARCHAR(255) DEFAULT NULL,
-  KEY `logentries` (`entry_time`, `logentry_data`, `node_name`),
-  KEY `logentry_data_time` (`logentry_data`, `entry_time`)
-)
-  ENGINE = InnoDB
+CREATE TABLE `statusengine_logentries`
+(
+    `id`            bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `entry_time`    bigint(20)          NOT NULL,
+    `logentry_type` int(11)                              DEFAULT '0',
+    `logentry_data` varchar(255) COLLATE utf8_general_ci DEFAULT NULL,
+    `node_name`     varchar(255) COLLATE utf8_general_ci DEFAULT NULL,
+    PRIMARY KEY (`id`, `entry_time`),
+    KEY `logentries` (`entry_time`, `logentry_data`, `node_name`),
+    KEY `logentry_data_time` (`logentry_data`, `entry_time`)
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
-  PARTITION BY RANGE ( entry_time DIV 86400) (
-  PARTITION p_max VALUES LESS THAN ( MAXVALUE )
-  );
+  COLLATE = utf8_general_ci
+    PARTITION BY RANGE ( entry_time DIV 86400) (
+        PARTITION p_max VALUES LESS THAN ( MAXVALUE )
+        );
 
 --
 
 DROP TABLE IF EXISTS `statusengine_host_statehistory`;
 
-CREATE TABLE `statusengine_host_statehistory` (
-  `hostname`              VARCHAR(255),
-  `state_time`            BIGINT(13) NOT NULL,
-  `state_change`          TINYINT(1)          DEFAULT 0,
-  `state`                 TINYINT(2) UNSIGNED DEFAULT 0,
-  `is_hardstate`          TINYINT(1) UNSIGNED DEFAULT 0,
-  `current_check_attempt` TINYINT(3) UNSIGNED DEFAULT 0,
-  `max_check_attempts`    TINYINT(3) UNSIGNED DEFAULT 0,
-  `last_state`            TINYINT(2) UNSIGNED DEFAULT 0,
-  `last_hard_state`       TINYINT(2) UNSIGNED DEFAULT 0,
-  `output`                VARCHAR(1024),
-  `long_output`           VARCHAR(8192),
-  KEY `hostname_time` (`hostname`, `state_time`)
-)
-  ENGINE = InnoDB
+CREATE TABLE `statusengine_host_statehistory`
+(
+    `hostname`              varchar(255) COLLATE utf8_general_ci NOT NULL,
+    `state_time`            bigint(20)                           NOT NULL,
+    `state_change`          tinyint(1)                            DEFAULT '0',
+    `state`                 smallint(5) unsigned                  DEFAULT '0',
+    `is_hardstate`          tinyint(1)                            DEFAULT '0',
+    `current_check_attempt` smallint(5) unsigned                  DEFAULT '0',
+    `max_check_attempts`    smallint(5) unsigned                  DEFAULT '0',
+    `last_state`            smallint(5) unsigned                  DEFAULT '0',
+    `last_hard_state`       smallint(5) unsigned                  DEFAULT '0',
+    `output`                varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `long_output`           varchar(8192) COLLATE utf8_general_ci DEFAULT NULL,
+    PRIMARY KEY (`hostname`, `state_time`)
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_general_ci
-  PARTITION BY RANGE ( state_time DIV 86400 ) (
-  PARTITION p_max VALUES LESS THAN ( MAXVALUE )
-  );
+    PARTITION BY RANGE ( state_time DIV 86400 ) (
+        PARTITION p_max VALUES LESS THAN ( MAXVALUE )
+        );
 
 --
 
 DROP TABLE IF EXISTS `statusengine_service_statehistory`;
 
-CREATE TABLE `statusengine_service_statehistory` (
-  `hostname`              VARCHAR(255),
-  `service_description`   VARCHAR(255),
-  `state_time`            BIGINT(13) NOT NULL,
-  `state_change`          TINYINT(1)          DEFAULT 0,
-  `state`                 TINYINT(2) UNSIGNED DEFAULT 0,
-  `is_hardstate`          TINYINT(1) UNSIGNED DEFAULT 0,
-  `current_check_attempt` TINYINT(3) UNSIGNED DEFAULT 0,
-  `max_check_attempts`    TINYINT(3) UNSIGNED DEFAULT 0,
-  `last_state`            TINYINT(2) UNSIGNED DEFAULT 0,
-  `last_hard_state`       TINYINT(2) UNSIGNED DEFAULT 0,
-  `output`                VARCHAR(1024),
-  `long_output`           VARCHAR(8192),
-  KEY `host_servicename_time` (`hostname`, `service_description`, `state_time`),
-  KEY `servicename_time` (`service_description`, `state_time`)
-
-)
-  ENGINE = InnoDB
+CREATE TABLE `statusengine_service_statehistory`
+(
+    `hostname`              varchar(255) COLLATE utf8_general_ci NOT NULL,
+    `service_description`   varchar(255) COLLATE utf8_general_ci NOT NULL,
+    `state_time`            bigint(20)                           NOT NULL,
+    `state_change`          tinyint(1)                            DEFAULT '0',
+    `state`                 smallint(5) unsigned                  DEFAULT '0',
+    `is_hardstate`          tinyint(1)                            DEFAULT '0',
+    `current_check_attempt` smallint(5) unsigned                  DEFAULT '0',
+    `max_check_attempts`    smallint(5) unsigned                  DEFAULT '0',
+    `last_state`            smallint(5) unsigned                  DEFAULT '0',
+    `last_hard_state`       smallint(5) unsigned                  DEFAULT '0',
+    `output`                varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `long_output`           varchar(8192) COLLATE utf8_general_ci DEFAULT NULL,
+    PRIMARY KEY (`hostname`, `service_description`, `state_time`)
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_general_ci
-  PARTITION BY RANGE ( state_time DIV 86400 ) (
-  PARTITION p_max VALUES LESS THAN ( MAXVALUE )
-  );
+    PARTITION BY RANGE ( state_time DIV 86400 ) (
+        PARTITION p_max VALUES LESS THAN ( MAXVALUE )
+        );
 
 --
 
 DROP TABLE IF EXISTS `statusengine_hostchecks`;
 
-CREATE TABLE `statusengine_hostchecks` (
-  `hostname`              VARCHAR(255),
-  `state`                 TINYINT(2) UNSIGNED DEFAULT 0,
-  `is_hardstate`          TINYINT(1) UNSIGNED DEFAULT 0,
-  `start_time`            BIGINT(13) NOT NULL,
-  `end_time`              BIGINT(13) NOT NULL,
-  `output`                VARCHAR(1024),
-  `timeout`               TINYINT(3) UNSIGNED DEFAULT 0,
-  `early_timeout`         TINYINT(1) UNSIGNED DEFAULT 0,
-  `latency`               FLOAT               DEFAULT 0,
-  `execution_time`        FLOAT               DEFAULT 0,
-  `perfdata`              VARCHAR(2048),
-  `command`               VARCHAR(1024),
-  `current_check_attempt` TINYINT(3) UNSIGNED DEFAULT 0,
-  `max_check_attempts`    TINYINT(3) UNSIGNED DEFAULT 0,
-  `long_output`           VARCHAR(8192),
-  KEY `times` (`start_time`, `end_time`),
-  KEY `hostname` (`hostname`, `start_time`)
-)
-  ENGINE = InnoDB
+CREATE TABLE `statusengine_hostchecks`
+(
+    `hostname`              varchar(255) COLLATE utf8_general_ci NOT NULL,
+    `start_time`            bigint(20)                           NOT NULL,
+    `state`                 smallint(5) unsigned                  DEFAULT '0',
+    `is_hardstate`          tinyint(1)                            DEFAULT '0',
+    `end_time`              bigint(20)                           NOT NULL,
+    `output`                varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `timeout`               smallint(5) unsigned                  DEFAULT '0',
+    `early_timeout`         tinyint(1)                            DEFAULT '0',
+    `latency`               double                                DEFAULT '0',
+    `execution_time`        double                                DEFAULT '0',
+    `perfdata`              varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `command`               varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `current_check_attempt` smallint(5) unsigned                  DEFAULT '0',
+    `max_check_attempts`    smallint(5) unsigned                  DEFAULT '0',
+    `long_output`           varchar(8192) COLLATE utf8_general_ci DEFAULT NULL,
+    PRIMARY KEY (`hostname`, `start_time`),
+    KEY `times` (`start_time`, `end_time`)
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_general_ci
-  PARTITION BY RANGE ( start_time DIV 86400 ) (
-  PARTITION p_max VALUES LESS THAN ( MAXVALUE )
-  );
+    PARTITION BY RANGE ( start_time DIV 86400 ) (
+        PARTITION p_max VALUES LESS THAN ( MAXVALUE )
+        );
 
 --
 
 DROP TABLE IF EXISTS `statusengine_servicechecks`;
 
-CREATE TABLE `statusengine_servicechecks` (
-  `hostname`              VARCHAR(255),
-  `service_description`   VARCHAR(255),
-  `state`                 TINYINT(2) UNSIGNED DEFAULT 0,
-  `is_hardstate`          TINYINT(1) UNSIGNED DEFAULT 0,
-  `start_time`            BIGINT(13) NOT NULL,
-  `end_time`              BIGINT(13) NOT NULL,
-  `output`                VARCHAR(1024),
-  `timeout`               TINYINT(3) UNSIGNED DEFAULT 0,
-  `early_timeout`         TINYINT(1) UNSIGNED DEFAULT 0,
-  `latency`               FLOAT               DEFAULT 0,
-  `execution_time`        FLOAT               DEFAULT 0,
-  `perfdata`              VARCHAR(2048),
-  `command`               VARCHAR(1024),
-  `current_check_attempt` TINYINT(3) UNSIGNED DEFAULT 0,
-  `max_check_attempts`    TINYINT(3) UNSIGNED DEFAULT 0,
-  `long_output`           VARCHAR(8192),
-  KEY `servicename` (`hostname`, `service_description`, `start_time`)
-
-)
-  ENGINE = InnoDB
+CREATE TABLE `statusengine_servicechecks`
+(
+    `hostname`              varchar(255) COLLATE utf8_general_ci NOT NULL,
+    `service_description`   varchar(255) COLLATE utf8_general_ci NOT NULL,
+    `start_time`            bigint(20)                           NOT NULL,
+    `state`                 smallint(5) unsigned                  DEFAULT '0',
+    `is_hardstate`          tinyint(1)                            DEFAULT '0',
+    `end_time`              bigint(20)                           NOT NULL,
+    `output`                varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `timeout`               smallint(5) unsigned                  DEFAULT '0',
+    `early_timeout`         tinyint(1)                            DEFAULT '0',
+    `latency`               double                                DEFAULT '0',
+    `execution_time`        double                                DEFAULT '0',
+    `perfdata`              varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `command`               varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `current_check_attempt` smallint(5) unsigned                  DEFAULT '0',
+    `max_check_attempts`    smallint(5) unsigned                  DEFAULT '0',
+    `long_output`           varchar(8192) COLLATE utf8_general_ci DEFAULT NULL,
+    PRIMARY KEY (`hostname`, `service_description`, `start_time`)
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_general_ci
-  PARTITION BY RANGE ( start_time DIV 86400 ) (
-  PARTITION p_max VALUES LESS THAN ( MAXVALUE )
-  );
+    PARTITION BY RANGE ( start_time DIV 86400 ) (
+        PARTITION p_max VALUES LESS THAN ( MAXVALUE )
+        );
 
 --
 
 DROP TABLE IF EXISTS `statusengine_host_notifications`;
 
-CREATE TABLE `statusengine_host_notifications` (
-  `hostname`     VARCHAR(255),
-  `contact_name` VARCHAR(1024),
-  `command_name` VARCHAR(1024),
-  `command_args` VARCHAR(1024),
-  `state`        TINYINT(2) UNSIGNED DEFAULT 0,
-  `start_time`   BIGINT(13) NOT NULL,
-  `end_time`     BIGINT(13) NOT NULL,
-  `reason_type`  TINYINT(3) UNSIGNED DEFAULT 0,
-  `output`       VARCHAR(1024),
-  `ack_author`   VARCHAR(255),
-  `ack_data`     VARCHAR(1024),
-  KEY `hostname` (`hostname`),
-  KEY `start_time` (`start_time`)
-
-)
-  ENGINE = InnoDB
+CREATE TABLE `statusengine_host_notifications`
+(
+    `id`           bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `hostname`     varchar(255) COLLATE utf8_general_ci  DEFAULT NULL,
+    `contact_name` varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `command_name` varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `command_args` varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `state`        smallint(5) unsigned                  DEFAULT '0',
+    `start_time`   bigint(20)          NOT NULL,
+    `end_time`     bigint(20)          NOT NULL,
+    `reason_type`  smallint(5) unsigned                  DEFAULT '0',
+    `output`       varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `ack_author`   varchar(255) COLLATE utf8_general_ci  DEFAULT NULL,
+    `ack_data`     varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    PRIMARY KEY (`id`, `start_time`),
+    KEY `start_time` (`start_time`),
+    KEY `hostname` (`hostname`)
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_general_ci
-  PARTITION BY RANGE ( start_time DIV 86400 ) (
-  PARTITION p_max VALUES LESS THAN ( MAXVALUE )
-  );
+    PARTITION BY RANGE ( start_time DIV 86400 ) (
+        PARTITION p_max VALUES LESS THAN ( MAXVALUE )
+        );
 
 --
 
 DROP TABLE IF EXISTS `statusengine_service_notifications`;
 
-CREATE TABLE `statusengine_service_notifications` (
-  `hostname`            VARCHAR(255),
-  `service_description` VARCHAR(255),
-  `contact_name`        VARCHAR(1024),
-  `command_name`        VARCHAR(1024),
-  `command_args`        VARCHAR(1024),
-  `state`               TINYINT(2) UNSIGNED DEFAULT 0,
-  `start_time`          BIGINT(13) NOT NULL,
-  `end_time`            BIGINT(13) NOT NULL,
-  `reason_type`         TINYINT(3) UNSIGNED DEFAULT 0,
-  `output`              VARCHAR(1024),
-  `ack_author`          VARCHAR(255),
-  `ack_data`            VARCHAR(1024),
-  KEY `servicename` (`hostname`, `service_description`),
-  KEY `start_time` (`start_time`)
-
-)
-  ENGINE = InnoDB
+CREATE TABLE `statusengine_service_notifications`
+(
+    `id`                  bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    `hostname`            varchar(255) COLLATE utf8_general_ci  DEFAULT NULL,
+    `service_description` varchar(255) COLLATE utf8_general_ci  DEFAULT NULL,
+    `contact_name`        varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `command_name`        varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `command_args`        varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `state`               smallint(5) unsigned                  DEFAULT '0',
+    `start_time`          bigint(20)          NOT NULL,
+    `end_time`            bigint(20)          NOT NULL,
+    `reason_type`         smallint(5) unsigned                  DEFAULT '0',
+    `output`              varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    `ack_author`          varchar(255) COLLATE utf8_general_ci  DEFAULT NULL,
+    `ack_data`            varchar(1024) COLLATE utf8_general_ci DEFAULT NULL,
+    PRIMARY KEY (`id`, `start_time`),
+    KEY `servicename` (`hostname`, `service_description`),
+    KEY `start_time` (`start_time`)
+) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_general_ci
-  PARTITION BY RANGE ( start_time DIV 86400 ) (
-  PARTITION p_max VALUES LESS THAN ( MAXVALUE )
-  );
+    PARTITION BY RANGE ( start_time DIV 86400 ) (
+        PARTITION p_max VALUES LESS THAN ( MAXVALUE )
+        );

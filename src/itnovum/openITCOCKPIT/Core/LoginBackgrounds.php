@@ -110,7 +110,7 @@ class LoginBackgrounds {
             ],
 
             'easter' => [
-                'description' => _('Happy Easter'),
+                'description' => __('Happy Easter'),
                 'particles'   => 'stars',
                 'images'      => [
                     [

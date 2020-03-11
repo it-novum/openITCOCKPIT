@@ -78,7 +78,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                             <div class="help-block">
-                                <?php echo _('Container Roles are handy to grant the same permissions to multiple users.'); ?>
+                                <?php echo __('Container Roles are handy to grant the same permissions to multiple users.'); ?>
                             </div>
                         </div>
 
@@ -121,7 +121,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                             <div class="help-block text-info">
                                 <i class="fa fa-info-circle"></i>
-                                <?php echo _('Container assignments defined in the user will overwrite permissions inherited from Container Roles!'); ?>
+                                <?php echo __('Container assignments defined in the user will overwrite permissions inherited from Container Roles!'); ?>
                             </div>
                         </div>
 
@@ -387,9 +387,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                             <div class="help-block">
-                                <?php echo _('Manual logout and login again required for changes to take effect.'); ?>
+                                <?php echo __('Manual logout and login again required for changes to take effect for the current user.'); ?>
                                 <br>
-                                <?php echo _('These options are community translations. Feel free to extend them and open a github pull request.'); ?>
+                                <?php echo __('These options are community translations. Feel free to extend them and open a github pull request.'); ?>
                             </div>
                         </div>
 
@@ -430,7 +430,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <div class="float-right">
                                     <label>
                                         <input type="checkbox" ng-model="data.createAnother">
-                                        <?php echo _('Create another'); ?>
+                                        <?php echo __('Create another'); ?>
                                     </label>
                                     <button class="btn btn-primary"
                                             type="submit"><?php echo __('Create user'); ?></button>

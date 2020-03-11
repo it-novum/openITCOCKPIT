@@ -40,14 +40,14 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
  *
  * @property \Statusengine2Module\Model\Table\ObjectsTable|\Cake\ORM\Association\BelongsTo $Objects
  *
- * @method \Statusengine2Module\Model\Entity\NotificationHost get($primaryKey, $options = [])
- * @method \Statusengine2Module\Model\Entity\NotificationHost newEntity($data = null, array $options = [])
- * @method \Statusengine2Module\Model\Entity\NotificationHost[] newEntities(array $data, array $options = [])
- * @method \Statusengine2Module\Model\Entity\NotificationHost|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \Statusengine2Module\Model\Entity\NotificationHost saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \Statusengine2Module\Model\Entity\NotificationHost patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \Statusengine2Module\Model\Entity\NotificationHost[] patchEntities($entities, array $data, array $options = [])
- * @method \Statusengine2Module\Model\Entity\NotificationHost findOrCreate($search, callable $callback = null, $options = [])
+ * @method \Statusengine2Module\Model\Entity\NotificationServices get($primaryKey, $options = [])
+ * @method \Statusengine2Module\Model\Entity\NotificationServices newEntity($data = null, array $options = [])
+ * @method \Statusengine2Module\Model\Entity\NotificationServices[] newEntities(array $data, array $options = [])
+ * @method \Statusengine2Module\Model\Entity\NotificationServices|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \Statusengine2Module\Model\Entity\NotificationServices saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \Statusengine2Module\Model\Entity\NotificationServices patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \Statusengine2Module\Model\Entity\NotificationServices[] patchEntities($entities, array $data, array $options = [])
+ * @method \Statusengine2Module\Model\Entity\NotificationServices findOrCreate($search, callable $callback = null, $options = [])
  *
  */
 class NotificationServicesTable extends Table implements NotificationServicesTableInterface {

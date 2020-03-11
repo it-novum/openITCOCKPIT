@@ -118,7 +118,7 @@
                                 <div class="float-right">
                                     <label>
                                         <input type="checkbox" ng-model="data.createAnother">
-                                        <?php echo _('Create another'); ?>
+                                        <?php echo __('Create another'); ?>
                                     </label>
 
                                     <button type="submit" class="btn btn-primary waves-effect waves-themed">

@@ -4,6 +4,7 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.apikeys = [];
         $scope.isLdapAuth = false;
+        $scope.localeOptions = [];
 
         $scope.post = {
             //contains every form from template
@@ -17,6 +18,7 @@ angular.module('openITCOCKPIT')
                 paginatorlength: 25,
                 dateformat: '',
                 timezone: '',
+                i18n: 'en_US'
             },
             Password: {
                 current_password: null,
@@ -75,6 +77,16 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.dateformats = result.data.dateformats;
+            });
+        };
+
+        $scope.loadLocaleOptions = function(){
+            return $http.get("/users/getLocaleOptions.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.localeOptions = result.data.localeOptions;
             });
         };
 
@@ -203,6 +215,7 @@ angular.module('openITCOCKPIT')
         $scope.load();
         $scope.loadDateformats();
         $scope.loadApiKey();
+        $scope.loadLocaleOptions();
 
         $scope.$watch('maxUploadLimit', function(){
             if($scope.maxUploadLimit != null){

@@ -45,334 +45,343 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
     <?php
     endforeach; ?>
 </head>
-<body class="">
-<div class="jarviswidget no-bordered">
-    <div class="well no-bordered">
-        <div class="row margin-top-10 font-md padding-bottom-10">
-            <div class="col-md-9 text-left font-xl txt-color-blueDark">
-                <i class="fa fa-calendar txt-color-blueDark"></i>
-                <?php
-                echo __('Analysis period: ');
-                echo h($UserTime->format($fromDate)); ?>
-                <i class="fa fa-long-arrow-right"></i>
-                <?php
-                echo h($UserTime->format($toDate));
-                ?>
-            </div>
-            <div class="col-md-3 text-left">
-                <img src="<?= $Logo->getLogoPdfPath(); ?>" width="200"/>
+<body>
+<div class="row">
+    <div class="col-6 padding-left-15">
+        <i class="fa fa-calendar "></i>
+        <?php
+        echo __('Analysis period: ');
+        echo h($UserTime->format($fromDate)); ?>
+        <i class="fas fa-long-arrow-alt-right"></i>
+        <?php
+        echo h($UserTime->format($toDate));
+        ?>
+    </div>
+    <div class="col-6">
+        <img class="float-right" src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
+    </div>
+</div>
+<?php
+if (!empty($error['no_downtimes']['empty'])):
+    echo $error['no_downtimes']['empty'];
+endif;
+if (!empty($downtimeReport['hostsWithOutages'])):?>
+    <div class="pdf-card">
+        <div class="pdf-card-header">
+            <h2>
+                <span class="fa-stack">
+                    <i class="fa fa-check fa-stack-1x ok"></i>
+                    <i class="fa fa-ban fa-stack-2x critical opacity-50"></i>
+                </span>
+                <?= __('Involved in outages (Hosts):'); ?>
+            </h2>
+        </div>
+        <div class="pdf-card-body padding-bottom-10">
+            <?php
+            foreach ($downtimeReport['hostsWithOutages'] as $chunkKey => $hostsWithOutages):
+            ?>
+            <?php
+            $MultipleBarChart = new MultipleBarChart();
+
+            $overview_chart = $MultipleBarChart->createBarChart(
+                Hash::combine($hostsWithOutages['hosts'], '{n}.Host.name', '{n}.Host.reportData')
+            );
+            ?>
+            <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"/>
+            <?php
+            foreach ($hostsWithOutages['hosts'] as $hostWithOutages): ?>
+            <div class="pdf-card">
+                <div class="pdf-card-header">
+                    <h2>
+                        <i class="fa fa-desktop"></i>
+                        <?= h($hostWithOutages['Host']['name']); ?>
+                    </h2>
+                </div>
+                <div class="pdf-card-body">
+                    <div class="row">
+                        <div class="col-3">
+                            <?= __('Description'); ?>
+                        </div>
+                        <div class="col-9">
+                            <?= h(($hostWithOutages['Host']['description']) ? $hostWithOutages['Host']['description'] : ' - '); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <?= __('IP address'); ?>
+                        </div>
+                        <div class="col-9">
+                            <?= h($hostWithOutages['Host']['address']); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <?= __('Status'); ?>
+                        </div>
+                        <?php for ($i = 0; $i < 3; $i++): ?>
+                            <?php $HoststatusIcon = new \itnovum\openITCOCKPIT\Core\Views\HoststatusIcon($i); ?>
+                            <div
+                                class="col-3 <?= $HoststatusIcon->getBgColor() ?> downtime-report-state-overview padding-5">
+                                <strong class="txt-color-white">
+                                    <strong class="txt-color-white">
+                                        <?= $hostWithOutages['pieChartData']['widgetOverview'][$i]['percent']; ?>
+                                    </strong>
+                                </strong>
+                            </div>
+                        <?php endfor; ?>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            &nbsp;
+                        </div>
+                        <?php
+                        for ($i = 0; $i < 3; $i++):?>
+                            <?php $HoststatusIcon = new \itnovum\openITCOCKPIT\Core\Views\HoststatusIcon($i); ?>
+                            <div
+                                class="col-3 <?= $HoststatusIcon->getBgColor() ?> downtime-report-state-overview  padding-5">
+                                <strong class="txt-color-white">
+                                    <?= $hostWithOutages['pieChartData']['widgetOverview'][$i]['human']; ?>
+                                </strong>
+                            </div>
+                        <?php
+                        endfor;
+                        if (isset($hostWithOutages['Services'])):
+                            $servicesWithOutages =
+                                Hash::extract(
+                                    $hostWithOutages['Services'],
+                                    '{s}.Service.reportData[2>0]'
+                                );
+                            if (!empty($servicesWithOutages)):?>
+                                <div class="col-9 padding-top-10 padding-bottom-10">
+                                    <strong class="">
+                                        <?= __('Involved in outages (Services):'); ?>
+                                    </strong>
+                                </div>
+                            <?php endif;
+                            foreach ($hostWithOutages['Services'] as $uuid => $service):
+                                if ($service['Service']['reportData'][2] > 0):
+                                    $serviceName = empty($service['Service']['name']) ?
+                                        $service['Servicetemplate']['name'] :
+                                        $service['Service']['name'];
+                                    ?>
+                                    <div class="col-12">
+                                        <i class="fa fa-cog"></i>
+                                        <?= h($serviceName);
+                                        ?>
+                                    </div>
+                                    <div class="col-3 text-right padding-right-20 text-info">
+                                        <?= __('Servicetemplate'); ?>
+                                    </div>
+                                    <div class="col-9 text-info">
+                                        <?= h($service['Servicetemplate']['template_name']);
+                                        ?>
+                                    </div>
+                                    <div class="col-3 text-right padding-bottom-10">
+                                        <?php
+                                        $overview_chart = \itnovum\openITCOCKPIT\Core\Views\PieChart::createPieChartOnDisk([
+                                            $service['Service']['reportData'][0],
+                                            $service['Service']['reportData'][1],
+                                            $service['Service']['reportData'][2],
+                                            $service['Service']['reportData'][3]
+                                        ]);
+                                        ?>
+                                        <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
+                                            width="100"/>
+                                    </div>
+                                    <?php for ($i = 0; $i <= 3; $i++): ?>
+                                    <?php $ServicestatusIcon = new \itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon($i); ?>
+                                    <div class="col-3 text-right ">
+                                        <em>
+                                            <?= $ServicestatusIcon->getHumanState(); ?>
+                                        </em>
+                                    </div>
+                                    <div
+                                        class="col-3 <?= $ServicestatusIcon->getBgColor(); ?> downtime-report-state-overview ">
+                                        <strong class="txt-color-white">
+                                            <?= $service['pieChartData']['widgetOverview'][$i]['percent']; ?>
+                                        </strong>
+                                    </div>
+                                    <div
+                                        class="col-3 <?= $ServicestatusIcon->getBgColor(); ?> downtime-report-state-overview ">
+                                        <strong class="txt-color-white">
+                                            <?= $service['pieChartData']['widgetOverview'][$i]['human']; ?>
+                                        </strong>
+                                    </div>
+                                <?php
+                                endfor;
+                                endif;
+                            endforeach;
+                        endif;
+                        ?>
+                    </div>
+                </div>
             </div>
         </div>
         <?php
-        if (!empty($error['no_downtimes']['empty'])):
-            echo $error['no_downtimes']['empty'];
-        endif;
-        if (!empty($downtimeReport['hostsWithOutages'])):?>
-            <section>
-                <div class="row">
-                    <article class="col-md-12 sortable-grid ui-sortable">
-                        <div class="jarviswidget">
-                            <header>
-                                <h2 class="txt-color-blueDark text-header">
-                                        <span class="fa-stack">
-                                            <i class="fa fa-check fa-stack-1x ok"></i>
-                                            <i class="fa fa-ban fa-stack-2x critical opacity-50"></i>
-                                        </span>
-                                    <?= __('Involved in outages (Hosts):'); ?>
-                                </h2>
-                            </header>
-                            <div class="well padding-bottom-10">
-                                <?php
-                                foreach ($downtimeReport['hostsWithOutages'] as $chunkKey => $hostsWithOutages):
-                                    ?>
-                                    <div class="widget-body">
-                                        <?php
-                                        $MultipleBarChart = new MultipleBarChart();
-
-                                        $overview_chart = $MultipleBarChart->createBarChart(
-                                            Hash::combine($hostsWithOutages['hosts'], '{n}.Host.name', '{n}.Host.reportData')
-                                        );
-                                        ?>
-                                        <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"/>
-                                    </div>
-                                    <?php
-                                    foreach ($hostsWithOutages['hosts'] as $hostWithOutages):?>
-                                        <div class="jarviswidget">
-                                            <header role="heading">
-                                                <h2 class="bold  txt-color-blueDark">
-                                                    <i class="fa fa-desktop txt-color-blueDark"></i>
-                                                    <?= h($hostWithOutages['Host']['name']); ?>
-                                                </h2>
-                                            </header>
-                                            <div class="widget-body font-md txt-color-blueDark">
-                                                <div class="col-md-3 ">
-                                                    <?= __('Description'); ?>
-                                                </div>
-                                                <div class="col-md-9">
-                                                    <?= h(($hostWithOutages['Host']['description']) ? $hostWithOutages['Host']['description'] : ' - '); ?>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <?= __('IP address'); ?>
-                                                </div>
-                                                <div class="col-md-9">
-                                                    <?= h($hostWithOutages['Host']['address']); ?>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <?= __('Status'); ?>
-                                                </div>
-                                                <?php for ($i = 0; $i < 3; $i++): ?>
-                                                    <?php $HoststatusIcon = new \itnovum\openITCOCKPIT\Core\Views\HoststatusIcon($i); ?>
-                                                    <div
-                                                        class="col-md-3 <?= $HoststatusIcon->getBgColor() ?> downtime-report-state-overview font-md padding-5">
-                                                        <strong class="txt-color-white">
-                                                            <strong class="txt-color-white">
-                                                                <?= $hostWithOutages['pieChartData']['widgetOverview'][$i]['percent']; ?>
-                                                            </strong>
-                                                        </strong>
-                                                    </div>
-                                                <?php endfor; ?>
-                                                <div class="col-md-3">
-                                                    &nbsp;
-                                                </div>
-                                                <?php
-                                                for ($i = 0; $i < 3; $i++):?>
-                                                    <?php $HoststatusIcon = new \itnovum\openITCOCKPIT\Core\Views\HoststatusIcon($i); ?>
-                                                    <div
-                                                        class="col-md-3 <?= $HoststatusIcon->getBgColor() ?> downtime-report-state-overview font-md padding-5">
-                                                        <strong class="txt-color-white">
-                                                            <?= $hostWithOutages['pieChartData']['widgetOverview'][$i]['human']; ?>
-                                                        </strong>
-                                                    </div>
-                                                <?php
-                                                endfor;
-                                                if (isset($hostWithOutages['Services'])):
-                                                    $servicesWithOutages =
-                                                        Hash::extract(
-                                                            $hostWithOutages['Services'],
-                                                            '{s}.Service.reportData[2>0]'
-                                                        );
-                                                    if (!empty($servicesWithOutages)):?>
-                                                        <div class="col-md-9 padding-top-10 padding-bottom-10">
-                                                            <strong class="txt-color-blueDark">
-                                                                <?= __('Involved in outages (Services):'); ?>
-                                                            </strong>
-                                                        </div>
-                                                    <?php endif;
-                                                    foreach ($hostWithOutages['Services'] as $uuid => $service):
-                                                        if ($service['Service']['reportData'][2] > 0):
-                                                            $serviceName = empty($service['Service']['name']) ?
-                                                                $service['Servicetemplate']['name'] :
-                                                                $service['Service']['name'];
-                                                            ?>
-                                                            <div class="col-md-12 txt-color-blueDark">
-                                                                <i class="fa fa-cog txt-color-blueDark"></i>
-                                                                <?= h($serviceName);
-                                                                ?>
-                                                            </div>
-                                                            <div class="col-md-3 text-right padding-right-20 text-info">
-                                                                <?= __('Servicetemplate'); ?>
-                                                            </div>
-                                                            <div class="col-md-9 text-info">
-                                                                <?= h($service['Servicetemplate']['template_name']);
-                                                                ?>
-                                                            </div>
-                                                            <div class="col-md-3 text-right padding-bottom-10">
-                                                                <?php
-                                                                $overview_chart = \itnovum\openITCOCKPIT\Core\Views\PieChart::createPieChartOnDisk([
-                                                                    $service['Service']['reportData'][0],
-                                                                    $service['Service']['reportData'][1],
-                                                                    $service['Service']['reportData'][2],
-                                                                    $service['Service']['reportData'][3]
-                                                                ]);
-                                                                ?>
-                                                                <img
-                                                                    src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
-                                                                    width="100"/>
-                                                            </div>
-                                                            <?php for ($i = 0; $i <= 3; $i++): ?>
-                                                            <?php $ServicestatusIcon = new \itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon($i); ?>
-                                                            <div class="col-md-3 text-right font-md">
-                                                                <em>
-                                                                    <?= $ServicestatusIcon->getHumanState(); ?>
-                                                                </em>
-                                                            </div>
-                                                            <div
-                                                                class="col-md-3 <?= $ServicestatusIcon->getBgColor(); ?> downtime-report-state-overview font-md">
-                                                                <strong class="txt-color-white">
-                                                                    <?= $service['pieChartData']['widgetOverview'][$i]['percent']; ?>
-                                                                </strong>
-                                                            </div>
-                                                            <div
-                                                                class="col-md-3 <?= $ServicestatusIcon->getBgColor(); ?> downtime-report-state-overview font-md">
-                                                                <strong class="txt-color-white">
-                                                                    <?= $service['pieChartData']['widgetOverview'][$i]['human']; ?>
-                                                                </strong>
-                                                            </div>
-                                                        <?php
-                                                        endfor;
-                                                        endif;
-                                                    endforeach;
-                                                endif;
-                                                ?>
-                                            </div>
-                                        </div>
-                                    <?php
-                                    endforeach;
-                                endforeach; ?>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </section>
-        <?php
-        endif;
-        if (!empty($downtimeReport['hostsWithoutOutages']['hosts'])):?>
-            <section>
-                <div class="row">
-                    <article class="col-md-12 sortable-grid ui-sortable">
-                        <div class="jarviswidget jarviswidget-sortable" role="widget">
-                            <header>
-                                <h2 class="txt-color-blueDark text-header">
-                                        <span class="fa-stack">
-                                            <i class="fa fa-circle-o fa-stack-2x txt-color-blueLight"></i>
-                                            <i class="fa fa-check fa-stack-1x ok"></i>
-                                        </span>
-                                    <?= __(' Hosts without outages:'); ?>
-                                </h2>
-                            </header>
-                            <div class="well padding-bottom-10">
-                                <?php
-                                foreach ($downtimeReport['hostsWithoutOutages']['hosts'] as $hostWithoutOutages):?>
-                                    <div class="jarviswidget jarviswidget-color-blueLight">
-                                        <header role="heading">
-                                            <h2 class="bold  txt-color-blueDark">
-                                                <i class="fa fa-desktop txt-color-blueDark"></i>
-                                                <?= h($hostWithoutOutages['Host']['name']); ?>
-                                            </h2>
-                                        </header>
-                                        <div class="widget-body font-md txt-color-blueDark">
-                                            <div class="col-md-3 ">
-                                                <?= __('Description'); ?>
-                                            </div>
-                                            <div class="col-md-9">
-                                                <?= h(($hostWithoutOutages['Host']['description']) ? $hostWithoutOutages['Host']['description'] : ' - '); ?>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <?= __('IP address'); ?>
-                                            </div>
-                                            <div class="col-md-9">
-                                                <?= h($hostWithoutOutages['Host']['address']); ?>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <?= __('Status'); ?>
-                                            </div>
-                                            <?php
-                                            for ($i = 0; $i < 3; $i++):?>
-                                                <?php $HoststatusIcon = new \itnovum\openITCOCKPIT\Core\Views\HoststatusIcon($i); ?>
-                                                <div
-                                                    class="col-md-3 <?= $HoststatusIcon->getBgColor() ?> downtime-report-state-overview font-md padding-5">
-                                                    <strong class="txt-color-white">
-                                                        <strong class="txt-color-white">
-                                                            <?= $hostWithoutOutages['pieChartData']['widgetOverview'][$i]['percent']; ?>
-                                                        </strong>
-                                                    </strong>
-                                                </div>
-                                            <?php
-                                            endfor;
-                                            ?>
-                                            <div class="col-md-3">
-                                                &nbsp;
-                                            </div>
-                                            <?php
-                                            for ($i = 0; $i < 3; $i++):?>
-                                                <?php $HoststatusIcon = new \itnovum\openITCOCKPIT\Core\Views\HoststatusIcon($i); ?>
-                                                <div
-                                                    class="col-md-3 <?= $HoststatusIcon->getBgColor() ?> downtime-report-state-overview font-md padding-5">
-                                                    <strong class="txt-color-white">
-                                                        <?= $hostWithoutOutages['pieChartData']['widgetOverview'][$i]['human']; ?>
-                                                    </strong>
-                                                </div>
-                                            <?php
-                                            endfor;
-                                            $servicesWithOutages = [];
-                                            if (isset($hostWithoutOutages['Services'])):
-                                                $servicesWithOutages =
-                                                    Hash::extract(
-                                                        $hostWithoutOutages['Services'],
-                                                        '{s}.Service.reportData[2>0]'
-                                                    );
-                                                if (!empty($servicesWithOutages)): ?>
-                                                    <div class="col-md-9 padding-top-10 padding-bottom-10">
-                                                        <strong class="txt-color-blueDark">
-                                                            <?= __('Involved in outages (Services):'); ?>
-                                                        </strong>
-                                                    </div>
-                                                <?php endif;
-                                                foreach ($hostWithoutOutages['Services'] as $uuid => $service):
-                                                    if ($service['Service']['reportData'][2] > 0):
-                                                        $serviceName = empty($service['Service']['name']) ?
-                                                            $service['Servicetemplate']['name'] :
-                                                            $service['Service']['name'];
-                                                        ?>
-                                                        <div class="col-md-12 txt-color-blueDark">
-                                                            <i class="fa fa-cog txt-color-blueDark"></i>
-                                                            <?= h($serviceName);
-                                                            ?>
-                                                        </div>
-                                                        <div class="col-md-3 text-right padding-right-20 text-info">
-                                                            <?= __('Servicetemplate'); ?>
-                                                        </div>
-                                                        <div class="col-md-9 text-info">
-                                                            <?= h($service['Servicetemplate']['template_name']);
-                                                            ?>
-                                                        </div>
-                                                        <div class="col-md-3 text-right padding-bottom-10">
-                                                            <?php
-                                                            $overview_chart = \itnovum\openITCOCKPIT\Core\Views\PieChart::createPieChartOnDisk([
-                                                                $service['Service']['reportData'][0],
-                                                                $service['Service']['reportData'][1],
-                                                                $service['Service']['reportData'][2],
-                                                                $service['Service']['reportData'][3]
-                                                            ]);
-                                                            ?>
-                                                            <img
-                                                                src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
-                                                                width="100"/>
-                                                        </div>
-                                                        <?php
-                                                        for ($i = 0; $i <= 3; $i++):?>
-                                                            <?php $ServicestatusIcon = new \itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon($i); ?>
-                                                            <div class="col-md-3 text-right font-md">
-                                                                <em>
-                                                                    <?= $ServicestatusIcon->getHumanState() ?>
-                                                                </em>
-                                                            </div>
-                                                            <div
-                                                                class="col-md-3 <?= $ServicestatusIcon->getBgColor() ?> downtime-report-state-overview font-md">
-                                                                <strong class="txt-color-white">
-                                                                    <?= $service['pieChartData']['widgetOverview'][$i]['percent']; ?>
-                                                                </strong>
-                                                            </div>
-                                                            <div
-                                                                class="col-md-3 <?= $ServicestatusIcon->getBgColor() ?> downtime-report-state-overview font-md">
-                                                                <strong class="txt-color-white">
-                                                                    <?= $service['pieChartData']['widgetOverview'][$i]['human']; ?>
-                                                                </strong>
-                                                            </div>
-                                                        <?php endfor;
-                                                    endif;
-                                                endforeach;
-                                            endif; ?>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </section>
-        <?php endif; ?>
+        endforeach;
+        endforeach; ?>
     </div>
-</div>
+<?php
+endif;
+if (!empty($downtimeReport['hostsWithoutOutages']['hosts'])): ?>
+<div class="pdf-card">
+    <div class="pdf-card-header">
+        <h2>
+            <span class="fa-stack">
+                <i class="fa fa-circle-o fa-stack-2x txt-color-blueLight"></i>
+                <i class="fa fa-check fa-stack-1x ok"></i>
+            </span>
+            <?= __(' Hosts without outages:'); ?>
+        </h2>
+    </div>
+    <div class="pdf-card-body">
+        <?php
+        foreach ($downtimeReport['hostsWithoutOutages']['hosts'] as $hostWithoutOutages): ?>
+        <div class="pdf-card">
+            <div class="pdf-card-header">
+                <h2>
+                    <i class="fa fa-desktop"></i>
+                    <?= h($hostWithoutOutages['Host']['name']); ?>
+                </h2>
+            </div>
+            <div class="pdf-card-body">
+                <div class="row">
+                    <div class="col-3">
+                        <?= __('Description'); ?>
+                    </div>
+                    <div class="col-9">
+                        <?= h(($hostWithoutOutages['Host']['description']) ? $hostWithoutOutages['Host']['description'] : ' - '); ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-3">
+                        <?= __('IP address'); ?>
+                    </div>
+                    <div class="col-9">
+                        <?= h($hostWithoutOutages['Host']['address']); ?>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-3">
+                        <?= __('Status'); ?>
+                    </div>
+                    <?php
+                    for ($i = 0; $i < 3; $i++):?>
+                        <?php $HoststatusIcon = new \itnovum\openITCOCKPIT\Core\Views\HoststatusIcon($i); ?>
+                        <div
+                            class="col-3 <?= $HoststatusIcon->getBgColor() ?> downtime-report-state-overview  padding-5">
+                            <strong class="txt-color-white">
+                                <strong class="txt-color-white">
+                                    <?= $hostWithoutOutages['pieChartData']['widgetOverview'][$i]['percent']; ?>
+                                </strong>
+                            </strong>
+                        </div>
+                    <?php
+                    endfor;
+                    ?>
+                </div>
+                <div class="row">
+                    <div class="col-3">
+                        &nbsp;
+                    </div>
+                    <?php
+                    for ($i = 0; $i < 3; $i++):?>
+                        <?php $HoststatusIcon = new \itnovum\openITCOCKPIT\Core\Views\HoststatusIcon($i); ?>
+                        <div
+                            class="col-3 <?= $HoststatusIcon->getBgColor() ?> downtime-report-state-overview  padding-5">
+                            <strong class="txt-color-white">
+                                <?= $hostWithoutOutages['pieChartData']['widgetOverview'][$i]['human']; ?>
+                            </strong>
+                        </div>
+                    <?php
+                    endfor;
+                    ?>
+                </div>
+                <div class="row">
+                    <?php
+                    $servicesWithOutages = [];
+                    if (isset($hostWithoutOutages['Services'])):
+                        $servicesWithOutages =
+                            Hash::extract(
+                                $hostWithoutOutages['Services'],
+                                '{s}.Service.reportData[2>0]'
+                            );
+                        if (!empty($servicesWithOutages)): ?>
+                            <div class="col-9 padding-top-10 padding-bottom-10">
+                                <strong>
+                                    <?= __('Involved in outages (Services):'); ?>
+                                </strong>
+                            </div>
+                </div>
+                <div class="row">
+                        <?php endif;
+                        foreach ($hostWithoutOutages['Services'] as $uuid => $service):
+                            if ($service['Service']['reportData'][2] > 0):
+                                $serviceName = empty($service['Service']['name']) ?
+                                    $service['Servicetemplate']['name'] :
+                                    $service['Service']['name'];
+                                ?>
+                                <div class="col-6">
+                                    <i class="fa fa-cog"></i>
+                                    <?= h($serviceName);
+                                    ?>
+                                </div>
+                                <div class="col-3 text-right padding-right-20 text-info">
+                                    <?= __('Servicetemplate'); ?>
+                                </div>
+                                <div class="col-3 text-info">
+                                    <i class="fas fa-edit"></i>
+                                    <?= h($service['Servicetemplate']['template_name']);
+                                    ?>
+                                </div>
+                </div>
+                <div class="row">
+                                <div class="col-3 text-right padding-bottom-10">
+                                    <?php
+                                    $overview_chart = \itnovum\openITCOCKPIT\Core\Views\PieChart::createPieChartOnDisk([
+                                        $service['Service']['reportData'][0],
+                                        $service['Service']['reportData'][1],
+                                        $service['Service']['reportData'][2],
+                                        $service['Service']['reportData'][3]
+                                    ]);
+                                    ?>
+                                    <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>" width="100"/>
+                                </div>
+                </div>
+                                <?php
+                                for ($i = 0; $i <= 3; $i++):?>
+                                    <?php $ServicestatusIcon = new \itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon($i); ?>
+                <div class="row">
+                                    <div class="col-3 text-right">
+                                        <em>
+                                            <?= $ServicestatusIcon->getHumanState() ?>
+                                        </em>
+                                    </div>
+                                    <div
+                                        class="col-3 <?= $ServicestatusIcon->getBgColor() ?> downtime-report-state-overview ">
+                                        <strong class="txt-color-white">
+                                            <?= $service['pieChartData']['widgetOverview'][$i]['percent']; ?>
+                                        </strong>
+                                    </div>
+                                    <div
+                                        class="col-3 <?= $ServicestatusIcon->getBgColor() ?> downtime-report-state-overview ">
+                                        <strong class="txt-color-white">
+                                            <?= $service['pieChartData']['widgetOverview'][$i]['human']; ?>
+                                        </strong>
+                                    </div>
+                </div>
+                                <?php endfor;
+                                ?>
+
+                    <?php
+                            endif;
+                        endforeach;
+                    endif; ?>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 </body>
 

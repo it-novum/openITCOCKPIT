@@ -51,123 +51,121 @@ $UserTime = $User->getUserTime();
 </head>
 <body>
 
-<div class="well">
-    <div class="row margin-top-10 font-lg no-padding">
-        <div class="col-md-9 text-left padding-left-10">
-            <i class="fa fa-sitemap txt-color-blueDark padding-left-10"></i>
-            <?php echo __('Hostgroups'); ?>
-        </div>
-        <div class="col-md-3 text-left">
-            <img src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
-        </div>
+<div class="row">
+    <div class="col-6 padding-left-15 font-lg">
+        <i class="fa fa-sitemap" style="font-size: 20px!important;"></i>
+        <?php echo __('Hostgroups'); ?>
     </div>
-    <div class="row padding-left-10 margin-top-10 font-sm">
-        <div class="text-left padding-left-10">
-            <i class="fa fa-calendar txt-color-blueDark"></i> <?php echo date('F d, Y H:i:s'); ?>
-        </div>
+    <div class="col-6">
+        <img class="float-right" src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
     </div>
-    <div class="row padding-left-10 margin-top-10 font-sm">
-        <div class="text-left padding-left-10">
-            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hostgroups: ' . $numberOfHostgroups); ?>
-        </div>
+</div>
+<div class="col-12 no-padding">
+    <div class="text-left padding-left-10">
+        <i class="fa fa-calendar"></i> <?php echo date('F d, Y H:i:s'); ?>
     </div>
-    <div class="row padding-left-10 margin-top-10 font-sm">
-        <div class="text-left padding-left-10">
-            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hosts: ' . $numberOfHosts); ?>
-        </div>
+</div>
+<div class="col-12 no-padding">
+    <div class="text-left padding-left-10">
+        <i class="fa fa-list-ol"></i> <?php echo __('Number of Hostgroups: ' . $numberOfHostgroups); ?>
     </div>
-    <div class="padding-top-10">
-        <table id="" class="table table-striped table-bordered smart-form font-xs">
-            <thead>
-            <tr class="font-md">
-                <th class="width-20"><?php echo __('Status'); ?></th>
-                <th class="no-sort text-center width-20"><i class="fa fa-user fa-lg"></i></th>
-                <th class="no-sort text-center width-20"><i class="fa fa-power-off fa-lg"></i></th>
-                <th><?php echo __('Host'); ?></th>
-                <th class="width-70"><?php echo __('Status since'); ?></th>
-                <th class="width-60"><?php echo __('Last check'); ?></th>
-                <th class="width-60"><?php echo __('Next check'); ?></th>
+</div>
+<div class="col-12 no-padding">
+    <div class="text-left padding-left-10">
+        <i class="fa fa-list-ol"></i> <?php echo __('Number of Hosts: ' . $numberOfHosts); ?>
+    </div>
+</div>
+<div class="padding-top-10">
+    <table class="table table-striped m-0 table-bordered table-hover table-sm">
+        <thead>
+        <tr>
+            <th class="width-20"><?php echo __('Status'); ?></th>
+            <th class="no-sort text-center width-20"><i class="fa fa-user"></i></th>
+            <th class="no-sort text-center width-20"><i class="fa fa-power-off"></i></th>
+            <th><?php echo __('Host'); ?></th>
+            <th class="width-90"><?php echo __('Status since'); ?></th>
+            <th class="width-90"><?php echo __('Last check'); ?></th>
+            <th class="width-90"><?php echo __('Next check'); ?></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($hostgroups as $hostgroup): ?>
+            <!-- Hostgroup -->
+            <tr>
+                <td class="bg-color-lightGray" colspan="8">
+                    <span><?php echo h($hostgroup['Hostgroup']['Containers']['name']); ?></span>
+                </td>
             </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($hostgroups as $hostgroup): ?>
-                <!-- Hostgroup -->
-                <tr>
-                    <td class="bg-color-lightGray" colspan="8">
-                        <span class="font-md"><?php echo h($hostgroup['Hostgroup']['Containers']['name']); ?></span>
-                    </td>
-                </tr>
-                <?php if (!empty($hostgroup['Hosts'])): ?>
-                    <?php foreach ($hostgroup['Hosts'] as $host): ?>
-                        <?php
-                        if (isset($hostgroup['Hoststatus'][$host['Host']['uuid']]['Hoststatus'])):
-                            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(
-                                $hostgroup['Hoststatus'][$host['Host']['uuid']]['Hoststatus']
-                            );
-                        else:
-                            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
-                        endif;
+            <?php if (!empty($hostgroup['Hosts'])): ?>
+                <?php foreach ($hostgroup['Hosts'] as $host): ?>
+                    <?php
+                    if (isset($hostgroup['Hoststatus'][$host['Host']['uuid']]['Hoststatus'])):
+                        $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(
+                            $hostgroup['Hoststatus'][$host['Host']['uuid']]['Hoststatus']
+                        );
+                    else:
+                        $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
+                    endif;
 
-                        $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
-                        $HoststatusIcon->getTextColor()
-                        ?>
+                    $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
+                    $HoststatusIcon->getTextColor()
+                    ?>
 
-                        <tr>
-                            <!-- status -->
-                            <td class="text-center font-lg">
-                                <?php
-                                if ($Hoststatus->isFlapping()):
-                                    $Hoststatus->getFlappingIconColored();
-                                else:
-                                    echo '<i class="fa fa-square ' . $HoststatusIcon->getTextColor() . '"></i>';
-                                endif;
-                                ?>
-                            </td>
-                            <!-- ACK -->
-                            <td class="text-center">
-                                <?php if ($Hoststatus->isAcknowledged()): ?>
-                                    <i class="fa fa-user fa-lg"></i>
-                                <?php endif; ?>
-                            </td>
-                            <!-- Downtime -->
-                            <td class="text-center">
-                                <?php if ($Hoststatus->isInDowntime()): ?>
-                                    <i class="fa fa-power-off fa-lg"></i>
-                                <?php endif; ?>
-                            </td>
-                            <!-- Host -->
-                            <td class="font-xs"><?php echo h($host['Host']['name']); ?></td>
-                            <!-- status since -->
-                            <td class="font-xs">
-                                <?php echo $UserTime->format($Hoststatus->getLastStateChange()); ?>
-                            </td>
-                            <!-- last check -->
-                            <td class="font-xs">
-                                <?php echo $UserTime->format($Hoststatus->getLastCheck()); ?>
-                            </td>
-                            <!-- next check -->
-                            <td class="font-xs"><?php echo $UserTime->format($Hoststatus->getNextCheck()); ?>
-                            </td>
-                        </tr>
-
-                    <?php endforeach; ?>
-                <?php else: ?>
                     <tr>
-                        <td class="text-center font-xs"
-                            colspan="8"><?php echo __('This host group has no hosts'); ?></td>
+                        <!-- status -->
+                        <td class="text-center">
+                            <?php
+                            if ($Hoststatus->isFlapping()):
+                                $Hoststatus->getFlappingIconColored();
+                            else:
+                                echo '<i class="fa fa-square ' . $HoststatusIcon->getTextColor() . '"></i>';
+                            endif;
+                            ?>
+                        </td>
+                        <!-- ACK -->
+                        <td class="text-center">
+                            <?php if ($Hoststatus->isAcknowledged()): ?>
+                                <i class="fa fa-user"></i>
+                            <?php endif; ?>
+                        </td>
+                        <!-- Downtime -->
+                        <td class="text-center">
+                            <?php if ($Hoststatus->isInDowntime()): ?>
+                                <i class="fa fa-power-off"></i>
+                            <?php endif; ?>
+                        </td>
+                        <!-- Host -->
+                        <td><?php echo h($host['Host']['name']); ?></td>
+                        <!-- status since -->
+                        <td>
+                            <?php echo $UserTime->format($Hoststatus->getLastStateChange()); ?>
+                        </td>
+                        <!-- last check -->
+                        <td>
+                            <?php echo $UserTime->format($Hoststatus->getLastCheck()); ?>
+                        </td>
+                        <!-- next check -->
+                        <td><?php echo $UserTime->format($Hoststatus->getNextCheck()); ?>
+                        </td>
                     </tr>
-                <?php endif; ?>
-            <?php endforeach; ?>
 
-            <?php if (empty($hostgroups)): ?>
-                <div class="noMatch">
-                    <center>
-                        <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                    </center>
-                </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr>
+                    <td class="text-center"
+                        colspan="8"><?php echo __('This host group has no hosts'); ?></td>
+                </tr>
             <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
+        <?php endforeach; ?>
+
+        <?php if (empty($hostgroups)): ?>
+            <div class="noMatch">
+                <center>
+                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
+                </center>
+            </div>
+        <?php endif; ?>
+        </tbody>
+    </table>
 </div>
 </body>

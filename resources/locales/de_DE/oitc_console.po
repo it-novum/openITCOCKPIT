@@ -19,6 +19,11 @@ msgstr ""
 #: src/Command/PushoverNotificationCommand.php:98
 #: src/Command/SendPushNotificationCommand.php:66
 #: src/Command/SmsNotificationCommand.php:69
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:137
+#: src/Command/NagiosNotificationCommand.php:150
+#: src/Command/PushoverNotificationCommand.php:98
+#: src/Command/SendPushNotificationCommand.php:66
+#: src/Command/SmsNotificationCommand.php:69
 msgid "Type of the notification host or service"
 msgstr ""
 

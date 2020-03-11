@@ -26,6 +26,8 @@ namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
 use itnovum\openITCOCKPIT\Core\System\Health\MonitoringEngine;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 class NagiosCfg extends ConfigGenerator implements ConfigInterface {
 
@@ -226,9 +228,16 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
     public function writeToFile($dbRecords) {
 
         $MonitoringEngine = new MonitoringEngine();
+        $DbBackend = new \itnovum\openITCOCKPIT\Core\DbBackend();
 
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
         $configToExport = [];
+
+        $configToExport['STATUSENGINE_VERSION'] = 3;
+        if($DbBackend->isNdoUtils()){
+            $configToExport['STATUSENGINE_VERSION'] = 2;
+        }
+
         foreach ($config as $type => $fields) {
             foreach ($fields as $key => $value) {
                 $configToExport[$key] = $value;
@@ -247,7 +256,23 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
 
         $configToExport['statusengine_path'] = $statusenginePath;
 
-        return $this->saveConfigFile($configToExport);
+        $success = $this->saveConfigFile($configToExport);
+
+        $FileHeader = new FileHeader();
+        $configToExport['STATIC_FILE_HEADER'] = $FileHeader->getHeader($this->commentChar);
+
+        $loader = new FilesystemLoader([
+            $this->getTemplatePath()
+        ]);
+        $twig = new Environment($loader, ['debug' => true]);
+
+        $ConfigSymlink = new ConfigSymlink('/opt/openitc/etc/statusengine/statusengine.toml', '/opt/openitc/etc/statusengine/statusengine.toml');
+        if (!file_put_contents('/opt/openitc/etc/statusengine/statusengine.toml', $twig->render('statusengine.toml', $configToExport))) {
+            $success = false;
+        }
+        $ConfigSymlink->link();
+
+        return $success;
     }
 
     /**

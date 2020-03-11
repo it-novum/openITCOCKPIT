@@ -356,7 +356,7 @@ class HosttemplatesTable extends Table {
             ->allowEmptyString('customvariables', null, true)
             ->add('customvariables', 'custom', [
                 'rule'    => [$this, 'checkMacroNames'], //\App\Lib\Traits\CustomValidationTrait
-                'message' => _('Macro name needs to be unique')
+                'message' => __('Macro name needs to be unique')
             ]);
 
 
