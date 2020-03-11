@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesBrowserController', function($scope, $http, QueryStringService, $interval, $stateParams, UuidService, $state){
+    .controller('ServicesBrowserController', function($scope, $http, $q, QueryStringService, $interval, $stateParams, UuidService, $state){
 
         $scope.id = $stateParams.id;
 
@@ -19,6 +19,9 @@ angular.module('openITCOCKPIT')
 
         $scope.dataSources = [];
         $scope.currentDataSource = null;
+
+        $scope.serverTimeDateObject = null;
+
         $scope.availableTimeranges = {
             1: '1 hour',
             2: '2 hours',
@@ -87,38 +90,44 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
-            $scope.lastLoadDate = Date.now();
-            $http.get("/services/browser/" + $scope.id + ".json", {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.mergedService = result.data.mergedService;
-                $scope.checkCommand = result.data.checkCommand;
-                $scope.areContactsFromService = result.data.areContactsFromService;
-                $scope.areContactsInheritedFromHosttemplate = result.data.areContactsInheritedFromHosttemplate;
-                $scope.areContactsInheritedFromHost = result.data.areContactsInheritedFromHost;
-                $scope.areContactsInheritedFromServicetemplate = result.data.areContactsInheritedFromServicetemplate;
-                $scope.checkPeriod = result.data.checkPeriod;
-                $scope.notifyPeriod = result.data.notifyPeriod;
-                $scope.host = result.data.host;
+            //$scope.lastLoadDate = Date.now();
+            $q.all([
+                $http.get("/services/browser/" + $scope.id + ".json", {
+                    params: {
+                        'angular': true
+                    }
+                }),$http.get("/angular/user_timezone.json", {
+                    params: {
+                        'angular': true
+                    }
+                })
+            ]).then(function(results){
+                $scope.mergedService = results[0].data.mergedService;
+                $scope.checkCommand = results[0].data.checkCommand;
+                $scope.areContactsFromService = results[0].data.areContactsFromService;
+                $scope.areContactsInheritedFromHosttemplate = results[0].data.areContactsInheritedFromHosttemplate;
+                $scope.areContactsInheritedFromHost = results[0].data.areContactsInheritedFromHost;
+                $scope.areContactsInheritedFromServicetemplate = results[0].data.areContactsInheritedFromServicetemplate;
+                $scope.checkPeriod = results[0].data.checkPeriod;
+                $scope.notifyPeriod = results[0].data.notifyPeriod;
+                $scope.host = results[0].data.host;
                 $scope.mergedService.disabled = parseInt($scope.mergedService.disabled, 10);
                 $scope.tags = $scope.mergedService.tags.split(',');
-                $scope.hoststatus = result.data.hoststatus;
-                $scope.servicestatus = result.data.servicestatus;
+                $scope.hoststatus = results[0].data.hoststatus;
+                $scope.servicestatus = results[0].data.servicestatus;
                 $scope.servicestatusForIcon = {
                     Servicestatus: $scope.servicestatus
                 };
                 $scope.serviceStatusTextClass = getServicestatusTextColor();
 
 
-                $scope.acknowledgement = result.data.acknowledgement;
-                $scope.downtime = result.data.downtime;
+                $scope.acknowledgement = results[0].data.acknowledgement;
+                $scope.downtime = results[0].data.downtime;
 
-                $scope.hostAcknowledgement = result.data.hostAcknowledgement;
-                $scope.hostDowntime = result.data.hostDowntime;
+                $scope.hostAcknowledgement = results[0].data.hostAcknowledgement;
+                $scope.hostDowntime = results[0].data.hostDowntime;
 
-                $scope.canSubmitExternalCommands = result.data.canSubmitExternalCommands;
+                $scope.canSubmitExternalCommands = results[0].data.canSubmitExternalCommands;
 
                 $scope.priorities = {
                     1: false,
@@ -133,11 +142,15 @@ angular.module('openITCOCKPIT')
                 }
 
                 $scope.graphAutoRefreshInterval = parseInt($scope.mergedService.check_interval, 10) * 1000;
+                $scope.timezone = results[1].data.timezone;
 
-                var graphStart = (parseInt(new Date().getTime() / 1000, 10) - (3 * 3600));
-                var graphEnd = parseInt(new Date().getTime() / 1000, 10);
+                $scope.serverTimeDateObject = new Date($scope.timezone.server_time);
+
+                var graphStart = (parseInt($scope.serverTimeDateObject.getTime() / 1000, 10) - (3 * 3600));
+                var graphEnd = parseInt($scope.serverTimeDateObject.getTime() / 1000, 10);
+
                 $scope.dataSources = [];
-                for(var dsName in result.data.mergedService.Perfdata){
+                for(var dsName in results[0].data.mergedService.Perfdata){
                     $scope.dataSources.push(dsName);
                 }
                 if($scope.dataSources.length > 0){
@@ -160,27 +173,16 @@ angular.module('openITCOCKPIT')
                 }
 
                 $scope.init = false;
-            }, function errorCallback(result){
-                if(result.status === 403){
+            }, function errorCallback(results){
+                if(results.status === 403){
                     $state.go('403');
                 }
 
-                if(result.status === 404){
+                if(results.status === 404){
                     $state.go('404');
                 }
             });
         };
-
-        $scope.loadTimezone = function(){
-            $http.get("/angular/user_timezone.json", {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.timezone = result.data.timezone;
-            });
-        };
-
 
         $scope.getObjectForDowntimeDelete = function(){
             var object = {};
@@ -251,8 +253,8 @@ angular.module('openITCOCKPIT')
 
         $scope.changeGraphTimespan = function(timespan){
             $scope.currentSelectedTimerange = timespan;
-            var start = (parseInt(new Date().getTime() / 1000, 10) - (timespan * 3600));
-            var end = parseInt(new Date().getTime() / 1000, 10);
+            var start = (parseInt(new Date($scope.timezone.server_time).getTime() / 1000, 10) - (timespan * 3600));
+            var end = parseInt(new Date($scope.timezone.server_time).getTime() / 1000, 10);
             //graphTimeSpan = timespan;
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, start, end, true);
         };
@@ -293,7 +295,6 @@ angular.module('openITCOCKPIT')
 
             //The last timestamp in the y-axe
             graphRenderEnd = end;
-
             if($scope.dataSources.length > 0){
                 $scope.isLoadingGraph = true;
                 $http.get('/Graphgenerators/getPerfdataByUuid.json', {
@@ -331,7 +332,6 @@ angular.module('openITCOCKPIT')
                             };
                         }
                     }
-
                     if(appendData === true){
                         if(result.data.performance_data.length > 0){
                             //Append new data to current graph
@@ -497,14 +497,14 @@ angular.module('openITCOCKPIT')
                 defaultTheme: false
             };
             options.xaxis.tickFormatter = function(val, axis){
-                var fooJS = new Date(val + ($scope.timezone.user_offset * 1000));
+                var fooJS = new Date(val);
                 var fixTime = function(value){
                     if(value < 10){
                         return '0' + value;
                     }
                     return value;
                 };
-                return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
+                return fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
             };
             options.series.color = defaultColor;
             options.series.threshold = thresholdAreas;
@@ -515,8 +515,8 @@ angular.module('openITCOCKPIT')
                 radius: 1
             };
 
-            options.xaxis.min = lastGraphStart * 1000;
-            options.xaxis.max = graphRenderEnd * 1000;
+            options.xaxis.min = (lastGraphStart + $scope.timezone.user_time_to_server_offset) * 1000;
+            options.xaxis.max = (graphRenderEnd + $scope.timezone.user_time_to_server_offset) * 1000;
 
             options.yaxis = {
                 axisLabel: performance_data.datasource.unit
@@ -800,7 +800,6 @@ angular.module('openITCOCKPIT')
         });
 
         $scope.loadIdOrUuid();
-        $scope.loadTimezone();
 
         $scope.$watch('servicestatus.isFlapping', function(){
             if($scope.servicestatus){
