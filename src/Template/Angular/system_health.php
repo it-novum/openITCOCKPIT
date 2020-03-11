@@ -1,6 +1,4 @@
-<div>
-
-    <?php
+<?php
 
     use App\View\Helper\ButtonGroupHelper;
 
@@ -325,17 +323,11 @@
         </div>
     </div>';
 
-    $templateData = [];
-    $templateData['GroupAriaLabel'] = 'Display of system health notifications';
-
-    $btnHelper = (new ButtonGroupHelper($templateData))
+    $btnHelper = (new ButtonGroupHelper('Display of system health notifications'))
     ->addButtonWithTogglingMenu('fas fa-heartbeat {{ class }}',__('System health'), $htmlMenu)
-    ->addButtonWithData('{{systemHealth.errorCount}}','{{ bgClass }}',__('# of status notifications'))
+    ->addButtonWithTooltip('{{systemHealth.errorCount}}','{{ bgClass }}',__('# of status notifications'))
     ;
 
     $html = $btnHelper->getHtml();
 
     echo $html;
-    ?>
-
-</div>
