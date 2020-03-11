@@ -26,6 +26,8 @@
 ?>
 <?php
 
+use App\View\Helper\ButtonGroupHelper;
+
 class OitcHeader {
 
     public function __construct($exportRunningHeaderInfo, $showstatsinmenu) {
@@ -154,27 +156,23 @@ private function menuStatistics($exportRunningHeaderInfo, $showstatsinmenu): voi
     echo $html;
 }
 
-private function buttonGroupElement(): string {
-    $thml = '';
-
-    return $html;
+private function surroundWithHeaderIcon(string $html): string {
+    return
+        '<div class="header-icon">' . PHP_EOL
+        . '    ' . $html . PHP_EOL
+        . '</div>';
 }
 
 private function menuHeaderClockDisplay() {
-    return
-        '<div class="header-icon">
-            <server-time></server-time>
-        </div>';
+    return $this->surroundWithHeaderIcon('<server-time></server-time>');
 }
+
 private function menuHeaderSignOut(): string {
-    return
-        '<div>
-            <a href="/users/logout" data-original-title="' . $this->translate('Sign out') . '"
-               data-placement="left"
-               rel="tooltip" data-container="body" class="header-icon">
-                <i class="fa fa-sign-out-alt"></i>
-            </a>
-        </div>';
+
+    $signOutBtnGrpHelper = new ButtonGroupHelper('');
+    $signOutBtnGrpHelper->addIconButtonWithHRef('fa fa-sign-out-alt', $this->translate('Sign out'),'/users/logout');
+
+    return $this->surroundWithHeaderIcon($signOutBtnGrpHelper->getHtml());
 }
 
 private function menuNotifications(): string {
