@@ -18,6 +18,10 @@ msgstr ""
 #: src/Template/Error/error500.php:40
 #: src/Template/Errors/error400.php:18
 #: src/Template/Errors/error500.php:18
+#: src/Template/Error/error400.php:36
+#: src/Template/Error/error500.php:40
+#: src/Template/Errors/error400.php:18
+#: src/Template/Errors/error500.php:18
 msgid "Error"
 msgstr ""
 

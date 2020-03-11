@@ -403,7 +403,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
                                    id="debuggingKeepHistory"
                                    ng-model="graph.keepHistory">
                             <label class="custom-control-label no-margin" for="debuggingKeepHistory">
-                                <?php echo _('Keep history'); ?>
+                                <?php echo __('Keep history'); ?>
                             </label>
                         </div>
                     </div>

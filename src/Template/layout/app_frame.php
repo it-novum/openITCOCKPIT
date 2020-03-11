@@ -92,7 +92,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     -->
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script data-pace-options='{ "ajax": false }' src='/legacy/smartadmin/js/plugin/pace/pace.min.js'></script>
+    <script data-pace-options='{ "ajax": false }' src='/js/lib/pace/pace.min.js'></script>
     <title>
         Monitoring powered by openITCOCKPIT
     </title>
@@ -158,7 +158,6 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
                 </div>
             </main>
         </div>
-        <?php //printf('<script src="/%s"></script>', 'legacy/smartadmin/js/app.js'); ?>
     </div>
 </div>
 <?= $this->element('shortcut_links') ?>

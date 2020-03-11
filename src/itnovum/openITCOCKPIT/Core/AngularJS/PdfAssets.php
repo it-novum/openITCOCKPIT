@@ -11,14 +11,14 @@ class PdfAssets {
      */
     static public function getCssFiles() {
         return [
-            '/legacy/css/vendor/bootstrap/css/bootstrap.css',
-            '/legacy/css/vendor/bootstrap/css/bootstrap-theme.css',
-            '/legacy/smartadmin/css/font-awesome.css',
-            '/legacy/smartadmin/css/smartadmin-production.css',
-            '/legacy/smartadmin/css/your_style.css',
-            '/legacy/css/app.css',
-            '/legacy/css/pdf_list_style.css',
-            '/legacy/css/bootstrap_pdf.css',
+            '/node_modules/bootstrap/dist/css/bootstrap.css',
+            '/smartadmin4/dist/css/vendors.bundle.css',
+            '/smartadmin4/dist/css/app.bundle.css',
+            '/node_modules/@fortawesome/fontawesome-free/css/all.css',
+            '/css/openitcockpit-colors.css',
+            '/css/openitcockpit-utils.css',
+            '/css/openitcockpit.css',
+            '/css/openitcockpit-pdf.css',
         ];
     }
 

@@ -392,7 +392,9 @@ class HostgroupsController extends AppController {
             }
 
             if ($this->DbBackend->isStatusengine3()) {
-                throw new MissingDbBackendException('MissingDbBackendException');
+                /** @var $HostsTable HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $hosts = $HostsTable->getHostsIndexStatusengine3($HostFilter, $HostConditions);
             }
 
             if ($this->DbBackend->isCrateDb()) {
@@ -525,7 +527,7 @@ class HostgroupsController extends AppController {
                 }
 
                 if ($this->DbBackend->isStatusengine3()) {
-                    throw new MissingDbBackendException('MissingDbBackendException');
+                    $hosts = $HostsTable->getHostsIndexStatusengine3($HostFilter, $HostConditions);
                 }
 
                 if ($this->DbBackend->isCrateDb()) {

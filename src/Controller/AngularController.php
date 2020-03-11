@@ -211,7 +211,11 @@ class AngularController extends AppController {
             }
 
             if ($this->DbBackend->isStatusengine3()) {
-                throw new MissingDbBackendException('MissingDbBackendException');
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+                $hoststatusCount = $HostsTable->getHoststatusCountStatusengine3($this->MY_RIGHTS, false);
+                $servicestatusCount = $HostsTable->getServicestatusCountStatusengine3($this->MY_RIGHTS, false);
             }
 
         }
@@ -290,7 +294,11 @@ class AngularController extends AppController {
         }
 
         if ($this->DbBackend->isStatusengine3()) {
-            throw new MissingDbBackendException('MissingDbBackendException');
+            /** @var HostsTable $HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+            $hoststatusCount = $HostsTable->getHoststatusCountStatusengine3($containerIdsForQuery, true);
+            $servicestatusCount = $HostsTable->getServicestatusCountStatusengine3($containerIdsForQuery, true);
         }
 
         $hoststatusSum = array_sum($hoststatusCount);

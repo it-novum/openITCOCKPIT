@@ -1,0 +1,107 @@
+{{STATIC_FILE_HEADER}}
+
+# You may add multiple [[Gearman]] or [[Rabbitmq]] section. Each section will be one connection
+# to the specified URL/Hostname.
+[[Gearman]]
+URL = "127.0.0.1:4730"
+# The following configuration items activating the generation and queuing of events.
+# The format is Identifier = "NameOfQueueinGearmanOrRabbitmq"
+# If you define multiple Gearman or Rabbitmq sections with the same Identifier, the generated message will be sent
+# to every instance.
+HostStatus = "statusngin_hoststatus"
+HostCheck = "statusngin_hostchecks"
+ServiceStatus = "statusngin_servicestatus"
+ServiceCheck = "statusngin_servicechecks"
+ServicePerfData = "statusngin_service_perfdata"
+StateChange = "statusngin_statechanges"
+AcknowledgementData = "statusngin_acknowledgements"
+FlappingData = "statusngin_flappings"
+DowntimeData = "statusngin_downtimes"
+ContactNotificationMethodData = "statusngin_contactnotificationmethod"
+RestartData = "statusngin_core_restart"
+
+{% if statusengine_enable_ochp == 1 %}
+OCHP = "statusngin_ochp"
+{% endif %}
+
+{% if statusengine_enable_ocsp == 1 %}
+OCSP = "statusngin_ocsp"
+{% endif %}
+
+# You can run external commands vis this queue.
+WorkerCommand = "statusngin_cmd"
+
+# The broker can directly process OCHP/OCSP from another naemon/nagios instance. If you have multiple
+#WorkerOCHP = "statusngin_ochp"
+#WorkerOCSP = "statusngin_ocsp"
+
+SystemCommandData = "statusngin_systemcommands"
+CommentData = "statusngin_comments"
+#ExternalCommandData = "statusngin_externalcommands"
+#NotificationData = "statusngin_notifications"
+#ProgramStatusData = "statusngin_programmstatus"
+#ContactStatusData = "statusngin_contactstatus"
+#ContactNotificationData = "statusngin_contactnotificationdata"
+EventHandlerData = "statusngin_eventhandler"
+#ProcessData = "statusngin_processdata"
+{% if statusengine_use_log_data == 1 %}
+LogData = "statusngin_logentries"
+{% endif %}
+
+# You may specify multiple rabbitmq connections, by adding more [[Rabbitmq]] sections.
+#[[Rabbitmq]]
+#Hostname = "localhost"
+#Username = "statusengine"
+#Password = "statusengine"
+##Vhost = "/"
+##Timeout = 30
+##Exchange = "statusengine"
+##DurableExchange = false
+##DurableQueues = false
+##SSL = false
+##SSL_verify = true
+##SSL_cacert = ""
+##SSL_cert = ""
+##SSL_key = ""
+#
+#HostStatus = "statusngin_hoststatus"
+#HostCheck = "statusngin_hostchecks"
+#ServiceStatus = "statusngin_servicestatus"
+#ServiceCheck = "statusngin_servicechecks"
+#ServicePerfData = "statusngin_service_perfdata"
+#StateChange = "statusngin_statechanges"
+#AcknowledgementData = "statusngin_acknowledgements"
+#FlappingData = "statusngin_flappings"
+#DowntimeData = "statusngin_downtimes"
+#ContactNotificationMethodData = "statusngin_contactnotificationmethod"
+#RestartData = "statusngin_core_restart"
+#OCHP = "statusngin_ochp"
+#OCSP = "statusngin_ocsp"
+#WorkerCommand = "statusngin_cmd"
+##WorkerOCHP = "statusngin_ochp"
+##WorkerOCSP = "statusngin_ocsp"
+#
+##SystemCommandData = "statusngin_systemcommands"
+##CommentData = "statusngin_comments"
+##ExternalCommandData = "statusngin_externalcommands"
+##NotificationData = "statusngin_notifications"
+##ProgramStatusData = "statusngin_programmstatus"
+##ContactStatusData = "statusngin_contactstatus"
+##ContactNotificationData = "statusngin_contactnotificationdata"
+##EventHandlerData = "statusngin_eventhandler"
+##ProcessData = "statusngin_processdata"
+##LogData = "statusngin_logentries"
+
+[Scheduler]
+# Used to fix a nasty scheduler behaviour in naemon when you often restart naemon
+# If next_schedule of a service or host is in the past during startup, we reschedule
+# the service/host within $StartupScheduleMax seconds instead of the check_intervall of the host/service.
+#StartupScheduleMax = 30
+
+[Bulk]
+## Maximum number of messages in one bulk message
+Maximum = 200
+## Flush Bulk messages every X seconds dispite number of cached messages
+FlushInterval = 1
+## List of queue identifier which should be created as bulk message. This is a global option for all connections
+Queues = ["HostStatus", "HostCheck", "ServiceStatus", "ServiceCheck", "ServicePerfData", "StateChange", "LogData"]

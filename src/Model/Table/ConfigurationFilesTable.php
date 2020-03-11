@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 /**
  * ConfigurationFiles Model
@@ -30,7 +31,7 @@ class ConfigurationFilesTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('configuration_files');
@@ -46,7 +47,7 @@ class ConfigurationFilesTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->nonNegativeInteger('id')
             ->allowEmptyString('id', null, 'create');
@@ -95,11 +96,9 @@ class ConfigurationFilesTable extends Table {
      * @throws \Exception
      */
     public function saveConfigurationValuesForConfigFile($configFile, $records) {
-        if (!$this->deleteAll([
+        $this->deleteAll([
             'ConfigurationFiles.config_file' => $configFile
-        ])) {
-            return false;
-        }
+        ]);
 
         //Convert Cake2 schema to cake4
         $entities = [];

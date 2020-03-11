@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2020-03-09 10:19+0100\n"
+"POT-Creation-Date: 2020-03-10 11:30+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -380,8 +380,8 @@ msgstr "Tableau de bord Grafana"
 #: src/Template/Macros/index.php:168
 #: src/Template/Macros/index.php:270
 #: src/Template/Profile/edit.php:198
-#: src/Template/Profile/edit.php:220
-#: src/Template/Profile/edit.php:237
+#: src/Template/Profile/edit.php:219
+#: src/Template/Profile/edit.php:236
 #: src/Template/Servicedependencies/add.php:69
 #: src/Template/Servicedependencies/add.php:92
 #: src/Template/Servicedependencies/add.php:114
@@ -499,7 +499,7 @@ msgstr "Tableau de bord Grafana"
 #: src/Template/Users/edit.php:161
 #: src/Template/Users/edit.php:330
 #: src/Template/Users/edit.php:347
-#: src/Template/Users/edit.php:382
+#: src/Template/Users/edit.php:383
 msgid "Please choose"
 msgstr "Choisissez s'il vous plaît"
 
@@ -544,7 +544,7 @@ msgstr "Choisissez s'il vous plaît"
 #: src/Template/Documentations/view.php:222
 #: src/Template/Macros/index.php:239
 #: src/Template/Macros/index.php:348
-#: src/Template/Profile/edit.php:578
+#: src/Template/Profile/edit.php:577
 #: src/Template/Profile/edit_apikey.php:80
 msgid "Save"
 msgstr "sauver"
@@ -884,7 +884,7 @@ msgid "light"
 msgstr "lumière"
 
 #: plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:180
-#: src/Template/Hostgroups/pdf/list_to_pdf.php:58
+#: src/Template/Hostgroups/pdf/list_to_pdf.php:57
 msgid "Hostgroups"
 msgstr "Groupes d'hôtes"
 
@@ -1266,8 +1266,8 @@ msgstr ""
 #: src/Template/Instantreports/edit.php:378
 #: src/Template/Locations/add.php:187
 #: src/Template/Locations/edit.php:185
-#: src/Template/Profile/edit.php:272
-#: src/Template/Profile/edit.php:426
+#: src/Template/Profile/edit.php:271
+#: src/Template/Profile/edit.php:425
 #: src/Template/Proxy/index.php:116
 #: src/Template/Servicedependencies/add.php:403
 #: src/Template/Servicedependencies/edit.php:403
@@ -1307,7 +1307,7 @@ msgstr ""
 #: src/Template/Usergroups/edit.php:277
 #: src/Template/Users/add.php:438
 #: src/Template/Users/add_from_ldap.php:484
-#: src/Template/Users/edit.php:443
+#: src/Template/Users/edit.php:444
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -1407,7 +1407,7 @@ msgstr "Synchroniser avec Grafana Modal"
 #: src/Template/Packetmanager/index.php:299
 #: src/Template/Packetmanager/index.php:345
 #: src/Template/Packetmanager/index.php:391
-#: src/Template/Profile/edit.php:581
+#: src/Template/Profile/edit.php:580
 #: src/Template/Profile/edit_apikey.php:83
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:90
 #: src/Template/Services/details.php:306
@@ -1645,7 +1645,7 @@ msgstr ""
 #: src/Template/Notifications/index.php:72
 #: src/Template/Notifications/service_notification.php:42
 #: src/Template/Notifications/services.php:72
-#: src/Template/Profile/edit.php:448
+#: src/Template/Profile/edit.php:447
 #: src/Template/Servicechecks/index.php:42
 #: src/Template/Servicedependencies/index.php:55
 #: src/Template/Serviceescalations/index.php:55
@@ -2035,14 +2035,14 @@ msgstr "Effacer"
 #: src/Template/Hostgroups/extended.php:235
 #: src/Template/Hostgroups/extended.php:421
 #: src/Template/Hostgroups/index.php:204
-#: src/Template/Hostgroups/pdf/list_to_pdf.php:165
+#: src/Template/Hostgroups/pdf/list_to_pdf.php:164
 #: src/Template/Hosts/browser.php:1295
 #: src/Template/Hosts/browser.php:1397
 #: src/Template/Hosts/browser.php:1492
 #: src/Template/Hosts/disabled.php:321
 #: src/Template/Hosts/index.php:641
 #: src/Template/Hosts/not_monitored.php:341
-#: src/Template/Hosts/pdf/list_to_pdf.php:136
+#: src/Template/Hosts/pdf/list_to_pdf.php:133
 #: src/Template/Hosttemplates/index.php:193
 #: src/Template/Instantreports/index.php:399
 #: src/Template/Instantreports/send_emails_list.php:159
@@ -2059,11 +2059,11 @@ msgstr "Effacer"
 #: src/Template/Servicegroups/extended.php:239
 #: src/Template/Servicegroups/extended.php:389
 #: src/Template/Servicegroups/index.php:204
-#: src/Template/Servicegroups/pdf/list_to_pdf.php:193
+#: src/Template/Servicegroups/pdf/list_to_pdf.php:191
 #: src/Template/Services/disabled.php:257
 #: src/Template/Services/index.php:590
 #: src/Template/Services/not_monitored.php:256
-#: src/Template/Services/pdf/list_to_pdf.php:162
+#: src/Template/Services/pdf/list_to_pdf.php:159
 #: src/Template/Services/service_list.php:364
 #: src/Template/Services/service_list.php:560
 #: src/Template/Services/service_list.php:703
@@ -2514,11 +2514,11 @@ msgstr "Sélectionnez le type d'objet"
 #: src/Template/Downtimes/host.php:283
 #: src/Template/Downtimes/service.php:296
 #: src/Template/Hostchecks/index.php:37
-#: src/Template/Hostgroups/pdf/list_to_pdf.php:86
+#: src/Template/Hostgroups/pdf/list_to_pdf.php:85
 #: src/Template/Hosts/add.php:80
 #: src/Template/Hosts/browser.php:66
 #: src/Template/Hosts/edit.php:66
-#: src/Template/Hosts/pdf/list_to_pdf.php:78
+#: src/Template/Hosts/pdf/list_to_pdf.php:75
 #: src/Template/Notifications/host_notification.php:37
 #: src/Template/Notifications/index.php:52
 #: src/Template/Notifications/index.php:234
@@ -2707,7 +2707,7 @@ msgstr "Télécharger un nouveau jeu d'icônes (sous forme de paquet .zip)"
 #: plugins/MapModule/templates/Mapeditors/edit.php:466
 #: plugins/MapModule/templates/Mapeditors/edit.php:1044
 #: plugins/MapModule/templates/Mapeditors/edit.php:1473
-#: src/Template/Profile/edit.php:335
+#: src/Template/Profile/edit.php:334
 msgid "Max allowed file size: "
 msgstr "Taille maximale autorisée du fichier : "
 
@@ -2771,9 +2771,9 @@ msgstr "Sélectionnez le type de sortie"
 #: src/Template/Dashboards/services_status_list_widget.php:211
 #: src/Template/Hosts/browser.php:1068
 #: src/Template/Servicechecks/index.php:223
-#: src/Template/Servicegroups/pdf/list_to_pdf.php:96
+#: src/Template/Servicegroups/pdf/list_to_pdf.php:95
 #: src/Template/Services/index.php:400
-#: src/Template/Services/pdf/list_to_pdf.php:81
+#: src/Template/Services/pdf/list_to_pdf.php:78
 #: src/Template/Services/service_list.php:207
 #: src/Template/Statehistories/service.php:224
 msgid "Service output"
@@ -2966,8 +2966,8 @@ msgstr "Nom d'hôte"
 #: src/Template/Macros/index.php:89
 #: src/Template/Macros/index.php:200
 #: src/Template/Macros/index.php:306
-#: src/Template/Profile/edit.php:471
-#: src/Template/Profile/edit.php:516
+#: src/Template/Profile/edit.php:470
+#: src/Template/Profile/edit.php:515
 #: src/Template/Profile/edit_apikey.php:18
 #: src/Template/Servicegroups/add.php:98
 #: src/Template/Servicegroups/edit.php:99
@@ -3054,7 +3054,7 @@ msgstr "Pas en surveillance"
 #: src/Template/Currentstatereports/index.php:343
 #: src/Template/Hosts/browser.php:394
 #: src/Template/Hosts/hostservicelist.php:69
-#: src/Template/Hosts/pdf/list_to_pdf.php:81
+#: src/Template/Hosts/pdf/list_to_pdf.php:78
 #: src/Template/Notifications/host_notification.php:181
 #: src/Template/Notifications/index.php:250
 #: src/Template/Notifications/service_notification.php:193
@@ -3084,19 +3084,19 @@ msgstr "Tentative en cours"
 #: src/Template/Currentstatereports/index.php:276
 #: src/Template/Currentstatereports/index.php:340
 #: src/Template/Hostgroups/extended.php:221
-#: src/Template/Hostgroups/pdf/list_to_pdf.php:88
+#: src/Template/Hostgroups/pdf/list_to_pdf.php:87
 #: src/Template/Hosts/browser.php:141
 #: src/Template/Hosts/browser.php:620
 #: src/Template/Hosts/hostservicelist.php:63
 #: src/Template/Hosts/index.php:392
-#: src/Template/Hosts/pdf/list_to_pdf.php:80
+#: src/Template/Hosts/pdf/list_to_pdf.php:77
 #: src/Template/Servicegroups/extended.php:224
-#: src/Template/Servicegroups/pdf/list_to_pdf.php:94
+#: src/Template/Servicegroups/pdf/list_to_pdf.php:93
 #: src/Template/Services/browser.php:133
 #: src/Template/Services/browser.php:740
 #: src/Template/Services/details.php:89
 #: src/Template/Services/index.php:390
-#: src/Template/Services/pdf/list_to_pdf.php:80
+#: src/Template/Services/pdf/list_to_pdf.php:77
 #: src/Template/Services/service_list.php:197
 msgid "Last check"
 msgstr "Dernière vérification"
@@ -3106,12 +3106,12 @@ msgstr "Dernière vérification"
 #: src/Template/Currentstatereports/index.php:279
 #: src/Template/Currentstatereports/index.php:341
 #: src/Template/Hostgroups/extended.php:224
-#: src/Template/Hostgroups/pdf/list_to_pdf.php:89
+#: src/Template/Hostgroups/pdf/list_to_pdf.php:88
 #: src/Template/Hosts/browser.php:149
 #: src/Template/Hosts/browser.php:625
 #: src/Template/Hosts/hostservicelist.php:66
 #: src/Template/Servicegroups/extended.php:227
-#: src/Template/Servicegroups/pdf/list_to_pdf.php:95
+#: src/Template/Servicegroups/pdf/list_to_pdf.php:94
 #: src/Template/Services/browser.php:745
 #: src/Template/Services/index.php:395
 #: src/Template/Services/service_list.php:202
@@ -3143,10 +3143,10 @@ msgstr "Etat hôte"
 #: src/Template/Hosts/browser.php:452
 #: src/Template/Hosts/browser.php:1063
 #: src/Template/Hosts/index.php:387
-#: src/Template/Hosts/pdf/list_to_pdf.php:79
+#: src/Template/Hosts/pdf/list_to_pdf.php:76
 #: src/Template/Services/browser.php:532
 #: src/Template/Services/index.php:385
-#: src/Template/Services/pdf/list_to_pdf.php:79
+#: src/Template/Services/pdf/list_to_pdf.php:76
 #: src/Template/Services/service_list.php:192
 msgid "Last state change"
 msgstr "Dernier changement d'état"
@@ -3273,15 +3273,33 @@ msgid "Refresh interval"
 msgstr "Intervalle de rafraîchissement"
 
 #: plugins/MapModule/templates/Maps/add.php:129
+#: src/Template/Agentchecks/add.php:121
+#: src/Template/Automaps/add.php:441
+#: src/Template/Calendars/add.php:119
 #: src/Template/Contactgroups/add.php:130
+#: src/Template/Contacts/add.php:488
+#: src/Template/Contacts/add_from_ldap.php:595
 #: src/Template/Hostgroups/add.php:164
 #: src/Template/Hosts/add.php:874
 #: src/Template/Hosts/edit.php:859
 #: src/Template/Hosttemplates/add.php:623
+#: src/Template/Locations/add.php:182
 #: src/Template/Servicegroups/add.php:164
 #: src/Template/Services/add.php:978
 #: src/Template/Servicetemplategroups/add.php:132
 #: src/Template/Servicetemplates/add.php:842
+#: src/Template/Systemdowntimes/add_containerdowntime.php:299
+#: src/Template/Systemdowntimes/add_hostdowntime.php:282
+#: src/Template/Systemdowntimes/add_hostgroupdowntime.php:282
+#: src/Template/Systemdowntimes/add_servicedowntime.php:260
+#: src/Template/Systemfailures/add.php:165
+#: src/Template/Tenants/add.php:162
+#: src/Template/Usercontainerroles/add.php:125
+#: src/Template/Usergroups/add.php:177
+#: src/Template/Usergroups/add.php:268
+#: src/Template/Users/add.php:433
+#: src/Template/Users/add_from_ldap.php:479
+#: src/Template/Users/edit.php:439
 msgid "Create another"
 msgstr ""
 
@@ -3585,7 +3603,7 @@ msgid "is not required in the URL and can be removed."
 msgstr ""
 
 #: plugins/NagiosModule/templates/Cmd/index.php:234
-msgid "External documentaition"
+msgid "External documentation"
 msgstr ""
 
 #: src/Command/AcknowledgePerMailCommand.php:171
@@ -3951,7 +3969,7 @@ msgstr "Utilisé par d'autres objets"
 msgid "Issue while deleting command"
 msgstr "Problème lors de la suppression de la commande"
 
-#: src/Controller/ConfigurationFilesController.php:205
+#: src/Controller/ConfigurationFilesController.php:211
 msgid "Config successfully restored to default"
 msgstr "La configuration a été restaurée avec succès par défaut"
 
@@ -4529,6 +4547,7 @@ msgstr "Utilisé par le module Eventcorrelation"
 msgid "Password can not be blank if basic auth is enabled."
 msgstr "Le mot de passe ne peut pas être vide si l'authentification de base est activée."
 
+#: src/Model/Table/AutomapsTable.php:77
 #: src/Model/Table/AutomapsTable.php:79
 msgid "You need to select at least one container"
 msgstr "Vous devez sélectionner au moins un conteneur"
@@ -4712,6 +4731,14 @@ msgstr "Adresse e-mail invalide"
 #: src/Model/Table/ContactsTable.php:165
 msgid "You have to choose at least one command."
 msgstr "Vous devez choisir au moins une commande."
+
+#: src/Model/Table/ContactsTable.php:192
+#: src/Model/Table/HostsTable.php:411
+#: src/Model/Table/HosttemplatesTable.php:359
+#: src/Model/Table/ServicesTable.php:419
+#: src/Model/Table/ServicetemplatesTable.php:386
+msgid "Macro name needs to be unique"
+msgstr ""
 
 #: src/Model/Table/ContainersTable.php:259
 msgid "This name already exists."
@@ -5682,7 +5709,7 @@ msgstr "Commencez s'il vous plaît démarrer gearman_worker"
 
 #: src/Template/Administrators/debug.php:183
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:35
-#: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:59
+#: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:60
 msgid "Monitoring engine"
 msgstr "Moteur de surveillance"
 
@@ -5723,7 +5750,7 @@ msgstr "Connecteur de base de données"
 
 #: src/Template/Administrators/debug.php:204
 #: src/Template/Administrators/debug.php:229
-#: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:62
+#: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:63
 msgid "Statusengine"
 msgstr "Statusengine"
 
@@ -5761,7 +5788,7 @@ msgid "External command interface used by Check_MK to pass check results."
 msgstr "Interface de commande externe utilisée par Check_MK pour transmettre les résultats du contrôle."
 
 #: src/Template/Administrators/debug.php:283
-#: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:65
+#: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:67
 msgid "phpNSTA"
 msgstr "phpNSTA"
 
@@ -5841,6 +5868,10 @@ msgstr "Nombre de cœurs de processeur"
 #: src/Template/Administrators/debug.php:396
 msgid "CPU load"
 msgstr "Charge du processeur"
+
+#: src/Template/Administrators/debug.php:406
+msgid "Keep history"
+msgstr ""
 
 #: src/Template/Administrators/debug.php:415
 msgid "Current load:"
@@ -7411,12 +7442,12 @@ msgstr "Transfert passif du résultat du chèque"
 #: src/Template/Downtimereports/pdf/create_pdf_report.php:121
 #: src/Template/Downtimereports/pdf/create_pdf_report.php:267
 #: src/Template/Hostgroups/extended.php:200
-#: src/Template/Hostgroups/pdf/list_to_pdf.php:83
+#: src/Template/Hostgroups/pdf/list_to_pdf.php:82
 #: src/Template/Hosts/hostservicelist.php:40
-#: src/Template/Hosts/pdf/list_to_pdf.php:75
+#: src/Template/Hosts/pdf/list_to_pdf.php:72
 #: src/Template/Servicegroups/extended.php:198
-#: src/Template/Servicegroups/pdf/list_to_pdf.php:89
-#: src/Template/Services/pdf/list_to_pdf.php:75
+#: src/Template/Servicegroups/pdf/list_to_pdf.php:88
+#: src/Template/Services/pdf/list_to_pdf.php:72
 #: src/Template/element/load_current_state_report_data.php:84
 #: src/Template/element/load_downtime_report_data.php:139
 #: src/Template/element/load_downtime_report_data.php:280
@@ -8564,7 +8595,7 @@ msgstr "Modèles d'hôte"
 #: src/Template/Servicegroups/append.php:34
 #: src/Template/Servicegroups/index.php:34
 #: src/Template/Servicegroups/index.php:50
-#: src/Template/Servicegroups/pdf/list_to_pdf.php:59
+#: src/Template/Servicegroups/pdf/list_to_pdf.php:58
 #: src/Template/Services/add.php:152
 #: src/Template/Services/edit.php:209
 #: src/Template/Servicetemplates/add.php:164
@@ -8896,18 +8927,18 @@ msgstr "Fuseau horaire Web-graphite"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:163
 #: src/Template/Dashboards/welcome_widget.php:41
-#: src/Template/Profile/edit.php:256
+#: src/Template/Profile/edit.php:255
 #: src/Template/Users/add.php:363
 #: src/Template/Users/add_from_ldap.php:431
-#: src/Template/Users/edit.php:365
+#: src/Template/Users/edit.php:366
 msgid "Server timezone is:"
 msgstr "Le fuseau horaire du serveur est :"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:167
-#: src/Template/Profile/edit.php:260
+#: src/Template/Profile/edit.php:259
 #: src/Template/Users/add.php:367
 #: src/Template/Users/add_from_ldap.php:435
-#: src/Template/Users/edit.php:369
+#: src/Template/Users/edit.php:370
 msgid "Current server time:"
 msgstr "Heure actuelle du serveur :"
 
@@ -9707,7 +9738,7 @@ msgstr "La longitude doit être comprise entre -180 et 180 degrés inclus."
 #: src/Template/Containers/index.php:540
 #: src/Template/Locations/add.php:150
 #: src/Template/Locations/edit.php:152
-#: src/Template/Profile/edit.php:233
+#: src/Template/Profile/edit.php:232
 #: src/Template/Users/add.php:341
 #: src/Template/Users/add_from_ldap.php:408
 #: src/Template/Users/edit.php:343
@@ -10082,9 +10113,9 @@ msgstr "Type d'état"
 #: src/Template/Hosts/browser.php:636
 #: src/Template/Hosts/hostservicelist.php:134
 #: src/Template/Hosts/hostservicelist.php:142
-#: src/Template/Hosts/pdf/list_to_pdf.php:126
-#: src/Template/Hosts/pdf/list_to_pdf.php:127
-#: src/Template/Hosts/pdf/list_to_pdf.php:128
+#: src/Template/Hosts/pdf/list_to_pdf.php:123
+#: src/Template/Hosts/pdf/list_to_pdf.php:124
+#: src/Template/Hosts/pdf/list_to_pdf.php:125
 #: src/Template/Servicegroups/extended.php:313
 #: src/Template/Servicegroups/extended.php:321
 #: src/Template/Services/browser.php:150
@@ -10172,8 +10203,8 @@ msgid "Date: "
 msgstr "Date : "
 
 #: src/Template/Currentstatereports/pdf/create_pdf_report.php:104
-#: src/Template/Hostgroups/pdf/list_to_pdf.php:87
-#: src/Template/Servicegroups/pdf/list_to_pdf.php:93
+#: src/Template/Hostgroups/pdf/list_to_pdf.php:86
+#: src/Template/Servicegroups/pdf/list_to_pdf.php:92
 #: src/Template/element/load_current_state_report_data.php:90
 msgid "Status since"
 msgstr "Statut depuis"
@@ -10318,10 +10349,6 @@ msgstr "En temps d'arrêt"
 #: src/Template/Dashboards/hosts_status_list_widget.php:147
 msgid "Filter by host output"
 msgstr "Filtrer par sortie de l'hôte"
-
-#: src/Template/Dashboards/index.php:33
-msgid "Please uncomment line {0} in {1}. Detailed output is disabled due to security reasons."
-msgstr ""
 
 #: src/Template/Dashboards/index.php:82
 msgid "Rename"
@@ -10488,7 +10515,7 @@ msgstr "Filtrer par sortie de service"
 #: src/Template/Hosts/browser.php:1416
 #: src/Template/Hosts/hostservicelist.php:57
 #: src/Template/Servicegroups/extended.php:218
-#: src/Template/Servicegroups/pdf/list_to_pdf.php:92
+#: src/Template/Servicegroups/pdf/list_to_pdf.php:91
 #: src/Template/Services/add.php:117
 #: src/Template/Services/copy.php:100
 #: src/Template/Services/disabled.php:141
@@ -10752,7 +10779,7 @@ msgstr "Hôtes sans panne:"
 
 #: src/Template/Downtimereports/pdf/create_pdf_report.php:55
 #: src/Template/Instantreports/generate.php:152
-#: src/Template/Instantreports/pdf/create_pdf_report.php:66
+#: src/Template/Instantreports/pdf/create_pdf_report.php:64
 #: src/Template/element/load_downtime_report_data.php:38
 #: src/Template/element/load_instant_report_data.php:54
 #: src/Template/pdf/create_pdf_report.php:66
@@ -10960,6 +10987,10 @@ msgstr ""
 
 #: src/Template/Exports/index.php:174
 msgid "New configuration is invalid"
+msgstr ""
+
+#: src/Template/Exports/index.php:206
+msgid "Refresh in progress "
 msgstr ""
 
 #: src/Template/Exports/index.php:213
@@ -11432,17 +11463,17 @@ msgstr "Vue étendue"
 msgid "List as PDF"
 msgstr "Liste en PDF"
 
-#: src/Template/Hostgroups/pdf/list_to_pdf.php:71
+#: src/Template/Hostgroups/pdf/list_to_pdf.php:70
 msgid "Number of Hostgroups: "
 msgstr "Nombre de groupes d'hôtes: "
 
-#: src/Template/Hostgroups/pdf/list_to_pdf.php:76
-#: src/Template/Hosts/pdf/list_to_pdf.php:68
-#: src/Template/Servicegroups/pdf/list_to_pdf.php:77
+#: src/Template/Hostgroups/pdf/list_to_pdf.php:75
+#: src/Template/Hosts/pdf/list_to_pdf.php:65
+#: src/Template/Servicegroups/pdf/list_to_pdf.php:76
 msgid "Number of Hosts: "
 msgstr "Nombre d'hôtes: "
 
-#: src/Template/Hostgroups/pdf/list_to_pdf.php:157
+#: src/Template/Hostgroups/pdf/list_to_pdf.php:156
 msgid "This host group has no hosts"
 msgstr "Ce groupe hôte n'a pas d'hôtes"
 
@@ -12229,7 +12260,7 @@ msgstr "Filtrer par tags exclus"
 msgid "Add to host group"
 msgstr "Ajouter au groupe hôte"
 
-#: src/Template/Hosts/pdf/list_to_pdf.php:55
+#: src/Template/Hosts/pdf/list_to_pdf.php:52
 msgid "Hosts Overview"
 msgstr ""
 
@@ -12451,7 +12482,7 @@ msgid "Generate report"
 msgstr "Creer un rapport"
 
 #: src/Template/Instantreports/generate.php:216
-#: src/Template/Instantreports/pdf/create_pdf_report.php:210
+#: src/Template/Instantreports/pdf/create_pdf_report.php:201
 #: src/Template/element/load_instant_report_data.php:196
 #: src/Template/element/load_instant_report_data.php:231
 #: src/Template/pdf/create_pdf_report.php:198
@@ -12460,7 +12491,7 @@ msgid "Hosts summary"
 msgstr "Résumé des hôtes"
 
 #: src/Template/Instantreports/generate.php:235
-#: src/Template/Instantreports/pdf/create_pdf_report.php:260
+#: src/Template/Instantreports/pdf/create_pdf_report.php:245
 #: src/Template/element/load_instant_report_data.php:245
 #: src/Template/element/load_instant_report_data.php:282
 #: src/Template/pdf/create_pdf_report.php:246
@@ -12489,7 +12520,7 @@ msgstr "Envoyer à"
 msgid "Hosts and services"
 msgstr "Hôtes et services"
 
-#: src/Template/Instantreports/pdf/create_pdf_report.php:136
+#: src/Template/Instantreports/pdf/create_pdf_report.php:132
 #: src/Template/element/load_instant_report_data.php:114
 #: src/Template/element/load_instant_report_data.php:233
 #: src/Template/element/load_instant_report_data.php:284
@@ -12802,7 +12833,7 @@ msgstr ""
 
 #: src/Template/Profile/edit.php:35
 #: src/Template/Profile/edit.php:51
-#: src/Template/Profile/edit.php:289
+#: src/Template/Profile/edit.php:288
 msgid "Profile"
 msgstr "Profil"
 
@@ -12864,117 +12895,124 @@ msgid "This value defines how many records will load per list. You can choose be
 msgstr "Cette valeur définit le nombre d'enregistrements chargés par liste. Vous pouvez choisir entre 1 et 1000"
 
 #: src/Template/Profile/edit.php:194
+#: src/Template/Users/edit.php:379
 msgid "Language"
 msgstr ""
 
-#: src/Template/Profile/edit.php:216
+#: src/Template/Profile/edit.php:208
+#: src/Template/Users/add.php:392
+#: src/Template/Users/edit.php:395
+msgid "These options are community translations. Feel free to extend them and open a github pull request."
+msgstr ""
+
+#: src/Template/Profile/edit.php:215
 #: src/Template/Users/add.php:324
 #: src/Template/Users/add_from_ldap.php:391
 #: src/Template/Users/edit.php:326
 msgid "Date format"
 msgstr "Format de date"
 
-#: src/Template/Profile/edit.php:270
+#: src/Template/Profile/edit.php:269
 msgid "Update Profile"
 msgstr "Mettre à jour le profil"
 
-#: src/Template/Profile/edit.php:290
+#: src/Template/Profile/edit.php:289
 msgid "picture"
 msgstr ""
 
-#: src/Template/Profile/edit.php:298
+#: src/Template/Profile/edit.php:297
 msgid "Current image"
 msgstr "Image actuelle"
 
-#: src/Template/Profile/edit.php:308
+#: src/Template/Profile/edit.php:307
 msgid "You have no own image uploaded yet"
 msgstr "Vous n'avez pas encore d'image téléchargée"
 
-#: src/Template/Profile/edit.php:323
+#: src/Template/Profile/edit.php:322
 msgid "Delete my image"
 msgstr "Supprimer mon image"
 
-#: src/Template/Profile/edit.php:330
+#: src/Template/Profile/edit.php:329
 msgid "Select image"
 msgstr "Sélectionnez une image"
 
-#: src/Template/Profile/edit.php:360
-#: src/Template/Profile/edit.php:424
+#: src/Template/Profile/edit.php:359
+#: src/Template/Profile/edit.php:423
 msgid "Change Password"
 msgstr "Changer le mot de passe"
 
-#: src/Template/Profile/edit.php:370
+#: src/Template/Profile/edit.php:369
 msgid "LDAP users need to change their password through the operating system or an LDAP account manager tool."
 msgstr "Les utilisateurs LDAP doivent modifier leur mot de passe via le système d'exploitation ou un outil de gestion de compte LDAP."
 
-#: src/Template/Profile/edit.php:377
+#: src/Template/Profile/edit.php:376
 msgid "Current password"
 msgstr ""
 
-#: src/Template/Profile/edit.php:391
+#: src/Template/Profile/edit.php:390
 #: src/Template/Users/add.php:402
 #: src/Template/Users/add_from_ldap.php:448
-#: src/Template/Users/edit.php:404
+#: src/Template/Users/edit.php:405
 msgid "New password"
 msgstr "Nouveau mot de passe"
 
-#: src/Template/Profile/edit.php:405
+#: src/Template/Profile/edit.php:404
 #: src/Template/Users/add.php:416
 #: src/Template/Users/add_from_ldap.php:462
-#: src/Template/Users/edit.php:418
+#: src/Template/Users/edit.php:419
 msgid "Confirm new password"
 msgstr "Confirmer le nouveau mot de passe"
 
-#: src/Template/Profile/edit.php:442
+#: src/Template/Profile/edit.php:441
 msgid "API keys"
 msgstr "Clés API"
 
-#: src/Template/Profile/edit.php:452
+#: src/Template/Profile/edit.php:451
 msgid "Create new API key"
 msgstr "Créer une nouvelle clé API"
 
-#: src/Template/Profile/edit.php:461
+#: src/Template/Profile/edit.php:460
 msgid "No API keys created yet. You can still use the api using your username and password."
 msgstr "Aucune clé API créée pour l'instant. Vous pouvez toujours utiliser l'API en utilisant votre nom d'utilisateur et votre mot de passe."
 
-#: src/Template/Profile/edit.php:463
+#: src/Template/Profile/edit.php:462
 msgid "It's recommended to create a own API key for every external application."
 msgstr "Il est recommandé de créer une clé API propre pour chaque application externe."
 
-#: src/Template/Profile/edit.php:468
+#: src/Template/Profile/edit.php:467
 msgid "ID"
 msgstr "ID"
 
-#: src/Template/Profile/edit.php:474
-#: src/Template/Profile/edit.php:487
+#: src/Template/Profile/edit.php:473
+#: src/Template/Profile/edit.php:486
 msgid "Show"
 msgstr "Spectacle"
 
-#: src/Template/Profile/edit.php:507
+#: src/Template/Profile/edit.php:506
 msgid "Create API key"
 msgstr "Créer une clé API"
 
-#: src/Template/Profile/edit.php:530
+#: src/Template/Profile/edit.php:529
 #: src/Template/Profile/edit_apikey.php:32
 msgid "API key (read-only)"
 msgstr "Clé API (en lecture seule)"
 
-#: src/Template/Profile/edit.php:545
+#: src/Template/Profile/edit.php:544
 #: src/Template/Profile/edit_apikey.php:47
 msgid "example"
 msgstr "exemple"
 
-#: src/Template/Profile/edit.php:554
+#: src/Template/Profile/edit.php:553
 #: src/Template/Profile/edit_apikey.php:56
 msgid "For self-signed certificates, add"
 msgstr "Pour les certificats auto-signés, ajoutez"
 
-#: src/Template/Profile/edit.php:561
+#: src/Template/Profile/edit.php:560
 #: src/Template/Profile/edit_apikey.php:63
 msgid "example with JSON processor"
 msgstr "exemple avec processeur JSON"
 
-#: src/Template/Profile/edit.php:574
+#: src/Template/Profile/edit.php:573
 msgid "Generate new key"
 msgstr "Générer une nouvelle clé"
 
@@ -13253,20 +13291,20 @@ msgstr "Groupes de services (0)"
 msgid "Filter by service group name"
 msgstr "Filtrer par nom de groupe de services"
 
-#: src/Template/Servicegroups/pdf/list_to_pdf.php:72
+#: src/Template/Servicegroups/pdf/list_to_pdf.php:71
 msgid "Number of Servicegroups: "
 msgstr "Nombre de groupes de services: "
 
-#: src/Template/Servicegroups/pdf/list_to_pdf.php:82
-#: src/Template/Services/pdf/list_to_pdf.php:68
+#: src/Template/Servicegroups/pdf/list_to_pdf.php:81
+#: src/Template/Services/pdf/list_to_pdf.php:65
 msgid "Number of Services: "
 msgstr "Nombre de services: "
 
-#: src/Template/Servicegroups/pdf/list_to_pdf.php:108
+#: src/Template/Servicegroups/pdf/list_to_pdf.php:107
 msgid "Service group: "
 msgstr "Groupe de service: "
 
-#: src/Template/Servicegroups/pdf/list_to_pdf.php:186
+#: src/Template/Servicegroups/pdf/list_to_pdf.php:184
 msgid "There are no services defined"
 msgstr "Il n'y a pas de services définis"
 
@@ -13552,11 +13590,11 @@ msgstr "Reconnaître le statut"
 msgid "no parameters for this command defined"
 msgstr "aucun paramètre défini pour cette commande"
 
-#: src/Template/Services/pdf/list_to_pdf.php:55
+#: src/Template/Services/pdf/list_to_pdf.php:52
 msgid "Services Overview"
 msgstr ""
 
-#: src/Template/Services/pdf/list_to_pdf.php:78
+#: src/Template/Services/pdf/list_to_pdf.php:75
 msgid "Servicename"
 msgstr "Nom du service"
 
@@ -14542,6 +14580,18 @@ msgstr ""
 msgid "Container Roles"
 msgstr "Rôles de conteneur"
 
+#: src/Template/Users/add.php:81
+#: src/Template/Users/add_from_ldap.php:82
+#: src/Template/Users/edit.php:85
+msgid "Container Roles are handy to grant the same permissions to multiple users."
+msgstr ""
+
+#: src/Template/Users/add.php:124
+#: src/Template/Users/add_from_ldap.php:125
+#: src/Template/Users/edit.php:127
+msgid "Container assignments defined in the user will overwrite permissions inherited from Container Roles!"
+msgstr ""
+
 #: src/Template/Users/add.php:181
 #: src/Template/Users/add_from_ldap.php:182
 #: src/Template/Users/edit.php:183
@@ -14556,8 +14606,12 @@ msgid "Company position"
 msgstr "Position de l'entreprise"
 
 #: src/Template/Users/add.php:376
-#: src/Template/Users/edit.php:378
 msgid "Frontend language"
+msgstr ""
+
+#: src/Template/Users/add.php:390
+#: src/Template/Users/edit.php:393
+msgid "Manual logout and login again required for changes to take effect for the current user."
 msgstr ""
 
 #: src/Template/Users/add.php:436
@@ -14584,7 +14638,11 @@ msgstr "Créer un utilisateur à partir de LDAP"
 msgid "Edit local user:"
 msgstr ""
 
-#: src/Template/Users/edit.php:441
+#: src/Template/Users/edit.php:430
+msgid "Please leave the password fields blank if you don't want to change the password."
+msgstr ""
+
+#: src/Template/Users/edit.php:442
 msgid "Update user"
 msgstr ""
 
@@ -14658,6 +14716,11 @@ msgstr "Vue d'ensemble des clés API"
 #: src/Template/element/apikey_help.php:95
 msgid "Click on \"Edit profile\" in the top left corner."
 msgstr "Cliquez sur \"Modifier le profil\" dans le coin supérieur gauche."
+
+#: src/Template/element/apikey_help.php:23
+#: src/Template/element/apikey_help.php:102
+msgid "At the bottom of the page, you can find the \"API Keys\" section. Click on \"Create new API key\""
+msgstr ""
 
 #: src/Template/element/calendar_mass_changes.php:43
 msgid "Do you really want delete the selected calendars?"
@@ -15032,11 +15095,11 @@ msgstr "Valeur hors limites (Nagios, Crate, Statusengine3)"
 msgid "Database Backend used by openITCOCKPIT. Be careful with this option!"
 msgstr "Base de données utilisée par openITCOCKPIT. Soyez prudent avec cette option!"
 
-#: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:52
+#: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:53
 msgid "openITCOCKPIT Interface configuration files"
 msgstr "Fichiers de configuration de l'interface openITCOCKPIT"
 
-#: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:68
+#: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:70
 msgid "Carbon and Whisper (Graphing)"
 msgstr "Carbon et Whisper (Graphing)"
 
@@ -15344,6 +15407,10 @@ msgstr "PHP Extension php5-curl chargé avec succès"
 #: src/itnovum/openITCOCKPIT/Core/Http.php:64
 msgid "PHP Extension php5-curl not loaded or installed!"
 msgstr "PHP Extension php5-curl pas chargé ou installé!"
+
+#: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:113
+msgid "Happy Easter"
+msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:128
 msgid "Valentine's Day"

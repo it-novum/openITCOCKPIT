@@ -94,7 +94,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" ng-click="restoreDefault(ConfigFile.dbKey)">
+                <button type="button" class="btn btn-primary" ng-click="restoreDefault(ConfigFile.dbKey)" data-dismiss="modal">
                     <i class="fa fa-refresh fa-spin" ng-show="isRestoring"></i>
                     <?php echo __('Restore default'); ?>
                 </button>

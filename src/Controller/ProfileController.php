@@ -29,6 +29,7 @@ namespace App\Controller;
 
 use App\Model\Table\ApikeysTable;
 use App\Model\Table\UsersTable;
+use Cake\Cache\Cache;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -111,7 +112,7 @@ class ProfileController extends AppController {
             }
 
             //Update user information in $_SESSION
-
+            Cache::clearAll();
             $session = $this->request->getSession();
             $session->write('Auth', $UsersTable->get($User->getId()));
 
