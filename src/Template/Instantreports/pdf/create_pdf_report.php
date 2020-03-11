@@ -75,135 +75,26 @@ if (!$instantReport['reportDetails']['summary'] && !empty($instantReport['hosts'
     foreach ($instantReport['hosts'] as $hostUuid => $hostData):
         $reportData = isset($hostData['Host']['reportData']) ? $hostData['Host']['reportData'] : [];
         ?>
-        <div class="row">
-            <article class="col-12 ">
-                <div>
-                    <header role="heading">
-                        <h2 style="width:97%" class="padding-left-15">
-                            <i class="fa fa-desktop"></i>
-                            <?php echo h($hostData['Host']['name']); ?>
-                        </h2>
-                    </header>
-                    <div class="card padding-bottom-10">
-                        <?php
-                        // evaluation '3' => ServicesOnly
-                        if ($instantReport['reportDetails']['evaluation'] !== 3 &&
-                            isset($reportData[0], $reportData[1], $reportData[2]) &&
-                            array_sum([
-                                    $reportData[0],
-                                    $reportData[1],
-                                    $reportData[2]
-                                ]
-                            ) > 0): ?>
-                            <div class="row margin-top-10 padding-bottom-20">
-                                <div class="col-4">
-                                    <?php
-                                    $overview_chart = PieChart::createPieChartOnDisk([
-                                        $reportData[0],
-                                        $reportData[1],
-                                        $reportData[2]
-                                    ]);
-                                    ?>
-                                    <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
-                                         width="300"/>
-                                </div>
-                                <div class="col-8 padding-top-10">
-                                    <?php
-                                    foreach ($reportData['percentage'] as $state => $info):?>
-                                        <div class="col-4 margin-bottom-5">
-                                            <?php
-                                            $HoststatusIcon = new HoststatusIcon($state);
-                                            echo $HoststatusIcon->getPdfIcon();
-                                            ?>
-                                            <span>
-                                                <?php echo $info; ?>
-                                            </span>
-                                        </div>
-                                    <?php endforeach;
-                                    ?>
-                                </div>
-                            </div>
-                        <?php
-                        elseif ($instantReport['reportDetails']['evaluation'] !== 3 &&
-                            isset($reportData[0], $reportData[1], $reportData[2]) &&
-                            array_sum([$reportData[0], $reportData[1], $reportData[2]]) === 0):?>
-                            <i class="fa fa-info-circle "></i>
-                            <?php
-                            echo __('There are no time frames defined. Time evaluation report data is not available for the selected period.');
-                        endif; ?>
-                        <div>
-                            <?php
-                            if (isset($hostData['Host']['Services'])):
-                                foreach ($hostData['Host']['Services'] as $serviceUuid => $serviceData):
-                                    $reportData = isset($serviceData['Service']['reportData']) ? $serviceData['Service']['reportData'] : [];
-                                    if (isset($reportData[0], $reportData[1], $reportData[2], $reportData[3]) &&
-                                        array_sum(
-                                            [$reportData[0], $reportData[1], $reportData[2], $reportData[3]]
-                                        ) > 0
-                                    ):?>
-                                        <div class="col-12">
-                                            <div>
-                                                <i class="fas fa-cog"></i>
-                                                <?php echo h($serviceData['Service']['name']); ?>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-4 text-left">
-                                                <?php
-                                                $overview_chart = BarChart::createBarChartOnDisk([
-                                                    $reportData[0],
-                                                    $reportData[1],
-                                                    $reportData[2],
-                                                    $reportData[3]
-                                                ]);
-                                                ?>
-
-                                                <img class="margin-5"
-                                                     src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
-                                                     width="100%"/>
-                                            </div>
-                                            <?php
-                                            foreach ($reportData['percentage'] as $state => $info):?>
-                                                <div
-                                                    class="col-2 text-left padding-top-3">
-                                                    <?php
-                                                    $ServicestatusIcon = new ServicestatusIcon($state);
-                                                    echo $ServicestatusIcon->getPdfIcon();
-                                                    ?>
-                                                    <span>
-                                                        <?php echo $info; ?>
-                                                    </span>
-                                                </div>
-                                            <?php endforeach;
-                                            ?>
-                                        </div>
-                                    <?php endif;
-                                endforeach;
-                            endif;
-                            ?>
-                            <br/>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        </div>
-    <?php
-    endforeach;
-endif;
-if ($instantReport['reportDetails']['summary']):
-    if ($instantReport['reportDetails']['summary_hosts']):
-        $reportData = $instantReport['reportDetails']['summary_hosts']['reportData'];
-        ?>
-        <div class="row">
-            <article class="col-12">
-                <header role="heading">
-                    <h2 style="width:97%" class="padding-left-15">
-                        <i class="fa fa-desktop "></i> <?= __('Hosts summary') ?>
-                    </h2>
-                </header>
-                <div class="card padding-bottom-10">
-                    <div class="row">
-                        <div class="col-4 text-left">
+        <div class="pdf-card">
+            <div class="pdf-card-header">
+                <h2>
+                    <i class="fa fa-desktop"></i>
+                    <?php echo h($hostData['Host']['name']); ?>
+                </h2>
+            </div>
+            <div class="pdf-card-body">
+                <?php
+                // evaluation '3' => ServicesOnly
+                if ($instantReport['reportDetails']['evaluation'] !== 3 &&
+                    isset($reportData[0], $reportData[1], $reportData[2]) &&
+                    array_sum([
+                            $reportData[0],
+                            $reportData[1],
+                            $reportData[2]
+                        ]
+                    ) > 0): ?>
+                    <div class="row margin-top-10 padding-bottom-20">
+                        <div class="col-4">
                             <?php
                             $overview_chart = PieChart::createPieChartOnDisk([
                                 $reportData[0],
@@ -213,39 +104,141 @@ if ($instantReport['reportDetails']['summary']):
                             ?>
                             <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>" width="300"/>
                         </div>
-                        <div class="col-8 text-left padding-top-10">
+                        <div class="col-8 padding-top-10">
                             <?php
                             foreach ($reportData['percentage'] as $state => $info):?>
-                                <div class="col-12 text-left padding-bottom-7">
+                                <div class="col-4 margin-bottom-5">
                                     <?php
                                     $HoststatusIcon = new HoststatusIcon($state);
                                     echo $HoststatusIcon->getPdfIcon();
                                     ?>
                                     <span>
-                                        <?php
-                                        echo $info;
-                                        ?>
+                                        <?php echo $info; ?>
                                     </span>
                                 </div>
                             <?php endforeach;
                             ?>
                         </div>
                     </div>
+                <?php
+                elseif ($instantReport['reportDetails']['evaluation'] !== 3 &&
+                    isset($reportData[0], $reportData[1], $reportData[2]) &&
+                    array_sum([$reportData[0], $reportData[1], $reportData[2]]) === 0):?>
+                    <i class="fa fa-info-circle "></i>
+                    <?php
+                    echo __('There are no time frames defined. Time evaluation report data is not available for the selected period.');
+                endif; ?>
+                <div>
+                    <?php
+                    if (isset($hostData['Host']['Services'])):
+                        foreach ($hostData['Host']['Services'] as $serviceUuid => $serviceData):
+                            $reportData = isset($serviceData['Service']['reportData']) ? $serviceData['Service']['reportData'] : [];
+                            if (isset($reportData[0], $reportData[1], $reportData[2], $reportData[3]) &&
+                                array_sum(
+                                    [$reportData[0], $reportData[1], $reportData[2], $reportData[3]]
+                                ) > 0
+                            ):?>
+                                <div class="col-12">
+                                    <div>
+                                        <i class="fas fa-cog"></i>
+                                        <?php echo h($serviceData['Service']['name']); ?>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4 text-left">
+                                        <?php
+                                        $overview_chart = BarChart::createBarChartOnDisk([
+                                            $reportData[0],
+                                            $reportData[1],
+                                            $reportData[2],
+                                            $reportData[3]
+                                        ]);
+                                        ?>
+
+                                        <img class="margin-5" src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>"
+                                             width="100%"/>
+                                    </div>
+                                    <?php
+                                    foreach ($reportData['percentage'] as $state => $info):?>
+                                        <div class="col-2 text-left padding-top-3">
+                                            <?php
+                                            $ServicestatusIcon = new ServicestatusIcon($state);
+                                            echo $ServicestatusIcon->getPdfIcon();
+                                            ?>
+                                            <span>
+                                                <?php echo $info; ?>
+                                            </span>
+                                        </div>
+                                    <?php endforeach;
+                                    ?>
+                                </div>
+                            <?php endif;
+                        endforeach;
+                    endif;
+                    ?>
+                    <br/>
                 </div>
-            </article>
+            </div>
+        </div>
+    <?php
+    endforeach;
+endif;
+if ($instantReport['reportDetails']['summary']):
+    if ($instantReport['reportDetails']['summary_hosts']):
+        $reportData = $instantReport['reportDetails']['summary_hosts']['reportData'];
+        ?>
+        <div class="pdf-card">
+            <div class="pdf-card-header">
+                <h2>
+                    <i class="fa fa-desktop"></i>
+                    <?= __('Hosts summary') ?>
+                </h2>
+            </div>
+            <div class="pdf-card-body">
+                <div class="row">
+                    <div class="col-4 text-left">
+                        <?php
+                        $overview_chart = PieChart::createPieChartOnDisk([
+                            $reportData[0],
+                            $reportData[1],
+                            $reportData[2]
+                        ]);
+                        ?>
+                        <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>" width="300"/>
+                    </div>
+                    <div class="col-8 text-left padding-top-10">
+                        <?php
+                        foreach ($reportData['percentage'] as $state => $info):?>
+                            <div class="col-12 text-left padding-bottom-7">
+                                <?php
+                                $HoststatusIcon = new HoststatusIcon($state);
+                                echo $HoststatusIcon->getPdfIcon();
+                                ?>
+                                <span>
+                                    <?php
+                                    echo $info;
+                                    ?>
+                                </span>
+                            </div>
+                        <?php endforeach;
+                        ?>
+                    </div>
+                </div>
+            </div>
         </div>
     <?php
     endif;
     if ($instantReport['reportDetails']['summary_services']):
         $reportData = $instantReport['reportDetails']['summary_services']['reportData']; ?>
-        <div class="row">
-            <article class="col-12">
-                <header role="heading">
-                    <h2 style="width:97%" class="padding-left-15">
-                        <i class="fa fa-cog "></i> <?= __('Services summary') ?>
-                    </h2>
-                </header>
-                <div class="row margin-top-10 padding-bottom-20">
+        <div class="pdf-card">
+            <div class="pdf-card-header">
+                <h2>
+                    <i class="fa fa-cog"></i>
+                    <?= __('Services summary') ?>
+                </h2>
+            </div>
+            <div class="pdf-card-body">
+                <div class="row">
                     <div class="col-4 text-left">
                         <?php
                         $overview_chart = PieChart::createPieChartOnDisk([
@@ -275,7 +268,7 @@ if ($instantReport['reportDetails']['summary']):
                         ?>
                     </div>
                 </div>
-            </article>
+            </div>
         </div>
     <?php
     endif;
