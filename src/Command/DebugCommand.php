@@ -41,11 +41,6 @@ use itnovum\openITCOCKPIT\Core\DbBackend;
 class DebugCommand extends Command {
 
     /**
-     * @var DbBackend
-     */
-    private $DbBackend;
-
-    /**
      * @var ConsoleIo
      */
     private $io;
@@ -72,7 +67,6 @@ class DebugCommand extends Command {
             'tail'  => ['boolean' => true, 'help' => __d('oitc_console', 'Tail and parse monitoring logfile')],
             'tailf' => ['short' => 't', 'boolean' => true, 'help' => __d('oitc_console', 'Tailf and parse monitoring logfile')],
             'stdin' => ['short' => 's', 'boolean' => true, 'help' => __d('oitc_console', 'Read and translate from stdin. Example: cat file.cfg | oitc debug -s')],
-            'debug' => ['short' => 'd', 'boolean' => true, 'help' => __d('oitc_console', 'Debugging menu')],
         ]);
 
         return $parser;
@@ -112,21 +106,7 @@ class DebugCommand extends Command {
             $this->DebugConfigNagios->tailf();
         }
 
-        $this->main();
-    }
-
-    private function main() {
-        $menuSelection = strtoupper($this->io->askChoice(__d('oitc_console', 'What would you like to debug?'), ['D', 'Q']));
-        switch ($menuSelection) {
-            case 'D':
-                $this->monitoringMenu();
-                break;
-            case 'Q':
-                $this->_exit();
-                break;
-            default:
-                $this->io->out(__d('oitc_console', 'You have made an invalid selection. Please choose by entering D or Q.'));
-        }
+        $this->monitoringMenu();
     }
 
     private function monitoringMenu() {
@@ -142,9 +122,9 @@ class DebugCommand extends Command {
         $this->io->out(__d('oitc_console', '[CG] Debug contact group configuration files'));
         $this->io->out(__d('oitc_console', '[HE] Debug host escalation configuration files'));
         $this->io->out(__d('oitc_console', '[UUID] Search object by UUID'));
-        $this->io->out(__d('oitc_console', '[B]ack'));
+        $this->io->out(__d('oitc_console', '[Q]uit'));
 
-        $menuSelection = strtoupper($this->io->askChoice(__d('oitc_console', 'What would you like to do?'), ['T', 'TF', 'H', 'HT', 'S', 'ST', 'TP', 'CM', 'C', 'CG', 'HE', 'UUID', 'B']));
+        $menuSelection = strtoupper($this->io->askChoice(__d('oitc_console', 'What would you like to do?'), ['T', 'TF', 'H', 'HT', 'S', 'ST', 'TP', 'CM', 'C', 'CG', 'HE', 'UUID', 'Q']));
         $this->DebugConfigNagios->setup($this->conf);
         switch ($menuSelection) {
             case 'T':
@@ -183,8 +163,8 @@ class DebugCommand extends Command {
             case 'UUID':
                 $this->DebugConfigNagios->debugByUuid();
                 break;
-            case 'B':
-                return $this->main();
+            case 'Q':
+                return $this->_exit();
             default:
                 $this->io->out(__d('oitc_console', 'You have made an invalid selection. Please choose by entering T or B.'));
         }
