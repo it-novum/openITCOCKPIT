@@ -26,9 +26,10 @@
 use App\View\Helper\ButtonGroupHelper;
 
 $btnHelper = new ButtonGroupHelper('Display of server and client times');
+
+$btnHelper->addButtonWithTooltipAndDisplayConditional('{{ currentClientTime }}', 'btn-secondary', __("local time of client"),'ng-if="showClientTime"');
 $btnHelper->addIconButton('fas fa-clock', __('display time information'));
-$btnHelper->addButtonWithTooltip('{{ currentServerTime }}','btn-primary',__("local time of server"));
-$btnHelper->addButtonWithTooltip('{{ currentClientTime }}','btn-secondary',__("local time of client"));
+$btnHelper->addButtonWithTooltip('{{ currentServerTime }}', 'btn-primary', __("local time of server"));
 
 $html = $btnHelper->getHtml();
 echo $html;

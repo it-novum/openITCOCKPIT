@@ -26,6 +26,8 @@
 ?>
 <?php
 
+use App\View\Helper\ButtonGroupHelper;
+
 class OitcHeader {
 
     public function __construct($exportRunningHeaderInfo, $showstatsinmenu) {
@@ -39,8 +41,8 @@ class OitcHeader {
         $this->menuHeaderCloses();
     }
 
-private function menuControl() {
-    $html = '<div class="hidden-md-down dropdown-icon-menu position-relative">
+    private function menuControl() {
+        $html = '<div class="hidden-md-down dropdown-icon-menu position-relative">
         <a href="#" class="header-btn btn js-waves-off" data-action="toggle"
            data-class="nav-function-hidden" title="Hide Navigation">
             <i class="fas fa-bars"></i>
@@ -66,60 +68,71 @@ private function menuControl() {
         </div>
     </div>';
 
-    echo $html;
-}
+        echo $html;
+    }
 
-private function menuHosts(): string {
-    return '<div>Hosts</div>';
-}
+    private function menuHosts(): string {
+        return '<div>Hosts</div>';
+    }
 
-private function menuSearchContentByAngularJsDirective(): string {
-    return '<div class="search" top-search=""></div>';
-}
+    private function menuSearchContentByAngularJsDirective(): string {
+        return '<div class="search" top-search=""></div>';
+    }
 
-private function translate($singular) {
-    return __($singular);
-}
+    private function translate($singular) {
+        return __($singular);
+    }
 
-/**
- * @param bool $exportRunningHeaderInfo
- * @return string
- */
-private function displayExportRunningNotificationIfEnabledInSettings($exportRunningHeaderInfo): string {
-    if ($exportRunningHeaderInfo === false) {
-        return
-            '<a ui-sref="ExportsIndex" sudo-server-connect=""
+    /**
+     * @param bool $exportRunningHeaderInfo
+     * @return string
+     */
+    private function displayExportRunningNotificationIfEnabledInSettings($exportRunningHeaderInfo): string {
+
+        $html = '';
+
+        $exportButtonGroupHelper = new ButtonGroupHelper('Export currently running notification');
+
+        if ($exportRunningHeaderInfo === false) {
+            $exportButtonGroupHelper->addIconButtonWithSRef('fa fa-retweet', $this->translate('Refresh monitoring configuration'), 'ExportsIndex');
+            $html .=
+                '<a ui-sref="ExportsIndex" sudo-server-connect=""
                 data-original-title="' . $this->translate('Refresh monitoring configuration') . '"
-                data-placement="left" rel="tooltip" data-container="body" class="header-icon">
+                data-placement="left" rel="tooltip" data-container="body">
                     <i class="fa fa-retweet"></i>
              </a>';
-    } else {
-        return
-            '<a ui-sref="ExportsIndex" export-status=""
+        } else {
+            $exportButtonGroupHelper->addIconButtonWithSRef('fa fa-retweet', $this->translate('Refresh monitoring configuration'), 'ExportsIndex');
+            $html .=
+                '<a ui-sref="ExportsIndex" export-status=""
                 data-original-title="' . $this->translate('Refresh monitoring configuration') . '"
-                data-placement="left" rel="tooltip" data-container="body" class="header-icon">
+                data-placement="left" rel="tooltip" data-container="body">
                     <i class="fa fa-retweet" ng-if="!exportRunning"></i>
-                    <i class="fa fa-refresh fa-spin txt-color-red" ng-if="exportRunning"></i>
+                    <i class="fas fa-sync fa-spin txt-color-red" ng-if="exportRunning"></i>
              </a>';
-    }
-}
+        }
 
-private function displayMenuStatisticsIfEnabledInSettings($showstatsinmenu): string {
-    $html = '';
+        $html = $exportButtonGroupHelper->getHtml();
 
-    if ($showstatsinmenu) {
-        $html .= '<menustats></menustats>';
-    } else {
-
+        return $this->surroundWithHeaderIcon($html);
     }
 
+    private function displayMenuStatisticsIfEnabledInSettings($showstatsinmenu): string {
+        $html = '';
 
-    return $html;
-}
+        if ($showstatsinmenu) {
+            $html .= '<menustats></menustats>';
+        } else {
 
-private function menuStatistics($exportRunningHeaderInfo, $showstatsinmenu): void {
+        }
 
-    $html ='<div class="ml-auto d-flex">
+
+        return $html;
+    }
+
+    private function menuStatistics($exportRunningHeaderInfo, $showstatsinmenu): void {
+
+        $html = '<div class="ml-auto d-flex">
             <div class="header-icon">
                 <span id="global_ajax_loader">
                     <div class="spinner-border spinner-border-sm" role="status">
@@ -129,7 +142,6 @@ private function menuStatistics($exportRunningHeaderInfo, $showstatsinmenu): voi
             </div>';
 
 
-
         $html .= '<div class="header-icon">' . $this->displayMenuStatisticsIfEnabledInSettings($showstatsinmenu) . '</div>';
 
         $html .= '
@@ -137,57 +149,53 @@ private function menuStatistics($exportRunningHeaderInfo, $showstatsinmenu): voi
                 <system-health></system-health>
             </div>';
 
-        $html .= $this->menuHeaderClockDisplay();
 
         $html .= '<div class="header-icon">
             <version-check></version-check>
         </div>';
 
-    $html .= '<div>' . $this->displayExportRunningNotificationIfEnabledInSettings($exportRunningHeaderInfo) . '</div>';
+        $html .= $this->displayExportRunningNotificationIfEnabledInSettings($exportRunningHeaderInfo);
 
-    $html .= $this->menuHeaderSignOut();
 
-    $html .= $this->menuNotifications();
+        $html .= $this->menuNotifications();
 
-    $html .= '</div>';
+        $html .= $this->menuHeaderClockDisplay();
+        $html .= $this->menuHeaderSignOut();
+        $html .= '</div>';
 
-    echo $html;
-}
+        echo $html;
+    }
 
-private function buttonGroupElement(): string {
-    $thml = '';
+    private function surroundWithHeaderIcon(string $html): string {
+        return
+            '<div class="header-icon">' . PHP_EOL
+            . '    ' . $html . PHP_EOL
+            . '</div>';
+    }
 
-    return $html;
-}
+    private function menuHeaderClockDisplay() {
+        return $this->surroundWithHeaderIcon('<server-time></server-time>');
+    }
 
-private function menuHeaderClockDisplay() {
-    return
-        '<div class="header-icon">
-            <server-time></server-time>
-        </div>';
-}
-private function menuHeaderSignOut(): string {
-    return
-        '<div>
-            <a href="/users/logout" data-original-title="' . $this->translate('Sign out') . '"
-               data-placement="left"
-               rel="tooltip" data-container="body" class="header-icon">
-                <i class="fa fa-sign-out-alt"></i>
-            </a>
-        </div>';
-}
+    private function menuHeaderSignOut(): string {
 
-private function menuNotifications(): string {
-    return '<push-notifications></push-notifications>';
-}
+        $signOutBtnGrpHelper = new ButtonGroupHelper('');
+        $signOutBtnGrpHelper->addIconButtonWithHRef('fa fa-sign-out-alt', $this->translate('Sign out'), '/users/logout');
 
-private function menuHeaderOpens() {
-    echo '<header id="header_jf" class="page-header" role="banner">';
-}
+        return $this->surroundWithHeaderIcon($signOutBtnGrpHelper->getHtml());
+    }
 
-private function menuHeaderCloses() {
-    echo '</header>';
-}
+    private function menuNotifications(): string {
+        return '<push-notifications></push-notifications>';
+    }
+
+    private function menuHeaderOpens() {
+        echo '<header id="header_jf" class="page-header" role="banner">';
+    }
+
+    private function menuHeaderCloses() {
+        echo '</header>';
+    }
 }
 
 $header = new OitcHeader($exportRunningHeaderInfo, $showstatsinmenu);
