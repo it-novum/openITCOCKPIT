@@ -122,11 +122,16 @@ if [ ! -f /opt/openitc/etc/grafana/admin_password ]; then
     pwgen 10 1 > /opt/openitc/etc/grafana/admin_password
 fi
 
+STATUSENGINE_VERSION=$(cat /opt/openitc/etc/statusengine/statusengine_version)
+
+if [[ $STATUSENGINE_VERSION == "Statusengine2" ]]; then
+    mysql "--defaults-extra-file=${INIFILE}" -e "INSERT INTO \`configuration_files\` (\`config_file\`, \`key\`, \`value\`)VALUES('DbBackend', 'dbbackend', 'Nagios');"
+fi
+
 oitc config_generator_shell --generate
 
 echo "---------------------------------------------------------------"
 echo "Load Statusengine DB Schema"
-STATUSENGINE_VERSION=$(oitc StatusengineVersion)
 if [[ $STATUSENGINE_VERSION == "Statusengine2" ]]; then
     echo "Setup Statusengine 2"
 
