@@ -166,7 +166,7 @@ if (!$instantReport['reportDetails']['summary'] && !empty($instantReport['hosts'
                                             echo $ServicestatusIcon->getPdfIcon();
                                             ?>
                                             <span>
-                                                <?php echo $info; ?>
+                                                <?= $info; ?>
                                             </span>
                                         </div>
                                     <?php endforeach;
@@ -215,13 +215,10 @@ if ($instantReport['reportDetails']['summary']):
                                 echo $HoststatusIcon->getPdfIcon();
                                 ?>
                                 <span>
-                                    <?php
-                                    echo $info;
-                                    ?>
+                                    <?= $info; ?>
                                 </span>
                             </div>
-                        <?php endforeach;
-                        ?>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
@@ -259,13 +256,10 @@ if ($instantReport['reportDetails']['summary']):
                                 echo $ServicestatusIcon->getPdfIcon();
                                 ?>
                                 <span class="padding-5">
-                                    <?php
-                                    echo $info;
-                                    ?>
+                                    <?= $info; ?>
                                 </span>
                             </div>
-                        <?php endforeach;
-                        ?>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
