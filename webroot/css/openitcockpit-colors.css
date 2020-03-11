@@ -763,3 +763,16 @@ fieldset[disabled] .btn-unknown.active {
     background-color: #727b84;
     background-image: none;
 }
+
+/* Link list item style */
+.app-list-item > .icon-stack > .icon-stack-3x {
+    color: #4084C5;
+}
+
+.app-list-item > .icon-stack > .icon-stack-1x {
+    color: #fff;
+}
+
+.linkListAddMore > .icon-stack > .icon-stack-3x {
+    color: #00C851;
+}
