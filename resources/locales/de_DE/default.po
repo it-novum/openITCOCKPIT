@@ -164,7 +164,7 @@ msgstr "Kein Element ausgewählt"
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:78
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:79
 msgid "Grafana dashboard"
-msgstr ""
+msgstr "Grafana Dashboard"
 
 #: plugins/GrafanaModule/templates/GrafanaConfiguration/grafana_widget.php:55
 #: plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:166
@@ -1313,7 +1313,7 @@ msgstr "Abbrechen"
 
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:63
 msgid "Edit user defined Grafana dashboard"
-msgstr ""
+msgstr "Bearbeite benutzerdefiniertes Grafana Dashboard"
 
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:116
 msgid "Update Grafana dashboard"
@@ -2729,7 +2729,7 @@ msgstr "Benötigte Icons: "
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:496
 msgid "Go back to settings"
-msgstr ""
+msgstr "Zurück zu den Einstellungen"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:523
 msgid "Add or edit line"
@@ -3586,7 +3586,7 @@ msgstr "Keine Parameter"
 #: plugins/NagiosModule/templates/Cmd/index.php:170
 #: plugins/NagiosModule/templates/Cmd/index.php:201
 msgid "YOUR_API_KEY_HERE"
-msgstr ""
+msgstr "DEIN_API_KEY_HIER"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:221
 #: src/Template/Agentconnector/config.php:297
@@ -3617,7 +3617,7 @@ msgstr "Fehlende IP oder Port des Agenten"
 
 #: src/Command/GearmanWorkerCommand.php:149
 msgid "GearmanWorker: Fork new worker child"
-msgstr ""
+msgstr "GearmanWorker: Erstelle neuen Kind-Prozess"
 
 #: src/Command/GearmanWorkerCommand.php:878
 msgid "Started refresh of monitoring configuration"
@@ -3781,43 +3781,43 @@ msgstr "Diese Shell hilft Ihnen beim Einrichten Ihrer Neuinstallation von openIT
 
 #: src/Command/SetupCommand.php:128
 msgid "Warning:"
-msgstr ""
+msgstr "Warnung:"
 
 #: src/Command/SetupCommand.php:129
 msgid "Only run this command, if you installed openITCOCKPIT right now and never logged in to the interface!"
-msgstr ""
+msgstr "Führen Sie diesen Befehl nur aus, wenn Sie openITCOCKPIT jetzt installiert haben und sich noch nie an der Schnittstelle angemeldet haben!"
 
 #: src/Command/SetupCommand.php:130
 msgid "If you continue, you will lose all your archive data!"
-msgstr ""
+msgstr "Wenn Sie weitermachen, werden Sie alle Ihre Archivdaten verlieren!"
 
 #: src/Command/SetupCommand.php:149
 msgid "Setup openITCOCKPIT and create your first user."
-msgstr ""
+msgstr "Richten Sie openITCOCKPIT ein und legen Sie Ihren ersten Benutzer an."
 
 #: src/Command/SetupCommand.php:158
 msgid "You can now open the web frontend in your browser and login. Have a nice day!"
-msgstr ""
+msgstr "Sie können nun das Web-Frontend in Ihrem Browser öffnen und sich anmelden. Ich wünsche Ihnen einen schönen Tag!"
 
 #: src/Command/SetupCommand.php:322
 msgid "Please enter the FQDN or IP address of your openITCOCKPIT Server. If you do not know your IP address enter a random one and change it via the interface later."
-msgstr ""
+msgstr "Bitte geben Sie den FQDN oder die IP-Adresse Ihres openITCOCKPIT-Servers ein. Wenn Sie Ihre IP-Adresse nicht kennen, geben Sie eine zufällige ein und ändern Sie diese später über die Schnittstelle."
 
 #: src/Command/SetupCommand.php:527
 msgid "User \"{0}\" created successfully"
-msgstr ""
+msgstr "Benutzer \"{0}\" erfolgreich erstellt"
 
 #: src/Command/SetupCommand.php:552
 msgid "Hostname was set to \"{0}\""
-msgstr ""
+msgstr "Der Hostname wurde auf \"{0}\" gesetzt."
 
 #: src/Command/SetupCommand.php:568
 msgid "E-Mail sender was set to \"{0}\""
-msgstr ""
+msgstr "E-Mail-Absender wurde auf \"{0}\" gesetzt"
 
 #: src/Command/SetupCommand.php:584
 msgid "Mail configuration \"{0}\" saved successfully."
-msgstr ""
+msgstr "E-Mail-Konfiguration \"{0}\" erfolgreich gespeichert."
 
 #: src/Controller/AcknowledgementsController.php:69
 #: src/Controller/AgentconfigsController.php:71
@@ -4143,15 +4143,15 @@ msgstr "unbekannt"
 
 #: src/Controller/HostgroupsController.php:458
 msgid "up"
-msgstr ""
+msgstr "verfügbar"
 
 #: src/Controller/HostgroupsController.php:459
 msgid "down"
-msgstr ""
+msgstr "nicht verfügbar"
 
 #: src/Controller/HostgroupsController.php:460
 msgid "unreachable"
-msgstr "nicht erreihbar"
+msgstr "nicht erreichbar"
 
 #: src/Controller/HostgroupsController.php:559
 msgid "Hostgroups_"
@@ -4245,15 +4245,15 @@ msgstr "Ungültiger Container"
 #: src/Controller/InstantreportsController.php:245
 #: src/itnovum/openITCOCKPIT/Core/Reports/InstantreportCreator.php:103
 msgid "Instant report not found"
-msgstr ""
+msgstr "Sofort-Bericht nicht gefunden"
 
 #: src/Controller/InstantreportsController.php:220
 msgid "No report data specified time found ({0} - {1}) !"
-msgstr ""
+msgstr "Keine Berichtsdaten mit Zeitangabe gefunden ({0} - {1}) !"
 
 #: src/Controller/InstantreportsController.php:328
 msgid "! No data within specified time found ({0} - {1}) !"
-msgstr ""
+msgstr "! Keine Daten innerhalb des bestimmten Zeitraums gefunden ({0} - {1}) !"
 
 #: src/Controller/LocationsController.php:94
 #: src/Controller/LocationsController.php:178
@@ -4304,7 +4304,7 @@ msgstr "API-Key erfolgreich gelöscht"
 
 #: src/Controller/ProfileController.php:394
 msgid "Could not delete api key"
-msgstr ""
+msgstr "Konnte den API-Key nicht löschen"
 
 #: src/Controller/ProfileController.php:443
 msgid "File deleted sucessfully"
@@ -4447,15 +4447,15 @@ msgstr "Sie müssen mindestens ein Objekt auswählen."
 
 #: src/Controller/SystemdowntimesController.php:778
 msgid "Invalide Systemdowntime"
-msgstr ""
+msgstr "Systemwartungszeit ungültig machen"
 
 #: src/Controller/SystemdowntimesController.php:784
 msgid "Systemdowntime successfully deleted"
-msgstr ""
+msgstr "Systemwartungszeit erfolgreich gelöscht"
 
 #: src/Controller/SystemdowntimesController.php:791
 msgid "Error while deleting systemdowntime"
-msgstr ""
+msgstr "Fehler beim Löschen der Systemwartungszeit"
 
 #: src/Controller/SystemfailuresController.php:146
 msgid "System failure not found"
@@ -4465,19 +4465,19 @@ msgstr "Systemfehler nicht gefunden"
 #: src/Controller/TenantsController.php:179
 #: src/Controller/TenantsController.php:268
 msgid "Invalid tenant"
-msgstr ""
+msgstr "Ungültiger Mandant"
 
 #: src/Controller/TenantsController.php:307
 msgid "Tenant deleted successfully"
-msgstr ""
+msgstr "Mandant erfolgreich gelöscht"
 
 #: src/Controller/TenantsController.php:312
 msgid "Could not delete tenant"
-msgstr ""
+msgstr "Mandant konnte nicht gelöscht werden"
 
 #: src/Controller/TenantsController.php:329
 msgid "Issue while deleting tenant"
-msgstr ""
+msgstr "Problem beim Löschen des Mandanten"
 
 #: src/Controller/TimeperiodsController.php:115
 #: src/Controller/TimeperiodsController.php:445
@@ -4524,7 +4524,7 @@ msgstr "Es muss mindestens einen Service angegeben werden."
 
 #: src/Form/CurrentstatereportForm.php:51
 msgid "You must specify at least one service status."
-msgstr ""
+msgstr "Sie müssen mindestens einen Servicestatus angeben."
 
 #: src/Identifier/SslIdentifier.php:53
 msgid "Invalid client certificate"
@@ -4682,28 +4682,28 @@ msgstr "Ereignishandler Kommando-Argumente"
 #: src/Template/Commands/edit.php:105
 #: src/Template/Commands/index.php:100
 msgid "Service check command"
-msgstr ""
+msgstr "Service Prüfkommando"
 
 #: src/Model/Table/CommandsTable.php:58
 #: src/Template/Commands/add.php:105
 #: src/Template/Commands/edit.php:106
 #: src/Template/Commands/index.php:112
 msgid "Host check command"
-msgstr ""
+msgstr "Host Prüfkommando"
 
 #: src/Model/Table/CommandsTable.php:59
 #: src/Template/Commands/add.php:106
 #: src/Template/Commands/edit.php:107
 #: src/Template/Commands/index.php:124
 msgid "Notification command"
-msgstr ""
+msgstr "Benachrichtigungskommando"
 
 #: src/Model/Table/CommandsTable.php:60
 #: src/Template/Commands/add.php:107
 #: src/Template/Commands/edit.php:108
 #: src/Template/Commands/index.php:136
 msgid "Eventhandler command"
-msgstr ""
+msgstr "Ereignisbehandlerkommando"
 
 #: src/Model/Table/CommandsTable.php:87
 #: src/Model/Table/ContainersTable.php:228
@@ -4738,7 +4738,7 @@ msgstr "Sie müssen mindestens ein Kommando auswählen."
 #: src/Model/Table/ServicesTable.php:419
 #: src/Model/Table/ServicetemplatesTable.php:386
 msgid "Macro name needs to be unique"
-msgstr ""
+msgstr "Der Makroname muss eindeutig sein"
 
 #: src/Model/Table/ContainersTable.php:259
 msgid "This name already exists."
@@ -4973,23 +4973,23 @@ msgstr "Dieses Feld kann nicht leer sein"
 
 #: src/Model/Table/ServicetemplatesTable.php:1174
 msgid "Generic templates"
-msgstr ""
+msgstr "Generische Vorlagen"
 
 #: src/Model/Table/ServicetemplatesTable.php:1178
 msgid "EVC templates"
-msgstr ""
+msgstr "EVK Vorlagen"
 
 #: src/Model/Table/ServicetemplatesTable.php:1182
 msgid "SLA templates"
-msgstr ""
+msgstr "SLA Vorlagen"
 
 #: src/Model/Table/ServicetemplatesTable.php:1186
 msgid "Checkmk templates"
-msgstr ""
+msgstr "Checkmk Vorlagen"
 
 #: src/Model/Table/ServicetemplatesTable.php:1189
 msgid "Agent templates"
-msgstr ""
+msgstr "Agent Vorlagen"
 
 #: src/Model/Table/SystemdowntimesTable.php:97
 msgid "Please select at least on object."
@@ -5320,7 +5320,7 @@ msgstr "Zustände"
 #: src/itnovum/openITCOCKPIT/Core/Reports/StatehistoryConverter.php:242
 #: src/itnovum/openITCOCKPIT/Core/Views/HoststatusIcon.php:87
 msgid "Down"
-msgstr ""
+msgstr "Nicht verfügbar"
 
 #: src/Template/Acknowledgements/host.php:143
 #: src/Template/Angular/submit_host_result.php:27
@@ -5362,7 +5362,7 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Reports/StatehistoryConverter.php:243
 #: src/itnovum/openITCOCKPIT/Core/Views/HoststatusIcon.php:88
 msgid "Unreachable"
-msgstr ""
+msgstr "Nicht erreichbar"
 
 #: src/Template/Acknowledgements/host.php:170
 #: src/Template/Acknowledgements/service.php:182
@@ -5429,14 +5429,14 @@ msgstr "Klebrig"
 #: src/Template/Systemsettings/index.php:118
 #: src/Template/Systemsettings/index.php:153
 msgid "True"
-msgstr ""
+msgstr "Wahr"
 
 #: src/Template/Acknowledgements/host.php:208
 #: src/Template/Acknowledgements/service.php:221
 #: src/Template/Systemsettings/index.php:119
 #: src/Template/Systemsettings/index.php:152
 msgid "False"
-msgstr ""
+msgstr "Falsch"
 
 #: src/Template/Acknowledgements/service.php:131
 #: src/Template/Angular/submit_service_result.php:25
@@ -5598,65 +5598,65 @@ msgstr "Unbekannt"
 
 #: src/Template/Administrators/debug.php:45
 msgid "Debugging information"
-msgstr ""
+msgstr "Informationen zur Fehlersuche"
 
 #: src/Template/Administrators/debug.php:53
 msgid "Show SQL query log"
-msgstr ""
+msgstr "SQL-Abfrageprotokoll anzeigen"
 
 #: src/Template/Administrators/debug.php:62
 #: src/Template/Exports/index.php:60
 msgid "Critical error!"
-msgstr ""
+msgstr "Kritischer Fehler!"
 
 #: src/Template/Administrators/debug.php:64
 msgid "Could not connect to Gearman Job Server! No background tasks will get executed!"
-msgstr ""
+msgstr "Konnte keine Verbindung zum Gearman Job Server herstellen! Es werden keine Hintergrundaufgaben ausgeführt!"
 
 #: src/Template/Administrators/debug.php:76
 #: src/Template/Packetmanager/index.php:58
 msgid "Ubuntu Trusty 14.04 end of life!"
-msgstr ""
+msgstr "Ubuntu Trusty 14.04 ist am Ende seines Lebens!"
 
 #: src/Template/Administrators/debug.php:78
 #: src/Template/Packetmanager/index.php:60
 msgid "Official end of life of Ubuntu Trusty scheduled for April 2019."
-msgstr ""
+msgstr "Das offizielle Ende der Lebensdauer von Ubuntu Trusty war April 2019."
 
 #: src/Template/Administrators/debug.php:79
 #: src/Template/Packetmanager/index.php:61
 msgid "Therefore openITCOCKPIT 3.5 will be the last release for Ubuntu Trusty. Please update to Ubuntu Xenial to receive further updates."
-msgstr ""
+msgstr "Daher wird openITCOCKPIT 3.5 die letzte Version für Ubuntu Trusty sein. Bitte aktualisieren Sie auf Ubuntu Xenial, um weitere Updates zu erhalten."
 
 #: src/Template/Administrators/debug.php:81
 #: src/Template/Administrators/debug.php:95
 #: src/Template/Packetmanager/index.php:63
 #: src/Template/Packetmanager/index.php:77
 msgid "Need help updating your system? Please don't hesitate to contact our enterprise support {0}."
-msgstr ""
+msgstr "Brauchen Sie Hilfe bei der Aktualisierung Ihres Systems? Bitte zögern Sie nicht, unseren Enterprise-Support zu kontaktieren {0}."
 
 #: src/Template/Administrators/debug.php:90
 #: src/Template/Packetmanager/index.php:72
 msgid "Debian Jessie 8 end of life!"
-msgstr ""
+msgstr "Debian Jessie 8 ist am Ende seines Lebens!"
 
 #: src/Template/Administrators/debug.php:92
 #: src/Template/Packetmanager/index.php:74
 msgid "Debian Jessie is not supported by the Debian security team anymore!"
-msgstr ""
+msgstr "Debian Jessie wird nicht mehr vom Debian-Sicherheitsteam unterstützt!"
 
 #: src/Template/Administrators/debug.php:93
 #: src/Template/Packetmanager/index.php:75
 msgid "Therefore openITCOCKPIT 3.5 will be the last release for Debian Jessie. Please update to Debian Stretch to receive further updates."
-msgstr ""
+msgstr "Daher wird openITCOCKPIT 3.5 die letzte Veröffentlichung für Debian Jessie sein. Bitte aktualisieren Sie auf Debian Stretch, um weitere Aktualisierungen zu erhalten."
 
 #: src/Template/Administrators/debug.php:105
 msgid "Interface information"
-msgstr ""
+msgstr "Informationen zur Schnittstelle"
 
 #: src/Template/Administrators/debug.php:112
 msgid "System name"
-msgstr ""
+msgstr "Systemname"
 
 #: src/Template/Administrators/debug.php:115
 #: src/Template/Nagiostats/index.php:194
@@ -5665,19 +5665,19 @@ msgstr ""
 
 #: src/Template/Administrators/debug.php:118
 msgid "Edition"
-msgstr ""
+msgstr "Ausgabe"
 
 #: src/Template/Administrators/debug.php:124
 msgid "Path for config"
-msgstr ""
+msgstr "Pfad für die Konfiguration"
 
 #: src/Template/Administrators/debug.php:127
 msgid "Path for backups"
-msgstr ""
+msgstr "Pfad für Backups"
 
 #: src/Template/Administrators/debug.php:130
 msgid "Command interface"
-msgstr ""
+msgstr "Kommandoschnittstelle"
 
 #: src/Template/Administrators/debug.php:144
 msgid "Process information"
@@ -5689,29 +5689,29 @@ msgstr ""
 #: src/Template/Errors/error404.php:30
 #: src/Template/Exports/index.php:165
 msgid "Error"
-msgstr ""
+msgstr "Fehler"
 
 #: src/Template/Administrators/debug.php:158
 msgid "Gearman-Job-Server is not running, openITCOCKPIT could not check the state of background daemons"
-msgstr ""
+msgstr "Gearman-Job-Server läuft nicht, openITCOCKPIT konnte den Status des Hintergrunddienstes nicht überprüfen"
 
 #: src/Template/Administrators/debug.php:160
 msgid "Please start Gearman-Job-Server first"
-msgstr ""
+msgstr "Bitte starten Sie zuerst Gearman-Job-Server"
 
 #: src/Template/Administrators/debug.php:171
 msgid "gearman_worker is not running, openITCOCKPIT could not check the state of background daemons"
-msgstr ""
+msgstr "gearman_worker läuft nicht, openITCOCKPIT konnte den Status des Hintergrunddienstes nicht überprüfen"
 
 #: src/Template/Administrators/debug.php:173
 msgid "Please start gearman_worker first"
-msgstr ""
+msgstr "Bitte starten Sie zuerst gearman_worker"
 
 #: src/Template/Administrators/debug.php:183
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:35
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:60
 msgid "Monitoring engine"
-msgstr ""
+msgstr "Monitoring-Engine"
 
 #: src/Template/Administrators/debug.php:186
 #: src/Template/Administrators/debug.php:199
@@ -5746,7 +5746,7 @@ msgstr "Läuft nicht!"
 
 #: src/Template/Administrators/debug.php:196
 msgid "Database connector"
-msgstr ""
+msgstr "Datenbank-Konnektor"
 
 #: src/Template/Administrators/debug.php:204
 #: src/Template/Administrators/debug.php:229
@@ -5760,7 +5760,7 @@ msgstr ""
 
 #: src/Template/Administrators/debug.php:221
 msgid "Perfdata processor"
-msgstr ""
+msgstr "Performancedaten-Verarbeiter"
 
 #: src/Template/Administrators/debug.php:241
 msgid "NPCD"
@@ -5769,7 +5769,7 @@ msgstr ""
 #: src/Template/Administrators/debug.php:246
 #: src/Template/Administrators/debug.php:581
 msgid "Queuing engine"
-msgstr ""
+msgstr "Warteschlangen-Engine"
 
 #: src/Template/Administrators/debug.php:255
 msgid "Gearman Worker"
@@ -5777,7 +5777,7 @@ msgstr ""
 
 #: src/Template/Administrators/debug.php:263
 msgid "Execute background jobs like refresh of monitoring configuration."
-msgstr ""
+msgstr "Ausführen von Hintergrund-Jobs wie z.B. aktualisieren der Überwachungskonfiguration."
 
 #: src/Template/Administrators/debug.php:269
 msgid "OITC Cmd"
@@ -5785,7 +5785,7 @@ msgstr ""
 
 #: src/Template/Administrators/debug.php:277
 msgid "External command interface used by Check_MK to pass check results."
-msgstr ""
+msgstr "Externe Kommandoschnittstelle, die von Check_MK zur Übergabe der Prüfergebnisse verwendet wird."
 
 #: src/Template/Administrators/debug.php:283
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:67
@@ -5794,15 +5794,15 @@ msgstr ""
 
 #: src/Template/Administrators/debug.php:291
 msgid "phpNSTA is only installed and running if you are using Distributed Monitoring."
-msgstr ""
+msgstr "phpNSTA ist nur installiert und läuft nur, wenn Sie die verteilte Überwachung verwenden."
 
 #: src/Template/Administrators/debug.php:297
 msgid "Push notification service"
-msgstr ""
+msgstr "Push-Benachrichtigungsdienst"
 
 #: src/Template/Administrators/debug.php:305
 msgid "Service required to send push notifications to your browser window."
-msgstr ""
+msgstr "Dienst, der erforderlich ist, um Push-Benachrichtigungen an Ihr Browserfenster zu senden."
 
 #: src/Template/Administrators/debug.php:311
 msgid "NodeJS Server"
@@ -5810,16 +5810,16 @@ msgstr ""
 
 #: src/Template/Administrators/debug.php:319
 msgid "Service required to run server side JavaScript to render charts to email notifications and PDF reports."
-msgstr ""
+msgstr "Dienst zur Ausführung von serverseitigem JavaScript zur Darstellung von Diagrammen für E-Mail-Benachrichtigungen und PDF-Berichte erforderlich."
 
 #: src/Template/Administrators/debug.php:340
 msgid "Server information"
-msgstr ""
+msgstr "Server Informationen"
 
 #: src/Template/Administrators/debug.php:347
 #: src/Template/Hosts/copy.php:101
 msgid "Address"
-msgstr ""
+msgstr "Adresse"
 
 #: src/Template/Administrators/debug.php:350
 msgid "Webserver"
@@ -5839,43 +5839,43 @@ msgstr ""
 
 #: src/Template/Administrators/debug.php:362
 msgid "Architecture"
-msgstr ""
+msgstr "Architektur"
 
 #: src/Template/Administrators/debug.php:365
 msgid "PHP version"
-msgstr ""
+msgstr "PHP Version"
 
 #: src/Template/Administrators/debug.php:368
 msgid "PHP Memory limit"
-msgstr ""
+msgstr "PHP-Speicherlimit"
 
 #: src/Template/Administrators/debug.php:371
 msgid "PHP Max. execution time"
-msgstr ""
+msgstr "PHP Max. Ausführungszeit"
 
 #: src/Template/Administrators/debug.php:374
 msgid "PHP loaded extensions"
-msgstr ""
+msgstr "PHP geladene Erweiterungen"
 
 #: src/Template/Administrators/debug.php:377
 msgid "CPU model"
-msgstr ""
+msgstr "CPU Modell"
 
 #: src/Template/Administrators/debug.php:380
 msgid "Number of CPU cores"
-msgstr ""
+msgstr "Anzahl der CPU-Kerne"
 
 #: src/Template/Administrators/debug.php:396
 msgid "CPU load"
-msgstr ""
+msgstr "CPU-Last"
 
 #: src/Template/Administrators/debug.php:406
 msgid "Keep history"
-msgstr ""
+msgstr "Behalte Historie"
 
 #: src/Template/Administrators/debug.php:415
 msgid "Current load:"
-msgstr ""
+msgstr "Aktuelle Last:"
 
 #: src/Template/Administrators/debug.php:436
 msgid "1 Minute"
@@ -5883,11 +5883,11 @@ msgstr ""
 
 #: src/Template/Administrators/debug.php:444
 msgid "5 Minutes"
-msgstr ""
+msgstr "5 Minuten"
 
 #: src/Template/Administrators/debug.php:452
 msgid "15 Minutes"
-msgstr ""
+msgstr "15 Minuten"
 
 #: src/Template/Administrators/debug.php:476
 msgid "Memory and disk usage"
@@ -5992,7 +5992,7 @@ msgstr "Sende Test E-Mail an"
 
 #: src/Template/Administrators/debug.php:678
 msgid "Client information"
-msgstr ""
+msgstr "Client Information"
 
 #: src/Template/Administrators/debug.php:685
 msgid "Client OS"
@@ -6000,11 +6000,11 @@ msgstr ""
 
 #: src/Template/Administrators/debug.php:688
 msgid "Client browser"
-msgstr ""
+msgstr "Client Browser"
 
 #: src/Template/Administrators/debug.php:691
 msgid "Client IP address"
-msgstr ""
+msgstr "Client IP-Adresse"
 
 #: src/Template/Administrators/querylog.php:34
 msgid "Databases query log"
@@ -6016,7 +6016,7 @@ msgstr "Datenbanken"
 
 #: src/Template/Administrators/querylog.php:48
 msgid "query log"
-msgstr ""
+msgstr "Abfrageprotokoll"
 
 #: src/Template/Administrators/querylog.php:53
 msgid "Successfully connected"
@@ -6024,7 +6024,7 @@ msgstr "Erfolgreich verbunden"
 
 #: src/Template/Administrators/querylog.php:57
 msgid "Used query log slots"
-msgstr ""
+msgstr "Verwendete Abfrageprotokoll-Slots"
 
 #: src/Template/Administrators/querylog.php:62
 msgid "Truncate log"
@@ -6036,7 +6036,7 @@ msgstr "Verbindungsfehler"
 
 #: src/Template/Administrators/querylog.php:72
 msgid "Could not connect to Query Log WebSocket Server. Did you execute"
-msgstr ""
+msgstr "Es konnte keine Verbindung zum Query Log WebSocket Server hergestellt werden. Wurde folgendes ausgeführt? "
 
 #: src/Template/Agentchecks/add.php:34
 #: src/Template/Agentchecks/edit.php:34
@@ -6518,7 +6518,7 @@ msgstr "Aktiviere Statusprüfungen für qemu"
 
 #: src/Template/Agentconnector/config.php:543
 msgid "Enable cpu status checks"
-msgstr ""
+msgstr "Aktiviere CPU-Statusprüfungen"
 
 #: src/Template/Agentconnector/config.php:557
 msgid "Enable sensor status checks"
@@ -6690,7 +6690,7 @@ msgstr "Netzwerkgerätestatistiken"
 
 #: src/Template/Agentconnector/config.php:1068
 msgid "Windows services"
-msgstr ""
+msgstr "Windows-Services"
 
 #: src/Template/Agentconnector/config.php:1088
 msgid "Docker container running"
@@ -6792,11 +6792,11 @@ msgstr "Kommando ausführen"
 #: src/Template/Services/browser.php:792
 #: src/Template/Services/details.php:159
 msgid "Acknowledge service status"
-msgstr ""
+msgstr "Bestätigen Servicestatus"
 
 #: src/Template/Angular/acknowledge_service.php:41
 msgid "Sticky acknowledgements will be stay until the service is back in state Ok"
-msgstr ""
+msgstr "Klebrige Bestätigungen bleiben so lange bestehen, bis der Service wieder in Ordnung ist."
 
 #: src/Template/Angular/confirm_deactivate.php:6
 #: src/Template/Angular/confirm_delete.php:6
@@ -7210,7 +7210,7 @@ msgstr "Servicevorlagengruppe zuordnen"
 #: src/Template/Hosts/index.php:618
 #: src/Template/Hosts/not_monitored.php:318
 msgid "openITCOCKPIT Agent discovery"
-msgstr ""
+msgstr "openITCOCKPIT Agent Entdeckung"
 
 #: src/Template/Angular/human_time.php:28
 msgid "hour"
@@ -7734,17 +7734,17 @@ msgstr "Neue Version verfügbar!"
 #: src/Template/Automaps/index.php:48
 #: src/Template/Automaps/view.php:34
 msgid "Auto Maps"
-msgstr ""
+msgstr "Automatische Karten"
 
 #: src/Template/Automaps/add.php:48
 msgid "Create new auto map"
-msgstr ""
+msgstr "Erstelle neue automatische Karte"
 
 #: src/Template/Automaps/add.php:62
 #: src/Template/Automaps/edit.php:64
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:94
 msgid "Auto Map"
-msgstr ""
+msgstr "Automatische Karte"
 
 #: src/Template/Automaps/add.php:77
 #: src/Template/Automaps/edit.php:79
@@ -8318,7 +8318,7 @@ msgstr "Instanz"
 #: src/Template/Services/index.php:454
 #: src/Template/Services/service_list.php:237
 msgid "Sticky Acknowledgedment"
-msgstr ""
+msgstr "Klebrige Bestätigung"
 
 #: src/Template/Browsers/index.php:519
 #: src/Template/Hosts/index.php:449
@@ -8397,7 +8397,7 @@ msgstr "Kalender"
 #: src/Template/Calendars/add.php:61
 #: src/Template/Calendars/edit.php:62
 msgid "Add holiday "
-msgstr ""
+msgstr "Erstelle Feiertag "
 
 #: src/Template/Calendars/add.php:61
 #: src/Template/Calendars/edit.php:62
@@ -8648,11 +8648,11 @@ msgstr "Deaktivieren"
 
 #: src/Template/Changelogs/index.php:283
 msgid "by"
-msgstr ""
+msgstr "von"
 
 #: src/Template/Changelogs/index.php:295
 msgid "by Cronjob"
-msgstr ""
+msgstr "vom Cronjob"
 
 #: src/Template/Commands/add.php:52
 msgid "Create new command"
@@ -9021,19 +9021,19 @@ msgstr "Nur einige Informationen zu phpNSTA"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:219
 msgid "Process fork information"
-msgstr ""
+msgstr "Informationen zur Prozessabspaltung"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:220
 msgid "File operation information"
-msgstr ""
+msgstr "Informationen zu Dateioperationen"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:221
 msgid "Nagios process information"
-msgstr ""
+msgstr "Informationen zum Nagios Prozess"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:222
 msgid "SSH tunnel information"
-msgstr ""
+msgstr "SSH Tunnel Information"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:223
 msgid "System time synchronization information"
@@ -9041,15 +9041,15 @@ msgstr "Informationen zur Systemzeitsynchronisation"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:224
 msgid "Events triggerd by the SAT-Systems"
-msgstr ""
+msgstr "Von den SAT-Systemen ausgelöste Ereignisse"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:225
 msgid "Child process monitoring"
-msgstr ""
+msgstr "Überwachung von Kinderprozessen"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:226
 msgid "Data for Mod_Gearman"
-msgstr ""
+msgstr "Daten für Mod_Gearman"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:227
 msgid "Bulk Transmission"
@@ -9061,7 +9061,7 @@ msgstr "Benutzerdefinierte Datenübertragung"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:229
 msgid "ALL"
-msgstr ""
+msgstr "ALLES"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:291
 msgid "Supervisor"
@@ -9198,7 +9198,7 @@ msgstr "Die folgende {0} kann nicht gelöscht werden."
 
 #: src/Template/Contactgroups/mass_delete.php:94
 msgid "(Used by other object)"
-msgstr ""
+msgstr "(Von anderem Objekt verwendet)"
 
 #: src/Template/Contactgroups/mass_delete.php:101
 msgid "Used by ..."
@@ -9537,12 +9537,12 @@ msgstr "Verbundener LDAP Server"
 #: src/Template/Contacts/add_from_ldap.php:104
 #: src/Template/Users/add_from_ldap.php:229
 msgid "Used filter query"
-msgstr ""
+msgstr "Verwendete Filterabfrage"
 
 #: src/Template/Contacts/add_from_ldap.php:107
 #: src/Template/Users/add_from_ldap.php:232
 msgid "Base DN"
-msgstr ""
+msgstr "Basis-DN"
 
 #: src/Template/Contacts/add_from_ldap.php:157
 msgid "Imported value from LDAP."
@@ -9658,19 +9658,19 @@ msgstr ""
 #: src/Template/Tenants/add.php:63
 #: src/Template/Tenants/edit.php:64
 msgid "Tenant"
-msgstr ""
+msgstr "Mandant"
 
 #: src/Template/Containers/index.php:83
 #: src/Template/Containers/index.php:387
 #: src/Template/Locations/add.php:63
 #: src/Template/Locations/edit.php:64
 msgid "Location"
-msgstr ""
+msgstr "Standort"
 
 #: src/Template/Containers/index.php:87
 #: src/Template/Containers/index.php:392
 msgid "Node"
-msgstr ""
+msgstr "Knoten"
 
 #: src/Template/Containers/index.php:103
 msgid "Servicetemplategroup"
@@ -9678,7 +9678,7 @@ msgstr "Servicevorlagengruppe"
 
 #: src/Template/Containers/index.php:114
 msgid "Tree"
-msgstr ""
+msgstr "Baum"
 
 #: src/Template/Containers/index.php:173
 #: src/Template/Containers/index.php:211
@@ -9692,7 +9692,7 @@ msgstr "Zeite Details"
 
 #: src/Template/Containers/index.php:359
 msgid "Add new container"
-msgstr ""
+msgstr "Erstelle neuen Container"
 
 #: src/Template/Containers/index.php:369
 msgid "Select container type"
@@ -9707,33 +9707,33 @@ msgstr "Containername"
 #: src/Template/Containers/index.php:442
 #: src/Template/Locations/index.php:124
 msgid "Location name"
-msgstr ""
+msgstr "Standort Name"
 
 #: src/Template/Containers/index.php:457
 msgid "Optional fields for location"
-msgstr ""
+msgstr "Optionale Felder für den Standort"
 
 #: src/Template/Containers/index.php:483
 #: src/Template/Locations/add.php:110
 #: src/Template/Locations/edit.php:112
 msgid "Latitude"
-msgstr ""
+msgstr "Breitengrad"
 
 #: src/Template/Containers/index.php:499
 #: src/Template/Locations/add.php:118
 #: src/Template/Locations/edit.php:120
 msgid " Latitude must be a number between -90 and 90 degree inclusive."
-msgstr ""
+msgstr " Der Breitengrad muss eine Zahl zwischen -90 und 90 Grad einschließlich sein."
 
 #: src/Template/Containers/index.php:512
 #: src/Template/Locations/add.php:130
 #: src/Template/Locations/edit.php:132
 msgid "Longitude"
-msgstr ""
+msgstr "Längengrad"
 
 #: src/Template/Containers/index.php:528
 msgid "Longitude must be a number -180 and 180 degree inclusive."
-msgstr ""
+msgstr "Der Längengrad muss eine Zahl von -180 und 180 Grad einschließlich sein."
 
 #: src/Template/Containers/index.php:540
 #: src/Template/Locations/add.php:150
@@ -9747,12 +9747,12 @@ msgstr "Zeitzone"
 
 #: src/Template/Containers/index.php:561
 msgid "Optional fields for tenant"
-msgstr ""
+msgstr "Optionale Felder für Mandanten"
 
 #: src/Template/Containers/index.php:576
 #: src/Template/Tenants/index.php:124
 msgid "Tenant name"
-msgstr ""
+msgstr "Mandantname"
 
 #: src/Template/Containers/index.php:613
 #: src/Template/Profile/edit.php:60
@@ -9820,12 +9820,12 @@ msgstr "Neuen Knoten erstellen"
 #: src/Template/Containers/index.php:735
 #: src/Template/Tenants/add.php:49
 msgid "Create new tenant"
-msgstr ""
+msgstr "Erstelle neuen Mandanten"
 
 #: src/Template/Containers/index.php:739
 #: src/Template/Locations/add.php:49
 msgid "Create new location"
-msgstr ""
+msgstr "Erstelle neuen Standort"
 
 #: src/Template/Containers/index.php:755
 msgid "Edit container name"
@@ -9931,7 +9931,7 @@ msgstr "Aufgaben"
 #: src/Template/Cronjobs/index.php:238
 #: src/Template/Macros/index.php:164
 msgid "Plugin"
-msgstr ""
+msgstr "Erweiterung"
 
 #: src/Template/Cronjobs/index.php:72
 #: src/Template/Cronjobs/index.php:175
@@ -10135,7 +10135,7 @@ msgstr ""
 #: src/Template/Services/browser.php:765
 #: src/Template/Services/details.php:108
 msgid "Hard state"
-msgstr ""
+msgstr "Harter Status"
 
 #: src/Template/Currentstatereports/index.php:305
 #: src/Template/Currentstatereports/index.php:411
@@ -10145,7 +10145,7 @@ msgstr ""
 #: src/Template/Services/browser.php:770
 #: src/Template/Services/details.php:117
 msgid "Soft state"
-msgstr ""
+msgstr "Weicher Status"
 
 #: src/Template/Currentstatereports/index.php:320
 #: src/Template/Currentstatereports/index.php:372
@@ -10214,7 +10214,7 @@ msgstr "Status seit"
 #: src/Template/Hosts/index.php:210
 #: src/Template/Hosts/not_monitored.php:194
 msgid "Host status"
-msgstr ""
+msgstr "Host Status"
 
 #: src/Template/Dashboards/host_status_overview_widget.php:116
 #: src/Template/Dashboards/service_status_overview_widget.php:141
@@ -10364,7 +10364,7 @@ msgstr "Stoppe Teilen"
 
 #: src/Template/Dashboards/index.php:113
 msgid "Setup tab rotation"
-msgstr ""
+msgstr "Setup Tab Rotation"
 
 #: src/Template/Dashboards/index.php:118
 msgid "Lock for edit"
@@ -10599,7 +10599,7 @@ msgstr "Nicht überwacht"
 #: src/Template/DeletedHosts/index.php:144
 #: src/Template/Services/service_list.php:760
 msgid "Performance data deleted"
-msgstr ""
+msgstr "Performance Daten wurden gelöscht"
 
 #: src/Template/Documentations/view.php:40
 msgid "Host template:"
@@ -10991,7 +10991,7 @@ msgstr "Neue Konfiguration ist ungültig"
 
 #: src/Template/Exports/index.php:206
 msgid "Refresh in progress "
-msgstr ""
+msgstr "Aktualisierung läuft"
 
 #: src/Template/Exports/index.php:213
 msgid "Launch refresh"
@@ -11000,14 +11000,14 @@ msgstr "Starte Aktualisierung"
 #: src/Template/Hostchecks/index.php:38
 #: src/Template/Servicechecks/index.php:38
 msgid "check history"
-msgstr ""
+msgstr "Prüfe Historie"
 
 #: src/Template/Hostchecks/index.php:150
 #: src/Template/Servicechecks/index.php:162
 #: src/Template/Statehistories/host.php:150
 #: src/Template/Statehistories/service.php:162
 msgid "State Types"
-msgstr ""
+msgstr "Statustypen"
 
 #: src/Template/Hostchecks/index.php:161
 #: src/Template/Hostchecks/index.php:235
@@ -11036,7 +11036,7 @@ msgstr "Hart"
 #: src/Template/Statehistories/host.php:203
 #: src/Template/Statehistories/service.php:216
 msgid "Check attempt"
-msgstr ""
+msgstr "Versuche Überprüfung"
 
 #: src/Template/Hostdependencies/add.php:49
 msgid "Create new host dependency"
@@ -11069,7 +11069,7 @@ msgstr "Abhängige Hostgruppen"
 #: src/Template/Servicedependencies/index.php:361
 #: src/Template/Servicedependencies/index.php:401
 msgid "Inherits parent"
-msgstr ""
+msgstr "Erbt Elternteil"
 
 #: src/Template/Hostdependencies/add.php:212
 #: src/Template/Hostdependencies/edit.php:212
@@ -11172,17 +11172,17 @@ msgstr "Filter nach abhängiger Hostgruppe"
 #: src/Template/Hostdependencies/index.php:168
 #: src/Template/Servicedependencies/index.php:168
 msgid "Execution fail on ..."
-msgstr ""
+msgstr "Ausführung fehlgeschlagen von ..."
 
 #: src/Template/Hostdependencies/index.php:244
 #: src/Template/Servicedependencies/index.php:258
 msgid "Notification fail on ..."
-msgstr ""
+msgstr "Benachrichtigung fehlgeschlagen von ..."
 
 #: src/Template/Hostdependencies/index.php:346
 #: src/Template/Servicedependencies/index.php:374
 msgid "Not inherits parent"
-msgstr ""
+msgstr "Erbt nicht vom Elternteil"
 
 #: src/Template/Hostdependencies/index.php:522
 #: src/Template/Hostdependencies/index.php:551
@@ -11479,11 +11479,11 @@ msgstr "Diese Hostgruppe hat keine Hosts"
 
 #: src/Template/Hosts/add.php:54
 msgid "/root container selected!"
-msgstr "/root Contianer ausgewählt!"
+msgstr "/root Container ausgewählt!"
 
 #: src/Template/Hosts/add.php:55
 msgid "Choosing a tenant container is recommended for later permission purposes"
-msgstr ""
+msgstr "Die Wahl eines Mandantencontainers wird für spätere Berechtigungszwecke empfohlen"
 
 #: src/Template/Hosts/add.php:66
 msgid "Create new host"
@@ -11535,7 +11535,7 @@ msgstr "Host Adresse"
 #: src/Template/Hosts/add.php:187
 #: src/Template/Hosts/edit.php:176
 msgid "IPv4/IPv6 address or FQDN"
-msgstr ""
+msgstr "IPv4/IPv6 Adresse oder FQDN"
 
 #: src/Template/Hosts/add.php:195
 #: src/Template/Hosts/edit.php:184
@@ -11545,7 +11545,7 @@ msgstr "Adresse konnte nicht aufgelöst werden."
 #: src/Template/Hosts/add.php:246
 #: src/Template/Hosts/edit.php:235
 msgid "Parent hosts"
-msgstr ""
+msgstr "Eltern-Host"
 
 #: src/Template/Hosts/add.php:265
 #: src/Template/Hosts/browser.php:818
@@ -11591,7 +11591,7 @@ msgstr "Priorität"
 #: src/Template/Hosts/browser.php:827
 #: src/Template/Hosts/edit.php:297
 msgid "Satellite"
-msgstr ""
+msgstr "Satellit"
 
 #: src/Template/Hosts/add.php:331
 #: src/Template/Hosts/edit.php:320
@@ -11603,7 +11603,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:221
 #: src/Template/Servicetemplates/edit.php:225
 msgid "Check configuration"
-msgstr ""
+msgstr "Prüfungs Konfiguration"
 
 #: src/Template/Hosts/add.php:337
 #: src/Template/Hosts/browser.php:407
@@ -11619,7 +11619,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:227
 #: src/Template/Servicetemplates/edit.php:231
 msgid "Check period"
-msgstr ""
+msgstr "Prüfungszeitraum"
 
 #: src/Template/Hosts/add.php:353
 #: src/Template/Hosts/add.php:403
@@ -11675,7 +11675,7 @@ msgstr "Wenn deaktiviert, wird der Überprüfungsbefehl nicht ausgeführt. Dies 
 #: src/Template/Servicetemplates/copy.php:116
 #: src/Template/Servicetemplates/edit.php:304
 msgid "Check command"
-msgstr ""
+msgstr "Prüfungskommando"
 
 #: src/Template/Hosts/add.php:440
 #: src/Template/Hosts/edit.php:429
@@ -11773,7 +11773,7 @@ msgstr "Benachrichtigungskonfiguration"
 #: src/Template/Servicetemplates/add.php:592
 #: src/Template/Servicetemplates/edit.php:595
 msgid "Misc. configuration"
-msgstr ""
+msgstr "Diverse Konfiguration"
 
 #: src/Template/Hosts/add.php:704
 #: src/Template/Hosts/copy.php:118
@@ -11790,7 +11790,7 @@ msgstr ""
 #: src/Template/Hosttemplates/add.php:487
 #: src/Template/Hosttemplates/edit.php:488
 msgid "The macros $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$ and $HOSTADDRESS$ will be replaced"
-msgstr ""
+msgstr "Die Makros $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$ und $HOSTADDRESS$ werden ersetzt werden"
 
 #: src/Template/Hosts/add.php:727
 #: src/Template/Hosts/browser.php:844
@@ -11878,16 +11878,16 @@ msgstr "Befehl erfolgreich gesendet. In 5 Sekunden aktualisieren"
 #: src/Template/Hosts/browser.php:77
 #: src/Template/Services/browser.php:77
 msgid "Status information"
-msgstr ""
+msgstr "Status Informationen"
 
 #: src/Template/Hosts/browser.php:83
 msgid "Device information"
-msgstr ""
+msgstr "Geräte Informationen"
 
 #: src/Template/Hosts/browser.php:90
 #: src/Template/Services/browser.php:90
 msgid "Timeline"
-msgstr ""
+msgstr "Zeitleiste"
 
 #: src/Template/Hosts/browser.php:98
 #: src/Template/Services/browser.php:98
@@ -11963,7 +11963,7 @@ msgstr "Bestätigung wurde gesetzt von"
 #: src/Template/Services/browser.php:427
 #: src/Template/Services/details.php:254
 msgid "at"
-msgstr ""
+msgstr "um"
 
 #: src/Template/Hosts/browser.php:339
 msgid "The state of this host is currently flapping!"
@@ -12033,7 +12033,7 @@ msgstr "Benachrichtigungen aktiviert"
 #: src/Template/Hosts/browser.php:565
 #: src/Template/Services/browser.php:679
 msgid "Notify on"
-msgstr ""
+msgstr "Benachrichtigen bei"
 
 #: src/Template/Hosts/browser.php:570
 #: src/Template/Services/browser.php:684
@@ -12106,31 +12106,31 @@ msgstr "Legende"
 #: src/Template/Hosts/browser.php:886
 #: src/Template/Services/browser.php:978
 msgid "State types"
-msgstr ""
+msgstr "Statustypen"
 
 #: src/Template/Hosts/browser.php:892
 msgid "Up soft"
-msgstr ""
+msgstr "Erreichbar (weich)"
 
 #: src/Template/Hosts/browser.php:896
 msgid "Down soft"
-msgstr ""
+msgstr "Nicht erreichbar (weich)"
 
 #: src/Template/Hosts/browser.php:900
 msgid "Unreachable soft"
-msgstr ""
+msgstr "Nicht verfügbar (weich)"
 
 #: src/Template/Hosts/browser.php:906
 msgid "Up hard"
-msgstr ""
+msgstr "Erreichbar (hart)"
 
 #: src/Template/Hosts/browser.php:910
 msgid "Down hard"
-msgstr ""
+msgstr "Nicht erreichbar (hart)"
 
 #: src/Template/Hosts/browser.php:914
 msgid "Unreachable hard"
-msgstr ""
+msgstr "Nicht verfügbar (hart)"
 
 #: src/Template/Hosts/browser.php:929
 #: src/Template/Services/browser.php:1029
@@ -12302,7 +12302,7 @@ msgstr "Vorlagenname"
 #: src/Template/Hosttemplates/add.php:210
 #: src/Template/Hosttemplates/edit.php:211
 msgid "Check Command"
-msgstr ""
+msgstr "Prüfungskommando"
 
 #: src/Template/Hosttemplates/add.php:626
 msgid "Create host template"
@@ -12369,7 +12369,7 @@ msgstr "Sofortige Berichte"
 
 #: src/Template/Instantreports/add.php:47
 msgid "Create new instant report"
-msgstr ""
+msgstr "Neuen Sofort-Bericht erstellen"
 
 #: src/Template/Instantreports/add.php:61
 #: src/Template/Instantreports/edit.php:62
@@ -12509,7 +12509,7 @@ msgstr "Filtern nach Sofortberichtsnamen"
 #: src/Template/Timeperiods/edit.php:77
 #: src/Template/Timeperiods/used_by.php:46
 msgid "Time period"
-msgstr ""
+msgstr "Zeitraum"
 
 #: src/Template/Instantreports/index.php:242
 #: src/Template/Instantreports/send_emails_list.php:88
@@ -12641,30 +12641,30 @@ msgstr ""
 
 #: src/Template/Nagiostats/index.php:64
 msgid "Executed Active Service Checks"
-msgstr ""
+msgstr "Ausgeführte aktive Service-Prüfungen"
 
 #: src/Template/Nagiostats/index.php:73
 #: src/Template/Nagiostats/index.php:236
 #: src/Template/Nagiostats/index.php:326
 #: src/Template/Nagiostats/index.php:446
 msgid "Timeframe"
-msgstr ""
+msgstr "Zeitrahmen "
 
 #: src/Template/Nagiostats/index.php:74
 #: src/Template/Nagiostats/index.php:237
 #: src/Template/Nagiostats/index.php:327
 #: src/Template/Nagiostats/index.php:447
 msgid "Checks performed"
-msgstr ""
+msgstr "Durchgeführte Prüfungen"
 
 #: src/Template/Nagiostats/index.php:107
 #: src/Template/Nagiostats/index.php:360
 msgid "Since start"
-msgstr ""
+msgstr "Seit Beginn"
 
 #: src/Template/Nagiostats/index.php:125
 msgid "Active Service Checks Timings"
-msgstr ""
+msgstr "Aktive Service-Prüfung Timings"
 
 #: src/Template/Nagiostats/index.php:134
 #: src/Template/Nagiostats/index.php:188
@@ -12692,23 +12692,23 @@ msgstr ""
 #: src/Template/Nagiostats/index.php:142
 #: src/Template/Nagiostats/index.php:394
 msgid "Execution time"
-msgstr ""
+msgstr "Ausführungszeit"
 
 #: src/Template/Nagiostats/index.php:150
 #: src/Template/Nagiostats/index.php:406
 msgid "Latency"
-msgstr ""
+msgstr "Latenz"
 
 #: src/Template/Nagiostats/index.php:162
 #: src/Template/Nagiostats/index.php:298
 #: src/Template/Nagiostats/index.php:418
 #: src/Template/Nagiostats/index.php:508
 msgid "State changes"
-msgstr ""
+msgstr "Statusänderungen"
 
 #: src/Template/Nagiostats/index.php:179
 msgid "Additional information"
-msgstr ""
+msgstr "Zusätzliche Informationen"
 
 #: src/Template/Nagiostats/index.php:198
 msgid "Core PID"
@@ -12724,31 +12724,31 @@ msgstr "Gesamte Services"
 
 #: src/Template/Nagiostats/index.php:210
 msgid "Program uptime"
-msgstr ""
+msgstr "Programm-Betriebszeit"
 
 #: src/Template/Nagiostats/index.php:227
 msgid "Passive Service Checks"
-msgstr ""
+msgstr "Passive Service-Prüfungen"
 
 #: src/Template/Nagiostats/index.php:281
 msgid "Processed Passive Service Checks"
-msgstr ""
+msgstr "Verarbeitete passive Service-Prüfungen"
 
 #: src/Template/Nagiostats/index.php:317
 msgid "Executed Active Host Checks"
-msgstr ""
+msgstr "Ausgeführte aktive Host-Prüfungen"
 
 #: src/Template/Nagiostats/index.php:377
 msgid "Active Host Checks Timing"
-msgstr ""
+msgstr "Aktive Host-Prüfungen Timing"
 
 #: src/Template/Nagiostats/index.php:437
 msgid "Processed Passive Host Checks"
-msgstr ""
+msgstr "Verarbeitete passive Host-Prüfungen"
 
 #: src/Template/Nagiostats/index.php:491
 msgid "Passive Host Checks"
-msgstr ""
+msgstr "Passive Host-Prüfungen"
 
 #: src/Template/Notifications/host_notification.php:38
 #: src/Template/Notifications/service_notification.php:38
@@ -13005,12 +13005,12 @@ msgstr "Beispiel"
 #: src/Template/Profile/edit.php:553
 #: src/Template/Profile/edit_apikey.php:56
 msgid "For self-signed certificates, add"
-msgstr ""
+msgstr "Für selbstsignierte Zertifikate fügen Sie Folgendes hinzu:"
 
 #: src/Template/Profile/edit.php:560
 #: src/Template/Profile/edit_apikey.php:63
 msgid "example with JSON processor"
-msgstr ""
+msgstr "Beispiel mit JSON-Prozessor"
 
 #: src/Template/Profile/edit.php:573
 msgid "Generate new key"
@@ -13027,7 +13027,7 @@ msgstr ""
 
 #: src/Template/Proxy/index.php:48
 msgid "Edit configuration"
-msgstr ""
+msgstr "Bearbeite Konfiguration"
 
 #: src/Template/Proxy/index.php:58
 msgid "Proxy configuration"
@@ -13064,7 +13064,7 @@ msgstr "Registrieren Sie diese openICOCKPIT-Instanz"
 
 #: src/Template/Registers/index.php:53
 msgid "Credits"
-msgstr ""
+msgstr "Danksagung"
 
 #: src/Template/Registers/index.php:62
 #: src/Template/Registers/index.php:101
@@ -13099,7 +13099,7 @@ msgstr "Erstelle neue Service Abhängigkeit"
 #: src/Template/Servicedependencies/edit.php:76
 #: src/Template/Servicedependencies/edit.php:504
 msgid "Service dependencies are an advanced feature that allow you to\n                                    suppress notifications for services based on the status of one or more other services."
-msgstr ""
+msgstr "Serviceabhängigkeiten sind eine fortgeschrittene Funktion, \n                                    die es Ihnen ermöglicht, Benachrichtigungen für Services basierend auf dem Status eines oder mehrerer anderer Services zu unterdrücken."
 
 #: src/Template/Servicedependencies/add.php:109
 #: src/Template/Servicedependencies/edit.php:109
@@ -13130,50 +13130,50 @@ msgstr "Aktualisiere Service Abhängigkeit"
 
 #: src/Template/Servicedependencies/edit.php:775
 msgid "'Execution none' option"
-msgstr ""
+msgstr "'Keine Ausführung' Option"
 
 #: src/Template/Servicedependencies/edit.php:777
 #: src/Template/Servicedependencies/edit.php:914
 msgid "Another options will be deselected automatically!"
-msgstr ""
+msgstr "Andere Optionen werden automatisch abgewählt!"
 
 #: src/Template/Servicedependencies/edit.php:912
 msgid "'Notification none' option"
-msgstr ""
+msgstr "'Keine Benachrichtigung' Option"
 
 #: src/Template/Servicedependencies/edit.php:926
 msgid "Save service depependency"
-msgstr ""
+msgstr "Serviceabhängigkeit speichern"
 
 #: src/Template/Servicedependencies/index.php:97
 msgid "You can either search for  <b>\"service\"</b> OR <b>\"dependent service\"</b>. Opposing field will be reset automatically"
-msgstr ""
+msgstr "Sie können entweder nach <b>\"Service\"</b> oder <b>\"abhängigem Service\"</b> suchen. Das andere Feld wird automatisch zurückgesetzt."
 
 #: src/Template/Servicedependencies/index.php:112
 msgid "Filter by dependent service name"
-msgstr ""
+msgstr "Filter nach abhängigem Service Namen"
 
 #: src/Template/Servicedependencies/index.php:128
 #: src/Template/Serviceescalations/index.php:128
 msgid "Filter by service group"
-msgstr ""
+msgstr "Filter nach Servicegruppe"
 
 #: src/Template/Servicedependencies/index.php:138
 msgid "You can either search for  <b>\"service group\"</b> OR <b>\"dependent service group\"</b>.  Opposing field will be reset automatically"
-msgstr ""
+msgstr "Sie können entweder nach <b>\"Servicegruppe\"</b> oder <b>\"abhängiger Servicegruppe\"</b> suchen. Das andere Feld wird automatisch zurückgesetzt."
 
 #: src/Template/Servicedependencies/index.php:153
 msgid "Filter by dependent service group"
-msgstr ""
+msgstr "Filter nach abhängiger Servicegruppe"
 
 #: src/Template/Serviceescalations/add.php:49
 msgid "Create new service escalation"
-msgstr ""
+msgstr "Erstelle neue Serviceeskalation"
 
 #: src/Template/Serviceescalations/add.php:77
 #: src/Template/Serviceescalations/edit.php:76
 msgid "Notification escalations could be used to notify a certain user group in case of an emergency.\nOnce a service escalated, contacts, contact group and notification options will be overwritten by the escalation."
-msgstr ""
+msgstr "Benachrichtigungseskalationen könnten verwendet werden, um im Notfall eine bestimmte Benutzergruppe zu benachrichtigen. Sobald ein Service eskaliert ist, werden Kontakte, Kontaktgruppe und Benachrichtigungsoptionen durch die Eskalation überschrieben."
 
 #: src/Template/Serviceescalations/add.php:110
 #: src/Template/Serviceescalations/edit.php:109
@@ -13190,7 +13190,7 @@ msgstr "Ausgeschlossene Servicegruppen"
 #: src/Template/Serviceescalations/add.php:201
 #: src/Template/Serviceescalations/edit.php:200
 msgid "If number of last_notification is reached, the notification rule\n                                    will be disabled and the notification options of the service will be used again."
-msgstr ""
+msgstr "Wenn die Anzahl der last_notification erreicht ist,\n                                    wird die Benachrichtigungsregel deaktiviert und die Benachrichtigungsoptionen des Dienstes werden wieder verwendet."
 
 #: src/Template/Serviceescalations/add.php:350
 msgid "Create service escalation"
@@ -13211,7 +13211,7 @@ msgstr "Service Eskalationen"
 
 #: src/Template/Serviceescalations/index.php:97
 msgid "You can either search for  <b>\"service\"</b> OR <b>\"excluded service\"</b>. Opposing Field will be reset automatically"
-msgstr ""
+msgstr "Sie können entweder nach <b>\"Service\"</b> oder <b>\"ausgeschlossenem Service\"</b> suchen. Das andere Feld wird automatisch zurückgesetzt."
 
 #: src/Template/Serviceescalations/index.php:112
 msgid "Filter by excluded service name"
@@ -13219,7 +13219,7 @@ msgstr "Filter nach ausgeschlossenem Servicenamen"
 
 #: src/Template/Serviceescalations/index.php:138
 msgid "You can either search for  <b>\"service group\"</b> OR <b>\"excluded service group\"</b>.  Opposing Field will be reset automatically"
-msgstr ""
+msgstr "Sie können entweder nach <b>\"Servicegruppe\"</b> oder <b>\"ausgeschlossener Servicegruppe\"</b> suchen. Das andere Feld wird automatisch zurückgesetzt."
 
 #: src/Template/Serviceescalations/index.php:153
 msgid "Filter by excluded service group"
@@ -13234,7 +13234,7 @@ msgstr "Erstelle neue Servicegruppe"
 #: src/Template/Servicegroups/add.php:111
 #: src/Template/Servicegroups/edit.php:112
 msgid "Service group URL"
-msgstr ""
+msgstr "Servicegruppen URL"
 
 #: src/Template/Servicegroups/add.php:167
 msgid "Create service group"
@@ -13371,7 +13371,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:611
 #: src/Template/Servicetemplates/edit.php:614
 msgid "The macros $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$, $HOSTADDRESS$, $SERVICEID$, $SERVICEDESC$, $SERVICEDISPLAYNAME$ will be replaced"
-msgstr ""
+msgstr "Die Makros $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$, $HOSTADDRESS$, $SERVICEID$, $SERVICEDESC$, $SERVICEDISPLAYNAME$ werden ersetzt werden"
 
 #: src/Template/Services/add.php:843
 #: src/Template/Services/edit.php:913
@@ -13392,14 +13392,14 @@ msgstr "Erzwingt, dass die Überwachungs-Engine eine Benachrichtigung über jede
 #: src/Template/Servicetemplates/add.php:730
 #: src/Template/Servicetemplates/edit.php:733
 msgid "Online documentation"
-msgstr ""
+msgstr "Online Dokumentation"
 
 #: src/Template/Services/add.php:871
 #: src/Template/Services/edit.php:941
 #: src/Template/Servicetemplates/add.php:742
 #: src/Template/Servicetemplates/edit.php:745
 msgid "Event Handler configuration"
-msgstr ""
+msgstr "Event Handler Konfiguration"
 
 #: src/Template/Services/add.php:878
 #: src/Template/Services/edit.php:948
@@ -13413,14 +13413,14 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:792
 #: src/Template/Servicetemplates/edit.php:795
 msgid "This Event Handler command does not have any parameters."
-msgstr ""
+msgstr "Dieses Event-Handler Kommando hat keine Parameter."
 
 #: src/Template/Services/add.php:937
 #: src/Template/Services/edit.php:1008
 #: src/Template/Servicetemplates/add.php:801
 #: src/Template/Servicetemplates/edit.php:804
 msgid "Service macro configuration"
-msgstr ""
+msgstr "Service Makro Konfiguration"
 
 #: src/Template/Services/add.php:948
 #: src/Template/Services/edit.php:1019
@@ -13442,7 +13442,7 @@ msgstr "Erstelle Service"
 
 #: src/Template/Services/browser.php:83
 msgid "Service information"
-msgstr ""
+msgstr "Service Informationen"
 
 #: src/Template/Services/browser.php:141
 #: src/Template/Services/details.php:97
@@ -13502,19 +13502,19 @@ msgstr ""
 
 #: src/Template/Services/browser.php:984
 msgid "Ok soft"
-msgstr ""
+msgstr "Okay weich"
 
 #: src/Template/Services/browser.php:988
 msgid "Warning soft"
-msgstr ""
+msgstr "Warnend (weich)"
 
 #: src/Template/Services/browser.php:992
 msgid "Critical soft"
-msgstr ""
+msgstr "Kritisch (weich)"
 
 #: src/Template/Services/browser.php:996
 msgid "Unknown soft"
-msgstr ""
+msgstr "Unbekannt (weich)"
 
 #: src/Template/Services/browser.php:1078
 msgid "graphs"
@@ -13522,7 +13522,7 @@ msgstr "Graphen"
 
 #: src/Template/Services/browser.php:1089
 msgid "Show data points"
-msgstr ""
+msgstr "Datenpunkte anzeigen"
 
 #: src/Template/Services/browser.php:1108
 msgid "Timerange: "
@@ -13770,194 +13770,194 @@ msgstr "Vorlagentyp"
 #: src/Template/Servicetemplates/add.php:123
 #: src/Template/Servicetemplates/edit.php:127
 msgid "Defines the type of the template. Use \"Generic template\" if you are not sure."
-msgstr ""
+msgstr "Definiert den Typ der Vorlage. Verwenden Sie \"Generische Vorlage\", wenn Sie sich nicht sicher sind."
 
 #: src/Template/Servicetemplates/add.php:140
 #: src/Template/Servicetemplates/edit.php:144
 msgid "Default name of services using this service template."
-msgstr ""
+msgstr "Standardname der Dienste, die diese Servicevorlage verwenden."
 
 #: src/Template/Servicetemplates/add.php:278
 #: src/Template/Servicetemplates/edit.php:282
 msgid "If enabled the system will check that passive checks for this service will be received as frequently as defined."
-msgstr ""
+msgstr "Wenn diese Option aktiviert ist, prüft das System, ob passive Prüfungen für diesen Service so häufig wie definiert empfangen werden."
 
 #: src/Template/Servicetemplates/add.php:845
 msgid "Create service template"
-msgstr ""
+msgstr "Erstelle Servicevorlage"
 
 #: src/Template/Servicetemplates/add_servicetemplates_to_servicetemplategroup.php:32
 msgid "Append service template/s to service template group"
-msgstr ""
+msgstr "Servicevorlage(n) an die Servicevorlagengruppe anhängen"
 
 #: src/Template/Servicetemplates/add_servicetemplates_to_servicetemplategroup.php:41
 msgid "Selected service templates"
-msgstr ""
+msgstr "Ausgewählte Servicevorlagen"
 
 #: src/Template/Servicetemplates/add_servicetemplates_to_servicetemplategroup.php:61
 msgid "Append existing service template group"
-msgstr ""
+msgstr "Vorhandene Servicevorlagengruppe anhängen"
 
 #: src/Template/Servicetemplates/copy.php:47
 msgid "Copy service template/s"
-msgstr ""
+msgstr "Kopiere Servicevorlage(n)"
 
 #: src/Template/Servicetemplates/copy.php:62
 msgid "Source service template:"
-msgstr ""
+msgstr "Ursprüngliche Servicevorlage:"
 
 #: src/Template/Servicetemplates/copy.php:77
 msgid "Name of the new service template"
-msgstr ""
+msgstr "Name der neuen Servicevorlage"
 
 #: src/Template/Servicetemplates/copy.php:167
 msgid "Copy service templates"
-msgstr ""
+msgstr "Kopiere Servicevorlage"
 
 #: src/Template/Servicetemplates/edit.php:48
 msgid "Edit service template:"
-msgstr ""
+msgstr "Bearbeite Servicevorlage"
 
 #: src/Template/Servicetemplates/edit.php:844
 msgid "Update service template"
-msgstr ""
+msgstr "Aktualisiere Servicevorlage"
 
 #: src/Template/Servicetemplates/index.php:101
 msgid "Filter by service template description"
-msgstr ""
+msgstr "Filter nach Servicevorlagenbeschreibung"
 
 #: src/Template/Servicetemplates/index.php:128
 msgid "Filter by service template types"
-msgstr ""
+msgstr "Filter nach Servicevorlagentypen"
 
 #: src/Template/Servicetemplates/index.php:299
 msgid "Add to service template group"
-msgstr ""
+msgstr "Füge zu Servicevorlagengruppe hinzu"
 
 #: src/Template/Servicetemplates/used_by.php:58
 msgid "services."
-msgstr ""
+msgstr "Services."
 
 #: src/Template/Servicetemplates/used_by.php:75
 msgid " Include disabled services"
-msgstr ""
+msgstr "Deaktivierte Services einbeziehen"
 
 #: src/Template/Servicetemplates/used_by.php:187
 msgid "This service template is not used by any services"
-msgstr ""
+msgstr "Diese Servicevorlage wird von keinem Service verwendet."
 
 #: src/Template/Statehistories/host.php:38
 #: src/Template/Statehistories/service.php:38
 msgid "state history"
-msgstr ""
+msgstr "Statushistorie"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:33
 #: src/Template/Statistics/index.php:48
 msgid "We ask for your help"
-msgstr ""
+msgstr "Wir bitten um Ihre Hilfe"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:42
 msgid "\n                        We are always interested to improve openITCOCKPIT with every new version.\n                        You can help us, by submitting anonymous statistical information to us.\n                        "
-msgstr ""
+msgstr "\n                        Wir sind immer daran interessiert, openITCOCKPIT mit jeder neuen Version zu verbessern.\n                        Sie können uns helfen, indem Sie anonyme statistische Informationen an uns übermitteln.\n                        "
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:52
 #: src/Template/Statistics/index.php:79
 msgid "What data do we collect?"
-msgstr ""
+msgstr "Welche Daten sammeln wir?"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:55
 #: src/Template/Statistics/index.php:82
 msgid "We are not interested in who you are, in which company you work or any other personal data."
-msgstr ""
+msgstr "Wir sind weder daran interessiert, wer Sie sind, in welchem Unternehmen Sie arbeiten noch an sonstigen persönlichen Daten."
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:57
 #: src/Template/Statistics/index.php:84
 msgid "We just ask you, to provide us system metrics like:"
-msgstr ""
+msgstr "Wir bitten Sie lediglich um Freigabe von Systemmetriken wie:"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:60
 #: src/Template/Statistics/index.php:87
 msgid "CPU load, number of CPU cores and CPU model"
-msgstr ""
+msgstr "CPU-Last, Anzahl der CPU-Kerne und CPU-Modell"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:61
 #: src/Template/Statistics/index.php:88
 msgid "Memory and swap usage"
-msgstr ""
+msgstr "Speicher- und Swap-Nutzung"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:62
 #: src/Template/Statistics/index.php:89
 msgid "Version of used monitoring engine"
-msgstr ""
+msgstr "Version der verwendeten Monitoring-Engine"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:63
 #: src/Template/Statistics/index.php:90
 msgid "Version of PHP"
-msgstr ""
+msgstr "Version von PHP"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:64
 #: src/Template/Statistics/index.php:91
 msgid "Version of openITCOCKPIT and installed openITCOCKPIT modules"
-msgstr ""
+msgstr "Version von openITCOCKPIT und der installierten openITCOCKPIT-Module"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:65
 #: src/Template/Statistics/index.php:92
 msgid "Number of monitored hosts and services"
-msgstr ""
+msgstr "Anzahl der überwachten Hosts und Services"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:66
 #: src/Template/Statistics/index.php:93
 msgid "Used operating system"
-msgstr ""
+msgstr "Verwendetes Betriebssystem"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:67
 #: src/Template/Statistics/index.php:94
 msgid "MySQL usage statistics like number of select, insert and delete statements"
-msgstr ""
+msgstr "MySQL-Nutzungsstatistiken wie die Anzahl der Select-, Insert- und Delete-Anweisungen"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:71
 msgid "Show me all metrics you like to collect."
-msgstr ""
+msgstr "Zeigen Sie mir alle Metriken, die Sie sammeln möchten."
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:77
 #: src/Template/Statistics/index.php:99
 msgid "Do you track users on the interface?"
-msgstr ""
+msgstr "Verfolgen Sie die Benutzer auf der Schnittstelle?"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:81
 #: src/Template/Statistics/index.php:103
 msgid "No. We are not interested in any user or user behavior data."
-msgstr ""
+msgstr "Nein. Wir sind nicht an Daten über Benutzer oder Benutzerverhalten interessiert."
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:88
 #: src/Template/Statistics/index.php:142
 msgid "Why do you ask for this data?"
-msgstr ""
+msgstr "Warum fragen Sie nach diesen Daten?"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:93
 #: src/Template/Statistics/index.php:145
 msgid "\n                            This information influences decisions such as which openITCOCKPIT modules should\n                            get new features or which operating system is used by most of the users.\n\n                            In addition the data will help use to optimize the database schema and improve scalability of\n                            openITCOCKPIT.\n                        "
-msgstr ""
+msgstr "\n                            Diese Informationen beeinflussen Entscheidungen, z.B. welche openITCOCKPIT-Module\n                            neue Funktionen erhalten sollen oder welches Betriebssystem von den meisten Benutzern verwendet wird.\n\n                            Darüber hinaus werden die Daten dazu beitragen, das Datenbankschema zu optimieren\n                            und die Skalierbarkeit von openITCOCKPIT zu verbessern.\n                        "
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:105
 msgid "Ask me again"
-msgstr ""
+msgstr "Fragen Sie mich noch einmal"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:108
 msgid "I want more information"
-msgstr ""
+msgstr "Ich möchte mehr Informationen"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:111
 msgid "Yes, I want to help"
-msgstr ""
+msgstr "Ja, ich möchte helfen"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:114
 msgid "No, thanks"
-msgstr ""
+msgstr "Nein, danke."
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:124
 msgid "Many thanks for your support!"
-msgstr ""
+msgstr "Vielen Dank für Ihre Unterstützung!"
 
 #: src/Template/Statistics/index.php:34
 #: src/Template/Statistics/index.php:47
@@ -13968,82 +13968,82 @@ msgstr "Anonyme Statistiken"
 
 #: src/Template/Statistics/index.php:56
 msgid "Sending of anonymous statistics is currently disabled."
-msgstr ""
+msgstr "Das Senden von anonymen Statistiken ist derzeit deaktiviert."
 
 #: src/Template/Statistics/index.php:63
 msgid "Sending of anonymous statistics is currently disabled. Waiting for your approval."
-msgstr ""
+msgstr "Das Senden von anonymen Statistiken ist derzeit deaktiviert. Wir warten auf Ihre Zustimmung."
 
 #: src/Template/Statistics/index.php:71
 msgid "Sending of anonymous statistics is currently enabled. Many thanks for your support!"
-msgstr ""
+msgstr "Das Senden von anonymen Statistiken ist derzeit aktiviert. Vielen Dank für Ihre Unterstützung!"
 
 #: src/Template/Statistics/index.php:108
 msgid "What records would you like to send exactly?"
-msgstr ""
+msgstr "Welche Einträge genau möchten Sie versenden?"
 
 #: src/Template/Statistics/index.php:111
 msgid "To be as transparent as possible, we show you all records that will be send to us. (This data was generated on your system.)"
-msgstr ""
+msgstr "Um so transparent wie möglich zu sein, zeigen wir Ihnen alle Einträge, die uns zugesandt werden. (Diese Daten wurden auf Ihrem System generiert)."
 
 #: src/Template/Statistics/index.php:121
 msgid "What is the"
-msgstr ""
+msgstr "Was ist die"
 
 #: src/Template/Statistics/index.php:124
 msgid "The system_id is a unique number that was generated on your system.\n                                The system_id is included in every request, to enable our database to locate your record and update it.\n                        "
-msgstr ""
+msgstr "Die system_id ist eine eindeutige Nummer, die auf Ihrem System generiert wurde.\n                                Die system_id ist in jeder Anfrage enthalten, damit unsere Datenbank Ihren Eintrag lokalisieren und aktualisieren kann.\n                        "
 
 #: src/Template/Statistics/index.php:130
 msgid "The system_id will not be linked to any other records."
-msgstr ""
+msgstr "Die system_id wird nicht mit anderen Datensätzen verknüpft."
 
 #: src/Template/Statistics/index.php:134
 msgid "If you want to change your system_id, you can delete the file"
-msgstr ""
+msgstr "Wenn Sie Ihre system_id ändern möchten, können Sie folgende Datei löschen:"
 
 #: src/Template/Statistics/index.php:136
 msgid "openITCOCKPIT will generate a new system_id, if required."
-msgstr ""
+msgstr "openITCOCKPIT generiert eine neue system_id, falls erforderlich."
 
 #: src/Template/Statusmaps/host_and_services_summary_status.php:85
 msgid "TOTAL:"
-msgstr ""
+msgstr "INSGESAMT:"
 
 #: src/Template/Statusmaps/index.php:34
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:84
 msgid "Status Map"
-msgstr ""
+msgstr "Status Karte"
 
 #: src/Template/Statusmaps/index.php:70
 msgid "Status map"
-msgstr ""
+msgstr "Status Karte"
 
 #: src/Template/Statusmaps/index.php:109
 msgid "Consider parent child relations"
-msgstr ""
+msgstr "Eltern-Kind-Beziehungen berücksichtigen"
 
 #: src/Template/Statusmaps/index.php:168
 msgid "Acknowledged and in downtime"
-msgstr ""
+msgstr "Bestätige und in Wartungszeit"
 
 #: src/Template/Statusmaps/index.php:189
 msgid "Loading visualization for "
-msgstr ""
+msgstr "Lade Visualisierung für "
 
 #: src/Template/Statusmaps/index.php:192
 msgid " nodes"
-msgstr ""
+msgstr " Knoten"
 
 #: src/Template/Supports/issue.php:34
 #: src/Template/Supports/issue.php:48
 #: src/Template/element/sidebar.php:108
 msgid "Support"
-msgstr ""
+msgstr "Unterstützung"
 
 #: src/Template/Supports/issue.php:38
 msgid "Issue"
-msgstr ""
+msgstr "Problem"
 
 #: src/Template/Supports/issue.php:49
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:667
@@ -14052,19 +14052,19 @@ msgstr "Ein Problem melden"
 
 #: src/Template/Systemdowntimes/add.php:32
 msgid "create"
-msgstr ""
+msgstr "erstellen"
 
 #: src/Template/Systemdowntimes/add.php:50
 msgid "Host downtime"
-msgstr ""
+msgstr "Host Wartungszeit"
 
 #: src/Template/Systemdowntimes/add.php:54
 msgid "Hostgroup downtime"
-msgstr ""
+msgstr "Hostgruppen Wartungszeit"
 
 #: src/Template/Systemdowntimes/add.php:58
 msgid "Service downtime"
-msgstr ""
+msgstr "Service Wartungszeit"
 
 #: src/Template/Systemdowntimes/add.php:74
 #: src/Template/Systemdowntimes/add.php:148
@@ -14073,17 +14073,17 @@ msgstr ""
 #: src/Template/Systemdowntimes/add_hostgroupdowntime.php:91
 #: src/Template/Systemsettings/index.php:160
 msgid "Individual host"
-msgstr ""
+msgstr "Einzelner Host"
 
 #: src/Template/Systemdowntimes/add.php:75
 #: src/Template/Systemdowntimes/add.php:149
 msgid "Host and dependent Hosts (triggered)"
-msgstr ""
+msgstr "Hosts und abhängige Hosts (ausgelöst)"
 
 #: src/Template/Systemdowntimes/add.php:76
 #: src/Template/Systemdowntimes/add.php:150
 msgid "Host and dependent Hosts (non-triggered)"
-msgstr ""
+msgstr "Hosts und abhängige Hosts (nicht ausgelöst)"
 
 #: src/Template/Systemdowntimes/add.php:85
 #: src/Template/Systemdowntimes/add.php:159
@@ -14092,7 +14092,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/add_hostgroupdowntime.php:128
 #: src/Template/Systemdowntimes/add_servicedowntime.php:106
 msgid "Recurring downtime"
-msgstr ""
+msgstr "Wiederkehrende Wartungszeit"
 
 #: src/Template/Systemdowntimes/add.php:106
 #: src/Template/Systemdowntimes/add.php:180
@@ -14105,7 +14105,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/node.php:229
 #: src/Template/Systemdowntimes/service.php:247
 msgid "Weekdays"
-msgstr ""
+msgstr "Wochentage"
 
 #: src/Template/Systemdowntimes/add.php:107
 #: src/Template/Systemdowntimes/add.php:181
@@ -14114,7 +14114,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/add_hostgroupdowntime.php:202
 #: src/Template/Systemdowntimes/add_servicedowntime.php:180
 msgid "1,2,3,4,5 or <blank>"
-msgstr ""
+msgstr "1,2,3,4,5 or <leer>"
 
 #: src/Template/Systemdowntimes/add.php:107
 #: src/Template/Systemdowntimes/add.php:181
@@ -14127,26 +14127,26 @@ msgstr ""
 #: src/Template/Systemdowntimes/node.php:231
 #: src/Template/Systemdowntimes/service.php:249
 msgid "Days of month"
-msgstr ""
+msgstr "Tage des Monats"
 
 #: src/Template/Systemdowntimes/add_containerdowntime.php:50
 msgid "Create new container downtime"
-msgstr ""
+msgstr "Erstelle neue Container Wartungszeit"
 
 #: src/Template/Systemdowntimes/add_containerdowntime.php:92
 msgid "Recursive container lookup"
-msgstr ""
+msgstr "Rekursives Nachschlagen von Containern"
 
 #: src/Template/Systemdowntimes/add_containerdowntime.php:95
 msgid "Will also create a downtime for all children containers"
-msgstr ""
+msgstr "Wird auch eine Ausfallzeit für alle Kindercontainer erstellen"
 
 #: src/Template/Systemdowntimes/add_containerdowntime.php:115
 #: src/Template/Systemdowntimes/add_hostdowntime.php:98
 #: src/Template/Systemdowntimes/add_hostgroupdowntime.php:98
 #: src/Template/Systemsettings/index.php:162
 msgid "Host including services"
-msgstr ""
+msgstr "Host einschließlich Services"
 
 #: src/Template/Systemdowntimes/add_containerdowntime.php:154
 #: src/Template/Systemdowntimes/add_hostdowntime.php:137
@@ -14158,7 +14158,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:253
 #: src/Template/Systemfailures/index.php:124
 msgid "Start time"
-msgstr ""
+msgstr "Startzeit"
 
 #: src/Template/Systemdowntimes/add_containerdowntime.php:160
 #: src/Template/Systemdowntimes/add_containerdowntime.php:254
@@ -14177,15 +14177,15 @@ msgstr ""
 
 #: src/Template/Systemdowntimes/add_hostdowntime.php:50
 msgid "Create new host downtime"
-msgstr ""
+msgstr "Erstelle neue Host Wartungszeit"
 
 #: src/Template/Systemdowntimes/add_hostgroupdowntime.php:50
 msgid "Create new host group downtime"
-msgstr ""
+msgstr "Erstelle neue Hostgruppen Wartungszeit"
 
 #: src/Template/Systemdowntimes/add_servicedowntime.php:50
 msgid "Create new service downtime"
-msgstr ""
+msgstr "Erstelle neue Service Wartungszeit"
 
 #: src/Template/Systemdowntimes/host.php:34
 #: src/Template/Systemdowntimes/host.php:62
@@ -14196,70 +14196,70 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:34
 #: src/Template/Systemdowntimes/service.php:62
 msgid "Recurring downtimes"
-msgstr ""
+msgstr "Wiederkehrende Wartungszeiten"
 
 #: src/Template/Systemdowntimes/host.php:51
 #: src/Template/Systemdowntimes/hostgroup.php:51
 #: src/Template/Systemdowntimes/node.php:51
 #: src/Template/Systemdowntimes/service.php:51
 msgid "Recurring downtimes with deleted objects will be deleted automatically by the cronjob"
-msgstr ""
+msgstr "Wiederkehrende Wartungszeiten mit gelöschten Objekten werden automatisch durch den Cronjob gelöscht"
 
 #: src/Template/Systemdowntimes/host.php:280
 #: src/Template/Systemdowntimes/hostgroup.php:280
 #: src/Template/Systemdowntimes/node.php:274
 #: src/Template/Systemdowntimes/service.php:308
 msgid "Every defined weekday"
-msgstr ""
+msgstr "Jeder definierte Wochentag"
 
 #: src/Template/Systemdowntimes/node.php:165
 msgid "Filter by container name"
-msgstr ""
+msgstr "Filter nach Containername"
 
 #: src/Template/Systemfailures/add.php:34
 #: src/Template/Systemfailures/add.php:61
 msgid "System failure"
-msgstr ""
+msgstr "Systemausfall"
 
 #: src/Template/Systemfailures/add.php:46
 msgid "Create new system failure"
-msgstr ""
+msgstr "Erstelle neuen Systemausfall"
 
 #: src/Template/Systemfailures/add.php:61
 msgid " created successfully"
-msgstr ""
+msgstr " erfolgreich erstelle"
 
 #: src/Template/Systemfailures/add.php:66
 msgid "What are \"System Failures\" for?"
-msgstr ""
+msgstr "Wozu sind \"Systemausfälle\" gut?"
 
 #: src/Template/Systemfailures/add.php:67
 msgid "<i>System failures</i> are outages of the openITCOCKPIT server itself. They need to be created manually."
-msgstr ""
+msgstr "<i>Systemausfälle</i> sind Ausfälle des openITCOCKPIT-Servers selbst. Sie müssen manuell erstellt werden."
 
 #: src/Template/Systemfailures/add.php:69
 msgid "Timeframes defined by System failures will be ignored while report generation."
-msgstr ""
+msgstr "Zeitrahmen, die durch Systemausfälle definiert sind, werden bei der Berichtserstellung ignoriert."
 
 #: src/Template/Systemfailures/add.php:168
 msgid "Create system failure"
-msgstr ""
+msgstr "Erstelle Systemausfall"
 
 #: src/Template/Systemfailures/index.php:34
 msgid "System Failure"
-msgstr ""
+msgstr "Systemausfall"
 
 #: src/Template/Systemfailures/index.php:50
 msgid "System failures"
-msgstr ""
+msgstr "Systemausfälle"
 
 #: src/Template/Systemfailures/index.php:98
 msgid "Filter by first and last name"
-msgstr ""
+msgstr "Filter nach Vor- und Nachname"
 
 #: src/Template/Systemfailures/index.php:128
 msgid "End time"
-msgstr ""
+msgstr "Endzeit"
 
 #: src/Template/Systemsettings/index.php:34
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:621
@@ -14268,7 +14268,7 @@ msgstr "Systemeinstellungen"
 
 #: src/Template/Systemsettings/index.php:56
 msgid "Do not change values, where you don't know what you are doing!"
-msgstr ""
+msgstr "Ändern Sie keine Werte, bei denen Sie nicht wissen, was Sie tun!"
 
 #: src/Template/Systemsettings/index.php:80
 msgid "Info"
@@ -14296,7 +14296,7 @@ msgstr ""
 
 #: src/Template/Systemsettings/index.php:181
 msgid "Click for more information."
-msgstr ""
+msgstr "Klicken Sie für weitere Informationen."
 
 #: src/Template/Tenants/add.php:35
 #: src/Template/Tenants/edit.php:35
@@ -14304,38 +14304,38 @@ msgstr ""
 #: src/Template/Tenants/index.php:50
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:478
 msgid "Tenants"
-msgstr ""
+msgstr "Mandanten"
 
 #: src/Template/Tenants/add.php:165
 msgid "Create tenant"
-msgstr ""
+msgstr "Erstelle Mandant"
 
 #: src/Template/Tenants/edit.php:49
 msgid "Edit tenant:"
-msgstr ""
+msgstr "Bearbeite Mandant:"
 
 #: src/Template/Tenants/edit.php:162
 msgid "Update tenant"
-msgstr ""
+msgstr "Aktualisiere Mandant"
 
 #: src/Template/Timeperiods/add.php:59
 msgid "Create new time period"
-msgstr ""
+msgstr "Erstelle neuen Zeitraum"
 
 #: src/Template/Timeperiods/add.php:134
 #: src/Template/Timeperiods/edit.php:138
 msgid "In addition to the interval defined by the given time ranges, you are able to add 24x7 days using a calendar. This will only affect the monitoring engine."
-msgstr ""
+msgstr "Zusätzlich zu dem durch die angegebenen Zeitbereiche definierten Intervall können Sie mit Hilfe eines Kalenders 24x7 Tage hinzufügen. Dies wirkt sich nur auf die Monitoring-Engine aus."
 
 #: src/Template/Timeperiods/add.php:141
 #: src/Template/Timeperiods/edit.php:145
 msgid "Time ranges:"
-msgstr ""
+msgstr "Zeitbereiche:"
 
 #: src/Template/Timeperiods/add.php:145
 #: src/Template/Timeperiods/edit.php:149
 msgid "Do not enter overlapping timeframes"
-msgstr ""
+msgstr "Geben Sie keine überlappenden Zeiträume ein"
 
 #: src/Template/Timeperiods/add.php:177
 #: src/Template/Timeperiods/edit.php:181
@@ -14349,7 +14349,7 @@ msgstr ""
 
 #: src/Template/Timeperiods/add.php:230
 msgid "Create time period"
-msgstr ""
+msgstr "Erstelle Zeitraum"
 
 #: src/Template/Timeperiods/copy.php:46
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:240
@@ -14358,36 +14358,36 @@ msgstr "Zeitabschnitte"
 
 #: src/Template/Timeperiods/copy.php:47
 msgid "Copy time period/s"
-msgstr ""
+msgstr "Kopiere Zeitraum"
 
 #: src/Template/Timeperiods/copy.php:63
 msgid "Source time period:"
-msgstr ""
+msgstr "Ursprünglicher Zeitraum:"
 
 #: src/Template/Timeperiods/copy.php:69
 #: src/Template/Timeperiods/index.php:120
 msgid "Time period name"
-msgstr ""
+msgstr "Name des Zeitraums"
 
 #: src/Template/Timeperiods/copy.php:77
 msgid "Name of the new time period"
-msgstr ""
+msgstr "Name des neuen Zeitraums"
 
 #: src/Template/Timeperiods/edit.php:59
 msgid "Edit time period:"
-msgstr ""
+msgstr "Bearbeite Zeitraum"
 
 #: src/Template/Timeperiods/edit.php:234
 msgid "Update time period"
-msgstr ""
+msgstr "Aktualisiere Zeitraum"
 
 #: src/Template/Timeperiods/index.php:82
 msgid "Filter by time period name"
-msgstr ""
+msgstr "Filter nach Name des Zeitraums"
 
 #: src/Template/Timeperiods/index.php:95
 msgid "Filter by time period description"
-msgstr ""
+msgstr "Filter nach Beschreibung des Zeitraums"
 
 #: src/Template/Timeperiods/used_by.php:246
 msgid "Autoreports"
@@ -14395,28 +14395,28 @@ msgstr ""
 
 #: src/Template/Timeperiods/used_by.php:264
 msgid "This timeperiod is not used by any object"
-msgstr ""
+msgstr "Dieser Zeitraum wird von keinem Objekt verwendet."
 
 #: src/Template/Usercontainerroles/add.php:35
 #: src/Template/Usercontainerroles/edit.php:35
 #: src/Template/Usercontainerroles/index.php:34
 #: src/Template/Usercontainerroles/index.php:50
 msgid "User container roles"
-msgstr ""
+msgstr "Benutzer Container Rollen"
 
 #: src/Template/Usercontainerroles/add.php:49
 msgid "Create new user container role"
-msgstr ""
+msgstr "Erstelle neue Benutzer Container Rolle"
 
 #: src/Template/Usercontainerroles/add.php:63
 #: src/Template/Usercontainerroles/edit.php:64
 msgid "User container role"
-msgstr ""
+msgstr "Benutzer Container Rolle"
 
 #: src/Template/Usercontainerroles/add.php:66
 #: src/Template/Usercontainerroles/edit.php:67
 msgid "Role name"
-msgstr ""
+msgstr "Rollenname"
 
 #: src/Template/Usercontainerroles/add.php:108
 #: src/Template/Usercontainerroles/edit.php:109
@@ -14427,7 +14427,7 @@ msgstr ""
 #: src/Template/Users/edit.php:99
 #: src/Template/Users/edit.php:143
 msgid "read"
-msgstr ""
+msgstr "lesen"
 
 #: src/Template/Usercontainerroles/add.php:116
 #: src/Template/Usercontainerroles/edit.php:117
@@ -14438,30 +14438,30 @@ msgstr ""
 #: src/Template/Users/edit.php:105
 #: src/Template/Users/edit.php:151
 msgid "read/write"
-msgstr ""
+msgstr "lesen/schreiben"
 
 #: src/Template/Usercontainerroles/add.php:128
 msgid "Create user container role"
-msgstr ""
+msgstr "Erstelle Benutzer Container Rolle"
 
 #: src/Template/Usercontainerroles/edit.php:49
 msgid "Edit user container role:"
-msgstr ""
+msgstr "Bearbeite Benutzer Container Rolle"
 
 #: src/Template/Usercontainerroles/edit.php:125
 msgid "Update user container role"
-msgstr ""
+msgstr "Aktualisiere Benutzer Container Rolle"
 
 #: src/Template/Usergroups/add.php:34
 #: src/Template/Usergroups/edit.php:34
 #: src/Template/Usergroups/index.php:34
 #: src/Template/Usergroups/index.php:50
 msgid "User roles"
-msgstr ""
+msgstr "Benutzer Rollen"
 
 #: src/Template/Usergroups/add.php:48
 msgid "Create new user role"
-msgstr ""
+msgstr "Erstelle neue Benutzer Rolle"
 
 #: src/Template/Usergroups/add.php:62
 #: src/Template/Usergroups/edit.php:65
@@ -14470,92 +14470,92 @@ msgstr ""
 #: src/Template/Users/edit.php:157
 #: src/Template/Users/index.php:194
 msgid "User role"
-msgstr ""
+msgstr "Benutzer Rolle"
 
 #: src/Template/Usergroups/add.php:102
 #: src/Template/Usergroups/edit.php:114
 msgid "Filter by controller"
-msgstr ""
+msgstr "Filter nach Controller"
 
 #: src/Template/Usergroups/add.php:114
 #: src/Template/Usergroups/edit.php:126
 msgid "Bulk actions"
-msgstr ""
+msgstr "Massenaktionen"
 
 #: src/Template/Usergroups/add.php:120
 #: src/Template/Usergroups/edit.php:132
 msgid "Tick all"
-msgstr ""
+msgstr "Alle ankreuzen"
 
 #: src/Template/Usergroups/add.php:125
 #: src/Template/Usergroups/edit.php:137
 msgid "Untick all"
-msgstr ""
+msgstr "Alle abwählen"
 
 #: src/Template/Usergroups/add.php:131
 #: src/Template/Usergroups/edit.php:143
 msgid "Tick all: index"
-msgstr ""
+msgstr "Alle ankreuzen: Index"
 
 #: src/Template/Usergroups/add.php:136
 #: src/Template/Usergroups/edit.php:148
 msgid "Untick all: index"
-msgstr ""
+msgstr "Alle abwählen: Index"
 
 #: src/Template/Usergroups/add.php:142
 #: src/Template/Usergroups/edit.php:154
 msgid "Tick all: add"
-msgstr ""
+msgstr "Alle ankreuzen: hinzufügen"
 
 #: src/Template/Usergroups/add.php:147
 #: src/Template/Usergroups/edit.php:159
 msgid "Untick all: add"
-msgstr ""
+msgstr "Alle abwählen: hinzufügen"
 
 #: src/Template/Usergroups/add.php:153
 #: src/Template/Usergroups/edit.php:165
 msgid "Tick all: edit"
-msgstr ""
+msgstr "Alle ankreuzen: bearbeiten"
 
 #: src/Template/Usergroups/add.php:158
 #: src/Template/Usergroups/edit.php:170
 msgid "Untick all: edit"
-msgstr ""
+msgstr "Alle abwählen: bearbeiten"
 
 #: src/Template/Usergroups/add.php:164
 #: src/Template/Usergroups/edit.php:176
 msgid "Tick all: delete"
-msgstr ""
+msgstr "Alle ankreuzen: löschen"
 
 #: src/Template/Usergroups/add.php:169
 #: src/Template/Usergroups/edit.php:181
 msgid "Untick all: delete"
-msgstr ""
+msgstr "Alle abwählen: löschen"
 
 #: src/Template/Usergroups/add.php:180
 #: src/Template/Usergroups/add.php:271
 msgid "Create user role"
-msgstr ""
+msgstr "Erstelle Benutzer Rolle"
 
 #: src/Template/Usergroups/edit.php:48
 msgid "Edit user role:"
-msgstr ""
+msgstr "Bearbeite Benutzer Rolle"
 
 #: src/Template/Usergroups/edit.php:98
 #: src/Template/element/host_mass_changes.php:107
 #: src/Template/element/service_mass_changes.php:86
 #: src/Template/element/servicetemplate_mass_changes.php:70
 msgid "Notice!"
-msgstr ""
+msgstr "Beachten Sie!"
 
 #: src/Template/Usergroups/edit.php:99
 msgid "Permissions of the user role <strong>Administrator</strong> will be set back to default on every update of {0}!"
-msgstr ""
+msgstr "Die Berechtigungen der Benutzerrolle <strong>Administrator</strong> werden bei jedem Update von {0} auf den Standardwert zurückgesetzt!"
 
 #: src/Template/Usergroups/edit.php:188
 #: src/Template/Usergroups/edit.php:275
 msgid "Update user role"
-msgstr ""
+msgstr "Aktualisiere Benutzer Rolle"
 
 #: src/Template/Users/add.php:35
 #: src/Template/Users/add_from_ldap.php:35
@@ -14564,50 +14564,50 @@ msgstr ""
 #: src/Template/Users/index.php:34
 #: src/Template/Users/index.php:50
 msgid "Users"
-msgstr ""
+msgstr "Benutzer"
 
 #: src/Template/Users/add.php:39
 msgid "Add local"
-msgstr ""
+msgstr "Lokal hinzufügen"
 
 #: src/Template/Users/add.php:49
 msgid "Create new local user"
-msgstr ""
+msgstr "Erstelle neuen lokalen Benutzer"
 
 #: src/Template/Users/add.php:66
 #: src/Template/Users/add_from_ldap.php:67
 #: src/Template/Users/edit.php:70
 msgid "Container Roles"
-msgstr ""
+msgstr "Container Rollen"
 
 #: src/Template/Users/add.php:81
 #: src/Template/Users/add_from_ldap.php:82
 #: src/Template/Users/edit.php:85
 msgid "Container Roles are handy to grant the same permissions to multiple users."
-msgstr ""
+msgstr "Container Rollen sind praktisch, um mehreren Benutzern die gleichen Berechtigungen zu erteilen."
 
 #: src/Template/Users/add.php:124
 #: src/Template/Users/add_from_ldap.php:125
 #: src/Template/Users/edit.php:127
 msgid "Container assignments defined in the user will overwrite permissions inherited from Container Roles!"
-msgstr ""
+msgstr "Im Benutzer definierte Containerzuweisungen überschreiben die von Container Rollen geerbten Berechtigungen!"
 
 #: src/Template/Users/add.php:181
 #: src/Template/Users/add_from_ldap.php:182
 #: src/Template/Users/edit.php:183
 #: src/Template/Users/index.php:190
 msgid "Is active"
-msgstr ""
+msgstr "Ist aktiv"
 
 #: src/Template/Users/add.php:240
 #: src/Template/Users/add_from_ldap.php:307
 #: src/Template/Users/edit.php:242
 msgid "Company position"
-msgstr ""
+msgstr "Position des Unternehmens"
 
 #: src/Template/Users/add.php:376
 msgid "Frontend language"
-msgstr ""
+msgstr "Sprache der Benutzeroberfläche"
 
 #: src/Template/Users/add.php:390
 #: src/Template/Users/edit.php:393
@@ -14616,15 +14616,15 @@ msgstr "Manuelles Abmelden und erneutes Anmelden erforderlich, damit die Änderu
 
 #: src/Template/Users/add.php:436
 msgid "Create user"
-msgstr ""
+msgstr "Erstelle Benutzer"
 
 #: src/Template/Users/add_from_ldap.php:39
 msgid "Add from LDAP"
-msgstr ""
+msgstr "Hinzufügen von LDAP"
 
 #: src/Template/Users/add_from_ldap.php:50
 msgid "Import new user from LDAP"
-msgstr ""
+msgstr "Importiere neuen Benutzer von LDAP"
 
 #: src/Template/Users/add_from_ldap.php:207
 msgid "DN"
@@ -14632,174 +14632,174 @@ msgstr ""
 
 #: src/Template/Users/add_from_ldap.php:482
 msgid "Create user from LDAP"
-msgstr ""
+msgstr "Erstelle Benutzer von LDAP"
 
 #: src/Template/Users/edit.php:49
 msgid "Edit local user:"
-msgstr ""
+msgstr "Bearbeite lokalen Benutzer:"
 
 #: src/Template/Users/edit.php:430
 msgid "Please leave the password fields blank if you don't want to change the password."
-msgstr ""
+msgstr "Bitte lassen Sie die Passwortfelder leer, wenn Sie das Passwort nicht ändern wollen."
 
 #: src/Template/Users/edit.php:442
 msgid "Update user"
-msgstr ""
+msgstr "Aktualisiere Benutzer"
 
 #: src/Template/Users/index.php:59
 msgid "New local user"
-msgstr ""
+msgstr "Neuer lokaler Benutzer"
 
 #: src/Template/Users/index.php:91
 msgid "Filter by full name"
-msgstr ""
+msgstr "Filter nach vollem Namen"
 
 #: src/Template/Users/index.php:104
 msgid "Filter by email"
-msgstr ""
+msgstr "Filter nach E-Mail"
 
 #: src/Template/Users/index.php:117
 msgid "Filter by phone"
-msgstr ""
+msgstr "Filter nach Telefonnummer"
 
 #: src/Template/Users/index.php:130
 msgid "Filter by company"
-msgstr ""
+msgstr "Filter nach Unternehmen"
 
 #: src/Template/Users/index.php:144
 msgid "Filter by user role"
-msgstr ""
+msgstr "Filter nach Benutzer Rolle"
 
 #: src/Template/Users/index.php:174
 msgid "Full name"
-msgstr ""
+msgstr "Voller Name"
 
 #: src/Template/Users/index.php:263
 msgid "Reset password"
-msgstr ""
+msgstr "Passwort zurücksetzen"
 
 #: src/Template/Users/index.php:327
 msgid "Reset user password"
-msgstr ""
+msgstr "Benutzerpasswort zurücksetzen"
 
 #: src/Template/Users/index.php:336
 msgid "Do you really want to reset the password for the selected user?"
-msgstr ""
+msgstr "Wollen Sie wirklich das Passwort für den ausgewählten Benutzer zurücksetzen?"
 
 #: src/Template/Users/index.php:347
 msgid "The system will send the user an email with a new random generated password."
-msgstr ""
+msgstr "Das System schickt dem Benutzer eine E-Mail mit einem neuen zufällig generierten Passwort."
 
 #: src/Template/Users/index.php:353
 msgid "Yes - reset password"
-msgstr ""
+msgstr "Ja - Passwort zurücksetzen"
 
 #: src/Template/Users/login.php:43
 #: src/Template/Users/login.php:90
 msgid "Login"
-msgstr ""
+msgstr "Anmelden"
 
 #: src/Template/Users/login.php:78
 msgid "Remember Me"
-msgstr ""
+msgstr "An mich erinnern"
 
 #: src/Template/Users/login.php:101
 msgid "Authorization through SSL certificate successfully."
-msgstr ""
+msgstr "Autorisierung durch SSL-Zertifikat erfolgreich."
 
 #: src/Template/element/apikey_help.php:7
 #: src/Template/element/apikey_help.php:88
 msgid "API Keys Overview"
-msgstr ""
+msgstr "API Keys Übersicht"
 
 #: src/Template/element/apikey_help.php:16
 #: src/Template/element/apikey_help.php:95
 msgid "Click on \"Edit profile\" in the top left corner."
-msgstr ""
+msgstr "Klicken Sie auf \"Profil bearbeiten\" in der linken oberen Ecke."
 
 #: src/Template/element/apikey_help.php:23
 #: src/Template/element/apikey_help.php:102
 msgid "At the bottom of the page, you can find the \"API Keys\" section. Click on \"Create new API key\""
-msgstr ""
+msgstr "Unten auf der Seite finden Sie den Abschnitt \"API-Key\". Klicken Sie auf \"Neuen API-Key erstellen\"."
 
 #: src/Template/element/calendar_mass_changes.php:43
 msgid "Do you really want delete the selected calendars?"
-msgstr ""
+msgstr "Wollen Sie die ausgewählten Kalender wirklich löschen?"
 
 #: src/Template/element/command_mass_changes.php:50
 msgid "Do you really want delete the selected commands?"
-msgstr ""
+msgstr "Wollen Sie die ausgewählten Kommandos wirklich löschen?"
 
 #: src/Template/element/contactgroup_mass_changes.php:52
 msgid "Do you really want delete the selected contactgroups?"
-msgstr ""
+msgstr "Wollen Sie die ausgewählten Kontaktgruppen wirklich löschen?"
 
 #: src/Template/element/contacts_mass_changes.php:54
 msgid "Do you really want delete the selected contacts?"
-msgstr ""
+msgstr "Wollen Sie die ausgewählten Kontakte wirklich löschen?"
 
 #: src/Template/element/dialog_success.php:28
 msgid "success"
-msgstr ""
+msgstr "Erfolg"
 
 #: src/Template/element/dialog_success.php:32
 msgid "Success"
-msgstr ""
+msgstr "Erfolg"
 
 #: src/Template/element/downtimes_mass_delete.php:44
 msgid "You are about to delete downtime for host:"
-msgstr ""
+msgstr "Sie sind dabei, die Wartungszeit für den Host zu löschen:"
 
 #: src/Template/element/downtimes_mass_delete.php:46
 msgid "Do you want to delete service downtimes for this host too?"
-msgstr ""
+msgstr "Wollen Sie für diesen Host auch die Service-Wartungszeiten löschen?"
 
 #: src/Template/element/header.php:100
 msgid "Sign out"
-msgstr ""
+msgstr "Abmelden"
 
 #: src/Template/element/host_mass_changes.php:48
 #: src/Template/element/service_mass_changes.php:41
 #: src/Template/element/servicetemplate_mass_changes.php:49
 msgid "More"
-msgstr ""
+msgstr "Mehr"
 
 #: src/Template/element/host_mass_changes.php:106
 msgid "Do you really want delete the selected hosts?"
-msgstr ""
+msgstr "Wollen Sie die ausgewählten Hosts wirklich löschen?"
 
 #: src/Template/element/host_mass_changes.php:109
 msgid "Do you really want disable the selected hosts?"
-msgstr ""
+msgstr "Wollen Sie die ausgewählten Hosts wirklich deaktivieren?"
 
 #: src/Template/element/hostgroup_mass_changes.php:47
 msgid "Do you really want delete the selected hostgroups?"
-msgstr ""
+msgstr "Wollen Sie die ausgewählten Hostgruppen wirklich löschen?"
 
 #: src/Template/element/load_current_state_report_data.php:205
 msgid "Checks (Not monitored)"
-msgstr ""
+msgstr "Prüfungen (nicht überwacht)"
 
 #: src/Template/element/load_downtime_report_data.php:317
 #: src/Template/element/load_downtime_report_data.php:450
 msgid "Servicetemplate:"
-msgstr ""
+msgstr "Servicevorlagen:"
 
 #: src/Template/element/load_downtime_report_data.php:390
 msgid "Hosts without state history records for selected time range:"
-msgstr ""
+msgstr "Hosts ohne historische Statusaufzeichnungen für den ausgewählten Zeitraum:"
 
 #: src/Template/element/load_instant_report_data.php:156
 msgid "There are no services defined."
-msgstr ""
+msgstr "Es sind keine Services definiert."
 
 #: src/Template/element/load_instant_report_data.php:335
 msgid "No hosts/services found"
-msgstr ""
+msgstr "Keine Hosts/Services gefunden"
 
 #: src/Template/element/map_mass_changes.php:43
 msgid "Do you really want delete the selected maps?"
-msgstr ""
+msgstr "Wollen Sie die ausgewählten Karten wirklich löschen?"
 
 #: src/Template/element/paginator_or_scroll.php:29
 msgid "Switch to Paginator Mode"
@@ -14811,7 +14811,7 @@ msgstr "Wechseln in den Scroll-Modus"
 
 #: src/Template/element/repository_checker.php:20
 msgid "APT Repository - Manually action required!"
-msgstr ""
+msgstr "APT Repository - Manueller Handlungsbedarf!"
 
 #: src/Template/element/repository_checker.php:23
 msgid "Please contact your system administrator."
@@ -14845,11 +14845,11 @@ msgstr "Möchten Sie die ausgewählten Services wirklich löschen?"
 
 #: src/Template/element/service_mass_changes.php:88
 msgid "Do you really want disable the selected services?"
-msgstr ""
+msgstr "Wollen Sie die ausgewählten Services wirklich deaktivieren?"
 
 #: src/Template/element/servicegroup_mass_changes.php:47
 msgid "Do you really want delete the selected servicegroups?"
-msgstr ""
+msgstr "Wollen Sie die ausgewählten Servicegruppen wirklich löschen?"
 
 #: src/Template/element/servicetemplate_mass_changes.php:57
 msgid "Allocate to service template group"
@@ -14869,63 +14869,63 @@ msgstr "Tastatürkürzel"
 
 #: src/Template/element/shortcuts.php:39
 msgid "Global Shortcuts"
-msgstr ""
+msgstr "Globale Tastatürkürzel"
 
 #: src/Template/element/shortcuts.php:40
 msgid "Open shortcut help"
-msgstr ""
+msgstr "Shortcut-Hilfe öffnen"
 
 #: src/Template/element/shortcuts.php:55
 msgid "Open lockscreen"
-msgstr ""
+msgstr "Sperrbildschirm öffnen"
 
 #: src/Template/element/shortcuts.php:70
 msgid "Logout"
-msgstr ""
+msgstr "Abmelden"
 
 #: src/Template/element/shortcuts.php:85
 msgid "Close overlays"
-msgstr ""
+msgstr "Überlagerungen schließen"
 
 #: src/Template/element/shortcuts.php:92
 msgid "Collapse menu"
-msgstr ""
+msgstr "Menü einklappen"
 
 #: src/Template/element/shortcuts.php:107
 msgid "Submit"
-msgstr ""
+msgstr "Senden"
 
 #: src/Template/element/shortcuts.php:115
 msgid "List Shortcuts"
-msgstr ""
+msgstr "Abkürzungen auflisten"
 
 #: src/Template/element/shortcuts.php:116
 msgid "Open Search"
-msgstr ""
+msgstr "Öffne Suche"
 
 #: src/Template/element/shortcuts.php:133
 msgid "Close (ESC)"
-msgstr ""
+msgstr "Schließen (ESC)"
 
 #: src/Template/element/sidebar.php:67
 msgid "Administrator privileges"
-msgstr ""
+msgstr "Administrator Berechtigungen"
 
 #: src/Template/element/sidebar.php:103
 msgid "Report a Bug"
-msgstr ""
+msgstr "Ein Problem melden"
 
 #: src/Template/element/tenant_mass_changes.php:46
 msgid "Do you really want delete the selected tenants? All nodes, contacts, contactgroups, locations, calendars, timeperiods, hosttemplates, hostgroups, hosts, servicetemplates, servicetemplategroups, servicegroups and services from the selected tenant(s) will be deleted too."
-msgstr ""
+msgstr "Wollen Sie die ausgewählten Mandanten wirklich löschen? Alle Knoten, Kontakte, Kontaktgruppen, Standorte, Kalender, Zeiträume, Hostvorlagen, Hostgruppen, Hosts, Servicevorlagen, Servicevorlagengruppen, Servicegruppen and Service von dem/den ausgewählten Mandant(en) wird ebenfalls gelöscht."
 
 #: src/Template/element/timeperiod_mass_changes.php:53
 msgid "Do you really want delete the selected timeperiods?"
-msgstr ""
+msgstr "Wollen Sie die ausgewählten Zeiträume wirklich löschen?"
 
 #: src/Template/email/html/instantreport_mail.php:74
 msgid "Attached you find the automatically generated report: "
-msgstr ""
+msgstr "Im Anhang finden Sie den automatisch generierten Bericht: "
 
 #: src/Template/email/html/instantreport_mail.php:97
 #: src/Template/email/html/notification_host.php:195
@@ -14938,17 +14938,17 @@ msgstr ""
 #: src/Template/email/html/notification_host.php:61
 #: src/Template/email/html/notification_service.php:65
 msgid "{0} notification"
-msgstr ""
+msgstr "{0} Benachrichtigung"
 
 #: src/Template/email/html/notification_host.php:99
 #: src/Template/email/html/notification_service.php:109
 msgid " is {0}"
-msgstr ""
+msgstr " ist {0}"
 
 #: src/Template/email/html/notification_host.php:111
 #: src/Template/email/html/notification_service.php:120
 msgid "The current status was acknowledged by {0} with the comment: "
-msgstr ""
+msgstr "Der aktuelle Stand wurde bestätigt von {0} mit dem Kommentar: "
 
 #: src/Template/email/html/notification_host.php:128
 #: src/Template/email/html/notification_service.php:135
@@ -15070,34 +15070,34 @@ msgstr "Portnummer des Remote-SSH-Servers."
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/ConfigGenerator.php:206
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:105
 msgid "This field needs to be a float."
-msgstr ""
+msgstr "Dieses Feld muss eine Fließkommazahl sein."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/ConfigGenerator.php:212
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:117
 msgid "This field needs to be an integer."
-msgstr ""
+msgstr "Dieses Feld muss eine ganze Zahl sein."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/ConfigGenerator.php:218
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:123
 msgid "This field needs to be a boolean."
-msgstr ""
+msgstr "Dieses Feld muss ein Boolescher Wert sein."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/ConfigGenerator.php:224
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:135
 msgid "This field can not left be blank."
-msgstr ""
+msgstr "Dieses Feld kann nicht leer gelassen werden."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/DbBackend.php:71
 msgid "Value out of range (Nagios, Crate, Statusengine3)"
-msgstr ""
+msgstr "Wert aus dem Bereich (Nagios, Crate, Statusengine3)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/DbBackend.php:97
 msgid "Database Backend used by openITCOCKPIT. Be careful with this option!"
-msgstr ""
+msgstr "Datenbank-Backend, das von openITCOCKPIT verwendet wird. Seien Sie vorsichtig mit dieser Option!"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:53
 msgid "openITCOCKPIT Interface configuration files"
-msgstr ""
+msgstr "openITCOCKPIT Schnittstellen Konfigurationsdateien"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:70
 msgid "Carbon and Whisper (Graphing)"
@@ -15105,172 +15105,172 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:172
 msgid "Value is not in CIDR notation"
-msgstr ""
+msgstr "Wert ist nicht in CIDR-Notation"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:178
 msgid "Value is not a valid IPv4 address in CIDR notation"
-msgstr ""
+msgstr "Wert ist keine gültige IPv4-Adresse in CIDR-Notation"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:182
 msgid "Subnet needs to be numeric."
-msgstr ""
+msgstr "Das Subnetz muss numerisch sein."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:186
 msgid "Value is not a valid IPv4 address in CIDR notation. Subnet is out of range."
-msgstr ""
+msgstr "Wert ist keine gültige IPv4-Adresse in CIDR-Notation. Das Subnetz liegt außerhalb des Bereichs."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:195
 msgid "Can not be the same subnet as used for Fixed CIDR"
-msgstr ""
+msgstr "Kann nicht dasselbe Subnetz sein, das für Fixed CIDR verwendet wird"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:253
 msgid "Path where Carbon will store whisper files."
-msgstr ""
+msgstr "Pfad, in dem Carbon Whisper Dateien speichert."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:255
 msgid "Number of carbon cache instances for multi core CPU scaling"
-msgstr ""
+msgstr "Anzahl der Carbon-Cache-Instanzen für Multi-Core-CPU-Skalierung"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:256
 msgid "Number of Carbon-C-Relay worker threads. (Carbon-Cache load balancer)"
-msgstr ""
+msgstr "Anzahl der Carbon-C-Relay-Arbeiterthreads. (Carbon-Cache-Load-Balancer)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:257
 msgid "Local HTTP port used by Graphite-Web"
-msgstr ""
+msgstr "Lokaler HTTP-Port, der von Graphite-Web verwendet wird"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:258
 msgid "Local plaintext port to send metrics to Carbon-C-Relay."
-msgstr ""
+msgstr "Lokaler Klartext Port zum Senden von Metriken an Carbon-C-Relay."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:259
 msgid " Only beneficial on linux filesystems that support the fallocate system call. It maintains the benefits of contiguous reads/writes, but with a potentially much faster creation speed, by allowing the kernel to handle the block allocation and zero-ing. Enabling this option may allow a large increase of MAX_CREATES_PER_MINUTE. If enabled on an OS or filesystem that is unsupported this option will gracefully fallback to standard POSIX file access methods."
-msgstr ""
+msgstr " Nur vorteilhaft auf Linux-Dateisystemen, die den fallocate Systemaufruf unterstützen. Es behält die Vorteile von zusammenhängenden Lese-/Schreibvorgängen bei, aber mit einer potenziell viel schnelleren Erstellungsgeschwindigkeit, indem es dem Kernel erlaubt, die Blockzuweisung und das Zeroing zu handhaben. Die Aktivierung dieser Option kann eine starke Erhöhung von MAX_CREATES_PER_MINUTE ermöglichen. Wenn diese Option auf einem nicht unterstützten Betriebssystem oder Dateisystem aktiviert ist, greift sie auf die Standard-POSIX-Dateizugriffsmethoden zurück."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:260
 msgid "Set your local timezone for Graphite-Web. (Django's default is America/Chicago) If your graphs appear to be offset by a couple hours then this probably needs to be explicitly set to your local timezone. Set this value to the same timezone, as your servers timezone is!"
-msgstr ""
+msgstr "Stellen Sie Ihre lokale Zeitzone für Graphite-Web ein. (Django's Standard ist America/Chicago). Wenn Ihre Graphen um ein paar Stunden versetzt erscheinen, dann muss dies wahrscheinlich explizit auf Ihre lokale Zeitzone eingestellt werden. Setzen Sie diesen Wert auf die gleiche Zeitzone, wie die Zeitzone Ihres Servers!"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:261
 msgid "Determine if docker daemon will automatically configure network interface docker0"
-msgstr ""
+msgstr "Bestimmen Sie, ob der Docker-Dienst automatisch die Netzwerk-Schnittstelle docker0 konfigurieren soll"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:264
 msgid "Subnet used by Docker Compose in CIDR notation. For Example  192.168.1.0/24. Needs to be a different subnet than used for Fixed CIDR!"
-msgstr ""
+msgstr "Von Docker Compose verwendetes Subnetz in CIDR-Notation. Zum Beispiel 192.168.1.0/24. Muss ein anderes Subnetz sein als das für Fixed CIDR verwendete!"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphiteWeb.php:87
 msgid "IP-Address of the Graphite-Web server openITCOCKPIT should use to query data."
-msgstr ""
+msgstr "IP-Adresse des Graphite-Web-Servers, den openITCOCKPIT zur Abfrage von Daten verwenden soll."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphiteWeb.php:88
 msgid "Port of the Graphite-Web server."
-msgstr ""
+msgstr "Port des Graphite-Web-Servers"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphiteWeb.php:89
 msgid "Prefix added to every metric stored in carbon"
-msgstr ""
+msgstr "Präfix, das jeder in Carbon gespeicherten Metrik hinzugefügt wird"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphiteWeb.php:90
 msgid "Use HTTPS to connect to Graphite-Web server."
-msgstr ""
+msgstr "Nutze HTTPS zum Herstellen der Verbindung zum Graphite-Web-Servers."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphiteWeb.php:91
 msgid "Use configured proxy server to connect to Graphite-Web server."
-msgstr ""
+msgstr "Verwenden Sie den konfigurierten Proxy-Server für die Verbindung zum Graphite-Web-Server."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NagiosCfg.php:124
 msgid "Value out of range (c, u, w, o)"
-msgstr ""
+msgstr "Wert außerhalb des Bereichs (c, u, w, o)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NagiosModuleConfig.php:81
 msgid "Minimum value of monitoring related interval settings for sliders in seconds."
-msgstr ""
+msgstr "Mindestwert der überwachungsbezogenen Intervalleinstellungen für Schieberegler in Sekunden."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NagiosModuleConfig.php:82
 msgid "Maximum value of monitoring related interval settings for sliders in seconds."
-msgstr ""
+msgstr "Maximaler Wert der überwachungsbezogenen Intervalleinstellungen für Schieberegler in Sekunden."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NagiosModuleConfig.php:83
 msgid "Step size of sliders in seconds"
-msgstr ""
+msgstr "Schrittgröße der Schieberegler in Sekunden"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/PerfdataBackend.php:72
 msgid "Value out of range (Whisper, Crate, Rrdtool)"
-msgstr ""
+msgstr "Wert außerhalb des Bereichs (Whisper, Crate, Rrdtool)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/PerfdataBackend.php:98
 msgid "Time-series backend used by openITCOCKPIT to store performance data. Be careful with this option!"
-msgstr ""
+msgstr "Zeitreihen-Backend, das von openITCOCKPIT zur Speicherung von Leistungsdaten verwendet wird. Seien Sie vorsichtig mit dieser Option!"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:86
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:92
 msgid "Value out of range (1-3)"
-msgstr ""
+msgstr "Wert außerhalb des Bereichs (1-3)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:119
 msgid "Date format for filename of rotaed logfiles. Germany: d_m_Y_H_i, USA: m_d_Y_H_i"
-msgstr ""
+msgstr "Datumsformat für den Dateinamen von rotaed Logfiles. Germany: d_m_Y_H_i, USA: m_d_Y_H_i"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:120
 msgid "Date format of the timestamp in the logfile. Germany: d.m.Y H:i:s, USA: m.d.Y H:i:s"
-msgstr ""
+msgstr "Datumsformat des Zeitstempels in der Logdatei. Germany: d.m.Y H:i:s, USA: m.d.Y H:i:s"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:121
 msgid "Determines in days, how long old log files should be keeped."
-msgstr ""
+msgstr "Bestimmt in Tagen, wie lange alte Protokolldateien aufbewahrt werden sollen."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:122
 msgid "Determines how to submit check result data to Naemon/Nagios."
-msgstr ""
+msgstr "Legt fest, wie die Prüfergebnisdaten an Naemon/Nagios übermittelt werden."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:123
 msgid "Bulk size of submitted passive check results."
-msgstr ""
+msgstr "Massengröße der eingereichten passiven Prüfergebnisse."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:124
 msgid "Maximum number of worker processes. Recommendation: One process per satellite."
-msgstr ""
+msgstr "Maximale Anzahl von Arbeitsprozessen. Empfehlung: Ein Prozess pro Satellit."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:125
 msgid "Use an SSH tunnel for each satellite for secure connection."
-msgstr ""
+msgstr "Verwenden Sie für jeden Satelliten einen SSH-Tunnel für eine sichere Verbindung."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:126
 msgid "Username used to established SSH connection."
-msgstr ""
+msgstr "Benutzername, der für den Aufbau der SSH-Verbindung verwendet wurde."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:127
 msgid "Private key file used to established SSH connection."
-msgstr ""
+msgstr "Private Schlüsseldatei, die zum Aufbau einer SSH-Verbindung verwendet wird."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:128
 msgid "Public key file used to established SSH connection."
-msgstr ""
+msgstr "Öffentliche Schlüsseldatei, die zum Aufbau einer SSH-Verbindung verwendet wird."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:129
 msgid "SSH Port of remote hosts"
-msgstr ""
+msgstr "SSH-Port von entfernten Hosts"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:130
 msgid "The local ports where each satellite system gets bind to"
-msgstr ""
+msgstr "Die lokalen Ports, an die jedes Satellitensystem gebunden ist"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:131
 msgid "Username used for supervisor XML-RPC API."
-msgstr ""
+msgstr "Benutzername, verwendet für supervisor XML-RPC API."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:132
 msgid "Password of supervisor XML-RPC API"
-msgstr ""
+msgstr "Passwort der supervisor XML-RPC API"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:133
 msgid "Synchronize the system clock to each connected satellite system"
-msgstr ""
+msgstr "Synchronisieren Sie die Systemuhr mit jedem angeschlossenen Satellitensystem"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:134
 msgid "System time synchronization interval"
-msgstr ""
+msgstr "Intervall zur Synchronisierung der Systemzeit"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:86
 msgid "Australia"
@@ -15402,35 +15402,35 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Core/Http.php:61
 msgid "PHP Extension php5-curl loaded successfully"
-msgstr ""
+msgstr "PHP-Erweiterung php5-curl erfolgreich geladen"
 
 #: src/itnovum/openITCOCKPIT/Core/Http.php:64
 msgid "PHP Extension php5-curl not loaded or installed!"
-msgstr ""
+msgstr "PHP-Erweiterung php5-curl nicht geladen oder installiert!"
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:113
 msgid "Happy Easter"
-msgstr ""
+msgstr "Fröhliche Ostern"
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:128
 msgid "Valentine's Day"
-msgstr ""
+msgstr "Valentinstag"
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:143
 msgid "German Unity Day"
-msgstr ""
+msgstr "Tag der Deutschen Einheit"
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:158
 msgid "System Administrator Appreciation Day"
-msgstr ""
+msgstr "Tag der Anerkennung für Systemadministratoren"
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:173
 msgid "International Beer Day"
-msgstr ""
+msgstr "Internationaler Tag des Bieres"
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:188
 msgid "Happy Halloween"
-msgstr ""
+msgstr "Fröhliches Halloween"
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:203
 msgid "Merry Christmas"
@@ -15598,15 +15598,15 @@ msgstr "Proxy Einstellungen"
 
 #: src/itnovum/openITCOCKPIT/Core/Reports/DowntimeReportBarChartWidgetDataPreparer.php:48
 msgid "Availability in %"
-msgstr ""
+msgstr "Verfügbarkeit in %"
 
 #: src/itnovum/openITCOCKPIT/Core/Timeline/DowntimeSerializer.php:86
 msgid " Cancelled"
-msgstr ""
+msgstr " Abgebrochen"
 
 #: src/itnovum/openITCOCKPIT/Core/Timeline/Groups.php:39
 msgid "Acknowlegements"
-msgstr ""
+msgstr "Bestätigungen"
 
 #: src/itnovum/openITCOCKPIT/Core/Timeline/Groups.php:54
 msgid "State history service"
@@ -15618,19 +15618,19 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:35
 msgid "Runtime error"
-msgstr ""
+msgstr "Laufzeitfehler"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:36
 msgid "Runtime warning"
-msgstr ""
+msgstr "Laufzeit-Warnung"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:38
 msgid "Verification error"
-msgstr ""
+msgstr "Verifizierungsfehler"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:39
 msgid "Verification warning"
-msgstr ""
+msgstr "Verifikationswarnung"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:41
 msgid "Config error"
@@ -15650,68 +15650,68 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:46
 msgid "External command"
-msgstr ""
+msgstr "Externes Kommando"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:49
 msgid "Host up"
-msgstr ""
+msgstr "Host erreichbar"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:50
 msgid "Host down"
-msgstr ""
+msgstr "Host nicht erreichbar"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:51
 msgid "Host unreachable"
-msgstr ""
+msgstr "Host nicht verfügbar"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:53
 msgid "Service ok"
-msgstr ""
+msgstr "Service okay"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:54
 msgid "Service unknown"
-msgstr ""
+msgstr "Service unbekannt"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:55
 msgid "Service warning"
-msgstr ""
+msgstr "Service warnend"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:56
 msgid "Service critical"
-msgstr ""
+msgstr "Service kritisch"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:58
 msgid "Passive check"
-msgstr ""
+msgstr "Passive Prüfung"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:60
 msgid "Message"
-msgstr ""
+msgstr "Nachricht"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/HoststatusIcon.php:143
 #: src/itnovum/openITCOCKPIT/Core/Views/ServicestatusIcon.php:159
 msgid "Not found in monitoring"
-msgstr ""
+msgstr "Bei der Überwachung nicht gefunden"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/ListSettingsRenderer.php:108
 msgid "Apply"
-msgstr ""
+msgstr "Anwenden"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/ListSettingsRenderer.php:120
 msgid "From:"
-msgstr ""
+msgstr "Von:"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/ListSettingsRenderer.php:135
 msgid "To:"
-msgstr ""
+msgstr "An:"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/Logentry.php:124
 msgid "External command failed"
-msgstr ""
+msgstr "Externes Kommando fehlgeschlagen"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/Logentry.php:125
 msgid "Timeperiod transition"
-msgstr ""
+msgstr "Zeitlicher Übergang"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:124
 msgid "Y"
@@ -16454,142 +16454,142 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:49
 msgid "Host Macros"
-msgstr ""
+msgstr "Host Makros"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:54
 msgid "The UUID of the host (\"1284b927-2bd2-4737-a3da-c39854376ca2\")"
-msgstr ""
+msgstr "Die UUID des host (\"1284b927-2bd2-4737-a3da-c39854376ca2\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:58
 msgid "The human name of the host (\"srvstorage01\")"
-msgstr ""
+msgstr "Der Anzeigename des Host (\"srvstorage01\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:62
 msgid "The human name of the host (\"srvstorage01\"), same as $HOSTDISPLAYNAME$"
-msgstr ""
+msgstr "Der Anzeigename des Host \"srvstorage01\"), genau wie $HOSTDISPLAYNAME$"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:66
 msgid "Address or FQDN of the host. (\"10.10.12.12\")"
-msgstr ""
+msgstr "Adresse oder FQDN des Host. (\"10.10.12.12\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:70
 msgid "Current host state as string (\"UP\", \"DOWN\", or \"UNREACHABLE\")."
-msgstr ""
+msgstr "Aktueller Host-Zustand als Zeichenkette (\"UP\", \"DOWN\", or \"UNREACHABLE\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:74
 msgid "Current host state as integer (0=UP, 1=DOWN, 2=UNREACHABLE)."
-msgstr ""
+msgstr "Aktueller Host-Zustand als Ganzzahl (0=UP, 1=DOWN, 2=UNREACHABLE)."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:78
 msgid "Last host state as string (\"UP\", \"DOWN\", or \"UNREACHABLE\")."
-msgstr ""
+msgstr "Letzter Host-Status als Zeichenkette (\"UP\", \"DOWN\", or \"UNREACHABLE\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:82
 msgid "Last host state as integer (0=UP, 1=DOWN, 2=UNREACHABLE)."
-msgstr ""
+msgstr "Letzter Host-Zustand als Ganzzahl (0=UP, 1=DOWN, 2=UNREACHABLE)."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:86
 msgid "Current host state type as string (\"SOFT\" or \"HARD\")."
-msgstr ""
+msgstr "Aktueller Host-Zustands-Typ als Zeichenkette (\"SOFT\" or \"HARD\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:90
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:278
 msgid "Current check attempt as integer"
-msgstr ""
+msgstr "Aktueller Prüfversuch als Ganzzahl"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:94
 msgid "Max number of host check attempts."
-msgstr ""
+msgstr "Maximale Anzahl von Host-Prüfversuchen."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:98
 msgid "Number of state change events as unique number per host."
-msgstr ""
+msgstr "Anzahl der Zustandswechsel-Ereignisse als eindeutige Zahl pro Host."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:102
 msgid "Last unique host event number."
-msgstr ""
+msgstr "Letzte eindeutige Nummer der Hostevents."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:106
 msgid "Unique number of the current host problem state."
-msgstr ""
+msgstr "Eindeutige Nummer des aktuellen Host-Problemstatus."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:110
 msgid "Unique number of the last host problem state."
-msgstr ""
+msgstr "Eindeutige Nummer des letzten Host-Problemzustands."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:114
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:306
 msgid "Delay between scheduled check time and actual check time as floating point. (\"2.05\")"
-msgstr ""
+msgstr "Verzögerung zwischen geplanter Prüfzeit und tatsächlicher Prüfzeit als Fließkommazahl. (\"2.05\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:118
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:310
 msgid "Plugin execution time as floating point. (\"4.21\")."
-msgstr ""
+msgstr "Plugin-Ausführungszeit als Fließkommazahl. (\"4.21\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:122
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:314
 msgid "Time since last state change occured as string (HH MM SS)"
-msgstr ""
+msgstr "Zeit seit der letzten Zustandsänderung als Zeichenkette (HH MM SS)"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:126
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:318
 msgid "Time since last state change occured as integer in seconds."
-msgstr ""
+msgstr "Zeit seit der letzten Zustandsänderung als Ganzzahl in Sekunden."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:130
 msgid "If the host in a scheduled downtime, this value will be >= 1."
-msgstr ""
+msgstr "Wenn der Host in einer geplanten Ausfallzeit ist, wird dieser Wert >= 1 sein."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:134
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:326
 msgid "State change percentage as floating point. (This is used by the flap detection algorithm)."
-msgstr ""
+msgstr "Zustandsänderungsprozentsatz als Fließkommazahl. (Dies wird vom Flattererkennungsalgorithmus verwendet)."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:138
 msgid "Contain the first host group of an host as string (\"12403d1a-70c0-468b-ad8d-446fb8412205\")"
-msgstr ""
+msgstr "Enthält die erste Host-Gruppe eines Hosts als Zeichenkette (\"12403d1a-70c0-468b-ad8d-446fb8412205\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:142
 msgid "A comma separated of all the host groups the host belongs to. (\"12403d1a-70c0-468b-ad8d-446fb8412205,20a1bad7-60c1-433d-8e28-716cde8b8f04\")"
-msgstr ""
+msgstr "Kommasepariert alle Host-Gruppen, zu denen der Host gehört. (\"12403d1a-70c0-468b-ad8d-446fb8412205,20a1bad7-60c1-433d-8e28-716cde8b8f04\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:146
 msgid "Unix timestamp (integer) of the last host check."
-msgstr ""
+msgstr "Unix-Zeitstempel (ganzzahlig) der letzten Host-Prüfung."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:150
 msgid "Unix timestamp (integer) of last host state change."
-msgstr ""
+msgstr "Unix-Zeitstempel (ganzzahlig) der letzten Host-Zustandsänderung."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:154
 msgid "Unix timestamp (integer) of the last host UP state."
-msgstr ""
+msgstr "Unix-Zeitstempel (ganzzahlig) des letzten Host-UP-Status."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:158
 msgid "Unix timestamp (integer) of the last host DOWN state."
-msgstr ""
+msgstr "Unix-Zeitstempel (ganzzahlig) des letzten Host-DOWN-Status."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:162
 msgid "Unix timestamp (integer) of the last host UNREACHABLE state."
-msgstr ""
+msgstr "Unix-Zeitstempel (Ganzzahl) des letzten Host-Zustands UNREACHABLE."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:166
 msgid "Output of host check plugin (\"OK - 127.5.6.7: rta 0,054ms, lost 0% \")."
-msgstr ""
+msgstr "Ausgabe des Host-Prüfungs-Plugins (\"OK - 127.5.6.7: rta 0,054ms, lost 0% \")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:170
 msgid "The long plugin output of current host check."
-msgstr ""
+msgstr "Die lange Plugin-Ausgabe der aktuellen Host-Prüfung."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:174
 msgid "Performance date output of current host check. (\"rta=0.054000ms;100.000000;500.000000;0.000000 pl=0%;20;60;0\")"
-msgstr ""
+msgstr "Ausgabe des Leistungsdatums der aktuellen Host-Prüfung. (\"rta=0.054000ms;100.000000;500.000000;0.000000 pl=0%;20;60;0\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:178
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:374
 msgid "Contains the command UUID including used command arguments (\"5a538ebc-03de-4ce6-8e32-665b841abde3!3000.0,80%!4000.0,90%;\")"
-msgstr ""
+msgstr "Enthält die Befehls-UUID einschließlich der verwendeten Befehlsargumente (\"5a538ebc-03de-4ce6-8e32-665b841abde3!3000.0,80%!4000.0,90%;\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:182
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:186
@@ -16602,324 +16602,324 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:409
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:413
 msgid "Not implemented by openITCOCKPIT."
-msgstr ""
+msgstr "Nicht durch openITCOCKPIT implementiert."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:190
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:386
 msgid "Uer defined notes for the host."
-msgstr ""
+msgstr "Benutzerdefinierte Notizen für den Host."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:194
 msgid "Total number of services associated with the host."
-msgstr ""
+msgstr "Gesamtzahl der mit dem Gastgeber verbundenen Services."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:198
 msgid "Total number of services associated with the host in state OK."
-msgstr ""
+msgstr "Gesamtzahl der mit dem Gastgeber im Staat verbundenen Services im Zustand OK."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:202
 msgid "Total number of services associated with the host in state WARNING."
-msgstr ""
+msgstr "Gesamtzahl der mit dem Gastgeber im Staat verbundenen Services im Zustand WARNING."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:207
 msgid "Total number of services associated with the host in state CRITICAL."
-msgstr ""
+msgstr "Gesamtzahl der mit dem Gastgeber im Staat verbundenen Services im Zustand CRITICAL."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:211
 msgid "Total number of services associated with the host in state UNKNOWN."
-msgstr ""
+msgstr "Gesamtzahl der mit dem Gastgeber im Staat verbundenen Services im Zustand UNKNOWN."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:217
 msgid "Host Group Macros"
-msgstr ""
+msgstr "Hostgruppen Makros"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:222
 msgid "The UUID of the host group (\"fc11e1b9-9c0f-49d7-90b5-f283fe39a21d\")"
-msgstr ""
+msgstr "Die UUID der Hostgruppe (\"fc11e1b9-9c0f-49d7-90b5-f283fe39a21d\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:226
 msgid "A comma separated list of the host group mebers as UUIDs (\"c7176869-ffb7-4149-b960-bdbf9ae85968,f5e943f3-c46f-4f6d-8fc1-468774a72332\")."
-msgstr ""
+msgstr "Eine durch Komma getrennte Liste der Host-Gruppenmitglieder als UUIDs (\"c7176869-ffb7-4149-b960-bdbf9ae85968,f5e943f3-c46f-4f6d-8fc1-468774a72332\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:244
 msgid "Service Macros"
-msgstr ""
+msgstr "Service Makros"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:249
 msgid "The UUID of the service (\"bd19ce04-3209-4664-a146-bd1220e740bc\")"
-msgstr ""
+msgstr "Die UUID des Service (\"bd19ce04-3209-4664-a146-bd1220e740bc\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:253
 msgid "The human name of the service (\"PING\")"
-msgstr ""
+msgstr "Der Anzeigename des Service (\"PING\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:257
 msgid "Current service state as string  (\"OK\", \"WARNING\", \"UNKNOWN\", or \"CRITICAL\")."
-msgstr ""
+msgstr "Aktueller Servicestatus als String (\"OK\", \"WARNING\", \"UNKNOWN\", or \"CRITICAL\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:261
 msgid "Current service state as integer (0=OK, 1=WARNING, 2=CRITICAL, 3=UNKNOWN)."
-msgstr ""
+msgstr "Aktueller Servicestatus als Ganzzahl (0=OK, 1=WARNING, 2=CRITICAL, 3=UNKNOWN)."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:265
 msgid "Last service state as string (\"OK\", \"WARNING\", \"UNKNOWN\", or \"CRITICAL\")."
-msgstr ""
+msgstr "Letzter Servicestatus als String (\"OK\", \"WARNING\", \"UNKNOWN\", or \"CRITICAL\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:270
 msgid "Last service state as integer (0=OK, 1=WARNING, 2=CRITICAL, 3=UNKNOWN)."
-msgstr ""
+msgstr "Letzter Servicestatus als Ganzzahl (0=OK, 1=WARNING, 2=CRITICAL, 3=UNKNOWN)."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:274
 msgid "Current service state type as string (\"SOFT\" or \"HARD\")."
-msgstr ""
+msgstr "Aktueller Servicestatustyp als String (\"SOFT\" or \"HARD\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:282
 msgid "Max number of service check attempts."
-msgstr ""
+msgstr "Maximale Anzahl von Service-Prüfversuchen."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:286
 msgid "Is volatile as integer (0=NO, 1=YES)"
-msgstr ""
+msgstr "Ist flüchtig als Ganzzahl (0=NO, 1=YES)"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:290
 msgid "Number of state change events as unique number per service."
-msgstr ""
+msgstr "Anzahl der Zustandsänderungsereignisse als eindeutige Nummer pro Service."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:294
 msgid "Last unique service event number."
-msgstr ""
+msgstr "Letzte eindeutige Service-Event-Nummer."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:298
 msgid "Unique number of the current service problem state."
-msgstr ""
+msgstr "Eindeutige Nummer des aktuellen Serviceproblemstatus."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:302
 msgid "Unique number of the last service problem state."
-msgstr ""
+msgstr "Eindeutige Nummer des letzten Serviceproblemstatus."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:322
 msgid "If the service in a scheduled downtime, this value will be >= 1."
-msgstr ""
+msgstr "Wenn der Service in einer geplanten Ausfallzeit ist, wird dieser Wert >= 1 sein."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:330
 msgid "Contain the first service group of an service as string (\"6123eb90-a3eb-4895-b348-c464d9494d14\")"
-msgstr ""
+msgstr "Enthält die erste Servicegruppe eines Services als Zeichenkette (\"6123eb90-a3eb-4895-b348-c464d9494d14\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:334
 msgid "A comma separated of all the service groups the service belongs to. (\"6123eb90-a3eb-4895-b348-c464d9494d14,666b1caf-4c0f-45e8-9380-78f9e915b82d\")"
-msgstr ""
+msgstr "Kommasepariert alle Servicegruppen, zu denen der Service gehört. (\"6123eb90-a3eb-4895-b348-c464d9494d14,666b1caf-4c0f-45e8-9380-78f9e915b82d\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:338
 msgid "Unix timestamp (integer) of the last service check."
-msgstr ""
+msgstr "Unix-Zeitstempel (ganzzahlig) der letzten Serviceprüfung."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:342
 msgid "Unix timestamp (integer) of last service state change."
-msgstr ""
+msgstr "Unix-Zeitstempel (ganzzahlig) der letzten Servicestatusänderung"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:346
 msgid "Unix timestamp (integer) of the last service OK state."
-msgstr ""
+msgstr "Unix-Zeitstempel (ganzzahlig) des letzten OK-Status des Services."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:350
 msgid "Unix timestamp (integer) of the last service WARNING state."
-msgstr ""
+msgstr "Unix-Zeitstempel (ganzzahlig) des letzten WARNING-Status des Services."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:354
 msgid "Unix timestamp (integer) of the last service CRITICAL state."
-msgstr ""
+msgstr "Unix-Zeitstempel (ganzzahlig) des letzten CRITICAL-Status des Services."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:358
 msgid "Unix timestamp (integer) of the last service UNKNOWN state."
-msgstr ""
+msgstr "Unix-Zeitstempel (ganzzahlig) des letzten UNKNOWN-Status des Services."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:362
 msgid "Output of service check plugin (\"OK - 127.5.6.7: rta 0,054ms, lost 0% \")."
-msgstr ""
+msgstr "Ausgabe des Service-Check-Plugins (\"OK - 127.5.6.7: rta 0,054ms, lost 0% \")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:366
 msgid "The long plugin output of current service check."
-msgstr ""
+msgstr "Die lange Plugin-Ausgabe der aktuellen Service-Prüfung."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:370
 msgid "Performance date output of current service check. (\"rta=0.054000ms;100.000000;500.000000;0.000000 pl=0%;20;60;0\")"
-msgstr ""
+msgstr "Ausgabe der Performancedaten der aktuellen Serviceprüfung. (\"rta=0.054000ms;100.000000;500.000000;0.000000 pl=0%;20;60;0\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:392
 msgid "Service Group Macros"
-msgstr ""
+msgstr "Servicegruppen Makros"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:397
 msgid "The UUID of the host group (\"65c7692e-b322-4788-8232-97258b457f22\")"
-msgstr ""
+msgstr "Die UUID der Hostgruppe (\"65c7692e-b322-4788-8232-97258b457f22\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:401
 msgid "A comma separated list of the service group mebers as UUIDs (\"0a9feda1-569e-40fe-a5a3-b2f389818301,ade06bfb-f9bd-4112-9537-2b3d286a6572\")."
-msgstr ""
+msgstr "Eine durch Komma getrennte Liste der Servicegruppenmitglieder als UUIDs (\"0a9feda1-569e-40fe-a5a3-b2f389818301,ade06bfb-f9bd-4112-9537-2b3d286a6572\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:419
 msgid "Contact Macros"
-msgstr ""
+msgstr "Kontakt Makros"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:424
 msgid "The UUID of the contact (\"9595f7d6-2b79-4a7b-b7b8-414eec84c0b0\")"
-msgstr ""
+msgstr "Die UUId des Kontakts (\"9595f7d6-2b79-4a7b-b7b8-414eec84c0b0\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:428
 msgid "The human name of the contact (\"info\")."
-msgstr ""
+msgstr "Der Anzeigename des Kontakts (\"info\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:432
 msgid "The human name of the contact (\"info\"), same as $CONTACTGROUPNAME$"
-msgstr ""
+msgstr "Der Anzeigename des Kontakts (\"info\"), genau wie $CONTACTGROUPNAME$"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:436
 msgid "Email address of the contact. (\"community@openitcockpit.io\")"
-msgstr ""
+msgstr "E-Mail-Adresse des Kontakts. (\"community@openitcockpit.io\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:440
 msgid "Pager number of the contact. (\"004913456789\")"
-msgstr ""
+msgstr "Pager-Nummer der Kontaktperson. (\"004913456789\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:444
 msgid "A comma separated of all the contact groups the contact belongs to. (\"06e352a8-643d-4fa8-a7bd-9ff74ad0e112,4992c7ad-1bb4-465a-8fe4-a721461b69a2\")"
-msgstr ""
+msgstr "Eine kommaseparierte Liste aller Kontaktgruppen, zu denen der Kontakt gehört. (\"06e352a8-643d-4fa8-a7bd-9ff74ad0e112,4992c7ad-1bb4-465a-8fe4-a721461b69a2\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:450
 msgid "Contact Group Macros"
-msgstr ""
+msgstr "Kontaktgruppen Makros"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:455
 msgid "The UUID of the contact group (\"06e352a8-643d-4fa8-a7bd-9ff74ad0e112\")"
-msgstr ""
+msgstr "Die UUID der Kontaktgruppe (\"06e352a8-643d-4fa8-a7bd-9ff74ad0e112\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:459
 msgid "A comma separated of all the contacts belongs to the contact group. (\"9595f7d6-2b79-4a7b-b7b8-414eec84c0b0,6de7d0f9-413e-41cc-b1e4-3289072b72c4\")"
-msgstr ""
+msgstr "Eine kommaseparierte Liste aller Kontakte, die zu der Kontaktgruppe gehören. (\"9595f7d6-2b79-4a7b-b7b8-414eec84c0b0,6de7d0f9-413e-41cc-b1e4-3289072b72c4\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:465
 msgid "SUMMARY Macros (Notice: CPU intensive to calculate - use with care)"
-msgstr ""
+msgstr "ZUSAMMENFASSUNG Makros (Hinweis: CPU-intensiv zu berechnen - mit Vorsicht zu verwenden)"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:470
 msgid "Number of hosts in state UP."
-msgstr ""
+msgstr "Anzahl der Hosts im Status UP."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:474
 msgid "Number of hosts in state DOWN."
-msgstr ""
+msgstr "Anzahl der Hosts im Status DOWN."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:478
 msgid "Number of hosts in state UNREACHABLE."
-msgstr ""
+msgstr "Anzahl der Hosts im Status UNREACHABLE."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:482
 msgid "Number of unhandled hosts. Unhandled hosts are in a DOWN state and not acknowledged or in a scheduled downtime."
-msgstr ""
+msgstr "Anzahl der unbehandelten Hosts. Unbehandelte Hosts befinden sich in einem DOWN-Zustand und werden nicht bestätigt oder befinden sich in einer geplanten Wartungszeit."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:486
 msgid "Number of unhandled hosts. Unhandled hosts are in a UNREACHABLE state and not acknowledged or in a scheduled downtime."
-msgstr ""
+msgstr "Anzahl der unbehandelten Hosts. Unbehandelte Hosts befinden sich in einem UNREACHABLE-Zustand und werden nicht bestätigt oder befinden sich in einer geplanten Wartungszeit."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:490
 msgid "Number of hosts in a non UP state."
-msgstr ""
+msgstr "Anzahl der Hosts in einem nicht UP Zustand."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:494
 msgid "Number of unhandled hosts. Unhandled hosts are in a non UP state and not acknowledged or in a scheduled downtime."
-msgstr ""
+msgstr "Anzahl der unbehandelten Hosts. Unbehandelte Hosts befinden sich in einem nicht UP-Zustand und werden nicht bestätigt oder befinden sich in einer geplanten Wartungszeit."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:498
 msgid "Number of services in state OK."
-msgstr ""
+msgstr "Anzahl der Services im Status OK."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:502
 msgid "Number of services in state WARNING."
-msgstr ""
+msgstr "Anzahl der Services im Status WARNING."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:506
 msgid "Number of services in state CRITICAL."
-msgstr ""
+msgstr "Anzahl der Services im Status CRITICAL."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:510
 msgid "Number of services in state UNKNOWN."
-msgstr ""
+msgstr "Anzahl der Services im Status UNKNOWN."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:514
 msgid "Number of unhandled services. Unhandled services are in a WARNING state and not acknowledged or in a scheduled downtime."
-msgstr ""
+msgstr "Anzahl der unbehandelten Services. Unbehandelte Services befinden sich in einem WARNING-Zustand und werden nicht bestätigt oder befinden sich in einer geplanten Wartungszeit."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:518
 msgid "Number of unhandled services. Unhandled services are in a CRITICAL state and not acknowledged or in a scheduled downtime."
-msgstr ""
+msgstr "Anzahl der unbehandelten Services. Unbehandelte Services befinden sich in einem CRITICAL-Zustand und werden nicht bestätigt oder befinden sich in einer geplanten Wartungszeit."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:522
 msgid "Number of unhandled services. Unhandled services are in a UNKNOWN state and not acknowledged or in a scheduled downtime."
-msgstr ""
+msgstr "Anzahl der unbehandelten Services. Unbehandelte Services befinden sich in einem UNKNOWN-Zustand und werden nicht bestätigt oder befinden sich in einer geplanten Wartungszeit."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:526
 msgid "Number of services in a non OK state."
-msgstr ""
+msgstr "Anzahl der Services in einem nicht UP Zustand."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:530
 msgid "Number of unhandled services. Unhandled services are in a non OK state and not acknowledged or in a scheduled downtime."
-msgstr ""
+msgstr "Anzahl der unbehandelten Services. Unbehandelte Services befinden sich in einem nicht OK-Zustand und werden nicht bestätigt oder befinden sich in einer geplanten Wartungszeit."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:536
 msgid "Notification Macros"
-msgstr ""
+msgstr "Benachrichtigungs Makros"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:541
 msgid "Notification type as string (\"PROBLEM\", \"RECOVERY\", \"ACKNOWLEDGEMENT\", \"FLAPPINGSTART\", \"FLAPPINGSTOP\", \"FLAPPINGDISABLED\", \"DOWNTIMESTART\", \"DOWNTIMEEND\", or \"DOWNTIMECANCELLED\")."
-msgstr ""
+msgstr "Benachrichtigungstyp als Zeichenkette (\"PROBLEM\", \"RECOVERY\", \"ACKNOWLEDGEMENT\", \"FLAPPINGSTART\", \"FLAPPINGSTOP\", \"FLAPPINGDISABLED\", \"DOWNTIMESTART\", \"DOWNTIMEEND\", or \"DOWNTIMECANCELLED\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:545
 msgid "A comma separated of all the contacts for this notification. (\"12403d1a-70c0-468b-ad8d-446fb8412205,20a1bad7-60c1-433d-8e28-716cde8b8f04\")"
-msgstr ""
+msgstr "Eine durch Komma getrennte Liste aller Kontakte für diese Benachrichtigung. (\"12403d1a-70c0-468b-ad8d-446fb8412205,20a1bad7-60c1-433d-8e28-716cde8b8f04\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:550
 msgid "Is this an escalated notification (0=NO, 1=YES)"
-msgstr ""
+msgstr "Ist dies eine eskalierte Benachrichtigung (0=NO, 1=YES)"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:554
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:558
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:562
 msgid "openITCOCKPIT user name as string."
-msgstr ""
+msgstr "openITCOCKPIT-Benutzername als Zeichenkette."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:566
 msgid "Comment data of the notification."
-msgstr ""
+msgstr "Kommentardaten der Benachrichtigung."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:570
 msgid "Number of send notifications for a host. If the host state goes to RECOVERY, the counter will be reset to 0."
-msgstr ""
+msgstr "Anzahl der Sendebenachrichtigungen für einen Host. Wenn der Host-Status auf RECOVERY geht, wird der Zähler auf 0 zurückgesetzt."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:574
 msgid "Unique event number of the host notification."
-msgstr ""
+msgstr "Eindeutige Ereignisnummer der Host-Benachrichtigung."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:578
 msgid "Number of send notifications for a service. If the service state goes to OK, the counter will be reset to 0."
-msgstr ""
+msgstr "Anzahl der Sendebenachrichtigungen für einen Service. Wenn der Service-Status auf OK geht, wird der Zähler auf 0 zurückgesetzt."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:582
 msgid "Unique event number of the service notification."
-msgstr ""
+msgstr "Eindeutige Ereignisnummer der Service-Benachrichtigung."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:588
 msgid "Date and Time Macros"
-msgstr ""
+msgstr "Datum und Zeit-Makros"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:593
 msgid "Current date as string (DD-MM-YYYY)."
-msgstr ""
+msgstr "Aktuelles Datum als String (DD-MM-YYYY)."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:597
 msgid "Current time as string (HH:MM:SS)."
-msgstr ""
+msgstr "Aktuelle Zeit als String (HH:MM:SS)."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:601
 msgid "Current time as UNIX timestamp."
-msgstr ""
+msgstr "Aktuelle Zeit als UNIX-Zeitstempel."
 

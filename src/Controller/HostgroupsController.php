@@ -43,7 +43,6 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
@@ -328,11 +327,11 @@ class HostgroupsController extends AppController {
                     'Hostgroup' => $hostgroup->toArray()
                 ]
             );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
 
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
@@ -457,9 +456,9 @@ class HostgroupsController extends AppController {
 
         //Merge host status count to status names
         $hostgroupHoststatusOverview = array_combine([
-            __('up'),
-            __('down'),
-            __('unreachable')
+            'up',
+            'down',
+            'unreachable'
         ], $hostgroupHoststatusOverview);
 
         $hostgroup = $hostgroup->toArray();

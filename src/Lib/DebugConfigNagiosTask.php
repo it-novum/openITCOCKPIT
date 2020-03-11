@@ -575,7 +575,6 @@ class DebugConfigNagiosTask {
 
     public function translateStdin() {
         $ConsoleInput = new ConsoleInput();
-        $result = null;
         while ($ConsoleInput->dataAvailable()) {
             $result = $ConsoleInput->read();
             if ($result !== false) {

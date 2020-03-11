@@ -91,7 +91,7 @@ class SudoServerCommand extends Command {
         );
 
         $loop = \React\EventLoop\Factory::create();
-        $loop->addPeriodicTimer(0.01, [$SudoMessasgeInterface, 'eventLoop']);
+        $loop->addPeriodicTimer(1, [$SudoMessasgeInterface, 'eventLoop']);
 
         $Server = new IoServer(
             new HttpServerSize(
