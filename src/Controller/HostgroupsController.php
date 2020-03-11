@@ -425,10 +425,10 @@ class HostgroupsController extends AppController {
 
             $serviceStateSummary['state'] = array_combine(
                 [
-                    __('ok'),
-                    __('warning'),
-                    __('critical'),
-                    __('unknown')
+                    'ok',
+                    'warning',
+                    'critical',
+                    'unknown'
                 ],
                 $serviceStateSummary['state']
             );
