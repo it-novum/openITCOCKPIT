@@ -617,22 +617,22 @@ class Menu {
                 1,
                 'fa fa-code'
             ))
-            ->addLink(new MenuLink(
-                __('System Settings'),
-                'SystemsettingsIndex',
-                'systemsettings',
-                'index',
-                '',
-                'fa fa-wrench',
-                [],
-                2
-            ))
             ->addCategory((new MenuCategory(
                 'settings_category',
-                __('Settings ???'),
+                __('System'),
                 3,
-                'fa fa-wrench'
+                'fa fa-cogs'
             ))
+                ->addLink(new MenuLink(
+                    __('System Settings'),
+                    'SystemsettingsIndex',
+                    'systemsettings',
+                    'index',
+                    '',
+                    'fa fa-wrench',
+                    [],
+                    2
+                ))
                 ->addLink(new MenuLink(
                     __('Config file editor'),
                     'ConfigurationFilesIndex',

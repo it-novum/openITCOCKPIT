@@ -24,9 +24,23 @@
 //	confirmation.
 
 ?>
-<!-- HEADER START -->
-<header id="header" class="page-header" role="banner">
-    <div class="hidden-md-down dropdown-icon-menu position-relative">
+<?php
+
+class OitcHeader {
+
+    public function __construct($exportRunningHeaderInfo, $showstatsinmenu) {
+        $this->menuHeaderOpens();
+
+        $this->menuControl();
+        $this->menuHosts();
+        $this->menuSearchContentByAngularJsDirective();
+        $this->menuStatistics($exportRunningHeaderInfo, $showstatsinmenu);
+
+        $this->menuHeaderCloses();
+    }
+
+private function menuControl() {
+    $html = '<div class="hidden-md-down dropdown-icon-menu position-relative">
         <a href="#" class="header-btn btn js-waves-off" data-action="toggle"
            data-class="nav-function-hidden" title="Hide Navigation">
             <i class="fas fa-bars"></i>
@@ -45,65 +59,136 @@
                 </a>
             </li>
         </ul>
-    </div>
-    <div class="hidden-lg-up">
-        <a href="#" class="header-btn btn press-scale-down" data-action="toggle" data-class="mobile-nav-on">
+        <div class="hidden-lg-up">
+            <a href="#" class="header-btn btn press-scale-down" data-action="toggle" data-class="mobile-nav-on">
             <i class="fas fa-bars"></i>
-        </a>
-    </div>
+            </a>
+        </div>
+    </div>';
+
+    echo $html;
+}
+
+private function menuHosts(): string {
+    return '<div>Hosts</div>';
+}
+
+private function menuSearchContentByAngularJsDirective(): string {
+    return '<div class="search" top-search=""></div>';
+}
+
+private function translate($singular) {
+    return __($singular);
+}
+
+/**
+ * @param bool $exportRunningHeaderInfo
+ * @return string
+ */
+private function displayExportRunningNotificationIfEnabledInSettings($exportRunningHeaderInfo): string {
+    if ($exportRunningHeaderInfo === false) {
+        return
+            '<a ui-sref="ExportsIndex" sudo-server-connect=""
+                data-original-title="' . $this->translate('Refresh monitoring configuration') . '"
+                data-placement="left" rel="tooltip" data-container="body" class="header-icon">
+                    <i class="fa fa-retweet"></i>
+             </a>';
+    } else {
+        return
+            '<a ui-sref="ExportsIndex" export-status=""
+                data-original-title="' . $this->translate('Refresh monitoring configuration') . '"
+                data-placement="left" rel="tooltip" data-container="body" class="header-icon">
+                    <i class="fa fa-retweet" ng-if="!exportRunning"></i>
+                    <i class="fa fa-refresh fa-spin txt-color-red" ng-if="exportRunning"></i>
+             </a>';
+    }
+}
+
+private function displayMenuStatisticsIfEnabledInSettings($showstatsinmenu): string {
+    $html = '';
+
+    if ($showstatsinmenu) {
+        $html .= '<menustats></menustats>';
+    } else {
+
+    }
 
 
-    <div class="search" top-search="">
-        <!-- Content get loaded by AngularJS Directive -->
-    </div>
+    return $html;
+}
 
+private function menuStatistics($exportRunningHeaderInfo, $showstatsinmenu): void {
 
-    <div class="ml-auto d-flex">
-        <div class="header-icon">
+    $html ='<div class="ml-auto d-flex">
+            <div class="header-icon">
                 <span id="global_ajax_loader">
                     <div class="spinner-border spinner-border-sm" role="status">
                         <span class="sr-only">Loading...</span>
                     </div>
                 </span>
-        </div>
-        <div >
-            <?php if ($showstatsinmenu): ?>
-                <menustats></menustats>
-            <?php endif; ?>
-        </div>
-        <div>
-            <system-health></system-health>
-        </div>
-        <div class="header-icon">
-            <server-time></server-time>
-        </div>
-        <div>
+            </div>';
+
+
+
+        $html .= '<div class="header-icon">' . $this->displayMenuStatisticsIfEnabledInSettings($showstatsinmenu) . '</div>';
+
+        $html .= '
+            <div class="header-icon">
+                <system-health></system-health>
+            </div>';
+
+        $html .= $this->menuHeaderClockDisplay();
+
+        $html .= '<div class="header-icon">
             <version-check></version-check>
-        </div>
-        <div>
-            <?php if ($exportRunningHeaderInfo === false): ?>
-                <a ui-sref="ExportsIndex" sudo-server-connect=""
-                   data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
-                   data-placement="left" rel="tooltip" data-container="body" class="header-icon">
-                    <i class="fa fa-retweet"></i>
-                </a>
-            <?php else: ?>
-                <a ui-sref="ExportsIndex" export-status=""
-                   data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
-                   data-placement="left" rel="tooltip" data-container="body" class="header-icon">
-                    <i class="fa fa-retweet" ng-hide="exportRunning"></i>
-                    <i class="fa fa-refresh fa-spin txt-color-red" ng-show="exportRunning"></i>
-                </a>
-            <?php endif; ?>
-        </div>
-        <div>
-            <a href="/users/logout" data-original-title="<?php echo __('Sign out'); ?>"
+        </div>';
+
+    $html .= '<div>' . $this->displayExportRunningNotificationIfEnabledInSettings($exportRunningHeaderInfo) . '</div>';
+
+    $html .= $this->menuHeaderSignOut();
+
+    $html .= $this->menuNotifications();
+
+    $html .= '</div>';
+
+    echo $html;
+}
+
+private function buttonGroupElement(): string {
+    $thml = '';
+
+    return $html;
+}
+
+private function menuHeaderClockDisplay() {
+    return
+        '<div class="header-icon">
+            <server-time></server-time>
+        </div>';
+}
+private function menuHeaderSignOut(): string {
+    return
+        '<div>
+            <a href="/users/logout" data-original-title="' . $this->translate('Sign out') . '"
                data-placement="left"
                rel="tooltip" data-container="body" class="header-icon">
                 <i class="fa fa-sign-out-alt"></i>
             </a>
-        </div>
-        <push-notifications></push-notifications>
-    </div>
+        </div>';
+}
 
-</header>
+private function menuNotifications(): string {
+    return '<push-notifications></push-notifications>';
+}
+
+private function menuHeaderOpens() {
+    echo '<header id="header_jf" class="page-header" role="banner">';
+}
+
+private function menuHeaderCloses() {
+    echo '</header>';
+}
+}
+
+$header = new OitcHeader($exportRunningHeaderInfo, $showstatsinmenu);
+?>

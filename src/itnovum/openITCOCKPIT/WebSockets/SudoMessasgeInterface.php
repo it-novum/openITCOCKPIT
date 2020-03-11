@@ -98,7 +98,7 @@ class SudoMessasgeInterface implements MessageComponentInterface {
      * Gets called every 0.01 sec
      */
     public function eventLoop() {
-
+        $this->isExportRunning();
     }
 
     /**

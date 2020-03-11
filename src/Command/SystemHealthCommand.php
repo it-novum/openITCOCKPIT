@@ -88,8 +88,8 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             'isPhpNstaRunning'                => false,
             'isGearmanWorkerRunning'          => false,
             'isNdoInstalled'                  => false,
-            'isStatusengineInstalled'         => false,
-            'isStatusenginePerfdataProcessor' => false,
+            'isStatusengineInstalled'         => true, //NDOUtils are not supported anymore
+            'isStatusenginePerfdataProcessor' => true, //NPCD is not supported anymore
             'isDistributeModuleInstalled'     => false,
             'isPushNotificationRunning'       => false,
             'isNodeJsServerRunning'           => false
@@ -161,19 +161,19 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             $data['isNdoInstalled'] = true;
         }
 
-        if (file_exists('/opt/openitc/statusengine2/cakephp/app/Console/Command/StatusengineLegacyShell.php')) {
-            $data['isStatusengineInstalled'] = true;
-        }
+        //if (file_exists('/opt/openitc/statusengine2/cakephp/app/Console/Command/StatusengineLegacyShell.php')) {
+        //    $data['isStatusengineInstalled'] = true;
+        //}
 
-        $statusengineConfig = '/opt/openitc/statusengine2/cakephp/app/Config/Statusengine.php';
-        if (file_exists($statusengineConfig)) {
-            require_once $statusengineConfig;
-            if (isset($config['process_perfdata'])) {
-                if ($config['process_perfdata'] === true) {
-                    $data['isStatusenginePerfdataProcessor'] = true;
-                }
-            }
-        }
+        //$statusengineConfig = '/opt/openitc/statusengine2/cakephp/app/Config/Statusengine.php';
+        //if (file_exists($statusengineConfig)) {
+        //    require_once $statusengineConfig;
+        //    if (isset($config['process_perfdata'])) {
+        //        if ($config['process_perfdata'] === true) {
+        //            $data['isStatusenginePerfdataProcessor'] = true;
+        //        }
+        //    }
+        //}
 
         if (Plugin::isLoaded('DistributeModule')) {
             $data['isDistributeModuleInstalled'] = true;

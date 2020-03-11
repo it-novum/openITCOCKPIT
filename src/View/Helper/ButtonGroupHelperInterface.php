@@ -23,12 +23,15 @@
 //    License agreement and license key will be shipped with the order
 //    confirmation.
 
-use App\View\Helper\ButtonGroupHelper;
+namespace App\View\Helper;
 
-$btnHelper = new ButtonGroupHelper('Display of server and client times');
-$btnHelper->addIconButton('fas fa-clock', __('display time information'));
-$btnHelper->addButtonWithTooltip('{{ currentServerTime }}','btn-primary',__("local time of server"));
-$btnHelper->addButtonWithTooltip('{{ currentClientTime }}','btn-secondary',__("local time of client"));
 
-$html = $btnHelper->getHtml();
-echo $html;
+interface ButtonGroupHelperInterface {
+    public function getHtml(): string;
+    public function addIconButton(string $iconCssSelector, string $dataOriginalTitle=''): ButtonGroupHelperInterface;
+    public function addIconButtonWithSRef(string $iconCssSelector, string $dataOriginalTitle='', string $sRef = ''): ButtonGroupHelperInterface;
+    public function addButton(string $innerHtml, string $cssSelector = 'btn-default'): ButtonGroupHelperInterface;
+    public function addButtonWithTooltip(string $innerHtml, string $cssSelector = 'btn-default', $dataOriginalTitle = ''): ButtonGroupHelperInterface;
+    public function addButtonWithTogglingMenu(string $iconCssSelector, string $dataOriginalTitle = '', string $htmlMenu = ''): ButtonGroupHelperInterface;
+    public function addButtonWithTooltipAndSRef(string $innerHtml, string $cssSelector = 'btn-default', $dataOriginalTitle = '', $href = ''): ButtonGroupHelperInterface;
+}

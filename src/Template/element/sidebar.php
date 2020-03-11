@@ -42,7 +42,9 @@
     <nav id="js-primary-nav" class="primary-nav" role="navigation">
         <div class="nav-filter">
             <div class="position-relative">
-                <input type="text" id="nav_filter_input" placeholder="Filter menu" class="form-control"
+                <input type="text" id="nav_filter_input"
+                       placeholder="<?php echo 'Filter menu'; ?>"
+                       class="form-control"
                        tabindex="0">
                 <a href="#" onclick="return false;" class="btn-primary btn-search-close js-waves-off"
                    data-action="toggle" data-class="list-filter-active" data-target=".page-sidebar">
