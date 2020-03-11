@@ -25,22 +25,10 @@
 
 use App\View\Helper\ButtonGroupHelper;
 
-$templateData = [];
-$templateData['GroupAriaLabel'] = 'Display of server and client times';
-//$templateData['GroupElement']['icon']['class'] = 'btn btn-default';
-//$templateData['GroupElement']['icon']['data-original-title'] = '';
-//$templateData['GroupElement']['icon']['innerHTML'] = '<i class="fas fa-clock"></i>';
-$templateData['GroupElement']['server']['class'] = 'btn-primary';
-$templateData['GroupElement']['server']['data-original-title'] = __("local time of {context}", ["context" => "server"]);
-$templateData['GroupElement']['server']['innerHTML'] = '{{ currentServerTime }}';
-$templateData['GroupElement']['client']['class'] = 'btn-secondary';
-$templateData['GroupElement']['client']['data-original-title'] = __("local time of {context}", ["context" => "client"]);
-$templateData['GroupElement']['client']['innerHTML'] = '{{ currentClientTime }}';
-
-$btnHelper = new ButtonGroupHelper($templateData);
+$btnHelper = new ButtonGroupHelper('Display of server and client times');
 $btnHelper->addIconButton('fas fa-clock', __('display time information'));
-//$btnHelper->addButtonWithData('{{ currentServerTime }}',' btn-primary', __('local time of server'));
+$btnHelper->addButtonWithTooltip('{{ currentServerTime }}','btn-primary',__("local time of server"));
+$btnHelper->addButtonWithTooltip('{{ currentClientTime }}','btn-secondary',__("local time of client"));
 
 $html = $btnHelper->getHtml();
 echo $html;
-?>
