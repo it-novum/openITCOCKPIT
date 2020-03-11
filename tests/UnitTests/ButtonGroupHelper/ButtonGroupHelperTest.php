@@ -156,6 +156,18 @@ class ButtonGroupHelperTest extends TestCase {
         $this->assertEquals($expected,$actual);
     }
 
+    public function test_addIconButtonWithHRef() {
+        $expected = $this->getExpectedOpeningButtonGroupTag()
+            . '    <button class="btn btn-default" data-original-title="test related tooltip" data-placement="bottom" rel="tooltip" data-container="body"><a href="/an/url/reference/for/icons"><i class="fas fa-question"></i></a></button>'
+            . $this->getExpectedClosingButtonGroupTag();
+
+        $this->sut->addIconButtonWithHRef('fas fa-question','test related tooltip','/an/url/reference/for/icons');
+
+        $actual = $this->sut->getHtml();
+
+        $this->assertEquals($expected,$actual);
+    }
+
     /**
      * @return string
      */
