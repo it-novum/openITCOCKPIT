@@ -108,6 +108,17 @@ class ButtonGroupHelperTest extends TestCase {
         $this->assertEquals($expected, $actual);
     }
 
+    public function test_addButtonWithTooltipAndDisplayConditional() {
+        $expected =$this->getExpectedOpeningButtonGroupTag()
+            . '    <button class="btn btn-secondary" data-original-title="test related title" data-placement="bottom" rel="tooltip" data-container="body" inserted="testRelatedText>test related innerHtml</button>'
+            . $this->getExpectedClosingButtonGroupTag();
+
+        $this->sut->addButtonWithTooltipAndDisplayConditional('test related innerHtml', 'btn-secondary', "test related title",'inserted="testRelatedText');
+
+        $actual = $this->sut->getHtml();
+
+        $this->assertEquals($expected,$actual);
+    }
 
     public function test_getView_returnsHtmlTemplate() {
         $expected = $this->getExpectedOpeningButtonGroupTag()

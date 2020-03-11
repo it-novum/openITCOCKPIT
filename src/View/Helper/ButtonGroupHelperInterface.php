@@ -42,4 +42,6 @@ interface ButtonGroupHelperInterface {
     public function addButtonWithTogglingMenu(string $iconCssSelector, string $dataOriginalTitle = '', string $htmlMenu = ''): ButtonGroupHelperInterface;
 
     public function addButtonWithTooltipAndSRef(string $innerHtml, string $cssSelector = 'btn-default', $dataOriginalTitle = '', $href = ''): ButtonGroupHelperInterface;
+
+    public function addButtonWithTooltipAndDisplayConditional(string $innerHtml, string $cssSelector = 'btn-default', string $dataOriginalTitle = '', string $conditional = ''): ButtonGroupHelperInterface;
 }

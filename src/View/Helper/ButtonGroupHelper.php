@@ -73,6 +73,12 @@ class ButtonGroupHelper implements ButtonGroupHelperInterface {
         return $this;
     }
 
+    public function addButtonWithTooltipAndDisplayConditional(string $innerHtml, string $cssSelector = 'btn-default', string $dataOriginalTitle = '', string $conditional = ''): ButtonGroupHelperInterface {
+        $this->groupElements[] = '<button class="btn ' . $cssSelector . '" data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body" '. $conditional .'>' . $innerHtml . '</button>';
+
+        return $this;
+    }
+
     private function iterateOverManuallyAddedElements(): string {
         $html = '';
 
