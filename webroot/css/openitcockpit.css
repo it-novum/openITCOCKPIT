@@ -1038,13 +1038,17 @@ div.required .control-label::after {
     padding: 0.30rem 1.0rem;
 }
 
-.dropdown-divider{
+.dropdown-divider {
     margin: 0.2rem 0;
 }
 
 @media (min-width: 768px) {
     .oitc-modal-xl {
         width: 80%;
-        max-width:2500px;
+        max-width: 2500px;
     }
+}
+
+a[target]:not(.btn) {
+    text-decoration: none !important;
 }
