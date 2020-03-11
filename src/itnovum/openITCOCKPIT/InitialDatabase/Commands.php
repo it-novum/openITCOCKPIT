@@ -678,6 +678,16 @@ of processes.  Search filters can be applied to limit the processes to check.',
                 'uuid'             => 'c23255b7-5b1a-40b4-b614-17837dc376af',
                 'description'      => 'Send a service notification to the browser window',
                 'commandarguments' => []
+            ],
+            (int)28 => [
+                'id'               => '29',
+                'name'             => 'check_statusengine_statistics',
+                'command_line'     => '/opt/openitc/statusengine3/worker/bin/Console.php statistics --naemon',
+                'command_type'     => '1',
+                'human_args'       => null,
+                'uuid'             => 'fcc17401-76cb-403e-b714-33c0b0072e80',
+                'description'      => 'Collect statistical information about the Statusengine Worker performance',
+                'commandarguments' => []
             ]
         ];
 
