@@ -48,7 +48,7 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
 <body>
 <div class="row">
     <div class="col-6 padding-left-15">
-        <i class="fa fa-calendar "></i>
+        <i class="fa fa-calendar"></i>
         <?php
         echo __('Analysis period: ');
         echo h($UserTime->format($fromDate)); ?>
