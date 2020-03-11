@@ -6315,11 +6315,11 @@ msgstr "Konfigurationsgenerierung überspringen"
 
 #: src/Template/Agentconnector/config.php:122
 msgid "Select host and agent mode"
-msgstr "Wählen Sie einen Host und den Agentenmodus"
+msgstr "Wähle Host und Agentenmodus"
 
 #: src/Template/Agentconnector/config.php:128
 msgid "Basic agent configuration"
-msgstr "Grundlegende Agentenkonfiguration"
+msgstr "Basis Agentenkonfiguration"
 
 #: src/Template/Agentconnector/config.php:134
 msgid "Installation guide"
@@ -6327,7 +6327,7 @@ msgstr "Installationsanleitung"
 
 #: src/Template/Agentconnector/config.php:140
 msgid "Create agent services"
-msgstr "Erstelle Agent Services"
+msgstr "Erstelle Services"
 
 #: src/Template/Agentconnector/config.php:146
 #: src/Template/Agentconnector/config.php:1203
