@@ -15584,7 +15584,7 @@ msgid "System Configuration"
 msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:632
-msgid "Settings ???"
+msgid "System"
 msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:637
