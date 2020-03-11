@@ -38,6 +38,7 @@ use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\CakePHP\Set;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
@@ -49,11 +50,13 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\Downtime;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use Statusengine2Module\Model\Entity\DowntimeService;
 use Statusengine2Module\Model\Table\StatehistoryHostsTable;
+use Statusengine3Module\Model\Entity\DowntimeHost;
 
 /**
  * Class DowntimereportsController
@@ -66,76 +69,80 @@ class DowntimereportsController extends AppController {
             //Only ship HTML template
             return;
         }
-        $downtimeReportForm = new DowntimereportForm();
-        $downtimeReportForm->execute($this->request->getData());
 
-        $User = new User($this->getUser());
-        $UserTime = UserTime::fromUser($User);
+        if ($this->request->is('post')) {
 
-        if (!empty($downtimeReportForm->getErrors())) {
-            $this->response = $this->response->withStatus(400);
-            $this->set('error', $downtimeReportForm->getErrors());
-            $this->viewBuilder()->setOption('serialize', ['error']);
-            return;
+            $downtimeReportForm = new DowntimereportForm();
+            $downtimeReportForm->execute($this->request->getData());
+
+            $User = new User($this->getUser());
+            $UserTime = UserTime::fromUser($User);
+
+            if (!empty($downtimeReportForm->getErrors())) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $downtimeReportForm->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
+            /** @var $TimeperiodsTable TimeperiodsTable */
+            $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+            $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->getData('timeperiod_id'));
+            if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', [
+                    'timeperiod_id' => [
+                        'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
+                    ]
+                ]);
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+            /** @var HostsTable $HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            $fromDate = strtotime($this->request->getData('from_date') . ' 00:00:00');
+            $toDate = strtotime($this->request->getData('to_date') . ' 23:59:59');
+            $evaluationType = $this->request->getData('evaluation_type');
+            $reflectionState = $this->request->getData('reflection_state');
+
+            $hostsUuids = $HostsTable->getHostsByContainerId($this->MY_RIGHTS, 'list', 'uuid');
+            if (empty($hostsUuids)) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', [
+                    'hosts' => [
+                        'empty' => 'There are no hosts for downtime report available.'
+                    ]
+                ]);
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+            $downtimeReport = $this->createReport(
+                $fromDate,
+                $toDate,
+                $evaluationType,
+                $reflectionState,
+                $timeperiod['Timeperiod']['timeperiod_timeranges'],
+                $hostsUuids,
+                $UserTime
+            );
+
+            if ($downtimeReport === null) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', [
+                    'no_downtimes' => [
+                        'empty' => __('No downtimes within specified time found ({0} - {1}) !',
+                            date('d.m.Y', $fromDate),
+                            date('d.m.Y', $toDate)
+                        )
+                    ]
+                ]);
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
+            $this->set('downtimeReport', $downtimeReport);
+            $this->viewBuilder()->setOption('serialize', ['downtimeReport']);
         }
-
-        /** @var $TimeperiodsTable TimeperiodsTable */
-        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->getData('timeperiod_id'));
-        if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
-            $this->response = $this->response->withStatus(400);
-            $this->set('error', [
-                'timeperiod_id' => [
-                    'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
-                ]
-            ]);
-            $this->viewBuilder()->setOption('serialize', ['error']);
-            return;
-        }
-        /** @var HostsTable $HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        $fromDate = strtotime($this->request->getData('from_date') . ' 00:00:00');
-        $toDate = strtotime($this->request->getData('to_date') . ' 23:59:59');
-        $evaluationType = $this->request->getData('evaluation_type');
-        $reflectionState = $this->request->getData('reflection_state');
-
-        $hostsUuids = $HostsTable->getHostsByContainerId($this->MY_RIGHTS, 'list', 'uuid');
-        if (empty($hostsUuids)) {
-            $this->response = $this->response->withStatus(400);
-            $this->set('error', [
-                'hosts' => [
-                    'empty' => 'There are no hosts for downtime report available.'
-                ]
-            ]);
-            $this->viewBuilder()->setOption('serialize', ['error']);
-            return;
-        }
-        $downtimeReport = $this->createReport(
-            $fromDate,
-            $toDate,
-            $evaluationType,
-            $reflectionState,
-            $timeperiod['Timeperiod']['timeperiod_timeranges'],
-            $hostsUuids,
-            $UserTime
-        );
-
-        if ($downtimeReport === null) {
-            $this->response = $this->response->withStatus(400);
-            $this->set('error', [
-                'no_downtimes' => [
-                    'empty' => __('No downtimes within specified time found ({0} - {1}) !',
-                        date('d.m.Y', $fromDate),
-                        date('d.m.Y', $toDate)
-                    )
-                ]
-            ]);
-            $this->viewBuilder()->setOption('serialize', ['error']);
-            return;
-        }
-
-        $this->set('downtimeReport', $downtimeReport);
-        $this->viewBuilder()->setOption('serialize', ['downtimeReport']);
     }
 
     /**
@@ -260,16 +267,36 @@ class DowntimereportsController extends AppController {
         /** @var DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable */
         $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
 
+
         $downtimes = [
-            'Hosts' => $DowntimehistoryHostsTable->getDowntimesForReporting($DowntimeHostConditions)
+            'Hosts' => []
         ];
+
+        foreach ($DowntimehistoryHostsTable->getDowntimesForReporting($DowntimeHostConditions) as $downtime) {
+            $downtime = $downtime->toArray();
+
+            $DowntimeView = new Downtime($downtime);
+            $downtimes['Hosts'][] = [
+                'author_name'          => $DowntimeView->getAuthorName(),
+                'comment_data'         => $DowntimeView->getCommentData(),
+                'entry_time'           => date('c', $DowntimeView->getEntryTime()),
+                'scheduled_start_time' => date('c', $DowntimeView->getScheduledStartTime()),
+                'scheduled_end_time'   => date('c', $DowntimeView->getScheduledEndTime()),
+                'duration'             => $DowntimeView->getDuration(),
+                'was_started'          => (int)$DowntimeView->wasStarted(),
+                'internal_downtime_id' => $DowntimeView->getInternalDowntimeId(),
+                'was_cancelled'        => (int)$DowntimeView->wasCancelled(),
+                'Hosts'                => $downtime['Hosts'],
+                'HostsToContainers'    => $downtime['HostsToContainers']
+            ];
+        }
 
         $hosts = [];
         $services = [];
         $reportData = [];
         foreach ($downtimes['Hosts'] as $hostDowntime) {
-            $hosts[$hostDowntime->get('Hosts')['uuid']] = [
-                'Host' => $hostDowntime->get('Hosts')
+            $hosts[$hostDowntime['Hosts']['uuid']] = [
+                'Host' => $hostDowntime['Hosts']
             ];
         }
         if ($evaluationType == 1) { //Evaluation with services
@@ -282,15 +309,35 @@ class DowntimereportsController extends AppController {
             /** @var DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable */
             $DowntimehistoryServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
 
-            $downtimes['Services'] = $DowntimehistoryServicesTable->getDowntimesForReporting($DowntimeServiceConditions);
+            $downtimes['Services'] = [];
             /** @var DowntimeService $serviceDowntime */
-            foreach ($downtimes['Services'] as $serviceDowntime) {
-                $hosts[$serviceDowntime->get('Hosts')['uuid']] = $serviceDowntime->get('Hosts');
-                $services[$serviceDowntime->get('Services')['uuid']] = [
-                    'Service'         => $serviceDowntime->get('Services'),
-                    'Host'            => $serviceDowntime->get('Hosts'),
-                    'Servicetemplate' => $serviceDowntime->get('Servicetemplates')
+            foreach ($DowntimehistoryServicesTable->getDowntimesForReporting($DowntimeServiceConditions) as $serviceDowntime) {
+                $serviceDowntime = $serviceDowntime->toArray();
+                $DowntimeView = new Downtime($serviceDowntime);
+
+                $downtimes['Services'][] = [
+                    'author_name'          => $DowntimeView->getAuthorName(),
+                    'comment_data'         => $DowntimeView->getCommentData(),
+                    'entry_time'           => date('c', $DowntimeView->getEntryTime()),
+                    'scheduled_start_time' => date('c', $DowntimeView->getScheduledStartTime()),
+                    'scheduled_end_time'   => date('c', $DowntimeView->getScheduledEndTime()),
+                    'duration'             => $DowntimeView->getDuration(),
+                    'was_started'          => (int)$DowntimeView->wasStarted(),
+                    'internal_downtime_id' => $DowntimeView->getInternalDowntimeId(),
+                    'was_cancelled'        => (int)$DowntimeView->wasCancelled(),
+                    'Services'             => $serviceDowntime['Services'],
+                    'Hosts'                => $serviceDowntime['Hosts'],
+                    'Servicetemplates'     => $serviceDowntime['Servicetemplates'],
+                    'servicename'          => !empty($serviceDowntime['Services']['name']) ? $serviceDowntime['Services']['name'] : $serviceDowntime['Servicetemplates']['name']
                 ];
+
+                $hosts[$serviceDowntime['Hosts']['uuid']] = $serviceDowntime['Hosts'];
+                $services[$serviceDowntime['Services']['uuid']] = [
+                    'Service'         => $serviceDowntime['Services'],
+                    'Host'            => $serviceDowntime['Hosts'],
+                    'Servicetemplate' => $serviceDowntime['Servicetemplates']
+                ];
+
             }
         }
         if (empty($downtimes['Hosts']) && empty($downtimes['Services'])) {
@@ -524,7 +571,6 @@ class DowntimereportsController extends AppController {
                 'hosts' => $hosts
             ];
         }
-
 
         $downtimeReport['totalTime'] = $totalTime;
         $downtimeReport['downtimes'] = $downtimes;

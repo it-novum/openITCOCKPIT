@@ -77,6 +77,17 @@
                 <div class="panel-content">
                     <div class="frame-wrap">
                         <div ng-show="tabName == 'reportConfig'" id="reportConfig">
+
+                            <div class="row" ng-if="errors.no_downtimes">
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        <div ng-repeat="error in errors.no_downtimes">
+                                            <div class="help-block text-info">{{ error }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <form ng-submit="submit();" class="form-horizontal"
                                   ng-init="reportMessage={successMessage : '<?php echo __('Report created successfully'); ?>' , errorMessage: '<?php echo __('Report could not be created'); ?>'}">
 

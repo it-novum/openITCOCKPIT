@@ -332,8 +332,8 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
             ]);
         }
 
-        $startDateSqlFormat = $DowntimeServiceConditions->getFrom();
-        $endDateSqlFormat = $DowntimeServiceConditions->getTo();
+        $startTimestamp = $DowntimeServiceConditions->getFrom();
+        $endTimestamp = $DowntimeServiceConditions->getTo();
 
         $query->where([
             'OR' => [
@@ -343,10 +343,10 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
 
             ]
         ])
-            ->bind(':start1', $startDateSqlFormat, 'date')
-            ->bind(':end1', $endDateSqlFormat, 'date')
-            ->bind(':start2', $startDateSqlFormat, 'date')
-            ->bind(':end2', $endDateSqlFormat, 'date');
+            ->bind(':start1', $startTimestamp, 'integer')
+            ->bind(':end1', $endTimestamp, 'integer')
+            ->bind(':start2', $startTimestamp, 'integer')
+            ->bind(':end2', $endTimestamp, 'integer');
 
         $query->enableHydration($enableHydration);
         if ($disableResultsCasting) {
