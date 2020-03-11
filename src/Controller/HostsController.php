@@ -27,12 +27,10 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Lib\Constants;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\AcknowledgementHostsTableInterface;
 use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Lib\Interfaces\HoststatusTableInterface;
-use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Service;
@@ -65,7 +63,6 @@ use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
@@ -97,7 +94,6 @@ use itnovum\openITCOCKPIT\Core\Views\Contact;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\Downtime;
 use itnovum\openITCOCKPIT\Core\Views\Host;
-use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\Hosttemplate;
 use itnovum\openITCOCKPIT\Core\Views\NotificationHost;
 use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
@@ -224,10 +220,10 @@ class HostsController extends AppController {
 
             $serviceStateSummary['state'] = array_combine(
                 [
-                    __('ok'),
-                    __('warning'),
-                    __('critical'),
-                    __('unknown')
+                    'ok',
+                    'warning',
+                    'critical',
+                    'unknown'
                 ],
                 $serviceStateSummary['state']
             );

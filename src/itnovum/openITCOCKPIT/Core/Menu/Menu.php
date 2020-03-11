@@ -629,9 +629,9 @@ class Menu {
             ))
             ->addCategory((new MenuCategory(
                 'settings_category',
-                __('Settings ???'),
+                __('System'),
                 3,
-                'fa fa-wrench'
+                'fa fa-cogs'
             ))
                 ->addLink(new MenuLink(
                     __('Config file editor'),
