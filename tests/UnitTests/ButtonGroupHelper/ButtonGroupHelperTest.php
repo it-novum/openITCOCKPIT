@@ -50,7 +50,7 @@ class ButtonGroupHelperTest extends TestCase {
         $iconCssSelector = 'fas fa-cog';
 
         $expected = $this->getExpectedOpeningButtonGroupTag()
-            . '    <button class="btn btn-default" data-original-title="" data-placement="bottom" rel="tooltip" data-container="body"><i class="fas fa-cog"></i></button>'
+            . '    <button class="btn btn-default " data-original-title="" data-placement="bottom" rel="tooltip" data-container="body"><i class="fas fa-cog"></i></button>'
             . $this->getExpectedClosingButtonGroupTag();
 
         $this->sut->addIconButton($iconCssSelector);
@@ -66,7 +66,7 @@ class ButtonGroupHelperTest extends TestCase {
         $dataOriginalTitle = 'test related title';
 
         $expected = $this->getExpectedOpeningButtonGroupTag()
-            . '    <button class="btn btn-default" data-original-title="test related title" data-placement="bottom" rel="tooltip" data-container="body"><i class="fas fa-cog"></i></button>'
+            . '    <button class="btn btn-default " data-original-title="test related title" data-placement="bottom" rel="tooltip" data-container="body"><i class="fas fa-cog"></i></button>'
             . $this->getExpectedClosingButtonGroupTag();
 
         $this->sut->addIconButton($iconCssSelector, $dataOriginalTitle);
@@ -183,7 +183,7 @@ class ButtonGroupHelperTest extends TestCase {
      * @return string
      */
     private function getExpectedOpeningButtonGroupTag(): string {
-        return '<div class="btn-group btn-group-xs mr-2" role="group" aria-label="unit testing">' . PHP_EOL;
+        return '<div class="btn-group mr-2" role="group" aria-label="unit testing">' . PHP_EOL;
     }
 
     /**
