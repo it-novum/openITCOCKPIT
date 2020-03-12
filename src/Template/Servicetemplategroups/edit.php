@@ -95,7 +95,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error':errors.container.description}">
+                        <div class="form-group" ng-class="{'has-error':errors.container.description}">
                             <label class="control-label">
                                 <?php echo __('Description'); ?>
                             </label>

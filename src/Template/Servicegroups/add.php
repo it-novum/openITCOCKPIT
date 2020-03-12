@@ -93,7 +93,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error':errors.description}">
+                        <div class="form-group" ng-class="{'has-error':errors.description}">
                             <label class="control-label">
                                 <?php echo __('Description'); ?>
                             </label>
@@ -106,7 +106,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error':errors.servicegroup_url}">
+                        <div class="form-group" ng-class="{'has-error':errors.servicegroup_url}">
                             <label class="control-label">
                                 <?php echo __('Service group URL'); ?>
                             </label>
@@ -119,7 +119,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.services}">
+                        <div class="form-group" ng-class="{'has-error': errors.services}">
                             <label class="control-label" for="ServicegroupServicesSelect">
                                 <?php echo __('Services'); ?>
                             </label>
@@ -138,7 +138,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.servicetemplates}">
+                        <div class="form-group" ng-class="{'has-error': errors.servicetemplates}">
                             <label class="control-label" for="ServicetemplatesSelect">
                                 <?php echo __('Service templates'); ?>
                             </label>
