@@ -180,9 +180,10 @@ class ButtonGroupHelperTest extends TestCase {
     }
 
     public function test_addRaw() {
-        $expected = '<div class="btn-group mr-2" role="group" aria-label="unit testing">
-    <div>test related html element</div>
-</div>';
+        $expected = $this->getExpectedOpeningButtonGroupTag()
+            . '    <div>test related html element</div>'
+            . $this->getExpectedClosingButtonGroupTag();
+
         $this->sut->addRaw('<div>test related html element</div>');
 
         $actual = $this->sut->getHtml();
