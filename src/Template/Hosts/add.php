@@ -875,10 +875,10 @@
                                     </label>
 
                                     <div class="btn-group" ng-if="!data.createAnother">
-                                        <button onclick="return false;" ng-click="submit('AgentconnectorsConfig')"
-                                                class="btn btn-primary">
+                                        <a onclick="return false;" ng-click="submit('AgentconnectorsConfig')"
+                                                class="btn btn-primary waves-effect waves-themed text-white">
                                             <?php echo __('Create host and setup agent'); ?>
-                                        </button>
+                                        </a>
                                     </div>
 
                                     <div class="btn-group">
