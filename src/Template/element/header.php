@@ -31,12 +31,11 @@ use App\View\Helper\ButtonGroupHelper;
 class OitcHeader {
 
     public function __construct($exportRunningHeaderInfo, $showstatsinmenu) {
+
         $this->menuHeaderOpens();
 
         $this->menuControl();
-        $this->menuHosts();
-
-        echo $this->menuSearchContentByAngularJsDirective();
+        $this->menuSearchContentByAngularJsDirective();
 
         $this->menuStatistics($exportRunningHeaderInfo, $showstatsinmenu);
 
@@ -73,12 +72,8 @@ class OitcHeader {
         echo $html;
     }
 
-    private function menuHosts(): string {
-        return $this->decorateHeaderHtmlElement('<div>Hosts</div>');
-    }
-
-    private function menuSearchContentByAngularJsDirective(): string {
-        return '<div class="search" top-search=""></div>';
+    private function menuSearchContentByAngularJsDirective(): void {
+        echo '<div class="search" top-search=""></div>';
     }
 
     private function translate($singular) {
