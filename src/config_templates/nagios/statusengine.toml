@@ -105,3 +105,8 @@ Maximum = 200
 FlushInterval = 1
 ## List of queue identifier which should be created as bulk message. This is a global option for all connections
 Queues = ["HostStatus", "HostCheck", "ServiceStatus", "ServiceCheck", "ServicePerfData", "StateChange", "LogData"]
+
+[Log]
+#Level = Warning
+### Level = Info
+### Level = Error
