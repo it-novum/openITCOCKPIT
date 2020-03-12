@@ -568,7 +568,7 @@ pre {
 }
 
 .chosen-container-multi .chosen-choices .search-choice {
-    margin: 0px !important;
+    margin: 0px 3px 0px 0px !important
 }
 
 .server-clock {
@@ -608,6 +608,11 @@ pre {
 .bootstrap-tagsinput {
     border-color: #E5E5E5;
     box-shadow: none;
+}
+
+.bootstrap-tagsinput .badge {
+    margin: 2px 2px 0 0;
+    padding:5px 8px;
 }
 
 .filter-text {
@@ -758,14 +763,9 @@ pre {
     margin: 1px 0px;
 }
 
-.downtime-report-service-widget {
-    border-radius: 12px 2px 2px 58px;
-}
-
 .serviceBarChart {
     height: 30px;
 }
-
 
 .barchart-legend-container ul {
     margin: 0;
@@ -1082,4 +1082,38 @@ a[target]:not(.btn) {
     -webkit-box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0, 0 0 1px 0 rgba(60, 64, 67, 0.08), 0 0 2px 1px rgba(60, 64, 67, 0.1);
     box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0, 0 0 1px 0 rgba(60, 64, 67, 0.08), 0 0 2px 1px rgba(60, 64, 67, 0.1);
     z-index: 1;
+}
+
+.menu-item,
+label.menu-open-button {
+    background: #233646;
+}
+
+.menu-item:hover,
+label.menu-open-button:hover {
+    background: #65727d;
+}
+
+.menu-open:checked + .menu-open-button {
+    background: #182531;
+}
+
+/* hintmarks */
+
+.hintmark:after {
+    color: #4759FF;
+    content: " *";
+    display: inline;
+}
+
+.hintmark_before:before {
+    color: #4759FF;
+    content: "* ";
+    display: inline;
+}
+
+.hintmark_red:after {
+    color: red;
+    content: " *";
+    display: inline;
 }

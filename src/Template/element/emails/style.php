@@ -128,8 +128,8 @@
 
     table.head-wrap {
         width: 100%;
-        background-color: #f3f3f3;
-        background-image: linear-gradient(to bottom, #f3f3f3, #e2e2e2);
+        background-color: #213340;
+        background-image: linear-gradient(to bottom, #233545, #1b2321);
         background-repeat: repeat-x;
     }
 
@@ -204,7 +204,7 @@
         font-weight: 900;
         font-size: 14px;
         text-transform: uppercase;
-        color: #444
+        color: #b1b3b2
     }
 
     .collapse {

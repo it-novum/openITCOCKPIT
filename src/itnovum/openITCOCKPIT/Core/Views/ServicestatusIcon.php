@@ -221,7 +221,7 @@ class ServicestatusIcon {
 
         $state = (int)$state;
         if ($state === 0) {
-            return Emoji::whiteHeavyCheckMark(); // Ok
+            return Emoji::checkMarkButton(); // Ok
         }
 
         if ($state === 1) {

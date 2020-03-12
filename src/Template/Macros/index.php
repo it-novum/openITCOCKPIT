@@ -177,7 +177,7 @@
                     </div>
                 </div>
 
-                <div class="form-group" ng-class="{'has-error': errors.value}">
+                <div class="form-group required" ng-class="{'has-error': errors.value}">
                     <label class="control-label">
                         <?php echo __('Value'); ?>
                     </label>
@@ -283,7 +283,7 @@
                     </div>
                 </div>
 
-                <div class="form-group" ng-class="{'has-error': errors.value}">
+                <div class="form-group required" ng-class="{'has-error': errors.value}">
                     <label class="control-label">
                         <?php echo __('Value'); ?>
                     </label>

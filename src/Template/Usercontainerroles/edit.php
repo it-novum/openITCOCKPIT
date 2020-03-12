@@ -62,7 +62,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
             {objectName : '<?php echo __('User container role'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
-                        <div class="form-group" ng-class="{'has-error': errors.name}">
+                        <div class="form-group required" ng-class="{'has-error': errors.name}">
                             <label class="control-label">
                                 <?php echo __('Role name'); ?>
                             </label>

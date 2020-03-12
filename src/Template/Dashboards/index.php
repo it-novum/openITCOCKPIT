@@ -54,7 +54,6 @@
                             <a class="nav-link"
                                href="javascript:void(0);"
                                ng-if="activeTab !== tab.id"
-                               ng-class="{'active':activeTab === tab.id}"
                                role="tab">
                                 <span class="text" ng-click="loadTabContent(tab.id)"
                                       ng-class="{ 'text-primary': tab.shared === true}">
@@ -63,7 +62,7 @@
                             </a>
 
                             <a href="javascript:void(0);"
-                               class="dropdown-toggle nav-link"
+                               class="dropdown-toggle nav-link active"
                                data-toggle="dropdown"
                                aria-expanded="false"
                                ng-if="activeTab === tab.id"
@@ -499,7 +498,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger pull-left" ng-click="neverPerformUpdates()">
+                <button type="button" class="btn btn-danger mr-auto" ng-click="neverPerformUpdates()">
                     <?php echo __('Never perform an update for this dashboard'); ?>
                 </button>
 

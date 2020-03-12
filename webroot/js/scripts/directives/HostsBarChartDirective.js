@@ -25,21 +25,21 @@ angular.module('openITCOCKPIT').directive('hostsBarChart', function($http, $time
                             type: 'bar',
                             label: $scope.barChartData.datasets[0].label,
                             data: $scope.barChartData.datasets[0].data,
-                            backgroundColor: '#449D44',
+                            backgroundColor: '#00C851',
                             borderColor: '#ffffff',
                             borderWidth: 1
                         }, {
                             type: 'bar',
                             label: $scope.barChartData.datasets[1].label,
                             data: $scope.barChartData.datasets[1].data,
-                            backgroundColor: '#C9302C',
+                            backgroundColor: '#CC0000',
                             borderColor: '#ffffff',
                             borderWidth: 1
                         }, {
                             type: 'bar',
                             label: $scope.barChartData.datasets[2].label,
                             data: $scope.barChartData.datasets[2].data,
-                            backgroundColor: '#92a2a8',
+                            backgroundColor: '#727b84',
                             borderColor: '#ffffff',
                             borderWidth: 1
                         }]

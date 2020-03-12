@@ -52,6 +52,7 @@ use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
@@ -213,7 +214,7 @@ class DashboardsController extends AppController {
                     ->first();
 
                 if ($tab) {
-                    $tab->set('modified', date('Y-m-d H:i:s'));
+                    $tab->set('modified', new FrozenTime());
                     $DashboardTabsTable->save($tab);
                 }
 
@@ -708,8 +709,9 @@ class DashboardsController extends AppController {
             ];
         }
 
+        $FrozenTime = new FrozenTime();
         $tabToUpdate = $DashboardTabsTable->patchEntity($tabToUpdate, [
-            'last_update' => time(),
+            'last_update' => $FrozenTime->getTimestamp(),
             'locked'      => (bool)$sourceTabWithWidgets->get('locked'),
             'widgets'     => $widgets
         ]);

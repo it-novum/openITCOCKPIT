@@ -19,11 +19,16 @@ MYSQL_PASSWORD=$(pwgen -s -1 16)
 
 PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 
+OSVERSION=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
+
 echo "Copy required system files"
 cp -r ${APPDIR}/system/etc/. /etc/
 cp -r ${APPDIR}/system/lib/. /lib/
 cp -r ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/
 cp -r ${APPDIR}/system/usr/. /usr/
+cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.conf
+cp ${APPDIR}/system/nginx/ssl_cert.conf /etc/nginx/openitc/ssl_cert.conf
+echo "# This file will NOT be overwritten during an update" >> /etc/nginx/openitc/custom.conf
 chmod +x /usr/bin/oitc
 
 echo "Create required system folders"

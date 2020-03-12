@@ -81,7 +81,7 @@ Once a service escalated, contacts, contact group and notification options will 
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.services}">
+                        <div class="form-group required" ng-class="{'has-error': errors.services}">
                             <label class="control-label">
                                 <i class="fa fa-plus up" aria-hidden="true"></i>
                                 <?php echo __('Services'); ?>
@@ -167,7 +167,7 @@ Once a service escalated, contacts, contact group and notification options will 
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.first_notification}">
+                        <div class="form-group required" ng-class="{'has-error': errors.first_notification}">
                             <label class="control-label">
                                 <?php echo __('First notification'); ?>
                             </label>
@@ -186,7 +186,7 @@ Once a service escalated, contacts, contact group and notification options will 
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.last_notification}">
+                        <div class="form-group required" ng-class="{'has-error': errors.last_notification}">
                             <label class="control-label">
                                 <?php echo __('Last notification'); ?>
                             </label>
@@ -237,7 +237,7 @@ Once a service escalated, contacts, contact group and notification options will 
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': errors.contacts}">
-                            <label class="control-label">
+                            <label class="control-label hintmark">
                                 <i class="fa fa-minus" aria-hidden="true"></i>
                                 <?php echo __('Contacts'); ?>
                             </label>
@@ -258,7 +258,7 @@ Once a service escalated, contacts, contact group and notification options will 
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': errors.contactgroups}">
-                            <label class="control-label">
+                            <label class="control-label hintmark">
                                 <i class="fa fa-minus" aria-hidden="true"></i>
                                 <?php echo __('Contactgroups'); ?>
                             </label>

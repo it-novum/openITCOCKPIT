@@ -81,7 +81,7 @@
                         </div>
 
 
-                        <div class="form-group required" ng-class="{'has-error':errors.Systemdowntime.comment}">
+                        <div class="form-group" ng-class="{'has-error':errors.Systemdowntime.comment}">
                             <label class="control-label">
                                 <?php echo __('Comment'); ?>
                             </label>
