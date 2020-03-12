@@ -98,7 +98,8 @@ class AngularAssets implements AngularAssetsInterface {
         'js/lib/raphael-charts-cust/g.raphael.js',
         'js/lib/raphael-charts-cust/g.bar.js',
         'js/lib/raphael-charts-cust/pielicious.js',
-        'node_modules/file-saver/dist/FileSaver.min.js'
+        'node_modules/file-saver/dist/FileSaver.min.js',
+        'node_modules/canvas-gauges/gauge.min.js'
     ];
 
     private $cssFiles = [

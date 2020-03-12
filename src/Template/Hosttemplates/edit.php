@@ -85,7 +85,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group" ng-class="{'has-error': errors.name}">
+                                <div class="form-group required" ng-class="{'has-error': errors.name}">
                                     <label class="control-label">
                                         <?php echo __('Template name'); ?>
                                     </label>
@@ -95,7 +95,7 @@
                                         type="text"
                                         ng-model="post.Hosttemplate.name">
                                     <div ng-repeat="error in errors.name">
-                                        <div class="help-block text-danger">{{ name }}</div>
+                                        <div class="help-block text-danger">{{ error }}</div>
                                     </div>
                                 </div>
 
@@ -109,11 +109,11 @@
                                         type="text"
                                         ng-model="post.Hosttemplate.description">
                                     <div ng-repeat="error in errors.description">
-                                        <div class="help-block text-danger">{{ name }}</div>
+                                        <div class="help-block text-danger">{{ error }}</div>
                                     </div>
                                 </div>
 
-                                <div class="form-group required" ng-class="{'has-error': errors.hostgroups}">
+                                <div class="form-group" ng-class="{'has-error': errors.hostgroups}">
                                     <label class="control-label" for="HosttemplateHostgroups">
                                         <?php echo __('Host groups'); ?>
                                     </label>
@@ -363,8 +363,8 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group required" ng-class="{'has-error': errors.contacts}">
-                                    <label class="control-label" for="ContactsPeriodSelect">
+                                <div class="form-group" ng-class="{'has-error': errors.contacts}">
+                                    <label class="control-label hintmark" for="ContactsPeriodSelect">
                                         <?php echo __('Contacts'); ?>
                                     </label>
                                     <select
@@ -381,8 +381,8 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group required" ng-class="{'has-error': errors.contactgroups}">
-                                    <label class="control-label" for="ContactgroupsSelect">
+                                <div class="form-group" ng-class="{'has-error': errors.contactgroups}">
+                                    <label class="control-label hintmark" for="ContactgroupsSelect">
                                         <?php echo __('Contact groups'); ?>
                                     </label>
                                     <select
