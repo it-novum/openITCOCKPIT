@@ -149,7 +149,7 @@ angular.module('openITCOCKPIT')
                 bottom = bottom * -1;
                 $('#credits').css('bottom', bottom + 'px');
 
-                var stopPosition = ($(window).height() / 2) - (114 / 2); //114 is height of oITC logo in px
+                var stopPosition = ($(window).height() / 2) - (250 / 2); //114 is height of oITC logo in px
                 var stopInterval = ($(window).height() / 2) + 100;
                 var marginTop = 1;
 
