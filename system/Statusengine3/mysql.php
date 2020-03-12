@@ -1,21 +1,4 @@
 <?php
-/**
- * Statusengine Worker
- * Copyright (C) 2016-2018  Daniel Ziegler
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 use Doctrine\DBAL\Schema\Schema;
 
@@ -32,7 +15,7 @@ $table->addOption("collate" , "utf8_general_ci");
 $table->addOption("comment" , "");
 $table->addColumn("id", "integer", array (
     'unsigned' => false,
-    'autoincrement' => true,
+    'autoincrement' => false,
     'notnull' => true,
     'default' => NULL,
 ));
@@ -59,9 +42,21 @@ $table->addOption("comment" , "");
 $table->addColumn("hostname", "string", array (
     'unsigned' => false,
     'autoincrement' => false,
-    'notnull' => false,
+    'notnull' => true,
     'default' => NULL,
     'length' => 255,
+));
+$table->addColumn("entry_time", "bigint", array (
+    'unsigned' => false,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => NULL,
+));
+$table->addColumn("entry_time_usec", "integer", array (
+    'unsigned' => true,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => '0',
 ));
 $table->addColumn("state", "smallint", array (
     'unsigned' => true,
@@ -82,12 +77,6 @@ $table->addColumn("comment_data", "string", array (
     'notnull' => false,
     'default' => NULL,
     'length' => 1024,
-));
-$table->addColumn("entry_time", "bigint", array (
-    'unsigned' => false,
-    'autoincrement' => false,
-    'notnull' => true,
-    'default' => NULL,
 ));
 $table->addColumn("acknowledgement_type", "smallint", array (
     'unsigned' => true,
@@ -113,12 +102,17 @@ $table->addColumn("notify_contacts", "boolean", array (
     'notnull' => false,
     'default' => '0',
 ));
-$table->addIndex([
-    "entry_time"
-], "entry_time");
+$table->setPrimaryKey([
+    "hostname",
+    "entry_time",
+    "entry_time_usec"
+]);
 $table->addIndex([
     "hostname"
 ], "hostname");
+$table->addIndex([
+    "entry_time"
+], "entry_time");
 
 
 
@@ -160,6 +154,12 @@ $table->addColumn("entry_time", "bigint", array (
     'autoincrement' => false,
     'notnull' => true,
     'default' => NULL,
+));
+$table->addColumn("entry_time_usec", "integer", array (
+    'unsigned' => true,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => '0',
 ));
 $table->addColumn("author_name", "string", array (
     'unsigned' => false,
@@ -231,6 +231,14 @@ $table->setPrimaryKey([
 ]);
 $table->addIndex([
     "hostname",
+    "entry_time",
+    "entry_time_usec",
+    "scheduled_start_time",
+    "scheduled_end_time",
+    "was_cancelled"
+], "reports");
+$table->addIndex([
+    "hostname",
     "scheduled_start_time",
     "scheduled_end_time",
     "was_cancelled"
@@ -241,6 +249,7 @@ $table->addIndex([
 /****************************************
  * Define: statusengine_host_notifications
  ***************************************/
+/*
 $table = $schema->createTable("statusengine_host_notifications");
 $table->addOption("engine" , "InnoDB");
 $table->addOption("collate" , "utf8_general_ci");
@@ -248,9 +257,21 @@ $table->addOption("comment" , "");
 $table->addColumn("hostname", "string", array (
     'unsigned' => false,
     'autoincrement' => false,
-    'notnull' => false,
+    'notnull' => true,
     'default' => NULL,
     'length' => 255,
+));
+$table->addColumn("start_time", "bigint", array (
+    'unsigned' => false,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => NULL,
+));
+$table->addColumn("start_time_usec", "integer", array (
+    'unsigned' => true,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => '0',
 ));
 $table->addColumn("contact_name", "string", array (
     'unsigned' => false,
@@ -278,12 +299,6 @@ $table->addColumn("state", "smallint", array (
     'autoincrement' => false,
     'notnull' => false,
     'default' => '0',
-));
-$table->addColumn("start_time", "bigint", array (
-    'unsigned' => false,
-    'autoincrement' => false,
-    'notnull' => true,
-    'default' => NULL,
 ));
 $table->addColumn("end_time", "bigint", array (
     'unsigned' => false,
@@ -318,13 +333,18 @@ $table->addColumn("ack_data", "string", array (
     'default' => NULL,
     'length' => 1024,
 ));
-$table->addIndex([
-    "start_time"
-], "start_time");
+$table->setPrimaryKey([
+    "hostname",
+    "start_time",
+    "start_time_usec"
+]);
 $table->addIndex([
     "hostname"
 ], "hostname");
-
+$table->addIndex([
+    "start_time"
+], "start_time");
+*/
 
 
 /****************************************
@@ -446,6 +466,12 @@ $table->addColumn("state_time", "bigint", array (
     'notnull' => true,
     'default' => NULL,
 ));
+$table->addColumn("state_time_usec", "integer", array (
+    'unsigned' => true,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => '0',
+));
 $table->addColumn("state_change", "boolean", array (
     'unsigned' => false,
     'autoincrement' => false,
@@ -504,10 +530,14 @@ $table->addColumn("long_output", "string", array (
 ));
 $table->setPrimaryKey([
     "hostname",
-    "state_time"
+    "state_time",
+    "state_time_usec"
 ]);
+$table->addIndex([
+    "hostname",
+    "state_time"
+], "hostname_time");
 */
-
 
 
 /****************************************
@@ -521,9 +551,21 @@ $table->addOption("comment" , "");
 $table->addColumn("hostname", "string", array (
     'unsigned' => false,
     'autoincrement' => false,
-    'notnull' => false,
+    'notnull' => true,
     'default' => NULL,
     'length' => 255,
+));
+$table->addColumn("start_time", "bigint", array (
+    'unsigned' => false,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => NULL,
+));
+$table->addColumn("start_time_usec", "integer", array (
+    'unsigned' => true,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => '0',
 ));
 $table->addColumn("state", "smallint", array (
     'unsigned' => true,
@@ -536,12 +578,6 @@ $table->addColumn("is_hardstate", "boolean", array (
     'autoincrement' => false,
     'notnull' => false,
     'default' => '0',
-));
-$table->addColumn("start_time", "bigint", array (
-    'unsigned' => false,
-    'autoincrement' => false,
-    'notnull' => true,
-    'default' => NULL,
 ));
 $table->addColumn("end_time", "bigint", array (
     'unsigned' => false,
@@ -615,12 +651,17 @@ $table->addColumn("long_output", "string", array (
 ));
 $table->setPrimaryKey([
     "hostname",
-    "start_time"
+    "start_time",
+    "start_time_usec"
 ]);
 $table->addIndex([
     "start_time",
     "end_time"
 ], "times");
+$table->addIndex([
+    "hostname",
+    "start_time"
+], "hostname");
 */
 
 
@@ -1051,14 +1092,26 @@ $table = $schema->createTable("statusengine_service_acknowledgements");
 $table->addOption("engine" , "InnoDB");
 $table->addOption("collate" , "utf8_general_ci");
 $table->addOption("comment" , "");
-$table->addColumn("hostname", "string", array (
+$table->addColumn("service_description", "string", array (
     'unsigned' => false,
     'autoincrement' => false,
-    'notnull' => false,
+    'notnull' => true,
     'default' => NULL,
     'length' => 255,
 ));
-$table->addColumn("service_description", "string", array (
+$table->addColumn("entry_time", "bigint", array (
+    'unsigned' => false,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => NULL,
+));
+$table->addColumn("entry_time_usec", "integer", array (
+    'unsigned' => true,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => '0',
+));
+$table->addColumn("hostname", "string", array (
     'unsigned' => false,
     'autoincrement' => false,
     'notnull' => false,
@@ -1085,12 +1138,6 @@ $table->addColumn("comment_data", "string", array (
     'default' => NULL,
     'length' => 1024,
 ));
-$table->addColumn("entry_time", "bigint", array (
-    'unsigned' => false,
-    'autoincrement' => false,
-    'notnull' => true,
-    'default' => NULL,
-));
 $table->addColumn("acknowledgement_type", "smallint", array (
     'unsigned' => true,
     'autoincrement' => false,
@@ -1115,10 +1162,11 @@ $table->addColumn("notify_contacts", "boolean", array (
     'notnull' => false,
     'default' => '0',
 ));
-$table->addIndex([
+$table->setPrimaryKey([
     "service_description",
-    "entry_time"
-], "servicedesc_time");
+    "entry_time",
+    "entry_time_usec"
+]);
 $table->addIndex([
     "hostname",
     "service_description"
@@ -1126,6 +1174,10 @@ $table->addIndex([
 $table->addIndex([
     "entry_time"
 ], "entry_time");
+$table->addIndex([
+    "service_description",
+    "entry_time"
+], "servicedesc_time");
 
 
 
@@ -1174,6 +1226,12 @@ $table->addColumn("entry_time", "bigint", array (
     'autoincrement' => false,
     'notnull' => true,
     'default' => NULL,
+));
+$table->addColumn("entry_time_usec", "integer", array (
+    'unsigned' => true,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => '0',
 ));
 $table->addColumn("author_name", "string", array (
     'unsigned' => false,
@@ -1246,6 +1304,14 @@ $table->setPrimaryKey([
 ]);
 $table->addIndex([
     "service_description",
+    "entry_time",
+    "entry_time_usec",
+    "scheduled_start_time",
+    "scheduled_end_time",
+    "was_cancelled"
+], "reports");
+$table->addIndex([
+    "service_description",
     "scheduled_start_time",
     "scheduled_end_time",
     "was_cancelled"
@@ -1256,18 +1322,31 @@ $table->addIndex([
 /****************************************
  * Define: statusengine_service_notifications
  ***************************************/
+/*
 $table = $schema->createTable("statusengine_service_notifications");
 $table->addOption("engine" , "InnoDB");
 $table->addOption("collate" , "utf8_general_ci");
 $table->addOption("comment" , "");
-$table->addColumn("hostname", "string", array (
+$table->addColumn("service_description", "string", array (
     'unsigned' => false,
     'autoincrement' => false,
-    'notnull' => false,
+    'notnull' => true,
     'default' => NULL,
     'length' => 255,
 ));
-$table->addColumn("service_description", "string", array (
+$table->addColumn("start_time", "bigint", array (
+    'unsigned' => false,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => NULL,
+));
+$table->addColumn("start_time_usec", "integer", array (
+    'unsigned' => true,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => '0',
+));
+$table->addColumn("hostname", "string", array (
     'unsigned' => false,
     'autoincrement' => false,
     'notnull' => false,
@@ -1300,12 +1379,6 @@ $table->addColumn("state", "smallint", array (
     'autoincrement' => false,
     'notnull' => false,
     'default' => '0',
-));
-$table->addColumn("start_time", "bigint", array (
-    'unsigned' => false,
-    'autoincrement' => false,
-    'notnull' => true,
-    'default' => NULL,
 ));
 $table->addColumn("end_time", "bigint", array (
     'unsigned' => false,
@@ -1340,6 +1413,11 @@ $table->addColumn("ack_data", "string", array (
     'default' => NULL,
     'length' => 1024,
 ));
+$table->setPrimaryKey([
+    "service_description",
+    "start_time",
+    "start_time_usec"
+]);
 $table->addIndex([
     "hostname",
     "service_description"
@@ -1347,7 +1425,7 @@ $table->addIndex([
 $table->addIndex([
     "start_time"
 ], "start_time");
-
+*/
 
 
 /****************************************
@@ -1464,17 +1542,10 @@ $table = $schema->createTable("statusengine_service_statehistory");
 $table->addOption("engine" , "InnoDB");
 $table->addOption("collate" , "utf8_general_ci");
 $table->addOption("comment" , "");
-$table->addColumn("hostname", "string", array (
-    'unsigned' => false,
-    'autoincrement' => false,
-    'notnull' => false,
-    'default' => NULL,
-    'length' => 255,
-));
 $table->addColumn("service_description", "string", array (
     'unsigned' => false,
     'autoincrement' => false,
-    'notnull' => false,
+    'notnull' => true,
     'default' => NULL,
     'length' => 255,
 ));
@@ -1483,6 +1554,19 @@ $table->addColumn("state_time", "bigint", array (
     'autoincrement' => false,
     'notnull' => true,
     'default' => NULL,
+));
+$table->addColumn("state_time_usec", "integer", array (
+    'unsigned' => true,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => '0',
+));
+$table->addColumn("hostname", "string", array (
+    'unsigned' => false,
+    'autoincrement' => false,
+    'notnull' => false,
+    'default' => NULL,
+    'length' => 255,
 ));
 $table->addColumn("state_change", "boolean", array (
     'unsigned' => false,
@@ -1541,11 +1625,21 @@ $table->addColumn("long_output", "string", array (
     'length' => 8192,
 ));
 $table->setPrimaryKey([
+    "service_description",
+    "state_time",
+    "state_time_usec"
+]);
+$table->addIndex([
     "hostname",
     "service_description",
     "state_time"
-]);
+], "host_servicename_time");
+$table->addIndex([
+    "service_description",
+    "state_time"
+], "servicename_time");
 */
+
 
 /****************************************
  * Define: statusengine_servicechecks
@@ -1555,14 +1649,26 @@ $table = $schema->createTable("statusengine_servicechecks");
 $table->addOption("engine" , "InnoDB");
 $table->addOption("collate" , "utf8_general_ci");
 $table->addOption("comment" , "");
-$table->addColumn("hostname", "string", array (
+$table->addColumn("service_description", "string", array (
     'unsigned' => false,
     'autoincrement' => false,
-    'notnull' => false,
+    'notnull' => true,
     'default' => NULL,
     'length' => 255,
 ));
-$table->addColumn("service_description", "string", array (
+$table->addColumn("start_time", "bigint", array (
+    'unsigned' => false,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => NULL,
+));
+$table->addColumn("start_time_usec", "integer", array (
+    'unsigned' => true,
+    'autoincrement' => false,
+    'notnull' => true,
+    'default' => '0',
+));
+$table->addColumn("hostname", "string", array (
     'unsigned' => false,
     'autoincrement' => false,
     'notnull' => false,
@@ -1580,12 +1686,6 @@ $table->addColumn("is_hardstate", "boolean", array (
     'autoincrement' => false,
     'notnull' => false,
     'default' => '0',
-));
-$table->addColumn("start_time", "bigint", array (
-    'unsigned' => false,
-    'autoincrement' => false,
-    'notnull' => true,
-    'default' => NULL,
 ));
 $table->addColumn("end_time", "bigint", array (
     'unsigned' => false,
@@ -1658,10 +1758,15 @@ $table->addColumn("long_output", "string", array (
     'length' => 8192,
 ));
 $table->setPrimaryKey([
+    "service_description",
+    "start_time",
+    "start_time_usec"
+]);
+$table->addIndex([
     "hostname",
     "service_description",
     "start_time"
-]);
+], "servicename");
 */
 
 
