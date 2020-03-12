@@ -13,7 +13,6 @@ angular.module('openITCOCKPIT').directive('serviceAvailabilityOverview', functio
                     $scope.color = AvailabilityColorCalculationService.getBackgroundColor(
                         $scope.data.pieChartData.availability
                     );
-                    $scope.color = 'linear-gradient(90deg, '+$scope.color+' 33%, rgba(76, 79, 83, 0.9) 34%)';
                 }
 
                 var chart = new Chart('servicePieChart-' + $scope.data.Service.id, {

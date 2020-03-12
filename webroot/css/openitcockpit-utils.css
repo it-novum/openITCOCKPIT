@@ -407,7 +407,7 @@ openITCOCKPIT v4 Utilities
     width: 160px;
 }
 
-.width-180{
+.width-180 {
     width: 180px;
 }
 
@@ -570,4 +570,31 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 .search_list_item_active {
     background-color: rgba(69, 69, 69, 0.8);
     color: #ffffff;
+}
+
+.icon-stack .cornered {
+    position: absolute;
+    bottom: -5px;
+    line-height: 1em;
+    text-shadow: 1px 1px 1px #BDBDBD;
+    font-size: 9px;
+}
+
+.icon-stack .cornered-lr {
+    right: -5px;
+    text-align: right;
+}
+
+.icon-stack .cornered-ll {
+    text-align: left;
+}
+
+.icon-stack .cornered-tr {
+    top: 0px !important;
+    text-align: right;
+}
+
+.icon-stack .cornered-tl {
+    top: 0px !important;
+    text-align: left;
 }

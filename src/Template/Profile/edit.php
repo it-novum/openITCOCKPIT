@@ -364,7 +364,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                     <form ng-submit="submitPassword();" class="form-horizontal">
 
                         <div class="row" ng-show="isLdapUser">
-                            <div class="col-xs-12 text-center text-info padding-top-10" ng-show="isLdapUser">
+                            <div class="col-12 card card-body text-center text-info padding-10" ng-show="isLdapUser">
                                 <i class="fa fa-info-circle"></i>
                                 <?php echo __('LDAP users need to change their password through the operating system or an LDAP account manager tool.'); ?>
                             </div>
@@ -412,11 +412,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
-
-
                         </div>
 
-                        <div class="card margin-top-10">
+                        <div class="card margin-top-10" ng-hide="isLdapUser">
                             <div class="card-body">
                                 <div class="float-right">
                                     <button class="btn btn-primary"
@@ -455,11 +453,13 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
             <div class="panel-container show">
                 <div class="panel-content">
 
-                    <div class="col-xs-12 text-center text-info" ng-show="apikeys.length === 0">
-                        <i class="fa fa-info-circle"></i>
-                        <?php echo __('No API keys created yet. You can still use the api using your username and password.'); ?>
-                        <br/>
-                        <b><?php echo __('It\'s recommended to create a own API key for every external application.'); ?></b>
+                    <div class="row">
+                        <div class="col-12 card card-body text-center text-info padding-10" ng-show="apikeys.length == 0">
+                            <i class="fa fa-info-circle"></i>
+                            <?php echo __('No API keys created yet. You can still use the api using your username and password.'); ?>
+                            <br/>
+                            <b><?php echo __('It\'s recommended to create a own API key for every external application.'); ?></b>
+                        </div>
                     </div>
 
                     <div class="row" ng-show="apikeys.length > 0">

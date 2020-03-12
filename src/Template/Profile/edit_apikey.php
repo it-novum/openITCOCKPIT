@@ -71,7 +71,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" ng-click="deleteApiKey()">
+                <button type="button" class="btn btn-danger mr-auto" ng-click="deleteApiKey()">
                     <i class="fa fa-trash"></i>
                     <?php echo __('Delete'); ?>
                 </button>

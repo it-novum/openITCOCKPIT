@@ -186,18 +186,43 @@ if [[ "$NORESTART" == "true" ]]; then
   exit 0
 fi
 
-systemctl restart sudo_server.service
-systemctl restart oitc_cmd.service
-systemctl restart gearman_worker.service
-systemctl restart push_notification.service
-systemctl restart nodejs_server.service
+OSVERSION=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
+
+echo "Copy required system files"
+cp -r ${APPDIR}/system/etc/. /etc/
+cp -r ${APPDIR}/system/lib/. /lib/
+cp -r ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/
+cp -r ${APPDIR}/system/usr/. /usr/
+cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.conf
+# only ensure that the files exist
+touch /etc/nginx/openitc/ssl_cert.conf
+touch /etc/nginx/openitc/custom.conf
+chmod +x /usr/bin/oitc
+
+echo "Create required system folders"
+mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,phpnsta,statusengine} /opt/openitc/etc/statusengine/Config
+
+echo "Enable new systemd services"
+systemctl daemon-reload
+systemctl enable sudo_server.service\
+ oitc_cmd.service\
+ gearman_worker.service\
+ push_notification.service\
+ nodejs_server.service\
+ openitcockpit-graphing.service
+
+systemctl restart sudo_server.service\
+ oitc_cmd.service\
+ gearman_worker.service\
+ push_notification.service\
+ nodejs_server.service
 
 PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
 # Restart services if they are running
 # Nagios/Naemon is aliased, so it works for both
-for srv in statusengine.service nagios.service nginx.service phpnsta.service; do
+for srv in openitcockpit-graphing.service statusengine.service nagios.service nginx.service phpnsta.service; do
   if systemctl is-active --quiet $srv; then
     echo "Restart service: $srv"
     systemctl restart $srv

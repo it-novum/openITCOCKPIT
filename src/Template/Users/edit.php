@@ -46,7 +46,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Edit local user:'); ?>
+                    <span ng-if="!isLdapUser"><?php echo __('Edit local user:'); ?></span>
+                    <span ng-if="isLdapUser"><?php echo __('Edit LDAP user:'); ?></span>
                     <span class="fw-300"><i>
                         {{post.User.firstname}},
                         {{post.User.lastname}}
@@ -65,8 +66,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
             {objectName : '<?php echo __('User'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
-                        <div class="form-group required" ng-class="{'has-error': errors.usercontainerroles}">
-                            <label class="control-label" for="UserContainerroles">
+                        <div class="form-group" ng-class="{'has-error': errors.usercontainerroles}">
+                            <label class="control-label hintmark" for="UserContainerroles">
                                 <?php echo __('Container Roles'); ?>
                             </label>
                             <select
@@ -106,8 +107,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.containers}">
-                            <label class="control-label" for="UserContainers">
+                        <div class="form-group" ng-class="{'has-error': errors.containers}">
+                            <label class="control-label hintmark" for="UserContainers">
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
@@ -185,6 +186,23 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
+                        <div ng-show="isLdapUser" class="form-group required" ng-class="{'has-error': errors.samaccountname}">
+                            <label class="control-label">
+                                <?php echo __('SAM-Account-Name'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                ng-disabled="isLdapUser"
+                                ng-model="post.User.samaccountname">
+                            <div ng-repeat="error in errors.samaccountname">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info">
+                                <?php echo __('Username for the login'); ?>
+                            </div>
+                        </div>
+
                         <div class="form-group required" ng-class="{'has-error': errors.email}">
                             <label class="control-label">
                                 <?php echo __('Email address'); ?>
@@ -192,35 +210,47 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <input
                                 class="form-control"
                                 type="text"
+                                ng-disabled="isLdapUser"
                                 ng-model="post.User.email">
                             <div ng-repeat="error in errors.email">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                            <div class="help-block text-info" ng-show="isLdapUser">
+                                <?php echo __('Value imported from LDAP Server'); ?>
+                            </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.firstname}">
+                        <div class="form-group required" ng-class="{'has-error': errors.firstname}">
                             <label class="control-label">
                                 <?php echo __('First name'); ?>
                             </label>
                             <input
                                 class="form-control"
                                 type="text"
+                                ng-disabled="isLdapUser"
                                 ng-model="post.User.firstname">
                             <div ng-repeat="error in errors.firstname">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                            <div class="help-block text-info" ng-show="isLdapUser">
+                                <?php echo __('Value imported from LDAP Server'); ?>
+                            </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.lastname}">
+                        <div class="form-group required" ng-class="{'has-error': errors.lastname}">
                             <label class="control-label">
                                 <?php echo __('Last name'); ?>
                             </label>
                             <input
                                 class="form-control"
                                 type="text"
+                                ng-disabled="isLdapUser"
                                 ng-model="post.User.lastname">
                             <div ng-repeat="error in errors.lastname">
                                 <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info" ng-show="isLdapUser">
+                                <?php echo __('Value imported from LDAP Server'); ?>
                             </div>
                         </div>
 
@@ -400,7 +430,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         <!-- Prevent FireFox and Chrome from filling the users email into the timezone select box  :facepalm: -->
                         <input type="text" name="name" style="display:none">
 
-                        <div class="form-group required" ng-class="{'has-error': errors.password}">
+                        <div class="form-group required" ng-class="{'has-error': errors.password}" ng-if="isLdapUser === false">
                             <label class="control-label">
                                 <?php echo __('New password'); ?>
                             </label>
@@ -414,7 +444,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.confirm_password}">
+                        <div class="form-group required" ng-class="{'has-error': errors.confirm_password}" ng-if="isLdapUser === false">
                             <label class="control-label">
                                 <?php echo __('Confirm new password'); ?>
                             </label>

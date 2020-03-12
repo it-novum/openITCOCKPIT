@@ -94,7 +94,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error':errors.description}">
+                        <div class="form-group" ng-class="{'has-error':errors.description}">
                             <label class="control-label">
                                 <?php echo __('Description'); ?>
                             </label>
@@ -107,7 +107,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error':errors.hostgroup_url}">
+                        <div class="form-group" ng-class="{'has-error':errors.hostgroup_url}">
                             <label class="control-label">
                                 <?php echo __('Host group URL'); ?>
                             </label>
@@ -120,7 +120,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.hosts}">
+                        <div class="form-group" ng-class="{'has-error': errors.hosts}">
                             <label class="control-label" for="HostgroupHostSelect">
                                 <?php echo __('Hosts'); ?>
                             </label>
@@ -139,7 +139,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.hosttemplates}">
+                        <div class="form-group" ng-class="{'has-error': errors.hosttemplates}">
                             <label class="control-label" for="HostgroupHosttemplateSelect">
                                 <?php echo __('Host templates'); ?>
                             </label>

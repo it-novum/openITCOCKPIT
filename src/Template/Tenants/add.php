@@ -62,7 +62,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                           ng-init="successMessage=
             {objectName : '<?php echo __('Tenant'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
-                        <div class="form-group" ng-class="{'has-error': errors.name}">
+                        <div class="form-group required" ng-class="{'has-error': errors.name}">
                             <label class="control-label">
                                 <?php echo __('Name'); ?>
                             </label>
@@ -70,7 +70,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 class="form-control"
                                 type="text"
                                 ng-model="post.container.name">
-                            <div ng-repeat="error in errors.name">
+                            <div ng-repeat="error in errors.container.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>

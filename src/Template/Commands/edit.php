@@ -128,7 +128,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                         </div>
 
                         <div class="form-group required" ng-class="{'has-error': errors.command_line}">
-                            <label class="form-label required" for="commandLineTextArea">
+                            <label class="control-label" for="commandLineTextArea">
                                 <?php echo __('Command line'); ?>
                             </label>
                             <textarea class="form-control code-font" type="text" ng-model="post.Command.command_line"
