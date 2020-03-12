@@ -97,7 +97,6 @@ class NotificationHostsTable extends Table implements NotificationHostsTableInte
     public function getNotifications(HostNotificationConditions $HostNotificationConditions, $PaginateOMat = null) {
         $query = $this->find()
             ->select([
-                'NotificationHosts.id',
                 'NotificationHosts.hostname',
                 'NotificationHosts.start_time',
                 'NotificationHosts.state',
@@ -138,7 +137,11 @@ class NotificationHostsTable extends Table implements NotificationHostsTableInte
                 'NotificationHosts.start_time <'      => $HostNotificationConditions->getTo()
             ])
             ->order($HostNotificationConditions->getOrder())
-            ->group(['NotificationHosts.id']);
+            ->group([
+                'NotificationHosts.hostname',
+                'NotificationHosts.start_time',
+                'NotificationHosts.start_time_usec'
+            ]);
 
 
         if ($HostNotificationConditions->getHostUuid()) {

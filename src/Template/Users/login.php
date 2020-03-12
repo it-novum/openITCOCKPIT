@@ -36,8 +36,8 @@
     ng-controller="UsersLoginController"
     class="col-12 col-md-4 peer pX-40 pY-80 h-100 scrollable pos-r login-side-bg" style='min-width: 320px;'>
 
-    <div class="col-12">
-        <img class="img-fluid" src="/img/logos/openITCOCKPIT_Logo_Big.png"/>
+    <div class="col-12 text-center">
+        <img class="img-fluid" src="/img/logos/openitcockpit-logo-url-light.png" style="max-height: 230px;"/>
     </div>
 
     <h4 class="fw-300 c-white mB-40"><?= __('Login') ?></h4>
