@@ -22,6 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+$Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -147,13 +149,11 @@
             <dd>Timo Triebensky</dd>
         </dl>
 
-
         <h2 class="credits-h2">Special Thanks</h2>
         <p>Stephan Kraus, Oliver Müller, Laziz Karimov, Robert Braun,<br/>
             René Kleffel, Michael Ziegler, Jonas Rottmann,<br/>
             Johannes Drummer, Jens Michelsons, Jeremy Eder and more...</p>
 
-        <h2 class="credits-h2">Special Thanks</h2>
         <p>Thanks to all the developers for the beautiful libraries.</p>
 
         <h2 class="credits-h2">Powered by</h2>
@@ -185,6 +185,10 @@
 
         <br/>
         <br/>
+        <h2 class="credits-h2">Image Credits</h2>
+        <p>Milky Way Photo by Denis Degioanni on Unsplash</p>
+        <br/>
+        <br/>
         <h2 class="credits-h2">Sponsored by it-novum</h2>
         <p>
             <img src="/img/logos/it-novum.png">
@@ -194,7 +198,7 @@
         <br/>
         <br/>
         <p id="credits-oitc-logo">
-            <img src="/img/logos/openITCOCKPIT_dark.png" style="width: 600px;">
+            <img class="img-fluid" alt="Logo" src="/img/logos/logo_small.png" style="max-height: 400px;">
         </p>
 
         <br/>

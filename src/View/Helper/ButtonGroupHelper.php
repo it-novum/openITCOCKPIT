@@ -44,7 +44,7 @@ class ButtonGroupHelper implements ButtonGroupHelperInterface {
     }
 
     private function buttonGroupOpens(): string {
-        return '<div class="btn-group btn-group-xs mr-2" role="group" aria-label="' . $this->buttonGroupAriaLabel . '">';
+        return '<div class="btn-group mr-2" role="group" aria-label="' . $this->buttonGroupAriaLabel . '">';
     }
 
     private function buttonGroupCloses(): string {
@@ -55,8 +55,12 @@ class ButtonGroupHelper implements ButtonGroupHelperInterface {
         return $this->createButtonGroupWithContent();
     }
 
+    private function getOpeningButtonGeneralPart(string $classAttribute): string {
+        return '<button class="btn ' . $classAttribute . ' "';
+}
+
     public function addIconButton(string $iconCssSelector, string $dataOriginalTitle = ''): ButtonGroupHelperInterface {
-        $this->groupElements[] = '<button class="btn btn-default" data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body"><i class="' . $iconCssSelector . '"></i></button>';
+        $this->groupElements[] = $this->getOpeningButtonGeneralPart('btn-default') . ' data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body"><i class="' . $iconCssSelector . '"></i></button>';
 
         return $this;
     }
