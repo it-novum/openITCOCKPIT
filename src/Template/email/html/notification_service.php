@@ -58,7 +58,7 @@ echo $this->element('emails/style');
                     <tr>
                         <td>
                             <?php if ($noAttachments === false): ?>
-                                <img src="cid:100" width="120"/>
+                                <img src="cid:100" width="60"/>
                             <?php endif; ?>
                         </td>
                         <td align="right">
@@ -66,7 +66,8 @@ echo $this->element('emails/style');
                         </td>
                     </tr>
                     <tr>
-                        <td class="notification_type" colspan="2">
+                        <td>&nbsp;</td>
+                        <td align="right" class="notification_type" >
                             <?= h($args->getOption('notificationtype')) ?>
                         </td>
                     </tr>

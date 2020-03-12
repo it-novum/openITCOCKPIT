@@ -17,7 +17,7 @@ $menu = getBufferedFileContent('system_health_menu.php');
 $btnHelper = (new ButtonGroupHelper('Display of system health notifications'))
     ->addButtonWithTogglingMenu('fas fa-heartbeat {{ class }}', __('System health'))
     ->addRaw($menu)
-    ->addButtonWithTooltip('{{systemHealth.errorCount}}', '{{ bgClass }}', __('# of status notifications'));
+    ->addButtonWithTooltip('{{systemHealth.errorCount}}', 'bg-up {{ bgClass }}', __('# of status notifications'));
 
 $html = $btnHelper->getHtml();
 echo $html;

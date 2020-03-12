@@ -70,26 +70,47 @@ define('TESTS', ROOT . DS . 'tests' . DS);
  * Path to the temporary files directory.
  */
 if ($isCli === false) {
+    // www-data
     define('TMP', ROOT . DS . 'tmp' . DS);
 } else {
-    // www-data
-    define('TMP', ROOT . DS . 'tmp_cli' . DS);
+    // root or nagios
+    if ($_SERVER['USER'] !== 'root') {
+        //nagios user or so
+        define('TMP', ROOT . DS . 'tmp' . DS . 'nagios' . DS);
+    } else {
+        //root user
+        define('TMP', ROOT . DS . 'tmp' . DS . 'cli' . DS);
+    }
 }
 
 /*
  * Path to the logs directory.
  */
-define('LOGS', ROOT . DS . 'logs' . DS);
-
+if ($isCli === false) {
+    //www-data
+    define('LOGS', ROOT . DS . 'logs' . DS);
+} else {
+    if ($_SERVER['USER'] !== 'root') {
+        define('LOGS', ROOT . DS . 'logs' . DS . 'nagios' . DS);
+    } else {
+        define('LOGS', ROOT . DS . 'logs' . DS);
+    }
+}
 
 /*
  * Path to the cache files directory. It can be shared between hosts in a multi-server setup.
  */
 if ($isCli === false) {
+    //www-data
     define('CACHE', TMP . 'cache' . DS);
 } else {
-    // www-data
-    define('CACHE', TMP . 'cache_cli' . DS);
+    if ($_SERVER['USER'] !== 'root') {
+        //nagios user or so
+        define('CACHE', TMP . 'cache' . DS . 'nagios' . DS);
+    } else {
+        //root user
+        define('CACHE', TMP . 'cache' . DS . 'cli' . DS);
+    }
 }
 
 /**

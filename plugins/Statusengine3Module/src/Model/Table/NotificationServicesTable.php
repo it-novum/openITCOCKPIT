@@ -97,7 +97,6 @@ class NotificationServicesTable extends Table implements NotificationServicesTab
     public function getNotifications(ServiceNotificationConditions $ServiceNotificationConditions, $PaginateOMat = null) {
         $query = $this->find();
         $query->select([
-            'NotificationServices.id',
             'NotificationServices.hostname',
             'NotificationServices.service_description',
             'NotificationServices.start_time',
@@ -153,7 +152,11 @@ class NotificationServicesTable extends Table implements NotificationServicesTab
                 ['Commands.uuid = NotificationServices.command_name']
             )
             ->order($ServiceNotificationConditions->getOrder())
-            ->group(['NotificationServices.id']);
+            ->group([
+                'NotificationServices.service_description',
+                'NotificationServices.start_time',
+                'NotificationServices.start_time_usec'
+            ]);
 
 
         if ($ServiceNotificationConditions->getServiceUuid()) {

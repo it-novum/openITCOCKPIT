@@ -205,7 +205,7 @@ class HoststatusIcon {
 
         $state = (int)$state;
         if ($state === 0) {
-            return Emoji::whiteHeavyCheckMark(); // Up
+            return Emoji::checkMarkButton(); // Up
         }
 
         if ($state === 1) {

@@ -45,9 +45,9 @@ echo $this->element('emails/style');
             <div class="content">
                 <table>
                     <tr>
-                        <td><img src="cid:100" width="120"/></td>
+                        <td><img src="cid:100" width="60"/></td>
                         <td align="right">
-                            <h6><?= __('Test mail') ?></h6>
+                            <h6><?= __('New password') ?></h6>
                         </td>
                     </tr>
                 </table>
