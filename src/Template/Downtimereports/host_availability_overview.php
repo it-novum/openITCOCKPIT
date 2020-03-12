@@ -1,10 +1,10 @@
-<div class="card margin-top-10" style="width: 100%">
-    <div class="card-header">
-        <h4 ng-style="{'color':  color}">
+<div class="card" style="width: 100%">
+    <div class="padding-left-5 padding-top-5" ng-style="{'background':  color}">
+        <h4 ng-class="{'text-white': dynamicColor}">
             <strong>
-                <i class="fa fa-desktop" ></i>
+                <i class="fa fa-desktop" ng-class="{'text-white': dynamicColor}"></i>
                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                    <a ui-sref="HostsBrowser({id:data.Host.id})">
+                    <a ui-sref="HostsBrowser({id:data.Host.id})" ng-class="{'text-white': dynamicColor}">
                         {{data.Host.name}}
                     </a>
                 <?php else: ?>
@@ -65,7 +65,7 @@
                                            dynamic-color="dynamicColor"
                                            ng-repeat="service in data.Services"
                                            ng-if="evaluationType == 1"
-                                           class="col-lg-3">
+                                           class="col-lg-3 no-padding">
             </service-availability-overview>
         </div>
     </div>

@@ -443,34 +443,6 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         <!-- Prevent FireFox and Chrome from filling the users email into the timezone select box  :facepalm: -->
                         <input type="text" name="name" style="display:none">
 
-                        <div class="form-group required" ng-class="{'has-error': errors.password}">
-                            <label class="control-label">
-                                <?php echo __('New password'); ?>
-                            </label>
-                            <input
-                                class="form-control"
-                                type="password"
-                                ng-model="post.User.password"
-                                autocomplete="new-password">
-                            <div ng-repeat="error in errors.password">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
-
-                        <div class="form-group required" ng-class="{'has-error': errors.confirm_password}">
-                            <label class="control-label">
-                                <?php echo __('Confirm new password'); ?>
-                            </label>
-                            <input
-                                class="form-control"
-                                type="password"
-                                ng-model="post.User.confirm_password"
-                                autocomplete="new-password">
-                            <div ng-repeat="error in errors.confirm_password">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
-
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">

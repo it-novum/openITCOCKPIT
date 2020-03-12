@@ -10,7 +10,7 @@ angular.module('openITCOCKPIT').directive('hostAvailabilityOverview', function($
         controller: function($scope){
             $timeout(function(){
 
-                $scope.color = 'rgba(76, 79, 83, 0.9)';
+                $scope.color = 'transparent';
                 if($scope.dynamicColor){
                     $scope.color = AvailabilityColorCalculationService.getBackgroundColor(
                         $scope.data.pieChartData.availability
