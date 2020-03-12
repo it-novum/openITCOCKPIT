@@ -60,6 +60,7 @@ src/Lib/openITCOCKPIT_AvailableVersion.php
 webroot/img/userimages
 webroot/img/charts
 webroot/img/graphs
+webroot/dist
 ansible_settings.yml
 config/after_export.php
 config/openitcGrafanaTag.php
