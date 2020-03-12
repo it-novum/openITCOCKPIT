@@ -147,7 +147,7 @@
                         ng-options="value as value for (key , value) in availablePlugins"
                         ng-model="post.Cronjob.plugin">
                     </select>
-                    <div ng-repeat="error in errors.name">
+                    <div ng-repeat="error in errors.plugin">
                         <div class="help-block text-danger">{{ error }}</div>
                     </div>
                 </div>
@@ -246,7 +246,7 @@
                         ng-options="value as value for (key , value) in availablePlugins"
                         ng-model="editPost.Cronjob.plugin">
                     </select>
-                    <div ng-repeat="error in errors.name">
+                    <div ng-repeat="error in errors.plugin">
                         <div class="help-block text-danger">{{ error }}</div>
                     </div>
                 </div>

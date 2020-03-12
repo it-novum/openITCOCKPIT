@@ -57,7 +57,7 @@
                           ng-init="successMessage=
             {objectName : '<?php echo __('Proxy configuration'); ?>' , message: '<?php echo __('updated successfully'); ?>'}">
 
-                        <div class="form-group">
+                        <div class="form-group required">
                             <label class="control-label">
                                 <?php echo __('Proxy address and Port'); ?>
                             </label>
