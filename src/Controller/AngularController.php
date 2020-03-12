@@ -34,8 +34,8 @@ use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
-use AppAuthComponent;
 use Cake\Cache\Cache;
+use Cake\Http\CallbackStream;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Table;
@@ -57,7 +57,6 @@ use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
-use MenuComponent;
 use RuntimeException;
 
 /**
@@ -682,7 +681,7 @@ class AngularController extends AppController {
     }
 
     private function setHealthState($state) {
-        if($state !== 'ok'){
+        if ($state !== 'ok') {
             $this->errorCount++;
         }
 
@@ -771,10 +770,14 @@ class AngularController extends AppController {
 
         $image = $PieChart->getImage();
 
-        $this->autoRender = false;
-        header('Content-Type: image/png');
-        imagepng($image, null, 0);
-        imagedestroy($image);
+
+        $this->disableAutoRender();
+        $this->response = $this->response->withHeader('Content-Type', 'image/png');
+        $stream = new CallbackStream(function () use ($image) {
+            imagepng($image, null, 0);
+            imagedestroy($image);
+        });
+        $this->response = $this->response->withBody($stream);
     }
 
     /**
@@ -798,10 +801,13 @@ class AngularController extends AppController {
 
         $image = $PieChart->getImage();
 
-        $this->autoRender = false;
-        header('Content-Type: image/png');
-        imagepng($image, null, 0);
-        imagedestroy($image);
+        $this->disableAutoRender();
+        $this->response = $this->response->withHeader('Content-Type', 'image/png');
+        $stream = new CallbackStream(function () use ($image) {
+            imagepng($image, null, 0);
+            imagedestroy($image);
+        });
+        $this->response = $this->response->withBody($stream);
     }
 
     /**

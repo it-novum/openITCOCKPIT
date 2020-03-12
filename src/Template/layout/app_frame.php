@@ -37,10 +37,10 @@ $scripts = $AngularAssets->getJsFiles();
 
 $appScripts = [];
 if (ENVIRONMENT === Environments::PRODUCTION) {
-    $compressedAngularControllers = WWW_ROOT . 'js' . DS . 'compressed_angular_controllers.js';
-    $compressedAngularDirectives = WWW_ROOT . 'js' . DS . 'compressed_angular_directives.js';
-    $compressedAngularServices = WWW_ROOT . 'js' . DS . 'compressed_angular_services.js';
-    $compressedAngularStates = WWW_ROOT . 'js' . DS . 'compressed_angular_states.js';
+    $compressedAngularControllers = WWW_ROOT . 'dist' . DS . 'compressed_angular_controllers.js';
+    $compressedAngularDirectives = WWW_ROOT . 'dist' . DS . 'compressed_angular_directives.js';
+    $compressedAngularServices = WWW_ROOT . 'dist' . DS . 'compressed_angular_services.js';
+    $compressedAngularStates = WWW_ROOT . 'dist' . DS . 'compressed_angular_states.js';
     if (file_exists($compressedAngularControllers) && file_exists($compressedAngularDirectives) && file_exists($compressedAngularServices)) {
         $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularServices);
         $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularDirectives);
