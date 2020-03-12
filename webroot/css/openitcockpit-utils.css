@@ -566,3 +566,8 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 .border-color-error {
     border-color: #A90329;
 }
+
+.search_list_item_active {
+    background-color: rgba(69, 69, 69, 0.8);
+    color: #ffffff;
+}
