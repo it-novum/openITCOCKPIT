@@ -1054,6 +1054,7 @@ a[target]:not(.btn) {
 }
 
 .header-icon .btn {
-    line-height: 0.20;
-    font-size: 1.1rem;
+    height: 25px;
+    font-size: 1.0rem;
+    padding: 0.1rem 1.125rem;
 }
