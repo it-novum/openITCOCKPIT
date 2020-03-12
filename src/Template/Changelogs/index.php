@@ -299,8 +299,9 @@
                                         <!-- Add and copy changes -->
                                         <blockquote
                                             ng-class="{'changelog-blockquote-success': change.action ==='add', 'changelog-blockquote-primary': change.action ==='copy'}"
-                                            ng-if="change.action === 'add' || change.action === 'copy'" class="blockquote">
-                                            <div
+                                            ng-if="(change.action === 'add' || change.action === 'copy') && data_unserialized_notEmpty(change.data_unserialized)"
+                                            class="blockquote">
+                                            <div class="margin-left-10"
                                                  ng-repeat="(tableName, tableChanges) in change.data_unserialized">
                                                 {{tableName}}
 
@@ -314,7 +315,8 @@
                                                 <span ng-repeat="(fieldName, fieldValue) in tableChanges.data"
                                                       ng-if="tableChanges.isArray" class="padding-top-5">
                                                     <span ng-repeat="(subFieldName, subFieldValue) in fieldValue">
-                                                        <footer class="padding-left-10 blockquote-footer" ng-if="subFieldName !== 'id'">
+                                                        <footer class="padding-left-10 blockquote-footer"
+                                                                ng-if="subFieldName !== 'id'">
                                                             {{subFieldName}}:
                                                             <span class="text-primary">{{subFieldValue}}</span>
                                                         </footer>
@@ -325,9 +327,10 @@
                                         </blockquote>
 
                                         <!-- Edit changes -->
-                                        <blockquote class="changelog-blockquote-warning"
-                                                    ng-if="change.action === 'edit'" class="blockquote">
-                                            <div ng-repeat="(tableName, tableChanges) in change.data_unserialized">
+                                        <blockquote class="changelog-blockquote-warning blockquote"
+                                                    ng-if="change.action === 'edit' && data_unserialized_notEmpty(change.data_unserialized)">
+                                            <div class="margin-left-10"
+                                                 ng-repeat="(tableName, tableChanges) in change.data_unserialized">
                                                 {{tableName}}
 
                                                 <span ng-repeat="(fieldName, fieldValueChanges) in tableChanges.data"
