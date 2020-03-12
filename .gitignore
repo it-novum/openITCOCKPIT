@@ -24,8 +24,6 @@ Thumbs.db
 #######################
 # PHPUnit
 .phpunit.result.cache
-build/coverage-report
-build/xdebug-filter.php
 # PHP Composer
 composer.lock
 # vim
