@@ -175,7 +175,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.Hostgroup}">
+                        <div class="form-group" ng-class="{'has-error': errors.Hostgroup}">
                             <label class="control-label" for="hostgroups">
                                 <?php echo __('Hostgroups'); ?>
                             </label>
@@ -196,7 +196,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.Hostgroup_excluded}">
+                        <div class="form-group" ng-class="{'has-error': errors.Hostgroup_excluded}">
                             <label class="control-label" for="hostgroupsExcluded">
                                 <?php echo __('Hostgroups (excluded)'); ?>
                             </label>
