@@ -102,9 +102,9 @@
                                             <div class="input-group input-group-sm">
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">
-                                                        <div class='icon-stack'>
-                                                            <i class="fas fa-desktop icon-stack-3x opacity-100 "></i>
-                                                            <i class="fas fa-exclamation-triangle icon-stack-2x opacity-100 text-danger"></i>
+                                                        <div class="icon-stack">
+                                                            <i class="fas fa-desktop opacity-100 "></i>
+                                                            <i class="fas fa-exclamation-triangle opacity-100 fa-xs text-danger cornered cornered-lr"></i>
                                                         </div>
                                                     </span>
                                                 </div>
@@ -122,7 +122,9 @@
                                         <div class="form-group">
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
-                                                    <span class="input-group-text"><i class="fa fa-sitemap"></i></span>
+                                                    <span class="input-group-text">
+                                                        <i class="fa fa-server"></i>
+                                                    </span>
                                                 </div>
                                                 <input type="text" class="form-control form-control-sm"
                                                        placeholder="<?php echo __('Filter by host group'); ?>"
@@ -142,10 +144,10 @@
                                         <div class="form-group">
                                             <div class="input-group  input-group-sm">
                                                 <div class="input-group-prepend">
-                                                     <span class="input-group-text">
-                                                        <div class='icon-stack'>
-                                                            <i class="fas fa-sitemap icon-stack-3x opacity-100 "></i>
-                                                            <i class="fas fa-exclamation-triangle icon-stack-2x opacity-100 text-danger"></i>
+                                                    <span class="input-group-text">
+                                                        <div class="icon-stack">
+                                                            <i class="fas fa-server opacity-100 "></i>
+                                                            <i class="fas fa-exclamation-triangle opacity-100 fa-xs text-danger cornered cornered-lr"></i>
                                                         </div>
                                                     </span>
                                                 </div>

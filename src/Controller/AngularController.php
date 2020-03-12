@@ -1079,4 +1079,10 @@ class AngularController extends AppController {
         //Only ship HTML template
         return;
     }
+
+    public function sidebar() {
+        //Only ship HTML template
+        $this->set('hasRootPrivileges', $this->hasRootPrivileges);
+        return;
+    }
 }
