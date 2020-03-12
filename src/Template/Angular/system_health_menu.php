@@ -204,7 +204,7 @@
                 </span>
         </a>
     </div>
-    <div class="dropdown-item" ng-if="systemHealth.memory_usage.memory.state !== \'ok\'">
+    <div class="dropdown-item" ng-if="systemHealth.memory_usage.memory.state !== 'ok'">
         <a ui-sref="AdministratorsDebug" class="d-flex align-items-center" href="javascript:void();">
                 <span class="mr-2">
                     <i class="d-inline-block fas fa-warning fa-3x warning"></i>
@@ -249,7 +249,7 @@
                 </span>
         </a>
     </div>
-    <div class="dropdown-item" ng-repeat="disk in systemHealth.disk_usage" ng-if="disk.state !== \'ok\'">
+    <div class="dropdown-item" ng-repeat="disk in systemHealth.disk_usage" ng-if="disk.state !== 'ok'">
         <a ui-sref="AdministratorsDebug" class="d-flex align-items-center" href="javascript:void();">
                 <span class="mr-2">
                     <i class="d-inline-block fas fa-warning fa-3x warning"></i>
