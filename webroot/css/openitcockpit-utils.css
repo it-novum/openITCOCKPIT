@@ -575,13 +575,23 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     border-color: #A90329;
 }
 
+/* menu search stuff */
 .search_list_item_active {
     background-color: rgba(69, 69, 69, 0.8);
 }
 
 .search_list_item_active a {
-    color: white!important;
+    color: white !important;
 }
+
+.pull-trigger-btn:hover {
+    background: #4285f4;
+    border-color: #1266f1;
+    -webkit-box-shadow: 0px 0px 2px #5790b3;
+    box-shadow: 0px 0px 2px #5790b3;
+}
+
+/* stacked icons in input prepend */
 
 .icon-stack .cornered {
     position: absolute;
