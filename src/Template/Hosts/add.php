@@ -106,7 +106,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group required"
+                                <div class="form-group"
                                      ng-class="{'has-error': errors.hosts_to_containers_sharing}">
                                     <label class="control-label" for="HostSharingContainer">
                                         <?php echo __('Shared containers'); ?>
@@ -145,7 +145,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group" ng-class="{'has-error': errors.name}">
+                                <div class="form-group required" ng-class="{'has-error': errors.name}">
                                     <label class="control-label">
                                         <?php echo __('Host name'); ?>
                                     </label>
@@ -176,7 +176,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group" ng-class="{'has-error': errors.address}">
+                                <div class="form-group required" ng-class="{'has-error': errors.address}">
                                     <label class="control-label">
                                         <?php echo __('Host address'); ?>
                                     </label>
@@ -216,7 +216,7 @@
                                     </div>
 
 
-                                    <div class="form-group required"
+                                    <div class="form-group"
                                          ng-class="{'has-error': errors.hostgroups}">
                                         <label class="control-label">
                                             <?php echo __('Host groups'); ?>
@@ -241,7 +241,7 @@
                                     </div>
 
 
-                                    <div class="form-group required" ng-class="{'has-error': errors.parenthosts}">
+                                    <div class="form-group" ng-class="{'has-error': errors.parenthosts}">
                                         <label class="control-label" for="ParentHostsSelect">
                                             <?php echo __('Parent hosts'); ?>
                                         </label>
@@ -303,7 +303,7 @@
                                     </div>
 
                                     <?php if (\Cake\Core\Plugin::isLoaded('DistributeModule')): ?>
-                                        <div class="form-group required" ng-class="{'has-error': errors.satellite_id}">
+                                        <div class="form-group" ng-class="{'has-error': errors.satellite_id}">
                                             <label class="control-label" for="SatellitesSelect">
                                                 <?php echo __('Satellite'); ?>
                                             </label>
@@ -331,7 +331,7 @@
                                 <i class="fa fa-terminal"></i> <?php echo __('Check configuration'); ?>
                             </div>
                             <div class="card-body">
-                                <div class="form-group required"
+                                <div class="form-group"
                                      ng-class="{'has-error': errors.check_period_id}">
                                     <label class="control-label">
                                         <?php echo __('Check period'); ?>
@@ -381,7 +381,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group required"
+                                <div class="form-group"
                                      ng-class="{'has-error': errors.command_id}">
                                     <label class="control-label">
                                         <?php echo __('Check command'); ?>
@@ -473,7 +473,7 @@
                                 </div>
 
 
-                                <div class="form-group required"
+                                <div class="form-group"
                                      ng-class="{'has-error': errors.max_check_attempts}">
                                     <label class="col-xs-12 col-lg-2 control-label">
                                         <?php echo __('Max. number of check attempts'); ?>
@@ -533,7 +533,7 @@
                                 <div class="form-group required"
                                      ng-class="{'has-error': errors.notify_period_id}">
                                     <label class="control-label">
-                                        <?php echo __('Check command'); ?>
+                                        <?php echo __('Notification Period'); ?>
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
@@ -569,7 +569,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group required"
+                                <div class="form-group"
                                      ng-class="{'has-error': errors.contacts}">
                                     <label class="control-label">
                                         <?php echo __('Contacts'); ?>
@@ -593,7 +593,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group required"
+                                <div class="form-group"
                                      ng-class="{'has-error': errors.contactgroups}">
                                     <label class="control-label">
                                         <?php echo __('Contact groups'); ?>
