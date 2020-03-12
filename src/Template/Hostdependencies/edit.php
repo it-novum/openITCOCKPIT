@@ -81,7 +81,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.hosts}">
+                        <div class="form-group required" ng-class="{'has-error': errors.hosts}">
                             <label class="control-label">
                                 <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
                                 <?php echo __('Hosts'); ?>
@@ -103,7 +103,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.hosts_dependent}">
+                        <div class="form-group required" ng-class="{'has-error': errors.hosts_dependent}">
                             <label class="control-label">
                                 <i class="fa fa-sitemap fa-rotate-90 text-primary" aria-hidden="true"></i>
                                 <?php echo __('Dependent hosts'); ?>
