@@ -1052,3 +1052,8 @@ div.required .control-label::after {
 a[target]:not(.btn) {
     text-decoration: none !important;
 }
+
+.header-icon .btn {
+    line-height: 0.20;
+    font-size: 1.1rem;
+}

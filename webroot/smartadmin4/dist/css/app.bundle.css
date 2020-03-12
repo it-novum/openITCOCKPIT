@@ -710,9 +710,6 @@ html body {
   line-height: 4.125rem;
   text-decoration: none;
   position: relative;}
-  .header-icon .btn {
-      line-height: 0.20;
-  }
   .header-icon:not(.btn) {
     min-width: 3.125rem;
     text-align: center;
