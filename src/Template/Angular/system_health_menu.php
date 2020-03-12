@@ -1,10 +1,11 @@
-<div class="dropdown-menu dropdown-menu-animated dropdown-xl scrollable-menu">
+<div class="dropdown-menu dropdown-menu-animated dropdown-xl scrollable-menu dropdown-remove-paddings-and-margins">
     <div
-        class="dropdown-header bg-trans-gradient d-flex justify-content-center align-items-center rounded-top mb-2">
+        class="dropdown-header bg-trans-gradient d-flex justify-content-center align-items-center rounded-top">
         <h4 class="m-0 text-center color-white">
             <?= __('System Health') ?>
         </h4>
     </div>
+
     <div class="dropdown-item" ng-if="systemHealth.state === 'unknown'">
         <a ui-sref="AdministratorsDebug" class="d-flex align-items-center" href="javascript:void();">
                 <span class="mr-2">
@@ -275,7 +276,7 @@
     </div>
     <div class="dropdown-item" ng-if="systemHealth.isDistributeModuleInstalled && !systemHealth.isPhpNstaRunning">
         <a ui-sref="AdministratorsDebug" class="d-flex align-items-center" href="javascript:void();">
-                <span class="mr-2">
+                <span class="">
                     <i class="d-inline-block fas fa-warning fa-3x warning"></i>
                 </span>
             <span class="d-flex flex-column flex-1 ml-1">
