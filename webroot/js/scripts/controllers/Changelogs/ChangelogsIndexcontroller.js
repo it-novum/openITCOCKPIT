@@ -108,6 +108,19 @@ angular.module('openITCOCKPIT')
             $scope.load();
         };
 
+        $scope.data_unserialized_notEmpty = function(data_unserialized){
+            if(data_unserialized.constructor === Array){
+                if(data_unserialized.length === 0){
+                    return false;
+                }
+            }else if(data_unserialized.constructor === Object){
+                if(Object.keys(data_unserialized).length <= 0){
+                    return false;
+                }
+            }
+            return true;
+        };
+
 
         //Fire on page load
         defaultFilter();

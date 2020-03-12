@@ -50,14 +50,14 @@ class ButtonGroupHelperTest extends TestCase {
         $iconCssSelector = 'fas fa-cog';
 
         $expected = $this->getExpectedOpeningButtonGroupTag()
-            . '    <button class="btn btn-default" data-original-title="" data-placement="bottom" rel="tooltip" data-container="body"><i class="fas fa-cog"></i></button>'
+            . '    <button class="btn btn-default " data-original-title="" data-placement="bottom" rel="tooltip" data-container="body"><i class="fas fa-cog"></i></button>'
             . $this->getExpectedClosingButtonGroupTag();
 
         $this->sut->addIconButton($iconCssSelector);
 
         $actual = $this->sut->getHtml();
 
-        $this->assertEquals($expected,$actual);
+        $this->assertEquals($expected, $actual);
 
     }
 
@@ -66,14 +66,14 @@ class ButtonGroupHelperTest extends TestCase {
         $dataOriginalTitle = 'test related title';
 
         $expected = $this->getExpectedOpeningButtonGroupTag()
-            . '    <button class="btn btn-default" data-original-title="test related title" data-placement="bottom" rel="tooltip" data-container="body"><i class="fas fa-cog"></i></button>'
+            . '    <button class="btn btn-default " data-original-title="test related title" data-placement="bottom" rel="tooltip" data-container="body"><i class="fas fa-cog"></i></button>'
             . $this->getExpectedClosingButtonGroupTag();
 
-        $this->sut->addIconButton($iconCssSelector,$dataOriginalTitle);
+        $this->sut->addIconButton($iconCssSelector, $dataOriginalTitle);
 
         $actual = $this->sut->getHtml();
 
-        $this->assertEquals($expected,$actual);
+        $this->assertEquals($expected, $actual);
 
     }
 
@@ -89,7 +89,7 @@ class ButtonGroupHelperTest extends TestCase {
 
         $actual = $this->sut->getHtml();
 
-        $this->assertEquals($expected,$actual);
+        $this->assertEquals($expected, $actual);
     }
 
     public function test_addButton_withDataOriginalTitle() {
@@ -105,9 +105,20 @@ class ButtonGroupHelperTest extends TestCase {
 
         $actual = $this->sut->getHtml();
 
-        $this->assertEquals($expected,$actual);
+        $this->assertEquals($expected, $actual);
     }
 
+    public function test_addButtonWithTooltipAndDisplayConditional() {
+        $expected =$this->getExpectedOpeningButtonGroupTag()
+            . '    <button class="btn btn-secondary" data-original-title="test related title" data-placement="bottom" rel="tooltip" data-container="body" inserted="testRelatedText>test related innerHtml</button>'
+            . $this->getExpectedClosingButtonGroupTag();
+
+        $this->sut->addButtonWithTooltipAndDisplayConditional('test related innerHtml', 'btn-secondary', "test related title",'inserted="testRelatedText');
+
+        $actual = $this->sut->getHtml();
+
+        $this->assertEquals($expected,$actual);
+    }
 
     public function test_getView_returnsHtmlTemplate() {
         $expected = $this->getExpectedOpeningButtonGroupTag()
@@ -115,20 +126,20 @@ class ButtonGroupHelperTest extends TestCase {
 
         $actual = $this->sut->getHtml();
 
-        $this->assertEquals($expected,$actual);
+        $this->assertEquals($expected, $actual);
     }
 
     public function test_addButtonWithTogglingMenu() {
         $expected = $this->getExpectedOpeningButtonGroupTag()
-        . '    <a href="javascript:void(0);" class="btn btn-default" data-toggle="dropdown" data-original-title="test related title"  data-placement="bottom" rel="tooltip"><i class="css selector"></i></a>' . PHP_EOL
-        . '    <div>attachedMenu</div>'
-        . $this->getExpectedClosingButtonGroupTag();
+            . '    <a href="javascript:void(0);" class="btn btn-default" data-toggle="dropdown" data-original-title="test related title"  data-placement="bottom" rel="tooltip"><i class="css selector"></i></a>' . PHP_EOL
+            . '    <div>attachedMenu</div>'
+            . $this->getExpectedClosingButtonGroupTag();
 
-        $this->sut->addButtonWithTogglingMenu('css selector','test related title', '<div>attachedMenu</div>');
+        $this->sut->addButtonWithTogglingMenu('css selector', 'test related title', '<div>attachedMenu</div>');
 
         $actual = $this->sut->getHtml();
 
-        $this->assertEquals($expected,$actual);
+        $this->assertEquals($expected, $actual);
 
     }
 
@@ -137,23 +148,23 @@ class ButtonGroupHelperTest extends TestCase {
             . '    <button class="btn btn-danger" data-original-title="test related data original title" data-placement="bottom" rel="tooltip" data-container="body" ui-sref="/an/url/reference">test related text</button>'
             . $this->getExpectedClosingButtonGroupTag();
 
-        $this->sut->addButtonWithTooltipAndSRef('test related text','btn-danger','test related data original title','/an/url/reference');
+        $this->sut->addButtonWithTooltipAndSRef('test related text', 'btn-danger', 'test related data original title', '/an/url/reference');
 
         $actual = $this->sut->getHtml();
 
-        $this->assertEquals($expected,$actual);
+        $this->assertEquals($expected, $actual);
     }
 
     public function test_addIconButtonWithSRef() {
         $expected = $this->getExpectedOpeningButtonGroupTag()
-        . '    <button class="btn btn-default" data-original-title="test related tooltip" data-placement="bottom" rel="tooltip" data-container="body" ui-sref="/an/url/reference/for/icons" customHtmlAttribute="unimportant value><i class="fas fa-question"></i></button>'
-        . $this->getExpectedClosingButtonGroupTag();
+            . '    <button class="btn btn-default" data-original-title="test related tooltip" data-placement="bottom" rel="tooltip" data-container="body" ui-sref="/an/url/reference/for/icons" customHtmlAttribute="unimportant value><i class="fas fa-question"></i></button>'
+            . $this->getExpectedClosingButtonGroupTag();
 
-        $this->sut->addIconButtonWithSRef('fas fa-question','test related tooltip','/an/url/reference/for/icons','customHtmlAttribute="unimportant value');
+        $this->sut->addIconButtonWithSRef('fas fa-question', 'test related tooltip', '/an/url/reference/for/icons', 'customHtmlAttribute="unimportant value');
 
         $actual = $this->sut->getHtml();
 
-        $this->assertEquals($expected,$actual);
+        $this->assertEquals($expected, $actual);
     }
 
     public function test_addIconButtonWithHRef() {
@@ -161,7 +172,19 @@ class ButtonGroupHelperTest extends TestCase {
             . '    <button class="btn btn-default" data-original-title="test related tooltip" data-placement="bottom" rel="tooltip" data-container="body"><a href="/an/url/reference/for/icons"><i class="fas fa-question"></i></a></button>'
             . $this->getExpectedClosingButtonGroupTag();
 
-        $this->sut->addIconButtonWithHRef('fas fa-question','test related tooltip','/an/url/reference/for/icons');
+        $this->sut->addIconButtonWithHRef('fas fa-question', 'test related tooltip', '/an/url/reference/for/icons');
+
+        $actual = $this->sut->getHtml();
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function test_addRaw() {
+        $expected = $this->getExpectedOpeningButtonGroupTag()
+            . '    <div>test related html element</div>'
+            . $this->getExpectedClosingButtonGroupTag();
+
+        $this->sut->addRaw('<div>test related html element</div>');
 
         $actual = $this->sut->getHtml();
 
@@ -172,7 +195,7 @@ class ButtonGroupHelperTest extends TestCase {
      * @return string
      */
     private function getExpectedOpeningButtonGroupTag(): string {
-        return '<div class="btn-group btn-group-xs mr-2" role="group" aria-label="unit testing">'. PHP_EOL ;
+        return '<div class="btn-group mr-2" role="group" aria-label="unit testing">' . PHP_EOL;
     }
 
     /**

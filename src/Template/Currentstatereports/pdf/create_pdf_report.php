@@ -32,139 +32,139 @@
 
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
+
+$css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
 $Logo = new Logo();
 ?>
 <head>
-    <?php
-    $css = [
-        '/css/lib/bootstrap/css/bootstrap.css',
-        '/css/lib/font-awesome.css',
-        '/css/lib/your_style.css',
-        '/css/lib/app.css',
-        '/css/lib/pdf_list_style.css',
-        '/css/lib/bootstrap_pdf.css',
-    ];
-    ?>
     <?php
     foreach ($css as $cssFile): ?>
         <link rel="stylesheet" type="text/css" href="<?= WWW_ROOT . $cssFile; ?>"/>
     <?php
     endforeach; ?>
 </head>
-<body class="">
-<div class="jarviswidget no-bordered">
-    <div class="well no-bordered">
-        <div class="row margin-top-10 font-md padding-bottom-10">
-            <div class="col-md-9 text-left padding-left-20">
-                <i class="fa fa-calendar txt-color-blueDark"></i>
-                <?php
-                echo __('Current state report ');
-                echo h('(' . __('Date: ') . $UserTime->format(time()) . ')'); ?>
-            </div>
-            <div class="col-md-3 text-left">
-                <img src="<?= $Logo->getLogoPdfPath(); ?>" width="200"/>
-            </div>
-            <div class="col-md-12 padding-20">
-                <?php
-                if (sizeof($all_services) > 0):
-                    foreach ($all_services as $hostId => $currentStateObjectData):
-                        if (!empty($currentStateObjectData['Services'])):?>
-                            <div class="jarviswidget col-md-12">
-                                <header role="heading">
-                                    <h2>
-                                        <strong
-                                            class="<?= $currentStateObjectData['Hoststatus']['humanState']; ?> font-lg">
-                                            <i class="fa fa-desktop <?= $currentStateObjectData['Hoststatus']['humanState']; ?>"></i> <?= h($currentStateObjectData['Host']['hostname']);
-                                            ?>
-                                        </strong>
-                                    </h2>
-                                </header>
-                                <div class="widget-body font-md">
-                                    <div class="col-md-3 ">
-                                        <?= __('Description'); ?>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <?= h(($currentStateObjectData['Host']['description']) ? $currentStateObjectData['Host']['description'] : ' - '); ?>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <?= __('IP address'); ?>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <?= h($currentStateObjectData['Host']['address']); ?>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <?= __('Status'); ?>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <?= h($currentStateObjectData['Hoststatus']['humanState']); ?>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <?= __('Status since'); ?>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <?= h($currentStateObjectData['Hoststatus']['lastCheck']); ?>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <?= __('Host output'); ?>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <?= h($currentStateObjectData['Hoststatus']['output']); ?>
-                                    </div>
-                                    <div class="col-md-12 padding-top-20 padding-bottom-10">
-                                        <i class="fa fa-gears txt-color-blueDark"></i>
-                                        <?= __('Checks'); ?>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="widget-body font-sm">
-                                            <?php
-                                            foreach ($currentStateObjectData['Services'] as $serviceData):
-                                                $PerfdataParser = new \Statusengine\PerfdataParser($serviceData['Servicestatus']['perfdata']);
-                                                $perfdata = $PerfdataParser->parse();
-                                                ?>
-                                                <div class="row no-padding padding-top-5">
-                                                    <div class="col-md-3">
-                                                        <i class="fa fa-square <?= h($serviceData['Servicestatus']['textClass']); ?>"> </i>
-                                                        <?= h($serviceData['Service']['servicename']); ?>
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <?= h($serviceData['Servicestatus']['lastCheck']); ?>
-                                                    </div>
-                                                    <div class="col-md-5">
-                                                        <?= h($serviceData['Servicestatus']['output']); ?>
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <?php foreach ($perfdata as $label => $gauge): ?>
-                                                            <div class="col-md-12 text-center">
-                                                                <?= h($label); ?>
-                                                            </div>
-                                                            <div
-                                                                class="col-md-12 text-center bordered <?= h($serviceData['Servicestatus']['cssClass']); ?>">
-                                                                <strong class="txt-color-white">
-                                                                    <?= h($gauge['current']) . ' ' . h($gauge['unit']) ?>
-                                                                </strong>
-                                                            </div>
-                                                        <?php endforeach; ?>
-                                                    </div>
-                                                </div>
-                                            <?php
-                                            endforeach; ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php
-                        endif;
-                    endforeach;
-                else:?>
-                    <i class="fa fa-lg fa-info-circle txt-color-blueDark"></i>
-                    <span class="txt-color-blueDark">
-                     <?= __('No entries match the selection'); ?>
-                    </span>
-                <?php
-                endif;
-                ?>
-            </div>
-        </div>
+<body>
+<div class="row">
+    <div class="col-6 padding-left-15">
+        <i class="fa fa-calendar"></i>
+        <?php
+        echo __('Current state report ');
+        echo h('(' . __('Date: ') . $UserTime->format(time()) . ')');
+        ?>
+    </div>
+    <div class="col-6">
+        <img class="float-right" src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
     </div>
 </div>
+
+
+<?php
+if (sizeof($all_services) > 0):
+    foreach ($all_services as $hostId => $currentStateObjectData):
+        if (!empty($currentStateObjectData['Services'])):?>
+            <div class="pdf-card">
+                <div class="pdf-card-header">
+                    <h2>
+                        <strong class="<?= $currentStateObjectData['Hoststatus']['humanState']; ?>">
+                            <i class="fa fa-desktop <?= $currentStateObjectData['Hoststatus']['humanState']; ?>"></i>
+                            <?= h($currentStateObjectData['Host']['hostname']); ?>
+                        </strong>
+                    </h2>
+                </div>
+                <div class="pdf-card-body padding-bottom-10">
+                    <div class="row">
+                        <div class="col-3 ">
+                            <?= __('Description'); ?>
+                        </div>
+                        <div class="col-9">
+                            <?= h(($currentStateObjectData['Host']['description']) ? $currentStateObjectData['Host']['description'] : ' - '); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <?= __('IP address'); ?>
+                        </div>
+                        <div class="col-9">
+                            <?= h($currentStateObjectData['Host']['address']); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <?= __('Status'); ?>
+                        </div>
+                        <div class="col-9">
+                            <?= h($currentStateObjectData['Hoststatus']['humanState']); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <?= __('Status since'); ?>
+                        </div>
+                        <div class="col-9">
+                            <?= h($currentStateObjectData['Hoststatus']['lastCheck']); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <?= __('Host output'); ?>
+                        </div>
+                        <div class="col-9">
+                            <?= h($currentStateObjectData['Hoststatus']['output']); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 padding-top-20 padding-bottom-10">
+                            <i class="fa fa-gears "></i>
+                            <?= __('Checks'); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <?php
+                            foreach ($currentStateObjectData['Services'] as $serviceData):
+                                $PerfdataParser = new \Statusengine\PerfdataParser($serviceData['Servicestatus']['perfdata']);
+                                $perfdata = $PerfdataParser->parse();
+                                ?>
+                                <div class="row padding-top-5 no-padding" style="border-bottom: 1px solid #e1e1e1;">
+                                    <div class="col-3" style="font-size: 65%!important;">
+                                        <i class="fa fa-square <?= h($serviceData['Servicestatus']['textClass']); ?>"> </i>
+                                        <?= h($serviceData['Service']['servicename']); ?>
+                                    </div>
+                                    <div class="col-2" style="font-size: 65%!important;">
+                                        <?= h($serviceData['Servicestatus']['lastCheck']); ?>
+                                    </div>
+                                    <div class="col-5" style="font-size: 65%!important;">
+                                        <?= h($serviceData['Servicestatus']['output']); ?>
+                                    </div>
+                                    <div class="col-2">
+                                        <?php foreach ($perfdata as $label => $gauge): ?>
+                                            <div class="col-12 text-center" style="font-size: 65%!important;">
+                                                <?= h($label); ?>
+                                            </div>
+                                            <div
+                                                class="col-12 text-center bordered <?= h($serviceData['Servicestatus']['cssClass']); ?>">
+                                                <strong class="txt-color-white" style="font-size: 65%!important;">
+                                                    <?= h($gauge['current']) . ' ' . h($gauge['unit']) ?>
+                                                </strong>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php
+                            endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php
+        endif;
+    endforeach;
+else:?>
+    <i class="fa fa-lg fa-info-circle "></i>
+    <span class="">
+        <?= __('No entries match the selection'); ?>
+    </span>
+<?php
+endif;
+?>
 </body>

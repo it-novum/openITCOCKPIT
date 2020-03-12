@@ -21,18 +21,10 @@
         </testsuite>
     </testsuites>
 
-    <listeners>
-        <listener class="Cake\TestSuite\Fixture\FixtureInjector">
-            <arguments>
-                <object class="Cake\TestSuite\Fixture\FixtureManager"/>
-            </arguments>
-        </listener>
-    </listeners>
-
     <filter>
         <whitelist>
-            <directory suffix=".php">src/</directory>
-            <directory suffix=".php">plugins/*/src/</directory>
+            <directory suffix=".php">src/View/Helper</directory>
+<!--            <directory suffix=".php">plugins/*/src/</directory>-->
             <exclude>
                 <file>src/Console/Installer.php</file>
             </exclude>

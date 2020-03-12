@@ -227,9 +227,19 @@ oitc setup
 
 oitc nagios_export
 
-systemctl restart statusengine.service nagios.service nginx.service sudo_server.service\
- oitc_cmd.service gearman_worker.service push_notification.service nodejs_server.service
+echo "Enabling webserver configuration"
+ln -s /etc/nginx/sites-available/openitc /etc/nginx/sites-enabled/openitc
+rm -f /etc/nginx/sites-enabled/default
 
+systemctl restart\
+ statusengine.service\
+ nagios.service\
+ nginx.service\
+ sudo_server.service\
+ oitc_cmd.service\
+ gearman_worker.service\
+ push_notification.service\
+ nodejs_server.service
 
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 

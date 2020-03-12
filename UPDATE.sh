@@ -186,36 +186,37 @@ if [[ "$NORESTART" == "true" ]]; then
   exit 0
 fi
 
-CODENAME=$(lsb_release -sc)
-if [[ "$1" == "install" ]]; then
-  if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "bionic" ] || [ $CODENAME = "stretch" ]; then
-    systemctl restart gearman_worker.service
+systemctl restart sudo_server.service
+systemctl restart oitc_cmd.service
+systemctl restart gearman_worker.service
+systemctl restart push_notification.service
+systemctl restart nodejs_server.service
+
+PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
+echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
+
+# Restart services if they are running
+# Nagios/Naemon is aliased, so it works for both
+for srv in statusengine.service nagios.service nginx.service phpnsta.service; do
+  if systemctl is-active --quiet $srv; then
+    echo "Restart service: $srv"
+    systemctl restart $srv
   fi
-  echo "Update successfully finished"
+done
+
+systemctl is-enabled --quiet php${PHPVersion}-fpm.service
+RC=$?
+if [ $RC -eq 0 ]; then
+  #Is it php7.3-fpm-service ?
+  systemctl restart php${PHPVersion}-fpm.service
 else
-
-  systemctl restart sudo_server
-  systemctl restart oitc_cmd
-  systemctl restart gearman_worker
-  systemctl restart push_notification
-  systemctl restart nodejs_server
-
-  PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
-  echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
-
-  systemctl is-enabled --quiet php${PHPVersion}-fpm.service
+  # Is it just php-fpm.service?
+  systemctl is-enabled --quiet php-fpm.service
   RC=$?
   if [ $RC -eq 0 ]; then
-    #Is it php7.3-fpm-service ?
-    systemctl restart php${PHPVersion}-fpm.service
+    systemctl restart php-fpm.service
   else
-    # Is it just php-fpm.service?
-    systemctl is-enabled --quiet php-fpm.service
-    RC=$?
-    if [ $RC -eq 0 ]; then
-      systemctl restart php-fpm.service
-    else
-      echo "ERROR: could not detect php-fpm systemd service file. You need to restart php-fpm manualy"
-    fi
+    echo "ERROR: could not detect php-fpm systemd service file. You need to restart php-fpm manualy"
   fi
 fi
+
