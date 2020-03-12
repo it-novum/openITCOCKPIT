@@ -71,7 +71,7 @@
                     </span>
                 <?php endif; ?>
             </div>
-            <img src="/smartadmin4/dist/img/card-backgrounds/cover-6-lg.png" class="cover" alt="cover">
+            <img src="/img/menu/denis-degioanni-9wH624ALFQA-unsplash.png" class="cover" alt="cover">
             <a href="#" onclick="return false;" class="pull-trigger-btn" data-action="toggle"
                data-class="list-filter-active" data-target=".page-sidebar" data-focus="nav_filter_input">
                 <i class="fa fa-angle-down"></i>
