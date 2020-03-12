@@ -198,7 +198,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
         <br/>
         <br/>
         <p id="credits-oitc-logo">
-            <img class="img-fluid" alt="Logo" src="/img/logos/logo_small.png" style="max-height: 400px;">
+            <img alt="Logo" src="/img/logos/logo_small.png" style="max-height: 250px;">
         </p>
 
         <br/>
