@@ -221,7 +221,7 @@ class DatabaseCleanupCommand extends Command implements CronjobInterface {
                 $systemsettingsKey = 'LOGENTRIES';
                 break;
             case 'NotificationHosts':
-            case 'NotificationService':
+            case 'NotificationServices':
             case 'Contactnotifications': // NDO only
             case 'Contactnotificationmethods': // NDO only
                 $systemsettingsKey = 'NOTIFICATIONS';
