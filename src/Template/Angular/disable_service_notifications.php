@@ -13,8 +13,8 @@
             <div class="modal-body">
 
                 <div class="row">
-                    <div class="col-lg-12 text-center">
-                        <div class="card">
+                    <div class="col-lg-12 text-center padding-top-10">
+                        <div class="card card-body">
                             <span class="hintmark">
                                 <?php echo __('Yes, I would like to temporarily <strong>disable</strong> notifications.'); ?>
                             </span>

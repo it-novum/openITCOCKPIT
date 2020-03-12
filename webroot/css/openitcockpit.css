@@ -1077,3 +1077,23 @@ label.menu-open-button:hover {
 .menu-open:checked + .menu-open-button {
     background: #182531;
 }
+
+/* hintmarks */
+
+.hintmark:after {
+    color: #4759FF;
+    content: " *";
+    display: inline;
+}
+
+.hintmark_before:before {
+    color: #4759FF;
+    content: "* ";
+    display: inline;
+}
+
+.hintmark_red:after {
+    color: red;
+    content: " *";
+    display: inline;
+}

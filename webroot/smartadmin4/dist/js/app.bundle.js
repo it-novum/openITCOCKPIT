@@ -542,6 +542,13 @@ var initApp = (function(app) {
 				$(list).find($("[data-filter-tags*='" + filter + "']"))
 					.parentsUntil(list).removeClass('js-filter-hide')
 					.addClass('js-filter-show');
+				var filterToCompare = filter.toLowerCase().replace(/ /g,'');
+                $(list).find($("[title]").filter(function() {
+                    var titleToCompare = this.title.toLowerCase().replace(/ /g,'');
+                    return (titleToCompare.match(filterToCompare) ? this : null);
+                })).parentsUntil(list)
+                    .removeClass('js-filter-hide')
+                    .addClass('js-filter-show');
 
 				/* if element exists then print results */
 				if (listPrev){
