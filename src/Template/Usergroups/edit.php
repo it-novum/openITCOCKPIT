@@ -64,7 +64,7 @@
                           ng-init="successMessage=
             {objectName : '<?php echo __('User role'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
 
-                        <div class="form-group" ng-class="{'has-error': errors.name}">
+                        <div class="form-group required" ng-class="{'has-error': errors.name}">
                             <label class="control-label">
                                 <?php echo __('Name'); ?>
                             </label>

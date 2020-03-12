@@ -74,12 +74,12 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                 ng-options="container.key as container.value for container in containers"
                                 ng-model="post.container.parent_id">
                             </select>
-                            <div ng-repeat="error in errors.containers">
+                            <div ng-repeat="error in errors.container.parent_id">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.name}">
+                        <div class="form-group required" ng-class="{'has-error': errors.name}">
                             <label class="control-label">
                                 <?php echo __('Name'); ?>
                             </label>
@@ -87,7 +87,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                 class="form-control"
                                 type="text"
                                 ng-model="post.container.name">
-                            <div ng-repeat="error in errors.name">
+                            <div ng-repeat="error in errors.container.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>

@@ -93,7 +93,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group" ng-class="{'has-error': errors.template_name}">
+                                <div class="form-group required" ng-class="{'has-error': errors.template_name}">
                                     <label class="control-label">
                                         <?php echo __('Template name'); ?>
                                     </label>
@@ -131,7 +131,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group" ng-class="{'has-error': errors.name}">
+                                <div class="form-group required" ng-class="{'has-error': errors.name}">
                                     <label class="control-label">
                                         <?php echo __('Service name'); ?>
                                     </label>
@@ -144,7 +144,7 @@
                                         <?= __('Default name of services using this service template.') ?>
                                     </div>
                                     <div ng-repeat="error in errors.name">
-                                        <div class="help-block text-danger">{{ name }}</div>
+                                        <div class="help-block text-danger">{{ error }}</div>
                                     </div>
                                 </div>
 
