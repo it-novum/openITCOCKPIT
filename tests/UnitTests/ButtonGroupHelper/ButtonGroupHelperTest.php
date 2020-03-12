@@ -179,6 +179,17 @@ class ButtonGroupHelperTest extends TestCase {
         $this->assertEquals($expected, $actual);
     }
 
+    public function test_addRaw() {
+        $expected = '<div class="btn-group mr-2" role="group" aria-label="unit testing">
+    <div>test related html element</div>
+</div>';
+        $this->sut->addRaw('<div>test related html element</div>');
+
+        $actual = $this->sut->getHtml();
+
+        $this->assertEquals($expected,$actual);
+    }
+
     /**
      * @return string
      */
