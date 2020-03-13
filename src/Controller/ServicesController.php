@@ -509,6 +509,26 @@ class ServicesController extends AppController {
 
         if ($this->request->is('post')) {
             $servicetemplateId = $this->request->getData('Service.servicetemplate_id');
+
+            if (!$this->request->getData('Service.host_id') || !$this->request->getData('Service.servicetemplate_id')) {
+                $errors = [];
+                $this->response = $this->response->withStatus(400);
+                if (!$this->request->getData('Service.host_id')) {
+
+                    $errors['host_id'] = [
+                        'empty' => __('This field cannot be left empty')
+                    ];
+                }
+                if (!$this->request->getData('Service.servicetemplate_id')) {
+                    $errors['servicetemplate_id'] = [
+                        'empty' => __('This field cannot be left empty')
+                    ];
+                }
+                $this->set('error', $errors);
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
             if ($servicetemplateId === null) {
                 throw new BadRequestException('Service.servicetemplate_id needs to set.');
             }

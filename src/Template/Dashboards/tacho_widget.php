@@ -88,9 +88,9 @@
                                class="custom-control-input"
                                ng-true-value="1"
                                ng-false-value="0"
-                               id="showLabel"
+                               id="showLabel{{widget.id}}"
                                ng-model="tacho.show_label">
-                        <label class="custom-control-label" for="showLabel">
+                        <label class="custom-control-label" for="showLabel{{widget.id}}">
                             <?php echo __('Show label'); ?>
                         </label>
                     </div>

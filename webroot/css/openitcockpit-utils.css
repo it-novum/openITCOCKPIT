@@ -305,6 +305,10 @@ openITCOCKPIT v4 Utilities
     margin-left: 15px;
 }
 
+.margin-left-20 {
+    margin-left: 20px;
+}
+
 .margin-right-5 {
     margin-right: 5px;
 }
@@ -556,6 +560,10 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 
 .display-inline-flex {
     display: inline-flex;
+}
+
+.display-inline-block {
+    display: inline-block;
 }
 
 .chosen-container-single .chosen-single {
