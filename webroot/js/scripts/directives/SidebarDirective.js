@@ -11,6 +11,14 @@ angular.module('openITCOCKPIT').directive('sidebar', function($http, $timeout, $
         controller: function($scope){
             $scope.menuFilterPosition = -1;
 
+            $scope.setMenuMinify = function(boolstate = true){
+                if(boolstate){
+                    localStorage.setItem('menuStateMinify', '1');
+                }else{
+                    localStorage.setItem('menuStateMinify', '0');
+                }
+            };
+
             $scope.resetMenuFilterSelectorPosition = function(){
                 $('li.js-filter-show').each(function(index){
                     $(this).removeClass('search_list_item_active');

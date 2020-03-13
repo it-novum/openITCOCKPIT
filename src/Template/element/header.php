@@ -43,33 +43,7 @@ class OitcHeader {
     }
 
     private function menuControl() {
-        $html = '<div class="hidden-md-down dropdown-icon-menu position-relative">
-        <a href="#" class="header-btn btn js-waves-off" data-action="toggle"
-           data-class="nav-function-hidden" title="Hide Navigation">
-            <i class="fas fa-bars"></i>
-        </a>
-        <ul>
-            <li>
-                <a href="#" class="btn js-waves-off" data-action="toggle" data-class="nav-function-minify"
-                   title="Minify Navigation">
-                    <i class="far fa-caret-square-left"></i>
-                </a>
-            </li>
-            <li>
-                <a href="#" class="btn js-waves-off" data-action="toggle" data-class="nav-function-fixed"
-                   title="Lock Navigation">
-                    <i class="fas fa-lock"></i>
-                </a>
-            </li>
-        </ul>
-        <div class="hidden-lg-up">
-            <a href="#" class="header-btn btn press-scale-down" data-action="toggle" data-class="mobile-nav-on">
-            <i class="fas fa-bars"></i>
-            </a>
-        </div>
-    </div>';
-
-        echo $html;
+        echo '<menu-control></menu-control>';
     }
 
     private function menuSearchContentByAngularJsDirective(): void {

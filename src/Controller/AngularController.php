@@ -367,6 +367,11 @@ class AngularController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['menu']);
     }
 
+    public function menuControl() {
+        //Only ship HTML template
+        return;
+    }
+
     public function topSearch() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
