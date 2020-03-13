@@ -572,6 +572,7 @@
                                             echo $AdditionalLinks->getLinksAsHtmlList('services', 'index', 'list');
                                             ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(host, service))"
                                                    ng-if="service.Service.allow_edit"
                                                    class="dropdown-item txt-color-red">

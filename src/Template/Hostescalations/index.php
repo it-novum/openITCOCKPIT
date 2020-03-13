@@ -500,6 +500,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hostescalations')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(hostescalation))"
                                                    ng-if="hostescalation.allowEdit"
                                                    href="javascript:void(0);"

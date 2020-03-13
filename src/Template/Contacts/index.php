@@ -295,6 +295,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'contacts')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a href="javascript:void(0);"
                                                    ng-if="contact.Contact.allow_edit"
                                                    class="txt-color-red dropdown-item"

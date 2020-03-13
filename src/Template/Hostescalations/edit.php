@@ -219,7 +219,7 @@ Once a host or service escalated, contacts, contact group and notification optio
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
+                        <div class="form-group">
                             <label class="control-label" for="HostescalationTimeperiod">
                                 <?php echo __('Escalation period'); ?>
                             </label>
@@ -231,14 +231,10 @@ Once a host or service escalated, contacts, contact group and notification optio
                                 ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
                                 ng-model="post.Hostescalation.timeperiod_id">
                             </select>
-                            <div ng-repeat="error in errors.timeperiod_id">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': errors.contacts}">
                             <label class="control-label hintmark">
-                                <i class="fa fa-minus" aria-hidden="true"></i>
                                 <?php echo __('Contacts'); ?>
                             </label>
                             <div class="input-group">
@@ -259,7 +255,6 @@ Once a host or service escalated, contacts, contact group and notification optio
 
                         <div class="form-group" ng-class="{'has-error': errors.contactgroups}">
                             <label class="control-label hintmark">
-                                <i class="fa fa-minus" aria-hidden="true"></i>
                                 <?php echo __('Contactgroups'); ?>
                             </label>
                             <div class="input-group">
