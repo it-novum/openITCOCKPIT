@@ -25,6 +25,9 @@
 
 /**
  * @var \App\View\AppView $this
+ * @var string $systemname ;
+ * @var string $userFullName
+ * @var string $userImage
  */
 
 use App\Lib\Environments;
@@ -37,10 +40,10 @@ $scripts = $AngularAssets->getJsFiles();
 
 $appScripts = [];
 if (ENVIRONMENT === Environments::PRODUCTION) {
-    $compressedAngularControllers = WWW_ROOT . 'js' . DS . 'compressed_angular_controllers.js';
-    $compressedAngularDirectives = WWW_ROOT . 'js' . DS . 'compressed_angular_directives.js';
-    $compressedAngularServices = WWW_ROOT . 'js' . DS . 'compressed_angular_services.js';
-    $compressedAngularStates = WWW_ROOT . 'js' . DS . 'compressed_angular_states.js';
+    $compressedAngularControllers = WWW_ROOT . 'dist' . DS . 'compressed_angular_controllers.js';
+    $compressedAngularDirectives = WWW_ROOT . 'dist' . DS . 'compressed_angular_directives.js';
+    $compressedAngularServices = WWW_ROOT . 'dist' . DS . 'compressed_angular_services.js';
+    $compressedAngularStates = WWW_ROOT . 'dist' . DS . 'compressed_angular_states.js';
     if (file_exists($compressedAngularControllers) && file_exists($compressedAngularDirectives) && file_exists($compressedAngularServices)) {
         $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularServices);
         $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularDirectives);
@@ -120,9 +123,22 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
         printf('<script src="/%s%s"></script>%s', $appScript, $fileVersion, PHP_EOL);
     endforeach;
 
-    foreach ($AngularAssets->getCssFiles() as $cssFile):
-        printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $cssFile, $fileVersion, PHP_EOL);
-    endforeach;
+    if (ENVIRONMENT === Environments::PRODUCTION && file_exists(WWW_ROOT . 'dist' . DS . 'compressed_app.css')):
+        foreach ($AngularAssets->getNodeCssFiles() as $cssFile):
+            printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $cssFile, $fileVersion, PHP_EOL);
+        endforeach;
+        printf('<link rel="stylesheet" type="text/css" href="/dist/compressed_app.css?%s">%s', $fileVersion, PHP_EOL);
+
+    else:
+        //Dev mode - load all css files
+        foreach ($AngularAssets->getNodeCssFiles() as $cssFile):
+            printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $cssFile, $fileVersion, PHP_EOL);
+        endforeach;
+
+        foreach ($AngularAssets->getCssFiles() as $cssFile):
+            printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $cssFile, $fileVersion, PHP_EOL);
+        endforeach;
+    endif;
     ?>
 </head>
 <body class="mod-bg-1">
@@ -137,7 +153,8 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
             <i class="fa fa-refresh fa-spin"></i>
         </div>
 
-        <sidebar class="page-sidebar" systemname="<?= $systemname; ?>" user-full-name="<?= h($userFullName); ?>" user-image="<?= h($userImage); ?>"></sidebar>
+        <sidebar class="page-sidebar" systemname="<?= $systemname; ?>" user-full-name="<?= h($userFullName); ?>"
+                 user-image="<?= h($userImage); ?>"></sidebar>
 
         <div class="page-content-wrapper">
             <!-- HEADER START -->

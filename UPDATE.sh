@@ -132,7 +132,7 @@ mysql "--defaults-extra-file=$INIFILE" -e "UPDATE containers SET containertype_i
 #oitc api --model Cronjob --action create_missing_cronjobs --data ""
 
 #Compress and minify javascript files
-#oitc compress
+oitc compress
 
 #Acc ALC dependencies config for itc core
 echo "---------------------------------------------------------------"

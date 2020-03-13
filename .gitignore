@@ -46,11 +46,6 @@ nbproject/*
 # Sass preprocessor
 .sass-cache/
 
-# npm modules #
-#######################
-webroot/package-lock.json
-webroot/node_modules
-
 # openITCOCKPIT files #
 #######################
 docker
@@ -60,12 +55,21 @@ src/Lib/openITCOCKPIT_AvailableVersion.php
 webroot/img/userimages
 webroot/img/charts
 webroot/img/graphs
+webroot/dist
 ansible_settings.yml
 config/after_export.php
 config/openitcGrafanaTag.php
 config/datasource.php
 config/dbbackend.php
 config/perfdatabackend.php
+
+# npm modules #
+#######################
+node_modules
+package-lock.json
+webroot/package-lock.json
+webroot/node_modules
+
 
 # Plugins #
 #######################

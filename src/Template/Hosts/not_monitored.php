@@ -323,6 +323,7 @@
                                             echo $AdditionalLinks->getLinksAsHtmlList('hosts', 'notMonitored', 'list');
                                             ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(host))"
                                                    class="dropdown-item txt-color-red">
                                                     <i class="fa fa-trash"></i>

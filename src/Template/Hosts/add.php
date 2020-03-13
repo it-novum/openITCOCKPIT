@@ -41,7 +41,7 @@
 
 <div class="alert alert-warning alert-dismissible fade show ng-hide" role="alert" ng-show="showRootAlert">
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true"><i class="fal fa-times"></i></span>
+        <span aria-hidden="true"><i class="fas fa-times"></i></span>
     </button>
     <div class="d-flex align-items-center">
         <div class="alert-icon width-3">
@@ -156,7 +156,7 @@
                                         ng-model="post.Host.name"
                                         ng-blur="runDnsLookup(true)">
                                     <div ng-repeat="error in errors.name">
-                                        <div class="help-block text-danger">{{ name }}</div>
+                                        <div class="help-block text-danger">{{ error }}</div>
                                     </div>
                                     <div class="text-warning" ng-show="data.dnsHostnameNotFound">
                                         <i class="fa fa-exclamation-triangle"></i>
@@ -188,7 +188,7 @@
                                         ng-model="post.Host.address"
                                         ng-blur="runDnsLookup(false)">
                                     <div ng-repeat="error in errors.address">
-                                        <div class="help-block text-danger">{{ address }}</div>
+                                        <div class="help-block text-danger">{{ error }}</div>
                                     </div>
                                     <div class="text-warning" ng-show="data.dnsAddressNotFound">
                                         <i class="fa fa-exclamation-triangle"></i>
