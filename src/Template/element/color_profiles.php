@@ -23,7 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<!-- COMMENTING THIS OUT CAUSES rgb is undefined error from vendors.bundle.js -->
+<!-- COMMENTING THIS OUT CAUSES rgb is undefined error from jquery.snippets.js -->
 <!-- BEGIN Color profile -->
 <!-- this area is hidden and will not be seen on screens or screen readers -->
 <!-- we use this only for CSS color refernce for JS stuff -->
