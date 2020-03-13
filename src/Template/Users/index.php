@@ -264,6 +264,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'users')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(user))"
                                                    ng-if="user.allow_edit && (user.id != myUserId)"
                                                    href="javascript:void(0);"

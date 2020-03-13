@@ -185,6 +185,7 @@
                                             <?php endif; ?>
 
                                             <?php if ($this->Acl->hasPermission('delete', 'agentchecks')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a href="javascript:void(0);" ng-if="agentcheck.allow_edit"
                                                    class="dropdown-item txt-color-red"
                                                    ng-click="confirmDelete(getObjectForDelete(agentcheck))">

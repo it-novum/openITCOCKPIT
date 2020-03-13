@@ -592,6 +592,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hostdependencies')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(hostdependency))"
                                                    ng-if="hostdependency.allowEdit"
                                                    href="javascript:void(0);"

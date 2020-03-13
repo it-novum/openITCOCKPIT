@@ -168,6 +168,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'usergroups')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(usergroup))"
                                                    href="javascript:void(0);"
                                                    class="dropdown-item txt-color-red">

@@ -185,7 +185,8 @@
                                                 </a>
                                             <?php endif; ?>
 
-                                            <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
+                                            <?php if ($this->Acl->hasPermission('delete', 'agentconnector')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a href="javascript:void(0);"
                                                    class="dropdown-item txt-color-red"
                                                    ng-click="confirmDelete(getObjectForDelete(agent))">

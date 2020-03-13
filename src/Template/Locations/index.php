@@ -186,6 +186,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'locations')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(location))"
                                                    ng-if="location.Location.allowEdit"
                                                    href="javascript:void(0);"
