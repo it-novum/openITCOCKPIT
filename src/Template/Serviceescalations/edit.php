@@ -230,6 +230,7 @@ Once a service escalated, contacts, contact group and notification options will 
                                 chosen="timeperiods"
                                 ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
                                 ng-model="post.Serviceescalation.timeperiod_id">
+                                <option></option>
                             </select>
                         </div>
 

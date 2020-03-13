@@ -226,10 +226,11 @@ Once a host or service escalated, contacts, contact group and notification optio
                             <select
                                 id="HostescalationTimeperiod"
                                 data-placeholder="<?php echo __('Please choose a escalation timeperiod'); ?>"
-                                class="form-control"
+                                class="form-control chosen-container-single"
                                 chosen="timeperiods"
                                 ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
                                 ng-model="post.Hostescalation.timeperiod_id">
+                                <option></option>
                             </select>
                         </div>
 
