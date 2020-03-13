@@ -623,6 +623,7 @@
                                             echo $AdditionalLinks->getLinksAsHtmlList('hosts', 'index', 'list');
                                             ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a g-click="confirmDelete(getObjectForDelete(host))"
                                                    class="dropdown-item txt-color-red">
                                                     <i class="fa fa-trash"></i>
