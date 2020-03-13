@@ -4038,9 +4038,17 @@ msgstr ""
 msgid "MySQL performance"
 msgstr "Performance MySQL"
 
+#: src/Controller/DocumentationsController.php:234
+msgid "A few tips to optimize your MySQL performance."
+msgstr "Quelques conseils pour optimiser vos performances MySQL."
+
 #: src/Controller/DocumentationsController.php:239
 msgid "Browser Push Notifications"
 msgstr "Notifications push du navigateur"
+
+#: src/Controller/DocumentationsController.php:240
+msgid "How to setup openITCOCKPIT browser push notifications."
+msgstr "Comment configurer les notifications de push du navigateur openITCOCKPIT."
 
 #: src/Controller/DowntimereportsController.php:127
 msgid "No downtimes within specified time found ({0} - {1}) !"

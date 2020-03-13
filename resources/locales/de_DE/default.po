@@ -4038,9 +4038,17 @@ msgstr "Fehler beim Löschen des Widgets"
 msgid "MySQL performance"
 msgstr "MySQL Leistung"
 
+#: src/Controller/DocumentationsController.php:234
+msgid "A few tips to optimize your MySQL performance."
+msgstr "Ein paar Tipps zur Optimierung Ihrer MySQL-Performance."
+
 #: src/Controller/DocumentationsController.php:239
 msgid "Browser Push Notifications"
-msgstr "Browser Push-Benachrichtigungen"
+msgstr "Browser-Push-Benachrichtigungen"
+
+#: src/Controller/DocumentationsController.php:240
+msgid "How to setup openITCOCKPIT browser push notifications."
+msgstr "Wie man openITCOCKPIT Browser-Push-Benachrichtigungen einrichtet."
 
 #: src/Controller/DowntimereportsController.php:127
 msgid "No downtimes within specified time found ({0} - {1}) !"
@@ -16938,4 +16946,3 @@ msgstr "Ortszeit des Servers"
 #: src/Template/Angular/system_health.php:20
 msgid "# of status notifications"
 msgstr "Anzahl der Status-Benachrichtigungen"
-

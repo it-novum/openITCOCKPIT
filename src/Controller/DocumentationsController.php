@@ -231,13 +231,13 @@ class DocumentationsController extends AppController {
                 'children'  => [
                     'mysql_performance'          => [
                         'name'        => __('MySQL performance'),
-                        'description' => 'A few tips to optimize your MySQL performance.',
+                        'description' => __('A few tips to optimize your MySQL performance.'),
                         'file'        => 'mysql_performance',
                         'icon'        => 'fas fa-database',
                     ],
                     'browser_push_notifications' => [
                         'name'        => __('Browser Push Notifications'),
-                        'description' => 'How to setup openITCOCKPIT browser push notifications',
+                        'description' => __('How to setup openITCOCKPIT browser push notifications.'),
                         'file'        => 'browser_push_notifications',
                         'icon'        => 'fas fa-bell',
                     ],
