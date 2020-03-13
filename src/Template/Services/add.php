@@ -111,7 +111,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group" ng-class="{'has-error': errors.name}">
+                                <div class="form-group required" ng-class="{'has-error': errors.name}">
                                     <label class="control-label">
                                         <?php echo __('Service name'); ?>
                                     </label>
