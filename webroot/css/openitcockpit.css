@@ -1117,6 +1117,12 @@ label.menu-open-button:hover {
     background: #182531;
 }
 
+.nav-function-minify:not(.nav-function-top) .page-sidebar .primary-nav .nav-menu > li > a + ul > li > a {
+    padding-left: 3.5rem;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+}
+
 /* hintmarks */
 
 .hintmark:after {
