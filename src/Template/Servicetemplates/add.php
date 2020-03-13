@@ -756,6 +756,7 @@
                                             chosen="commands"
                                             ng-options="eventhandler.key as eventhandler.value for eventhandler in eventhandlerCommands"
                                             ng-model="post.Servicetemplate.eventhandler_command_id">
+                                            <option></option>
                                         </select>
                                     </div>
                                     <div ng-repeat="error in errors.eventhandler_command_id">
