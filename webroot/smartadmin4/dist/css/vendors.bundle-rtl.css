@@ -1,7 +1,7 @@
 /*  THEME COLORs
 ========================================================================== */
 /* Looks good on chrome default color profile */
-/* looks good in sRGB but washed up on chrome default 
+/* looks good in sRGB but washed up on chrome default
 $color-primary:						#826bb0;
 $color-success:						#31cb55;
 $color-info:						#5e93ec;
@@ -104,7 +104,7 @@ http://www.standardista.com/px-to-rem-conversion-if-root-font-size-is-16px/
 /*  Z-INDEX declearation
 ========================================================================== */
 /* we adjust bootstrap z-index to be higher than our higest z-index*/
-/*  CUSTOM ICON PREFIX 
+/*  CUSTOM ICON PREFIX
 ========================================================================== */
 /*  PRINT CSS (landscape or portrait)
 ========================================================================== */
@@ -142,11 +142,11 @@ aside.page-sidebar ($nav-width, $nav-background)
 		ul.nav-menu
 			li
 				a (parent level-0..., $nav-link-color, $nav-link-hover-color, $nav-link-hover-bg-color, $nav-link-hover-left-border-color)
-					icon 
+					icon
 					span
-					collapse-sign 
-					
-				ul.nav-menu-sub-one  
+					collapse-sign
+
+				ul.nav-menu-sub-one
 					li
 						a ($nav-level-1... $nav-sub-link-height)
 							span
@@ -182,13 +182,13 @@ aside.page-sidebar ($nav-width, $nav-background)
 /* List Table */
 /*   PAGE SETTINGS
 ========================================================================== */
-/*   PAGE BREADCRUMB 
+/*   PAGE BREADCRUMB
 ========================================================================== */
-/*   PAGE COMPONENT PANELS 
+/*   PAGE COMPONENT PANELS
 ========================================================================== */
-/*   PAGE COMPONENT PROGRESSBARS 
+/*   PAGE COMPONENT PROGRESSBARS
 ========================================================================== */
-/*   PAGE COMPONENT MESSENGER 
+/*   PAGE COMPONENT MESSENGER
 ========================================================================== */
 /*   FOOTER
 ========================================================================== */
@@ -8442,10 +8442,10 @@ a.text-dark:hover, a.text-dark:focus {
 /* #BOOTSTRAP AND MIXINS - Base Unmodified Bootstrap file with theme mixins
 ========================================================================== */
 /*---------------------------------------------------
-    SASS ELements (based on LESS Elements 0.9 http://lesselements.com) 
+    SASS ELements (based on LESS Elements 0.9 http://lesselements.com)
   -------------------------------- -------------------
     LESS ELEMENTS made by Dmitry Fadeyev (http://fadeyev.net)
-    SASS port by Samuel Beek (http://samuelbeek.com) 
+    SASS port by Samuel Beek (http://samuelbeek.com)
   ---------------------------------------------------*/
 /*------------------------
     Usage
@@ -8472,12 +8472,12 @@ From this W3C document: http://www.webmasterworld.com/r.cgi?f=88&d=9769&url=http
 
 usage:
 @include text-contrast($bgcolor)
-      
-Color brightness is determined by the following formula: 
+
+Color brightness is determined by the following formula:
 ((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000
 ------------------------*/
 /*------------------------
- color factory 
+ color factory
   eg: @include paint($blue-grey-50, bg-blue-grey-50);
 ------------------------*/
 /* backface visibility */
@@ -8487,7 +8487,7 @@ Color brightness is determined by the following formula:
 /*  THEME COLORs
 ========================================================================== */
 /* Looks good on chrome default color profile */
-/* looks good in sRGB but washed up on chrome default 
+/* looks good in sRGB but washed up on chrome default
 $color-primary:						#826bb0;
 $color-success:						#31cb55;
 $color-info:						#5e93ec;
@@ -8590,7 +8590,7 @@ http://www.standardista.com/px-to-rem-conversion-if-root-font-size-is-16px/
 /*  Z-INDEX declearation
 ========================================================================== */
 /* we adjust bootstrap z-index to be higher than our higest z-index*/
-/*  CUSTOM ICON PREFIX 
+/*  CUSTOM ICON PREFIX
 ========================================================================== */
 /*  PRINT CSS (landscape or portrait)
 ========================================================================== */
@@ -8628,11 +8628,11 @@ aside.page-sidebar ($nav-width, $nav-background)
 		ul.nav-menu
 			li
 				a (parent level-0..., $nav-link-color, $nav-link-hover-color, $nav-link-hover-bg-color, $nav-link-hover-left-border-color)
-					icon 
+					icon
 					span
-					collapse-sign 
-					
-				ul.nav-menu-sub-one  
+					collapse-sign
+
+				ul.nav-menu-sub-one
 					li
 						a ($nav-level-1... $nav-sub-link-height)
 							span
@@ -8668,13 +8668,13 @@ aside.page-sidebar ($nav-width, $nav-background)
 /* List Table */
 /*   PAGE SETTINGS
 ========================================================================== */
-/*   PAGE BREADCRUMB 
+/*   PAGE BREADCRUMB
 ========================================================================== */
-/*   PAGE COMPONENT PANELS 
+/*   PAGE COMPONENT PANELS
 ========================================================================== */
-/*   PAGE COMPONENT PROGRESSBARS 
+/*   PAGE COMPONENT PROGRESSBARS
 ========================================================================== */
-/*   PAGE COMPONENT MESSENGER 
+/*   PAGE COMPONENT MESSENGER
 ========================================================================== */
 /*   FOOTER
 ========================================================================== */
@@ -8747,8 +8747,8 @@ h6 small,
   text-shadow: none; }
 
 /* looking for font size? Check _helpers.scss */
-/* PLACEHOLDER 
-============================================= 
+/* PLACEHOLDER
+=============================================
 
 EXAMPLE:
 
@@ -8810,7 +8810,7 @@ RESULT:
 			left: 0;
 			top: 0;
 			border-radius: 50%;
-		} 
+		}
 	}*/
 /* patterns */
 /* #WEBFONT ICONS IMPORTS
@@ -12183,8 +12183,8 @@ readers do not read off random characters that represent icons */
  */
 @font-face {
   font-family: 'nextgen-icons';
-  src: url("../webfonts/nextgen-icons.eot");
-  src: url("../webfonts/nextgen-icons.eot?#iefix") format("embedded-opentype"), url("../webfonts/nextgen-icons.woff2") format("woff2"), url("../webfonts/webfonts/nextgen-icons.woff") format("woff"), url("../webfonts/webfonts/nextgen-icons.ttf") format("truetype"), url("../webfonts/webfonts/nextgen-icons.svg#nextgen-icons") format("svg");
+  src: url("/smartadmin4/dist/webfonts/nextgen-icons.eot");
+  src: url("/smartadmin4/dist/webfonts/nextgen-icons.eot?#iefix") format("embedded-opentype"), url("/smartadmin4/dist/webfonts/nextgen-icons.woff2") format("woff2"), url("../webfonts/webfonts/nextgen-icons.woff") format("woff"), url("../webfonts/webfonts/nextgen-icons.ttf") format("truetype"), url("../webfonts/webfonts/nextgen-icons.svg#nextgen-icons") format("svg");
   font-weight: normal;
   font-style: normal; }
 
