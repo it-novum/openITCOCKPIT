@@ -41,7 +41,7 @@
 
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true"><i class="fal fa-times"></i></span>
+        <span aria-hidden="true"><i class="fas fa-times"></i></span>
     </button>
     <div class="d-flex align-items-center">
         <div class="alert-icon width-3">
