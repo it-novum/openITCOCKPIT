@@ -32,7 +32,7 @@
         <a ng-if="!item.items" ui-sref="{{item.state}}" class=" waves-effect waves-themed"
            title="{{item.name}}" data-filter-tags="{{item.tags}}">
             <i class="{{item.icon}}"></i>
-            <span class="menu-item-parent nav-link-text" >
+            <span class="menu-item-parent nav-link-text">
                 {{item.name}}
             </span>
         </a>

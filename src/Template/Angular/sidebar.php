@@ -30,10 +30,11 @@
 ?>
 <aside id="pageSidebar" class="page-sidebar">
     <div class="page-logo">
-        <a href="javascript:void(0);" class="page-logo-link press-scale-down d-flex align-items-center position-relative"
+        <a href="javascript:void(0);"
+           class="page-logo-link press-scale-down d-flex align-items-center position-relative"
            data-toggle="modal" data-target="#modal-shortcut">
             <img src="/img/favicons/favicon-32x32.png" alt="logo" aria-roledescription="logo" style="width: 28px;">
-            <span class="page-logo-text mr-1"><?php echo $systemname; ?></span>
+            <span class="page-logo-text mr-1">{{systemname}}</span>
             <span class="position-absolute text-white opacity-50 small pos-top pos-right mr-2 mt-n2"></span>
             <i class="fa fa-angle-down d-inline-block ml-1 fs-lg color-primary-300"></i>
         </a>
@@ -43,9 +44,9 @@
         <div class="nav-filter">
             <div class="position-relative">
                 <input type="text" id="nav_filter_input"
-                       placeholder="<?php echo 'Filter menu'; ?>"
+                       placeholder="<?= __('Type to search'); ?>"
                        class="form-control"
-                       tabindex="0">
+                       tabindex="0" ng-keydown="navigate($event)">
                 <a href="#" onclick="return false;" class="btn-primary btn-search-close js-waves-off"
                    data-action="toggle" data-class="list-filter-active" data-target=".page-sidebar">
                     <i class="fa fa-chevron-up"></i>
@@ -53,17 +54,17 @@
             </div>
         </div>
         <div class="info-card">
-            <img class="profile-image rounded-circle" alt="me" src="<?= h($userImage) ?>">
+            <img class="profile-image rounded-circle" alt="me" src="{{userImage}}">
             <div class="info-card-text">
                 <a class="d-flex align-items-center text-white" ui-sref="ProfileEdit">
                     <span class="text-truncate text-truncate-sm d-inline-block">
-                        <?= h($userFullName) ?>
+                        {{userFullName}}
                     </span>
                 </a>
                 <?php if ($hasRootPrivileges === true): ?>
                     <span class="d-inline-block text-truncate text-truncate-sm rootCrown">
                         <i class="fas fa-crown"
-                           style="color:#FFD700; text-shadow: 0px 0px 9px rgba(255, 255, 0, 0.50); "
+                           style="color:#FFD700; text-shadow: 0px 0px 5px rgba(255, 255, 0, 0.50); "
                            id="userRootIcon"
                            data-html="true"
                            data-original-title="<?php echo __('Administrator privileges'); ?>"
@@ -81,6 +82,7 @@
         <ul menu
             id="js-nav-menu"
             class="nav-menu"
+            menu-filter-position="menuFilterPosition"
             phpplugin="<?= $this->getRequest()->getParam('plugin', '') ?>"
             phpcontroller="<?= $this->getRequest()->getParam('controller', '') ?>"
             phpaction="<?= $this->getRequest()->getParam('action', '') ?>">>
@@ -97,22 +99,26 @@
         </a>
         <ul class="list-table m-auto nav-footer-buttons">
             <li>
-                <a ui-sref="StatisticsIndex" data-toggle="tooltip" data-placement="top" title="<?php echo __('Anonymous statistics'); ?>">
+                <a ui-sref="StatisticsIndex" data-toggle="tooltip" data-placement="top"
+                   title="<?php echo __('Anonymous statistics'); ?>">
                     <i class="fa fa-line-chart"></i>
                 </a>
             </li>
             <li>
-                <a ui-sref="SupportsIssue" data-toggle="tooltip" data-placement="top" title="<?php echo __('Report a Bug'); ?>">
+                <a ui-sref="SupportsIssue" data-toggle="tooltip" data-placement="top"
+                   title="<?php echo __('Report a Bug'); ?>">
                     <i class="fas fa-bug"></i>
                 </a>
             </li>
             <li>
-                <a href="https://openitcockpit.io/#Subscription" data-toggle="tooltip" data-placement="top" title="<?php echo __('Support'); ?>">
+                <a href="https://openitcockpit.io/#Subscription" data-toggle="tooltip" data-placement="top"
+                   title="<?php echo __('Support'); ?>">
                     <i class="fa fa-life-ring"></i>
                 </a>
             </li>
             <li>
-                <a ui-sref="DocumentationsWiki" data-toggle="tooltip" data-placement="top" title="<?php echo __('Documentation'); ?>">
+                <a ui-sref="DocumentationsWiki" data-toggle="tooltip" data-placement="top"
+                   title="<?php echo __('Documentation'); ?>">
                     <i class="fa fa-book"></i>
                 </a>
             </li>

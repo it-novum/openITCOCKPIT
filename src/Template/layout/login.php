@@ -43,7 +43,6 @@
     <link rel="stylesheet" type="text/css" href="/node_modules/noty/lib/noty.css">
 
     <link rel="stylesheet" type="text/css" href="/css/login/adminator.min.css">
-
     <link rel="stylesheet" type="text/css" href="/css/login/login.css">
 
     <title><?= __('Sign In') ?></title>

@@ -33,7 +33,7 @@ class AngularAssets implements AngularAssetsInterface {
     /**
      * @var array
      */
-    private $jsFiles = [
+    protected $jsFiles = [
         'node_modules/jquery/dist/jquery.min.js',
         'node_modules/jquery-ui-dist/jquery-ui.min.js',
         'node_modules/popper.js/dist/umd/popper.min.js',
@@ -99,25 +99,23 @@ class AngularAssets implements AngularAssetsInterface {
         'js/lib/raphael-charts-cust/g.bar.js',
         'js/lib/raphael-charts-cust/pielicious.js',
         'node_modules/file-saver/dist/FileSaver.min.js',
-        'node_modules/canvas-gauges/gauge.min.js'
+        'node_modules/canvas-gauges/gauge.min.js',
+        'node_modules/particles.js/particles.js'
     ];
 
-    private $cssFiles = [
+    /**
+     * @var array
+     * Gets added before self::cssFiles in the HTML document
+     */
+    protected $nodeCssFiles = [
         '/node_modules/jquery-ui-dist/jquery-ui.css',
         '/node_modules/node-waves/dist/waves.css',
         '/node_modules/bootstrap4-tagsinput/tagsinput.css',
         '/node_modules/bootstrap4c-chosen/dist/css/component-chosen.css',
         '/node_modules/highlight-within-textarea/jquery.highlight-within-textarea.css',
-        '/css/timeline.css',
-        '/css/changelog.css',
         '/node_modules/dropzone/dist/min/dropzone.min.css',
-        '/smartadmin4/dist/css/vendors.bundle.css',
-        '/smartadmin4/dist/css/app.bundle.css',
-        '/smartadmin4/dist/css/themes/cust-theme-10.css',
-        '/css/lib/jquery-jvectormap-1.2.2.css',
         '/node_modules/font-awesome/css/font-awesome.css',
         '/node_modules/@fortawesome/fontawesome-free/css/all.min.css',
-        '/css/console.css',
         '/node_modules/@fullcalendar/core/main.css',
         '/node_modules/@fullcalendar/daygrid/main.css',
         '/node_modules/@fullcalendar/timegrid/main.css',
@@ -125,14 +123,27 @@ class AngularAssets implements AngularAssetsInterface {
         '/node_modules/@fullcalendar/bootstrap/main.css',
         '/node_modules/flag-icon-css/css/flag-icon.css',
         '/node_modules/animate.css/animate.min.css',
-        '/css/lib/ansi.css',
         '/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.css',
         '/node_modules/vis-network/dist/vis-network.min.css',
         '/node_modules/vis-timeline/dist/vis-timeline-graph2d.css',
         '/node_modules/noty/lib/noty.css',
         '/node_modules/angular-flippy/dist/css/angular-flippy.min.css',
+        '/node_modules/angular-gridster/dist/angular-gridster.min.css'
+    ];
+
+    /**
+     * @var array
+     */
+    protected $cssFiles = [
+        '/css/timeline.css',
+        '/css/changelog.css',
+        '/smartadmin4/dist/css/vendors.bundle.css',
+        '/smartadmin4/dist/css/app.bundle.css',
+        '/smartadmin4/dist/css/themes/cust-theme-10.css',
+        '/css/lib/jquery-jvectormap-1.2.2.css',
+        '/css/console.css',
+        '/css/lib/ansi.css',
         '/css/lib/image-picker.css',
-        '/node_modules/angular-gridster/dist/angular-gridster.min.css',
         '/css/openitcockpit-colors.css',
         '/css/openitcockpit-utils.css',
         '/css/openitcockpit.css',
@@ -203,4 +214,107 @@ class AngularAssets implements AngularAssetsInterface {
         return $cssFiles;
     }
 
+    public function getNodeCssFiles() {
+        return $this->nodeCssFiles;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCssFilesOnDisk() {
+        $cssFiles = [];
+        foreach ($this->cssFiles as $cssFile) {
+            if (substr($cssFile, 0, 1) === '/') {
+                //Remove leading / from path
+                $cssFile = substr($cssFile, 1);
+            }
+
+            $cssFiles[] = WWW_ROOT . $cssFile;
+        }
+
+        //Load Plugin configuration files
+        $Folder = new Folder(PLUGIN);
+        $folders = $Folder->subdirectories();
+
+        $loadedModules = array_filter($folders, function ($value) {
+            return strpos($value, 'Module') !== false;
+        });
+
+        foreach ($loadedModules as $loadedModule) {
+            $file = $loadedModule . DS . 'src' . DS . 'Lib' . DS . 'AngularAssets.php';
+            if (file_exists($file)) {
+                require_once $file;
+                $moduleNameArray = explode('/', $loadedModule);
+                $moduleName = array_pop($moduleNameArray);
+                $dynamicAngularAssets = sprintf('itnovum\openITCOCKPIT\%s\AngularAssets\AngularAssets', $moduleName);
+                $ModuleAngularAssets = new $dynamicAngularAssets();
+                /** @var AngularAssetsInterface $ModuleAngularAssets */
+                foreach ($ModuleAngularAssets->getCssFilesOnDisk() as $cssFile) {
+                    $cssFiles[] = $cssFile;
+                }
+            }
+        }
+        return $cssFiles;
+    }
+
+    /**
+     * @return array
+     */
+    public function getNodeCssFilesOnDisk() {
+        $cssFiles = [];
+        foreach ($this->nodeCssFiles as $cssFile) {
+            if (substr($cssFile, 0, 1) === '/') {
+                //Remove leading / from path
+                $cssFile = substr($cssFile, 1);
+            }
+
+            $cssFiles[] = WWW_ROOT . $cssFile;
+        }
+        return $cssFiles;
+    }
+
+    /**
+     * @return array
+     */
+    public function getNodeJsFiles() {
+        $jsFiles = [];
+        foreach ($this->jsFiles as $jsFile) {
+            if (substr($jsFile, 0, 1) === '/') {
+                //Remove leading / from path
+                $jsFile = substr($jsFile, 1);
+            }
+
+            if (substr($jsFile, 0, 12) === 'node_modules') {
+                $jsFiles[] = $jsFile;
+            }
+        }
+        return $jsFiles;
+    }
+
+    /**
+     * @return array
+     */
+    public function getJsFilesOnDisk() {
+        // TODO: Implement getJsFilesOnDisk() method.
+    }
+
+    public function getPluginNgStateJsFiles() {
+        $ngStateJsFiles = [];
+
+        $Folder = new Folder(PLUGIN);
+        $folders = $Folder->subdirectories();
+        $loadedModules = array_filter($folders, function ($value) {
+            return strpos($value, 'Module') !== false;
+        });
+
+        foreach ($loadedModules as $loadedModule) {
+            //Also include ng.stats.js of the Plugin
+            $ngStateJs = $loadedModule . DS . 'webroot' . DS . 'js' . DS . 'scripts' . DS . 'ng.states.js';
+            if (file_exists($ngStateJs)) {
+                $jsFiles[] = $ngStateJs;
+            }
+        }
+
+        return $jsFiles;
+    }
 }

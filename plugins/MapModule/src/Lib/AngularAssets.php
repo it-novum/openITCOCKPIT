@@ -8,31 +8,46 @@
 namespace itnovum\openITCOCKPIT\MapModule\AngularAssets;
 
 use itnovum\openITCOCKPIT\Core\AngularJS\AngularAssetsInterface;
+use itnovum\openITCOCKPIT\Core\AngularJS\PluginAngularAssets;
 
-class AngularAssets implements AngularAssetsInterface {
+class AngularAssets extends PluginAngularAssets implements AngularAssetsInterface {
 
     /**
      * @var array
      */
-    private $jsFiles = [
+    protected $jsFiles = [
 
     ];
 
-    private $cssFiles = [
-        'map_module/css/MapModule.css'
+    protected $cssFiles = [
+        '/css/MapModule.css'
     ];
 
     /**
      * @return array
      */
     public function getJsFiles() {
-        return $this->jsFiles;
+        return $this->_getJsFiles('map_module');
     }
 
     /**
      * @return array
      */
     public function getCssFiles() {
-        return $this->cssFiles;
+        return $this->_getCssFiles('map_module');
+    }
+
+    /**
+     * @return array
+     */
+    public function getJsFilesOnDisk() {
+        return $this->_getJsFilesOnDisk('MapModule');
+    }
+
+    /**
+     * @return array
+     */
+    public function getCssFilesOnDisk() {
+        return $this->_getCssFilesOnDisk('MapModule');
     }
 }
