@@ -8090,7 +8090,7 @@ msgstr "Supprimer le fichier"
 
 #: src/Template/Backups/index.php:80
 msgid "Download file"
-msgstr ""
+msgstr "Télécharger le fichier"
 
 #: src/Template/Backups/index.php:84
 msgid "Start Restore"
