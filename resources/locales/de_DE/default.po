@@ -16923,3 +16923,19 @@ msgstr "Aktuelle Zeit als String (HH:MM:SS)."
 msgid "Current time as UNIX timestamp."
 msgstr "Aktuelle Zeit als UNIX-Zeitstempel."
 
+#: src/Template/Angular/user_timezone.php:30
+msgid "local time of client"
+msgstr "Ortszeit des Benutzers"
+
+#: src/Template/Angular/user_timezone.php:31
+msgid "display time information"
+msgstr "Zeitinformationen anzeigen"
+
+#: src/Template/Angular/user_timezone.php:32
+msgid "local time of server"
+msgstr "Ortszeit des Servers"
+
+#: src/Template/Angular/system_health.php:20
+msgid "# of status notifications"
+msgstr "Anzahl der Status-Benachrichtigungen"
+
