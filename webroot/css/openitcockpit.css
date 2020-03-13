@@ -122,6 +122,24 @@ div.custom-control-right-badge .custom-control-label::after {
     border-color: #E5E5E5 !important;
 }
 
+#global-loading {
+    background: rgba(71, 69, 68, 0.8);
+    color: #FFF;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    border-radius: 16px;
+    width: 250px;
+    height: 250px;
+    z-index: 9999;
+    font-size: 100px;
+    text-align: center;
+    padding-top: 50px;
+    margin-top: -125px;
+    margin-left: -125px;
+    display: none;
+}
+
 /* dashboards host/service status overview */
 .bg-host-0, .bg-service-0 {
     background-color: #00C851 !important;
@@ -612,7 +630,7 @@ pre {
 
 .bootstrap-tagsinput .badge {
     margin: 2px 2px 0 0;
-    padding:5px 8px;
+    padding: 5px 8px;
 }
 
 .filter-text {
@@ -1036,7 +1054,7 @@ div.required .control-label::after {
 
 .header-icon .notification-message,
 .header-icon .notification-title,
-.header-icon .d-flex{
+.header-icon .d-flex {
     line-height: 1rem;
 }
 
@@ -1052,7 +1070,8 @@ div.required .control-label::after {
     transform-origin: 429px -450px;
     opacity: 1;
     margin-top: 44px;
-    visibility: visible; }
+    visibility: visible;
+}
 
 .dropdown-item {
     padding: 0.30rem 1.0rem;

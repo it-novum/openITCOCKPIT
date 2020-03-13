@@ -26,7 +26,6 @@ namespace itnovum\openITCOCKPIT\Core\Reports;
 
 
 use Cake\Utility\Hash;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class StatehistoryConverter {
 
@@ -137,6 +136,7 @@ class StatehistoryConverter {
                     //if outage in downtime add time for state "ok"
                     if (($currentState == $outageState) && $isDowntime) {
                         $evaluationData[0] += $stateTimeTimestamp - $time;
+                        //$current_state = $state_ok;
                         $evaluationData['outages'][$outageCounter] = [
                             'start'       => $time,
                             'end'         => $stateTimeTimestamp,
@@ -145,7 +145,7 @@ class StatehistoryConverter {
                         $outageCounter++;
                     } else {
                         $evaluationData[$currentState] += $stateTimeTimestamp - $time;
-                        if ($currentState == $outageState) {
+                        if ($currentState == $outageState && ($stateTimeTimestamp - $time) > 0) {
                             $evaluationData['outages'][$outageCounter] = [
                                 'start'       => $time,
                                 'end'         => $stateTimeTimestamp,
@@ -200,6 +200,7 @@ class StatehistoryConverter {
         unset($timeSlices, $stateHistory);
         return $evaluationData;
     }
+
 
     /**
      * @param $outageArray
@@ -260,29 +261,29 @@ class StatehistoryConverter {
         return $values;
     }
 
-    public static function hostStateSummary($hostsStatesHistoryEntries){
+    public static function hostStateSummary($hostsStatesHistoryEntries) {
         $totalHostsData = [
             0 => 0,
             1 => 0,
             2 => 0
         ];
-        foreach($hostsStatesHistoryEntries as $hostStatesHistoryEntries){
-            foreach($hostStatesHistoryEntries as $state => $hostStatesHistoryEntry){
+        foreach ($hostsStatesHistoryEntries as $hostStatesHistoryEntries) {
+            foreach ($hostStatesHistoryEntries as $state => $hostStatesHistoryEntry) {
                 $totalHostsData[$state] += $hostStatesHistoryEntry;
             }
         }
         return $totalHostsData;
     }
 
-    public static function serviceStateSummary($servicesStatesHistoryEntries){
+    public static function serviceStateSummary($servicesStatesHistoryEntries) {
         $totalServicesData = [
             0 => 0,
             1 => 0,
             2 => 0,
             3 => 0
         ];
-        foreach($servicesStatesHistoryEntries as $serviceStatesHistoryEntries){
-            foreach($serviceStatesHistoryEntries as $state => $serviceStatesHistoryEntry){
+        foreach ($servicesStatesHistoryEntries as $serviceStatesHistoryEntries) {
+            foreach ($serviceStatesHistoryEntries as $state => $serviceStatesHistoryEntry) {
                 $totalServicesData[$state] += $serviceStatesHistoryEntry;
             }
         }
