@@ -190,8 +190,8 @@
                             </div>
                         </div>
 
-
                         <div class="col-xs-12 col-md-6 col-lg-4" ng-repeat="module in modules">
+
                             <div class="card">
                                 <div class="card-header">
                                     <h4>
@@ -214,10 +214,20 @@
                                         {{module.Module.license}}
                                     </div>
 
-                                    <div>
+                                    <!-- V4 tags -->
+                                    <div ng-if="isArray(module.Module.tags)">
                                         <i class="fa fa-tags"></i>
                                         <span class="badge badge-secondary margin-right-5"
                                               ng-repeat="tag in module.Module.tags">
+                                            {{tag}}
+                                        </span>
+                                    </div>
+
+                                    <!-- V3 tags -->
+                                    <div ng-if="!isArray(module.Module.tags)">
+                                        <i class="fa fa-tags"></i>
+                                        <span class="badge badge-secondary margin-right-5"
+                                              ng-repeat="tag in splitTags(module.Module.tags)">
                                             {{tag}}
                                         </span>
                                     </div>

@@ -6,6 +6,8 @@ angular.module('openITCOCKPIT')
         $scope.modulesToInstall = [];
         $scope.modulesToCheckboxesInstall = {};
 
+        $scope.isArray = angular.isArray;
+
         $scope.load = function(){
             $scope.selectedUserContainers = [];
             $scope.selectedUserContainerWithPermission = {};
@@ -56,6 +58,16 @@ angular.module('openITCOCKPIT')
             if($scope.modulesToInstall.length > 0){
                 $('#installPackageModal').modal('show');
             }
+        };
+
+        /**
+         * used for v3 License tags
+         */
+        $scope.splitTags = function(str){
+            if(!angular.isString(str)){
+                return false;
+            }
+            return str.split(',');
         };
 
         $scope.getCliCommand = function(){
