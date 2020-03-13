@@ -61,7 +61,6 @@
                           ng-init="successMessage=
             {objectName : '<?php echo __('Service'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
-
                         <!-- BASIC CONFIGURATION START -->
 
                         <div class="card margin-bottom-10">
@@ -122,7 +121,7 @@
                                         type="text"
                                         ng-model="post.Service.name">
                                     <div ng-repeat="error in errors.name">
-                                        <div class="help-block text-danger">{{ name }}</div>
+                                        <div class="help-block text-danger">{{ error }}</div>
                                     </div>
                                 </div>
 

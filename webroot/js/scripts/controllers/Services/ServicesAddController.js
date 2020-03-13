@@ -369,7 +369,6 @@ angular.module('openITCOCKPIT')
                     NotyService.scrollTop();
                 }
 
-
                 console.log('Data saved successfully');
             }, function errorCallback(result){
 
