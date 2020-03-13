@@ -173,6 +173,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'calendars')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a href="javascript:void(0);"
                                                    ng-if="calendar.allowEdit"
                                                    class="txt-color-red dropdown-item"

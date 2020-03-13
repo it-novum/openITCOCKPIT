@@ -167,7 +167,7 @@ class OitcHeader {
     private function menuHeaderSignOut(): string {
 
         $signOutBtnGrpHelper = new ButtonGroupHelper('');
-        $signOutBtnGrpHelper->addIconButtonWithHRef('fa fa-sign-out-alt', $this->translate('Sign out'), '/users/logout');
+        $signOutBtnGrpHelper->addIconButtonWithHRefFixed('fa fa-sign-out-alt', $this->translate('Sign out'), '/users/logout');
 
         return $this->decorateHeaderHtmlElement($signOutBtnGrpHelper->getHtml());
     }

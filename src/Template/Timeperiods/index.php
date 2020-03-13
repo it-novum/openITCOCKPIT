@@ -188,6 +188,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'timeperiods')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a href="javascript:void(0);"
                                                    ng-if="timeperiod.Timeperiod.allow_edit"
                                                    class="txt-color-red dropdown-item"

@@ -23,8 +23,8 @@
 //  confirmation.
 ?>
 
-<div class="input-group">
-    <div class="input-group-btn input-group-prepend" ng-init="type='<?= __('host') ?>';name='<?= __('Hosts') ?>'">
+<div class="btn-group font-sm display-flex">
+    <div class="btn-group input-group-btn input-group-prepend" ng-init="type='<?= __('host') ?>';name='<?= __('Hosts') ?>'">
         <button type="button"
                 class="btn btn-default dropdown-toggle no-border"
                 data-toggle="dropdown" aria-expanded="false">
