@@ -46,4 +46,6 @@ interface ButtonGroupHelperInterface {
     public function addButtonWithTooltipAndDisplayConditional(string $innerHtml, string $cssSelector = 'btn-default', string $dataOriginalTitle = '', string $conditional = ''): ButtonGroupHelperInterface;
 
     public function addRaw(string $html): ButtonGroupHelperInterface;
+
+    public function addIconButtonWithHRefFixed(string $iconCssSelector, string $dataOriginalTitle = '', string $hRef = ''): ButtonGroupHelperInterface;
 }

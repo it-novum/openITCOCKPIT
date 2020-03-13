@@ -128,6 +128,12 @@ class ButtonGroupHelper implements ButtonGroupHelperInterface {
         return $this;
     }
 
+    public function addIconButtonWithHRefFixed(string $iconCssSelector, string $dataOriginalTitle = '', string $hRef = ''): ButtonGroupHelperInterface {
+        $this->groupElements[] = '<a class="btn btn-default" data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body" href="' . $hRef . '"><i class="' . $iconCssSelector . '"></i></a>';
+
+        return $this;
+    }
+
     /**
      * @return string
      */
