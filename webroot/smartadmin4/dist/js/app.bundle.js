@@ -84,8 +84,8 @@ var myapp_config = {
 	Nav close and open signs
 	This uses the fontawesome css class
 	*/
-	navClosedSign: 'fal fa-angle-down',
-	navOpenedSign: 'fal fa-angle-up',
+	navClosedSign: 'fas fa-angle-down',
+	navOpenedSign: 'fas fa-angle-up',
 	/*
 	App date ID
 	found inside the breadcrumb unit, displays current date to the app on pageload
