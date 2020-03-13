@@ -380,6 +380,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'instantreports')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(instantreport))"
                                                    ng-if="instantreport.allowEdit"
                                                    href="javascript:void(0);"

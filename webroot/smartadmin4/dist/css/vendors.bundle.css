@@ -8820,8 +8820,8 @@ RESULT:
  */
 @font-face {
     font-family: 'nextgen-icons';
-    src: url("../webfonts/nextgen-icons.eot");
-    src: url("../webfonts/nextgen-icons.eot?#iefix") format("embedded-opentype"), url("../webfonts/nextgen-icons.woff2") format("woff2"), url("../webfonts/webfonts/nextgen-icons.woff") format("woff"), url("../webfonts/webfonts/nextgen-icons.ttf") format("truetype"), url("../webfonts/webfonts/nextgen-icons.svg#nextgen-icons") format("svg");
+    src: url("/smartadmin4/dist/webfonts/nextgen-icons.eot");
+    src: url("/smartadmin4/dist/webfonts/nextgen-icons.eot?#iefix") format("embedded-opentype"), url("/smartadmin4/dist/webfonts/nextgen-icons.woff2") format("woff2"), url("../webfonts/webfonts/nextgen-icons.woff") format("woff"), url("../webfonts/webfonts/nextgen-icons.ttf") format("truetype"), url("../webfonts/webfonts/nextgen-icons.svg#nextgen-icons") format("svg");
     font-weight: normal;
     font-style: normal; }
 

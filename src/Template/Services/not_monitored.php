@@ -237,10 +237,11 @@
                                         echo $AdditionalLinks->getLinksAsHtmlList('services', 'notMonitored', 'list');
                                         ?>
                                         <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                            <div class="dropdown-divider"></div>
                                             <a href="javascript:void(0);"
                                                ng-click="confirmDelete(getObjectForDelete(host, service))"
                                                ng-if="service.allow_edit"
-                                               class="dropdown-item">
+                                               class="dropdown-item txt-color-red">
                                                 <i class="fa fa-trash"></i>
                                                 <?php echo __('Delete'); ?>
                                             </a>

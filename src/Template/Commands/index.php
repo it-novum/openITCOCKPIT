@@ -212,6 +212,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'commands')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a href="javascript:void(0);"
                                                    class="txt-color-red dropdown-item"
                                                    ng-click="confirmDelete(getObjectForDelete(command))">
