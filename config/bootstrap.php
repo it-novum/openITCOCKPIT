@@ -26,11 +26,6 @@ if (!defined('PLUGIN')) {
     define('PLUGIN', ROOT . DS . 'plugins' . DS);
 }
 
-if (!defined('ENVIRONMENT')) {
-    define('ENVIRONMENT', 'development');
-}
-
-
 /*
  * Bootstrap CakePHP.
  *
@@ -98,6 +93,15 @@ try {
 } catch (\Exception $e) {
     exit($e->getMessage() . "\n");
 }
+
+if (!defined('ENVIRONMENT')) {
+    if (Configure::read('debug') === true) {
+        define('ENVIRONMENT', 'development');
+    } else {
+        define('ENVIRONMENT', 'production');
+    }
+}
+
 
 /*
  * Load an environment local configuration file to provide overrides to your configuration.
