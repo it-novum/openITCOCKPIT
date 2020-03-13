@@ -64,7 +64,7 @@
                 <?php if ($hasRootPrivileges === true): ?>
                     <span class="d-inline-block text-truncate text-truncate-sm rootCrown">
                         <i class="fas fa-crown"
-                           style="color:#FFD700; text-shadow: 0px 0px 9px rgba(255, 255, 0, 0.50); "
+                           style="color:#FFD700; text-shadow: 0px 0px 5px rgba(255, 255, 0, 0.50); "
                            id="userRootIcon"
                            data-html="true"
                            data-original-title="<?php echo __('Administrator privileges'); ?>"
