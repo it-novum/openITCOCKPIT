@@ -557,7 +557,9 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 .display-inline-flex {
     display: inline-flex;
 }
-
+.display-flex {
+    display: flex;
+}
 .chosen-container-single .chosen-single {
     height: 100%;
     line-height: calc(2.6em);
