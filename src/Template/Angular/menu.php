@@ -24,36 +24,34 @@
 //  confirmation.
 ?>
 
-<span ng-repeat="headline in menu">
-    <li class="nav-title">
-        {{headline.alias}}
-    </li>
-    <li ng-repeat="item in headline.items">
-        <a ng-if="!item.items" ui-sref="{{item.state}}" class=" waves-effect waves-themed"
-           title="{{item.name}}" data-filter-tags="{{item.tags}}">
-            <i class="{{item.icon}}"></i>
-            <span class="menu-item-parent nav-link-text">
-                {{item.name}}
-            </span>
-        </a>
+<li ng-repeat-start="headline in menu" class="nav-title">
+    {{headline.alias}}
+</li>
+<li ng-repeat-end="" ng-repeat="item in headline.items">
+    <a ng-if="!item.items" ui-sref="{{item.state}}" class="waves-effect waves-themed"
+       title="{{item.name}}" data-filter-tags="{{item.tags}}">
+        <i class="{{item.icon}}"></i>
+        <span class="menu-item-parent nav-link-text">
+            {{item.name}}
+        </span>
+    </a>
 
-        <a ng-if="item.items.length > 0" href="javascript:void(0);" class=" waves-effect waves-themed"
-           title="{{item.alias}}" data-filter-tags="{{item.tags}}">
-            <i class="{{item.icon}}"></i>
-            <span class="menu-item-parent nav-link-text">
-                {{item.alias}}
-            </span>
-        </a>
-        <ul ng-if="item.items.length > 0">
-            <li ng-repeat="subItem in item.items">
-                <a ui-sref="{{subItem.state}}" class="waves-effect waves-themed"
-                   title="{{subItem.name}}" data-filter-tags="{{subItem.tags}}">
-                    <i class="{{subItem.icon}}"></i>
-                    <span class="nav-link-text">
-                        {{subItem.name}}
-                    </span>
-                </a>
-            </li>
-        </ul>
-    </li>
-</span>
+    <a ng-if="item.items.length > 0" href="javascript:void(0);" class="waves-effect waves-themed"
+       title="{{item.alias}}" data-filter-tags="{{item.tags}}">
+        <i class="{{item.icon}}"></i>
+        <span class="menu-item-parent nav-link-text">
+            {{item.alias}}
+        </span>
+    </a>
+    <ul ng-if="item.items.length > 0">
+        <li ng-repeat="subItem in item.items">
+            <a ui-sref="{{subItem.state}}" class="waves-effect waves-themed"
+               title="{{subItem.name}}" data-filter-tags="{{subItem.tags}}">
+                <i class="{{subItem.icon}}"></i>
+                <span class="nav-link-text">
+                    {{subItem.name}}
+                </span>
+            </a>
+        </li>
+    </ul>
+</li>

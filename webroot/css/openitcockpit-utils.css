@@ -562,6 +562,10 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     display: inline-flex;
 }
 
+.display-flex {
+    display: flex;
+}
+
 .display-inline-block {
     display: inline-block;
 }

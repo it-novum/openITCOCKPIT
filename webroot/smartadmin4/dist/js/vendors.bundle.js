@@ -25012,7 +25012,7 @@ bootbox.setTemplates({
 		footer:
 		'<div class="modal-footer"></div>',
 		closeButton:
-		'<button type="button" class="bootbox-close-button close" aria-hidden="true"><i class="fal fa-times"></i></button>',
+		'<button type="button" class="bootbox-close-button close" aria-hidden="true"><i class="fas fa-times"></i></button>',
 		form:
 		'<form class="bootbox-form"></form>',
 		button:
@@ -26851,7 +26851,7 @@ function rgb2hex(rgb) {
 					if (self.o.refreshButton === true && tPanel.data('panel-refresh') === undefined) {
 						refreshButton = '<a href="#" class="dropdown-item js-panel-refresh"><span data-i18n="drpdwn.refreshpanel">' + self.o.refreshButtonLabel + '</span></a>';
 						thisContainer.prepend(
-							'<div class="loader"><i class="fal fa-spinner-third fa-spin-4x fs-xxl"></i></div>'
+							'<div class="loader"><i class="fas fa-spinner-third fa-spin-4x fs-xxl"></i></div>'
 						);
 						//append** conflicts with panel > container > content:last child, so changed to prepend
 
@@ -26895,7 +26895,7 @@ function rgb2hex(rgb) {
 					 * Append the image to the panel header.
 					 **/
 					thisHeader.append(
-						'<div class="panel-saving mr-2" style="display:none"><i class="fal fa-spinner-third fa-spin-4x fs-xl"></i></div>'
+						'<div class="panel-saving mr-2" style="display:none"><i class="fas fa-spinner-third fa-spin-4x fs-xl"></i></div>'
 					);
 
 					/**
@@ -26927,7 +26927,7 @@ function rgb2hex(rgb) {
 					 * Add a button wrapper to the header.
 					 **/
 					if (lockedButton !== '' || colorButton !== '' || refreshButton !== '' || resetButton !== '' || customButton !== '') {
-						thisHeader.append('<div class="panel-toolbar"><a href="#" class="btn btn-toolbar-master" data-toggle="dropdown"><i class="fal fa-ellipsis-v"></i></a><div class="dropdown-menu dropdown-menu-animated dropdown-menu-right p-0">' + formatDropdownButtons + '</div></div>');
+						thisHeader.append('<div class="panel-toolbar"><a href="#" class="btn btn-toolbar-master" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></a><div class="dropdown-menu dropdown-menu-animated dropdown-menu-right p-0">' + formatDropdownButtons + '</div></div>');
 					}
 
 					/**

@@ -148,7 +148,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
             var classHolder = document.getElementsByTagName("BODY")[0]; // may delete this if navigation (plugin) changes
             Dropzone.autoDiscover = false;
         </script>
-        
+
         <div id="global-loading">
             <i class="fa fa-refresh fa-spin"></i>
         </div>
