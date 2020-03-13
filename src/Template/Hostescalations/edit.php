@@ -230,6 +230,7 @@ Once a host or service escalated, contacts, contact group and notification optio
                                 chosen="timeperiods"
                                 ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
                                 ng-model="post.Hostescalation.timeperiod_id">
+                                <option></option>
                             </select>
                         </div>
 

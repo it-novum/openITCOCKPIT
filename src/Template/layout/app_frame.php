@@ -150,7 +150,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
         </script>
 
         <div id="global-loading">
-            <i class="fa fa-refresh fa-spin"></i>
+            <i class="fas fa-spinner fa-spin"></i>
         </div>
 
         <sidebar class="page-sidebar" systemname="<?= $systemname; ?>" user-full-name="<?= h($userFullName); ?>"

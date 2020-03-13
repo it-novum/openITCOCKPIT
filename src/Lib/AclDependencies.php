@@ -85,6 +85,7 @@ class AclDependencies {
             ->allow('Angular', 'statuscount')
             ->allow('Angular', 'menu')
             ->allow('Angular', 'topSearch')
+            ->allow('Angular', 'sidebar')
             ->allow('Angular', 'websocket_configuration')
             ->allow('Angular', 'push_configuration')
             ->allow('Angular', 'export')
