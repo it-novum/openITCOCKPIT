@@ -55,62 +55,85 @@
                         <?php if ($hasLicense): ?>
                             <div class="card">
                                 <h3 class="card-header reportIssueCardCommercialSupportHeader">
-                                    Commercial support
+                                    <?= __('Commercial support'); ?>
                                 </h3>
                                 <h3 class="card-header reportIssueCardSubheader">
-                                    it-novum GmbH
+                                    <?= __('it-novum GmbH'); ?>
                                 </h3>
                                 <div class="card-body text-align-center">
                                     <ul class="list-unstyled text-left">
-                                        <li><i class="fa fa-minus text-muted"></i> General questions about openITCOCKPIT
+                                        <li>
+                                            <i class="fa fa-minus text-muted"></i> <?= __('General questions about openITCOCKPIT'); ?>
                                         </li>
-                                        <li><i class="fa fa-minus text-muted"></i> System issues</li>
-                                        <li><i class="fa fa-minus text-muted"></i> System crashes</li>
-                                        <li><i class="fa fa-minus text-muted"></i> Unwanted behavior or bugs</li>
-                                        <li><i class="fa fa-minus text-muted"></i> Errors with packages for your
-                                            distribution
+                                        <li><i class="fa fa-minus text-muted"></i> <?= __('System issues'); ?></li>
+                                        <li><i class="fa fa-minus text-muted"></i> <?= __('System crashes'); ?></li>
+                                        <li>
+                                            <i class="fa fa-minus text-muted"></i> <?= __('Unwanted behavior or bugs'); ?>
+                                        </li>
+                                        <li><i class="fa fa-minus text-muted"></i> <?= __('Errors with packages for your
+                                        distribution'); ?>
                                         </li>
                                     </ul>
                                 </div>
                                 <div class="card-footer text-align-center">
                                     <a href="mailto:support@itsm.it-novum.com" class="btn btn-primary btn-block"
                                        role="button">
-                                        <i class="far fa-envelope"></i> Create a Ticket
+                                        <i class="far fa-envelope"></i> <?= __('Create a Ticket'); ?>
                                     </a>
                                 </div>
                             </div>
                         <?php endif; ?>
                         <div class="card">
                             <h3 class="card-header reportIssueCardCommunityHeader">
-                                GitHub
+                                <?= __('GitHub'); ?>
                             </h3>
                             <h3 class="card-header reportIssueCardSubheader">
-                                Community
+                                <?= __('Community'); ?>
                             </h3>
                             <div class="card-body text-align-center">
                                 <ul class="list-unstyled text-left">
-                                    <li><i class="fa fa-minus text-muted"></i> System issues</li>
-                                    <li><i class="fa fa-minus text-muted"></i> System crashes</li>
-                                    <li><i class="fa fa-minus text-muted"></i> Unwanted behavior or bugs</li>
-                                    <li><i class="fa fa-minus text-muted"></i> Errors with packages for your
-                                        distribution
+                                    <li><i class="fa fa-minus text-muted"></i> <?= __('System issues'); ?></li>
+                                    <li><i class="fa fa-minus text-muted"></i> <?= __('System crashes'); ?></li>
+                                    <li><i class="fa fa-minus text-muted"></i> <?= __('Unwanted behavior or bugs'); ?>
+                                    </li>
+                                    <li><i class="fa fa-minus text-muted"></i> <?= __('Errors with packages for your
+                                        distribution'); ?>
                                     </li>
                                 </ul>
                             </div>
                             <div class="card-footer text-align-center">
                                 <a href="https://github.com/it-novum/openITCOCKPIT/issues" target="_blank"
                                    class="btn btn-default btn-block" role="button">
-                                    <i class="fab fa-github"></i> Create an issue
+                                    <i class="fab fa-github"></i> <?= __('Create an issue'); ?>
                                 </a>
                             </div>
                         </div>
                         <div class="card">
                             <h3 class="card-header reportIssueCardChatHeader">
-                                Want to chat?
+                                <?= __('Want to chat?'); ?>
+                            </h3>
+                            <h3 class="card-header reportIssueCardSubheader">
+                                <?= __('Community'); ?>
                             </h3>
                             <div class="card-body text-align-center">
-                                <a href="http://webchat.freenode.net/?channels=openitcockpit" target="_blank">
-                                    Join #openITCOCKPIT on freenode.
+                                <ul class="list-unstyled text-left">
+                                    <li><i class="fa fa-minus text-muted"></i> <a
+                                            href="https://www.reddit.com/r/openitcockpit/" target="_blank">
+                                            <?= __('Feel free to start a discussion on our reddit channel'); ?>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-minus text-muted"></i> <a href="http://webchat.freenode.net/?channels=openitcockpit" target="_blank">
+                                            <?= __('or just join our IRC channel'); ?>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-footer text-align-center">
+                                <a href="http://webchat.freenode.net/?channels=openitcockpit" target="_blank"
+                                   class="btn btn-primary btn-block"
+                                   role="button">
+                                    <i class="fa fa-hashtag"></i> <?= __('Join #openITCOCKPIT on freenode.'); ?>
                                 </a>
                             </div>
                         </div>
