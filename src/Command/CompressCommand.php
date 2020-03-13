@@ -240,6 +240,9 @@ class CompressCommand extends Command {
         //Copy Bootstrap fr Login Screen
         $Filesystem->mirror(ROOT . DS . 'node_modules/bootstrap/dist/css', WWW_ROOT . 'node_modules/bootstrap/dist/css');
 
+        //Copy Flag svgs
+        $Filesystem->mirror(ROOT . DS . 'node_modules/flag-icon-css/flags', WWW_ROOT . 'node_modules/flag-icon-css/flags');
+
         //Remove al .html files
         $Finder = new Finder();
         $Finder
