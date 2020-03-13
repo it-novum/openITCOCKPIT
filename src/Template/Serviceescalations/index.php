@@ -102,9 +102,9 @@
                                             <div class="input-group input-group-sm">
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">
-                                                        <div class='icon-stack'>
-                                                            <i class="fas fa-cog icon-stack-3x opacity-100 "></i>
-                                                            <i class="fas fa-exclamation-triangle icon-stack-2x opacity-100 text-danger"></i>
+                                                        <div class="icon-stack">
+                                                            <i class="fas fa-cog opacity-100 "></i>
+                                                            <i class="fas fa-exclamation-triangle opacity-100 fa-xs text-danger cornered cornered-lr"></i>
                                                         </div>
                                                     </span>
                                                 </div>
@@ -142,10 +142,10 @@
                                         <div class="form-group">
                                             <div class="input-group  input-group-sm">
                                                 <div class="input-group-prepend">
-                                                     <span class="input-group-text">
-                                                        <div class='icon-stack'>
-                                                            <i class="fas fa-cogs icon-stack-3x opacity-100 "></i>
-                                                            <i class="fas fa-exclamation-triangle icon-stack-2x opacity-100 text-danger"></i>
+                                                    <span class="input-group-text">
+                                                        <div class="icon-stack">
+                                                            <i class="fas fa-cogs opacity-100 "></i>
+                                                            <i class="fas fa-exclamation-triangle opacity-100 fa-xs text-danger cornered cornered-lr"></i>
                                                         </div>
                                                     </span>
                                                 </div>
