@@ -201,6 +201,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'servicetemplategroups')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(servicetemplategroup))"
                                                    ng-if="servicetemplategroup.Servicetemplategroup.allow_edit"
                                                    class="dropdown-item txt-color-red">

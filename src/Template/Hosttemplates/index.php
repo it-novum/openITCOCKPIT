@@ -174,6 +174,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosttemplates')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a  ng-click="confirmDelete(getObjectForDelete(hosttemplate))"
                                                     ng-if="hosttemplate.Hosttemplate.allow_edit"
                                                    href="javascript:void(0);"

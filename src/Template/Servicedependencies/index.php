@@ -628,6 +628,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'servicedependencies')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(servicedependency))"
                                                    ng-if="servicedependency.allowEdit"
                                                    href="javascript:void(0);"

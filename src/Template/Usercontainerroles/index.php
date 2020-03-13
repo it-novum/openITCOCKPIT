@@ -157,6 +157,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'usercontainerroles')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-if="usercontainerrole.allow_edit"
                                                     ng-click="confirmDelete(getObjectForDelete(usercontainerrole))"
                                                    href="javascript:void(0);"
