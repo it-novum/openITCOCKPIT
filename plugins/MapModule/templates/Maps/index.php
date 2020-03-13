@@ -186,7 +186,7 @@
                                                 <a ui-sref="MapsCopy({ids: map.id})"
                                                    ng-if="map.allowCopy"
                                                    class="dropdown-item">
-                                                    <i class="fa fa-edit"></i>
+                                                    <i class="fas fa-lg fa-files-o"></i>
                                                     <?php echo __('Copy'); ?>
                                                 </a>
                                             <?php endif; ?>
