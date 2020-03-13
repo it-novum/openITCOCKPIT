@@ -33,23 +33,20 @@
             <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
-            <li ng-class="{active: type === 'host'}" class="dropdown-item">
-                <a href="javascript:void(0)"
-                   ng-click="setSearchType('host', '<?= __('Hosts') ?>')">
+            <li ng-class="{active: type === 'host'}" class="dropdown-item" ng-click="setSearchType('host', '<?= __('Hosts') ?>')">
+                <a href="javascript:void(0)">
                     <i class="fa fa-check" ng-show="type === 'host'"></i>
                     <?= __('Hosts') ?>
                 </a>
             </li>
-            <li ng-class="{active: type === 'service'}" class="dropdown-item">
-                <a href="javascript:void(0)"
-                   ng-click="setSearchType('service', '<?= __('Services') ?>')">
+            <li ng-class="{active: type === 'service'}" class="dropdown-item" ng-click="setSearchType('service', '<?= __('Services') ?>')">
+                <a href="javascript:void(0)">
                     <i class="fa fa-check" ng-show="type === 'service'"></i>
                     <?= __('Services') ?>
                 </a>
             </li>
-            <li ng-class="{active: type === 'uuid'}" class="dropdown-item">
-                <a href="javascript:void(0)"
-                   ng-click="setSearchType('uuid', '<?= __('UUID') ?>')">
+            <li ng-class="{active: type === 'uuid'}" class="dropdown-item" ng-click="setSearchType('uuid', '<?= __('UUID') ?>')">
+                <a href="javascript:void(0)">
                     <i class="fa fa-check" ng-show="type === 'uuid'"></i>
                     <?= __('UUID') ?>
                 </a>
