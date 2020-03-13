@@ -25,6 +25,9 @@
 
 /**
  * @var \App\View\AppView $this
+ * @var string $systemname ;
+ * @var string $userFullName
+ * @var string $userImage
  */
 
 use App\Lib\Environments;
@@ -120,9 +123,22 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
         printf('<script src="/%s%s"></script>%s', $appScript, $fileVersion, PHP_EOL);
     endforeach;
 
-    foreach ($AngularAssets->getCssFiles() as $cssFile):
-        printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $cssFile, $fileVersion, PHP_EOL);
-    endforeach;
+    if (ENVIRONMENT === Environments::PRODUCTION && file_exists(WWW_ROOT . 'dist' . DS . 'compressed_app.css')):
+        foreach ($AngularAssets->getNodeCssFiles() as $cssFile):
+            printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $cssFile, $fileVersion, PHP_EOL);
+        endforeach;
+        printf('<link rel="stylesheet" type="text/css" href="/dist/compressed_app.css?%s">%s', $fileVersion, PHP_EOL);
+
+    else:
+        //Dev mode - load all css files
+        foreach ($AngularAssets->getNodeCssFiles() as $cssFile):
+            printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $cssFile, $fileVersion, PHP_EOL);
+        endforeach;
+
+        foreach ($AngularAssets->getCssFiles() as $cssFile):
+            printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $cssFile, $fileVersion, PHP_EOL);
+        endforeach;
+    endif;
     ?>
 </head>
 <body class="mod-bg-1">
@@ -132,12 +148,13 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
             var classHolder = document.getElementsByTagName("BODY")[0]; // may delete this if navigation (plugin) changes
             Dropzone.autoDiscover = false;
         </script>
-<!--
-        <div id="global-loading">
-            <i class="fa fa-refresh fa-spin"></i>
-        </div>
--->
-        <sidebar class="page-sidebar" systemname="<?= $systemname; ?>" user-full-name="<?= h($userFullName); ?>" user-image="<?= h($userImage); ?>"></sidebar>
+        <!--
+                <div id="global-loading">
+                    <i class="fa fa-refresh fa-spin"></i>
+                </div>
+        -->
+        <sidebar class="page-sidebar" systemname="<?= $systemname; ?>" user-full-name="<?= h($userFullName); ?>"
+                 user-image="<?= h($userImage); ?>"></sidebar>
 
         <div class="page-content-wrapper">
             <!-- HEADER START -->

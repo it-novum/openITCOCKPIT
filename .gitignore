@@ -46,11 +46,6 @@ nbproject/*
 # Sass preprocessor
 .sass-cache/
 
-# npm modules #
-#######################
-webroot/package-lock.json
-webroot/node_modules
-
 # openITCOCKPIT files #
 #######################
 docker
@@ -67,6 +62,14 @@ config/openitcGrafanaTag.php
 config/datasource.php
 config/dbbackend.php
 config/perfdatabackend.php
+
+# npm modules #
+#######################
+node_modules
+package-lock.json
+webroot/package-lock.json
+webroot/node_modules
+
 
 # Plugins #
 #######################

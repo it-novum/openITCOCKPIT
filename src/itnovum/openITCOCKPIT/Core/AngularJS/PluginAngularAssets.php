@@ -26,26 +26,50 @@
 namespace itnovum\openITCOCKPIT\Core\AngularJS;
 
 
-interface AngularAssetsInterface {
-
-
-    /**
-     * @return array
-     */
-    public function getJsFiles();
+abstract class PluginAngularAssets {
 
     /**
      * @return array
      */
-    public function getCssFiles();
+    public function _getJsFiles($moduleNameUrl) {
+        $files = [];
+        foreach ($this->jsFiles as $jsFile) {
+            $files[] = $moduleNameUrl . $jsFile;
+        }
+        return $files;
+    }
 
     /**
      * @return array
      */
-    public function getJsFilesOnDisk();
+    public function _getCssFiles($moduleNameUrl) {
+        $files = [];
+        foreach ($this->cssFiles as $cssFile) {
+            $files[] = $moduleNameUrl . $cssFile;
+        }
+        return $files;
+    }
 
     /**
      * @return array
      */
-    public function getCssFilesOnDisk();
+    public function _getJsFilesOnDisk($moduleNameDisk) {
+        $files = [];
+        foreach ($this->jsFiles as $jsFile) {
+            $files[] = PLUGIN . $moduleNameDisk . DS . 'webroot' . $jsFile;
+        }
+        return $files;
+    }
+
+    /**
+     * @return array
+     */
+    public function _getCssFilesOnDisk($moduleNameDisk) {
+        $files = [];
+        foreach ($this->cssFiles as $cssFile) {
+            $files[] = PLUGIN . $moduleNameDisk . DS . 'webroot' . $cssFile;
+        }
+        return $files;
+    }
+
 }
