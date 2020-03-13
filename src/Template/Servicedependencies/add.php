@@ -179,6 +179,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                     chosen="timeperiods"
                                     ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
                                     ng-model="post.Servicedependency.timeperiod_id">
+                                    <option></option>
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.timeperiod_id">
