@@ -250,9 +250,10 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'automaps')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(automap))"
                                                    ng-if="automap.allow_edit"
-                                                   class="dropdown-item">
+                                                   class="dropdown-item txt-color-red">
                                                     <i class="fa fa-trash"></i>
                                                     <?php echo __('Delete'); ?>
                                                 </a>
