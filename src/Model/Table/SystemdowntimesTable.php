@@ -333,6 +333,9 @@ class SystemdowntimesTable extends Table {
                 'Hosts' => function (Query $query) use ($MY_RIGHTS) {
                     if (!empty($MY_RIGHTS)) {
                         $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                            'HostsToContainersSharing.host_id = Hosts.id'
+                        ]);
+                        $query->where([
                             'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
                         ]);
                     }
@@ -399,6 +402,9 @@ class SystemdowntimesTable extends Table {
                         'Hosts' => function (Query $query) use ($MY_RIGHTS) {
                             if (!empty($MY_RIGHTS)) {
                                 $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                                    'HostsToContainersSharing.host_id = Hosts.id'
+                                ]);
+                                $query->where([
                                     'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
                                 ]);
                             }
