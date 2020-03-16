@@ -1277,6 +1277,7 @@ use Cake\Core\Plugin;
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(mergedHost.name, service))"
                                                    ng-if="service.Service.allow_edit"
                                                    class="dropdown-item txt-color-red">
@@ -1379,6 +1380,7 @@ use Cake\Core\Plugin;
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(mergedHost.name, service))"
                                                    ng-if="service.Service.allow_edit"
                                                    class="dropdown-item txt-color-red">
@@ -1474,6 +1476,7 @@ use Cake\Core\Plugin;
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(mergedHost.name, service))"
                                                    ng-if="service.Service.allow_edit"
                                                    class="dropdown-item txt-color-red">
