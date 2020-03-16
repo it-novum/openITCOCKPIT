@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Hostgroup;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
@@ -36,6 +37,7 @@ class HostgroupsTable extends Table {
 
     use PaginationAndScrollIndexTrait;
     use Cake2ResultTableTrait;
+    use PluginManagerTableTrait;
 
     /**
      * Initialize method

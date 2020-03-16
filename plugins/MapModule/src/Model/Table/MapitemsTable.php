@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace MapModule\Model\Table;
 
 use Cake\Datasource\EntityInterface;
+use Cake\Datasource\RepositoryInterface;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\RulesChecker;
@@ -80,6 +81,60 @@ class MapitemsTable extends Table {
             'joinTable'        => 'maps_to_containers',
             //'saveStrategy'     => 'replace'
         ]);
+
+        $this->belongsToMany('Hosts');
+        $this->belongsToMany('Hostgroups');
+        $this->belongsToMany('Services');
+        $this->belongsToMany('Servicegroups');
+    }
+
+    public function bindCoreAssociations(RepositoryInterface $coreTable) {
+        switch ($coreTable->getAlias()) {
+            case 'Hosts':
+                $coreTable->hasMany('Mapitems', [
+                    'className'  => 'MapModule.Mapitems',
+                    'dependent'  => true,
+                    'foreignKey' => 'object_id',
+                    'joinType'   => 'INNER',
+                    'conditions' => [
+                        'type' => 'host'
+                    ]
+                ]);
+                break;
+            case 'Hostgroups':
+                $coreTable->hasMany('Mapitems', [
+                    'className'  => 'MapModule.Mapitems',
+                    'dependent'  => true,
+                    'foreignKey' => 'object_id',
+                    'joinType'   => 'INNER',
+                    'conditions' => [
+                        'type' => 'hostgroup'
+                    ]
+                ]);
+                break;
+            case 'Services':
+                $coreTable->hasMany('Mapitems', [
+                    'className'  => 'MapModule.Mapitems',
+                    'dependent'  => true,
+                    'foreignKey' => 'object_id',
+                    'joinType'   => 'INNER',
+                    'conditions' => [
+                        'type' => 'service'
+                    ]
+                ]);
+                break;
+            case 'Servicegroups':
+                $coreTable->hasMany('Mapitems', [
+                    'className'  => 'MapModule.Mapitems',
+                    'dependent'  => true,
+                    'foreignKey' => 'object_id',
+                    'joinType'   => 'INNER',
+                    'conditions' => [
+                        'type' => 'servicegroup'
+                    ]
+                ]);
+                break;
+        }
     }
 
     /**

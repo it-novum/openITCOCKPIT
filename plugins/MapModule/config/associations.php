@@ -5,10 +5,16 @@
 // The license agreement and license key were sent with the order confirmation.
 
 return [
-    'Hosts'    => [ //Core Table
-        'MapModule.Mapitems', //Plugin Tables
+    'Hosts'         => [
+        'MapModule.Mapitems',
     ],
-    'Services' => [
+    'Hostgroups'    => [
+        'MapModule.Mapitems',
+    ],
+    'Services'      => [
+        'MapModule.Mapitems'
+    ],
+    'Servicegroups' => [
         'MapModule.Mapitems'
     ]
 ];
