@@ -179,10 +179,10 @@ class AgentServicesToCreate {
                             $receiverPluginName = 'Fan';
                             foreach ($sensor as $fanname => $fandata) {
                                 $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
-                                $service['servicecommandargumentvalues'][2]['value'] = $fanname;
+                                $service['servicecommandargumentvalues'][3]['value'] = $fanname;
                                 $service['agent_wizard_option_description'] = $fanname;
 
-                                $this->addServiceToCreate($service, $receiverPluginName, $services, $fanname, 2);
+                                $this->addServiceToCreate($service, $receiverPluginName, $services, $fanname, 3);
                             }
                         } else if ($sensorType === 'temperatures') {
                             $receiverPluginName = 'Temperature';
