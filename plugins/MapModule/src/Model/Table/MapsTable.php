@@ -40,6 +40,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use Cake\Datasource\EntityInterface;
+use Cake\Datasource\RepositoryInterface;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Query;
@@ -47,7 +48,6 @@ use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\DbBackend;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\MapConditions;
@@ -130,42 +130,72 @@ class MapsTable extends Table {
             'joinTable'        => 'maps_to_containers',
             //'saveStrategy'     => 'replace'
         ]);
+        $this->belongsToMany('Hosts', [
+            'foreignKey' => 'object_id',
+            'joinType'   => 'INNER'
+        ])->setDependent(true);
+        $this->belongsToMany('Services');
 
         $this->hasMany('Mapgadgets', [
             'foreignKey' => 'map_id',
-            'className'  => 'MapModule.Mapgadgets',
-            'dependent'  => true
-        ]);
+            'className'  => 'MapModule.Mapgadgets'
+        ])->setDependent(true);
         $this->hasMany('Mapicons', [
             'foreignKey' => 'map_id',
-            'className'  => 'MapModule.Mapicons',
-            'dependent'  => true
-        ]);
+            'className'  => 'MapModule.Mapicons'
+        ])->setDependent(true);
         $this->hasMany('Mapitems', [
             'foreignKey' => 'map_id',
-            'className'  => 'MapModule.Mapitems',
-            'dependent'  => true
-        ]);
+            'className'  => 'MapModule.Mapitems'
+        ])->setDependent(true);
         $this->hasMany('Maplines', [
             'foreignKey' => 'map_id',
-            'className'  => 'MapModule.Maplines',
-            'dependent'  => true
-        ]);
+            'className'  => 'MapModule.Maplines'
+        ])->setDependent(true);
         $this->hasMany('MapsToRotations', [
             'foreignKey' => 'map_id',
-            'className'  => 'MapModule.MapsToRotations',
-            'dependent'  => true
-        ]);
+            'className'  => 'MapModule.MapsToRotations'
+        ])->setDependent(true);
         $this->hasMany('Mapsummaryitems', [
             'foreignKey' => 'map_id',
-            'className'  => 'MapModule.Mapsummaryitems',
-            'dependent'  => true
-        ]);
+            'className'  => 'MapModule.Mapsummaryitems'
+        ])->setDependent(true);
         $this->hasMany('Maptexts', [
             'foreignKey' => 'map_id',
-            'className'  => 'MapModule.Maptexts',
-            'dependent'  => true
-        ]);
+            'className'  => 'MapModule.Maptexts'
+        ])->setDependent(true);
+    }
+
+    public function bindCoreAssociations(RepositoryInterface $coreTable) {
+        switch ($coreTable->getAlias()) {
+            case 'Hosts':
+                $coreTable->hasMany('Mapitems', [
+                    'className' => 'MapModule.Mapitems',
+                ]);
+                break;
+            /*case 'Hosts':
+                $coreTable->hasMany('Mapitems', [
+                    'className' => 'MapModule.Mapitems',
+                    'dependent'  => true,
+                    'foreignKey' => 'object_id',
+                    'joinType'   => 'INNER',
+                    'conditions' => [
+                        'type' => 'service'
+                    ]
+                ]);
+                break;*/
+            case 'Services':
+                $coreTable->hasMany('Mapitems', [
+                    'className'  => 'MapModule.Mapitems',
+                    'dependent'  => true,
+                    'foreignKey' => 'object_id',
+                    'joinType'   => 'INNER',
+                    'conditions' => [
+                        'type' => 'service'
+                    ]
+                ]);
+                break;
+        }
     }
 
     /**
