@@ -168,6 +168,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(host, service))"
                                                    ng-if="host.allow_edit"
                                                    href="javascript:void(0);"
