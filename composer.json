@@ -54,6 +54,7 @@
         "ext-redis": "*",
         "ext-soap": "*",
         "ext-simplexml": "*",
+        "ext-zip": "*",
         "azuyalabs/yasumi": "^2.2",
         "cakephp/acl": "4.x-dev",
         "cakephp/authentication": "^2.0",
