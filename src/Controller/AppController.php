@@ -260,6 +260,13 @@ class AppController extends Controller {
         return $this->request->getParam('_ext') === 'pdf';
     }
 
+    /**
+     * @return bool
+     */
+    protected function isZipRequest(): bool {
+        return $this->request->getParam('_ext') === 'zip';
+    }
+
     protected function isApiRequest() {
         if ($this->isJsonRequest() || $this->isXmlRequest()) {
             return true;
