@@ -18,6 +18,7 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\Service $service
  */
 class Servicecommandargumentvalue extends Entity {
+
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *

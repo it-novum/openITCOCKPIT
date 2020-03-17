@@ -42,7 +42,7 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
  * @property |\Cake\ORM\Association\HasMany $NagiosServiceContacts
  * @property |\Cake\ORM\Association\HasMany $NagiosServiceParentservices
  * @property |\Cake\ORM\Association\HasMany $NagiosServices
- * @property \NewModule\Model\Table\ServicecommandargumentvaluesTable|\Cake\ORM\Association\HasMany $Servicecommandargumentvalues
+ * @property ServicecommandargumentvaluesTable|\Cake\ORM\Association\HasMany $Servicecommandargumentvalues
  * @property |\Cake\ORM\Association\HasMany $Serviceeventcommandargumentvalues
  * @property |\Cake\ORM\Association\HasMany $ServicesToAutoreports
  * @property |\Cake\ORM\Association\HasMany $ServicesToServicedependencies
@@ -2898,7 +2898,7 @@ class ServicesTable extends Table {
                 'count' => $query->newExpr('COUNT(DISTINCT Servicestatus.service_description)')
             ])
             ->where([
-                'Services.disabled'       => 0
+                'Services.disabled' => 0
             ])
             ->join([
                 'b' => [
