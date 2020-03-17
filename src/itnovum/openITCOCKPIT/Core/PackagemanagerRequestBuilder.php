@@ -52,7 +52,7 @@ class PackagemanagerRequestBuilder {
     /**
      * @var string
      */
-    private $baseUrl = '%s/modules/fetch/%s.json';
+    private $baseUrl = '%s/modules/fetch/%s/4.json';
 
     /**
      * @var string
