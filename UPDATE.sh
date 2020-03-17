@@ -241,7 +241,7 @@ echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
 # Restart services if they are running
 # Nagios/Naemon is aliased, so it works for both
-for srv in openitcockpit-graphing.service statusengine.service nagios.service nginx.service phpnsta.service; do
+for srv in openitcockpit-graphing.service statusengine.service nagios.service nginx.service phpnsta.service supervisor.service; do
   if systemctl is-active --quiet $srv; then
     echo "Restart service: $srv"
     systemctl restart $srv

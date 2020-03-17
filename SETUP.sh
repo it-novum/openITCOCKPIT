@@ -268,6 +268,12 @@ systemctl restart\
  nodejs_server.service\
  oitc_cronjobs.timer
 
+for srv in supervisor.service; do
+  if systemctl is-active --quiet $srv; then
+    systemctl restart $srv
+  fi
+done
+
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
 systemctl is-enabled --quiet php${PHPVersion}-fpm.service
