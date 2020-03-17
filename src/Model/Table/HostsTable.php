@@ -2629,7 +2629,7 @@ class HostsTable extends Table {
                 'count' => $query->newExpr('COUNT(DISTINCT Hoststatus.hostname)'),
             ])
             ->where([
-                'Hosts.disabled'       => 0
+                'Hosts.disabled' => 0
             ])
             ->join([
                 'b' => [
@@ -2694,7 +2694,7 @@ class HostsTable extends Table {
                 'count' => $query->newExpr('COUNT(DISTINCT Servicestatus.service_description)'),
             ])
             ->where([
-                'Services.disabled'       => 0
+                'Services.disabled' => 0
             ])
             ->join([
                 'a' => [
@@ -2824,7 +2824,7 @@ class HostsTable extends Table {
                 'Hosts.id'
             ])
             ->where([
-                'Hosts.disabled'       => 0
+                'Hosts.disabled' => 0
             ])
             ->join([
                 'b' => [
@@ -3524,4 +3524,37 @@ class HostsTable extends Table {
 
         return $query;
     }
+
+    /**
+     * @param int $satelliteId
+     * @return array
+     */
+    public function getHostBySatelliteId($satelliteId) {
+        $query = $this->find()
+            ->where([
+                'Hosts.satellite_id' => $satelliteId
+            ])
+            ->contain('HostsToContainersSharing')
+            ->all();
+        return $query->toArray();
+    }
+
+    /**
+     * @param int $satelliteId
+     * @return array
+     */
+    public function getHostBySatelliteIdForDelete($satelliteId) {
+        $query = $this->find()
+            ->where([
+                'Hosts.satellite_id' => $satelliteId
+            ])
+            ->contain([
+                'HostescalationsHostMemberships',
+                'HostdependenciesHostMemberships',
+                'HostsToContainersSharing'
+            ])
+            ->all();
+        return $query->toArray();
+    }
+
 }
