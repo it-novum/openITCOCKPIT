@@ -40,7 +40,6 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use Cake\Datasource\EntityInterface;
-use Cake\Datasource\RepositoryInterface;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Query;
@@ -130,11 +129,6 @@ class MapsTable extends Table {
             'joinTable'        => 'maps_to_containers',
             //'saveStrategy'     => 'replace'
         ]);
-        $this->belongsToMany('Hosts', [
-            'foreignKey' => 'object_id',
-            'joinType'   => 'INNER'
-        ])->setDependent(true);
-        $this->belongsToMany('Services');
 
         $this->hasMany('Mapgadgets', [
             'foreignKey' => 'map_id',
@@ -147,6 +141,13 @@ class MapsTable extends Table {
         $this->hasMany('Mapitems', [
             'foreignKey' => 'map_id',
             'className'  => 'MapModule.Mapitems'
+        ])->setDependent(true);
+        $this->hasMany('Mapitems', [
+            'foreignKey' => 'object_id',
+            'className'  => 'MapModule.Mapitems',
+            'conditions' => [
+                'type' => 'map'
+            ]
         ])->setDependent(true);
         $this->hasMany('Maplines', [
             'foreignKey' => 'map_id',
@@ -164,38 +165,6 @@ class MapsTable extends Table {
             'foreignKey' => 'map_id',
             'className'  => 'MapModule.Maptexts'
         ])->setDependent(true);
-    }
-
-    public function bindCoreAssociations(RepositoryInterface $coreTable) {
-        switch ($coreTable->getAlias()) {
-            case 'Hosts':
-                $coreTable->hasMany('Mapitems', [
-                    'className' => 'MapModule.Mapitems',
-                ]);
-                break;
-            /*case 'Hosts':
-                $coreTable->hasMany('Mapitems', [
-                    'className' => 'MapModule.Mapitems',
-                    'dependent'  => true,
-                    'foreignKey' => 'object_id',
-                    'joinType'   => 'INNER',
-                    'conditions' => [
-                        'type' => 'service'
-                    ]
-                ]);
-                break;*/
-            case 'Services':
-                $coreTable->hasMany('Mapitems', [
-                    'className'  => 'MapModule.Mapitems',
-                    'dependent'  => true,
-                    'foreignKey' => 'object_id',
-                    'joinType'   => 'INNER',
-                    'conditions' => [
-                        'type' => 'service'
-                    ]
-                ]);
-                break;
-        }
     }
 
     /**
@@ -575,7 +544,7 @@ class MapsTable extends Table {
         $HostView = new \itnovum\openITCOCKPIT\Core\Views\Host($host->toArray());
 
         if (empty($hoststatus) || $host->get('disabled')) {
-            $HoststatusView = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
+            $HoststatusView = new Hoststatus([]);
             return [
                 'icon'           => $this->errorIcon,
                 'icon_property'  => $this->errorIcon,
@@ -588,7 +557,7 @@ class MapsTable extends Table {
             ];
         }
 
-        $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus']);
+        $hoststatus = new Hoststatus($hoststatus['Hoststatus']);
         $icon = $this->hostIcons[$hoststatus->currentState()];
         $color = $hoststatus->HostStatusColor();
         $background = $hoststatus->HostStatusBackgroundColor();
@@ -639,7 +608,7 @@ class MapsTable extends Table {
                 Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc')
             );
 
-            $servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($worstServiceState[0]['Servicestatus']);
+            $servicestatus = new Servicestatus($worstServiceState[0]['Servicestatus']);
             $serviceIcon = $this->serviceIcons[$servicestatus->currentState()];
 
             $serviceIconProperty = $serviceIcon;
@@ -696,7 +665,7 @@ class MapsTable extends Table {
         $HostView = new \itnovum\openITCOCKPIT\Core\Views\Host($serviceArray['host']);
         $ServiceView = new \itnovum\openITCOCKPIT\Core\Views\Service($serviceArray);
         if (empty($servicestatus) || $service->get('disabled')) {
-            $ServicestatusView = new \itnovum\openITCOCKPIT\Core\Servicestatus([]);
+            $ServicestatusView = new Servicestatus([]);
             $tmpServicestatus = $ServicestatusView->toArray();
             if ($includeServiceOutput === true) {
                 $tmpServicestatus['output'] = null;
@@ -717,7 +686,7 @@ class MapsTable extends Table {
             ];
         }
 
-        $servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus']);
+        $servicestatus = new Servicestatus($servicestatus['Servicestatus']);
 
         $icon = $this->serviceIcons[$servicestatus->currentState()];
 
@@ -768,7 +737,7 @@ class MapsTable extends Table {
         $HoststatusFields = new HoststatusFields(new DbBackend());
         $HoststatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
 
-        $hostUuids = \Cake\Utility\Hash::extract($hostgroup['hosts'], '{n}.uuid');
+        $hostUuids = Hash::extract($hostgroup['hosts'], '{n}.uuid');
 
         $hoststatusByUuids = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
         $hostgroupLight = [
@@ -789,7 +758,7 @@ class MapsTable extends Table {
             Hash::sort($hoststatusByUuids, '{s}.Hoststatus.current_state', 'desc')
         );
 
-        $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($worstHostState[0]['Hoststatus']);
+        $hoststatus = new Hoststatus($worstHostState[0]['Hoststatus']);
 
         $icon = $this->hostIcons[$hoststatus->currentState()];
         $color = $hoststatus->HostStatusColor();
@@ -818,7 +787,7 @@ class MapsTable extends Table {
         }
 
         //Check services for cumulated state (only if host is up)
-        $hostIds = \Cake\Utility\Hash::extract($hostgroup['hosts'], '{n}.id');
+        $hostIds = Hash::extract($hostgroup['hosts'], '{n}.id');
 
         //Check services for cumulated state (only if host is up)
         $services = $Service->getActiveServicesByHostIds($hostIds, false);
@@ -838,7 +807,7 @@ class MapsTable extends Table {
                 Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc')
             );
 
-            $servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($worstServiceState[0]['Servicestatus']);
+            $servicestatus = new Servicestatus($worstServiceState[0]['Servicestatus']);
             $serviceIcon = $this->serviceIcons[$servicestatus->currentState()];
 
             if ($servicestatus->isAcknowledged()) {
@@ -903,7 +872,7 @@ class MapsTable extends Table {
             Hash::sort($servicestatusByUuids, '{s}.Servicestatus.current_state', 'desc')
         );
 
-        $servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($worstServiceState[0]['Servicestatus']);
+        $servicestatus = new Servicestatus($worstServiceState[0]['Servicestatus']);
 
         $icon = $this->serviceIcons[$servicestatus->currentState()];
         $color = $servicestatus->ServiceStatusColor();
@@ -1143,7 +1112,7 @@ class MapsTable extends Table {
         $hoststatusByUuids = $HoststatusTable->byUuid($hostsUuids, $HoststatusFields);
 
         if (empty($hoststatusByUuids)) {
-            $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
+            $hoststatus = new Hoststatus([]);
             $icon = $this->errorIcon;
             $color = $hoststatus->HostStatusColor();
             $background = $hoststatus->HostStatusBackgroundColor();
@@ -1153,7 +1122,7 @@ class MapsTable extends Table {
                 Hash::sort($hoststatusByUuids, '{s}.Hoststatus.current_state', 'desc')
             );
             if (!empty($worstHostState)) {
-                $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($worstHostState[0]['Hoststatus']);
+                $hoststatus = new Hoststatus($worstHostState[0]['Hoststatus']);
             }
             $icon = $this->hostIcons[$hoststatus->currentState()];
             $color = $hoststatus->HostStatusColor();
@@ -1194,7 +1163,7 @@ class MapsTable extends Table {
             $worstServiceState = array_values(
                 Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc')
             );
-            $servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($worstServiceState[0]['Servicestatus']);
+            $servicestatus = new Servicestatus($worstServiceState[0]['Servicestatus']);
             $serviceIcon = $this->serviceIcons[$servicestatus->currentState()];
 
             $serviceIconProperty = $serviceIcon;
@@ -1742,7 +1711,7 @@ class MapsTable extends Table {
             $hoststatus['Hoststatus'] = [];
         }
 
-        $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(
+        $hoststatus = new Hoststatus(
             $hoststatus['Hoststatus'],
             $UserTime
         );
@@ -1930,7 +1899,7 @@ class MapsTable extends Table {
             $cumulatedHostState = (int)$worstHostState[0]['Hoststatus']['current_state'];
             $hosts = Hash::combine($hosts, '{n}.uuid', '{n}');
             foreach ($hoststatusByUuids as $hostUuid => $hoststatusByUuid) {
-                $hostStatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusByUuid['Hoststatus'], $UserTime);
+                $hostStatus = new Hoststatus($hoststatusByUuid['Hoststatus'], $UserTime);
                 $currentHostState = $hostStatus->currentState();
 
                 $hostIdsGroupByState[$currentHostState][] = $hosts[$hostUuid]['id'];
@@ -1952,7 +1921,7 @@ class MapsTable extends Table {
             $cumulatedServiceState = (int)$worstServiceState[0]['Servicestatus']['current_state'];
             $services = Hash::combine($services, '{n}.Service.uuid', '{n}');
             foreach ($servicestatusResults as $serviceUuid => $servicestatusByUuid) {
-                $serviceStatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatusByUuid['Servicestatus'], $UserTime);
+                $serviceStatus = new Servicestatus($servicestatusByUuid['Servicestatus'], $UserTime);
                 $currentServiceState = $serviceStatus->currentState();
                 $serviceIdsGroupByState[$currentServiceState][] = $services[$serviceUuid]['Service']['id'];
 
@@ -1967,13 +1936,13 @@ class MapsTable extends Table {
             }
         }
 
-        $CumulatedHostStatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([
+        $CumulatedHostStatus = new Hoststatus([
             'current_state' => $cumulatedHostState
         ]);
 
         $CumulatedHumanState = $CumulatedHostStatus->toArray()['humanState'];
         if (($cumulatedHostState === 0 || is_null($cumulatedHostState)) && !is_null($cumulatedServiceState)) {
-            $CumulatedServiceStatus = new \itnovum\openITCOCKPIT\Core\Servicestatus([
+            $CumulatedServiceStatus = new Servicestatus([
                 'current_state' => $cumulatedServiceState
             ]);
             $CumulatedHumanState = $CumulatedServiceStatus->toArray()['humanState'];

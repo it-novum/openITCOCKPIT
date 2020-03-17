@@ -5,11 +5,26 @@
 // The license agreement and license key were sent with the order confirmation.
 
 return [
-    'Hosts'    => [ //Core Table
-        'MapModule.Mapitems', //Plugin Tables
+    'Hosts'         => [
+        'MapModule.Mapitems',
+        'MapModule.Maplines',
+        'MapModule.Mapsummaryitems',
     ],
-    'Services' => [
-        'MapModule.Mapitems'
-    ]
+    'Hostgroups'    => [
+        'MapModule.Mapitems',
+        'MapModule.Maplines',
+        'MapModule.Mapsummaryitems',
+    ],
+    'Services'      => [
+        'MapModule.Mapitems',
+        'MapModule.Maplines',
+        'MapModule.Mapsummaryitems',
+        'MapModule.Mapgadgets',
+    ],
+    'Servicegroups' => [
+        'MapModule.Mapitems',
+        'MapModule.Maplines',
+        'MapModule.Mapsummaryitems',
+    ],
 ];
 

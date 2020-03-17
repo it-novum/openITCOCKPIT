@@ -66,7 +66,7 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group required" ng-class="{'has-error': sourceMap.Error.name}">
-                                <label for="Map{{$index}}Name"  class="control-label">
+                                <label for="Map{{$index}}Name" class="control-label">
                                     <?php echo __('Map name'); ?>
                                 </label>
                                 <input
@@ -82,7 +82,7 @@
                                 </div>
                             </div>
                             <div class="form-group required" ng-class="{'has-error': sourceMap.Error.title}">
-                                <label for="Map{{$index}}Title"  class="control-label">
+                                <label for="Map{{$index}}Title" class="control-label">
                                     <?php echo __('Map title'); ?>
                                 </label>
                                 <input
@@ -98,7 +98,7 @@
                                 </div>
                             </div>
                             <div class="form-group required" ng-class="{'has-error': sourceMap.Error.refresh_interval}">
-                                <label for="Map{{$index}}RefreshInterval"  class="control-label">
+                                <label for="Map{{$index}}RefreshInterval" class="control-label">
                                     <?php echo __('Refresh Interval'); ?>
                                 </label>
                                 <input

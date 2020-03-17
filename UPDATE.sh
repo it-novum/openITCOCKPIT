@@ -209,13 +209,16 @@ systemctl enable sudo_server.service\
  gearman_worker.service\
  push_notification.service\
  nodejs_server.service\
- openitcockpit-graphing.service
+ openitcockpit-graphing.service\
+ oitc_cronjobs.timer
 
-systemctl restart sudo_server.service\
+systemctl restart\
+ sudo_server.service\
  oitc_cmd.service\
  gearman_worker.service\
  push_notification.service\
- nodejs_server.service
+ nodejs_server.service\
+ oitc_cronjobs.timer
 
 PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"

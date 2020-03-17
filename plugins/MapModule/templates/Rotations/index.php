@@ -159,7 +159,7 @@
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'rotations', 'MapModule')): ?>
                                             <a ui-sref="RotationsEdit({id: rotation.id})"
-                                                     ng-if="rotation.allowEdit"
+                                               ng-if="rotation.allowEdit"
                                                class="btn btn-default btn-lower-padding">
                                                 <i class="fa fa-cog"></i>
                                             </a>

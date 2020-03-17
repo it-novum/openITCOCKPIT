@@ -586,18 +586,22 @@ angular.module('openITCOCKPIT')
                     'action': 'delete'
                 }
             ).then(function(result){
-                //Remove item from current scope
-                for(var i in $scope.map.Mapitems){
-                    if($scope.map.Mapitems[i].id == $scope.currentItem.id){
-                        $scope.map.Mapitems.splice(i, 1);
+                if(result.data.success){
+                    //Remove item from current scope
+                    for(var i in $scope.map.Mapitems){
+                        if($scope.map.Mapitems[i].id == $scope.currentItem.id){
+                            $scope.map.Mapitems.splice(i, 1);
 
-                        //We are done here
-                        break;
+                            //We are done here
+                            break;
+                        }
                     }
+                    genericSuccess();
+                }else{
+                    genericError();
                 }
 
                 $('#addEditMapItemModal').modal('hide');
-                genericSuccess();
                 $scope.currentItem = {};
             }, function errorCallback(result){
                 genericError();
@@ -683,18 +687,22 @@ angular.module('openITCOCKPIT')
                     'action': 'delete'
                 }
             ).then(function(result){
-                //Remove item from current scope
-                for(var i in $scope.map.Maplines){
-                    if($scope.map.Maplines[i].id == $scope.currentItem.id){
-                        $scope.map.Maplines.splice(i, 1);
+                if(result.data.success){
+                    //Remove item from current scope
+                    for(var i in $scope.map.Maplines){
+                        if($scope.map.Maplines[i].id == $scope.currentItem.id){
+                            $scope.map.Maplines.splice(i, 1);
 
-                        //We are done here
-                        break;
+                            //We are done here
+                            break;
+                        }
                     }
+                    genericSuccess();
+                }else{
+                    genericError();
                 }
 
                 $('#addEditMapLineModal').modal('hide');
-                genericSuccess();
                 $scope.currentItem = {};
             }, function errorCallback(result){
                 genericError();
@@ -804,17 +812,21 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 //Remove item from current scope
-                for(var i in $scope.map.Mapgadgets){
-                    if($scope.map.Mapgadgets[i].id == $scope.currentItem.id){
-                        $scope.map.Mapgadgets.splice(i, 1);
+                if(result.data.success){
+                    for(var i in $scope.map.Mapgadgets){
+                        if($scope.map.Mapgadgets[i].id == $scope.currentItem.id){
+                            $scope.map.Mapgadgets.splice(i, 1);
 
-                        //We are done here
-                        break;
+                            //We are done here
+                            break;
+                        }
                     }
+                    genericSuccess();
+                }else{
+                    genericError();
                 }
 
                 $('#addEditMapGadgetModal').modal('hide');
-                genericSuccess();
                 $scope.currentItem = {};
             }, function errorCallback(result){
                 genericError();
@@ -904,18 +916,22 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 //Remove item from current scope
-                for(var i in $scope.map.Maptexts){
-                    if($scope.map.Maptexts[i].id == $scope.currentItem.id){
-                        $scope.map.Maptexts.splice(i, 1);
-                        $('#docuText').val('');
+                if(result.data.success){
+                    for(var i in $scope.map.Maptexts){
+                        if($scope.map.Maptexts[i].id == $scope.currentItem.id){
+                            $scope.map.Maptexts.splice(i, 1);
+                            $('#docuText').val('');
 
-                        //We are done here
-                        break;
+                            //We are done here
+                            break;
+                        }
                     }
+                    genericSuccess();
+                }else{
+                    genericError();
                 }
 
                 $('#AddEditStatelessTextModal').modal('hide');
-                genericSuccess();
                 $scope.currentItem = {};
             }, function errorCallback(result){
                 genericError();
@@ -1123,17 +1139,21 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 //Remove item from current scope
-                for(var i in $scope.map.Mapsummaryitems){
-                    if($scope.map.Mapsummaryitems[i].id == $scope.currentItem.id){
-                        $scope.map.Mapsummaryitems.splice(i, 1);
+                if(result.data.success){
+                    for(var i in $scope.map.Mapsummaryitems){
+                        if($scope.map.Mapsummaryitems[i].id == $scope.currentItem.id){
+                            $scope.map.Mapsummaryitems.splice(i, 1);
 
-                        //We are done here
-                        break;
+                            //We are done here
+                            break;
+                        }
                     }
+                    genericSuccess();
+                }else{
+                    genericError();
                 }
 
                 $('#addEditSummaryItemModal').modal('hide');
-                genericSuccess();
                 $scope.currentItem = {};
             }, function errorCallback(result){
                 genericError();

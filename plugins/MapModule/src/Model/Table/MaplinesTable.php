@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace MapModule\Model\Table;
 
 use Cake\Datasource\EntityInterface;
+use Cake\Datasource\RepositoryInterface;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\RulesChecker;
@@ -72,6 +73,60 @@ class MaplinesTable extends Table {
             'joinType'   => 'INNER',
             'className'  => 'MapModule.Maps',
         ]);
+
+        $this->hasMany('Hosts');
+        $this->hasMany('Hostgroups');
+        $this->hasMany('Services');
+        $this->hasMany('Servicegroups');
+    }
+
+    public function bindCoreAssociations(RepositoryInterface $coreTable) {
+        switch ($coreTable->getAlias()) {
+            case 'Hosts':
+                $coreTable->hasMany('Maplines', [
+                    'className'  => 'MapModule.Maplines',
+                    'dependent'  => true,
+                    'foreignKey' => 'object_id',
+                    'joinType'   => 'INNER',
+                    'conditions' => [
+                        'type' => 'host'
+                    ]
+                ]);
+                break;
+            case 'Hostgroups':
+                $coreTable->hasMany('Maplines', [
+                    'className'  => 'MapModule.Maplines',
+                    'dependent'  => true,
+                    'foreignKey' => 'object_id',
+                    'joinType'   => 'INNER',
+                    'conditions' => [
+                        'type' => 'hostgroup'
+                    ]
+                ]);
+                break;
+            case 'Services':
+                $coreTable->hasMany('Maplines', [
+                    'className'  => 'MapModule.Maplines',
+                    'dependent'  => true,
+                    'foreignKey' => 'object_id',
+                    'joinType'   => 'INNER',
+                    'conditions' => [
+                        'type' => 'service'
+                    ]
+                ]);
+                break;
+            case 'Servicegroups':
+                $coreTable->hasMany('Maplines', [
+                    'className'  => 'MapModule.Maplines',
+                    'dependent'  => true,
+                    'foreignKey' => 'object_id',
+                    'joinType'   => 'INNER',
+                    'conditions' => [
+                        'type' => 'servicegroup'
+                    ]
+                ]);
+                break;
+        }
     }
 
     /**
