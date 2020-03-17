@@ -724,7 +724,7 @@ angular.module('openITCOCKPIT')
 
         $scope.editGadget = function(gadgetItem){
             $scope.action = 'gadget';
-            $scope.currentItem = gadgetItem;
+            $scope.currentItem = JSON.parse(JSON.stringify(gadgetItem));    //real clone
             $('#addEditMapGadgetModal').modal('show');
         };
 
@@ -776,8 +776,13 @@ angular.module('openITCOCKPIT')
                 if($scope.currentItem.hasOwnProperty('id')){
                     for(var i in $scope.map.Mapgadgets){
                         if($scope.map.Mapgadgets[i].id == $scope.currentItem.id){
-                            $scope.map.Mapgadgets[i].x = $scope.currentItem.x;
-                            $scope.map.Mapgadgets[i].y = $scope.currentItem.y;
+
+                            if($scope.currentItem.object_id){   // after edit
+                                $scope.map.Mapgadgets[i] = $scope.currentItem;
+                            }else{                            // only after (draggable) position change
+                                $scope.map.Mapgadgets[i].x = $scope.currentItem.x;
+                                $scope.map.Mapgadgets[i].y = $scope.currentItem.y;
+                            }
 
                             //We are done here
                             break;
@@ -1524,7 +1529,6 @@ angular.module('openITCOCKPIT')
 
                     switch(type){
                         case 'gadget':
-                            console.log('HIER');
                             for(var key in $scope.map.Mapgadgets){
                                 if($scope.map.Mapgadgets[key].id === id){
                                     $scope.map.Mapgadgets[key].size_y = newHeight;

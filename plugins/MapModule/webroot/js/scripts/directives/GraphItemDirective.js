@@ -184,6 +184,9 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
             };
 
             var renderGraph = function(performance_data){
+                if(!performance_data){
+                    return;
+                }
                 initTooltip();
                 var graph_data = [];
 

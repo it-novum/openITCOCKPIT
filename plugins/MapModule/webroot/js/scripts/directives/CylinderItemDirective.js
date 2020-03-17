@@ -63,6 +63,9 @@ angular.module('openITCOCKPIT').directive('cylinderItem', function($http, $inter
             });
 
             var renderCylinder = function(perfdata){
+                if(!$scope.perfdata){
+                    return;
+                }
                 var $cylinder = $('#map-cylinder-' + $scope.item.id);
                 $cylinder.svg('destroy');
 
@@ -222,11 +225,13 @@ angular.module('openITCOCKPIT').directive('cylinderItem', function($http, $inter
                         }
                     }
                 }
-                $scope.perfdata.current = parseFloat($scope.perfdata.current);
-                $scope.perfdata.warning = parseFloat($scope.perfdata.warning);
-                $scope.perfdata.critical = parseFloat($scope.perfdata.critical);
-                $scope.perfdata.min = parseFloat($scope.perfdata.min);
-                $scope.perfdata.max = parseFloat($scope.perfdata.max);
+                if($scope.perfdata){
+                    $scope.perfdata.current = parseFloat($scope.perfdata.current);
+                    $scope.perfdata.warning = parseFloat($scope.perfdata.warning);
+                    $scope.perfdata.critical = parseFloat($scope.perfdata.critical);
+                    $scope.perfdata.min = parseFloat($scope.perfdata.min);
+                    $scope.perfdata.max = parseFloat($scope.perfdata.max);
+                }
             };
 
             var initRefreshTimer = function(){
