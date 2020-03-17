@@ -394,6 +394,7 @@ class Agent extends Importer {
                 'description'      => "Return fan speed of a given device.\n" .
                     "Warning: Fan RPM as integer\n" .
                     "Critical:  Fan RPM as integer\n" .
+                    "Average: Use average fan speed, if a device has multiple fans.\n" .
                     "Device: Fan device name (e.g. cpu_fan) \n" .
                     "Only available on Linux and macOS.\n",
                 'commandarguments' => [
@@ -407,6 +408,10 @@ class Agent extends Importer {
                     ],
                     [
                         'name'       => '$ARG3$',
+                        'human_name' => 'Average'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
                         'human_name' => 'Device'
                     ]
                 ]
@@ -1311,6 +1316,10 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
+                        'value'              => '0',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG4$',
                         'value'              => 'thinkpad',
                     ]
                 ],

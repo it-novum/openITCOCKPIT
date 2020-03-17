@@ -624,7 +624,7 @@
                                             ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
                                                 <div class="dropdown-divider"></div>
-                                                <a g-click="confirmDelete(getObjectForDelete(host))"
+                                                <a ng-click="confirmDelete(getObjectForDelete(host))"
                                                    class="dropdown-item txt-color-red">
                                                     <i class="fa fa-trash"></i>
                                                     <?php echo __('Delete'); ?>

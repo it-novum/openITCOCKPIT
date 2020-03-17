@@ -17,6 +17,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -166,17 +167,17 @@ class HostsTable extends Table {
 
         $this->hasOne('Agentconfigs', [
             'foreignKey' => 'host_id',
-        ]);
+        ])->setDependent(true);
 
         $this->hasOne('Agenthostscache', [
             'foreignKey' => 'hostuuid',
             'bindingKey' => 'uuid'
-        ]);
+        ])->setDependent(true);
 
         $this->hasOne('Agentconnector', [
             'foreignKey' => 'hostuuid',
             'bindingKey' => 'uuid'
-        ]);
+        ])->setDependent(true);
 
     }
 
@@ -775,6 +776,9 @@ class HostsTable extends Table {
         $query->where($where);
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
@@ -848,6 +852,9 @@ class HostsTable extends Table {
 
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
@@ -966,6 +973,9 @@ class HostsTable extends Table {
 
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
@@ -1066,6 +1076,9 @@ class HostsTable extends Table {
 
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
@@ -1137,6 +1150,9 @@ class HostsTable extends Table {
 
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
@@ -1203,6 +1219,9 @@ class HostsTable extends Table {
         $query->where($where);
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
@@ -1256,6 +1275,9 @@ class HostsTable extends Table {
 
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
@@ -1339,6 +1361,9 @@ class HostsTable extends Table {
 
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
@@ -1425,8 +1450,11 @@ class HostsTable extends Table {
         ]);
 
         $query->where($where);
-        if (!empty($MY_RIGHTS)) {
+        if (!empty($containerIds)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $containerIds
             ]);
         }
@@ -1721,6 +1749,9 @@ class HostsTable extends Table {
         $MY_RIGHTS = $HostConditions->getContainerIds();
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
@@ -1765,6 +1796,9 @@ class HostsTable extends Table {
             $MY_RIGHTS = $HostConditions->getContainerIds();
             if (!empty($MY_RIGHTS)) {
                 $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                    'HostsToContainersSharing.host_id = Hosts.id'
+                ]);
+                $query->where([
                     'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
                 ]);
             }
@@ -2170,6 +2204,9 @@ class HostsTable extends Table {
 
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
@@ -2229,6 +2266,9 @@ class HostsTable extends Table {
 
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
@@ -2380,6 +2420,9 @@ class HostsTable extends Table {
         $query->where($where);
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
@@ -2536,6 +2579,9 @@ class HostsTable extends Table {
             ]);
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
@@ -2666,6 +2712,9 @@ class HostsTable extends Table {
             ]);
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
@@ -2724,6 +2773,9 @@ class HostsTable extends Table {
             ]);
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
@@ -2784,6 +2836,9 @@ class HostsTable extends Table {
             ]);
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }

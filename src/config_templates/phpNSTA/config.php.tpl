@@ -61,12 +61,12 @@ $config = [
          * Only important, if oitc_version is set to 3 or 4!
          *
          * V3 Default: /etc/openitcockpit/app/Config/database.php
-         * V4 Default: /opt/openitc/etc/frontend/core/datasource.php
+         * V4 Default: /opt/openitc/frontend/config/datasource.php
          *
          * Type: String
          * @since 1.6.0
          **/
-        'oitc_database' => '/opt/openitc/etc/frontend/core/datasource.php',
+        'oitc_database' => '/opt/openitc/frontend/config/datasource.php',
 
 
         /**

@@ -2725,7 +2725,7 @@ class NagiosConfigGenerator {
                             'address'    => $host['address'],
                             'uuid'       => $hostUuid,
                             'port'       => $host['agentconfig'] && $host['agentconfig']['port'] ? $host['agentconfig']['port'] : '',
-                            'proxy'      => $host['agentconfig'] && $host['agentconfig']['proxy'] && $host['agentconfig']['proxy'] == 1 ? $proxySettings['ipaddress'] . ':' . $proxySettings['port'] : '',
+                            'proxy'      => $host['agentconfig'] && $host['agentconfig']['proxy'] && $host['agentconfig']['proxy'] == 1 && $proxySettings['ipaddress'] != '' ? $proxySettings['ipaddress'] . ':' . $proxySettings['port'] : '',
                             'use_https'  => $host['agentconfig'] && $host['agentconfig']['use_https'] ? $host['agentconfig']['use_https'] : '',
                             'insecure'   => $host['agentconfig'] && $host['agentconfig']['insecure'] ? $host['agentconfig']['insecure'] : '',
                             'basic_auth' => $host['agentconfig'] && $host['agentconfig']['basic_auth'] ? $host['agentconfig']['basic_auth'] : '',

@@ -202,6 +202,12 @@ chmod +x /usr/bin/oitc
 echo "Create required system folders"
 mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,phpnsta,statusengine} /opt/openitc/etc/statusengine/Config
 
+mkdir -p /opt/openitc/logs/frontend
+chown www-data:www-data /opt/openitc/logs/frontend
+chmod 770 /opt/openitc/logs/frontend
+
+chown -R www-data:www-data /opt/openitc/frontend
+
 echo "Enable new systemd services"
 systemctl daemon-reload
 systemctl enable sudo_server.service\
@@ -209,13 +215,16 @@ systemctl enable sudo_server.service\
  gearman_worker.service\
  push_notification.service\
  nodejs_server.service\
- openitcockpit-graphing.service
+ openitcockpit-graphing.service\
+ oitc_cronjobs.timer
 
-systemctl restart sudo_server.service\
+systemctl restart\
+ sudo_server.service\
  oitc_cmd.service\
  gearman_worker.service\
  push_notification.service\
- nodejs_server.service
+ nodejs_server.service\
+ oitc_cronjobs.timer
 
 PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"

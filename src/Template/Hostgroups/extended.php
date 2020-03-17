@@ -392,6 +392,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
+                                                <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(host))"
                                                    ng-if="host.Host.allow_edit"
                                                    class="dropdown-item txt-color-red">

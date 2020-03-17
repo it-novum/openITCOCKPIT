@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Servicegroup;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -33,6 +34,7 @@ use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
 class ServicegroupsTable extends Table {
 
     use PaginationAndScrollIndexTrait;
+    use PluginManagerTableTrait;
 
     /**
      * Initialize method
