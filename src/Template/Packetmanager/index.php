@@ -312,7 +312,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                 </button>
             </div>
             <div class="modal-body">
-                <div class="container mt-5 mb-5">
+                <div class="container">
                     <div class="row">
                         <div class="col-12">
                             <h4>
