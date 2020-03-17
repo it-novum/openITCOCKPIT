@@ -45,4 +45,13 @@ class PluginManagerTableLocator extends TableLocator {
         }
         return $table;
     }
+
+    /**
+     * @param string $alias
+     */
+    public function destroy($alias){
+        if (isset($this->_instances[$alias])) {
+            unset($this->_instances[$alias]);
+        }
+    }
 }
