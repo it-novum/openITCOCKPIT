@@ -129,7 +129,7 @@
                                                    data-toggle="modal"
                                                    data-target="#changelogModal">
                                                     <span class="btn-label">
-                                                        <i class="fa fa-code-fork"></i>
+                                                        <i class="fas fa-code-fork"></i>
                                                     </span>
                                                     <?= __('Changelog'); ?>
                                                 </a>
@@ -178,7 +178,7 @@
                                                    data-toggle="modal"
                                                    data-target="#changelogModal">
                                                     <span class="btn-label">
-                                                        <i class="fa fa-code-fork"></i>
+                                                        <i class="fas fa-code-fork"></i>
                                                     </span>
                                                     <?= __('Changelog'); ?>
                                                 </a>
@@ -247,19 +247,26 @@
                                             </button>
                                         </div>
 
-                                        <div class="col-lg-12 padding-right-0">
-                                            <button
-                                                type="button"
-                                                ng-hide="installedModules[module.Module.apt_name]"
-                                                class="btn btn-labeled btn-primary pull-right"
-                                                ng-click="installPackage(module.Module.apt_name)">
-                                            <span class="btn-label">
-                                                <input type="checkbox"
-                                                       ng-model="modulesToCheckboxesInstall[module.Module.apt_name]">
-                                            </span>
-                                                <?= __('Install'); ?>
-                                            </button>
+                                        <div class="col-lg-12">
+                                            <div class="input-group"
+                                                 ng-hide="installedModules[module.Module.apt_name]">
+                                                <div class="input-group-prepend ml-auto">
+                                                    <div class="input-group-text" id="btnGroupAddon">
+                                                        <input type="checkbox"
+                                                               ng-click="installPackage(module.Module.apt_name)"
+                                                                ng-model="modulesToCheckboxesInstall[module.Module.apt_name]">
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-primary"
+                                                        style="border-top-right-radius: 4px; border-bottom-right-radius: 4px;"
+                                                        ng-click="installPackage(module.Module.apt_name)">
+                                                        <?= __('Install'); ?>
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -271,13 +278,13 @@
     </div>
 </div>
 
-<!-- Install packages modal -->
+<!-- Changelog modal -->
 <div id="changelogModal" class="modal" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fa fa-code-fork"></i>
+                    <i class="fas fa-code-fork"></i>
                     <?php echo __('Changelog'); ?>
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -287,7 +294,7 @@
             <div class="modal-body">
                 <div class="container mt-5 mb-5">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <h4>
                                 <?= __('Latest version') ?>
                                 {{changelog[0].Changelog.version}}
@@ -313,51 +320,6 @@
     </div>
 </div>
 
-
-
-<!-- Changelog modal -->
-<div class="modal fade" id="changelogModal" tabindex="-1" role="dialog"
-     aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                    &times;
-                </button>
-                <h4 class="modal-title">
-                    <i class="fa fa-code-fork"></i>
-                    <?php echo __('Changelog'); ?>
-                </h4>
-            </div>
-            <div class="modal-body">
-                <div class="container mt-5 mb-5">
-                    <div class="row">
-                        <div class="col-md-6 offset-md-3">
-                            <h4>
-                                <?= __('Latest version') ?>
-                                {{changelog[0].Changelog.version}}
-                            </h4>
-                            <ul class="timeline">
-                                <li ng-repeat="record in changelog">
-                                    <span class="text-primary">{{record.Changelog.version}}</span>
-                                    <p>
-                                        {{record.Changelog.changes | trustAsHtml}}
-                                    </p>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <?php echo __('Close'); ?>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Install packages modal -->
 <div id="installPackageModal" class="modal" role="dialog">
@@ -365,7 +327,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fa fa-code-fork"></i>
+                    <i class="fas fa-code-fork"></i>
                     <?php echo __('Install packages'); ?>
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -374,7 +336,7 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-12">
                         <?= __('To install the selected packages, please execute the following command on your {0} system.', $systemname) ?>
                     </div>
                 </div>
