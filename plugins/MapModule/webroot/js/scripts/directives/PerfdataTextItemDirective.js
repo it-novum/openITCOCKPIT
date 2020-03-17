@@ -93,24 +93,26 @@ angular.module('openITCOCKPIT').directive('perfdataTextItem', function($http, $i
                     }
                 }
 
-                var text = $scope.perfdata.current;
-                if($scope.perfdata.unit !== null && $scope.perfdata.unit !== ''){
-                    text = text + ' ' + $scope.perfdata.unit;
-                }
+                if($scope.perfdata){
+                    var text = $scope.perfdata.current;
+                    if($scope.perfdata.unit !== null && $scope.perfdata.unit !== ''){
+                        text = text + ' ' + $scope.perfdata.unit;
+                    }
 
-                if($scope.item.show_label){
-                    text = $scope.perfdataName + ' ' + text;
-                }
+                    if($scope.item.show_label){
+                        text = $scope.perfdataName + ' ' + text;
+                    }
 
-                if($scope.width <= 0){
-                    $scope.width = text.length * 11;
-                }
+                    if($scope.width <= 0){
+                        $scope.width = text.length * 11;
+                    }
 
-                if($scope.height <= 0){
-                    $scope.height = 18;
-                }
+                    if($scope.height <= 0){
+                        $scope.height = 18;
+                    }
 
-                $scope.text = text;
+                    $scope.text = text;
+                }
             };
 
             var initRefreshTimer = function(){

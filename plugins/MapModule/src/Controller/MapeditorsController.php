@@ -1476,11 +1476,12 @@ class MapeditorsController extends AppController {
             $gadgetEntity = $MapgadgetsTable->get($this->request->getData('Mapgadget.id'));
         }
 
-        $gadget = $this->request->getData();
-        $gadget['Mapgadget']['show_label'] = (int)$this->request->getData('Mapgadget.show_label');
-        $gadget['Mapgadget']['size_x'] = (int)$this->request->getData('Mapgadget.size_x');
-        $gadget['Mapgadget']['size_y'] = (int)$this->request->getData('Mapgadget.size_y');
-        $gadgetEntity = $MapgadgetsTable->patchEntity($gadgetEntity, $gadget['Mapgadget']);
+        $gadget = $this->request->getData('Mapgadget');
+        $gadget['show_label'] = (int)$this->request->getData('Mapgadget.show_label');
+        $gadget['size_x'] = (int)$this->request->getData('Mapgadget.size_x');
+        $gadget['size_y'] = (int)$this->request->getData('Mapgadget.size_y');
+        $gadget['transparent_background'] = (int)$this->request->getData('Mapgadget.transparent_background');
+        $gadgetEntity = $MapgadgetsTable->patchEntity($gadgetEntity, $gadget);
 
         $MapgadgetsTable->save($gadgetEntity);
         if (!$gadgetEntity->hasErrors()) {
