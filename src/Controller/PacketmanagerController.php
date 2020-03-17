@@ -86,7 +86,7 @@ class PacketmanagerController extends AppController {
             $installedModules = [];
             $output = [];
             exec('dpkg -l |grep openitcockpit-module', $output, $rc);
-            $output = $this->getTestDpkgOutput();
+            //$output = $this->getTestDpkgOutput();
             foreach ($output as $line) {
                 $line = explode('  ', $line);
                 if (isset($line[1]) && preg_match('/openitcockpit-module-/', $line[1])) {

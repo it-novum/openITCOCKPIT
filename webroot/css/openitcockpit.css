@@ -716,24 +716,6 @@ pre {
     color: #dc0a2e;
 }
 
-.packagemanagerCardBody {
-
-    padding: 5px 5px 5px 5px;
-    border-radius: 10px;
-    height: 150px;
-    /*width: 22%; */
-    margin: 5px 1% 5px 1%;
-    float: left;
-    position: relative;
-    transition: height 0.5s;
-    -webkit-transition: height 0.5s;
-    overflow: scroll;
-}
-
-.packagemanagerCardBody:hover {
-    height: 400px;
-}
-
 .badge-small {
     color: #ffffff;
     text-align: center;
@@ -1145,4 +1127,35 @@ label.menu-open-button:hover {
     color: red;
     content: " *";
     display: inline;
+}
+
+/** package manager **/
+.pm-h4{
+    padding-top: 5px;
+    margin-bottom: 0;
+}
+
+.packagemanagerCardBody {
+    padding: 5px 5px 5px 5px;
+    border-radius: 10px;
+    height: 150px;
+    /*width: 22%; */
+    margin: 5px 1% 5px 1%;
+    float: left;
+    position: relative;
+    transition: height 0.5s;
+    -webkit-transition: height 0.5s;
+    overflow: auto;
+}
+
+.community-bg-header{
+    background-image: url("/img/logos/bgs/community_edition.png");
+    background-repeat: no-repeat;
+    background-color: #3182b1;
+}
+
+.enterprise-bg-header{
+    background-image: url("/img/logos/bgs/enterprise_edition.png");
+    background-repeat: no-repeat;
+    background-color: #cb2522;
 }

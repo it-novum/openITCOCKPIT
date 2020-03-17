@@ -30,6 +30,8 @@
  * @var \itnovum\openITCOCKPIT\Core\System\Health\LsbRelease $LsbRelease
  */
 
+$Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
+
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -102,30 +104,34 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-xs-12 col-md-6 col-lg-4" ng-show="!newVersion">
+
+                        <!-- Current installed version -->
+                        <div class="col-xs-12 col-md-6 col-lg-4 padding-bottom-10" ng-show="!newVersion">
                             <div class="card">
-                                <div class="card-header">
-                                    <div>
-                                        <h4>
-                                            <?= \Spatie\Emoji\Emoji::partyingFace(); ?>
-                                            <?= __('Your system is on the latest version!'); ?>
-                                        </h4>
-                                        <div class="float-right italic unknown">
-                                            <?= h(OPENITCOCKPIT_VERSION); ?>
-                                        </div>
+                                <div class="card-header community-bg-header text-white">
+                                    <h4 class="pm-h4">
+                                        <?= \Spatie\Emoji\Emoji::partyingFace(); ?>
+                                        <?= __('Your system is on the latest version!'); ?>
+                                    </h4>
+                                    <div class="float-right italic">
+                                        <?= h(OPENITCOCKPIT_VERSION); ?>
                                     </div>
                                 </div>
-                                <div class="card-body" style="min-height: 200px;">
-                                    <div class="text">
-
+                                <div class="card-body packagemanagerCardBody">
+                                    <div class="text text-center">
+                                        <img class="img-fluid" alt="Logo" src="<?= $Logo->getLogoForHtml() ?>"
+                                             style="max-height: 140px;">
                                     </div>
+
                                 </div>
                                 <div class="card-footer">
                                     <div class="row">
                                         <div class="col-lg-12 padding-right-0">
+
                                             <div class="float-right">
+
                                                 <a href="javascript:void(0);"
-                                                   class="btn btn-labeled btn-default"
+                                                   class="btn btn-default"
                                                    data-toggle="modal"
                                                    data-target="#changelogModal">
                                                     <span class="btn-label">
@@ -134,26 +140,26 @@
                                                     <?= __('Changelog'); ?>
                                                 </a>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-xs-12 col-md-6 col-lg-4" ng-show="newVersion">
+                        <!-- New version available -->
+                        <div class="col-xs-12 col-md-6 col-lg-4 padding-bottom-10" ng-show="newVersion">
                             <div class="card">
-                                <div class="card-header">
-                                    <div>
-                                        <h4>
-                                            <?= \Spatie\Emoji\Emoji::partyPopper() ?>
-                                            <?= __('New version available!'); ?>
-                                        </h4>
-                                        <div class="pull-right italic unknown">
-                                            {{changelog[0].Changelog.version}}
-                                        </div>
+                                <div class="card-header community-bg-header text-white">
+                                    <h4 class="pm-h4">
+                                        <?= \Spatie\Emoji\Emoji::partyPopper() ?>
+                                        <?= __('New version available!'); ?>
+                                    </h4>
+                                    <div class="float-right italic">
+                                        {{changelog[0].Changelog.version}}
                                     </div>
                                 </div>
-                                <div class="card-body" style="min-height: 150px;">
+                                <div class="card-body packagemanagerCardBody">
                                     <div class="text">
                                         <?= __('Please update your {0} installation to the latest version to get new features and latest security fixes.', h($systemname)) ?>
                                     </div>
@@ -166,7 +172,7 @@
 
                                                 <a href="https://openitcockpit.io/2018/01/02/how-to-update-openitcockpit/"
                                                    target="_blank"
-                                                   class="btn btn-labeled btn-success">
+                                                   class="btn btn-success">
                                                     <span class="btn-label">
                                                         <i class="fa fa-rocket"></i>
                                                     </span>
@@ -174,7 +180,7 @@
                                                 </a>
 
                                                 <a href="javascript:void(0);"
-                                                   class="btn btn-labeled btn-default"
+                                                   class="btn btn-default"
                                                    data-toggle="modal"
                                                    data-target="#changelogModal">
                                                     <span class="btn-label">
@@ -190,17 +196,18 @@
                             </div>
                         </div>
 
-                        <div class="col-xs-12 col-md-6 col-lg-4" ng-repeat="module in modules">
+                        <div class="col-xs-12 col-md-6 col-lg-4 padding-bottom-10" ng-repeat="module in modules">
 
                             <div class="card">
-                                <div class="card-header">
-                                    <h4>
+                                <div class="card-header community-bg-header text-white"
+                                     ng-class="{'enterprise-bg-header':module.Module.enterprise}">
+                                    <h4 class="pm-h4">
                                         {{module.Module.name}}
                                     </h4>
-                                    <div class="float-right italic unknown">
+                                    <div class="float-right italic">
                                         {{module.Module.author}}
                                     </div>
-                                    <div class="italic unknown" ng-show="module.Module.enterprise">
+                                    <div class="italic" ng-show="module.Module.enterprise">
                                         <?= __('Enterprise') ?>
                                     </div>
                                 </div>
@@ -233,13 +240,14 @@
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    <div class="row">
+
+                                    <div class="row" ng-if="module.Module.license_included">
                                         <div class="col-lg-12 padding-right-0">
                                             <button
                                                 type="button"
                                                 title="<?= __('This module is already installed') ?>"
                                                 ng-show="installedModules[module.Module.apt_name]"
-                                                class="btn btn-labeled btn-success float-right">
+                                                class="btn btn-success float-right">
                                             <span class="btn-label">
                                                 <i class="fa fa-check"></i>
                                             </span>
@@ -254,7 +262,7 @@
                                                     <div class="input-group-text" id="btnGroupAddon">
                                                         <input type="checkbox"
                                                                ng-click="installPackage(module.Module.apt_name)"
-                                                                ng-model="modulesToCheckboxesInstall[module.Module.apt_name]">
+                                                               ng-model="modulesToCheckboxesInstall[module.Module.apt_name]">
                                                     </div>
                                                     <button
                                                         type="button"
@@ -266,8 +274,20 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
+
+                                    <div class="row" ng-if="!module.Module.license_included">
+                                        <div class="col-lg-12 padding-right-0">
+                                            <a
+                                                href="https://it-novum.com/en/contact/contact-form-itsm/"
+                                                target="_blank"
+                                                class="btn btn-primary float-right">
+                                                <i class="fas fa-shopping-cart"></i>
+                                                <?= __('Request a quote'); ?>
+                                            </a>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
