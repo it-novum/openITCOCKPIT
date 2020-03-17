@@ -77,6 +77,11 @@ class PacketmanagerController extends AppController {
             if (!$http->error) {
                 if (strlen($http->data) > 0) {
                     $result['data'] = json_decode($http->data, true);
+                    if(!empty($result['data']['changelog'])) {
+                        foreach ($result['data']['changelog'] as $index => $changelog) {
+                            $result['data']['changelog'][$index]['Changelog']['changes'] = nl2br($result['data']['changelog'][$index]['Changelog']['changes']);
+                        }
+                    }
                 }
             } else {
                 $result['error'] = true;

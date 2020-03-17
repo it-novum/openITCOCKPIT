@@ -322,9 +322,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                             <ul class="timeline">
                                 <li ng-repeat="record in changelog">
                                     <span class="text-primary">{{record.Changelog.version}}</span>
-                                    <p>
-                                        {{record.Changelog.changes | trustAsHtml}}
-                                    </p>
+                                    <p ng-bind-html="record.Changelog.changes | trustAsHtml"></p>
                                 </li>
                             </ul>
                         </div>
