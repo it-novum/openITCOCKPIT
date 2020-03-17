@@ -34,6 +34,10 @@ chmod +x /usr/bin/oitc
 echo "Create required system folders"
 mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,phpnsta,statusengine} /opt/openitc/etc/statusengine/Config
 
+mkdir -p /opt/openitc/logs/frontend
+chown www-data:www-data /opt/openitc/logs/frontend
+chmod 770 /opt/openitc/logs/frontend
+
 echo "Enable new systemd services"
 systemctl daemon-reload
 systemctl enable\

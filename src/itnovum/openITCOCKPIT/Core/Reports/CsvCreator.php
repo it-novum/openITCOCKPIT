@@ -57,7 +57,7 @@ class CsvCreator {
         fclose($this->buffer);
     }
 
-    function readZip($zipPath, $files, $render) {
+    function readZip($zipPath, $files) {
         if (file_exists($zipPath)) {
             unlink($zipPath);
         }
@@ -65,7 +65,7 @@ class CsvCreator {
         $zipArchive = new \ZipArchive();
 
 
-        if ($zipArchive->open($zipPath, ZipArchive::CREATE) !== true) {
+        if ($zipArchive->open($zipPath, \ZipArchive::CREATE) !== true) {
             exit('Cant create zip file');
         }
         foreach ($files as $file) {
@@ -76,16 +76,13 @@ class CsvCreator {
         foreach ($files as $file) {
             unlink($file);
         }
-        if ($render) {
+        $basename = basename($zipPath, '.zip');
+        $zipName = preg_replace("/[^a-zA-Z0-9_]+/", "", $basename) . '.zip';
+        header("Content-Type: application/zip");
+        header("Content-Disposition: attachment; filename=$zipName");
+        header("Content-Length: " . filesize($zipPath));
 
-            $basename = basename($zipPath, '.zip');
-            $zipName = preg_replace("/[^a-zA-Z0-9_]+/", "", $basename) . '.zip';
-            header("Content-Type: application/zip");
-            header("Content-Disposition: attachment; filename=$zipName");
-            header("Content-Length: " . filesize($zipPath));
-
-            readfile($zipPath);
-        }
+        readfile($zipPath);
     }
 
     function clear() {
