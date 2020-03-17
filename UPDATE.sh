@@ -216,6 +216,8 @@ if [[ -d /opt/openitc/frontend/plugins/MapModule/webroot/img/ ]]; then
     chown -R www-data:www-data /opt/openitc/frontend/plugins/MapModule/webroot/img/
 fi
 
+oitc config_generator_shell --generate
+
 echo "Enable new systemd services"
 systemctl daemon-reload
 systemctl enable sudo_server.service\
