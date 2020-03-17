@@ -2701,7 +2701,7 @@ class HostsTable extends Table {
                     'table'      => 'services',
                     'type'       => 'INNER',
                     'alias'      => 'Services',
-                    'conditions' => 'Services.uuid = Hosts.id',
+                    'conditions' => 'Services.host_id = Hosts.id',
                 ],
                 'c' => [
                     'table'      => 'statusengine_servicestatus',

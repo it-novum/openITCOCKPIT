@@ -202,11 +202,19 @@ chmod +x /usr/bin/oitc
 echo "Create required system folders"
 mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,phpnsta,statusengine} /opt/openitc/etc/statusengine/Config
 
-mkdir -p /opt/openitc/logs/frontend
+mkdir -p /opt/openitc/logs/frontend/nagios
 chown www-data:www-data /opt/openitc/logs/frontend
-chmod 770 /opt/openitc/logs/frontend
+chown nagios:nagios /opt/openitc/logs/frontend/nagios
+chmod 775 /opt/openitc/logs/frontend
+chmod 775 /opt/openitc/logs/frontend/nagios
 
-chown -R www-data:www-data /opt/openitc/frontend
+mkdir -p /opt/openitc/frontend/tmp/nagios
+chown www-data:www-data /opt/openitc/frontend/tmp
+chown nagios:nagios /opt/openitc/frontend/tmp/nagios
+
+if [[ -d /opt/openitc/frontend/plugins/MapModule/webroot/img/ ]]; then
+    chown -R www-data:www-data /opt/openitc/frontend/plugins/MapModule/webroot/img/
+fi
 
 echo "Enable new systemd services"
 systemctl daemon-reload
