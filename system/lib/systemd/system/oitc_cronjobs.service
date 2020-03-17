@@ -1,0 +1,8 @@
+[Unit]
+Description=Run openITCOCKPIT Cronjobs
+
+[Service]
+Type=simple
+ExecStart=/opt/openitc/frontend/bin/cake cronjobs -q
+User=root
+Group=www-data
