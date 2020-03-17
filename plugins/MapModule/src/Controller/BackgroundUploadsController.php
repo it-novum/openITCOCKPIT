@@ -31,7 +31,6 @@ use Cake\Filesystem\Folder;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
-use Composer\Package\Archiver\ZipArchiver;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use MapModule\Model\Table\MapiconsTable;
@@ -40,6 +39,7 @@ use MapModule\Model\Table\MapUploadsTable;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
+use ZipArchive;
 
 
 /**
@@ -336,7 +336,7 @@ class BackgroundUploadsController extends AppController {
                     throw new Exception(__('Cannot move uploaded file'));
                 }
 
-                $zipFile = new \ZipArchive();
+                $zipFile = new ZipArchive();
                 $openZip = $zipFile->open($tempZipsDirectory . DS . $fileName);
                 if (!$openZip) {
                     throw new Exception(__('Could not open uploaded zip file.'));

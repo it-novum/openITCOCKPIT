@@ -82,10 +82,10 @@ class MapitemsTable extends Table {
             //'saveStrategy'     => 'replace'
         ]);
 
-        $this->belongsToMany('Hosts');
-        $this->belongsToMany('Hostgroups');
-        $this->belongsToMany('Services');
-        $this->belongsToMany('Servicegroups');
+        $this->hasMany('Hosts');
+        $this->hasMany('Hostgroups');
+        $this->hasMany('Services');
+        $this->hasMany('Servicegroups');
     }
 
     public function bindCoreAssociations(RepositoryInterface $coreTable) {

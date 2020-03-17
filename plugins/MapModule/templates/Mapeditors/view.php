@@ -52,7 +52,8 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'maps', 'mapmodule')): ?>
-                        <a back-button fallback-state='MapsIndex' class="btn btn-default btn-xs mr-1 shadow-0" ng-click="checkFullscreen()">
+                        <a back-button fallback-state='MapsIndex' class="btn btn-default btn-xs mr-1 shadow-0"
+                           ng-click="checkFullscreen()">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>

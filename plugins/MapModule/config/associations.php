@@ -7,15 +7,24 @@
 return [
     'Hosts'         => [
         'MapModule.Mapitems',
+        'MapModule.Maplines',
+        'MapModule.Mapsummaryitems',
     ],
     'Hostgroups'    => [
         'MapModule.Mapitems',
+        'MapModule.Maplines',
+        'MapModule.Mapsummaryitems',
     ],
     'Services'      => [
-        'MapModule.Mapitems'
+        'MapModule.Mapitems',
+        'MapModule.Maplines',
+        'MapModule.Mapsummaryitems',
+        'MapModule.Mapgadgets',
     ],
     'Servicegroups' => [
-        'MapModule.Mapitems'
-    ]
+        'MapModule.Mapitems',
+        'MapModule.Maplines',
+        'MapModule.Mapsummaryitems',
+    ],
 ];
 

@@ -36,8 +36,14 @@ mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,phpnsta,statusen
 
 echo "Enable new systemd services"
 systemctl daemon-reload
-systemctl enable sudo_server.service oitc_cmd.service gearman_worker.service push_notification.service\
- nodejs_server.service openitcockpit-graphing.service
+systemctl enable\
+ sudo_server.service\
+ oitc_cmd.service\
+ gearman_worker.service\
+ push_notification.service\
+ nodejs_server.service\
+ openitcockpit-graphing.service\
+ oitc_cronjobs.timer
 
 if [[ ! -f "$INIFILE" ]]; then
     echo "Create local MySQL configuration and database"
@@ -245,7 +251,8 @@ systemctl restart\
  oitc_cmd.service\
  gearman_worker.service\
  push_notification.service\
- nodejs_server.service
+ nodejs_server.service\
+ oitc_cronjobs.timer
 
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
