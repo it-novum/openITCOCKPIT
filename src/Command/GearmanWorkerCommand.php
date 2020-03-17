@@ -76,9 +76,9 @@ class GearmanWorkerCommand extends Command {
     private $jobIdelCounter = 0;
 
     /**
-     * @var ExternalCommands
+     * @var string
      */
-    private $ExternalCommands;
+    private $naemonExternalCommandsFile;
 
     /**
      * Hook method for defining this command's option parser.
@@ -102,15 +102,10 @@ class GearmanWorkerCommand extends Command {
      * @return null|void|int The exit code or null for success
      */
     public function execute(Arguments $args, ConsoleIo $io) {
-        /** @var SystemsettingsTable $SystemsettingsTable */
-        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-        $systemsettings = $SystemsettingsTable->findAsArray();
-
         Configure::load('gearman');
         Configure::load('nagios');
         Configure::load('NagiosModule.config');
-        $naemonExternalCommandsFile = Configure::read('NagiosModule.PREFIX') . Configure::read('NagiosModule.NAGIOS_CMD');
-        $this->ExternalCommands = new ExternalCommands($naemonExternalCommandsFile);
+        $this->naemonExternalCommandsFile = Configure::read('NagiosModule.PREFIX') . Configure::read('NagiosModule.NAGIOS_CMD');
 
         $this->daemonizing($io);
     }
@@ -145,6 +140,17 @@ class GearmanWorkerCommand extends Command {
         pcntl_signal(SIGTERM, [$this, 'sig_handler']);
         pcntl_signal(SIGINT, [$this, 'sig_handler']);
 
+        //Disconnect from DB before forking
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        //$SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        //$connection = $SystemsettingsTable->getConnection();
+        //$connection->disconnect();
+
+        //$driver = $connection->getDriver();
+        //$driver->disconnect();
+
+        //TableRegistry::getTableLocator()->destroy('Systemsettings');
+
         for ($i = 1; $i < $gearmanConfig['worker']; $i++) {
             $io->info(__('GearmanWorker: Fork new worker child'));
             $pid = pcntl_fork();
@@ -152,12 +158,8 @@ class GearmanWorkerCommand extends Command {
                 //I am a child process
                 $this->parentProcess = false;
 
-                // Avoid "MySQL server has gone away"
-                /** @var SystemsettingsTable $SystemsettingsTable */
                 $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-                $connection = $SystemsettingsTable->getConnection();
-                $connection->disconnect();
-                $connection->connect();
+
 
                 $this->loop();
             }
@@ -165,6 +167,7 @@ class GearmanWorkerCommand extends Command {
             unset($pid);
         }
 
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         pcntl_signal(SIGCHLD, [$this, 'sig_handler']);
         $this->loop();
     }
@@ -219,11 +222,12 @@ class GearmanWorkerCommand extends Command {
 
         // Avoid "MySQL server has gone away"
         /** @var SystemsettingsTable $SystemsettingsTable */
+        TableRegistry::getTableLocator()->destroy('Systemsettings');
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
-        $connection = $SystemsettingsTable->getConnection();
-        $connection->disconnect();
-        $connection->connect();
+        //$connection = $SystemsettingsTable->getConnection();
+        //$connection->disconnect();
+        //$connection->connect();
 
 
         switch ($payload['task']) {
@@ -520,32 +524,39 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'createHostDowntime':
-                $this->ExternalCommands->setHostDowntime($payload);
+                $ExternalCommands = new ExternalCommands($this->naemonExternalCommandsFile);
+                $ExternalCommands->setHostDowntime($payload);
                 break;
 
             case 'createHostgroupDowntime':
-                $this->ExternalCommands->setHostgroupDowntime($payload);
+                $ExternalCommands = new ExternalCommands($this->naemonExternalCommandsFile);
+                $ExternalCommands->setHostgroupDowntime($payload);
                 break;
 
             case 'createServiceDowntime':
-                $this->ExternalCommands->setServiceDowntime($payload);
+                $ExternalCommands = new ExternalCommands($this->naemonExternalCommandsFile);
+                $ExternalCommands->setServiceDowntime($payload);
                 break;
 
             case 'createContainerDowntime':
-                $this->ExternalCommands->setContainerDowntime($payload);
+                $ExternalCommands = new ExternalCommands($this->naemonExternalCommandsFile);
+                $ExternalCommands->setContainerDowntime($payload);
                 break;
 
             case 'deleteHostDowntime':
-                $this->ExternalCommands->deleteHostDowntime($payload['internal_downtime_id']);
+                $ExternalCommands = new ExternalCommands($this->naemonExternalCommandsFile);
+                $ExternalCommands->deleteHostDowntime($payload['internal_downtime_id']);
                 break;
 
             case 'deleteServiceDowntime':
-                $this->ExternalCommands->deleteServiceDowntime($payload['internal_downtime_id']);
+                $ExternalCommands = new ExternalCommands($this->naemonExternalCommandsFile);
+                $ExternalCommands->deleteServiceDowntime($payload['internal_downtime_id']);
                 break;
 
             //Called by NagiosModule/CmdController/submit
             case 'cmd_external_command':
-                $this->ExternalCommands->runCmdCommand($payload);
+                $ExternalCommands = new ExternalCommands($this->naemonExternalCommandsFile);
+                $ExternalCommands->runCmdCommand($payload);
                 break;
 
             case 'export_start_export':
@@ -1191,6 +1202,11 @@ class GearmanWorkerCommand extends Command {
         if ($result['task'] !== 'export_sync_sat_config') {
             /** @var ExportsTable $ExportsTable */
             $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
+
+            // Avoid "MySQL server has gone away"
+            $connection = $ExportsTable->getConnection();
+            $connection->disconnect();
+            $connection->connect();
 
             $entity = $ExportsTable->find()
                 ->where([

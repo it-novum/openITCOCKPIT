@@ -25,6 +25,7 @@
 
 namespace MapModule\Controller;
 
+use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
@@ -36,8 +37,8 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Exception;
+use InvalidArgumentException;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\MapConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
@@ -60,6 +61,7 @@ use MapModule\Model\Table\MapsTable;
 use MapModule\Model\Table\MapsummaryitemsTable;
 use MapModule\Model\Table\MaptextsTable;
 use MapModule\Model\Table\MapUploadsTable;
+use RuntimeException;
 use Statusengine\PerfdataParser;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
@@ -142,11 +144,11 @@ class MapeditorsController extends AppController {
         }
         $objectId = (int)$this->request->getQuery('objectId');
         if ($objectId <= 0) {
-            throw new \RuntimeException('Invalid object id');
+            throw new RuntimeException('Invalid object id');
         }
         $mapId = (int)$this->request->getQuery('mapId');
         if ($mapId <= 0) {
-            throw new \RuntimeException('Invalid map id');
+            throw new RuntimeException('Invalid map id');
         }
 
         try {
@@ -207,14 +209,14 @@ class MapeditorsController extends AppController {
      * @param $type
      * @param string $includeServiceOutput
      * @return array
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @throws MissingDbBackendException
      */
     private function _mapitem($objectId, $mapId, $type, $includeServiceOutput = 'true') {
         if ($objectId <= 0) {
-            throw new \RuntimeException('Invalid object id');
+            throw new RuntimeException('Invalid object id');
         }
         if ($mapId <= 0) {
-            throw new \RuntimeException('Invalid map id');
+            throw new RuntimeException('Invalid map id');
         }
 
         /** @var MapsTable $MapsTable */
@@ -411,7 +413,7 @@ class MapeditorsController extends AppController {
                 $allowView = false;
                 break;
             default:
-                throw new \RuntimeException('Unknown map item type');
+                throw new RuntimeException('Unknown map item type');
                 break;
         }
 
@@ -472,7 +474,7 @@ class MapeditorsController extends AppController {
     }
 
     /**
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @throws MissingDbBackendException
      */
     public function mapsummaryitem() {
         if (!$this->isApiRequest()) {
@@ -481,11 +483,11 @@ class MapeditorsController extends AppController {
         $properties = [];
         $objectId = (int)$this->request->getQuery('objectId');
         if ($objectId <= 0) {
-            throw new \RuntimeException('Invalid object id');
+            throw new RuntimeException('Invalid object id');
         }
         $mapId = (int)$this->request->getQuery('mapId');
         if ($mapId <= 0) {
-            throw new \RuntimeException('Invalid map id');
+            throw new RuntimeException('Invalid map id');
         }
 
         /** @var MapsTable $MapsTable */
@@ -732,7 +734,7 @@ class MapeditorsController extends AppController {
                 $allowView = false;
                 break;
             default:
-                throw new \RuntimeException('Unknown map item type');
+                throw new RuntimeException('Unknown map item type');
                 break;
         }
 
@@ -792,7 +794,7 @@ class MapeditorsController extends AppController {
     }
 
     /**
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @throws MissingDbBackendException
      */
     public function mapsummary() {
         if (!$this->isApiRequest()) {
@@ -802,7 +804,7 @@ class MapeditorsController extends AppController {
         $objectId = (int)$this->request->getQuery('objectId');
         $summaryStateItem = $this->request->getQuery('summary') === 'true';
         if ($objectId <= 0) {
-            throw new \RuntimeException('Invalid object id');
+            throw new RuntimeException('Invalid object id');
         }
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
@@ -1111,7 +1113,7 @@ class MapeditorsController extends AppController {
                 return;
                 break;
             default:
-                throw new \RuntimeException('Unknown map item type');
+                throw new RuntimeException('Unknown map item type');
                 break;
         }
 
@@ -1314,7 +1316,7 @@ class MapeditorsController extends AppController {
         $MapitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapitems');
 
         if (!is_numeric($id)) {
-            throw new \InvalidArgumentException('Mapitem.id needs to be numeric');
+            throw new InvalidArgumentException('Mapitem.id needs to be numeric');
         }
 
         if (!$MapitemsTable->existsById($id)) {
@@ -1398,7 +1400,7 @@ class MapeditorsController extends AppController {
         $id = $this->request->getData('Mapline.id');
 
         if (!is_numeric($id)) {
-            throw new \InvalidArgumentException('Mapline.id needs to be numeric');
+            throw new InvalidArgumentException('Mapline.id needs to be numeric');
         }
         if (!$MaplinesTable->existsById($id)) {
             throw new NotFoundException();
@@ -1503,7 +1505,7 @@ class MapeditorsController extends AppController {
         $id = $this->request->getData('Mapgadget.id');
 
         if (!is_numeric($id)) {
-            throw new \InvalidArgumentException('Mapgadget.id needs to be numeric');
+            throw new InvalidArgumentException('Mapgadget.id needs to be numeric');
         }
         if (!$MapgadgetsTable->existsById($id)) {
             throw new NotFoundException();
@@ -1521,7 +1523,7 @@ class MapeditorsController extends AppController {
 
     /**
      * @param $serviceId
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @throws MissingDbBackendException
      */
     public function getPerformanceDataMetrics($serviceId) {
         if (!$this->isAngularJsRequest()) {
@@ -1626,7 +1628,7 @@ class MapeditorsController extends AppController {
         }
 
         if (!is_numeric($id)) {
-            throw new \InvalidArgumentException('Maptext.id needs to be numeric');
+            throw new InvalidArgumentException('Maptext.id needs to be numeric');
         }
 
         if ($MaptextsTable->delete($MaptextsTable->get($id))) {
@@ -1706,7 +1708,7 @@ class MapeditorsController extends AppController {
         $MapiconsTable = TableRegistry::getTableLocator()->get('MapModule.Mapicons');
 
         if (!is_numeric($id)) {
-            throw new \InvalidArgumentException('Mapicon.id needs to be numeric');
+            throw new InvalidArgumentException('Mapicon.id needs to be numeric');
         }
         if (!$MapiconsTable->existsById($id)) {
             throw new NotFoundException();
@@ -1862,7 +1864,7 @@ class MapeditorsController extends AppController {
         $MapsummaryitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapsummaryitems');
 
         if (!is_numeric($id)) {
-            throw new \InvalidArgumentException('Mapsummaryitem.id needs to be numeric');
+            throw new InvalidArgumentException('Mapsummaryitem.id needs to be numeric');
         }
         if (!$MapsummaryitemsTable->existsById($id)) {
             throw new NotFoundException();
@@ -1929,7 +1931,7 @@ class MapeditorsController extends AppController {
         if ($this->request->is('get')) {
             $widgetId = (int)$this->request->getQuery('widgetId');
             if (!$WidgetsTable->existsById($widgetId)) {
-                throw new \RuntimeException('Invalid widget id');
+                throw new RuntimeException('Invalid widget id');
             }
 
             $widgetEntity = $WidgetsTable->get($widgetId);
@@ -1973,7 +1975,7 @@ class MapeditorsController extends AppController {
             $widgetId = (int)$this->request->getData('Widget.id');
 
             if (!$WidgetsTable->existsById($widgetId)) {
-                throw new \RuntimeException('Invalid widget id');
+                throw new RuntimeException('Invalid widget id');
             }
 
             $widgetEntity = $WidgetsTable->get($widgetId);

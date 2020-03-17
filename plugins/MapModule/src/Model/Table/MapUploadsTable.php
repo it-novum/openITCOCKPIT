@@ -40,6 +40,7 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use MapModule\Model\Entity\MapUpload;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * MapUploads Model
@@ -196,7 +197,7 @@ class MapUploadsTable extends Table {
         $finder->files()->in($basePath);
         $icons = [];
 
-        /** @var \Symfony\Component\Finder\SplFileInfo $file */
+        /** @var SplFileInfo $file */
         foreach ($finder as $file) {
             if (in_array($file->getExtension(), $this->supportedFileExtensions, true)) {
                 $icons[] = $file->getFilename();
@@ -413,7 +414,7 @@ class MapUploadsTable extends Table {
             }
         }
 
-        /** @var \Symfony\Component\Finder\SplFileInfo $folder */
+        /** @var SplFileInfo $folder */
         foreach ($finder as $folder) {
             $dirName = $folder->getFilename();
 

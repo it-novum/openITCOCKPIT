@@ -52,7 +52,7 @@ class PackagemanagerRequestBuilder {
     /**
      * @var string
      */
-    private $baseUrl = '%s/modules/fetch/%s.json';
+    private $baseUrl = '%s/modules/fetch/%s/4.json';
 
     /**
      * @var string
@@ -67,7 +67,7 @@ class PackagemanagerRequestBuilder {
     /**
      * @var string
      */
-    private $license = '';
+    private $license = '0';
 
     /**
      * PackagemanagerRequestBuilder constructor.
@@ -88,6 +88,9 @@ class PackagemanagerRequestBuilder {
 //        if ($this->ENVIRONMENT === \Environments::DEVELOPMENT) {
 //            return sprintf($this->baseUrl, $this->internalAddress, $this->license);
 //        }
+        if($this->license === ''){
+            $this->license = 0;
+        }
 
         return sprintf($this->baseUrl, $this->externalAddress, $this->license);
     }
