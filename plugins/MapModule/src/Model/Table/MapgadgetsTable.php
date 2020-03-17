@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace MapModule\Model\Table;
 
 use Cake\Datasource\EntityInterface;
+use Cake\Datasource\RepositoryInterface;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\RulesChecker;
@@ -72,6 +73,24 @@ class MapgadgetsTable extends Table {
             'joinType'   => 'INNER',
             'className'  => 'MapModule.Maps',
         ]);
+
+        $this->hasMany('Services');
+    }
+
+    public function bindCoreAssociations(RepositoryInterface $coreTable) {
+        switch ($coreTable->getAlias()) {
+            case 'Services':
+                $coreTable->hasMany('Mapgadgets', [
+                    'className'  => 'MapModule.Mapgadgets',
+                    'dependent'  => true,
+                    'foreignKey' => 'object_id',
+                    'joinType'   => 'INNER',
+                    'conditions' => [
+                        'type' => 'service'
+                    ]
+                ]);
+                break;
+        }
     }
 
     /**

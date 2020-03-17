@@ -30,6 +30,7 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use Exception;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
@@ -142,7 +143,7 @@ class RotationsController extends AppController {
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {

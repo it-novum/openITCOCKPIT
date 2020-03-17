@@ -53,10 +53,10 @@ class Rotation extends Entity {
      * @var array
      */
     protected $_accessible = [
-        'name'                    => true,
-        'interval'                => true,
-        'created'                 => true,
-        'modified'                => true,
+        'name'       => true,
+        'interval'   => true,
+        'created'    => true,
+        'modified'   => true,
         'maps'       => true,
         'containers' => true,
     ];
