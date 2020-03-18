@@ -558,13 +558,20 @@ class ServicesTable extends Table {
     /**
      * @param ServiceConditions $ServiceConditions
      * @param array|int $selected
+     * @param bool $returnEmptyArrayIfMyRightsIsEmpty
      * @return array|null
      */
-    public function getServicesForAngularCake4(ServiceConditions $ServiceConditions, $selected = []) {
+    public function getServicesForAngularCake4(ServiceConditions $ServiceConditions, $selected = [], $returnEmptyArrayIfMyRightsIsEmpty = false) {
         if (!is_array($selected)) {
             $selected = [$selected];
         }
         $selected = array_filter($selected);
+
+        if($returnEmptyArrayIfMyRightsIsEmpty){
+            if(empty($ServiceConditions->getContainerIds())){
+                return [];
+            }
+        }
 
         $where = $ServiceConditions->getConditions();
 

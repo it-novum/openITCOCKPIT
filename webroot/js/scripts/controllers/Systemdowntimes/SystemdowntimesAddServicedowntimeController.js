@@ -50,7 +50,7 @@ angular.module('openITCOCKPIT')
             };
 
             $scope.loadServices = function(searchString){
-                $http.get("/services/loadServicesByStringCake4.json", {
+                $http.get("/services/loadServicesByStringCake4/1.json", {
                     params: {
                         'angular': true,
                         'filter[servicename]': searchString,

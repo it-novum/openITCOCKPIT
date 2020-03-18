@@ -2518,7 +2518,7 @@ class ServicesController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['serviceeventhandlercommandargumentvalues']);
     }
 
-    public function loadServicesByStringCake4() {
+    public function loadServicesByStringCake4($onlyHostsWithWritePermission = false) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2548,13 +2548,26 @@ class ServicesController extends AppController {
         $ServicesFilter = new ServiceFilter($this->request);
 
         $ServiceConditions = new ServiceConditions($ServicesFilter->indexFilter());
+
+        if ($onlyHostsWithWritePermission) {
+            $writeContainers = [];
+            foreach($containerIds as $index => $containerId){
+                if(isset($this->MY_RIGHTS_LEVEL[$containerId])){
+                    if($this->MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT){
+                        $writeContainers[] = $containerId;
+                    }
+                }
+            }
+            $containerIds = $writeContainers;
+        }
+
         $ServiceConditions->setContainerIds($containerIds);
 
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         $services = Api::makeItJavaScriptAble(
-            $ServicesTable->getServicesForAngularCake4($ServiceConditions, $selected)
+            $ServicesTable->getServicesForAngularCake4($ServiceConditions, $selected, true)
         );
 
         $this->set('services', $services);
