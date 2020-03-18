@@ -130,7 +130,8 @@
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
                     <?php if ($this->Acl->hasPermission('add', 'services')): ?>
-                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="ServicesAdd">
+                        <button class="btn btn-xs btn-success mr-1 shadow-0"
+                                ui-sref="ServicesAdd({hostId: host.id})">
                             <i class="fas fa-plus"></i> <?php echo __('New'); ?>
                         </button>
                     <?php endif; ?>

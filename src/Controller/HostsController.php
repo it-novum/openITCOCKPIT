@@ -2847,7 +2847,7 @@ class HostsController extends AppController {
         }
 
         $hosts = Api::makeItJavaScriptAble(
-            $HostsTable->getHostsForAngular($HostCondition, $selected)
+            $HostsTable->getHostsForAngular($HostCondition, $selected, true)
         );
 
         $this->set('hosts', $hosts);
