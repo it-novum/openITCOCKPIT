@@ -2679,9 +2679,9 @@ html body {
   display: inline-block;
   font-style: normal;
   font-variant: normal;
-  font-weight: 400;
+  font-weight: 900;
   line-height: 1;
-  font-family: Font Awesome\ 5 Pro; }
+  font-family: Font Awesome\ 5 Free; }
 
 .breadcrumb-seperator-1 .breadcrumb-item + .breadcrumb-item:before {
   content: "\f105"; }
