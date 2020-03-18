@@ -130,6 +130,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
 
                                             <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
                                                 <a class="txt-color-green padding-left-10 font-xs pointer"
+                                                   ng-if="$Container.allowEdit"
                                                    ng-click="openAddNodeModal($Container)">
                                                     <i class="fa fa-plus"></i>
                                                     <?php echo __('Add'); ?>
@@ -160,6 +161,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
 
                                             <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
                                                 <a class="txt-color-green padding-left-10 font-xs pointer"
+                                                   ng-if="$Container.allowEdit"
                                                    ng-click="openAddNodeModal($Container)">
                                                     <i class="fa fa-plus"></i>
                                                     <?php echo __('Add'); ?>
@@ -198,6 +200,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
 
                                             <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
                                                 <a class="txt-color-green padding-left-10 font-xs pointer"
+                                                   ng-if="$Container.allowEdit"
                                                    ng-click="openAddNodeModal($Container)">
                                                     <i class="fa fa-plus"></i>
                                                     <?php echo __('Add'); ?>
@@ -236,6 +239,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
 
                                             <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
                                                 <a class="txt-color-green padding-left-10 font-xs pointer"
+                                                   ng-if="$Container.allowEdit"
                                                    ng-click="openAddNodeModal($Container)">
                                                     <i class="fa fa-plus"></i>
                                                     <?php echo __('Add'); ?>
@@ -784,7 +788,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger pull-left" ng-click="deleteNode()"
+                    <button type="button" class="btn btn-danger mr-auto" ng-click="deleteNode()"
                             ng-class="{'has-error': errors.id}">
                         <i class="fa fa-refresh fa-spin" ng-show="isDeleting"></i>
                         <?php echo __('Delete'); ?>

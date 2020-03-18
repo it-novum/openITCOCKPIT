@@ -99,6 +99,11 @@ class ContainersController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $container = $ContainersTable->newEntity($this->request->getData('Container'));
 
+        if(!$this->isWritableContainer($container->get('parent_id'))){
+            $this->render403();
+            return;
+        }
+
         $ContainersTable->save($container);
         if ($container->hasErrors()) {
             $this->response = $this->response->withStatus(400);
