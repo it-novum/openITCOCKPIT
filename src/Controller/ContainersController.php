@@ -99,7 +99,7 @@ class ContainersController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $container = $ContainersTable->newEntity($this->request->getData('Container'));
 
-        if(!$this->isWritableContainer($container->get('parent_id'))){
+        if (!$this->isWritableContainer($container->get('parent_id'))) {
             $this->render403();
             return;
         }
@@ -129,6 +129,14 @@ class ContainersController extends AppController {
                 throw new NotFoundException(__('Invalid container'));
             }
             $container = $ContainersTable->get($containerId);
+
+            if (!$this->isWritableContainer($container->get('id'))) {
+                $this->render403();
+                return;
+            }
+
+            $container->setAccess('id', false);
+            $container->setAccess('parent_id', false);
             $container = $ContainersTable->patchEntity($container, $this->request->getData('Container'));
 
             $ContainersTable->save($container);
@@ -144,15 +152,16 @@ class ContainersController extends AppController {
     }
 
     /**
-     * Is called by AJAX to render the nest list in Nodes
-     *
-     * @param int $id the id of the container
-     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-     * @since  3.0
+     * THIS IS ONLY FOR ContainersIndex Action !!!
      */
     public function loadContainersByContainerId($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
+        }
+
+        if(!$this->hasRootPrivileges && intval($id) === ROOT_CONTAINER){
+            $this->render403();
+            return;
         }
 
         /** @var $ContainersTable ContainersTable */
@@ -275,6 +284,9 @@ class ContainersController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['nest']);
     }
 
+    /**
+     * THIS IS ONLY FOR ContainersIndex Action !!!
+     */
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -303,6 +315,10 @@ class ContainersController extends AppController {
             $paths[$container['id']] = '/' . $ContainersTable->treePath($container['id'], '/');
         }
         natcasesort($paths);
+        if(!$this->hasRootPrivileges){
+            unset($paths[ROOT_CONTAINER]);
+        }
+
         $containers = Api::makeItJavaScriptAble($paths);
 
         $this->set('containers', $containers);
@@ -337,6 +353,8 @@ class ContainersController extends AppController {
      * @deprecated
      */
     public function delete($id = null) {
+        throw new \RuntimeException('Not implemented');
+
         $userId = $this->Auth->user('id');
 
         /** @var $ContainersTable ContainersTable */
