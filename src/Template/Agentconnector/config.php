@@ -689,7 +689,7 @@
                                             <div class="row col-12 padding-left-25">
                                                 <p>
                                                     <?= __('Download the agent installer for your system from our official openITCOCKPIT Website:'); ?>
-                                                    <a href="https://openitcockpit.io/download/#download"
+                                                    <a href="https://openitcockpit.io/agent"
                                                        target="_blank"><?= __('Download here'); ?></a>
                                                     <br><br>
                                                     <?= __('After the installation you have to update the default configuration files with the recently generated configuration'); ?>
