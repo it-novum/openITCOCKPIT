@@ -929,7 +929,15 @@ $table->addColumn("check_command", "string", array (
 $table->setPrimaryKey([
     "hostname"
 ]);
-
+$table->addIndex([
+    "current_state",
+    "node_name"
+], "current_state_node");
+$table->addIndex([
+    "problem_has_been_acknowledged",
+    "scheduled_downtime_depth",
+    "current_state"
+], "issues");
 
 
 /****************************************
