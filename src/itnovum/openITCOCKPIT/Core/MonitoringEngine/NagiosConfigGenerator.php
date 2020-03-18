@@ -279,9 +279,9 @@ class NagiosConfigGenerator {
                 }
             }
 
-            if (!empty($contact['Contact']['user_id'])) {
+            if ($contact->get('user_id') > 0) {
                 $content .= $this->addContent(';OITC user association:', 1);
-                $content .= $this->addContent('_OITCUSERID', 1, $contact['Contact']['user_id']);
+                $content .= $this->addContent('_OITCUSERID', 1, $contact->get('user_id'));
             }
 
             $content .= $this->addContent('}', 0);
