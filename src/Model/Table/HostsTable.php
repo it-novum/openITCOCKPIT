@@ -3234,16 +3234,16 @@ class HostsTable extends Table {
             ]);
 
         if (!empty($containerIds)) {
-            $query->contain([
-                'HostsToContainersSharing' => function (Query $query) use ($containerIds) {
-                    return $query->where([
-                        'HostsToContainersSharing.id IN' => $containerIds
-                    ]);
-                }
-            ])->group([
-                'Hosts.id'
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $containerIds
             ]);
         }
+
+        $query->contain('HostsToContainersSharing');
+
         if (!empty($allHostIds)) {
             $query->where([
                 'Hosts.id IN' => $allHostIds

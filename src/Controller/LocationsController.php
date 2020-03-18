@@ -58,8 +58,13 @@ class LocationsController extends AppController {
         $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
         $LocationFilter = new LocationFilter($this->request);
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if($this->hasRootPrivileges){
+            $MY_RIGHTS = [];
+        }
+
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $LocationFilter->getPage());
-        $all_locations = $LocationsTable->getLocationsIndex($LocationFilter, $PaginateOMat);
+        $all_locations = $LocationsTable->getLocationsIndex($LocationFilter, $PaginateOMat, $MY_RIGHTS);
 
         foreach ($all_locations as $key => $location) {
             $all_locations[$key]['Location']['allowEdit'] = false;

@@ -111,13 +111,21 @@ class LocationsTable extends Table {
     /**
      * @param LocationFilter $LocationFilter
      * @param null|PaginateOMat $PaginateOMat
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getLocationsIndex(LocationFilter $LocationFilter, $PaginateOMat = null) {
+    public function getLocationsIndex(LocationFilter $LocationFilter, $PaginateOMat = null, array $MY_RIGHTS = []) {
         $query = $this->find('all')
             ->contain(['Containers'])
             ->disableHydration();
         $query->where($LocationFilter->indexFilter());
+
+        if(!empty($MY_RIGHTS)){
+            $query->andWhere([
+                'Containers.parent_id IN' => $MY_RIGHTS
+            ]);
+        }
+
         $query->order($LocationFilter->getOrderForPaginator('Containers.name', 'asc'));
 
         if ($PaginateOMat === null) {

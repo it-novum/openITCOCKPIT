@@ -11,6 +11,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use EventcorrelationModule\Model\Table\EventcorrelationsTable;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
 
@@ -80,11 +81,18 @@ class TenantsTable extends Table {
      * @param null|PaginateOMat $PaginateOMat
      * @return array
      */
-    public function getTenantsIndex(TenantFilter $TenantFilter, $PaginateOMat = null) {
+    public function getTenantsIndex(TenantFilter $TenantFilter, $PaginateOMat = null, array $MY_RIGHTS = []) {
         $query = $this->find('all')
             ->contain(['Containers'])
             ->disableHydration();
         $query->where($TenantFilter->indexFilter());
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Tenants.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
         $query->order($TenantFilter->getOrderForPaginator('Containers.name', 'asc'));
 
         if ($PaginateOMat === null) {

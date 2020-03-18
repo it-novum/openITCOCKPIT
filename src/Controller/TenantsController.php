@@ -58,7 +58,11 @@ class TenantsController extends AppController {
         $TenantFilter = new TenantFilter($this->request);
 
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $TenantFilter->getPage());
-        $all_tenants = $TenantsTable->getTenantsIndex($TenantFilter, $PaginateOMat);
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if($this->hasRootPrivileges){
+            $MY_RIGHTS = [];
+        }
+        $all_tenants = $TenantsTable->getTenantsIndex($TenantFilter, $PaginateOMat, $MY_RIGHTS);
 
         foreach ($all_tenants as $key => $tenant) {
             $all_tenants[$key]['Tenant']['allowEdit'] = false;

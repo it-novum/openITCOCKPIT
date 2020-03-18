@@ -185,7 +185,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'tenants')): ?>
-                                                <div class="dropdown-divider"></div>
+                                                <div class="dropdown-divider" ng-if="tenant.Tenant.allowEdit"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(tenant))"
                                                    ng-if="tenant.Tenant.allowEdit"
                                                    href="javascript:void(0);"
