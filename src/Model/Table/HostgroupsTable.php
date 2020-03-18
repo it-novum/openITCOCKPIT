@@ -417,13 +417,20 @@ class HostgroupsTable extends Table {
     /**
      * @param HostgroupConditions $HostgroupConditions
      * @param array|int $selected
+     * @param bool $returnEmptyArrayIfMyRightsIsEmpty
      * @return array|null
      */
-    public function getHostgroupsForAngular(HostgroupConditions $HostgroupConditions, $selected = []) {
+    public function getHostgroupsForAngular(HostgroupConditions $HostgroupConditions, $selected = [], $returnEmptyArrayIfMyRightsIsEmpty = false) {
         if (!is_array($selected)) {
             $selected = [$selected];
         }
         $selected = array_filter($selected);
+
+        if($returnEmptyArrayIfMyRightsIsEmpty){
+            if(empty($HostgroupConditions->getContainerIds())){
+                return [];
+            }
+        }
 
 
         $where = $HostgroupConditions->getConditionsForFind();
