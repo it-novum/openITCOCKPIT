@@ -36,7 +36,7 @@
 
 <?php if ($this->Acl->hasPermission('index', 'statistics')): ?>
     <?php if (isset($askForHelp) && $askForHelp === true): ?>
-        <ask-anonymous-statistics></ask-anonymous-statistics>
+        <ask-anonymous-statistics ng-if="askForHelp"></ask-anonymous-statistics>
     <?php endif; ?>
 <?php endif; ?>
 

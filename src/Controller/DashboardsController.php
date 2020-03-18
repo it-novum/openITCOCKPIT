@@ -75,28 +75,23 @@ class DashboardsController extends AppController {
     use LocatorAwareTrait;
 
     public function index() {
-        //CakePHP 4 Model usage Example
-        //$TableLocator = $this->getTableLocator();
-        //$Proxy = $TableLocator->get('Proxies');
-        //debug($Proxy->find()->first());die();
+        $askForHelp = false;
+        $askAgainForHelp = $this->request->getCookie('askAgainForHelp');
+        if ($askAgainForHelp === null) {
 
-        if (!$this->isAngularJsRequest()) {
-            $askForHelp = false;
-            $askAgainForHelp = $this->request->getCookie('askAgainForHelp');
-            if ($askAgainForHelp === null) {
+            /** @var $SystemsettingsTable SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
-                /** @var $SystemsettingsTable SystemsettingsTable */
-                $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-
-                $record = $SystemsettingsTable->getSystemsettingByKeyAsCake2('SYSTEM.ANONYMOUS_STATISTICS');
-                if (!empty($record)) {
-                    if ($record['Systemsetting']['value'] === '2') {
-                        $askForHelp = true;
-                    }
+            $record = $SystemsettingsTable->getSystemsettingByKeyAsCake2('SYSTEM.ANONYMOUS_STATISTICS');
+            if (!empty($record)) {
+                if ($record['Systemsetting']['value'] === '2') {
+                    $askForHelp = true;
                 }
             }
-            $this->set('askForHelp', $askForHelp);
+        }
+        $this->set('askForHelp', $askForHelp);
 
+        if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
         }
@@ -133,7 +128,7 @@ class DashboardsController extends AppController {
         $this->set('tabs', $tabs);
         $this->set('widgets', $widgets);
         $this->set('tabRotationInterval', $tabRotationInterval);
-        $this->viewBuilder()->setOption('serialize', ['tabs', 'widgets', 'tabRotationInterval']);
+        $this->viewBuilder()->setOption('serialize', ['tabs', 'widgets', 'tabRotationInterval', 'askForHelp']);
     }
 
     /****************************

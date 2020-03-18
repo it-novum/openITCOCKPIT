@@ -100,6 +100,7 @@ angular.module('openITCOCKPIT')
                 createTabSort();
 
                 $scope.loadTabContent($scope.activeTab);
+                $scope.askForHelp = result.data.askForHelp;
 
                 $scope.init = false;
             });
