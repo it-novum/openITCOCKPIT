@@ -483,21 +483,18 @@ class GearmanWorkerCommand extends Command {
                 $repo = '';
                 $usesAuthConfig = false;
                 switch ($LsbRelease->getCodename()) {
-                    case 'trusty':
-                        $repo = 'packages.openitcockpit.com/repositories/trusty trusty';
-                        break;
                     case 'xenial':
-                        $repo = 'packages.openitcockpit.com/repositories/xenial xenial';
+                        $repo = 'packages.openitcockpit.io/openitcockpit/xenial/nightly xenial main';
                         break;
                     case 'bionic':
-                        $repo = 'packages.openitcockpit.com/repositories/bionic bionic';
+                        $repo = 'packages.openitcockpit.io/openitcockpit/bionic/nightly bionic main';
                         $usesAuthConfig = true;
                         break;
-                    case 'jessie':
-                        $repo = 'packages.openitcockpit.com/repositories/jessie jessie';
+                    case 'buster':
+                        $repo = 'packages.openitcockpit.io/openitcockpit/buster/nightly buster main';
                         break;
                     case 'stretch':
-                        $repo = 'packages.openitcockpit.com/repositories/stretch stretch';
+                        $repo = 'packages.openitcockpit.io/openitcockpit/stretch/nightly stretch main';
                         break;
                 }
                 $file = fopen('/etc/apt/sources.list.d/openitcockpit.list', 'w+');
@@ -511,7 +508,7 @@ class GearmanWorkerCommand extends Command {
                     fwrite($file, 'deb https://' . $repo . '  main' . PHP_EOL);
 
                     $authFile = fopen('/etc/apt/auth.conf.d/openitcockpit.conf', 'w+');
-                    fwrite($authFile, 'machine packages.openitcockpit.com login secret password ' . $payload['key'] . PHP_EOL);
+                    fwrite($authFile, 'machine packages.openitcockpit.io login secret password ' . $payload['key'] . PHP_EOL);
                     fclose($authFile);
 
                 } else {

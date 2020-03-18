@@ -35,7 +35,7 @@ class RepositoryChecker {
     /**
      * @var string
      */
-    private $newAptRepository = 'packages.openitcockpit.com';
+    private $newAptRepository = 'packages.openitcockpit.io';
 
     /**
      * @var string
