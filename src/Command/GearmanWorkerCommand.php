@@ -42,7 +42,6 @@ use Cake\Core\Plugin;
 use Cake\Filesystem\Folder;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigDefaults;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigGenerator;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
@@ -480,6 +479,8 @@ class GearmanWorkerCommand extends Command {
             */
             case 'create_apt_config':
                 $LsbRelease = new LsbRelease();
+
+                /*
                 $repo = '';
                 $usesAuthConfig = false;
                 switch ($LsbRelease->getCodename()) {
@@ -516,6 +517,16 @@ class GearmanWorkerCommand extends Command {
                     fwrite($file, 'deb https://secret:' . $payload['key'] . '@' . $repo . '  main' . PHP_EOL);
                 }
                 fclose($file);
+                */
+
+                if (!is_dir('/etc/apt/auth.conf.d')) {
+                    mkdir('/etc/apt/auth.conf.d');
+                }
+                $authFile = fopen('/etc/apt/auth.conf.d/openitcockpit.conf', 'w+');
+                fwrite($authFile, 'machine packages.openitcockpit.io login secret password ' . $payload['key'] . PHP_EOL);
+                fclose($authFile);
+
+
                 unset($payload);
                 exec('apt-get update');
                 break;
