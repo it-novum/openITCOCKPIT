@@ -38,6 +38,7 @@ use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use Cake\Cache\Cache;
+use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -800,13 +801,18 @@ class ServicegroupsController extends AppController {
         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
         $containerId = $this->request->getQuery('containerId');
+        $resolveContainerIds = $this->request->getQuery('resolveContainerIds', false);
+
         if (!is_numeric($containerId)) {
             throw new BadRequestException('containerId is missing or not numeric');
         }
 
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [CT_SERVICEGROUP]);
+        }else if ($containerId !== ROOT_CONTAINER && $resolveContainerIds) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, true, [CT_SERVICEGROUP]);
+            $containerIds = array_merge($containerIds, [ROOT_CONTAINER, $containerId]);
         }
 
         $servicegroups = $ServicegroupsTable->getServicegroupsByContainerId($containerIds, 'list');

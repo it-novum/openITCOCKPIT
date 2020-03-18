@@ -2526,6 +2526,8 @@ class ServicesController extends AppController {
 
         $selected = $this->request->getQuery('selected');
         $containerId = $this->request->getQuery('containerId');
+        $resolveContainerIds = $this->request->getQuery('resolveContainerIds', false);
+
         if (empty($containerId)) {
             $containerId = $this->MY_RIGHTS;
         }
@@ -2538,6 +2540,11 @@ class ServicesController extends AppController {
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+        if ($containerId !== ROOT_CONTAINER && $resolveContainerIds) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, true);
+            $containerIds = array_merge($containerIds, [ROOT_CONTAINER, $containerId]);
+        }
 
         $ServicesFilter = new ServiceFilter($this->request);
 

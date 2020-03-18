@@ -2861,20 +2861,23 @@ class HostsController extends AppController {
 
         $containerId = $this->request->getQuery('containerId');
         $selected = $this->request->getQuery('selected');
+        $resolveContainerIds = $this->request->getQuery('resolveContainerIds', false);
 
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $HostFilter = new HostFilter($this->request);
 
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
-            /** @var $ContainersTable ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
             //Don't panic! Only root users can edit /root objects ;)
             //So no loss of selected hosts/host templates
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        } else if ($containerId !== ROOT_CONTAINER && $resolveContainerIds) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, true);
+            $containerIds = array_merge($containerIds, [ROOT_CONTAINER, $containerId]);
         }
 
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());

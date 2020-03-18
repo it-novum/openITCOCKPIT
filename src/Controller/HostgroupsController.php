@@ -821,6 +821,8 @@ class HostgroupsController extends AppController {
 
         $containerId = $this->request->getQuery('containerId');
         $HostgroupFilter = new HostgroupFilter($this->request);
+        $resolveContainerIds = $this->request->getQuery('resolveContainerIds', false);
+
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
@@ -830,7 +832,12 @@ class HostgroupsController extends AppController {
         if ($containerId == ROOT_CONTAINER) {
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [CT_HOSTGROUP]);
         } else {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [CT_HOSTGROUP]);
+            if($resolveContainerIds){
+                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, true, [CT_HOSTGROUP]);
+                $containerIds = array_merge($containerIds, [ROOT_CONTAINER, $containerId]);
+            }else{
+                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [CT_HOSTGROUP]);
+            }
         }
         $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
         $HostgroupCondition->setContainerIds($containerIds);

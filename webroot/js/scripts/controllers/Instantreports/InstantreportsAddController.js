@@ -63,7 +63,8 @@ angular.module('openITCOCKPIT')
                     params: {
                         'angular': true,
                         'containerId': $scope.post.Instantreport.container_id,
-                        'selected[]': $scope.post.Instantreport.hostgroups._ids
+                        'selected[]': $scope.post.Instantreport.hostgroups._ids,
+                        'resolveContainerIds': true
                     }
                 }).then(function(result){
                     $scope.hostgroups = result.data.hostgroups;
@@ -78,7 +79,8 @@ angular.module('openITCOCKPIT')
                         'angular': true,
                         'containerId': $scope.post.Instantreport.container_id,
                         'filter[Hosts.name]': searchString,
-                        'selected[]': $scope.post.Instantreport.hosts._ids
+                        'selected[]': $scope.post.Instantreport.hosts._ids,
+                        'resolveContainerIds': true
                     }
                 }).then(function(result){
                     $scope.hosts = result.data.hosts;
@@ -95,7 +97,8 @@ angular.module('openITCOCKPIT')
                     params: {
                         'angular': true,
                         'containerId': $scope.post.Instantreport.container_id,
-                        'selected[]': $scope.post.Instantreport.servicegroups._ids
+                        'selected[]': $scope.post.Instantreport.servicegroups._ids,
+                        'resolveContainerIds': true
 
                     }
                 }).then(function(result){
@@ -112,7 +115,8 @@ angular.module('openITCOCKPIT')
                         'containerId': $scope.post.Instantreport.container_id,
                         'filter[Hosts.name]': searchString,
                         'filter[servicename]': searchString,
-                        'selected[]': $scope.post.Instantreport.services._ids
+                        'selected[]': $scope.post.Instantreport.services._ids,
+                        'resolveContainerIds': true
                     }
                 }).then(function(result){
                     $scope.services = result.data.services;
