@@ -1738,15 +1738,24 @@ class HostsTable extends Table {
     /**
      * @param HostConditions $HostConditions
      * @param int|array $selected
+     * @param bool $returnEmptyArrayIfMyRightsIsEmpty
      * @return array|null
      */
-    public function getHostsForAngular(HostConditions $HostConditions, $selected = []) {
+    public function getHostsForAngular(HostConditions $HostConditions, $selected = [], $returnEmptyArrayIfMyRightsIsEmpty = false) {
         if (!is_array($selected)) {
             $selected = [$selected];
         }
 
         $query = $this->find('list');
         $MY_RIGHTS = $HostConditions->getContainerIds();
+
+        if($returnEmptyArrayIfMyRightsIsEmpty === true){
+            if(empty($MY_RIGHTS)){
+                //User has no permissions to edit hosts/services
+                return [];
+            }
+        }
+
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
                 'HostsToContainersSharing.host_id = Hosts.id'

@@ -35,6 +35,7 @@ use App\Model\Table\UsergroupsTable;
 use App\Model\Table\UsersTable;
 use Authentication\Authenticator\ResultInterface;
 use Authentication\Controller\Component\AuthenticationComponent;
+use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Event\EventInterface;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -208,6 +209,7 @@ class UsersController extends AppController {
                 return;
             }
 
+            Cache::clear('permissions');
             $this->set('user', $user);
             $this->viewBuilder()->setOption('serialize', ['user']);
         }
@@ -314,6 +316,7 @@ class UsersController extends AppController {
                 return;
             }
 
+            Cache::clear('permissions');
             $this->set('user', $user);
             $this->viewBuilder()->setOption('serialize', ['user']);
         }

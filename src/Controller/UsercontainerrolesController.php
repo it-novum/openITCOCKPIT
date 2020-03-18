@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\UsercontainerrolesTable;
+use Cake\Cache\Cache;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
@@ -103,6 +104,7 @@ class UsercontainerrolesController extends AppController {
                 return;
             }
 
+            Cache::clear('permissions');
             $this->set('usercontainerrole', $usercontainerrole);
             $this->viewBuilder()->setOption('serialize', ['usercontainerrole']);
         }
@@ -157,6 +159,7 @@ class UsercontainerrolesController extends AppController {
                 return;
             }
 
+            Cache::clear('permissions');
             $this->set('usercontainerrole', $usercontainerrole);
             $this->viewBuilder()->setOption('serialize', ['usercontainerrole']);
         }

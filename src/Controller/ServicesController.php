@@ -366,9 +366,8 @@ class ServicesController extends AppController {
                 foreach ($services as $index => $service) {
                     $hostId = $service['_matchingData']['Hosts']['id'];
                     if (!isset($hostContainers[$hostId])) {
-                        $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId(1);
+                        $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId($hostId);
                     }
-
                     $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
                     $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
                 }
