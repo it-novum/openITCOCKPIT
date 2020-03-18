@@ -86,6 +86,7 @@
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="ldapUsers"
+                                callback="loadLdapUsersByString"
                                 ng-options="key as ldapUser.display_name for (key, ldapUser) in ldapUsers"
                                 ng-model="data.selectedSamAccountNameIndex">
                             </select>
@@ -145,6 +146,7 @@
                                     class="form-control"
                                     type="email"
                                     placeholder="user@example.org"
+                                    readonly="readonly"
                                     ng-model="post.Contact.email">
                                 <div ng-repeat="error in errors.email">
                                     <div class="help-block text-danger">{{ error }}</div>
