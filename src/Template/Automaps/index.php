@@ -236,7 +236,8 @@
                                         <div class="dropdown-menu">
                                             <?php if ($this->Acl->hasPermission('edit', 'automaps')): ?>
                                                 <a ui-sref="AutomapsEdit({id:automap.id})"
-                                                   class="dropdown-item">
+                                                   class="dropdown-item"
+                                                   ng-if="automap.allow_edit">
                                                     <i class="fa fa-cog"></i>
                                                     <?php echo __('Edit'); ?>
                                                 </a>
@@ -250,7 +251,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'automaps')): ?>
-                                                <div class="dropdown-divider"></div>
+                                                <div class="dropdown-divider" ng-if="automap.allow_edit"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(automap))"
                                                    ng-if="automap.allow_edit"
                                                    class="dropdown-item txt-color-red">
