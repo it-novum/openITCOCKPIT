@@ -2,8 +2,8 @@ angular.module('openITCOCKPIT')
     .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService){
         $rootScope.lastObjectName = null;
 
-        SortService.setSort(QueryStringService.getStateValue($stateParams,'sort', 'Servicestatus.current_state'));
-        SortService.setDirection(QueryStringService.getStateValue($stateParams,'direction', 'desc'));
+        SortService.setSort(QueryStringService.getStateValue($stateParams, 'sort', 'Servicestatus.current_state'));
+        SortService.setDirection(QueryStringService.getStateValue($stateParams, 'direction', 'desc'));
 
         $scope.currentPage = 1;
 
@@ -26,7 +26,7 @@ angular.module('openITCOCKPIT')
                 },
                 Services: {
                     id: QueryStringService.getStateValue($stateParams, 'id', []),
-                    name: QueryStringService.getStateValue($stateParams,'servicename', ''),
+                    name: QueryStringService.getStateValue($stateParams, 'servicename', ''),
                     keywords: '',
                     not_keywords: ''
                 },
@@ -46,6 +46,7 @@ angular.module('openITCOCKPIT')
         $scope.showFilter = false;
         $scope.serverResult = [];
         $scope.isLoadingGraph = true;
+        $scope.mouseout = true;
 
         var forTemplate = function(serverResponse){
             // Create a list of host with all services
@@ -125,8 +126,8 @@ angular.module('openITCOCKPIT')
                 'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Servicestatus.active_checks_enabled]': passive
             };
-            if(QueryStringService.getStateValue($stateParams,'BrowserContainerId') !== null){
-                params['BrowserContainerId'] = QueryStringService.getStateValue($stateParams,'BrowserContainerId');
+            if(QueryStringService.getStateValue($stateParams, 'BrowserContainerId') !== null){
+                params['BrowserContainerId'] = QueryStringService.getStateValue($stateParams, 'BrowserContainerId');
             }
 
             $http.get("/services/index.json", {
@@ -264,13 +265,16 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.mouseenter = function($event, host, service){
+            $scope.mouseout = false;
             $scope.isLoadingGraph = true;
             var offset = {
                 top: $event.relatedTarget.offsetTop + 40,
                 left: $event.relatedTarget.offsetLeft + 40
             };
 
-            offset.top += $event.relatedTarget.offsetParent.offsetTop;
+            if($event.relatedTarget.offsetParent && $event.relatedTarget.offsetParent.offsetTop){
+                offset.top += $event.relatedTarget.offsetParent.offsetTop;
+            }
 
             var currentScrollPosition = $(window).scrollTop();
 
@@ -299,6 +303,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.mouseleave = function(){
+            $scope.mouseout = true;
             $('#serviceGraphContainer').hide();
             $('#serviceGraphFlot').html('');
         };
@@ -372,7 +377,13 @@ angular.module('openITCOCKPIT')
             options.xaxis.min = (graphStart + $scope.timezone.user_time_to_server_offset) * 1000;
             options.xaxis.max = (graphEnd + $scope.timezone.user_time_to_server_offset) * 1000;
 
-            self.plot = $.plot('#serviceGraphFlot', graph_data, options);
+            if(document.getElementById('serviceGraphFlot') && !$scope.mouseout){
+                try{
+                    self.plot = $.plot('#serviceGraphFlot', graph_data, options);
+                }catch(e){
+                    console.error(e);
+                }
+            }
         };
 
         //Fire on page load

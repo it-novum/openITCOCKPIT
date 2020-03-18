@@ -462,19 +462,20 @@
                                 <td class="text-center">
                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                         <a ui-sref="ServicesBrowser({id:service.Service.id})"
-                                           class="txt-color-blueDark">
-                                            <i class="fa fa-area-chart"
-                                               ng-mouseenter="mouseenter($event, host, service)"
-                                               ng-mouseleave="mouseleave()"
-                                               ng-if="service.Service.has_graph">
-                                            </i>
-                                        </a>
-                                    <?php else: ?>
-                                        <i class="fa fa-lg fa-area-chart"
+                                           class="txt-color-blueDark"
                                            ng-mouseenter="mouseenter($event, host, service)"
                                            ng-mouseleave="mouseleave()"
                                            ng-if="service.Service.has_graph">
-                                        </i>
+                                            <i class="fa fa-area-chart">
+                                            </i>
+                                        </a>
+                                    <?php else: ?>
+                                        <div ng-mouseenter="mouseenter($event, host, service)"
+                                             ng-mouseleave="mouseleave()"
+                                             ng-if="service.Service.has_graph">
+                                            <i class="fa fa-lg fa-area-chart">
+                                            </i>
+                                        </div>
                                     <?php endif; ?>
                                 </td>
 
@@ -500,15 +501,18 @@
                                 </td>
 
                                 <td>
-                                    <span ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
+                                    <span
+                                        ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
                                     <span ng-if="service.Service.active_checks_enabled === false">
                                         <?php echo __('n/a'); ?>
                                     </span>
                                 </td>
 
                                 <td>
-                                    <span ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
-                                    <span ng-if="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                    <span
+                                        ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
+                                    <span
+                                        ng-if="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
                                         <?php echo __('n/a'); ?>
                                     </span>
                                 </td>
