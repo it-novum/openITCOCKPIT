@@ -66,7 +66,6 @@ class RotationsController extends AppController {
             $limit,
             $Paginator,
             $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
-
         foreach ($all_rotations as $key => $rotation) {
             $all_rotations[$key]['allowEdit'] = false;
             if ($this->hasRootPrivileges == true) {
@@ -76,7 +75,7 @@ class RotationsController extends AppController {
             foreach ($rotation['containers'] as $cKey => $container) {
                 if ($this->MY_RIGHTS_LEVEL[$container['id']] == WRITE_RIGHT) {
                     $all_rotations[$key]['allowEdit'] = true;
-                    continue;
+                    break;
                 }
             }
         }

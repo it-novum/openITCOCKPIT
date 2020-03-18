@@ -33,6 +33,7 @@ use App\Model\Table\ContainersTable;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Behavior\TimestampBehavior;
+use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -80,7 +81,8 @@ class RotationsTable extends Table {
             'foreignKey'       => 'rotation_id',
             'targetForeignKey' => 'container_id',
             'joinTable'        => 'rotations_to_containers',
-            'saveStrategy'     => 'replace',
+            'joinType'         => 'INNER',
+            'saveStrategy'     => 'replace'
         ]);
 
         $this->belongsToMany('Maps', [
@@ -141,16 +143,17 @@ class RotationsTable extends Table {
             ->contain([
                 'Maps',
                 'Containers'
-            ]);
-
+            ])
+            ->innerJoinWith('Containers', function (Query $query) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    return $query->where(['Containers.id IN' => $MY_RIGHTS]);
+                }
+                return $query;
+            });
         if (!empty($indexFilter)) {
             $query->where($indexFilter);
         }
-        if (!empty($MY_RIGHTS)) {
-            $query->where([
-                'Containers.id IN' => $MY_RIGHTS
-            ]);
-        }
+
         if ($limit !== null) {
             $query->limit($limit);
         }
