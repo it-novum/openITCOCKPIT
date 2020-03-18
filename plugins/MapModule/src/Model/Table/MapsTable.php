@@ -134,33 +134,32 @@ class MapsTable extends Table {
             'foreignKey' => 'map_id',
             'className'  => 'MapModule.Mapgadgets'
         ])->setDependent(true);
+
         $this->hasMany('Mapicons', [
             'foreignKey' => 'map_id',
             'className'  => 'MapModule.Mapicons'
         ])->setDependent(true);
+
         $this->hasMany('Mapitems', [
             'foreignKey' => 'map_id',
             'className'  => 'MapModule.Mapitems'
         ])->setDependent(true);
-        $this->hasMany('Mapitems', [
-            'foreignKey' => 'object_id',
-            'className'  => 'MapModule.Mapitems',
-            'conditions' => [
-                'type' => 'map'
-            ]
-        ])->setDependent(true);
+
         $this->hasMany('Maplines', [
             'foreignKey' => 'map_id',
             'className'  => 'MapModule.Maplines'
         ])->setDependent(true);
+
         $this->hasMany('MapsToRotations', [
             'foreignKey' => 'map_id',
             'className'  => 'MapModule.MapsToRotations'
         ])->setDependent(true);
+
         $this->hasMany('Mapsummaryitems', [
             'foreignKey' => 'map_id',
             'className'  => 'MapModule.Mapsummaryitems'
         ])->setDependent(true);
+
         $this->hasMany('Maptexts', [
             'foreignKey' => 'map_id',
             'className'  => 'MapModule.Maptexts'

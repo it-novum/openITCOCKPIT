@@ -367,7 +367,7 @@ class MapsController extends AppController {
         if ($this->hasRootPrivileges === true) {
             $containers = $ContainersTable->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges);
         } else {
-            $containers = $ContainersTable->easyPath($this->getWriteContainers(), CT_TENANT, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), CT_TENANT, [], true);
         }
         $containers = Api::makeItJavaScriptAble($containers);
 

@@ -86,10 +86,10 @@ class MapeditorsController extends AppController {
         $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
 
         $id = (int)$id;
+
         if (!$MapsTable->existsById($id)) {
             throw new NotFoundException();
         }
-
         $map = $MapsTable->get($id, [
             'contain' => [
                 'Containers',
