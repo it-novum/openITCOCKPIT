@@ -854,11 +854,6 @@
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">
-                                    <label>
-                                        <input type="checkbox" ng-model="data.createAnother">
-                                        <?php echo __('Create another'); ?>
-                                    </label>
-
                                     <button type="submit" class="btn btn-primary waves-effect waves-themed">
                                         <?php echo __('Update host'); ?>
                                     </button>

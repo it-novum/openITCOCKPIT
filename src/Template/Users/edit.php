@@ -464,10 +464,6 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">
-                                    <label>
-                                        <input type="checkbox" ng-model="data.createAnother">
-                                        <?php echo __('Create another'); ?>
-                                    </label>
                                     <button class="btn btn-primary"
                                             type="submit"><?php echo __('Update user'); ?></button>
                                     <a back-button fallback-state='UsersIndex'
