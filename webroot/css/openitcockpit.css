@@ -892,6 +892,11 @@ div.required .control-label::after {
     border-radius: 4px 0 0 4px;
 }
 
+.fuelux .wizard ul li:last-child {
+    padding-right: 20px;
+    border-radius: 0 4px 4px 0;
+}
+
 .fuelux .wizard ul li.active {
     color: #3a87ad;
     background: #f1f6fc;

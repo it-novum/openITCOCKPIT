@@ -162,7 +162,6 @@
                                             <span class="d-none d-lg-inline">
                                                 <?php echo __('Next'); ?>
                                             </span>
-                                            <span class="chevron"></span>
                                         </li>
                                         <li data-target="#step1" class="nav-item next-btn"
                                             ng-if="((pullMode || pushMode) && !installed && !configured)"
@@ -171,7 +170,6 @@
                                             <span class="d-none d-lg-inline">
                                                 <?php echo __('Next'); ?>
                                             </span>
-                                            <span class="chevron"></span>
                                         </li>
                                         <li data-target="#step1" class="nav-item next-btn"
                                             ng-if="((pullMode || pushMode) && !installed && configured)"
@@ -180,7 +178,6 @@
                                             <span class="d-none d-lg-inline">
                                                 <?php echo __('Next'); ?>
                                             </span>
-                                            <span class="chevron"></span>
                                         </li>
                                         <li data-target="#step1" class="nav-item next-btn"
                                             ng-if="((pullMode || pushMode) && installed && configured && !servicesConfigured)"
@@ -189,7 +186,6 @@
                                             <span class="d-none d-lg-inline">
                                                 <?php echo __('Next'); ?>
                                             </span>
-                                            <span class="chevron"></span>
                                         </li>
                                     </ul>
 
