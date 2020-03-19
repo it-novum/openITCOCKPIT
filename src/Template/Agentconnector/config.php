@@ -116,7 +116,7 @@
 
                                 <div class="wizard">
                                     <ul class="nav nav-tabs step-anchor">
-                                        <li data-target="#step1" class="nav-item reset-btn"
+                                        <li data-target="#step0" class="nav-item reset-btn"
                                             ng-if="(host.id && !servicesConfigured) || finished"
                                             ng-click="resetAgentConfiguration()">
                                             <i class="fas fa-trash"></i>&nbsp;
@@ -155,7 +155,7 @@
                                             <?php echo __('Save changes'); ?>
                                             <span class="chevron"></span>
                                         </li>
-                                        <li data-target="#step1" class="nav-item next-btn"
+                                        <li data-target="#step5" class="nav-item next-btn"
                                             ng-if="(!pullMode && !pushMode && host.id && servicesToCreate)"
                                             ng-click="skipConfigurationGeneration()">
                                             <i class="fa fa-arrow-right"></i>&nbsp;
@@ -163,7 +163,7 @@
                                                 <?php echo __('Next'); ?>
                                             </span>
                                         </li>
-                                        <li data-target="#step1" class="nav-item next-btn"
+                                        <li data-target="#step5" class="nav-item next-btn"
                                             ng-if="((pullMode || pushMode) && !installed && !configured)"
                                             ng-click="continueWithAgentInstallation()">
                                             <i class="fa fa-arrow-right"></i>&nbsp;
@@ -171,7 +171,7 @@
                                                 <?php echo __('Next'); ?>
                                             </span>
                                         </li>
-                                        <li data-target="#step1" class="nav-item next-btn"
+                                        <li data-target="#step5" class="nav-item next-btn"
                                             ng-if="((pullMode || pushMode) && !installed && configured)"
                                             ng-click="continueWithServiceConfiguration()">
                                             <i class="fa fa-arrow-right"></i>&nbsp;
@@ -179,7 +179,7 @@
                                                 <?php echo __('Next'); ?>
                                             </span>
                                         </li>
-                                        <li data-target="#step1" class="nav-item next-btn"
+                                        <li data-target="#step5" class="nav-item next-btn"
                                             ng-if="((pullMode || pushMode) && installed && configured && !servicesConfigured)"
                                             ng-click="saveAgentServices()">
                                             <i class="fa fa-arrow-right"></i>&nbsp;
