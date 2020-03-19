@@ -776,7 +776,7 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
-            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, true, lastGraphStart, lastGraphEnd, false);
+            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, lastGraphStart, lastGraphEnd, false);
         });
 
     });
