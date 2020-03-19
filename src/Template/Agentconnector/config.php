@@ -116,6 +116,15 @@
 
                                 <div class="wizard">
                                     <ul class="nav nav-tabs step-anchor">
+                                        <li data-target="#step1" class="nav-item reset-btn"
+                                            ng-if="(host.id && !servicesConfigured) || finished"
+                                            ng-click="resetAgentConfiguration()">
+                                            <i class="fas fa-trash"></i>&nbsp;
+                                            <span class="d-none d-lg-inline">
+                                                <?php echo __('Reset'); ?>
+                                            </span>
+                                            <span class="chevron"></span>
+                                        </li>
                                         <li data-target="#step1" class="nav-item"
                                             ng-class="(!pullMode && !pushMode) ? 'active' : ''">
                                             <span class="badge badge-info">1</span>
@@ -146,39 +155,43 @@
                                             <?php echo __('Save changes'); ?>
                                             <span class="chevron"></span>
                                         </li>
+                                        <li data-target="#step1" class="nav-item next-btn"
+                                            ng-if="(!pullMode && !pushMode && host.id && servicesToCreate)"
+                                            ng-click="skipConfigurationGeneration()">
+                                            <i class="fa fa-arrow-right"></i>&nbsp;
+                                            <span class="d-none d-lg-inline">
+                                                <?php echo __('Next'); ?>
+                                            </span>
+                                            <span class="chevron"></span>
+                                        </li>
+                                        <li data-target="#step1" class="nav-item next-btn"
+                                            ng-if="((pullMode || pushMode) && !installed && !configured)"
+                                            ng-click="continueWithAgentInstallation()">
+                                            <i class="fa fa-arrow-right"></i>&nbsp;
+                                            <span class="d-none d-lg-inline">
+                                                <?php echo __('Next'); ?>
+                                            </span>
+                                            <span class="chevron"></span>
+                                        </li>
+                                        <li data-target="#step1" class="nav-item next-btn"
+                                            ng-if="((pullMode || pushMode) && !installed && configured)"
+                                            ng-click="continueWithServiceConfiguration()">
+                                            <i class="fa fa-arrow-right"></i>&nbsp;
+                                            <span class="d-none d-lg-inline">
+                                                <?php echo __('Next'); ?>
+                                            </span>
+                                            <span class="chevron"></span>
+                                        </li>
+                                        <li data-target="#step1" class="nav-item next-btn"
+                                            ng-if="((pullMode || pushMode) && installed && configured && !servicesConfigured)"
+                                            ng-click="saveAgentServices()">
+                                            <i class="fa fa-arrow-right"></i>&nbsp;
+                                            <span class="d-none d-lg-inline">
+                                                <?php echo __('Next'); ?>
+                                            </span>
+                                            <span class="chevron"></span>
+                                        </li>
                                     </ul>
-                                    <div class="pull-right margin-right-5" style="margin-top: -39px;">
-                                        <div class="actions" style="position: relative; display: inline;">
-                                            <button class="btn btn-sm btn-default"
-                                                    ng-if="(host.id && !servicesConfigured) || finished"
-                                                    ng-click="resetAgentConfiguration()">
-                                                <i class="fa fa-arrow-left"></i>&nbsp;
-                                                <?php echo __('Reset'); ?>
-                                            </button>
-                                        </div>
-                                        <div class="actions" style="position: relative; display: inline;">
-                                            <button class="btn btn-sm btn-success"
-                                                    ng-if="(!pullMode && !pushMode && host.id && servicesToCreate)"
-                                                    ng-click="skipConfigurationGeneration()">
-                                                <?php echo __('Next'); ?>&nbsp;<i class="fa fa-arrow-right"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-success"
-                                                    ng-if="((pullMode || pushMode) && !installed && !configured)"
-                                                    ng-click="continueWithAgentInstallation()">
-                                                <?php echo __('Next'); ?>&nbsp;<i class="fa fa-arrow-right"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-success"
-                                                    ng-if="((pullMode || pushMode) && !installed && configured)"
-                                                    ng-click="continueWithServiceConfiguration()">
-                                                <?php echo __('Next'); ?>&nbsp;<i class="fa fa-arrow-right"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-success"
-                                                    ng-if="((pullMode || pushMode) && installed && configured && !servicesConfigured)"
-                                                    ng-click="saveAgentServices()">
-                                                <?php echo __('Next'); ?>&nbsp;<i class="fa fa-arrow-right"></i>
-                                            </button>
-                                        </div>
-                                    </div>
 
                                 </div>
 
@@ -465,7 +478,8 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="form-group col-12 padding-left-0" ng-if="agentconfig.customchecks">
+                                                        <div class="form-group col-12 padding-left-0"
+                                                             ng-if="agentconfig.customchecks">
                                                             <label class="col-xs-12 col-md-3 control-label"
                                                                    for="agentconfigCustomchecks.max_worker_threads">
                                                                 <?php echo __('Set max custom check threads'); ?>
