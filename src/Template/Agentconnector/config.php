@@ -208,7 +208,7 @@
 
                                             <div class="panel-container padding-20" style="min-height: 110px;">
                                                 <div class="text">
-                                                    <?= __('If you configure the Agent in pull mode, it has to be reachable threw the network.'); ?>
+                                                    <?= __('If you configure the Agent in pull mode, it has to be reachable through the network.'); ?>
                                                     <br>
                                                     <?= __('openITCOCKPIT will try to connect to the agent using the hosts IP Address.'); ?>
                                                     <br>
