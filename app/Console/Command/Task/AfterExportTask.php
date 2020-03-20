@@ -70,70 +70,55 @@ class AfterExportTask extends AppShell {
             }
 
             $this->out('Connect to ' . $satellite['Satellite']['name'] . ' (' . $satellite['Satellite']['address'] . ')', false);
-            $sshConnection = ssh2_connect($satellite['Satellite']['address'], $this->conf['SSH']['port']);
-            $loggedIn = ssh2_auth_pubkey_file(
-                $sshConnection,
-                $this->conf['SSH']['username'],
-                $this->conf['SSH']['public_key'],
-                $this->conf['SSH']['private_key']
-            );
-            if ($loggedIn !== true) {
-                throw new Exception('Login failed!');
-            }
-            $this->out('<green> ok</green>');
 
             //Creat SFTP Ressource
             if (!is_dir(Configure::read('nagios.export.satellite_path') . $satellite['Satellite']['id'])) {
                 throw new Exception('No derectory in nagios.export.satellite_path was found!');
             }
-            $folder = new Folder(Configure::read('nagios.export.satellite_path') . $satellite['Satellite']['id']);
+
 
             //Delete target on remote host
             $this->out('Delete old monitoring configuration', false);
-            $result = $this->execOverSsh($sshConnection, '/bin/bash -c \'rm -rf ' . $this->conf['REMOTE']['path'] . '/config\'');
-            $this->out('<green> ok</green>');
+            $result = $this->execOverSsh('rm -rf ' . $this->conf['REMOTE']['path'] . '/config', $satellite['Satellite']['address']);
+            if ($result['returnCode'] > 0) {
+                $this->out('<red>'.$result['output'].'</red>');
+            } else {
+                $this->out('<green>    ok</green>');
+            }
+
 
             //Copy new files
-            $this->out('Copy new configuration', false);
-            if ($this->conf['SSH']['use_rsync'] === false) {
-                $this->out(' using PHP', false);
-                $sftp = ssh2_sftp($sshConnection);
-                @$folder->copy([
-                    'to'        => 'ssh2.sftp://' . $sftp . $this->conf['REMOTE']['path'],
-                    'from'      => Configure::read('nagios.export.satellite_path') . $satellite['Satellite']['id'],
-                    //'mode' => 0644,
-                    'recursive' => true,
-                ]);
-                $this->out('<green> ok</green>');
-            } else {
-                $this->out(' using rsync', false);
-                $commandArgs = [
-                    $this->conf['SSH']['private_key'],
-                    Configure::read('nagios.export.satellite_path') . $satellite['Satellite']['id'],
-                    $this->conf['SSH']['username'],
-                    $satellite['Satellite']['address'],
-                    $this->conf['REMOTE']['path'],
-                ];
-                $commandTemplate = "rsync -e 'ssh -C -ax -i %s -o StrictHostKeyChecking=no' -avm --timeout=10 --delete %s/* %s@%s:%s";
-                $command = vsprintf($commandTemplate, $commandArgs);
-                exec($command, $output, $returnCode);
-                if ($returnCode != 0) {
-                    throw new Exception(sprintf('Failed executing "%s"', $commandTemplate));
-                }
-                $this->out('<green> ok</green>');
+            $this->out('Copy new configuration via rsync', false);
+
+            $commandArgs = [
+                $this->conf['SSH']['private_key'],
+                Configure::read('nagios.export.satellite_path') . $satellite['Satellite']['id'],
+                $this->conf['SSH']['username'],
+                $satellite['Satellite']['address'],
+                $this->conf['REMOTE']['path'],
+            ];
+            $commandTemplate = "rsync -e 'ssh -C -ax -i %s -o StrictHostKeyChecking=no' -avm --timeout=10 --delete %s/* %s@%s:%s";
+            $command = vsprintf($commandTemplate, $commandArgs);
+            exec($command, $output, $returnCode);
+            if ($returnCode != 0) {
+                throw new \Exception(sprintf('Failed executing "%s"', $commandTemplate));
             }
+            $this->out('<green>    ok</green>');
 
 
             //Restart remote monitoring engine
             $this->out('Restart remote monitoring engine', false);
-            $result = $this->execOverSsh($sshConnection, "/bin/bash -c '" . $this->conf['SSH']['restart_command'] . "'");
-            $this->out('<green> ok</green>');
+            $result = $this->execOverSsh($this->conf['SSH']['restart_command'], $satellite['Satellite']['address']);
+            if ($result['returnCode'] != 0) {
+                throw new \Exception(sprintf('Failed to restart monitoring engine'));
+            }
+            $this->out('<green>    ok</green>');
 
             //Execute remote commands - if any
             foreach ($this->conf['SSH']['remote_command'] as $remoteCommand) {
                 $this->out('Execute external command ' . $remoteCommand, false);
-                $result = $this->execOverSsh($sshConnection, $remoteCommand);
-                $this->out('<green> ok</green>');
+                $result = $this->execOverSsh($remoteCommand, $satellite['Satellite']['address']);
+                $this->out('<green>    ok</green>');
             }
 
             return true;
@@ -145,31 +130,43 @@ class AfterExportTask extends AppShell {
     }
 
 
-    public function checkPort($address) {
-        $this->out('Check remote system for open port ' . $this->conf['SSH']['port'], false);
+    /**
+     * @param $address
+     * @return bool
+     */
+    private function checkPort(string $address): bool {
         if (!@fsockopen('tcp://' . $address, $this->conf['SSH']['port'], $errorNo, $errorStr, 35)) {
             $this->out('<red> ' . $errorStr . '</red>');
-
             return false;
         }
-        $this->out('<green> ' . $errorStr . '</green>');
 
+        $this->out('<green> ' . $errorStr . '</green>');
         return true;
     }
 
-    public function execOverSsh($sshConnection, $command) {
-        $stream = ssh2_exec($sshConnection, $command);
-        $errorStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
-        stream_set_blocking($errorStream, true);
-        stream_set_blocking($stream, true);
-        $stdout = stream_get_contents($stream);
-        $stderr = stream_get_contents($errorStream);
-        fclose($stream);
-        fclose($errorStream);
+    /**
+     * @param $command
+     * @return array
+     */
+    private function execOverSsh($command, $address) {
+        //Do not use PHP SSH2 anymore - it's crap...
+
+        $output = [];
+        exec(
+            sprintf(
+                'ssh -l %s -i %s -o StrictHostKeyChecking=no %s "%s"',
+                escapeshellarg($this->conf['SSH']['username']),
+                escapeshellarg($this->conf['SSH']['private_key']),
+                escapeshellarg($address),
+                $command
+            ),
+            $output,
+            $returnCode
+        );
 
         return [
-            'stdout' => $stdout,
-            'stderr' => $stderr,
+            'output'     => implode("\n", $output),
+            'returnCode' => $returnCode
         ];
     }
 
