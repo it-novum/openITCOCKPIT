@@ -61,6 +61,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
      * {@inheritDoc}
      */
     public function bootstrap(): void {
+        $this->addPlugin('DesignModule');
+
         // Call parent to load bootstrap from files.
         parent::bootstrap();
 
