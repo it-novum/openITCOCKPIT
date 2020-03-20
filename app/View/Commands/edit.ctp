@@ -147,10 +147,6 @@
                     <span class="col col-md-10 col-xs-12 txt-color-redLight"><i
                                 class="fa fa-exclamation-circle"></i> <?php echo __('empty arguments will be removed automatically'); ?></span>
                 </fieldset>
-                <?php if ($this->Acl->hasPermission('terminal')): ?>
-                    <br/>
-                    <div id="console"></div>
-                <?php endif; ?>
                 <br/>
                 <?php echo $this->Form->formActions(); ?>
             </div>

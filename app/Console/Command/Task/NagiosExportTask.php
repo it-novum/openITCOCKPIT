@@ -2025,64 +2025,52 @@ class NagiosExportTask extends AppShell {
         } else {
             $serviceescalations = $this->Serviceescalation->find('all', $query);
         }
+
+        if (!is_dir($this->conf['path'] . $this->conf['serviceescalations'])) {
+            mkdir($this->conf['path'] . $this->conf['serviceescalations']);
+        }
+
         foreach ($serviceescalations as $serviceescalation) {
-            if (!empty($serviceescalation['ServiceescalationServiceMembership']) || !empty($serviceescalation['ServiceescalationServicegroupMembership'])) {
-
-                $includedServices = array_filter(Hash::extract($serviceescalation['ServiceescalationServiceMembership'], '{n}[excluded=0].Service'));
-
-                $exludedServices = array_filter(Hash::extract($serviceescalation['ServiceescalationServiceMembership'], '{n}[excluded=1].Service'));
-
-                $includedServicegroups = Hash::extract($serviceescalation['ServiceescalationServicegroupMembership'], '{n}[excluded=0].Servicegroup.uuid');
-                $exludedServicegroups = Hash::extract($serviceescalation['ServiceescalationServicegroupMembership'], '{n}[excluded=1].Servicegroup.uuid');
-
-
-                $includedHosts = array_unique(Hash::extract($includedServices, '{n}.Host.uuid'));
-                $includedServices = Hash::extract($includedServices, '{n}.uuid');
-
-                $exludedHosts = array_unique(Hash::extract($exludedServices, '{n}.Host.uuid'));
-                $exludedServices = Hash::extract($exludedServices, '{n}.uuid');
-
-
-                // Prefix exluded services with an !
-                $_exludedServices = [];
-                foreach ($exludedServices as $extService) {
-                    $_exludedServices[] = '!' . $extService;
+            $servicesForCfg = [];
+            if (empty($serviceescalation['ServiceescalationServiceMembership'])) {
+                $this->Serviceescalation->delete($serviceescalation['Serviceescalation']['id']);
+                continue;
+            }
+            foreach ($serviceescalation['ServiceescalationServiceMembership'] as $serviceEscalationService) {
+                if ($serviceEscalationService['excluded'] == 0) {
+                    $servicesForCfg[$serviceEscalationService['Service']['Host']['uuid']][] = $serviceEscalationService['Service']['uuid'];
+                } else {
+                    $servicesForCfg[$serviceEscalationService['Service']['Host']['uuid']][] = '!' . $serviceEscalationService['Service']['uuid'];
                 }
+            }
+            if (empty($servicesForCfg)) {
+                //This service escalation is broken!
+                $this->Serviceescalation->delete($serviceescalation['Serviceescalation']['id']);
+                continue;
+            }
 
-                $_exludedHosts = [];
-                foreach ($exludedHosts as $extHost) {
-                    $_exludedHosts[] = '!' . $extHost;
+            $servicegroupsForCfg = [];
+            foreach ($serviceescalation['ServiceescalationServicegroupMembership'] as $serviceEscalationServicegroup) {
+                if ($serviceEscalationServicegroup['excluded'] == 0) {
+                    $servicegroupsForCfg[] = $serviceEscalationServicegroup['Servicegroup']['uuid'];
+                } else {
+                    $servicegroupsForCfg[] = '!' . $serviceEscalationServicegroup['Servicegroup']['uuid'];
                 }
+            }
 
-                $services = Hash::merge($includedServices, $_exludedServices);
-                $hosts = Hash::merge($includedHosts, $_exludedHosts);
-
-                // Prefix excluded servicegroups with an !
-                $_exludedServicegroups = [];
-                foreach ($exludedServicegroups as $extServicegroup) {
-                    $_exludedServicegroups[] = '!' . $extServicegroup;
+            if (!empty($servicesForCfg)) {
+                $file = new File($this->conf['path'] . $this->conf['serviceescalations'] . $serviceescalation['Serviceescalation']['uuid'] . $this->conf['suffix']);
+                if (!$file->exists()) {
+                    $file->create();
                 }
-                $servicegroups = Hash::merge($includedServicegroups, $_exludedServicegroups);
-
-                if ((!empty($includedServices && !empty($hosts))) || (!empty($includedServicegroups) && !empty($hosts))) {
-                    $file = new File($this->conf['path'] . $this->conf['serviceescalations'] . $serviceescalation['Serviceescalation']['uuid'] . $this->conf['suffix']);
-                    $content = $this->fileHeader();
-                    if (!$file->exists()) {
-                        $file->create();
-                    }
-
-
+                $content = $this->fileHeader();
+                foreach ($servicesForCfg as $hostUuid => $serviceUuids) {
                     $content .= $this->addContent('define serviceescalation{', 0);
-                    $content .= $this->addContent('host_name', 1, implode(',', $hosts));
-
-                    if (!empty($services)) {
-                        $content .= $this->addContent('service_description', 1, implode(',', $services));
+                    $content .= $this->addContent('host_name', 1, $hostUuid);
+                    $content .= $this->addContent('service_description', 1, implode(',', $serviceUuids));
+                    if (!empty($servicegroupsForCfg)) {
+                        $content .= $this->addContent('servicegroup_name', 1, implode(',', $servicegroupsForCfg));
                     }
-
-                    if (!empty($servicegroups)) {
-                        $content .= $this->addContent('servicegroup_name', 1, implode(',', $servicegroups));
-                    }
-
                     if (!empty($serviceescalation['Contact'])) {
                         $content .= $this->addContent('contacts', 1, implode(',', Hash::extract($serviceescalation['Contact'], '{n}.uuid')));
                     }
@@ -2097,17 +2085,10 @@ class NagiosExportTask extends AppShell {
                     if (!empty($serviceEscalationString)) {
                         $content .= $this->addContent('escalation_options', 1, $serviceEscalationString);
                     }
-
                     $content .= $this->addContent('}', 0);
-                    $file->write($content);
-                    $file->close();
-                } else {
-                    //This service escalation is broken!
-                    $this->Serviceescalation->delete($serviceescalation['Serviceescalation']['id']);
                 }
-            } else {
-                //This service escalation is broken!
-                $this->Serviceescalation->delete($serviceescalation['Serviceescalation']['id']);
+                $file->write($content);
+                $file->close();
             }
         }
     }

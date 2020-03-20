@@ -40,7 +40,7 @@ $config = [
         ],
         'dependencies'   => [
             'GrafanaConfiguration'  => [
-                'index' => ['testGrafanaConnection', 'loadHostgroups'],
+                'index' => ['loadHostgroups'],
             ],
             'GrafanaUserdashboards' => [
                 'add'    => ['loadContainers'],

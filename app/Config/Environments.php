@@ -47,19 +47,18 @@ class Environments {
      * @return string
      */
     protected static function _detectHttp() {
-        $host = env('HTTP_HOST');
+        $environment = self::PRODUCTION;
 
-        if (substr($host, 0, 4) == 'dev.') {
-            $environment = self::DEVELOPMENT;
-        } else if (substr($host, 0, 4) == 'dev-') {
-            $environment = self::DEVELOPMENT;
-        } else if (substr($host, 0, 8) == 'staging.') {
-            $environment = self::STAGING;
-        } else {
-            $environment = self::PRODUCTION;
+        // To enable debug mode please add
+        // fastcgi_param OITC_DEBUG 1;
+        // to your nginx config
+
+        if (isset($_SERVER['OITC_DEBUG'])) {
+            if ($_SERVER['OITC_DEBUG'] === '1') {
+                $environment = self::DEVELOPMENT;
+            }
         }
-
+        
         return $environment;
-
     }
 }

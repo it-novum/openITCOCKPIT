@@ -157,7 +157,6 @@ class CommandsController extends AppController {
 
     public function add() {
         $userId = $this->Auth->user('id');
-        $this->Frontend->setJson('console_welcome', $this->Command->getConsoleWelcome($this->systemname));
         $this->set('command_types', $this->getCommandTypes());
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -210,7 +209,6 @@ class CommandsController extends AppController {
             $command_types = $this->getCommandTypes();
             $this->set(compact(['command', 'command_types']));
             $this->set('_serialize', ['command', 'command_types']);
-            $this->Frontend->setJson('console_welcome', $this->Command->getConsoleWelcome($this->systemname));
             $this->Frontend->setJson('command_id', $id);
 
             if ($this->request->is('post') || $this->request->is('put')) {

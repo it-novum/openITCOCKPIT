@@ -26,7 +26,7 @@ App.Controllers.CommandsAddController = Frontend.AppController.extend({
 
     argumentNames: null,
 
-    components: ['WebsocketSudo', 'Ajaxloader'],
+    components: ['Ajaxloader'],
 
     _initialize: function(){
         this.Ajaxloader.setup();
@@ -66,44 +66,6 @@ App.Controllers.CommandsAddController = Frontend.AppController.extend({
             $this = $(this);
             $this.parent().parent().remove();
         });
-
-        this.$jqconsole = null;
-        this.WebsocketSudo.setup(this.getVar('websocket_url'), this.getVar('akey'));
-        this.WebsocketSudo._errorCallback = function(){
-            $('#error_msg').html('<div class="alert alert-danger alert-block"><a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i class="fa fa-warning"></i> Error</h5>Could not connect to SudoWebsocket Server</div>');
-            $('#console').block({
-                fadeIn: 1000,
-                message: '<i class="fa fa-minus-circle fa-5x"></i>',
-                theme: false
-            });
-            $('.blockElement').css({
-                'background-color': '',
-                'border': 'none',
-                'color': '#FFFFFF'
-            });
-        }
-        this.WebsocketSudo.connect();
-        this.loadConsole();
-        this.WebsocketSudo._callback = function(transmitted){
-            this.$jqconsole.Write(transmitted.payload, 'jqconsole-output');
-        }.bind(this);
-    },
-
-    loadConsole: function(){
-        this.$jqconsole = $('#console').jqconsole('', 'nagios$ ');
-        this.$jqconsole.Write(this.getVar('console_welcome'));
-        var startPrompt = function(){
-            // Start the prompt with history enabled.
-            var self = this;
-            self.$jqconsole.Prompt(true, function(input){
-                // Output input with the class jqconsole-output.
-                //jqconsole.Write(input + '\n', 'jqconsole-output');
-                self.WebsocketSudo.send(self.WebsocketSudo.toJson('execute_nagios_command', input));
-                // Restart the prompt.
-                startPrompt();
-            });
-        }.bind(this);
-        startPrompt();
     },
 
     addArgument: function(){
