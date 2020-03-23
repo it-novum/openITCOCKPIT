@@ -89,7 +89,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
                 if (!isset($data[$type][$field])) {
                     if ($data['string']['USE_AUTO_NETWORKING'] == '1') {
                         if (in_array($field, $fieldsThatCanBeEmpty, true)) {
-                            continue;
+                            continue 2;
                         }
                     }
 
@@ -109,7 +109,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
                     case 'int':
                         if ($data['string']['USE_AUTO_NETWORKING'] == '1') {
                             if (in_array($field, $fieldsThatCanBeEmpty, true)) {
-                                continue;
+                                continue 2;
                             }
                         }
 
@@ -127,7 +127,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
                     case 'string':
                         if ($data['string']['USE_AUTO_NETWORKING'] == '1') {
                             if (in_array($field, $fieldsThatCanBeEmpty, true)) {
-                                continue;
+                                continue 2;
                             }
                         }
 
