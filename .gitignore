@@ -84,3 +84,5 @@ plugins/ServicenowModule
 plugins/PagerdutyModule
 plugins/AxiosAssystModule
 plugins/DesignModule
+plugins/PrometheusModule
+
