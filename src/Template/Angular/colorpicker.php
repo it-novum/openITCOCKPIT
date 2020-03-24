@@ -23,13 +23,6 @@
 //  confirmation.
 ?>
 
-<div class="input-group colorpicker-element" title="colorpicker" data-colorpicker-id="1">
-    <label class="col-12 control-label">
-       {{label}}
-    </label>
-    <input type="text" class="form-control input-lg" value="{{model}}" ng-model="model">
-
-    <span class="input-group-append">
-        <span class="input-group-text colorpicker-input-addon"><i></i></span>
-    </span>
-</div>
+<span class="input-group-append">
+    <span class="input-group-text colorpicker-input-addon input-group-lg"><i></i></span>
+</span>
