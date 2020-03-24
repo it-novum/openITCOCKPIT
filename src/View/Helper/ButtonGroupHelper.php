@@ -57,7 +57,7 @@ class ButtonGroupHelper implements ButtonGroupHelperInterface {
 
     private function getOpeningButtonGeneralPart(string $classAttribute): string {
         return '<button class="btn ' . $classAttribute . ' "';
-}
+    }
 
     public function addIconButton(string $iconCssSelector, string $dataOriginalTitle = ''): ButtonGroupHelperInterface {
         $this->groupElements[] = $this->getOpeningButtonGeneralPart('btn-default') . ' data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body"><i class="' . $iconCssSelector . '"></i></button>';
@@ -78,7 +78,7 @@ class ButtonGroupHelper implements ButtonGroupHelperInterface {
     }
 
     public function addButtonWithTooltipAndDisplayConditional(string $innerHtml, string $cssSelector = 'btn-default', string $dataOriginalTitle = '', string $conditional = ''): ButtonGroupHelperInterface {
-        $this->groupElements[] = '<button class="btn ' . $cssSelector . '" data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body" '. $conditional .'>' . $innerHtml . '</button>';
+        $this->groupElements[] = '<button class="btn ' . $cssSelector . '" data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body" ' . $conditional . '>' . $innerHtml . '</button>';
 
         return $this;
     }
@@ -123,7 +123,7 @@ class ButtonGroupHelper implements ButtonGroupHelperInterface {
     }
 
     public function addIconButtonWithHRef(string $iconCssSelector, string $dataOriginalTitle = '', string $hRef = ''): ButtonGroupHelperInterface {
-        $this->groupElements[] = '<button class="btn btn-default" data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body"><a href="' . $hRef . '"><i class="' . $iconCssSelector . '"></i></a></button>';
+        $this->groupElements[] = $this->openingButtonHtmlTag('btn-default','data-original-title="' . $dataOriginalTitle . '" data-placement="bottom" rel="tooltip" data-container="body"') . '<a href="' . $hRef . '"><i class="' . $iconCssSelector . '"></i></a></button>';
 
         return $this;
     }
@@ -141,4 +141,7 @@ class ButtonGroupHelper implements ButtonGroupHelperInterface {
         return '    ';
     }
 
+    private function openingButtonHtmlTag(string $additionalClassProperties, string $htmlAttributes): string {
+        return '<button class="btn ' . $additionalClassProperties .' " ' . $htmlAttributes . '>';
+    }
 }
