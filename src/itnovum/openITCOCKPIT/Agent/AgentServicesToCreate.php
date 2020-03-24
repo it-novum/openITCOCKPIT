@@ -148,6 +148,17 @@ class AgentServicesToCreate {
                         }
                     }
                     break;
+                case 'alfrescostats':
+                    foreach ($objects as $alfrescocheck) {
+                        foreach ($receiverPluginNames as $receiverPluginName) {
+                            $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
+                            $service['servicecommandargumentvalues'][2]['value'] = $alfrescocheck['name'];
+                            $service['agent_wizard_option_description'] = $alfrescocheck['name'];
+
+                            $this->addServiceToCreate($service, $receiverPluginName, $services, $alfrescocheck['name'], 2);
+                        }
+                    }
+                    break;
                 case 'disk_io':
                     foreach ($objects as $diskname => $disk) {
                         if ($diskname === 'timestamp') {
