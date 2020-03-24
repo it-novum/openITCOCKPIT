@@ -40,11 +40,20 @@ angular.module('openITCOCKPIT')
                 netio: true,
                 diskio: true,
                 winservices: true,
+                alfrescostats: false,
+                'alfresco-jmxuser': 'monitorRole',
+                'alfresco-jmxpassword': 'change_asap',
+                'alfresco-jmxaddress': '0.0.0.0',
+                'alfresco-jmxport': 50500,
+                'alfresco-jmxpath': '/alfresco/jmxrmi',
+                'alfresco-jmxquery': '',
+                'alfresco-javapath': '/usr/bin/java',
+
                 'oitc-hostuuid': '',
                 'oitc-url': '',
                 'oitc-apikey': '',
                 'oitc-interval': 60,
-                'oitc-enabled': false
+                'oitc-enabled': false,
             };
 
             $scope.choosenServicesToMonitor = {
@@ -65,7 +74,8 @@ angular.module('openITCOCKPIT')
                 DockerContainerCPU: [],
                 DockerContainerMemory: [],
                 QemuVMRunning: [],
-                Customcheck: []
+                Customcheck: [],
+                Alfresco: []
             };
 
             $scope.agentconfigCustomchecks = {
@@ -425,7 +435,7 @@ angular.module('openITCOCKPIT')
                             $scope.remoteAgentConfig = result.data.config;
                             for(var option in $scope.remoteAgentConfig.config){
                                 var tmpVal = $scope.remoteAgentConfig.config[option];
-                                if(option.includes('interval') || option === 'port'){
+                                if(option.includes('interval') || option === 'port' || option === 'alfresco-jmxport'){
                                     tmpVal = Number.parseInt(tmpVal);
                                 }else if(tmpVal === 'true'){
                                     tmpVal = true;
