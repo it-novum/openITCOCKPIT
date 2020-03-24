@@ -52,7 +52,7 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('agents', 'agentconnector')): ?>
-                        <a back-button fallback-state='AgentconnectorsAgent'
+                        <a back-button href="javascript:void(0);" fallback-state='AgentconnectorsAgent'
                            class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
@@ -116,6 +116,15 @@
 
                                 <div class="wizard">
                                     <ul class="nav nav-tabs step-anchor">
+                                        <li data-target="#step0" class="nav-item reset-btn"
+                                            ng-if="(host.id && !servicesConfigured) || finished"
+                                            ng-click="resetAgentConfiguration()">
+                                            <i class="fas fa-trash"></i>&nbsp;
+                                            <span class="d-none d-lg-inline">
+                                                <?php echo __('Reset'); ?>
+                                            </span>
+                                            <span class="chevron"></span>
+                                        </li>
                                         <li data-target="#step1" class="nav-item"
                                             ng-class="(!pullMode && !pushMode) ? 'active' : ''">
                                             <span class="badge badge-info">1</span>
@@ -146,39 +155,39 @@
                                             <?php echo __('Save changes'); ?>
                                             <span class="chevron"></span>
                                         </li>
+                                        <li data-target="#step5" class="nav-item next-btn"
+                                            ng-if="(!pullMode && !pushMode && host.id && servicesToCreate)"
+                                            ng-click="skipConfigurationGeneration()">
+                                            <i class="fa fa-arrow-right"></i>&nbsp;
+                                            <span class="d-none d-lg-inline">
+                                                <?php echo __('Next'); ?>
+                                            </span>
+                                        </li>
+                                        <li data-target="#step5" class="nav-item next-btn"
+                                            ng-if="((pullMode || pushMode) && !installed && !configured)"
+                                            ng-click="continueWithAgentInstallation()">
+                                            <i class="fa fa-arrow-right"></i>&nbsp;
+                                            <span class="d-none d-lg-inline">
+                                                <?php echo __('Next'); ?>
+                                            </span>
+                                        </li>
+                                        <li data-target="#step5" class="nav-item next-btn"
+                                            ng-if="((pullMode || pushMode) && !installed && configured)"
+                                            ng-click="continueWithServiceConfiguration()">
+                                            <i class="fa fa-arrow-right"></i>&nbsp;
+                                            <span class="d-none d-lg-inline">
+                                                <?php echo __('Next'); ?>
+                                            </span>
+                                        </li>
+                                        <li data-target="#step5" class="nav-item next-btn"
+                                            ng-if="((pullMode || pushMode) && installed && configured && !servicesConfigured)"
+                                            ng-click="saveAgentServices()">
+                                            <i class="fa fa-arrow-right"></i>&nbsp;
+                                            <span class="d-none d-lg-inline">
+                                                <?php echo __('Next'); ?>
+                                            </span>
+                                        </li>
                                     </ul>
-                                    <div class="pull-right margin-right-5" style="margin-top: -39px;">
-                                        <div class="actions" style="position: relative; display: inline;">
-                                            <button class="btn btn-sm btn-default"
-                                                    ng-if="(host.id && !servicesConfigured) || finished"
-                                                    ng-click="resetAgentConfiguration()">
-                                                <i class="fa fa-arrow-left"></i>&nbsp;
-                                                <?php echo __('Reset'); ?>
-                                            </button>
-                                        </div>
-                                        <div class="actions" style="position: relative; display: inline;">
-                                            <button class="btn btn-sm btn-success"
-                                                    ng-if="(!pullMode && !pushMode && host.id && servicesToCreate)"
-                                                    ng-click="skipConfigurationGeneration()">
-                                                <?php echo __('Next'); ?>&nbsp;<i class="fa fa-arrow-right"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-success"
-                                                    ng-if="((pullMode || pushMode) && !installed && !configured)"
-                                                    ng-click="continueWithAgentInstallation()">
-                                                <?php echo __('Next'); ?>&nbsp;<i class="fa fa-arrow-right"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-success"
-                                                    ng-if="((pullMode || pushMode) && !installed && configured)"
-                                                    ng-click="continueWithServiceConfiguration()">
-                                                <?php echo __('Next'); ?>&nbsp;<i class="fa fa-arrow-right"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-success"
-                                                    ng-if="((pullMode || pushMode) && installed && configured && !servicesConfigured)"
-                                                    ng-click="saveAgentServices()">
-                                                <?php echo __('Next'); ?>&nbsp;<i class="fa fa-arrow-right"></i>
-                                            </button>
-                                        </div>
-                                    </div>
 
                                 </div>
 
@@ -199,7 +208,7 @@
 
                                             <div class="panel-container padding-20" style="min-height: 110px;">
                                                 <div class="text">
-                                                    <?= __('If you configure the Agent in pull mode, it has to be reachable threw the network.'); ?>
+                                                    <?= __('If you configure the Agent in pull mode, it has to be reachable through the network.'); ?>
                                                     <br>
                                                     <?= __('openITCOCKPIT will try to connect to the agent using the hosts IP Address.'); ?>
                                                     <br>
@@ -465,7 +474,8 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="form-group col-12 padding-left-0" ng-if="agentconfig.customchecks">
+                                                        <div class="form-group col-12 padding-left-0"
+                                                             ng-show="agentconfig.customchecks">
                                                             <label class="col-xs-12 col-md-3 control-label"
                                                                    for="agentconfigCustomchecks.max_worker_threads">
                                                                 <?php echo __('Set max custom check threads'); ?>
@@ -658,6 +668,147 @@
                                                                     <?php echo __('Enable windows services status checks'); ?>
                                                                 </label>
                                                             </div>
+                                                        </div>
+
+                                                        <div class="form-group col-12">
+                                                            <div
+                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                <input type="checkbox"
+                                                                       class="custom-control-input"
+                                                                       id="agentconfig.alfrescostats"
+                                                                       ng-model="agentconfig.alfrescostats">
+                                                                <label class="custom-control-label"
+                                                                       for="agentconfig.alfrescostats">
+                                                                    <?php echo __('Enable Alfresco status checks'); ?>
+                                                                </label>
+                                                                <div class="help-block">
+                                                                    <?php echo __('If you have an Alfresco enterprise instance, JMX is configured and java installed on the agent host system, you can enable alfrescostats'); ?>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group col-12" style="padding-left: 1.75rem;"
+                                                             ng-show="agentconfig.alfrescostats">
+                                                            <div class="form-group col-12 padding-left-0">
+                                                                <label class="col-12 control-label"
+                                                                       for="agentconfig['alfresco-jmxuser']">
+                                                                    <?php echo __('Alfresco JMX username'); ?>
+                                                                </label>
+
+                                                                <div class="col-xs-12 col-md-9">
+                                                                    <input
+                                                                        id="agentconfig['alfresco-jmxuser']"
+                                                                        class="form-control"
+                                                                        type="text"
+                                                                        placeholder="<?php echo 'monitorRole'; ?>"
+                                                                        ng-model="agentconfig['alfresco-jmxuser']">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group col-12 padding-left-0">
+                                                                <label class="col-12 control-label"
+                                                                       for="agentconfig['alfresco-jmxpassword']">
+                                                                    <?php echo __('Alfresco JMX password'); ?>
+                                                                </label>
+
+                                                                <div class="col-xs-12 col-md-9">
+                                                                    <input
+                                                                        id="agentconfig['alfresco-jmxpassword']"
+                                                                        class="form-control"
+                                                                        type="text"
+                                                                        placeholder="<?php echo 'change_asap'; ?>"
+                                                                        ng-model="agentconfig['alfresco-jmxpassword']">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group col-12 padding-left-0">
+                                                                <label class="col-12 control-label"
+                                                                       for="agentconfig['alfresco-jmxaddress']">
+                                                                    <?php echo __('Alfresco host address'); ?>
+                                                                </label>
+
+                                                                <div class="col-xs-12 col-md-9">
+                                                                    <input
+                                                                        id="agentconfig['alfresco-jmxaddress']"
+                                                                        class="form-control"
+                                                                        type="text"
+                                                                        placeholder="<?php echo '0.0.0.0'; ?>"
+                                                                        ng-model="agentconfig['alfresco-jmxaddress']">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group col-12 padding-left-0">
+                                                                <label class="col-12 control-label"
+                                                                       for="agentconfig['alfresco-jmxport']">
+                                                                    <?php echo __('Alfresco JMX port'); ?>
+                                                                </label>
+
+                                                                <div class="col-xs-12 col-md-9">
+                                                                    <input
+                                                                        id="agentconfig['alfresco-jmxport']"
+                                                                        class="form-control"
+                                                                        type="number"
+                                                                        min="1"
+                                                                        ng-model="agentconfig['alfresco-jmxport']">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group col-12 padding-left-0">
+                                                                <label class="col-12 control-label"
+                                                                       for="agentconfig['alfresco-jmxpath']">
+                                                                    <?php echo __('Alfresco JMX path'); ?>
+                                                                </label>
+
+                                                                <div class="col-xs-12 col-md-9">
+                                                                    <input
+                                                                        id="agentconfig['alfresco-jmxpath']"
+                                                                        class="form-control"
+                                                                        type="text"
+                                                                        placeholder="<?php echo '/alfresco/jmxrmi'; ?>"
+                                                                        ng-model="agentconfig['alfresco-jmxpath']">
+                                                                    <div class="help-block">
+                                                                        <?php echo __('The path behind the JMX address (service:jmx:rmi:///jndi/rmi://0.0.0.0:50500), e.g. "/alfresco/jmxrmi"'); ?>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group col-12 padding-left-0">
+                                                                <label class="col-12 control-label"
+                                                                       for="agentconfig['alfresco-jmxquery']">
+                                                                    <?php echo __('Alfresco JMX query'); ?>
+                                                                </label>
+
+                                                                <div class="col-xs-12 col-md-9">
+                                                                    <input
+                                                                        id="agentconfig['alfresco-jmxquery']"
+                                                                        class="form-control"
+                                                                        type="text"
+                                                                        ng-model="agentconfig['alfresco-jmxquery']">
+                                                                    <div class="help-block">
+                                                                        <?php echo __('Set you custom Alfresco JMX query. Leave empty to use the default.'); ?>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group col-12 padding-left-0">
+                                                                <label class="col-12 control-label"
+                                                                       for="agentconfig['alfresco-javapath']">
+                                                                    <?php echo __('Path to the java binary'); ?>
+                                                                </label>
+
+                                                                <div class="col-xs-12 col-md-9">
+                                                                    <input
+                                                                        id="agentconfig['alfresco-javapath']"
+                                                                        class="form-control"
+                                                                        type="text"
+                                                                        placeholder="<?php echo '/usr/bin/java'; ?>"
+                                                                        ng-model="agentconfig['alfresco-javapath']">
+                                                                    <div class="help-block">
+                                                                        <?php echo __('Java need to be installed on agent host system if you want to use alfrescostats.'); ?>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
                                                         </div>
 
                                                     </div>
@@ -1077,6 +1228,26 @@
                                                                         multiple
                                                                         ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.WindowsService"
                                                                         ng-model="choosenServicesToMonitor.WindowsService">
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div ng-show="servicesToCreate.Alfresco"
+                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                <label class="control-label"
+                                                                       for="choosenServicesToMonitor.Alfresco">
+                                                                    <?php echo __('Alfresco checks'); ?>
+                                                                    ({{countObj(servicesToCreate.Alfresco)}})
+                                                                </label>
+                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                    <select
+                                                                        id="choosenServicesToMonitor.Alfresco"
+                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                        class="form-control"
+                                                                        chosen="servicesToCreate.Alfresco"
+                                                                        multiple
+                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.Alfresco"
+                                                                        ng-model="choosenServicesToMonitor.Alfresco">
                                                                     </select>
                                                                 </div>
                                                             </div>

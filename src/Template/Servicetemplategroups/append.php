@@ -49,7 +49,7 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'servicetemplategroups')): ?>
-                        <a back-button fallback-state='ServicetemplategroupsIndex'
+                        <a back-button href="javascript:void(0);" fallback-state='ServicetemplategroupsIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
@@ -95,7 +95,7 @@
                                         <?php echo __('Append to service template group'); ?>
                                     </button>
                                     <?php if ($this->Acl->hasPermission('index', 'servicetemplategroups')): ?>
-                                        <a back-button fallback-state='ServicetemplategroupsIndex'
+                                        <a back-button href="javascript:void(0);" fallback-state='ServicetemplategroupsIndex'
                                            class="btn btn-default">
                                             <?php echo __('Cancel'); ?>
                                         </a>

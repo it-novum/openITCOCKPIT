@@ -879,14 +879,39 @@ div.required .control-label::after {
     border-left: 14px solid #f1f6fc;
 }
 
+.fuelux .wizard ul li.next-btn .chevron::before {
+    border-left: 14px solid #00C851;
+}
+
+.fuelux .wizard ul li.reset-btn .chevron::before {
+    border-left: 14px solid #CC0000;
+}
+
 .fuelux .wizard ul li:first-child {
     padding-left: 20px;
     border-radius: 4px 0 0 4px;
 }
 
+.fuelux .wizard ul li:last-child {
+    padding-right: 20px;
+    border-radius: 0 4px 4px 0;
+}
+
 .fuelux .wizard ul li.active {
     color: #3a87ad;
     background: #f1f6fc;
+}
+
+.fuelux .wizard ul li.next-btn {
+    cursor: pointer;
+    color: #ffffff;
+    background: #00C851;
+}
+
+.fuelux .wizard ul li.reset-btn {
+    cursor: pointer;
+    color: #ffffff;
+    background: #CC0000;
 }
 
 .fuelux .wizard ul li .badge {

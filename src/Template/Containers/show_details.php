@@ -43,7 +43,7 @@
                     <span class="widget-icon"> <i class="fa fa-sitemap fa-rotate-270"></i> </span>
                     <h2><?php echo __('Objects overview'); ?> "{{containerDetails.Container.name}}"</h2>
                     <div class="widget-toolbar" role="menu">
-                        <a back-button fallback-state='ContainersIndex' class="btn btn-default btn-xs">
+                        <a back-button href="javascript:void(0);" fallback-state='ContainersIndex' class="btn btn-default btn-xs">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                     </div>
                 </header>

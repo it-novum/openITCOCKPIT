@@ -75,7 +75,7 @@
                             for="showAll"> <?php echo __(' Include disabled services'); ?></label>
                     </div>
                     <?php if ($this->Acl->hasPermission('index', 'servicetemplates')): ?>
-                        <a back-button fallback-state='ServicetemplatesIndex'
+                        <a back-button href="javascript:void(0);" fallback-state='ServicetemplatesIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>

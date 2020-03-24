@@ -112,7 +112,7 @@
                                     <button class="btn btn-primary" type="submit">
                                         <?php echo __('Update Configuration'); ?>
                                     </button>
-                                    <a back-button fallback-state='DashboardsIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);" fallback-state='DashboardsIndex' class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

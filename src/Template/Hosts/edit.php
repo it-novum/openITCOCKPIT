@@ -53,7 +53,7 @@
                         UUID: {{post.Host.uuid}}
                     </div>
                     <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
-                        <a back-button fallback-state='HostsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='HostsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -854,16 +854,11 @@
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">
-                                    <label>
-                                        <input type="checkbox" ng-model="data.createAnother">
-                                        <?php echo __('Create another'); ?>
-                                    </label>
-
                                     <button type="submit" class="btn btn-primary waves-effect waves-themed">
                                         <?php echo __('Update host'); ?>
                                     </button>
 
-                                    <a back-button fallback-state='HostsIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);" fallback-state='HostsIndex' class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>
