@@ -457,7 +457,8 @@ class ServicegroupsTable extends Table {
                                 'HostsToContainersSharing'
                             ])->select([
                                 'Hosts.id',
-                                'Hosts.uuid'
+                                'Hosts.uuid',
+                                'Hosts.name'
                             ])->where([
                                 'Hosts.disabled' => 0
                             ]);
@@ -519,7 +520,8 @@ class ServicegroupsTable extends Table {
                                 return $q->enableAutoFields(false)
                                     ->select([
                                         'Hosts.id',
-                                        'Hosts.uuid'
+                                        'Hosts.uuid',
+                                        'Hosts.name'
                                     ])
                                     ->contain(['HostsToContainersSharing'])
                                     ->where(['Hosts.disabled' => 0]);

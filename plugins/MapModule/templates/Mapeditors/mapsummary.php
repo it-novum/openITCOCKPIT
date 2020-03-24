@@ -393,8 +393,7 @@
                             <?php echo __('Hosts overview'); ?>
                         </div>
                         <div class="col-lg-8 no-padding">
-                            <div class="btn-group btn-group-xs" style="width: 100%;"
-                                 ng-show="summaryState.ServiceSummary.total > 0">
+                            <div class="btn-group btn-group-xs" style="width: 100%;">
                                 <button type="button" class="btn btn-success "
                                         ui-sref="HostsIndex({id: summaryState.HostIdsGroupByState[0]})">
                                     {{summaryState.Hostgroup.HostSummary.state[0]}}
@@ -416,8 +415,7 @@
                             <?php echo __('Services overview'); ?>
                         </div>
                         <div class="col-lg-8 no-padding">
-                            <div class="btn-group btn-group-xs" style="width: 100%;"
-                                 ng-show="summaryState.ServiceSummary.total > 0">
+                            <div class="btn-group btn-group-xs" style="width: 100%;">
                                 <button type="button" class="btn btn-success "
                                         ui-sref="ServicesIndex({id: summaryState.ServiceIdsGroupByState[0]})">
                                     {{summaryState.Hostgroup.TotalServiceSummary.state[0]}}
@@ -437,8 +435,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-12 padding-top-10" ng-repeat="host in summaryState.Hosts">
-                        <div class="col-lg-4 cropText">
+                    <div class="row padding-top-10" ng-repeat="host in summaryState.Hosts">
+                        <div class="col-lg-3 cropText">
                             <a ui-sref="HostsBrowser({id: host.Host.id})">
                                 {{host.Host.hostname}}
                             </a>
@@ -456,8 +454,8 @@
                             <?php echo __('Not in monitoring'); ?>
                             <i class="fa fa-eye-slash"></i>
                         </div>
-                        <div class="col-lg-4 padding-right-0">
-                            <div class="btn-group btn-group-justified" role="group">
+                        <div class="col-lg-4 offset-lg-1 no-padding">
+                            <div class="btn-group btn-group-xs" role="group">
                                 <a class="btn btn-success state-button-small font-sm"
                                    ui-sref="ServicesIndex({id: host.ServiceIdsGroupByState[0]})">
                                     {{host.ServiceSummary.state[0]}}
