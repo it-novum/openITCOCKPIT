@@ -219,6 +219,11 @@ class Agent extends Importer {
                 'plugin_name'        => 'Customcheck',
                 'servicetemplate_id' => '03b32b83-df7b-4204-a8bb-138a4939c554'
             ],
+            [
+                'name'               => 'alfrescostats',
+                'plugin_name'        => 'Alfresco',
+                'servicetemplate_id' => 'e453767c-b216-4b17-a012-9bc037d7da49'
+            ],
         ];
         return $data;
     }
@@ -731,6 +736,31 @@ class Agent extends Importer {
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
+                        'human_name' => 'Name'
+                    ]
+                ]
+            ],
+
+            [
+                'name'             => 'check_oitc_agent_alfresco',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '0d2e47c7-d584-4a4a-9a6c-1a1ff0f9365c',
+                'description'      => "Returns the value and state of an Alfresco check by its name.\n" .
+                    "Warning and Critical thresholds are numeric values depending on the chosen name.\n" .
+                    "Name:  Name of the Alfresco check.\n",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
                         'human_name' => 'Name'
                     ]
                 ]
@@ -2189,6 +2219,85 @@ class Agent extends Importer {
                     [
                         'commandargument_id' => '$ARG1$',
                         'value'              => 'username',
+                    ],
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ],
+                'contactgroups'                             => [],
+                'contacts'                                  => [
+                    '_ids' => [
+                        '1'
+                    ]
+                ]
+            ],
+
+
+            /* Alfresco servicetemplates */
+
+            [
+                'uuid'                                      => 'e453767c-b216-4b17-a012-9bc037d7da49',
+                'template_name'                             => 'OITC_AGENT_ALFRESCO',
+                'name'                                      => 'Alfresco check',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '0d2e47c7-d584-4a4a-9a6c-1a1ff0f9365c',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '0',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '0',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => 'Alfresco check name',
                     ],
                 ],
                 'customvariables'                           => [],
