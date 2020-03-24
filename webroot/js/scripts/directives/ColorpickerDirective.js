@@ -2,13 +2,12 @@ angular.module('openITCOCKPIT').directive('colorpickerDirective', function(){
     return {
         restrict: 'E',
         templateUrl: '/angular/colorpicker.html',
+        replace: true,
         scope: {
-            'label': '=',
             'model': '='
         },
 
         controller: function($scope){
-
         },
 
         link: function($scope, element, attr){
