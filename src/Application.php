@@ -61,6 +61,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
      * {@inheritDoc}
      */
     public function bootstrap(): void {
+
         // Call parent to load bootstrap from files.
         parent::bootstrap();
 

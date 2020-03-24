@@ -133,7 +133,7 @@
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
-                                                   ng-model="filter.Hosts.name"
+                                                   ng-model="filter.Host.name"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
                                     </div>

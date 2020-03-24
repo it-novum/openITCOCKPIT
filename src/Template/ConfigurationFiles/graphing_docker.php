@@ -272,7 +272,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
             <div class="float-right">
                 <button class="btn btn-primary"
                         type="submit"><?php echo __('Save'); ?></button>
-                <a back-button fallback-state='ConfigurationFilesIndex'
+                <a back-button href="javascript:void(0);" fallback-state='ConfigurationFilesIndex'
                    class="btn btn-default"><?php echo __('Cancel'); ?></a>
             </div>
         </div>

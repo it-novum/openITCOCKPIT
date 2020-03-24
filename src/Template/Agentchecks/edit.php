@@ -125,7 +125,7 @@
                                     <button type="submit" class="btn btn-primary waves-effect waves-themed">
                                         <?php echo __('Update agent check'); ?>
                                     </button>
-                                    <a back-button fallback-state='AgentchecksIndex'
+                                    <a back-button href="javascript:void(0);" fallback-state='AgentchecksIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
                             </div>

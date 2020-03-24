@@ -881,6 +881,11 @@ class AngularController extends AppController {
         return;
     }
 
+    public function colorpicker() {
+        //Only ship HTML template
+        return;
+    }
+
     public function humanTime() {
         //Only ship HTML template
         return;

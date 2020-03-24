@@ -48,7 +48,7 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'commands')): ?>
-                        <a back-button fallback-state='CommandsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='CommandsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -109,7 +109,7 @@
                                     <?php echo __('Copy'); ?>
                                 </button>
                                 <?php if ($this->Acl->hasPermission('index', 'Commands')): ?>
-                                    <a back-button fallback-state='CommandsIndex'
+                                    <a back-button href="javascript:void(0);" fallback-state='CommandsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 <?php endif; ?>
                             </div>

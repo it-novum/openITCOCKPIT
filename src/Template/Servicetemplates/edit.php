@@ -53,7 +53,7 @@
                         UUID: {{post.Servicetemplate.uuid}}
                     </div>
                     <?php if ($this->Acl->hasPermission('index', 'servicetemplates')): ?>
-                        <a back-button fallback-state='ServicetemplatesIndex'
+                        <a back-button href="javascript:void(0);" fallback-state='ServicetemplatesIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
@@ -844,7 +844,7 @@
                                     <button class="btn btn-primary" type="submit">
                                         <?php echo __('Update service template'); ?>
                                     </button>
-                                    <a back-button fallback-state='ServicetemplatesIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);" fallback-state='ServicetemplatesIndex' class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

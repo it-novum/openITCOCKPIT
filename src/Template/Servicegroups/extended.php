@@ -76,7 +76,7 @@
                         </button>
                     <?php endif; ?>
                     <?php if ($this->Acl->hasPermission('index', 'servicegroups')): ?>
-                        <a back-button fallback-state='ServicegroupsIndex'
+                        <a back-button href="javascript:void(0);" fallback-state='ServicegroupsIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
