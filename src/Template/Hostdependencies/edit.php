@@ -50,7 +50,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'hostdependencies')): ?>
-                        <a back-button fallback-state='HostdependenciesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='HostdependenciesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -370,7 +370,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <div class="float-right">
                                     <button class="btn btn-primary"
                                             type="submit" ng-click="submit()"><?php echo __('Update host dependency'); ?></button>
-                                    <a back-button fallback-state='HostdependenciesIndex'
+                                    <a back-button href="javascript:void(0);" fallback-state='HostdependenciesIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
                             </div>

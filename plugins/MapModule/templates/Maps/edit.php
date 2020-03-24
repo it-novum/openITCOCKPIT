@@ -52,7 +52,7 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'maps', 'mapmodule')): ?>
-                        <a back-button fallback-state='MapsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='MapsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -127,7 +127,7 @@
                                     <button class="btn btn-primary" type="submit">
                                         <?php echo __('Update map'); ?>
                                     </button>
-                                    <a back-button fallback-state='MapsIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);" fallback-state='MapsIndex' class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

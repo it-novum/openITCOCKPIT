@@ -267,7 +267,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <div class="float-right">
                                     <button class="btn btn-primary"
                                             type="submit"><?php echo __('Update Profile'); ?></button>
-                                    <a back-button fallback-state='ProfileEdit'
+                                    <a back-button href="javascript:void(0);" fallback-state='ProfileEdit'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
                             </div>
@@ -419,7 +419,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <div class="float-right">
                                     <button class="btn btn-primary"
                                             type="submit"><?php echo __('Change Password'); ?></button>
-                                    <a back-button fallback-state='ProfileEdit'
+                                    <a back-button href="javascript:void(0);" fallback-state='ProfileEdit'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
                             </div>

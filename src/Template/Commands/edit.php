@@ -64,7 +64,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                     <?php endif; ?>
 
                     <?php if ($this->Acl->hasPermission('index', 'commands')): ?>
-                        <a back-button fallback-state='CommandsIndex' class="btn btn-xs btn-default shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='CommandsIndex' class="btn btn-xs btn-default shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -221,7 +221,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                                 <div class="float-right">
                                     <button class="btn btn-primary"
                                             type="button" ng-click="checkForMisingArguments()"><?php echo __('Update command'); ?></button>
-                                    <a back-button fallback-state='CommandsIndex'
+                                    <a back-button href="javascript:void(0);" fallback-state='CommandsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
                             </div>

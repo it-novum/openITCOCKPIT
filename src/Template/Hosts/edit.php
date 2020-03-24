@@ -53,7 +53,7 @@
                         UUID: {{post.Host.uuid}}
                     </div>
                     <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
-                        <a back-button fallback-state='HostsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='HostsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -858,7 +858,7 @@
                                         <?php echo __('Update host'); ?>
                                     </button>
 
-                                    <a back-button fallback-state='HostsIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);" fallback-state='HostsIndex' class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

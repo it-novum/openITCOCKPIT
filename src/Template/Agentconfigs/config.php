@@ -182,7 +182,7 @@
                                         <div class="pull-right">
                                             <input class="btn btn-primary" type="submit"
                                                    value="<?php echo __('Update agent config and execute discovery.'); ?>">
-                                            <a back-button fallback-state='HostsIndex'
+                                            <a back-button href="javascript:void(0);" fallback-state='HostsIndex'
                                                class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                         </div>
                                     </div>

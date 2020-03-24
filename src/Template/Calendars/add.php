@@ -47,7 +47,7 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'calendars')): ?>
-                        <a back-button fallback-state='CalendarsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='CalendarsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -120,7 +120,7 @@
                                     </label>
                                     <button class="btn btn-primary"
                                             type="submit"><?php echo __('Create calendar'); ?></button>
-                                    <a back-button fallback-state='CalendarsIndex'
+                                    <a back-button href="javascript:void(0);" fallback-state='CalendarsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
                             </div>

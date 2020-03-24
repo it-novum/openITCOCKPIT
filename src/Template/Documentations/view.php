@@ -43,7 +43,7 @@
 
     <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6 margin-top-10">
         <div class="pull-right">
-            <a back-button fallback-state='HosttemplatesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+            <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                 <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
             </a>
         </div>
@@ -59,7 +59,7 @@
 
     <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6 margin-top-10">
         <div class="pull-right">
-            <a back-button fallback-state='ServicetemplatesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+            <a back-button href="javascript:void(0);" fallback-state='ServicetemplatesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                 <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
             </a>
         </div>
