@@ -42,7 +42,7 @@
 <div class="row">
     <div class="col-lg-12">
         <div class="alert alert-block alert-warning">
-            <a class="close" data-dismiss="alert" href="#">×</a>
+            <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
             <h4 class="alert-heading">
                 <i class="fa fa-exclamation-triangle"></i>
                 <?php echo __('Security notice'); ?>

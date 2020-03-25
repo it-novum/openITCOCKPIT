@@ -77,7 +77,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                         <div class="row">
                             <div class="col-xs-12 col-md-offset-2 col-md-12 col-lg-12 padding-left-0 padding-right-0">
                                 <div class="alert alert-block alert-warning">
-                                    <a class="close" data-dismiss="alert" href="#">×</a>
+                                    <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
                                     <h4 class="alert-heading">
                                         <i class="fa fa-exclamation-triangle"></i>
                                         <?php echo __('Security notice'); ?>

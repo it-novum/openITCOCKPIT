@@ -42,7 +42,7 @@
                        placeholder="<?= __('Type to search'); ?>"
                        class="form-control"
                        tabindex="0" ng-keydown="navigate($event)">
-                <a href="#" onclick="return false;" class="btn-primary btn-search-close js-waves-off"
+                <a href="javascript:void(0);" class="btn-primary btn-search-close js-waves-off"
                    data-action="toggle" data-class="list-filter-active" data-target=".page-sidebar">
                     <i class="fa fa-chevron-up"></i>
                 </a>
@@ -68,7 +68,7 @@
                 <?php endif; ?>
             </div>
             <img src="/img/menu/denis-degioanni-9wH624ALFQA-unsplash.png" class="cover" alt="cover">
-            <a href="#" onclick="return false;" class="pull-trigger-btn" data-action="toggle"
+            <a href="javascript:void(0);" class="pull-trigger-btn" data-action="toggle"
                data-class="list-filter-active" data-target=".page-sidebar" data-focus="nav_filter_input">
                 <i class="fa fa-angle-down"></i>
             </a>
@@ -87,7 +87,7 @@
     <!-- END PRIMARY NAVIGATION -->
     <!-- NAV FOOTER -->
     <div class="nav-footer shadow-top">
-        <a href="#" onclick="return false;" data-action="toggle" data-class="nav-function-minify"
+        <a href="javascript:void(0);" data-action="toggle" data-class="nav-function-minify"
            ng-click="setMenuMinify(false)"
            class="hidden-md-down">
             <i class="ni ni-chevron-right"></i>

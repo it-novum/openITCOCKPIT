@@ -15,7 +15,7 @@ try {
 if ($isOldRepositoryInUse === true || $hasError === true): ?>
     <div>
         <div class="alert alert-danger alert-block">
-            <a href="#" data-dismiss="alert" class="close">×</a>
+            <a href="javascript:void(0);" data-dismiss="alert" class="close">×</a>
             <h5 class="alert-heading"><i class="fa fa-warning"></i>
                 <?php echo __('APT Repository - Manually action required!'); ?>
             </h5>
