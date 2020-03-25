@@ -67,7 +67,7 @@
                 <div class="panel-content">
                     <div class="frame-wrap">
                         <div class="alert alert-danger alert-block" ng-show="connectionError">
-                            <a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i
+                            <a href="javascript:void(0);" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i
                                     class="fa fa-warning"></i> <?php echo __('Connection error'); ?></h5>
                             <?php echo __('Could not connect to Query Log WebSocket Server. Did you execute'); ?>
                             <code>oitc query_log --websocket-server --pretty --hide-acl</code>?

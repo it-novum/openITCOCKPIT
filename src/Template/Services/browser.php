@@ -339,22 +339,19 @@ use Cake\Core\Plugin;
 
                                 <div class="row" ng-show="hoststatus.currentState > 0">
                                     <div class="col-lg-12 margin-bottom-10">
-                                        <div class="browser-border padding-10 bg-info" style="width: 100%;">
-                                            <div>
-                                                <h4 class="no-padding text-info">
-                                                    <i class="fa fa-exclamation-triangle"></i>
-                                                    <?php echo __('Problem with host detected!'); ?>
-                                                </h4>
-                                            </div>
-                                            <div>
-                                                <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                                    <a ui-sref="HostsBrowser({id:host.Host.id})">
-                                                        {{host.Host.hostname}}
-                                                    </a>
-                                                <?php else: ?>
+                                        <div class="alert alert-block alert-info">
+                                            <h4 class="alert-heading">
+                                                <i class="fa fa-exclamation-triangle"></i>
+                                                <?php echo __('Problem with host detected!'); ?>
+                                            </h4>
+
+                                            <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                                <a ui-sref="HostsBrowser({id:host.Host.id})">
                                                     {{host.Host.hostname}}
-                                                <?php endif; ?>
-                                            </div>
+                                                </a>
+                                            <?php else: ?>
+                                                {{host.Host.hostname}}
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>

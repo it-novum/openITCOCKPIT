@@ -26,6 +26,12 @@ angular.module('openITCOCKPIT').directive('sidebar', function($http, $timeout, $
                 $scope.menuFilterPosition = -1;
             };
 
+            $scope.clearAndCloseMenu = function(){
+                $('#nav_filter_input').val('');
+                $('.page-sidebar').removeClass('list-filter-active');
+                $scope.resetMenuFilterSelectorPosition();
+            };
+
             $scope.navigate = function($event){
                 const RETURN_KEY = 13;
                 const ARROW_KEY_UP = 38;
@@ -55,9 +61,7 @@ angular.module('openITCOCKPIT').directive('sidebar', function($http, $timeout, $
                 }
 
                 if(keyCode === ESC){
-                    $('#nav_filter_input').val('');
-                    $('.page-sidebar').removeClass('list-filter-active');
-                    $scope.resetMenuFilterSelectorPosition();
+                    $scope.clearAndCloseMenu();
                     return;
                 }
 

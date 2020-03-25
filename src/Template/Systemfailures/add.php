@@ -62,7 +62,7 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="alert alert-info alert-block">
-                                    <a class="close" data-dismiss="alert" href="#">×</a>
+                                    <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
                                     <h4 class="alert-heading"><?php echo __('What are "System Failures" for?'); ?></h4>
                                     <?php echo __('<i>System failures</i> are outages of the openITCOCKPIT server itself. They need to be created manually.'); ?>
                                     <br/>
