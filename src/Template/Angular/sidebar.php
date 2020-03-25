@@ -76,7 +76,6 @@
         <ul menu
             id="js-nav-menu"
             class="nav-menu"
-            menu-filter-position="menuFilterPosition"
             phpplugin="<?= $this->getRequest()->getParam('plugin', '') ?>"
             phpcontroller="<?= $this->getRequest()->getParam('controller', '') ?>"
             phpaction="<?= $this->getRequest()->getParam('action', '') ?>">>
