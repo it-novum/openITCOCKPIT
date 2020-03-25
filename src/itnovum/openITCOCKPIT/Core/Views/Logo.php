@@ -30,6 +30,7 @@ class Logo {
     private $smallLogoName = 'logo_small.png';
 
     private $logoBasePath = '%s/img/logos/%s';
+    private $logoBaseForAbsolutePath = '%simg/logos/%s';
 
     private $customLogoName = 'logo_custom.png';
     private $customSmallLogoName = 'logo_small_custom.png';
@@ -133,14 +134,14 @@ class Logo {
      * @return string
      */
     public function getCustomLogoDiskPath() {
-        return sprintf($this->logoBasePath, APP, $this->customLogoName);
+        return sprintf($this->logoBaseForAbsolutePath, WWW_ROOT, $this->customLogoName);
     }
 
     /**
      * @return string
      */
     public function getCustomSmallLogoDiskPath() {
-        return sprintf($this->logoBasePath, APP, $this->customSmallLogoName);
+        return sprintf($this->logoBaseForAbsolutePath, WWW_ROOT, $this->customSmallLogoName);
     }
 
 
