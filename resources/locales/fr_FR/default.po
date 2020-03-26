@@ -6359,7 +6359,7 @@ msgid "Register Agent in pull mode"
 msgstr ""
 
 #: src/Template/Agentconnector/config.php:202
-msgid "If you configure the Agent in pull mode, it has to be reachable threw the network."
+msgid "If you configure the Agent in pull mode, it has to be reachable through the network."
 msgstr ""
 
 #: src/Template/Agentconnector/config.php:204
