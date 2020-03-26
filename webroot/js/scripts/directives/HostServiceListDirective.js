@@ -23,7 +23,7 @@ angular.module('openITCOCKPIT').directive('hostServiceList', function($http){
                     }
                 };
             };
-
+            var startTimestamp = new Date().getTime();
             var graphStart = 0;
             var graphEnd = 0;
 
@@ -95,12 +95,16 @@ angular.module('openITCOCKPIT').directive('hostServiceList', function($http){
 
             var loadGraph = function(host, service){
                 var serverTime = new Date($scope.timezone.server_time);
-                graphEnd = Math.floor(serverTime.getTime() / 1000);
+                var compareTimestamp = new Date().getTime();
+                var diffFromStartToNow = parseInt(compareTimestamp-startTimestamp,10);
+
+                graphEnd = Math.floor((serverTime.getTime()+diffFromStartToNow) / 1000);
                 graphStart = graphEnd - (3600 * 4);
+
                 $http.get('/Graphgenerators/getPerfdataByUuid.json', {
                     params: {
                         angular: true,
-                        host_uuid: host.uuid,
+                        host_uuid: host.Host.uuid,
                         service_uuid: service.Service.uuid,
                         start: graphStart,
                         end: graphEnd,
@@ -120,14 +124,18 @@ angular.module('openITCOCKPIT').directive('hostServiceList', function($http){
                         var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
                         graph_data[dsCount].push([frontEndTimestamp, performance_data[dsCount].data[timestamp]]);
                     }
+                    //graph_data.push(performance_data[key].data);
                 }
-
+                var color_amount = performance_data.length < 3 ? 3 : performance_data.length;
 
                 var GraphDefaultsObj = new GraphDefaults();
-                var color_amount = performance_data.length < 3 ? 3 : performance_data.length;
+
                 var colors = GraphDefaultsObj.getColors(color_amount);
+
                 var options = GraphDefaultsObj.getDefaultOptions();
+                options.height = '500px';
                 options.colors = colors.border;
+
                 options.xaxis.tickFormatter = function(val, axis){
                     var fooJS = new Date(val);
                     var fixTime = function(value){
@@ -138,6 +146,8 @@ angular.module('openITCOCKPIT').directive('hostServiceList', function($http){
                     };
                     return fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
                 };
+                options.xaxis.mode = 'time';
+                options.xaxis.timeBase = 'milliseconds';
                 options.xaxis.min = (graphStart + $scope.timezone.user_time_to_server_offset) * 1000;
                 options.xaxis.max = (graphEnd + $scope.timezone.user_time_to_server_offset) * 1000;
 

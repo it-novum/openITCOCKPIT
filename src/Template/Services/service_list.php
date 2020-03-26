@@ -247,7 +247,7 @@
                                         <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                             <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                                class="txt-color-blueDark"
-                                               ng-mouseenter="mouseenter($event, host, service)"
+                                               ng-mouseenter="mouseenter($event, service)"
                                                ng-mouseleave="mouseleave()"
                                                ng-if="service.Service.has_graph">
                                                 <i class="fa fa-area-chart">
@@ -372,6 +372,12 @@
                             <enable-notifications></enable-notifications>
                             <acknowledge-service author="<?php echo h($username); ?>"></acknowledge-service>
                             <service-downtime author="<?php echo h($username); ?>"></service-downtime>
+                            <div id="serviceGraphContainer" class="popup-graph-container">
+                                <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;" ng-show="isLoadingGraph">
+                                    <i class="fa fa-refresh fa-4x fa-spin"></i>
+                                </div>
+                                <div id="serviceGraphFlot"></div>
+                            </div>
 
                             <div class="row margin-top-10 margin-bottom-10">
                                 <div class="col-xs-12 col-md-2 text-muted text-center">
