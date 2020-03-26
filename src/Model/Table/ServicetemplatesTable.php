@@ -1379,7 +1379,8 @@ class ServicetemplatesTable extends Table {
         }
 
         //Delete Documentation record if exists
-        /** @var $DocumentationsTable DocumentationsTable */
+        /** @var DocumentationsTable $DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
         if ($DocumentationsTable->existsByUuid($Servicetemplate->get('uuid'))) {
             $DocumentationsTable->delete($DocumentationsTable->getDocumentationByUuid($Servicetemplate->get('uuid')));
         }
