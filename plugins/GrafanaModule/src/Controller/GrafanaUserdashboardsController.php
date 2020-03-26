@@ -680,6 +680,8 @@ class GrafanaUserdashboardsController extends AppController {
         if ($id === null) {
             $id = $this->request->getData('id', 0);
         }
+        $success = false;
+        $message = '';
 
         /** @var GrafanaUserdashboardsTable $GrafanaUserdashboardsTable */
         $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
@@ -755,7 +757,6 @@ class GrafanaUserdashboardsController extends AppController {
                 $GrafanaDashboard->addRow($GrafanaRow);
             }
             $json = $GrafanaDashboard->getGrafanaDashboardJson();
-
             if ($json) {
                 $request = new Request('POST', $GrafanaApiConfiguration->getApiUrl() . '/dashboards/db', ['content-type' => 'application/json'], $json);
                 try {
@@ -786,9 +787,11 @@ class GrafanaUserdashboardsController extends AppController {
                     }
                 }
             }
-
         }
 
+        if($success === false){
+            $message = __('An error has been occured while synchronizing');
+        }
         $this->set('success', $success);
         $this->set('message', $message);
         $this->viewBuilder()->setOption('serialize', ['success', 'message']);

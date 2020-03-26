@@ -124,7 +124,7 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
                 $http.get("/services/loadServicesByContainerId.json", {
                     params: {
                         'angular': true,
-                        'filter[Hostx.name]': searchString,
+                        'filter[Hosts.name]': searchString,
                         'filter[servicename]': searchString,
                         'selected[]': selected,
                         'containerId': $scope.containerId,
