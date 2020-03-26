@@ -473,7 +473,7 @@
                                         <div ng-mouseenter="mouseenter($event, host, service)"
                                              ng-mouseleave="mouseleave()"
                                              ng-if="service.Service.has_graph">
-                                            <i class="fa fa-lg fa-area-chart">
+                                            <i class="fa fa-area-chart">
                                             </i>
                                         </div>
                                     <?php endif; ?>

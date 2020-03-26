@@ -25,11 +25,9 @@
 
 namespace itnovum\openITCOCKPIT\Grafana;
 
-use \Cake\Filesystem\File;
-
 class GrafanaTag {
 
-    private $tagfilePath = '/opt/openitc/etc/frontend/core/';
+    private $tagfilePath = '/opt/openitc/frontend/config/';
     private $tagfileName = 'openitcGrafanaTag.php';
 
     private function generateTag() {
@@ -38,32 +36,23 @@ class GrafanaTag {
 
     public function writeTagfile() {
         $fullTagfilePath = $this->tagfilePath . $this->tagfileName;
-        $tagfile = new File($fullTagfilePath);
-        if ($tagfile->exists()) {
-            $tagfile->delete();
-        }
-        $tagfile = new File($fullTagfilePath, true, 0644);
 
-        try {
-            $tagfile->write($this->generateTag());
-        } catch (\Exception $e) {
-            echo $e->getMessage();
+        if (file_exists($fullTagfilePath)) {
+            unlink($fullTagfilePath);
         }
-
+        $tagfile = fopen($fullTagfilePath, 'w+');
+        fwrite($tagfile, $this->generateTag());
+        fclose($tagfile);
+        chmod($fullTagfilePath, 0644);
     }
 
     private function readTagFile() {
         $fullTagfilePath = $this->tagfilePath . $this->tagfileName;
-        $tagfile = new File($fullTagfilePath);
-        try {
-            if (!$tagfile->exists()) {
-                //throw new Exception('Tag File could not be found in '. $this->tagfilePath);
-                $this->writeTagfile();
-            }
-        } catch (\Exception $e) {
-            echo $e->getMessage();
+        if (!file_exists($fullTagfilePath)) {
+            $this->writeTagfile();
         }
-        return $tagfile->read();
+
+        return trim(file_get_contents($fullTagfilePath));
     }
 
     /**
