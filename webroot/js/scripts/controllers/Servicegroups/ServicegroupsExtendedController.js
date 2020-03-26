@@ -23,6 +23,7 @@ angular.module('openITCOCKPIT')
             $scope.post.Servicegroup.id = parseInt($scope.post.Servicegroup.id, 10);
         }
 
+        var startTimestamp = new Date().getTime();
         var graphStart = 0;
         var graphEnd = 0;
 
@@ -137,7 +138,10 @@ angular.module('openITCOCKPIT')
 
         var loadGraph = function(host, service){
             var serverTime = new Date($scope.timezone.server_time);
-            graphEnd = Math.floor(serverTime.getTime() / 1000);
+            var compareTimestamp = new Date().getTime();
+            var diffFromStartToNow = parseInt(compareTimestamp-startTimestamp,10);
+
+            graphEnd = Math.floor((serverTime.getTime()+diffFromStartToNow) / 1000);
             graphStart = graphEnd - (3600 * 4);
 
             $http.get('/Graphgenerators/getPerfdataByUuid.json', {

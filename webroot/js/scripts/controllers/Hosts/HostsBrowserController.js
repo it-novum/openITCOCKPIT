@@ -1,6 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, $stateParams, $state, SortService, $interval, StatusHelperService, UuidService){
 
+        var startTimestamp = new Date().getTime();
         //$scope.id = QueryStringService.getCakeId();
         $scope.id = $stateParams.id;
 
@@ -328,7 +329,10 @@ angular.module('openITCOCKPIT')
 
         var loadGraph = function(hostUuid, service){
             var serverTime = new Date($scope.timezone.server_time);
-            graphEnd = Math.floor(serverTime.getTime() / 1000);
+            var compareTimestamp = new Date().getTime();
+            var diffFromStartToNow = parseInt(compareTimestamp-startTimestamp,10);
+
+            graphEnd = Math.floor((serverTime.getTime()+diffFromStartToNow)  / 1000);
             graphStart = graphEnd - (3600 * 4);
 
             $http.get('/Graphgenerators/getPerfdataByUuid.json', {
