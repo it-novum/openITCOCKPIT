@@ -113,6 +113,22 @@ class InstantreportsController extends AppController {
         /** @var $InstantreportsTable InstantreportsTable */
         $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
+
+            /** @var $TimeperiodsTable TimeperiodsTable */
+            $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+            $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->getData('Instantreport.timeperiod_id'));
+
+            if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', [
+                    'timeperiod_id' => [
+                        'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
+                    ]
+                ]);
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
             $instantreport = $InstantreportsTable->newEmptyEntity();
             $instantreport = $InstantreportsTable->patchEntity($instantreport, $this->request->getData('Instantreport'));
             $InstantreportsTable->save($instantreport);
@@ -154,6 +170,22 @@ class InstantreportsController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
+
+            /** @var $TimeperiodsTable TimeperiodsTable */
+            $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+            $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->getData('Instantreport.timeperiod_id'));
+
+            if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', [
+                    'timeperiod_id' => [
+                        'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
+                    ]
+                ]);
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
             $data = $this->request->getData('Instantreport');
             $instantreport = $InstantreportsTable->get($id);
             $instantreport = $InstantreportsTable->patchEntity($instantreport, $data);
