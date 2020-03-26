@@ -163,13 +163,6 @@ class DowntimereportsController extends AppController {
             return;
         }
 
-        if ($this->isJsonRequest()) {
-            //Only validate parameters
-            $this->set('success', true);
-            $this->viewBuilder()->setOption('serialize', ['success']);
-            return;
-        }
-
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
@@ -179,6 +172,7 @@ class DowntimereportsController extends AppController {
 
         $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->getQuery('data.timeperiod_id', 0));
         if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
+
             $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'timeperiod_id' => [
@@ -211,6 +205,13 @@ class DowntimereportsController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
+        if ($this->isJsonRequest()) {
+            //Only validate parameters
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
         $downtimeReport = $this->createReport(
             $fromDate,
             $toDate,
