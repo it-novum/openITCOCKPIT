@@ -27,7 +27,7 @@ namespace itnovum\openITCOCKPIT\Grafana;
 
 class GrafanaTag {
 
-    private $tagfilePath = '/opt/openitc/etc/frontend/core/';
+    private $tagfilePath = '/opt/openitc/frontend/config/';
     private $tagfileName = 'openitcGrafanaTag.php';
 
     private function generateTag() {
