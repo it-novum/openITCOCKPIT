@@ -42,9 +42,8 @@
                        placeholder="<?= __('Type to search'); ?>"
                        class="form-control"
                        tabindex="0" ng-keydown="navigate($event)">
-                <a href="javascript:void(0);" class="btn-primary btn-search-close js-waves-off"
-                   data-action="toggle" data-class="list-filter-active" data-target=".page-sidebar">
-                    <i class="fa fa-chevron-up"></i>
+                <a class="btn-primary btn-search-close js-waves-off" ng-click="clearAndCloseMenu()">
+                    <i class="fa fa-chevron-up color-white"></i>
                 </a>
             </div>
         </div>
@@ -77,7 +76,6 @@
         <ul menu
             id="js-nav-menu"
             class="nav-menu"
-            menu-filter-position="menuFilterPosition"
             phpplugin="<?= $this->getRequest()->getParam('plugin', '') ?>"
             phpcontroller="<?= $this->getRequest()->getParam('controller', '') ?>"
             phpaction="<?= $this->getRequest()->getParam('action', '') ?>">>

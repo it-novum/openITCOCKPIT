@@ -27,7 +27,7 @@
 <li ng-repeat-start="headline in menu" class="nav-title">
     {{headline.alias}}
 </li>
-<li ng-repeat-end="" ng-repeat="item in headline.items">
+<li ng-repeat-end="" ng-repeat="item in headline.items" ng-class="{'menufilterSelectable': !item.items}">
     <a ng-if="!item.items" ui-sref="{{item.state}}" class="waves-effect waves-themed"
        title="{{item.name}}" data-filter-tags="{{item.tags}}">
         <i class="{{item.icon}}"></i>
@@ -44,7 +44,7 @@
         </span>
     </a>
     <ul ng-if="item.items.length > 0">
-        <li ng-repeat="subItem in item.items">
+        <li ng-repeat="subItem in item.items" class="menufilterSelectable">
             <a ui-sref="{{subItem.state}}" class="waves-effect waves-themed"
                title="{{subItem.name}}" data-filter-tags="{{subItem.tags}}">
                 <i class="{{subItem.icon}}"></i>
