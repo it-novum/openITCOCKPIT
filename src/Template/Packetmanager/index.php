@@ -54,7 +54,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 
 <?php if ($LsbRelease->getCodename() === 'trusty'): ?>
     <div class="alert alert-danger alert-block">
-        <a class="close" data-dismiss="alert" href="#">×</a>
+        <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
         <h4 class="alert-heading">
             <i class="fa fa-warning"></i>
             <?php echo __('Ubuntu Trusty 14.04 end of life!'); ?>
@@ -68,7 +68,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 
 <?php if ($LsbRelease->getCodename() === 'jessie'): ?>
     <div class="alert alert-danger alert-block">
-        <a class="close" data-dismiss="alert" href="#">×</a>
+        <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
         <h4 class="alert-heading">
             <i class="fa fa-warning"></i>
             <?php echo __('Debian Jessie 8 end of life!'); ?>

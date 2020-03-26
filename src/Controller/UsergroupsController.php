@@ -177,6 +177,7 @@ class UsergroupsController extends AppController {
         }
         $ArosAcosTable->saveMany($arosToAcos);
 
+        Cache::clear('permissions');
         $this->set('usergroup', $usergroup);
         $this->viewBuilder()->setOption('serialize', ['usergroup']);
     }
@@ -268,7 +269,9 @@ class UsergroupsController extends AppController {
                     '_delete' => (int)($state === 1),
                 ]);
             }
+
             $ArosAcosTable->saveMany($arosToAcos);
+            Cache::clear('permissions');
             $this->set('usergroup', $usergroup);
             $this->viewBuilder()->setOption('serialize', ['usergroup']);
         }

@@ -12,6 +12,7 @@ angular.module('openITCOCKPIT').directive('colorpickerDirective', function(){
 
         link: function($scope, element, attr){
             jQuery(element).colorpicker({
+                color: $scope.model,
                 format: 'auto'
             });
         }

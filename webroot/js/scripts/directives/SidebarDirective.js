@@ -26,13 +26,30 @@ angular.module('openITCOCKPIT').directive('sidebar', function($http, $timeout, $
                 $scope.menuFilterPosition = -1;
             };
 
+            $scope.resetMenuFilterClasses = function(list){
+                var listPrev = $(list).next().filter('.js-filter-message');
+                $(list).find('[data-filter-tags]').parentsUntil(list).removeClass('js-filter-hide js-filter-show');
+
+                /* if element exists reset print results */
+                if(listPrev){
+                    listPrev.text("");
+                }
+            };
+
+            $scope.clearAndCloseMenu = function(){
+                $('#nav_filter_input').val('');
+                $('.page-sidebar').removeClass('list-filter-active');
+                $scope.resetMenuFilterSelectorPosition();
+                $scope.resetMenuFilterClasses($('#js-nav-menu'));
+            };
+
             $scope.navigate = function($event){
                 const RETURN_KEY = 13;
                 const ARROW_KEY_UP = 38;
                 const ARROW_KEY_DOWN = 40;
                 const ESC = 27;
                 var keyCode = $event.keyCode;
-                var filteredObjects = $('li.js-filter-show');
+                var filteredObjects = $('li.js-filter-show.menufilterSelectable');
 
                 if(keyCode === RETURN_KEY && $scope.menuFilterPosition > -1){
                     filteredObjects.each(function(index){
@@ -55,9 +72,7 @@ angular.module('openITCOCKPIT').directive('sidebar', function($http, $timeout, $
                 }
 
                 if(keyCode === ESC){
-                    $('#nav_filter_input').val('');
-                    $('.page-sidebar').removeClass('list-filter-active');
-                    $scope.resetMenuFilterSelectorPosition();
+                    $scope.clearAndCloseMenu();
                     return;
                 }
 
@@ -103,8 +118,7 @@ angular.module('openITCOCKPIT').directive('sidebar', function($http, $timeout, $
                 /* on change keyboard */
                 $(input).change(function(){
 
-                    var filter = $(this).val().toLowerCase(),
-                        listPrev = $(list).next().filter('.js-filter-message');
+                    var filter = $(this).val().toLowerCase();
 
                     /* when user types more than 1 letter start search filter */
                     if(filter.length > 1){
@@ -130,6 +144,7 @@ angular.module('openITCOCKPIT').directive('sidebar', function($http, $timeout, $
                             .addClass('js-filter-show');
 
                         /* if element exists then print results */
+                        var listPrev = $(list).next().filter('.js-filter-message');
                         if(listPrev){
                             listPrev.text("showing " + $(list).find('li.js-filter-show').length + " from " + $(list).find('[data-filter-tags]').length + " total");
                         }
@@ -137,12 +152,7 @@ angular.module('openITCOCKPIT').directive('sidebar', function($http, $timeout, $
                     }else{
                         $scope.resetMenuFilterSelectorPosition();
                         /* when filter length is blank reset the classes */
-                        $(list).find('[data-filter-tags]').parentsUntil(list).removeClass('js-filter-hide js-filter-show');
-
-                        /* if element exists reset print results */
-                        if(listPrev){
-                            listPrev.text("");
-                        }
+                        $scope.resetMenuFilterClasses(list);
                     }
 
                     return false;

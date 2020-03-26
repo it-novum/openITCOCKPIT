@@ -1,9 +1,10 @@
 #!/bin/bash
 if [[ $1 == "--help" ]]; then
   echo "Supported parameters:"
-  echo "--rights         Reset file permissions"
-  echo "--cc             Clear model cache"
-  echo "--no-restart     Do not restart services at the end of the update"
+  echo "--rights             Reset file permissions"
+  echo "--cc                 Clear model cache"
+  echo "--no-restart         Do not restart services at the end of the update"
+  echo "--no-system-files    Do not copy files from system folder like nginx or php-fpm configs"
 
   exit 0
 fi
@@ -152,6 +153,7 @@ echo "Check for browser push notification commands"
 #oitc systemsettings_import
 
 NORESTART=false
+NOSYSTEMFILES=false
 for i in "$@"; do
   case $i in
   --cc)
@@ -165,6 +167,10 @@ for i in "$@"; do
 
   --no-restart)
     NORESTART=true
+    ;;
+
+    --no-system-files)
+    NOSYSTEMFILES=true
     ;;
 
   *)
@@ -188,15 +194,18 @@ fi
 
 OSVERSION=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
 
-echo "Copy required system files"
-cp -r ${APPDIR}/system/etc/. /etc/
-cp -r ${APPDIR}/system/lib/. /lib/
-cp -r ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/
-cp -r ${APPDIR}/system/usr/. /usr/
-cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.conf
-# only ensure that the files exist
-touch /etc/nginx/openitc/ssl_cert.conf
-touch /etc/nginx/openitc/custom.conf
+if [[ "$NOSYSTEMFILES" == "false" ]]; then
+  echo "Copy required system files"
+  cp -r ${APPDIR}/system/etc/. /etc/
+  cp -r ${APPDIR}/system/lib/. /lib/
+  cp -r ${APPDIR}/system/fpm/. /etc/php/${PHPVersion}/fpm/
+  cp -r ${APPDIR}/system/usr/. /usr/
+  cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.conf
+  # only ensure that the files exist
+  touch /etc/nginx/openitc/ssl_cert.conf
+  touch /etc/nginx/openitc/custom.conf
+fi
+
 chmod +x /usr/bin/oitc
 
 echo "Create required system folders"

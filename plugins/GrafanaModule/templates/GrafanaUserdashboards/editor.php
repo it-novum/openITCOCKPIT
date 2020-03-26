@@ -44,7 +44,7 @@
 
 <?php if ($hasGrafanaConfig === false): ?>
     <div class="alert alert-danger alert-block">
-        <a class="close" data-dismiss="alert" href="#">×</a>
+        <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
         <h4 class="alert-heading"><?php echo __('No Grafana configuration found!'); ?></h4>
         <?php
         $msg = __('Grafana Configuration');

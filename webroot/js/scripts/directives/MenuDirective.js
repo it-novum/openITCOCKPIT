@@ -5,15 +5,10 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
         scope: {
             phpplugin: '@',
             phpcontroller: '@',
-            phpaction: '@',
-            menuFilterPosition: '@'
+            phpaction: '@'
         },
 
         controller: function($scope){
-            $scope.menuFilter = '';
-            $scope.currentMenu = [];
-            $scope.menuMatches = [];
-            $scope.menuFilterPosition = -1;
             $scope.menuLoaded = false;
 
             $scope.load = function(){
@@ -27,112 +22,7 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
                 });
             };
 
-            $scope.isActiveChild = function(childNode){
-                let urlController = $scope.phpcontroller;
-                let urlAction = $scope.phpaction;
-                let urlPlugin = $scope.phpplugin;
-                if(window.location.href.includes('/ng/#!/')){
-                    let oldUrlParams = window.location.href.split('/ng/#!/')[1].split('/');
-                    if(oldUrlParams[0].includes('_module')){
-                        urlPlugin = oldUrlParams[0];
-                        urlController = oldUrlParams[1];
-                        urlAction = oldUrlParams[2] ? oldUrlParams[2] : "index";
-                    }else{
-                        urlController = oldUrlParams[0];
-                        urlAction = oldUrlParams[1] ? oldUrlParams[1] : "index";
-                    }
-                }
-                if(childNode.url_array.plugin == urlPlugin){
-                    if(childNode.url_array.controller === urlController){
-                        if(childNode.url_array.action === urlAction){
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            };
-
-            $scope.isActiveParent = function(parentNode){
-                let urlController = $scope.phpcontroller;
-                let urlAction = $scope.phpaction;
-                let urlPlugin = $scope.phpplugin;
-                if(window.location.href.includes('/ng/#!/')){
-                    let oldUrlParams = window.location.href.split('/ng/#!/')[1].split('/');
-                    if(oldUrlParams[0].includes('_module')){
-                        urlPlugin = oldUrlParams[0];
-                        urlController = oldUrlParams[1];
-                        urlAction = oldUrlParams[2] ? oldUrlParams[2] : "index";
-                    }else{
-                        urlController = oldUrlParams[0];
-                        urlAction = oldUrlParams[1] ? oldUrlParams[1] : "index";
-                    }
-                }
-
-                if(parentNode.url_array && parentNode.url_array.plugin == urlPlugin){
-                    if(parentNode.url_array.controller === urlController){
-                        if(parentNode.url_array.action === urlAction){
-                            return true;
-                        }
-                    }
-                }
-
-                if(parentNode.children.length > 0){
-                    for(var index in parentNode.children){
-                        if($scope.isActiveChild(parentNode.children[index])){
-                            return true;
-                        }
-                    }
-                }
-
-                return false;
-            };
-
-            $scope.isActiveParentStyle = function(parentNode){
-                if($scope.isActiveParent(parentNode)){
-                    return 'display:block;';
-                }
-                return '';
-            };
-
-            $scope.parentHref = function(parentNode){
-                if(parentNode.children.length > 0){
-                    return '#';
-                }
-                return parentNode.url;
-            };
-
             $scope.load();
-
-            $scope.$watch('menuFilter', function(){
-                var searchString = $scope.menuFilter;
-                if(searchString.length === 0){
-                    $scope.menuMatches = [];
-                    $scope.menuFilterPosition = -1;
-                    return;
-                }
-
-                $scope.menuMatches = [];
-                $scope.menuFilterPosition = -1;
-                searchString = searchString.toLowerCase().replace(/ /g, '');
-                for(var parentKey in $scope.menu){
-                    if($scope.menu[parentKey].children.length === 0){
-                        //Search parent records, that have no child elements
-                        var parentTitle = $scope.menu[parentKey].title.toLowerCase().replace(/ /g, '');
-                        if(parentTitle.match(searchString)){
-                            $scope.menuMatches.push($scope.menu[parentKey]);
-                        }
-                    }
-
-                    //Search in child items
-                    for(var childKey in $scope.menu[parentKey].children){
-                        var title = $scope.menu[parentKey].children[childKey].title.toLowerCase().replace(/ /g, '');
-                        if(title.match(searchString)){
-                            $scope.menuMatches.push($scope.menu[parentKey].children[childKey]);
-                        }
-                    }
-                }
-            });
-
         },
 
         link: function($scope, element, attrs){

@@ -49,7 +49,7 @@ class Agentconnector extends AbstractMigration {
                     'limit'   => 255,
                     'null'    => false,
                 ])
-                ->addColumn('checkdata', 'json', [
+                ->addColumn('checkdata', 'text', [
                     'default' => null,
                     'null'    => true,
                 ])

@@ -60,7 +60,7 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="alert alert-info alert-block">
-                                <a class="close" data-dismiss="alert" href="#">×</a>
+                                <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
                                 <h4 class="alert-heading"><?php echo __('What is this API for?'); ?></h4>
                                 <?php echo __('This API can be used by third party application to send commands to the monitoring backend.'); ?>
                                 <br/>

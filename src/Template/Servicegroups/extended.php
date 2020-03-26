@@ -51,7 +51,7 @@
 
 
 <div class="alert alert-success alert-block" ng-show="showFlashSuccess">
-    <a href="#" data-dismiss="alert" class="close">×</a>
+    <a href="javascript:void(0);" data-dismiss="alert" class="close">×</a>
     <h4 class="alert-heading"><i class="fa fa-check-circle"></i> <?php echo __('Command sent successfully'); ?></h4>
     <?php echo __('Data refresh in'); ?> {{ autoRefreshCounter }} <?php echo __('seconds...'); ?>
 </div>
