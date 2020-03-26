@@ -12,6 +12,7 @@ angular.module('openITCOCKPIT').directive('hostServiceList', function($http){
 
             $scope.deleteUrl = '/services/delete/';
             $scope.deactivateUrl = '/services/deactivate/';
+            $scope.mouseout = true;
 
             $scope.init = true;
             /*** Filter Settings ***/
@@ -48,13 +49,16 @@ angular.module('openITCOCKPIT').directive('hostServiceList', function($http){
 
 
             $scope.mouseenter = function($event, host, service){
+                $scope.mouseout = false;
                 $scope.isLoadingGraph = true;
                 var offset = {
                     top: $event.relatedTarget.offsetTop + 40,
                     left: $event.relatedTarget.offsetLeft + 40
                 };
 
-                offset.top += $event.relatedTarget.offsetParent.offsetTop;
+                if($event.relatedTarget.offsetParent && $event.relatedTarget.offsetParent.offsetTop){
+                    offset.top += $event.relatedTarget.offsetParent.offsetTop;
+                }
 
                 var currentScrollPosition = $(window).scrollTop();
 
@@ -83,6 +87,7 @@ angular.module('openITCOCKPIT').directive('hostServiceList', function($http){
             };
 
             $scope.mouseleave = function(){
+                $scope.mouseout = true;
                 $('#serviceGraphContainer').hide();
                 $('#serviceGraphFlot').html('');
             };
@@ -136,7 +141,13 @@ angular.module('openITCOCKPIT').directive('hostServiceList', function($http){
                 options.xaxis.min = (graphStart + $scope.timezone.user_time_to_server_offset) * 1000;
                 options.xaxis.max = (graphEnd + $scope.timezone.user_time_to_server_offset) * 1000;
 
-                self.plot = $.plot('#serviceGraphFlot', graph_data, options);
+                if(document.getElementById('serviceGraphFlot') && !$scope.mouseout){
+                    try{
+                        self.plot = $.plot('#serviceGraphFlot', graph_data, options);
+                    }catch(e){
+                        console.error(e);
+                    }
+                }
             };
 
             //Fire on page load

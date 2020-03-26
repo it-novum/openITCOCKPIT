@@ -14,6 +14,7 @@ angular.module('openITCOCKPIT')
         $scope.deleteUrl = '/services/delete/';
         $scope.deactivateUrl = '/services/deactivate/';
         $scope.activateUrl = '/services/enable/';
+        $scope.mouseout = true;
 
         $scope.activeTab = 'active';
 
@@ -245,13 +246,16 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.mouseenter = function($event, host, service){
+            $scope.mouseout = false;
             $scope.isLoadingGraph = true;
             var offset = {
                 top: $event.relatedTarget.offsetTop + 40,
                 left: $event.relatedTarget.offsetLeft + 40
             };
 
-            offset.top += $event.relatedTarget.offsetParent.offsetTop;
+            if($event.relatedTarget.offsetParent && $event.relatedTarget.offsetParent.offsetTop){
+                offset.top += $event.relatedTarget.offsetParent.offsetTop;
+            }
 
             var currentScrollPosition = $(window).scrollTop();
 
@@ -280,6 +284,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.mouseleave = function(){
+            $scope.mouseout = true;
             $('#serviceGraphContainer').hide();
             $('#serviceGraphFlot').html('');
         };
@@ -292,7 +297,7 @@ angular.module('openITCOCKPIT')
             $http.get('/Graphgenerators/getPerfdataByUuid.json', {
                 params: {
                     angular: true,
-                    host_uuid: host.Host.uuid,
+                    host_uuid: host.uuid,
                     service_uuid: service.Service.uuid,
                     start: graphStart,
                     end: graphEnd,
@@ -331,7 +336,13 @@ angular.module('openITCOCKPIT')
             options.xaxis.min = (graphStart + $scope.timezone.user_time_to_server_offset) * 1000;
             options.xaxis.max = (graphEnd + $scope.timezone.user_time_to_server_offset) * 1000;
 
-            self.plot = $.plot('#serviceGraphFlot', graph_data, options);
+            if(document.getElementById('serviceGraphFlot') && !$scope.mouseout){
+                try{
+                    self.plot = $.plot('#serviceGraphFlot', graph_data, options);
+                }catch(e){
+                    console.error(e);
+                }
+            }
         };
 
         $scope.$watch('data.hostId', function(){

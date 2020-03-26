@@ -61,6 +61,7 @@ angular.module('openITCOCKPIT')
         $scope.timelineIsLoading = false;
         $scope.failureDurationInPercent = null;
         $scope.lastLoadDate = Date.now();
+        $scope.mouseout = true;
 
         $scope.selectedGrafanaTimerange = 'now-3h';
         $scope.selectedGrafanaAutorefresh = '60s';
@@ -106,7 +107,6 @@ angular.module('openITCOCKPIT')
                 $scope.areContactsInheritedFromHosttemplate = result.data.areContactsInheritedFromHosttemplate;
                 $scope.checkPeriod = result.data.checkPeriod;
                 $scope.notifyPeriod = result.data.notifyPeriod;
-
 
 
                 $scope.mergedHost.disabled = parseInt($scope.mergedHost.disabled, 10);
@@ -287,13 +287,16 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.mouseenter = function($event, hostUuid, service){
+            $scope.mouseout = false;
             $scope.isLoadingGraph = true;
             var offset = {
                 top: $event.relatedTarget.offsetTop + 40,
                 left: $event.relatedTarget.offsetLeft + 40
             };
 
-            offset.top += $event.relatedTarget.offsetParent.offsetTop;
+            if($event.relatedTarget.offsetParent && $event.relatedTarget.offsetParent.offsetTop){
+                offset.top += $event.relatedTarget.offsetParent.offsetTop;
+            }
 
             var currentScrollPosition = $(window).scrollTop();
 
@@ -322,6 +325,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.mouseleave = function(){
+            $scope.mouseout = true;
             $('#serviceGraphContainer').hide();
             $('#serviceGraphFlot').html('');
         };
@@ -375,7 +379,14 @@ angular.module('openITCOCKPIT')
 
             options.xaxis.min = (graphStart + $scope.timezone.user_time_to_server_offset) * 1000;
             options.xaxis.max = (graphEnd + $scope.timezone.user_time_to_server_offset) * 1000;
-            self.plot = $.plot('#serviceGraphFlot', graph_data, options);
+
+            if(document.getElementById('serviceGraphFlot') && !$scope.mouseout){
+                try{
+                    self.plot = $.plot('#serviceGraphFlot', graph_data, options);
+                }catch(e){
+                    console.error(e);
+                }
+            }
         };
 
         $scope.stateIsUp = function(){
@@ -577,20 +588,15 @@ angular.module('openITCOCKPIT')
             var itemEnd = item.end.getTime();
             if(itemEnd < start){
                 return false;
-            }
-            else if(itemStart > end){
+            }else if(itemStart > end){
                 return false;
-            }
-            else if(itemStart >= start && itemEnd <= end){
+            }else if(itemStart >= start && itemEnd <= end){
                 return true;
-            }
-            else if(itemStart >= start && itemEnd > end){ //item started behind the start and ended behind the end
+            }else if(itemStart >= start && itemEnd > end){ //item started behind the start and ended behind the end
                 return true;
-            }
-            else if(itemStart < start && itemEnd > start && itemEnd < end){ //item started before the start and ended behind the end
+            }else if(itemStart < start && itemEnd > start && itemEnd < end){ //item started before the start and ended behind the end
                 return true;
-            }
-            else if(itemStart < start && itemEnd >= end){ // item startet before the start and enden before the end
+            }else if(itemStart < start && itemEnd >= end){ // item startet before the start and enden before the end
                 return true;
             }
             return false;

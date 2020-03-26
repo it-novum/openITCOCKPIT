@@ -198,13 +198,13 @@
                                     <?php echo __('Status'); ?>
                                 </th>
                                 <th class="width-20 text-center">
-                                    <i class="fa fa-user fa-lg" title="is acknowledged"></i>
+                                    <i class="fa fa-user" title="is acknowledged"></i>
                                 </th>
                                 <th class="width-20 text-center">
-                                    <i class="fa fa-power-off fa-lg" title="is in downtime"></i>
+                                    <i class="fa fa-power-off" title="is in downtime"></i>
                                 </th>
                                 <th class="width-20 text-center">
-                                    <i class="fa fa fa-area-chart fa-lg" title="Grapher"></i>
+                                    <i class="fa fa-area-chart" title="Grapher"></i>
                                 </th>
                                 <th class="width-20 text-center">
                                     <strong title="<?php echo __('Passively transferred service'); ?>">
@@ -263,19 +263,20 @@
                                 <td class="text-center">
                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                         <a ui-sref="ServicesBrowser({id: service.Service.id})"
-                                           class="txt-color-blueDark">
-                                            <i class="fa fa-area-chart"
-                                               ng-mouseenter="mouseenter($event, service.Host, service)"
-                                               ng-mouseleave="mouseleave()"
-                                               ng-if="service.Service.has_graph">
-                                            </i>
-                                        </a>
-                                    <?php else: ?>
-                                        <i class="fa fa-area-chart"
+                                           class="txt-color-blueDark"
                                            ng-mouseenter="mouseenter($event, service.Host, service)"
                                            ng-mouseleave="mouseleave()"
                                            ng-if="service.Service.has_graph">
-                                        </i>
+                                            <i class="fa fa-area-chart">
+                                            </i>
+                                        </a>
+                                    <?php else: ?>
+                                        <div ng-mouseenter="mouseenter($event, service.Host, service)"
+                                             ng-mouseleave="mouseleave()"
+                                             ng-if="service.Service.has_graph">
+                                            <i class="fa fa-area-chart">
+                                            </i>
+                                        </div>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-center">
