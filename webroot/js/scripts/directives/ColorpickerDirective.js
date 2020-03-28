@@ -3,17 +3,19 @@ angular.module('openITCOCKPIT').directive('colorpickerDirective', function(){
         restrict: 'E',
         templateUrl: '/angular/colorpicker.html',
         replace: true,
-        scope: {
-            'model': '='
-        },
+        require:'ngModel',
 
         controller: function($scope){
         },
 
-        link: function($scope, element, attr){
+        link: function($scope, element, attr, ctrl){
             jQuery(element).colorpicker({
-                color: $scope.model,
-                format: 'auto'
+                color: ctrl.$modelValue,
+                format: 'hex',
+                adjustableNumbers: true,
+
+            }).on('colorpickerChange colorpickerCreate', function (e){
+                ctrl.$setViewValue(e.color.string());
             });
         }
     };
