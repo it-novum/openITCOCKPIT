@@ -420,6 +420,7 @@ class AgentconnectorController extends AppController {
         $this->set('servicesToCreate', '');
         $this->set('config', '');
         $this->set('mode', '');
+        $this->set('error', '');
 
         if ($AgenthostscacheTable->existsByHostuuid($uuid)) {
             $Agenthostscache = $AgenthostscacheTable->getByHostUuid($uuid);
@@ -445,7 +446,7 @@ class AgentconnectorController extends AppController {
                 }
                 $this->set('mode', 'pull');
             } catch (\Exception | GuzzleException $e) {
-                //var_dump($e);
+                $this->set('error', $e->getMessage());
             }
         }
 
@@ -454,7 +455,7 @@ class AgentconnectorController extends AppController {
 
             $this->set('servicesToCreate', $AgentServicesToCreate->getServicesForFrontend());
         }
-        $this->viewBuilder()->setOption('serialize', ['servicesToCreate', 'mode', 'config']);
+        $this->viewBuilder()->setOption('serialize', ['servicesToCreate', 'mode', 'config', 'error']);
     }
 
     /**
