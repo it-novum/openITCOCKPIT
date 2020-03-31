@@ -6,9 +6,10 @@ angular.module('openITCOCKPIT')
         $scope.installed = false;
         $scope.configured = false;
         $scope.servicesConfigured = false;
-        $scope.servicesToCreateRequestInterval = null;
+        $scope.stopServicesToCreateRequestInterval = false;
 
         $scope.resetAgentConfiguration = function(){
+            $scope.stopServicesToCreateRequestInterval = true;
             $scope.pullMode = false;
             $scope.pushMode = false;
             $scope.configured = false;
@@ -82,12 +83,9 @@ angular.module('openITCOCKPIT')
                 'max_worker_threads': 8
             };
 
-            if($scope.servicesToCreateRequestInterval !== null){
-                $interval.cancel($scope.servicesToCreateRequestInterval);
-            }
-
             $scope.serviceQueue = [];
             $scope.servicesToCreate = false;
+            $scope.servicesToCreateError = '';
             $scope.configTemplate = '';
             $scope.configTemplateCustomchecks = '';
             $scope.host = {
@@ -318,12 +316,6 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.isUuid = function(string){
-            var s = '' + string;
-            s = s.match('^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$');
-            return s !== null;
-        };
-
         $scope.getServiceMappingForAgentKey = function(name){
             var plugin = null;
             if(name.includes('__')){
@@ -346,17 +338,11 @@ angular.module('openITCOCKPIT')
         $scope.continueWithServiceConfiguration = function(){
             NotyService.scrollTop();
             $scope.installed = true;
-            // start interval to check /agentconnector/getServicesToCreateByHostUuid/$uuid.json
+            $scope.stopServicesToCreateRequestInterval = false;
 
-            if(!$scope.servicesToCreate){
+            // start interval to check /agentconnector/getServicesToCreateByHostUuid/$uuid.json
+            if(!$scope.servicesToCreate && !$scope.stopServicesToCreateRequestInterval){
                 $scope.getServicesToCreateByHostUuid();
-                $scope.servicesToCreateRequestInterval = $interval(function(){
-                    if($scope.servicesToCreate){
-                        $interval.cancel($scope.servicesToCreateRequestInterval);
-                    }else{
-                        $scope.getServicesToCreateByHostUuid();
-                    }
-                }, 10000);
             }
         };
 
@@ -418,6 +404,8 @@ angular.module('openITCOCKPIT')
             if($scope.host.uuid !== 'undefined' && $scope.host.uuid !== ''){
                 $http.get('/agentconnector/getServicesToCreateByHostUuid/' + $scope.host.uuid + '.json').then(function(result){
                     if(result.data.servicesToCreate && result.data.servicesToCreate !== ''){
+                        $scope.stopServicesToCreateRequestInterval = true;
+                        $scope.servicesToCreateError = '';
                         $scope.servicesToCreate = result.data.servicesToCreate;
                         $scope.createCheckdataDependingPreselection();
                         if(result.data.mode && result.data.mode !== ''){
@@ -445,6 +433,14 @@ angular.module('openITCOCKPIT')
                                 $scope.agentconfig[option] = tmpVal;
                             }
                         }
+                    }else if(result.data.error && result.data.error !== ''){
+                        $scope.servicesToCreateError = result.data.error;
+                    }
+
+                    if(!$scope.servicesToCreate && !$scope.stopServicesToCreateRequestInterval){
+                        setTimeout(function(){
+                            $scope.getServicesToCreateByHostUuid();
+                        }, 10000);
                     }
                 }, function errorCallback(result){
                     if(result.status === 403){
@@ -500,9 +496,7 @@ angular.module('openITCOCKPIT')
 
         //Disable interval if object gets removed from DOM.
         $scope.$on('$destroy', function(){
-            if($scope.servicesToCreateRequestInterval !== null){
-                $interval.cancel($scope.servicesToCreateRequestInterval);
-            }
+            $scope.stopServicesToCreateRequestInterval = true;
         });
 
         $scope.load();

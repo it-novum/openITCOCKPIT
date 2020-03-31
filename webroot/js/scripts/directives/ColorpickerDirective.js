@@ -2,21 +2,26 @@ angular.module('openITCOCKPIT').directive('colorpickerDirective', function(){
     return {
         restrict: 'E',
         templateUrl: '/angular/colorpicker.html',
+        scope: {
+            'post': '=',
+            'key': '='
+        },
         replace: true,
-        require:'ngModel',
 
         controller: function($scope){
+            jQuery(document).ready(function(){
+                jQuery($scope.element).spectrum({
+                    type: "color",
+                    showPalette: "false",
+                    showInput: "true"
+                });
+
+                jQuery($scope.element).spectrum("set", $scope.post[$scope.key]);
+            });
         },
 
         link: function($scope, element, attr, ctrl){
-            jQuery(element).colorpicker({
-                color: ctrl.$modelValue,
-                format: 'hex',
-                adjustableNumbers: true,
-
-            }).on('colorpickerChange colorpickerCreate', function (e){
-                ctrl.$setViewValue(e.color.string());
-            });
+            $scope.element = element;
         }
     };
 });

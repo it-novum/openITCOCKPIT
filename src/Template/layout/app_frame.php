@@ -115,6 +115,11 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     <link rel="manifest" href="/img/favicons/site.webmanifest">
 
     <?php
+
+    if (\Cake\Core\Plugin::isLoaded('DesignModule')){
+        //load custom design css file
+    }
+
     foreach ($scripts as $script):
         printf('<script src="/%s%s"></script>%s', $script, $fileVersion, PHP_EOL);
     endforeach;

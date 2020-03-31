@@ -23,6 +23,4 @@
 //  confirmation.
 ?>
 
-<span class="input-group-append">
-    <span class="input-group-text colorpicker-input-addon input-group-lg"><i></i></span>
-</span>
+<input />
