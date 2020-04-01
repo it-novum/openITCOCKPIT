@@ -13,7 +13,11 @@ angular.module('openITCOCKPIT').directive('colorpickerDirective', function(){
                 jQuery($scope.element).spectrum({
                     type: "color",
                     showPalette: "false",
-                    showInput: "true"
+                    showInput: "true",
+                    change: function(color) {
+                        $scope.post[$scope.key] = color.toHexString();
+                    }
+
                 });
 
                 jQuery($scope.element).spectrum("set", $scope.post[$scope.key]);
