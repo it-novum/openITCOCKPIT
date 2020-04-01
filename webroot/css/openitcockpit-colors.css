@@ -776,3 +776,9 @@ fieldset[disabled] .btn-unknown.active {
 .linkListAddMore > .icon-stack > .icon-stack-3x {
     color: #00C851;
 }
+
+
+.elementHighlighter{
+    color: #c51162;
+    background-color: #a51eff;
+}
