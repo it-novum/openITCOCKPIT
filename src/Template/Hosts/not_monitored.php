@@ -359,7 +359,7 @@
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
-                                <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
+                                <a ui-sref="HostsCopy({ids: linkForCopy()})" class="a-clean">
                                     <i class="fas fa-lg fa-files-o"></i>
                                     <?php echo __('Copy'); ?>
                                 </a>
