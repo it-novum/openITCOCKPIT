@@ -116,9 +116,6 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
 
     <?php
 
-    if (\Cake\Core\Plugin::isLoaded('DesignModule')){
-        //load custom design css file
-    }
 
     foreach ($scripts as $script):
         printf('<script src="/%s%s"></script>%s', $script, $fileVersion, PHP_EOL);
@@ -144,6 +141,15 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
             printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $cssFile, $fileVersion, PHP_EOL);
         endforeach;
     endif;
+
+    if (\Cake\Core\Plugin::isLoaded('DesignModule')) {
+        //load custom design css file
+        $customCss = PLUGIN . 'DesignModule' . DS . 'webroot' . DS . 'css' . DS . 'customStyle.css';
+        if (file_exists($customCss)) {
+            $customCss = 'design_module/css/customStyle.css';
+            printf('<link rel="stylesheet" type="text/css" href="%s%s">%s', $customCss, $fileVersion, PHP_EOL);
+        }
+    }
     ?>
 </head>
 <body class="mod-bg-1">
