@@ -38,7 +38,9 @@ use Cake\Console\ConsoleOptionParser;
 use Cake\Database\Connection;
 use Cake\Datasource\ConnectionManager;
 use Cake\Mailer\Mailer;
+use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigurator;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigValue;
@@ -117,8 +119,12 @@ class Update3To4Command extends Command {
             $io->success('done');
         }
 
+        //Set timezone to UTC to migrate between mysql DATETIME and php timestamp strtotime and so on...
+        date_default_timezone_set('UTC');
         $this->migrateHostNotifications();
         $this->migrateServiceNotifications();
+        $this->migrateHostStatehistory();
+        $this->migrateServiceStatehistory();
     }
 
     public function migrateEmailConfiguration() {
@@ -223,6 +229,8 @@ class Update3To4Command extends Command {
 
 
     public function migrateHostNotifications() {
+        $this->migrateParitions('nagios_notifications', 'statusengine_host_notifications');
+
         $hostNotificationsCount = $this->getHostNotificationsMigrationQuery(0, true);
         $numberOfSelects = ceil($hostNotificationsCount / $this->limit);
 
@@ -252,9 +260,9 @@ class Update3To4Command extends Command {
                 $params[] = $record['Contacts']['uuid'];
                 $params[] = $record['Commands']['uuid'];
                 $params[] = $record['state'];
-                $params[] = $record['start_time']->getTimestamp();
-                $params[] = $record['start_time']->getTimestamp();
-                $params[] = $record['end_time']->getTimestamp();
+                $params[] = strtotime($record['start_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = strtotime($record['end_time']);
                 $params[] = $record['notification_reason'];
                 $params[] = $record['output'];
             }
@@ -269,9 +277,13 @@ class Update3To4Command extends Command {
 
             $ProgressBar->update(($i + 1));
         }
+        $this->io->out('');
     }
 
     public function migrateServiceNotifications() {
+        $this->migrateParitions('nagios_notifications', 'statusengine_service_notifications');
+
+
         $serviceNotificationsCount = $this->getServiceNotificationsMigrationQuery(0, true);
         $numberOfSelects = ceil($serviceNotificationsCount / $this->limit);
 
@@ -302,9 +314,9 @@ class Update3To4Command extends Command {
                 $params[] = $record['Contacts']['uuid'];
                 $params[] = $record['Commands']['uuid'];
                 $params[] = $record['state'];
-                $params[] = $record['start_time']->getTimestamp();
-                $params[] = $record['start_time']->getTimestamp();
-                $params[] = $record['end_time']->getTimestamp();
+                $params[] = strtotime($record['start_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = strtotime($record['end_time']);
                 $params[] = $record['notification_reason'];
                 $params[] = $record['output'];
             }
@@ -319,6 +331,122 @@ class Update3To4Command extends Command {
 
             $ProgressBar->update(($i + 1));
         }
+        $this->io->out('');
+    }
+
+    public function migrateHostStatehistory() {
+        $this->migrateParitions('nagios_statehistory', 'statusengine_host_statehistory');
+
+
+        $hostStatehistoryCount = $this->getHostStatehistoryMigrationQuery(0, true);
+        $numberOfSelects = ceil($hostStatehistoryCount / $this->limit);
+
+        if ($hostStatehistoryCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating host statehistory');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $offset = 0;
+
+        $query = "
+        INSERT INTO statusengine_host_statehistory
+        (hostname, state_time, state_time_usec, state, state_change, is_hardstate, current_check_attempt, max_check_attempts, last_state, last_hard_state, output, long_output)
+        VALUES%s";
+
+        $baseValues = '(?,?,?,?,?,?,?,?,?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getHostStatehistoryMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+
+                $params[] = $record['Objects']['name1'];
+                $params[] = strtotime($record['state_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = $record['state'];
+                $params[] = $record['state_change'];
+                $params[] = $record['state_type'];
+                $params[] = $record['current_check_attempt'];
+                $params[] = $record['max_check_attempts'];
+                $params[] = $record['last_state'];
+                $params[] = $record['last_hard_state'];
+                $params[] = $record['output'];
+                $params[] = $record['long_output'];
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
+    }
+
+    public function migrateServiceStatehistory() {
+        $this->migrateParitions('nagios_statehistory', 'statusengine_service_statehistory');
+
+
+        $serviceStatehistoryCount = $this->getServiceStatehistoryMigrationQuery(0, true);
+        $numberOfSelects = ceil($serviceStatehistoryCount / $this->limit);
+
+        if ($serviceStatehistoryCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating service statehistory');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $offset = 0;
+
+        $query = "
+        INSERT INTO statusengine_service_statehistory
+        (hostname, service_description, state_time, state_time_usec, state, state_change, is_hardstate, current_check_attempt, max_check_attempts, last_state, last_hard_state, output, long_output)
+        VALUES%s";
+
+        $baseValues = '(?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getServiceStatehistoryMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+
+                $params[] = $record['Objects']['name1'];
+                $params[] = $record['Objects']['name2'];
+                $params[] = strtotime($record['state_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = $record['state'];
+                $params[] = $record['state_change'];
+                $params[] = $record['state_type'];
+                $params[] = $record['current_check_attempt'];
+                $params[] = $record['max_check_attempts'];
+                $params[] = $record['last_state'];
+                $params[] = $record['last_hard_state'];
+                $params[] = $record['output'];
+                $params[] = $record['long_output'];
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
     }
 
     /**
@@ -400,7 +528,9 @@ class Update3To4Command extends Command {
 
         $query->offset($offset);
         $query->limit($this->limit);
-        return $query;
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
     }
 
     private function getServiceNotificationsMigrationQuery(int $offset = 0, bool $asCount = false) {
@@ -494,6 +624,143 @@ class Update3To4Command extends Command {
         $query->offset($offset);
         $query->limit($this->limit);
         $query->disableHydration();
+        $query->disableResultsCasting();
         return $query->toArray();
+    }
+
+    private function getHostStatehistoryMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\StatehistoryHostsTable $StatehistoryHostsTable */
+        $StatehistoryHostsTable = TableRegistry::getTableLocator()->get('Statusengine2Module.StatehistoryHosts');
+
+        $query = $StatehistoryHostsTable->find();
+        $query
+            ->select([
+                'StatehistoryHosts.state_time',
+                'StatehistoryHosts.state',
+                'StatehistoryHosts.state_change',
+                'StatehistoryHosts.state_type',
+                'StatehistoryHosts.current_check_attempt',
+                'StatehistoryHosts.max_check_attempts',
+                'StatehistoryHosts.last_state',
+                'StatehistoryHosts.last_hard_state',
+                'StatehistoryHosts.output',
+                'StatehistoryHosts.long_output',
+
+                'Objects.name1'
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = StatehistoryHosts.object_id']
+            )
+            ->where([
+                'Objects.objecttype_id' => 1
+            ]);
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function getServiceStatehistoryMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\StatehistoryServicesTable $StatehistoryServicesTable */
+        $StatehistoryServicesTable = TableRegistry::getTableLocator()->get('Statusengine2Module.StatehistoryServices');
+
+        $query = $StatehistoryServicesTable->find();
+        $query
+            ->select([
+                'StatehistoryServices.state_time',
+                'StatehistoryServices.state',
+                'StatehistoryServices.state_change',
+                'StatehistoryServices.state_type',
+                'StatehistoryServices.current_check_attempt',
+                'StatehistoryServices.max_check_attempts',
+                'StatehistoryServices.last_state',
+                'StatehistoryServices.last_hard_state',
+                'StatehistoryServices.output',
+                'StatehistoryServices.long_output',
+
+                'Objects.name1',
+                'Objects.name2'
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = StatehistoryServices.object_id']
+            )
+            ->where([
+                'Objects.objecttype_id' => 2
+            ]);
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function migrateParitions(string $sourceTable, string $targetTable) {
+        $Connection = ConnectionManager::get('default');
+
+        //Get existing partitions for this table out of MySQL's information_schema
+        $query = $Connection->execute("
+                SELECT *   
+                FROM information_schema.partitions
+                WHERE TABLE_SCHEMA = :databaseName
+                AND TABLE_NAME = :tableName
+                ORDER BY partitions.PARTITION_DESCRIPTION ASC", [
+            'databaseName' => $Connection->config()['database'],
+            'tableName'    => $sourceTable
+        ]);
+        $partitionsInNdoSchema = $query->fetchAll('assoc');
+
+        $query = $Connection->execute("
+                SELECT *   
+                FROM information_schema.partitions
+                WHERE TABLE_SCHEMA = :databaseName
+                AND TABLE_NAME = :tableName
+                ORDER BY partitions.PARTITION_DESCRIPTION ASC", [
+            'databaseName' => $Connection->config()['database'],
+            'tableName'    => $targetTable
+        ]);
+        $partitionsInStatusengineSchema = $query->fetchAll('assoc');
+        $partitionsInStatusengineSchemaNames = Hash::extract($partitionsInStatusengineSchema, '{n}.PARTITION_NAME');
+
+        foreach ($partitionsInNdoSchema as $ndoPartition) {
+            if ($ndoPartition['PARTITION_NAME'] === 'p_max') {
+                continue;
+            }
+
+            if (!in_array($ndoPartition['PARTITION_NAME'], $partitionsInStatusengineSchemaNames, true)) {
+
+                //Get less than value
+                $query = $Connection->execute("SELECT FROM_DAYS(" . $ndoPartition['PARTITION_DESCRIPTION'] . ") as less_than");
+                $lessThan = $query->fetchAll('assoc');
+
+                $lessThan = strtotime($lessThan[0]['less_than'] . ' 00:00:00');
+                //debug($ndoPartition['PARTITION_NAME'] . ' => ' . date('d.m.o H:i:s', $lessThan) . ' => ' . intdiv($lessThan, 86400));
+                $currentMysqlPartitionStartDate = intdiv($lessThan, 86400);
+
+                $this->io->info(__('Create partition {0} in tablke {1}', $ndoPartition['PARTITION_NAME'], $targetTable), 0);
+                $Connection->execute("ALTER TABLE " . $Connection->config()['database'] . "." . $targetTable . " REORGANIZE PARTITION p_max INTO (PARTITION " . $ndoPartition['PARTITION_NAME'] . " VALUES LESS THAN (" . $currentMysqlPartitionStartDate . "), PARTITION p_max values LESS THAN (MAXVALUE));");
+                $this->io->success('   Ok');
+            }
+        }
+    }
+
+    /**
+     * @return float
+     */
+    private function getMicrotime() {
+        $microtime = explode(' ', microtime())[0];
+        return (int)ltrim($microtime, '0.');
     }
 }

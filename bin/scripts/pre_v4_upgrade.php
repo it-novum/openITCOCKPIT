@@ -46,6 +46,10 @@ class PreUpgradeScript {
         //    exec('systemctl stop ' . $service);
         //}
 
+        if(file_exists('/etc/cron.d/openitc')){
+            unlink('/etc/cron.d/openitc');
+        }
+
         $this->out('Pre upgrade tasks done.');
 
     }

@@ -21,7 +21,7 @@ DEBIANCNF=/etc/mysql/debian.cnf
 
 MYSQL_USER=$(php -r "echo parse_ini_file('/etc/openitcockpit/mysql.cnf')['user'];")
 MYSQL_DATABASE=$(php -r "echo parse_ini_file('/etc/openitcockpit/mysql.cnf')['database'];")
-MYSQL_PASSWORD=$(php -r "echo parse_ini_file('/etc/openitcockpit/mysql.cnf')['password'];")
+MYSQL_PASSWORD=$(awk '$1 == "password" { print }' "/etc/openitcockpit/mysql.cnf" |cut -d= -f2 | sed 's/^\s*//' | sed 's/\s*$//' | sed 's_/_\\/_g')
 
 PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 
