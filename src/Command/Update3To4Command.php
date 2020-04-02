@@ -117,7 +117,7 @@ class Update3To4Command extends Command {
             $io->success('done');
         }
 
-        //$this->migrateHostNotifications();
+        $this->migrateHostNotifications();
         $this->migrateServiceNotifications();
     }
 
@@ -223,45 +223,52 @@ class Update3To4Command extends Command {
 
 
     public function migrateHostNotifications() {
-        debug($this->getHostNotificationsMigrationQuery(0, true));
-        die();
-
-        $hostNotificationsCount = $this->NotificationHost->find('count', $query);
+        $hostNotificationsCount = $this->getHostNotificationsMigrationQuery(0, true);
         $numberOfSelects = ceil($hostNotificationsCount / $this->limit);
 
         if ($hostNotificationsCount == 0) {
             return;
         }
 
-        $this->out('Exporting host notifications');
+        $this->io->out('Migrating host notifications');
         $ProgressBar = new Manager(0, $numberOfSelects);
-        $fileName = $this->basePath . DS . 'host_notifications.json';
-        $file = fopen($fileName, 'w+');
-        for ($i = 0; $i < $numberOfSelects; $i++) {
-            $query['limit'] = $this->limit;
-            $query['offset'] = $this->limit * $i;
 
-            foreach ($this->NotificationHost->find('all', $query) as $record) {
-                $data = [
-                    'ack_author'   => '',
-                    'ack_data'     => '',
-                    'command_args' => '',
-                    'command_name' => $record['Command']['uuid'],
-                    'contact_name' => $record['Contact']['uuid'],
-                    'end_time'     => (int)strtotime($record['Contactnotification']['end_time']),
-                    'hostname'     => $record['Host']['uuid'],
-                    'output'       => $record['NotificationHost']['output'],
-                    'reason_type'  => (int)$record['NotificationHost']['notification_type'],
-                    'start_time'   => (int)strtotime($record['Contactnotification']['start_time']),
-                    'state'        => (int)$record['NotificationHost']['state']
-                ];
-                fwrite($file, json_encode($data) . PHP_EOL);
+        $offset = 0;
+
+        $query = "
+      INSERT IGNORE INTO statusengine_host_notifications
+      (hostname, contact_name, command_name, state, start_time, start_time_usec, end_time, reason_type, output )
+      VALUES%s";
+
+        $baseValues = '(?,?,?,?,?,?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getHostNotificationsMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+                $params[] = $record['Hosts']['uuid'];
+                $params[] = $record['Contacts']['uuid'];
+                $params[] = $record['Commands']['uuid'];
+                $params[] = $record['state'];
+                $params[] = $record['start_time']->getTimestamp();
+                $params[] = $record['start_time']->getTimestamp();
+                $params[] = $record['end_time']->getTimestamp();
+                $params[] = $record['notification_reason'];
+                $params[] = $record['output'];
             }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
             $ProgressBar->update(($i + 1));
         }
-        fclose($file);
-        $this->out('');
-        $this->printCrashMsg($fileName, 'statusengine_host_notifications');
     }
 
     public function migrateServiceNotifications() {
