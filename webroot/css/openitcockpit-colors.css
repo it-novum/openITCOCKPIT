@@ -782,3 +782,11 @@ fieldset[disabled] .btn-unknown.active {
     color: #c51162 !important;
     background-color: #a51eff !important;
 }
+
+.elementBackgroundHighlighter{
+    background-color: #a51eff !important;
+}
+
+.elementFontHighlighter{
+    color: #c51162 !important;
+}
