@@ -135,65 +135,11 @@ class ResetPasswordCommand extends Command {
 
         $UsersTable->save($user);
 
-
-        $Mailer->deliver();
-        $this->io->success(__('New password was send to {0}', $user->email));
         if ($print) {
             $this->io->success(__('New password is: {0}', $newPassword));
         }
 
-    }
-
-    private function dinge() {
-        /** @var UsersTable $UsersTable */
-        $UsersTable = TableRegistry::getTableLocator()->get('Users');
-        /** @var SystemsettingsTable $SystemsettingsTable */
-        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-
-        $systemsettings = $SystemsettingsTable->findAsArray();
-
-        $users = $UsersTable->find()
-            ->where(['password !=' => ''])
-            ->disableHydration()
-            ->all();
-
-        $users = $users->toArray();
-
-        foreach ($users as $userArray) {
-            $user = $UsersTable->get($userArray['id']);
-            $newPassword = $UsersTable->generatePassword();
-
-            $user->set('password', $newPassword);
-
-            $Logo = new Logo();
-
-            $Mailer = new Mailer();
-            $Mailer->setFrom($systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'], $systemsettings['MONITORING']['MONITORING.FROM_NAME']);
-            $Mailer->addTo($user->get('email'));
-            $Mailer->setSubject(__('Your ') . $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'] . __(' got reset!'));
-            $Mailer->setEmailFormat('text');
-            $Mailer->setAttachments([
-                'logo.png' => [
-                    'file'      => $Logo->getSmallLogoDiskPath(),
-                    'mimetype'  => 'image/png',
-                    'contentId' => '100'
-                ]
-            ]);
-            $Mailer->viewBuilder()
-                ->setTemplate('reset_password')
-                ->setVar('systemname', $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])
-                ->setVar('newPassword', $newPassword);
-
-            $user->set('password', $newPassword);
-
-            $UsersTable->save($user);
-            if ($user->hasErrors()) {
-                $this->io->error('Could not reset password for user: ' . $user->email);
-                continue;
-            }
-
-            //$Mailer->deliver();
-            $this->io->success(__('New password was send to {0}', $user->email));
-        }
+        $Mailer->deliver();
+        $this->io->success(__('New password was send to {0}', $user->email));
     }
 }
