@@ -241,8 +241,6 @@ class Update3To4Command extends Command {
         $this->io->out('Migrating host notifications');
         $ProgressBar = new Manager(0, $numberOfSelects);
 
-        $offset = 0;
-
         $query = "
       INSERT IGNORE INTO statusengine_host_notifications
       (hostname, contact_name, command_name, state, start_time, start_time_usec, end_time, reason_type, output )
@@ -293,8 +291,6 @@ class Update3To4Command extends Command {
 
         $this->io->out('Migrating service notifications');
         $ProgressBar = new Manager(0, $numberOfSelects);
-
-        $offset = 0;
 
         $query = "
       INSERT IGNORE INTO statusengine_service_notifications
@@ -348,10 +344,8 @@ class Update3To4Command extends Command {
         $this->io->out('Migrating host statehistory');
         $ProgressBar = new Manager(0, $numberOfSelects);
 
-        $offset = 0;
-
         $query = "
-        INSERT INTO statusengine_host_statehistory
+        INSERT IGNORE INTO statusengine_host_statehistory
         (hostname, state_time, state_time_usec, state, state_change, is_hardstate, current_check_attempt, max_check_attempts, last_state, last_hard_state, output, long_output)
         VALUES%s";
 
@@ -405,10 +399,8 @@ class Update3To4Command extends Command {
         $this->io->out('Migrating service statehistory');
         $ProgressBar = new Manager(0, $numberOfSelects);
 
-        $offset = 0;
-
         $query = "
-        INSERT INTO statusengine_service_statehistory
+        INSERT IGNORE INTO statusengine_service_statehistory
         (hostname, service_description, state_time, state_time_usec, state, state_change, is_hardstate, current_check_attempt, max_check_attempts, last_state, last_hard_state, output, long_output)
         VALUES%s";
 
