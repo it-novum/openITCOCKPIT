@@ -81,9 +81,6 @@ class InstantReportCommand extends Command implements CronjobInterface {
         $io->setStyle('red', ['text' => 'red', 'blink' => false]);
 
         $io->out('Sending Instant Reports...');
-        /** @var SystemsettingsTable $SystemsettingsTable */
-        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-        $systemsettings = $SystemsettingsTable->findAsArraySection('MONITORING');
 
         $UserPermissionsCache = new KeyValueStore();
 
