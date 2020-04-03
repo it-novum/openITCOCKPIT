@@ -13,6 +13,8 @@ if [[ ! -f "$OLDINIFILE" ]]; then
     exit 1;
 fi
 
+$APPDIR/bin/scripts/pre_v4_upgrade.php
+
 INIFILE=/opt/openitc/etc/mysql/mysql.cnf
 DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
 BASHCONF=/opt/openitc/etc/mysql/bash.conf
@@ -180,6 +182,11 @@ if [[ $STATUSENGINE_VERSION == "Statusengine2" ]]; then
     echo "<?php return ['dbbackend' => 'Nagios',];" > /opt/openitc/frontend/config/dbbackend.php
 fi
 
+if [[ $STATUSENGINE_VERSION == "Statusengine3" ]]; then
+    mysql "--defaults-extra-file=${INIFILE}" -e "INSERT INTO \`configuration_files\` (\`config_file\`, \`key\`, \`value\`)VALUES('DbBackend', 'dbbackend', 'Statusengine3');"
+    echo "<?php return ['dbbackend' => 'Statusengine3',];" > /opt/openitc/frontend/config/dbbackend.php
+fi
+
 oitc config_generator_shell --generate
 
 echo "---------------------------------------------------------------"
@@ -211,7 +218,7 @@ echo "Configure Grafana"
 
 # Copy V3 Grafana Configuration
 cp /etc/openitcockpit/grafana/admin_password /opt/openitc/etc/grafana/admin_password
-cp /etc/openitcockpit/grafana/api_key /etc/openitcockpit/grafana/api_key
+cp /etc/openitcockpit/grafana/api_key /opt/openitc/etc/grafana/api_key
 
 systemctl restart openitcockpit-graphing.service
 
@@ -302,6 +309,10 @@ mysql --defaults-extra-file=${INIFILE} -e "TRUNCATE TABLE changelogs_to_containe
 
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = REPLACE(command_line, '/usr/share/openitcockpit/app/Console/cake', '/opt/openitc/frontend/bin/cake');"
 
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-', 'fas fa-');"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-exchange', 'fa-exchange-alt');"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-pencil-square-o', 'fa-pencil-square');"
+
 #ALC dependencies config for itc core
 echo "---------------------------------------------------------------"
 echo "Scan for new user permissions. This will take a while..."
@@ -310,6 +321,7 @@ oitc Acl.acl_extras aco_sync
 #Set default permissions, check for always allowed permissions and dependencies
 oitc roles --enable-defaults --admin
 
+echo "---------------------------------------------------------------"
 echo "Flush redis cache"
 redis-cli FLUSHALL
 
@@ -322,11 +334,22 @@ oitc update3_to4 --migrate-statehistory
 oitc update3_to4 --migrate-acknowledgements
 oitc update3_to4 --migrate-downtimes
 
+echo "---------------------------------------------------------------"
+echo "Convert MySQL Tables from utf8_swedish_ci to utf8_general_ci..."
+
+mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${MYSQL_DATABASE} CHARACTER SET utf8 COLLATE utf8_general_ci;"
+
+mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TABLE_NAME FROM \`information_schema\`.\`TABLES\` WHERE \`TABLE_SCHEMA\`='${MYSQL_DATABASE}' AND \`TABLE_NAME\` NOT LIKE 'nagios_%' AND \`TABLE_NAME\` NOT LIKE 'statusengine_%';" | while read TABLE_NAME; do
+    echo "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8;"
+    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8;"
+done
+
 #oitc setup
 
 oitc nagios_export
 
 echo "Enabling webserver configuration"
+rm -rf /etc/nginx/sites-enabled/openitc
 ln -s /etc/nginx/sites-available/openitc /etc/nginx/sites-enabled/openitc
 rm -f /etc/nginx/sites-enabled/default
 
