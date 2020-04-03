@@ -519,7 +519,7 @@ class DaterangesCreator {
      * @param $report_send_interval
      * @return bool
      */
-    private static function hasToBeSend($last_send_date, $report_send_interval) {
+    public static function hasToBeSend($last_send_date, $report_send_interval) {
         $now = time();
         $has_to_be_send = false;
 
