@@ -314,6 +314,7 @@ oitc Acl.acl_extras aco_sync
 #Set default permissions, check for always allowed permissions and dependencies
 oitc roles --enable-defaults --admin
 
+echo "---------------------------------------------------------------"
 echo "Flush redis cache"
 redis-cli FLUSHALL
 
@@ -325,6 +326,16 @@ oitc update3_to4 --migrate-notifications
 oitc update3_to4 --migrate-statehistory
 oitc update3_to4 --migrate-acknowledgements
 oitc update3_to4 --migrate-downtimes
+
+echo "---------------------------------------------------------------"
+echo "Convert MySQL Tables from utf8_swedish_ci to utf8_general_ci..."
+
+mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${MYSQL_DATABASE} CHARACTER SET utf8 COLLATE utf8_general_ci;"
+
+mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TABLE_NAME FROM \`information_schema\`.\`TABLES\` WHERE \`TABLE_SCHEMA\`='${MYSQL_DATABASE}' AND \`TABLE_NAME\` NOT LIKE 'nagios_%' AND \`TABLE_NAME\` NOT LIKE 'statusengine_%';" | while read TABLE_NAME; do
+    echo "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8;"
+    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8;"
+done
 
 #oitc setup
 
