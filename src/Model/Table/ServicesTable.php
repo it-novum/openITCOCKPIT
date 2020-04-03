@@ -199,7 +199,7 @@ class ServicesTable extends Table {
 
         $validator
             ->scalar('name')
-            ->maxLength('name', 255)
+            ->maxLength('name', 1500)
             ->requirePresence('name', false)
             ->allowEmptyString('name', __('Please enter a service name.'), function ($context) {
                 if (array_key_exists('name', $context['data'])) {
