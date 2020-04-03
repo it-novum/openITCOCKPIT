@@ -63,6 +63,12 @@ class Update3To4Command extends Command {
     private $io;
 
     /**
+     * Statusengine Node Name
+     * @var string
+     */
+    private $nodeName = 'openITCOCKPIT';
+
+    /**
      * Hook method for defining this command's option parser.
      *
      * @see https://book.cakephp.org/3.0/en/console-and-shells/commands.html#defining-arguments-and-options
@@ -86,6 +92,48 @@ class Update3To4Command extends Command {
 
         $parser->addOption('reset-all-passwords', [
             'help'    => __('Send a new random password to all local users per mail.'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
+        $parser->addOption('migrate-notifications', [
+            'help'    => __('Migrate notification history records from nagios_ to statusengine_ tables.'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
+        $parser->addOption('migrate-statehistory', [
+            'help'    => __('Migrate statehistory records from nagios_ to statusengine_ tables.'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
+        $parser->addOption('migrate-acknowledgements', [
+            'help'    => __('Migrate acknowledgements history records from nagios_ to statusengine_ tables.'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
+        $parser->addOption('migrate-downtimes', [
+            'help'    => __('Migrate downtimes history records from nagios_ to statusengine_ tables.'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
+        $parser->addOption('migrate-hostchecks', [
+            'help'    => __('Migrate hostchecks records from nagios_ to statusengine_ tables.'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
+        $parser->addOption('migrate-servicechecks', [
+            'help'    => __('Migrate servicechecks records from nagios_ to statusengine_ tables.'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
+        $parser->addOption('migrate-logentries', [
+            'help'    => __('Migrate logentries records from nagios_ to statusengine_ tables.'),
             'boolean' => true,
             'default' => false
         ]);
@@ -120,11 +168,44 @@ class Update3To4Command extends Command {
         }
 
         //Set timezone to UTC to migrate between mysql DATETIME and php timestamp strtotime and so on...
-        date_default_timezone_set('UTC');
-        $this->migrateHostNotifications();
-        $this->migrateServiceNotifications();
-        $this->migrateHostStatehistory();
-        $this->migrateServiceStatehistory();
+        if ($args->getOption('migrate-notifications') === true) {
+            date_default_timezone_set('UTC');
+            $this->migrateHostNotifications();
+            $this->migrateServiceNotifications();
+        }
+
+        if ($args->getOption('migrate-statehistory') === true) {
+            date_default_timezone_set('UTC');
+            $this->migrateHostStatehistory();
+            $this->migrateServiceStatehistory();
+        }
+
+        if ($args->getOption('migrate-acknowledgements') === true) {
+            date_default_timezone_set('UTC');
+            $this->migrateHostAcknowledgements();
+            $this->migrateServiceAcknowledgements();
+        }
+
+        if ($args->getOption('migrate-downtimes') === true) {
+            date_default_timezone_set('UTC');
+            $this->migrateHostDowntimes();
+            $this->migrateServiceDowntimes();
+        }
+
+        if ($args->getOption('migrate-hostchecks') === true) {
+            date_default_timezone_set('UTC');
+            $this->migrateHostChecks();
+        }
+
+        if ($args->getOption('migrate-servicechecks') === true) {
+            date_default_timezone_set('UTC');
+            $this->migrateServiceChecks();
+        }
+
+        if ($args->getOption('migrate-logentries') === true) {
+            date_default_timezone_set('UTC');
+            $this->migrateLogentries();
+        }
     }
 
     public function migrateEmailConfiguration() {
@@ -222,7 +303,7 @@ class Update3To4Command extends Command {
                 continue;
             }
 
-            //$Mailer->deliver();
+            $Mailer->deliver();
             $this->io->success(__('New password was send to {0}', $user->email));
         }
     }
@@ -240,8 +321,6 @@ class Update3To4Command extends Command {
 
         $this->io->out('Migrating host notifications');
         $ProgressBar = new Manager(0, $numberOfSelects);
-
-        $offset = 0;
 
         $query = "
       INSERT IGNORE INTO statusengine_host_notifications
@@ -293,8 +372,6 @@ class Update3To4Command extends Command {
 
         $this->io->out('Migrating service notifications');
         $ProgressBar = new Manager(0, $numberOfSelects);
-
-        $offset = 0;
 
         $query = "
       INSERT IGNORE INTO statusengine_service_notifications
@@ -348,10 +425,8 @@ class Update3To4Command extends Command {
         $this->io->out('Migrating host statehistory');
         $ProgressBar = new Manager(0, $numberOfSelects);
 
-        $offset = 0;
-
         $query = "
-        INSERT INTO statusengine_host_statehistory
+        INSERT IGNORE INTO statusengine_host_statehistory
         (hostname, state_time, state_time_usec, state, state_change, is_hardstate, current_check_attempt, max_check_attempts, last_state, last_hard_state, output, long_output)
         VALUES%s";
 
@@ -405,10 +480,8 @@ class Update3To4Command extends Command {
         $this->io->out('Migrating service statehistory');
         $ProgressBar = new Manager(0, $numberOfSelects);
 
-        $offset = 0;
-
         $query = "
-        INSERT INTO statusengine_service_statehistory
+        INSERT IGNORE INTO statusengine_service_statehistory
         (hostname, service_description, state_time, state_time_usec, state, state_change, is_hardstate, current_check_attempt, max_check_attempts, last_state, last_hard_state, output, long_output)
         VALUES%s";
 
@@ -434,6 +507,385 @@ class Update3To4Command extends Command {
                 $params[] = $record['last_hard_state'];
                 $params[] = $record['output'];
                 $params[] = $record['long_output'];
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
+    }
+
+    public function migrateHostAcknowledgements() {
+        $hostAcknowledgementsCount = $this->getHostAcknowledgementsMigrationQuery(0, true);
+        $numberOfSelects = ceil($hostAcknowledgementsCount / $this->limit);
+
+        if ($hostAcknowledgementsCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating host acknowledgements');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $query = "
+        INSERT IGNORE INTO statusengine_host_acknowledgements
+        (hostname, state, author_name, comment_data, entry_time, entry_time_usec, acknowledgement_type, is_sticky, persistent_comment, notify_contacts)
+        VALUES%s;";
+
+        $baseValues = '(?,?,?,?,?,?,?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getHostAcknowledgementsMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+
+                $params[] = $record['Objects']['name1'];
+                $params[] = $record['state'];
+                $params[] = $record['author_name'];
+                $params[] = $record['comment_data'];
+                $params[] = strtotime($record['entry_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = $record['acknowledgement_type'];
+                $params[] = $record['is_sticky'];
+                $params[] = $record['persistent_comment'];
+                $params[] = $record['notify_contacts'];
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
+    }
+
+    public function migrateServiceAcknowledgements() {
+        $serviceAcknowledgementsCount = $this->getServiceAcknowledgementsMigrationQuery(0, true);
+        $numberOfSelects = ceil($serviceAcknowledgementsCount / $this->limit);
+
+        if ($serviceAcknowledgementsCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating service acknowledgements');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $query = "
+        INSERT IGNORE INTO statusengine_service_acknowledgements
+        (hostname, service_description, state, author_name, comment_data, entry_time, entry_time_usec, acknowledgement_type, is_sticky, persistent_comment, notify_contacts)
+        VALUES%s;";
+
+        $baseValues = '(?,?,?,?,?,?,?,?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getServiceAcknowledgementsMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+
+                $params[] = $record['Objects']['name1'];
+                $params[] = $record['Objects']['name2'];
+                $params[] = $record['state'];
+                $params[] = $record['author_name'];
+                $params[] = $record['comment_data'];
+                $params[] = strtotime($record['entry_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = $record['acknowledgement_type'];
+                $params[] = $record['is_sticky'];
+                $params[] = $record['persistent_comment'];
+                $params[] = $record['notify_contacts'];
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
+    }
+
+    public function migrateHostDowntimes() {
+        $this->migrateParitions('nagios_downtimehistory', 'statusengine_host_downtimehistory');
+
+        $hostDowntimesCount = $this->getHostDowntimesMigrationQuery(0, true);
+        $numberOfSelects = ceil($hostDowntimesCount / $this->limit);
+
+        if ($hostDowntimesCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating host downtimes');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $query = "
+        INSERT IGNORE INTO statusengine_host_downtimehistory
+        (hostname, internal_downtime_id, scheduled_start_time, node_name, entry_time, entry_time_usec, author_name, comment_data, triggered_by_id, is_fixed, duration, scheduled_end_time, was_started, actual_start_time, actual_end_time, was_cancelled)
+        VALUES%s";
+
+        $baseValues = '(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getHostDowntimesMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+                $params[] = $record['Objects']['name1'];
+                $params[] = $record['internal_downtime_id'];
+                $params[] = strtotime($record['scheduled_start_time']);
+                $params[] = $this->nodeName;
+                $params[] = strtotime($record['entry_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = $record['author_name'];
+                $params[] = $record['comment_data'];
+                $params[] = $record['triggered_by_id'];
+                $params[] = $record['is_fixed'];
+                $params[] = $record['duration'];
+                $params[] = strtotime($record['scheduled_end_time']);
+                $params[] = $record['was_started'];
+                $params[] = strtotime($record['actual_start_time']);
+                $params[] = strtotime($record['actual_end_time']);
+                $params[] = $record['was_cancelled'];
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
+    }
+
+    public function migrateServiceDowntimes() {
+        $this->migrateParitions('nagios_downtimehistory', 'statusengine_service_downtimehistory');
+
+        $serviceDowntimesCount = $this->getServiceDowntimesMigrationQuery(0, true);
+        $numberOfSelects = ceil($serviceDowntimesCount / $this->limit);
+
+        if ($serviceDowntimesCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating service downtimes');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $query = "
+        INSERT IGNORE INTO statusengine_service_downtimehistory
+        (hostname, service_description, internal_downtime_id, scheduled_start_time, node_name, entry_time, entry_time_usec, author_name, comment_data, triggered_by_id, is_fixed, duration, scheduled_end_time, was_started, actual_start_time, actual_end_time, was_cancelled)
+        VALUES%s";
+
+        $baseValues = '(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getServiceDowntimesMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+                $params[] = $record['Objects']['name1'];
+                $params[] = $record['Objects']['name2'];
+                $params[] = $record['internal_downtime_id'];
+                $params[] = strtotime($record['scheduled_start_time']);
+                $params[] = $this->nodeName;
+                $params[] = strtotime($record['entry_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = $record['author_name'];
+                $params[] = $record['comment_data'];
+                $params[] = $record['triggered_by_id'];
+                $params[] = $record['is_fixed'];
+                $params[] = $record['duration'];
+                $params[] = strtotime($record['scheduled_end_time']);
+                $params[] = $record['was_started'];
+                $params[] = strtotime($record['actual_start_time']);
+                $params[] = strtotime($record['actual_end_time']);
+                $params[] = $record['was_cancelled'];
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
+    }
+
+    public function migrateHostChecks() {
+        $this->migrateParitions('nagios_hostchecks', 'statusengine_hostchecks');
+
+        $hostChecksCount = $this->getHostChecksMigrationQuery(0, true);
+        $numberOfSelects = ceil($hostChecksCount / $this->limit);
+
+        if ($hostChecksCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating host checks');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $query = "
+        INSERT IGNORE INTO statusengine_hostchecks
+        (hostname, start_time, start_time_usec, state, is_hardstate, end_time, output, timeout, early_timeout, latency, execution_time, perfdata, command, current_check_attempt, max_check_attempts, long_output)
+        VALUES%s";
+
+        $baseValues = '(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getHostChecksMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+
+                $params[] = $record['Objects']['name1'];
+                $params[] = strtotime($record['start_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = $record['state'];
+                $params[] = $record['state_type'];
+                $params[] = strtotime($record['end_time']);
+                $params[] = $record['output'];
+                $params[] = $record['timeout'];
+                $params[] = $record['early_timeout'];
+                $params[] = $record['latency'];
+                $params[] = $record['execution_time'];
+                $params[] = $record['perfdata'];
+                $params[] = $record['CommandObject']['name1'];
+                $params[] = $record['current_check_attempt'];
+                $params[] = $record['max_check_attempts'];
+                $params[] = $record['long_output'];
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
+    }
+
+    public function migrateServiceChecks() {
+        $this->migrateParitions('nagios_servicechecks', 'statusengine_servicechecks');
+
+        $serviceChecksCount = $this->getServiceChecksMigrationQuery(0, true);
+        $numberOfSelects = ceil($serviceChecksCount / $this->limit);
+
+        if ($serviceChecksCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating service checks');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $query = "
+        INSERT IGNORE INTO statusengine_servicechecks
+        (hostname, service_description, start_time, start_time_usec, state, is_hardstate, end_time, output, timeout, early_timeout, latency, execution_time, perfdata, command, current_check_attempt, max_check_attempts, long_output)
+        VALUES%s";
+
+        $baseValues = '(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getServiceChecksMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+
+                $params[] = $record['Objects']['name1'];
+                $params[] = $record['Objects']['name2'];
+                $params[] = strtotime($record['start_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = $record['state'];
+                $params[] = $record['state_type'];
+                $params[] = strtotime($record['end_time']);
+                $params[] = $record['output'];
+                $params[] = $record['timeout'];
+                $params[] = $record['early_timeout'];
+                $params[] = $record['latency'];
+                $params[] = $record['execution_time'];
+                $params[] = $record['perfdata'];
+                $params[] = $record['CommandObject']['name1'];
+                $params[] = $record['current_check_attempt'];
+                $params[] = $record['max_check_attempts'];
+                $params[] = $record['long_output'];
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
+    }
+
+    public function migrateLogentries() {
+        $this->migrateParitions('nagios_logentries', 'statusengine_logentries');
+
+        $logentriesCount = $this->getLogentriesMigrationQuery(0, true);
+        $numberOfSelects = ceil($logentriesCount / $this->limit);
+
+        if ($logentriesCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating logentries');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $query = "
+        INSERT IGNORE INTO statusengine_logentries
+        (entry_time, logentry_type, logentry_data, node_name)
+        VALUES%s";
+
+        $baseValues = '(?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getLogentriesMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+
+                $params[] = strtotime($record['logentry_time']);
+                $params[] = $record['logentry_type'];
+                $params[] = $record['logentry_data'];
+                $params[] = $this->nodeName;
             }
 
             $sql = sprintf($query, implode(',', $values));
@@ -695,6 +1147,278 @@ class Update3To4Command extends Command {
             ->where([
                 'Objects.objecttype_id' => 2
             ]);
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function getHostAcknowledgementsMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\AcknowledgementHostsTable $AcknowledgementHostsTable */
+        $AcknowledgementHostsTable = TableRegistry::getTableLocator()->get('Statusengine2Module.AcknowledgementHosts');
+
+
+        $query = $AcknowledgementHostsTable->find();
+
+        $query
+            ->select([
+                'AcknowledgementHosts.state',
+                'AcknowledgementHosts.author_name',
+                'AcknowledgementHosts.comment_data',
+                'AcknowledgementHosts.entry_time',
+                'AcknowledgementHosts.acknowledgement_type',
+                'AcknowledgementHosts.is_sticky',
+                'AcknowledgementHosts.persistent_comment',
+                'AcknowledgementHosts.notify_contacts',
+
+                'Objects.name1',
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = AcknowledgementHosts.object_id']
+            )
+            ->where([
+                'Objects.objecttype_id' => 1
+            ]);
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function getServiceAcknowledgementsMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\AcknowledgementServicesTable $AcknowledgementServicesTable */
+        $AcknowledgementServicesTable = TableRegistry::getTableLocator()->get('Statusengine2Module.AcknowledgementServices');
+
+
+        $query = $AcknowledgementServicesTable->find();
+
+        $query
+            ->select([
+                'AcknowledgementServices.state',
+                'AcknowledgementServices.author_name',
+                'AcknowledgementServices.comment_data',
+                'AcknowledgementServices.entry_time',
+                'AcknowledgementServices.acknowledgement_type',
+                'AcknowledgementServices.is_sticky',
+                'AcknowledgementServices.persistent_comment',
+                'AcknowledgementServices.notify_contacts',
+
+                'Objects.name1',
+                'Objects.name2',
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = AcknowledgementServices.object_id']
+            )
+            ->where([
+                'Objects.objecttype_id' => 2
+            ]);
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function getHostDowntimesMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\DowntimeHostsTable $DowntimeHostsTable */
+        $DowntimeHostsTable = TableRegistry::getTableLocator()->get('Statusengine2Module.DowntimeHosts');
+
+        $query = $DowntimeHostsTable->find();
+
+        $query
+            ->select([
+                'DowntimeHosts.internal_downtime_id',
+                'DowntimeHosts.scheduled_start_time',
+                'DowntimeHosts.entry_time',
+                'DowntimeHosts.author_name',
+                'DowntimeHosts.comment_data',
+                'DowntimeHosts.triggered_by_id',
+                'DowntimeHosts.is_fixed',
+                'DowntimeHosts.duration',
+                'DowntimeHosts.scheduled_end_time',
+                'DowntimeHosts.was_started',
+                'DowntimeHosts.actual_start_time',
+                'DowntimeHosts.actual_end_time',
+                'DowntimeHosts.was_cancelled',
+
+                'Objects.name1',
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = DowntimeHosts.object_id', 'DowntimeHosts.downtime_type = 2'] //Downtime.downtime_type = 2 Host downtime
+            )
+            ->where([
+                'Objects.objecttype_id' => 1
+            ]);
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function getServiceDowntimesMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\DowntimeServicesTable $DowntimeServicesTable */
+        $DowntimeServicesTable = TableRegistry::getTableLocator()->get('Statusengine2Module.DowntimeServices');
+
+        $query = $DowntimeServicesTable->find();
+
+        $query
+            ->select([
+                'DowntimeServices.internal_downtime_id',
+                'DowntimeServices.scheduled_start_time',
+                'DowntimeServices.entry_time',
+                'DowntimeServices.author_name',
+                'DowntimeServices.comment_data',
+                'DowntimeServices.triggered_by_id',
+                'DowntimeServices.is_fixed',
+                'DowntimeServices.duration',
+                'DowntimeServices.scheduled_end_time',
+                'DowntimeServices.was_started',
+                'DowntimeServices.actual_start_time',
+                'DowntimeServices.actual_end_time',
+                'DowntimeServices.was_cancelled',
+
+                'Objects.name1',
+                'Objects.name2',
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = DowntimeServices.object_id', 'DowntimeServices.downtime_type = 1'] //Downtime.downtime_type = 1 Service downtime
+            )
+            ->where([
+                'Objects.objecttype_id' => 2
+            ]);
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function getHostChecksMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\HostchecksTable $HostchecksTable */
+        $HostchecksTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Hostchecks');
+
+        $query = $HostchecksTable->find();
+        $query
+            ->select([
+                'Hostchecks.start_time',
+                'Hostchecks.state',
+                'Hostchecks.state_type',
+                'Hostchecks.end_time',
+                'Hostchecks.output',
+                'Hostchecks.timeout',
+                'Hostchecks.early_timeout',
+                'Hostchecks.latency',
+                'Hostchecks.execution_time',
+                'Hostchecks.perfdata',
+                'Hostchecks.current_check_attempt',
+                'Hostchecks.max_check_attempts',
+                'Hostchecks.long_output',
+
+                'Objects.name1',
+                'CommandObject.name1'
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = Hostchecks.host_object_id', 'Objects.objecttype_id = 1']
+            )
+            ->innerJoin(
+                ['CommandObject' => 'nagios_objects'],
+                ['CommandObject.object_id = Hostchecks.command_object_id', 'CommandObject.objecttype_id = 12']
+            );
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function getServiceChecksMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\ServicechecksTable $ServicechecksTable */
+        $ServicechecksTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Servicechecks');
+
+        $query = $ServicechecksTable->find();
+        $query
+            ->select([
+                'Servicechecks.start_time',
+                'Servicechecks.state',
+                'Servicechecks.state_type',
+                'Servicechecks.end_time',
+                'Servicechecks.output',
+                'Servicechecks.timeout',
+                'Servicechecks.early_timeout',
+                'Servicechecks.latency',
+                'Servicechecks.execution_time',
+                'Servicechecks.perfdata',
+                'Servicechecks.current_check_attempt',
+                'Servicechecks.max_check_attempts',
+                'Servicechecks.long_output',
+
+                'Objects.name1',
+                'Objects.name2',
+                'CommandObject.name1'
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = Servicechecks.service_object_id', 'Objects.objecttype_id = 2']
+            )
+            ->innerJoin(
+                ['CommandObject' => 'nagios_objects'],
+                ['CommandObject.object_id = Servicechecks.command_object_id', 'CommandObject.objecttype_id = 12']
+            );
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function getLogentriesMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\LogentriesTable $LogentriesTable */
+        $LogentriesTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Logentries');
+
+        $query = $LogentriesTable->find();
 
         if ($asCount === true) {
             return $query->count();

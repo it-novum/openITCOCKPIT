@@ -317,6 +317,11 @@ oitc update3_to4 --email-config
 oitc update3_to4 --activate-users
 oitc update3_to4 --reset-all-passwords
 
+oitc update3_to4 --migrate-notifications
+oitc update3_to4 --migrate-statehistory
+oitc update3_to4 --migrate-acknowledgements
+oitc update3_to4 --migrate-downtimes
+
 #oitc setup
 
 oitc nagios_export
