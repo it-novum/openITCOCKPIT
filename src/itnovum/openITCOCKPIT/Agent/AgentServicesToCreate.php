@@ -74,6 +74,14 @@ class AgentServicesToCreate {
     }
 
     private function addServiceToCreate(array $service, $receiverPluginName, $services, $servicecommandargumentvalue = null, $servicecommandargumentvaluePosition = null) {
+        $service['name'] = substr($service['name'], 0, 1450);   //database field length: varchar(1500)
+        if (isset($service['agent_wizard_option_description'])) {
+            $service['agent_wizard_option_description'] = substr($service['agent_wizard_option_description'], 0, 1450);
+        }
+        foreach ($service['servicecommandargumentvalues'] as $key => $argumentvalue) {
+            $service['servicecommandargumentvalues'][$key]['value'] = substr($argumentvalue['value'], 0, 1000);   //database field length: varchar(1000)
+        }
+
         if (!empty($service) && !$this->isInExistingServices($service, $services, $servicecommandargumentvalue, $servicecommandargumentvaluePosition)) {
             if (isset($service['agent_wizard_option_description'])) {
                 $service['name'] .= ' ' . $service['agent_wizard_option_description'];
