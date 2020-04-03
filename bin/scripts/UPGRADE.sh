@@ -182,6 +182,11 @@ if [[ $STATUSENGINE_VERSION == "Statusengine2" ]]; then
     echo "<?php return ['dbbackend' => 'Nagios',];" > /opt/openitc/frontend/config/dbbackend.php
 fi
 
+if [[ $STATUSENGINE_VERSION == "Statusengine3" ]]; then
+    mysql "--defaults-extra-file=${INIFILE}" -e "INSERT INTO \`configuration_files\` (\`config_file\`, \`key\`, \`value\`)VALUES('DbBackend', 'dbbackend', 'Statusengine3');"
+    echo "<?php return ['dbbackend' => 'Statusengine3',];" > /opt/openitc/frontend/config/dbbackend.php
+fi
+
 oitc config_generator_shell --generate
 
 echo "---------------------------------------------------------------"
@@ -213,7 +218,7 @@ echo "Configure Grafana"
 
 # Copy V3 Grafana Configuration
 cp /etc/openitcockpit/grafana/admin_password /opt/openitc/etc/grafana/admin_password
-cp /etc/openitcockpit/grafana/api_key /etc/openitcockpit/grafana/api_key
+cp /etc/openitcockpit/grafana/api_key /opt/openitc/etc/grafana/api_key
 
 systemctl restart openitcockpit-graphing.service
 
@@ -344,6 +349,7 @@ done
 oitc nagios_export
 
 echo "Enabling webserver configuration"
+rm -rf /etc/nginx/sites-enabled/openitc
 ln -s /etc/nginx/sites-available/openitc /etc/nginx/sites-enabled/openitc
 rm -f /etc/nginx/sites-enabled/default
 
