@@ -135,8 +135,9 @@ class Update3To4Command extends Command {
         //$this->migrateServiceAcknowledgements();
         //$this->migrateHostDowntimes();
         //$this->migrateServiceDowntimes();
-        $this->migrateHostChecks();
-        $this->migrateServiceChecks();
+        //$this->migrateHostChecks();
+        //$this->migrateServiceChecks();
+        $this->migrateLogentries();
     }
 
     public function migrateEmailConfiguration() {
@@ -786,6 +787,52 @@ class Update3To4Command extends Command {
         $this->io->out('');
     }
 
+    public function migrateLogentries() {
+        $this->migrateParitions('nagios_logentries', 'statusengine_logentries');
+
+        $logentriesCount = $this->getLogentriesMigrationQuery(0, true);
+        $numberOfSelects = ceil($logentriesCount / $this->limit);
+
+        if ($logentriesCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating logentries');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $query = "
+        INSERT INTO statusengine_logentries
+        (entry_time, logentry_type, logentry_data, node_name)
+        VALUES%s";
+
+        $baseValues = '(?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getLogentriesMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+
+                $params[] = strtotime($record['logentry_time']);
+                $params[] = $record['logentry_type'];
+                $params[] = $record['logentry_data'];
+                $params[] = $this->nodeName;
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
+    }
+
     /**
      * @param int $offset
      * @return mixed
@@ -1287,6 +1334,23 @@ class Update3To4Command extends Command {
                 ['CommandObject' => 'nagios_objects'],
                 ['CommandObject.object_id = Servicechecks.command_object_id', 'CommandObject.objecttype_id = 12']
             );
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function getLogentriesMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\LogentriesTable $LogentriesTable */
+        $LogentriesTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Logentries');
+
+        $query = $LogentriesTable->find();
 
         if ($asCount === true) {
             return $query->count();
