@@ -121,10 +121,12 @@ class Update3To4Command extends Command {
 
         //Set timezone to UTC to migrate between mysql DATETIME and php timestamp strtotime and so on...
         date_default_timezone_set('UTC');
-        $this->migrateHostNotifications();
-        $this->migrateServiceNotifications();
-        $this->migrateHostStatehistory();
-        $this->migrateServiceStatehistory();
+        //$this->migrateHostNotifications();
+        //$this->migrateServiceNotifications();
+        //$this->migrateHostStatehistory();
+        //$this->migrateServiceStatehistory();
+        $this->migrateHostAcknowledgements();
+        $this->migrateServiceAcknowledgements();
     }
 
     public function migrateEmailConfiguration() {
@@ -441,6 +443,107 @@ class Update3To4Command extends Command {
         $this->io->out('');
     }
 
+    public function migrateHostAcknowledgements() {
+        $hostAcknowledgementsCount = $this->getHostAcknowledgementsMigrationQuery(0, true);
+        $numberOfSelects = ceil($hostAcknowledgementsCount / $this->limit);
+
+        if ($hostAcknowledgementsCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating host acknowledgements');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $query = "
+        INSERT IGNORE INTO statusengine_host_acknowledgements
+        (hostname, state, author_name, comment_data, entry_time, entry_time_usec, acknowledgement_type, is_sticky, persistent_comment, notify_contacts)
+        VALUES%s;";
+
+        $baseValues = '(?,?,?,?,?,?,?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getHostAcknowledgementsMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+
+                $params[] = $record['Objects']['name1'];
+                $params[] = $record['state'];
+                $params[] = $record['author_name'];
+                $params[] = $record['comment_data'];
+                $params[] = strtotime($record['entry_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = $record['acknowledgement_type'];
+                $params[] = $record['is_sticky'];
+                $params[] = $record['persistent_comment'];
+                $params[] = $record['notify_contacts'];
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
+    }
+
+    public function migrateServiceAcknowledgements() {
+        $serviceAcknowledgementsCount = $this->getServiceAcknowledgementsMigrationQuery(0, true);
+        $numberOfSelects = ceil($serviceAcknowledgementsCount / $this->limit);
+
+        if ($serviceAcknowledgementsCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating service acknowledgements');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $query = "
+        INSERT INTO statusengine_service_acknowledgements
+        (hostname, service_description, state, author_name, comment_data, entry_time, entry_time_usec, acknowledgement_type, is_sticky, persistent_comment, notify_contacts)
+        VALUES%s;";
+
+        $baseValues = '(?,?,?,?,?,?,?,?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getServiceAcknowledgementsMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+
+                $params[] = $record['Objects']['name1'];
+                $params[] = $record['Objects']['name2'];
+                $params[] = $record['state'];
+                $params[] = $record['author_name'];
+                $params[] = $record['comment_data'];
+                $params[] = strtotime($record['entry_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = $record['acknowledgement_type'];
+                $params[] = $record['is_sticky'];
+                $params[] = $record['persistent_comment'];
+                $params[] = $record['notify_contacts'];
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
+    }
+
     /**
      * @param int $offset
      * @return mixed
@@ -683,6 +786,85 @@ class Update3To4Command extends Command {
             ->innerJoin(
                 ['Objects' => 'nagios_objects'],
                 ['Objects.object_id = StatehistoryServices.object_id']
+            )
+            ->where([
+                'Objects.objecttype_id' => 2
+            ]);
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function getHostAcknowledgementsMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\AcknowledgementHostsTable $AcknowledgementHostsTable */
+        $AcknowledgementHostsTable = TableRegistry::getTableLocator()->get('Statusengine2Module.AcknowledgementHosts');
+
+
+        $query = $AcknowledgementHostsTable->find();
+
+        $query
+            ->select([
+                'AcknowledgementHosts.state',
+                'AcknowledgementHosts.author_name',
+                'AcknowledgementHosts.comment_data',
+                'AcknowledgementHosts.entry_time',
+                'AcknowledgementHosts.acknowledgement_type',
+                'AcknowledgementHosts.is_sticky',
+                'AcknowledgementHosts.persistent_comment',
+                'AcknowledgementHosts.notify_contacts',
+
+                'Objects.name1',
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = AcknowledgementHosts.object_id']
+            )
+            ->where([
+                'Objects.objecttype_id' => 1
+            ]);
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function getServiceAcknowledgementsMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\AcknowledgementServicesTable $AcknowledgementServicesTable */
+        $AcknowledgementServicesTable = TableRegistry::getTableLocator()->get('Statusengine2Module.AcknowledgementServices');
+
+
+        $query = $AcknowledgementServicesTable->find();
+
+        $query
+            ->select([
+                'AcknowledgementServices.state',
+                'AcknowledgementServices.author_name',
+                'AcknowledgementServices.comment_data',
+                'AcknowledgementServices.entry_time',
+                'AcknowledgementServices.acknowledgement_type',
+                'AcknowledgementServices.is_sticky',
+                'AcknowledgementServices.persistent_comment',
+                'AcknowledgementServices.notify_contacts',
+
+                'Objects.name1',
+                'Objects.name2',
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = AcknowledgementServices.object_id']
             )
             ->where([
                 'Objects.objecttype_id' => 2
