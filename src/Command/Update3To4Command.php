@@ -135,6 +135,8 @@ class Update3To4Command extends Command {
         //$this->migrateServiceAcknowledgements();
         //$this->migrateHostDowntimes();
         //$this->migrateServiceDowntimes();
+        $this->migrateHostChecks();
+        $this->migrateServiceChecks();
     }
 
     public function migrateEmailConfiguration() {
@@ -667,6 +669,123 @@ class Update3To4Command extends Command {
         $this->io->out('');
     }
 
+    public function migrateHostChecks() {
+        $this->migrateParitions('nagios_hostchecks', 'statusengine_hostchecks');
+
+        $hostChecksCount = $this->getHostChecksMigrationQuery(0, true);
+        $numberOfSelects = ceil($hostChecksCount / $this->limit);
+
+        if ($hostChecksCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating host checks');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $query = "
+        INSERT IGNORE INTO statusengine_hostchecks
+        (hostname, start_time, start_time_usec, state, is_hardstate, end_time, output, timeout, early_timeout, latency, execution_time, perfdata, command, current_check_attempt, max_check_attempts, long_output)
+        VALUES%s";
+
+        $baseValues = '(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getHostChecksMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+
+                $params[] = $record['Objects']['name1'];
+                $params[] = strtotime($record['start_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = $record['state'];
+                $params[] = $record['state_type'];
+                $params[] = strtotime($record['end_time']);
+                $params[] = $record['output'];
+                $params[] = $record['timeout'];
+                $params[] = $record['early_timeout'];
+                $params[] = $record['latency'];
+                $params[] = $record['execution_time'];
+                $params[] = $record['perfdata'];
+                $params[] = $record['CommandObject']['name1'];
+                $params[] = $record['current_check_attempt'];
+                $params[] = $record['max_check_attempts'];
+                $params[] = $record['long_output'];
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
+    }
+
+    public function migrateServiceChecks() {
+        $this->migrateParitions('nagios_servicechecks', 'statusengine_servicechecks');
+
+        $serviceChecksCount = $this->getServiceChecksMigrationQuery(0, true);
+        $numberOfSelects = ceil($serviceChecksCount / $this->limit);
+
+        if ($serviceChecksCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating service checks');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $query = "
+        INSERT INTO statusengine_servicechecks
+        (hostname, service_description, start_time, start_time_usec, state, is_hardstate, end_time, output, timeout, early_timeout, latency, execution_time, perfdata, command, current_check_attempt, max_check_attempts, long_output)
+        VALUES%s";
+
+        $baseValues = '(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getServiceChecksMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+
+                $params[] = $record['Objects']['name1'];
+                $params[] = $record['Objects']['name2'];
+                $params[] = strtotime($record['start_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = $record['state'];
+                $params[] = $record['state_type'];
+                $params[] = strtotime($record['end_time']);
+                $params[] = $record['output'];
+                $params[] = $record['timeout'];
+                $params[] = $record['early_timeout'];
+                $params[] = $record['latency'];
+                $params[] = $record['execution_time'];
+                $params[] = $record['perfdata'];
+                $params[] = $record['CommandObject']['name1'];
+                $params[] = $record['current_check_attempt'];
+                $params[] = $record['max_check_attempts'];
+                $params[] = $record['long_output'];
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
+    }
+
     /**
      * @param int $offset
      * @return mixed
@@ -1079,6 +1198,95 @@ class Update3To4Command extends Command {
             ->where([
                 'Objects.objecttype_id' => 2
             ]);
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function getHostChecksMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\HostchecksTable $HostchecksTable */
+        $HostchecksTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Hostchecks');
+
+        $query = $HostchecksTable->find();
+        $query
+            ->select([
+                'Hostchecks.start_time',
+                'Hostchecks.state',
+                'Hostchecks.state_type',
+                'Hostchecks.end_time',
+                'Hostchecks.output',
+                'Hostchecks.timeout',
+                'Hostchecks.early_timeout',
+                'Hostchecks.latency',
+                'Hostchecks.execution_time',
+                'Hostchecks.perfdata',
+                'Hostchecks.current_check_attempt',
+                'Hostchecks.max_check_attempts',
+                'Hostchecks.long_output',
+
+                'Objects.name1',
+                'CommandObject.name1'
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = Hostchecks.host_object_id', 'Objects.objecttype_id = 1']
+            )
+            ->innerJoin(
+                ['CommandObject' => 'nagios_objects'],
+                ['CommandObject.object_id = Hostchecks.command_object_id', 'CommandObject.objecttype_id = 12']
+            );
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function getServiceChecksMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\ServicechecksTable $ServicechecksTable */
+        $ServicechecksTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Servicechecks');
+
+        $query = $ServicechecksTable->find();
+        $query
+            ->select([
+                'Servicechecks.start_time',
+                'Servicechecks.state',
+                'Servicechecks.state_type',
+                'Servicechecks.end_time',
+                'Servicechecks.output',
+                'Servicechecks.timeout',
+                'Servicechecks.early_timeout',
+                'Servicechecks.latency',
+                'Servicechecks.execution_time',
+                'Servicechecks.perfdata',
+                'Servicechecks.current_check_attempt',
+                'Servicechecks.max_check_attempts',
+                'Servicechecks.long_output',
+
+                'Objects.name1',
+                'Objects.name2',
+                'CommandObject.name1'
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = Servicechecks.service_object_id', 'Objects.objecttype_id = 2']
+            )
+            ->innerJoin(
+                ['CommandObject' => 'nagios_objects'],
+                ['CommandObject.object_id = Servicechecks.command_object_id', 'CommandObject.objecttype_id = 12']
+            );
 
         if ($asCount === true) {
             return $query->count();
