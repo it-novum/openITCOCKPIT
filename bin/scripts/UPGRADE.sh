@@ -302,6 +302,10 @@ mysql --defaults-extra-file=${INIFILE} -e "TRUNCATE TABLE changelogs_to_containe
 
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = REPLACE(command_line, '/usr/share/openitcockpit/app/Console/cake', '/opt/openitc/frontend/bin/cake');"
 
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-', 'fas fa-');"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-exchange', 'fa-exchange-alt');"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-pencil-square-o', 'fa-pencil-square');"
+
 #ALC dependencies config for itc core
 echo "---------------------------------------------------------------"
 echo "Scan for new user permissions. This will take a while..."
