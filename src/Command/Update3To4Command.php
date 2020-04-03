@@ -96,6 +96,48 @@ class Update3To4Command extends Command {
             'default' => false
         ]);
 
+        $parser->addOption('migrate-notifications', [
+            'help'    => __('Migrate notification history records from nagios_ to statusengine_ tables.'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
+        $parser->addOption('migrate-statehistory', [
+            'help'    => __('Migrate statehistory records from nagios_ to statusengine_ tables.'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
+        $parser->addOption('migrate-acknowledgements', [
+            'help'    => __('Migrate acknowledgements history records from nagios_ to statusengine_ tables.'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
+        $parser->addOption('migrate-downtimes', [
+            'help'    => __('Migrate downtimes history records from nagios_ to statusengine_ tables.'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
+        $parser->addOption('migrate-hostchecks', [
+            'help'    => __('Migrate hostchecks records from nagios_ to statusengine_ tables.'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
+        $parser->addOption('migrate-servicechecks', [
+            'help'    => __('Migrate servicechecks records from nagios_ to statusengine_ tables.'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
+        $parser->addOption('migrate-logentries', [
+            'help'    => __('Migrate logentries records from nagios_ to statusengine_ tables.'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
         return $parser;
     }
 
@@ -126,18 +168,44 @@ class Update3To4Command extends Command {
         }
 
         //Set timezone to UTC to migrate between mysql DATETIME and php timestamp strtotime and so on...
-        date_default_timezone_set('UTC');
-        //$this->migrateHostNotifications();
-        //$this->migrateServiceNotifications();
-        //$this->migrateHostStatehistory();
-        //$this->migrateServiceStatehistory();
-        //$this->migrateHostAcknowledgements();
-        //$this->migrateServiceAcknowledgements();
-        //$this->migrateHostDowntimes();
-        //$this->migrateServiceDowntimes();
-        //$this->migrateHostChecks();
-        //$this->migrateServiceChecks();
-        $this->migrateLogentries();
+        if ($args->getOption('migrate-notifications') === true) {
+            date_default_timezone_set('UTC');
+            $this->migrateHostNotifications();
+            $this->migrateServiceNotifications();
+        }
+
+        if ($args->getOption('migrate-statehistory') === true) {
+            date_default_timezone_set('UTC');
+            $this->migrateHostStatehistory();
+            $this->migrateServiceStatehistory();
+        }
+
+        if ($args->getOption('migrate-acknowledgements') === true) {
+            date_default_timezone_set('UTC');
+            $this->migrateHostAcknowledgements();
+            $this->migrateServiceAcknowledgements();
+        }
+
+        if ($args->getOption('migrate-downtimes') === true) {
+            date_default_timezone_set('UTC');
+            $this->migrateHostDowntimes();
+            $this->migrateServiceDowntimes();
+        }
+
+        if ($args->getOption('migrate-hostchecks') === true) {
+            date_default_timezone_set('UTC');
+            $this->migrateHostChecks();
+        }
+
+        if ($args->getOption('migrate-servicechecks') === true) {
+            date_default_timezone_set('UTC');
+            $this->migrateServiceChecks();
+        }
+
+        if ($args->getOption('migrate-logentries') === true) {
+            date_default_timezone_set('UTC');
+            $this->migrateLogentries();
+        }
     }
 
     public function migrateEmailConfiguration() {
@@ -516,7 +584,7 @@ class Update3To4Command extends Command {
         $ProgressBar = new Manager(0, $numberOfSelects);
 
         $query = "
-        INSERT INTO statusengine_service_acknowledgements
+        INSERT IGNORE INTO statusengine_service_acknowledgements
         (hostname, service_description, state, author_name, comment_data, entry_time, entry_time_usec, acknowledgement_type, is_sticky, persistent_comment, notify_contacts)
         VALUES%s;";
 
@@ -626,7 +694,7 @@ class Update3To4Command extends Command {
         $ProgressBar = new Manager(0, $numberOfSelects);
 
         $query = "
-        INSERT INTO statusengine_service_downtimehistory
+        INSERT IGNORE INTO statusengine_service_downtimehistory
         (hostname, service_description, internal_downtime_id, scheduled_start_time, node_name, entry_time, entry_time_usec, author_name, comment_data, triggered_by_id, is_fixed, duration, scheduled_end_time, was_started, actual_start_time, actual_end_time, was_cancelled)
         VALUES%s";
 
@@ -742,7 +810,7 @@ class Update3To4Command extends Command {
         $ProgressBar = new Manager(0, $numberOfSelects);
 
         $query = "
-        INSERT INTO statusengine_servicechecks
+        INSERT IGNORE INTO statusengine_servicechecks
         (hostname, service_description, start_time, start_time_usec, state, is_hardstate, end_time, output, timeout, early_timeout, latency, execution_time, perfdata, command, current_check_attempt, max_check_attempts, long_output)
         VALUES%s";
 
@@ -801,7 +869,7 @@ class Update3To4Command extends Command {
         $ProgressBar = new Manager(0, $numberOfSelects);
 
         $query = "
-        INSERT INTO statusengine_logentries
+        INSERT IGNORE INTO statusengine_logentries
         (entry_time, logentry_type, logentry_data, node_name)
         VALUES%s";
 
