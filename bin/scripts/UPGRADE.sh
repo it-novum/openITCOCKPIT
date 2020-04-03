@@ -13,6 +13,8 @@ if [[ ! -f "$OLDINIFILE" ]]; then
     exit 1;
 fi
 
+$APPDIR/bin/scripts/pre_v4_upgrade.php
+
 INIFILE=/opt/openitc/etc/mysql/mysql.cnf
 DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
 BASHCONF=/opt/openitc/etc/mysql/bash.conf
