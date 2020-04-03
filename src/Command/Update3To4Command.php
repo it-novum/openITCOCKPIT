@@ -303,7 +303,7 @@ class Update3To4Command extends Command {
                 continue;
             }
 
-            //$Mailer->deliver();
+            $Mailer->deliver();
             $this->io->success(__('New password was send to {0}', $user->email));
         }
     }
