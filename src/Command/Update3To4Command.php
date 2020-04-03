@@ -63,6 +63,12 @@ class Update3To4Command extends Command {
     private $io;
 
     /**
+     * Statusengine Node Name
+     * @var string
+     */
+    private $nodeName = 'openITCOCKPIT';
+
+    /**
      * Hook method for defining this command's option parser.
      *
      * @see https://book.cakephp.org/3.0/en/console-and-shells/commands.html#defining-arguments-and-options
@@ -125,8 +131,10 @@ class Update3To4Command extends Command {
         //$this->migrateServiceNotifications();
         //$this->migrateHostStatehistory();
         //$this->migrateServiceStatehistory();
-        $this->migrateHostAcknowledgements();
-        $this->migrateServiceAcknowledgements();
+        //$this->migrateHostAcknowledgements();
+        //$this->migrateServiceAcknowledgements();
+        //$this->migrateHostDowntimes();
+        //$this->migrateServiceDowntimes();
     }
 
     public function migrateEmailConfiguration() {
@@ -544,6 +552,121 @@ class Update3To4Command extends Command {
         $this->io->out('');
     }
 
+    public function migrateHostDowntimes() {
+        $this->migrateParitions('nagios_downtimehistory', 'statusengine_host_downtimehistory');
+
+        $hostDowntimesCount = $this->getHostDowntimesMigrationQuery(0, true);
+        $numberOfSelects = ceil($hostDowntimesCount / $this->limit);
+
+        if ($hostDowntimesCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating host downtimes');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $query = "
+        INSERT IGNORE INTO statusengine_host_downtimehistory
+        (hostname, internal_downtime_id, scheduled_start_time, node_name, entry_time, entry_time_usec, author_name, comment_data, triggered_by_id, is_fixed, duration, scheduled_end_time, was_started, actual_start_time, actual_end_time, was_cancelled)
+        VALUES%s";
+
+        $baseValues = '(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getHostDowntimesMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+                $params[] = $record['Objects']['name1'];
+                $params[] = $record['internal_downtime_id'];
+                $params[] = strtotime($record['scheduled_start_time']);
+                $params[] = $this->nodeName;
+                $params[] = strtotime($record['entry_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = $record['author_name'];
+                $params[] = $record['comment_data'];
+                $params[] = $record['triggered_by_id'];
+                $params[] = $record['is_fixed'];
+                $params[] = $record['duration'];
+                $params[] = strtotime($record['scheduled_end_time']);
+                $params[] = $record['was_started'];
+                $params[] = strtotime($record['actual_start_time']);
+                $params[] = strtotime($record['actual_end_time']);
+                $params[] = $record['was_cancelled'];
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
+    }
+
+    public function migrateServiceDowntimes() {
+        $this->migrateParitions('nagios_downtimehistory', 'statusengine_service_downtimehistory');
+
+        $serviceDowntimesCount = $this->getServiceDowntimesMigrationQuery(0, true);
+        $numberOfSelects = ceil($serviceDowntimesCount / $this->limit);
+
+        if ($serviceDowntimesCount == 0) {
+            return;
+        }
+
+        $this->io->out('Migrating service downtimes');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+
+        $query = "
+        INSERT INTO statusengine_service_downtimehistory
+        (hostname, service_description, internal_downtime_id, scheduled_start_time, node_name, entry_time, entry_time_usec, author_name, comment_data, triggered_by_id, is_fixed, duration, scheduled_end_time, was_started, actual_start_time, actual_end_time, was_cancelled)
+        VALUES%s";
+
+        $baseValues = '(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $offset = $this->limit * $i;
+
+            $values = [];
+            $params = [];
+            foreach ($this->getServiceDowntimesMigrationQuery($offset) as $record) {
+                $values[] = $baseValues;
+                $params[] = $record['Objects']['name1'];
+                $params[] = $record['Objects']['name2'];
+                $params[] = $record['internal_downtime_id'];
+                $params[] = strtotime($record['scheduled_start_time']);
+                $params[] = $this->nodeName;
+                $params[] = strtotime($record['entry_time']);
+                $params[] = $this->getMicrotime();
+                $params[] = $record['author_name'];
+                $params[] = $record['comment_data'];
+                $params[] = $record['triggered_by_id'];
+                $params[] = $record['is_fixed'];
+                $params[] = $record['duration'];
+                $params[] = strtotime($record['scheduled_end_time']);
+                $params[] = $record['was_started'];
+                $params[] = strtotime($record['actual_start_time']);
+                $params[] = strtotime($record['actual_end_time']);
+                $params[] = $record['was_cancelled'];
+            }
+
+            $sql = sprintf($query, implode(',', $values));
+            $connection = ConnectionManager::get('default');
+
+            $statement = $connection->execute(
+                $sql,
+                $params
+            );
+
+            $ProgressBar->update(($i + 1));
+        }
+        $this->io->out('');
+    }
+
     /**
      * @param int $offset
      * @return mixed
@@ -865,6 +988,93 @@ class Update3To4Command extends Command {
             ->innerJoin(
                 ['Objects' => 'nagios_objects'],
                 ['Objects.object_id = AcknowledgementServices.object_id']
+            )
+            ->where([
+                'Objects.objecttype_id' => 2
+            ]);
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function getHostDowntimesMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\DowntimeHostsTable $DowntimeHostsTable */
+        $DowntimeHostsTable = TableRegistry::getTableLocator()->get('Statusengine2Module.DowntimeHosts');
+
+        $query = $DowntimeHostsTable->find();
+
+        $query
+            ->select([
+                'DowntimeHosts.internal_downtime_id',
+                'DowntimeHosts.scheduled_start_time',
+                'DowntimeHosts.entry_time',
+                'DowntimeHosts.author_name',
+                'DowntimeHosts.comment_data',
+                'DowntimeHosts.triggered_by_id',
+                'DowntimeHosts.is_fixed',
+                'DowntimeHosts.duration',
+                'DowntimeHosts.scheduled_end_time',
+                'DowntimeHosts.was_started',
+                'DowntimeHosts.actual_start_time',
+                'DowntimeHosts.actual_end_time',
+                'DowntimeHosts.was_cancelled',
+
+                'Objects.name1',
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = DowntimeHosts.object_id', 'DowntimeHosts.downtime_type = 2'] //Downtime.downtime_type = 2 Host downtime
+            )
+            ->where([
+                'Objects.objecttype_id' => 1
+            ]);
+
+        if ($asCount === true) {
+            return $query->count();
+        }
+
+        $query->offset($offset);
+        $query->limit($this->limit);
+        $query->disableHydration();
+        $query->disableResultsCasting();
+        return $query->toArray();
+    }
+
+    private function getServiceDowntimesMigrationQuery(int $offset = 0, bool $asCount = false) {
+        /** @var \Statusengine2Module\Model\Table\DowntimeServicesTable $DowntimeServicesTable */
+        $DowntimeServicesTable = TableRegistry::getTableLocator()->get('Statusengine2Module.DowntimeServices');
+
+        $query = $DowntimeServicesTable->find();
+
+        $query
+            ->select([
+                'DowntimeServices.internal_downtime_id',
+                'DowntimeServices.scheduled_start_time',
+                'DowntimeServices.entry_time',
+                'DowntimeServices.author_name',
+                'DowntimeServices.comment_data',
+                'DowntimeServices.triggered_by_id',
+                'DowntimeServices.is_fixed',
+                'DowntimeServices.duration',
+                'DowntimeServices.scheduled_end_time',
+                'DowntimeServices.was_started',
+                'DowntimeServices.actual_start_time',
+                'DowntimeServices.actual_end_time',
+                'DowntimeServices.was_cancelled',
+
+                'Objects.name1',
+                'Objects.name2',
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = DowntimeServices.object_id', 'DowntimeServices.downtime_type = 1'] //Downtime.downtime_type = 1 Service downtime
             )
             ->where([
                 'Objects.objecttype_id' => 2
