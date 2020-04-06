@@ -982,6 +982,12 @@
                                                     <br>
                                                     <?= __('Please make sure the agent is running and right configured.'); ?>
                                                 </p>
+                                                <p ng-hide="servicesToCreate || !servicesToCreateError || servicesToCreateError == ''" class="txt-color-red">
+                                                    <?= __('During agent check the following error occurred:'); ?><br>
+                                                    {{servicesToCreateError}}
+                                                    <br><br>
+                                                    <?= __('The request will be tried again ...'); ?>
+                                                </p>
 
                                                 <div class="row" ng-show="servicesToCreate">
                                                     <div class="col-12">

@@ -221,6 +221,9 @@ mkdir -p /opt/openitc/frontend/tmp/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
 chown nagios:nagios /opt/openitc/frontend/tmp/nagios
 
+mkdir -p /opt/openitc/frontend/webroot/img/charts
+chown www-data:www-data /opt/openitc/frontend/webroot/img/charts
+
 if [[ -d /opt/openitc/frontend/plugins/MapModule/webroot/img/ ]]; then
     chown -R www-data:www-data /opt/openitc/frontend/plugins/MapModule/webroot/img/
 fi

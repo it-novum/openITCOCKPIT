@@ -1,6 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, $stateParams, SortService, MassChangeService, QueryStringService){
         $rootScope.lastObjectName = null;
+        var startTimestamp = new Date().getTime();
 
         SortService.setSort(QueryStringService.getStateValue($stateParams, 'sort', 'Servicestatus.current_state'));
         SortService.setDirection(QueryStringService.getStateValue($stateParams, 'direction', 'desc'));
@@ -324,7 +325,10 @@ angular.module('openITCOCKPIT')
 
         var loadGraph = function(host, service){
             var serverTime = new Date($scope.timezone.server_time);
-            graphEnd = Math.floor(serverTime.getTime() / 1000);
+            var compareTimestamp = new Date().getTime();
+            var diffFromStartToNow = parseInt(compareTimestamp-startTimestamp,10);
+
+            graphEnd = Math.floor((serverTime.getTime()+diffFromStartToNow) / 1000);
             graphStart = graphEnd - (3600 * 4);
 
             $http.get('/Graphgenerators/getPerfdataByUuid.json', {

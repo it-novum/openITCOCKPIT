@@ -1191,19 +1191,20 @@ use Cake\Core\Plugin;
                                 <td class="text-center">
                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                         <a ui-sref="ServicesBrowser({id:service.Service.id})"
-                                           class="txt-color-blueDark">
-                                            <i class="fa fa-area-chart"
-                                               ng-mouseenter="mouseenter($event, mergedHost.uuid, service)"
-                                               ng-mouseleave="mouseleave()"
-                                               ng-if="service.Service.has_graph">
-                                            </i>
-                                        </a>
-                                    <?php else: ?>
-                                        <i class="fa fa-area-chart"
+                                           class="txt-color-blueDark"
                                            ng-mouseenter="mouseenter($event, mergedHost.uuid, service)"
                                            ng-mouseleave="mouseleave()"
                                            ng-if="service.Service.has_graph">
+                                            <i class="fa fa-area-chart">
+                                            </i>
+                                        </a>
+                                    <?php else: ?>
+                                    <div ng-mouseenter="mouseenter($event, mergedHost.uuid, service)"
+                                         ng-mouseleave="mouseleave()"
+                                         ng-if="service.Service.has_graph">
+                                        <i class="fa fa-area-chart">
                                         </i>
+                                    </div>
                                     <?php endif; ?>
                                 </td>
 

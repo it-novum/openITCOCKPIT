@@ -139,12 +139,13 @@
                                             <span ng-show="userdashboard.grafana_url == ''"
                                                   class="label label-primary font-xs pointer"
                                                   ng-click="synchronizeWithGrafana(userdashboard.id)">
-                                    <?php echo __('Not synchronized'); ?>
+                                                <span class="badge border border-primary text-primary"><?php echo __('Not synchronized'); ?></span>
+
                                 </span>
                                         <?php else: ?>
                                             <span ng-show="userdashboard.grafana_url == ''"
                                                   class="label label-primary font-xs">
-                                    <?php echo __('Not synchronized'); ?>
+                                                <span class="badge border border-primary text-primary"><?php echo __('Not synchronized'); ?></span>
                                 </span>
                                         <?php endif; ?>
                                     <?php else: ?>
@@ -181,6 +182,7 @@
                                             <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                                 <a ng-click="synchronizeWithGrafana(userdashboard.id)"
                                                    ng-if="userdashboard.allowEdit"
+                                                   href="javascript:void(0);"
                                                    class="dropdown-item">
                                                     <i class="fa fa-refresh"></i>
                                                     <?php echo __('Synchronize'); ?>

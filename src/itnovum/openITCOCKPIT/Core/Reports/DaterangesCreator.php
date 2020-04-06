@@ -213,7 +213,7 @@ class DaterangesCreator {
      * @return array
      * @throws \Exception
      */
-    public function createDateSlicesByIntervalAndLastUpdateDate($lastUpdateDate, $interval) {
+    public static function createDateSlicesByIntervalAndLastUpdateDate($lastUpdateDate, $interval) {
         if (date('H:i:s', $lastUpdateDate) === '23:59:59') {
             $lastUpdateDate += 1;// plus on second for moving timestamp into new day
         }
@@ -242,7 +242,7 @@ class DaterangesCreator {
 
                     $dateInterval = new \DateInterval('P1D');
                     $dateRange = new \DatePeriod($begin, $dateInterval, $end);
-                    /** @var DateTime $date */
+                    /** @var \DateTime $date */
                     foreach ($dateRange as $date) {
                         $dateAsTimestamp = $date->getTimestamp();
                         if (date('z', $dateAsTimestamp) < date('z', $now)) {
@@ -287,7 +287,7 @@ class DaterangesCreator {
 
                     $interval = new \DateInterval('P1W');
                     $daterange = new \DatePeriod($nextWeekMonday, $interval, $end);
-                    /** @var DateTime $date */
+                    /** @var \DateTime $date */
                     foreach ($daterange as $date) {
                         $dateAsTimestamp = $date->getTimestamp();
                         if (date('W', $now) === date('W', $dateAsTimestamp)) {
@@ -332,7 +332,7 @@ class DaterangesCreator {
 
                     $interval = new \DateInterval('P1M');
                     $daterange = new \DatePeriod($nextMonthFirstDay, $interval, $end);
-                    /** @var DateTime $date */
+                    /** @var \DateTime $date */
                     foreach ($daterange as $date) {
                         $dateAsTimestamp = $date->getTimestamp();
                         if (date('m', $now) === date('m', $dateAsTimestamp)) {
@@ -359,17 +359,17 @@ class DaterangesCreator {
                 return $dateTimeSlices;
                 break;
             case 'QUARTER':
-                $numberFromCurrentQuarter = $this->getNumberFromQuarter($now);
-                $firstDayOfThisQuarter = $this->firstDayOfQuarter($LastUpdateDate, $numberFromCurrentQuarter);
+                $numberFromCurrentQuarter = self::getNumberFromQuarter($now);
+                $firstDayOfThisQuarter = self::firstDayOfQuarter($LastUpdateDate, $numberFromCurrentQuarter);
 
                 if ($firstDayOfThisQuarter->getTimestamp() === $lastUpdateDate) {
                     $initialEntryType = 'new';
                 }
 
-                if (date('Y', $lastUpdateDate) . $this->getNumberFromQuarter($lastUpdateDate) !== date('Y', $now) . $numberFromCurrentQuarter) {
+                if (date('Y', $lastUpdateDate) . self::getNumberFromQuarter($lastUpdateDate) !== date('Y', $now) . $numberFromCurrentQuarter) {
                     $begin = new \DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
-                    $lastUpdateQuarter = $this->getNumberFromQuarter($lastUpdateDate);
-                    $lastDayOfThisQuarter = $this->lastDayOfQuarter($begin, $lastUpdateQuarter);
+                    $lastUpdateQuarter = self::getNumberFromQuarter($lastUpdateDate);
+                    $lastDayOfThisQuarter = self::lastDayOfQuarter($begin, $lastUpdateQuarter);
                     $dateTimeSlices[] = [
                         'start'     => $lastUpdateDate,
                         'end'       => strtotime($lastDayOfThisQuarter->format('d.m.Y') . ' 23:59:59'),
@@ -380,11 +380,11 @@ class DaterangesCreator {
                     $end = new \DateTime(date('Y-m-d', $now));
                     $interval = new \DateInterval('P3M');
                     $daterange = new \DatePeriod($nextQuarterFirstDay, $interval, $end);
-                    /** @var DateTime $date */
+                    /** @var \DateTime $date */
                     foreach ($daterange as $date) {
                         $dateAsTimestamp = $date->getTimestamp();
-                        $numberFromDateQuarter = $this->getNumberFromQuarter($dateAsTimestamp);
-                        if (date('Y', $now) . $numberFromCurrentQuarter === date('Y', $dateAsTimestamp) . $this->getNumberFromQuarter($dateAsTimestamp)) {
+                        $numberFromDateQuarter = self::getNumberFromQuarter($dateAsTimestamp);
+                        if (date('Y', $now) . $numberFromCurrentQuarter === date('Y', $dateAsTimestamp) . self::getNumberFromQuarter($dateAsTimestamp)) {
                             $dateTimeSlices[] = [
                                 'start'     => strtotime(date('d.m.Y', $dateAsTimestamp) . ' 00:00:00'),
                                 'end'       => $now,
@@ -392,7 +392,7 @@ class DaterangesCreator {
                             ];
                         } else {
                             $end = $date;
-                            $lastDayOfDateQuarter = $this->lastDayOfQuarter($end, $numberFromDateQuarter);
+                            $lastDayOfDateQuarter = self::lastDayOfQuarter($end, $numberFromDateQuarter);
                             $dateTimeSlices[] = [
                                 'start'     => strtotime(date('d.m.Y', $dateAsTimestamp) . ' 00:00:00'),
                                 'end'       => strtotime(date('d.m.Y', $lastDayOfDateQuarter->getTimestamp()) . ' 23:59:59'),
@@ -428,7 +428,7 @@ class DaterangesCreator {
 
                     $interval = new \DateInterval('P1Y');
                     $daterange = new \DatePeriod($nextMonthFirstDay, $interval, $end);
-                    /** @var DateTime $date */
+                    /** @var \DateTime $date */
                     foreach ($daterange as $date) {
                         $dateAsTimestamp = $date->getTimestamp();
                         if (date('Y', $now) === date('Y', $dateAsTimestamp)) {
@@ -464,7 +464,7 @@ class DaterangesCreator {
      * @param $numberOfQuarter
      * @return \DateTime
      */
-    private function firstDayOfQuarter(\DateTime $date, $numberOfQuarter) {
+    private static function firstDayOfQuarter(\DateTime $date, $numberOfQuarter) {
         switch ($numberOfQuarter) {
             case 1:
                 $date->modify('first day of january 00:00:00');
@@ -487,7 +487,7 @@ class DaterangesCreator {
      * @param $numberOfQuarter
      * @return \DateTime
      */
-    private function lastDayOfQuarter(\DateTime $date, $numberOfQuarter) {
+    private static function lastDayOfQuarter(\DateTime $date, $numberOfQuarter) {
         switch ($numberOfQuarter) {
             case 1:
                 $date->modify('last day of march');
@@ -509,8 +509,147 @@ class DaterangesCreator {
      * @param $date
      * @return float
      */
-    private function getNumberFromQuarter($date) {
+    private static function getNumberFromQuarter($date) {
         $currentMonth = date('m', $date);
         return ceil($currentMonth / 3);
+    }
+
+    /**
+     * @param $last_send_date
+     * @param $report_send_interval
+     * @return bool
+     */
+    public static function hasToBeSend($last_send_date, $report_send_interval) {
+        $now = time();
+        $has_to_be_send = false;
+
+        if (strcmp($report_send_interval, 'NEVER') != 0) {
+            if ($last_send_date == '0000-00-00 00:00:00') {
+                return true;
+            }
+            $last_send_timestamp = strtotime($last_send_date);
+            if (strcmp($report_send_interval, 'DAY') == 0) {
+                if (intval(date('Ymd', $now)) > intval(date('Ymd', $last_send_timestamp))) {
+                    $has_to_be_send = true;
+                }
+            } else if (strcmp($report_send_interval, 'WEEK') == 0) {
+                if (intval(date('oW', $now)) > intval(date('oW', $last_send_timestamp))) {
+                    $has_to_be_send = true;
+                }
+            } else if (strcmp($report_send_interval, 'MONTH') == 0) {
+                if (intval(date('Ym', $now)) > intval(date('Ym', $last_send_timestamp))) {
+                    $has_to_be_send = true;
+                }
+            } else if (strcmp($report_send_interval, 'QUARTER') == 0) {
+                $currentMonth = date('n', $now);
+                $currentQuarter = ceil($currentMonth / 3);
+                $lastSendMonth = date('n', $last_send_timestamp);
+                $lastSendQuarter = ceil($lastSendMonth / 3);
+                if (intval(date('Y', $now) . $currentQuarter) > intval(date('Y', $last_send_timestamp) . $lastSendQuarter)) {
+                    $has_to_be_send = true;
+                }
+            } else if (strcmp($report_send_interval, 'YEAR') == 0) {
+                if (intval(date('Y', $now)) > intval(date('Y', $last_send_timestamp))) {
+                    $has_to_be_send = true;
+                }
+            }
+        }
+
+        return $has_to_be_send;
+    }
+
+    /**
+     * @param $report_interval
+     * @return int timestamp
+     * @throws \Exception
+     */
+    public static function getInitStartTimeForCalculateAvailability($report_interval) {
+        $dateNow = new \DateTime(date('d.m.Y H:i:s', time()));
+        switch ($report_interval) {
+            case 'WEEK':
+                $dateNow->modify('first monday of january ' . $dateNow->format('Y'));
+                break;
+            case 'DAY':
+            case 'MONTH':
+            case 'QUARTER':
+            case 'YEAR':
+                $dateNow->modify('first day of january ' . $dateNow->format('Y'));
+                break;
+        }
+        $dateNow->setTime(0, 0, 0);
+        return $dateNow->getTimestamp();
+    }
+
+    /**
+     * @param $report_interval
+     * @return int timestamp
+     * @throws \Exception
+     */
+    public static function getStartTime($report_interval) {
+        $now = self::getEndTime($report_interval);
+        $dateNow = new \DateTime(date('d.m.Y H:i:s', $now));
+        switch ($report_interval) {
+            case 'WEEK':
+                $dateNow->modify('last Monday');
+                break;
+            case 'MONTH':
+                $dateNow->modify('first day of this month');
+                break;
+            case 'QUARTER':
+                $currentMonth = date('n');
+                $currentYear = date('o');
+                if ($currentMonth >= 1 && $currentMonth <= 3) {
+                    $dateNow->modify('first day of october ' . ($currentYear - 1));
+                } else if ($currentMonth >= 4 && $currentMonth <= 6) {
+                    $dateNow->modify('first day of january ' . $currentYear);
+                } else if ($currentMonth >= 7 && $currentMonth <= 9) {
+                    $dateNow->modify('first day of april ' . $currentYear);
+                } else if ($currentMonth >= 10 && $currentMonth <= 12) {
+                    $dateNow->modify('first day of july ' . $currentYear);
+                }
+                break;
+            case 'YEAR':
+                $dateNow->modify('first day of january ' . $dateNow->format('Y'));
+                break;
+        }
+        $dateNow->setTime(0, 0, 0);
+        return $dateNow->getTimestamp();
+    }
+
+    /**
+     * @param $report_interval
+     * @return int timestamp
+     * @throws \Exception
+     */
+    public static function getEndTime($report_interval) {
+        $dateNow = new \DateTime(date('d.m.Y H:i', time()));
+        switch ($report_interval) {
+            case 'DAY':
+                $dateNow->modify('yesterday');
+                break;
+            case 'WEEK':
+                $dateNow->modify('last Sunday');
+                break;
+            case 'MONTH':
+            case 'YEAR':
+                $dateNow->modify('last day of last month');
+                break;
+            case 'QUARTER':
+                $currentMonth = date('n');
+                $currentYear = date('o');
+                if ($currentMonth >= 1 && $currentMonth <= 3) {
+                    $dateNow->modify('last day of december ' . ($currentYear - 1));
+                } else if ($currentMonth >= 4 && $currentMonth <= 6) {
+                    $dateNow->modify('last day of march ' . $currentYear);
+                } else if ($currentMonth >= 7 && $currentMonth <= 9) {
+                    $dateNow->modify('last day of june ' . $currentYear);
+                } else if ($currentMonth >= 10 && $currentMonth <= 12) {
+                    $dateNow->modify('last day of september ' . $currentYear);
+                }
+                break;
+        }
+
+        $dateNow->setTime(23, 59, 59);
+        return $dateNow->getTimestamp();
     }
 }

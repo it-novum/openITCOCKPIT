@@ -1204,7 +1204,8 @@ class HosttemplatesTable extends Table {
         }
 
         //Delete Documentation record if exists
-        /** @var $DocumentationsTable DocumentationsTable */
+        /** @var DocumentationsTable $DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
         if ($DocumentationsTable->existsByUuid($Hosttemplate->get('uuid'))) {
             $DocumentationsTable->delete($DocumentationsTable->getDocumentationByUuid($Hosttemplate->get('uuid')));
         }

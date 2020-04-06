@@ -246,19 +246,20 @@
                                     <td class="text-center">
                                         <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                             <a ui-sref="ServicesBrowser({id:service.Service.id})"
-                                               class="txt-color-blueDark">
-                                                <i class="fa fa-area-chart"
-                                                   ng-mouseenter="mouseenter($event, host, service)"
-                                                   ng-mouseleave="mouseleave()"
-                                                   ng-if="service.Service.has_graph">
+                                               class="txt-color-blueDark"
+                                               ng-mouseenter="mouseenter($event, service)"
+                                               ng-mouseleave="mouseleave()"
+                                               ng-if="service.Service.has_graph">
+                                                <i class="fa fa-area-chart">
                                                 </i>
                                             </a>
                                         <?php else: ?>
-                                            <i class="fa fa-area-chart"
-                                               ng-mouseenter="mouseenter($event, host, service)"
-                                               ng-mouseleave="mouseleave()"
-                                               ng-if="service.Service.has_graph">
-                                            </i>
+                                            <div ng-mouseenter="mouseenter($event, host, service)"
+                                                 ng-mouseleave="mouseleave()"
+                                                 ng-if="service.Service.has_graph">
+                                                <i class="fa fa-area-chart">
+                                                </i>
+                                            </div>
                                         <?php endif; ?>
                                     </td>
 
@@ -371,6 +372,12 @@
                             <enable-notifications></enable-notifications>
                             <acknowledge-service author="<?php echo h($username); ?>"></acknowledge-service>
                             <service-downtime author="<?php echo h($username); ?>"></service-downtime>
+                            <div id="serviceGraphContainer" class="popup-graph-container">
+                                <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;" ng-show="isLoadingGraph">
+                                    <i class="fa fa-refresh fa-4x fa-spin"></i>
+                                </div>
+                                <div id="serviceGraphFlot"></div>
+                            </div>
 
                             <div class="row margin-top-10 margin-bottom-10">
                                 <div class="col-xs-12 col-md-2 text-muted text-center">
@@ -786,6 +793,14 @@
                     </div>
                 </div>
             </div>
+
+            <div id="serviceGraphContainer" class="popup-graph-container">
+                <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;" ng-show="isLoadingGraph">
+                    <i class="fa fa-refresh fa-4x fa-spin"></i>
+                </div>
+                <div id="serviceGraphFlot"></div>
+            </div>
+
         </div>
     </div>
 </div>

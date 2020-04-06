@@ -7,15 +7,23 @@ fi
 
 APPDIR="/opt/openitc/frontend"
 
+OLDINIFILE=/etc/openitcockpit/mysql.cnf
+if [[ ! -f "$OLDINIFILE" ]]; then
+    echo "Error: Could not find V3 database configuration $OLDINIFILE"
+    exit 1;
+fi
+
+$APPDIR/bin/scripts/pre_v4_upgrade.php
+
 INIFILE=/opt/openitc/etc/mysql/mysql.cnf
 DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
 BASHCONF=/opt/openitc/etc/mysql/bash.conf
 
 DEBIANCNF=/etc/mysql/debian.cnf
 
-MYSQL_USER="openitcockpit"
-MYSQL_DATABASE="openitcockpit"
-MYSQL_PASSWORD=$(pwgen -s -1 16)
+MYSQL_USER=$(php -r "echo parse_ini_file('/etc/openitcockpit/mysql.cnf')['user'];")
+MYSQL_DATABASE=$(php -r "echo parse_ini_file('/etc/openitcockpit/mysql.cnf')['database'];")
+MYSQL_PASSWORD=$(awk '$1 == "password" { print }' "/etc/openitcockpit/mysql.cnf" |cut -d= -f2 | sed 's/^\s*//' | sed 's/\s*$//' | sed 's_/_\\/_g')
 
 PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 
@@ -51,6 +59,24 @@ if [[ -d /opt/openitc/frontend/plugins/MapModule/webroot/img/ ]]; then
     chown -R www-data:www-data /opt/openitc/frontend/plugins/MapModule/webroot/img/
 fi
 
+#Copy V3 MapModule images into V4 MapModule
+if [[ -d /usr/share/openitcockpit/app/Plugin/MapModule/webroot/img/ ]]; then
+    mkdir -p /opt/openitc/frontend/plugins/MapModule/webroot/img/
+
+    cp -r /usr/share/openitcockpit/app/Plugin/MapModule/webroot/img/. /opt/openitc/frontend/plugins/MapModule/webroot/img/
+    chown -R www-data:www-data /opt/openitc/frontend/plugins/MapModule/webroot/img/
+fi
+
+mdkir -p /opt/openitc/frontend/webroot/img/userimages/
+if [[ -d /usr/share/openitcockpit/app/webroot/userimages/ ]]; then
+    cp -r /usr/share/openitcockpit/app/webroot/userimages/. /opt/openitc/frontend/webroot/img/userimages/
+    chown -R www-data:www-data /opt/openitc/frontend/webroot/img/userimages
+fi
+
+echo "Clear all gearman queues"
+systemctl stop gearman-job-server.service
+systemctl start gearman-job-server.service
+
 echo "Enable new systemd services"
 systemctl daemon-reload
 systemctl enable\
@@ -71,7 +97,6 @@ if [[ ! -f "$INIFILE" ]]; then
         # set sql_mode to enable group by like it was in the good old times :)
         mysql --defaults-extra-file=${DEBIANCNF} -e "SET GLOBAL sql_mode = '';"
 
-        mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE USER '${MYSQL_DATABASE}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';" -B
         mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;" -B
         mysql --defaults-extra-file=${DEBIANCNF} -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_DATABASE}'@'localhost';" -B
 
@@ -150,11 +175,16 @@ if [ ! -f /opt/openitc/etc/grafana/admin_password ]; then
     pwgen 10 1 > /opt/openitc/etc/grafana/admin_password
 fi
 
-STATUSENGINE_VERSION=$(cat /opt/openitc/etc/statusengine/statusengine_version)
+STATUSENGINE_VERSION=Statusengine3
 
 if [[ $STATUSENGINE_VERSION == "Statusengine2" ]]; then
     mysql "--defaults-extra-file=${INIFILE}" -e "INSERT INTO \`configuration_files\` (\`config_file\`, \`key\`, \`value\`)VALUES('DbBackend', 'dbbackend', 'Nagios');"
     echo "<?php return ['dbbackend' => 'Nagios',];" > /opt/openitc/frontend/config/dbbackend.php
+fi
+
+if [[ $STATUSENGINE_VERSION == "Statusengine3" ]]; then
+    mysql "--defaults-extra-file=${INIFILE}" -e "INSERT INTO \`configuration_files\` (\`config_file\`, \`key\`, \`value\`)VALUES('DbBackend', 'dbbackend', 'Statusengine3');"
+    echo "<?php return ['dbbackend' => 'Statusengine3',];" > /opt/openitc/frontend/config/dbbackend.php
 fi
 
 oitc config_generator_shell --generate
@@ -179,10 +209,17 @@ if [[ $STATUSENGINE_VERSION == "Statusengine3" ]]; then
     chmod +x /opt/openitc/statusengine3/worker/bin/StatusengineWorker.php
 
     /opt/openitc/statusengine3/worker/bin/Console.php database --update
+
+    mysql --defaults-extra-file=${INIFILE} < ${APPDIR}/partitions_statusengine3.sql
 fi
 
 echo "---------------------------------------------------------------"
 echo "Configure Grafana"
+
+# Copy V3 Grafana Configuration
+cp /etc/openitcockpit/grafana/admin_password /opt/openitc/etc/grafana/admin_password
+cp /etc/openitcockpit/grafana/api_key /opt/openitc/etc/grafana/api_key
+
 systemctl restart openitcockpit-graphing.service
 
 ADMIN_PASSWORD=$(cat /opt/openitc/etc/grafana/admin_password)
@@ -245,18 +282,74 @@ if [ -f /opt/openitc/etc/grafana/api_key ]; then
     set -e
 fi
 
-echo "---------------------------------------------------------------"
-echo "Scan and import ACL objects. This will take a while..."
-oitc Acl.acl_extras aco_sync
-
-
 oitc compress
 
-oitc setup
+# Migrate data from NDO schema to Statusengine 3
+
+echo "Run MySQL migration"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE aros SET model='Usergroups';"
+
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE users SET dateformat='F j, Y H:i:s' WHERE dateformat='%B %e, %Y %H:%M:%S';"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE users SET dateformat='m-d-Y H:i:s' WHERE dateformat='%m-%d-%Y  %H:%M:%S';"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE users SET dateformat='m-d-Y H:i' WHERE dateformat='%m-%d-%Y  %H:%M';"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE users SET dateformat='m-d-Y h:i:s A' WHERE dateformat='%m-%d-%Y  %l:%M:%S %p';"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE users SET dateformat='H:i:s m-d-Y' WHERE dateformat='%H:%M:%S  %m-%d-%Y';"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE users SET dateformat='j F Y, H:i:s' WHERE dateformat='%e %B %Y, %H:%M:%S';"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE users SET dateformat='d.m.Y - H:i:s' WHERE dateformat='%d.%m.%Y - %H:%M:%S';"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE users SET dateformat='d.m.Y - h:i:s A' WHERE dateformat='%d.%m.%Y - %l:%M:%S %p';"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE users SET dateformat='H:i:s - d.m.Y' WHERE dateformat='%H:%M:%S - %d.%m.%Y';"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE users SET dateformat='H:i - d.m.Y' WHERE dateformat='%H:%M - %d.%m.%Y';"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE users SET dateformat='Y-m-d H:i' WHERE dateformat='%Y-%m-%d %H:%M';"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE users SET dateformat='Y-m-d H:i:s' WHERE dateformat='%Y-%m-%d %H:%M:%S';"
+
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE \`systemsettings\` SET \`value\`='session' WHERE \`key\`='FRONTEND.AUTH_METHOD' AND \`value\`='twofactor';"
+
+mysql --defaults-extra-file=${INIFILE} -e "TRUNCATE TABLE changelogs;"
+mysql --defaults-extra-file=${INIFILE} -e "TRUNCATE TABLE changelogs_to_containers;"
+
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = REPLACE(command_line, '/usr/share/openitcockpit/app/Console/cake', '/opt/openitc/frontend/bin/cake');"
+
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-', 'fas fa-');"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-exchange', 'fa-exchange-alt');"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-pencil-square-o', 'fa-pencil-square');"
+
+#ALC dependencies config for itc core
+echo "---------------------------------------------------------------"
+echo "Scan for new user permissions. This will take a while..."
+oitc Acl.acl_extras aco_sync
+
+#Set default permissions, check for always allowed permissions and dependencies
+oitc roles --enable-defaults --admin
+
+echo "---------------------------------------------------------------"
+echo "Flush redis cache"
+redis-cli FLUSHALL
+
+oitc update3_to4 --email-config
+oitc update3_to4 --activate-users
+oitc update3_to4 --reset-all-passwords
+
+oitc update3_to4 --migrate-notifications
+oitc update3_to4 --migrate-statehistory
+oitc update3_to4 --migrate-acknowledgements
+oitc update3_to4 --migrate-downtimes
+
+echo "---------------------------------------------------------------"
+echo "Convert MySQL Tables from utf8_swedish_ci to utf8_general_ci..."
+
+mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${MYSQL_DATABASE} CHARACTER SET utf8 COLLATE utf8_general_ci;"
+
+mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TABLE_NAME FROM \`information_schema\`.\`TABLES\` WHERE \`TABLE_SCHEMA\`='${MYSQL_DATABASE}' AND \`TABLE_NAME\` NOT LIKE 'nagios_%' AND \`TABLE_NAME\` NOT LIKE 'statusengine_%';" | while read TABLE_NAME; do
+    echo "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8;"
+    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8;"
+done
+
+#oitc setup
 
 oitc nagios_export
 
 echo "Enabling webserver configuration"
+rm -rf /etc/nginx/sites-enabled/openitc
 ln -s /etc/nginx/sites-available/openitc /etc/nginx/sites-enabled/openitc
 rm -f /etc/nginx/sites-enabled/default
 
@@ -294,8 +387,5 @@ else
         echo "ERROR: could not detect php-fpm systemd service file. You need to restart php-fpm manualy"
     fi
 fi
-
-#Set default permissions, check for always allowed permissions and dependencies
-oitc roles --enable-defaults --admin
 
 date > /opt/openitc/etc/.installation_done

@@ -14,6 +14,7 @@ angular.module('openITCOCKPIT')
         $scope.deleteUrl = '/services/delete/';
         $scope.deactivateUrl = '/services/deactivate/';
         $scope.activateUrl = '/services/enable/';
+        $scope.mouseout = true;
 
         $scope.activeTab = 'active';
 
@@ -23,9 +24,14 @@ angular.module('openITCOCKPIT')
                 currentState: 5
             }
         };
-
+        var startTimestamp = new Date().getTime();
         var graphStart = 0;
         var graphEnd = 0;
+
+        $scope.init = true;
+        $scope.serverResult = [];
+        $scope.isLoadingGraph = true;
+        $scope.mouseout = true;
 
         $scope.changeTab = function(tab){
             if(tab !== $scope.activeTab){
@@ -244,14 +250,17 @@ angular.module('openITCOCKPIT')
             return ids.join(',');
         };
 
-        $scope.mouseenter = function($event, host, service){
+        $scope.mouseenter = function($event, service){
+            $scope.mouseout = false;
             $scope.isLoadingGraph = true;
             var offset = {
                 top: $event.relatedTarget.offsetTop + 40,
                 left: $event.relatedTarget.offsetLeft + 40
             };
 
-            offset.top += $event.relatedTarget.offsetParent.offsetTop;
+            if($event.relatedTarget.offsetParent && $event.relatedTarget.offsetParent.offsetTop){
+                offset.top += $event.relatedTarget.offsetParent.offsetTop;
+            }
 
             var currentScrollPosition = $(window).scrollTop();
 
@@ -276,23 +285,27 @@ angular.module('openITCOCKPIT')
             }
 
             $popupGraphContainer.show();
-            loadGraph(host, service);
+            loadGraph(service);
         };
 
         $scope.mouseleave = function(){
+            $scope.mouseout = true;
             $('#serviceGraphContainer').hide();
             $('#serviceGraphFlot').html('');
         };
 
-        var loadGraph = function(host, service){
+        var loadGraph = function(service){
             var serverTime = new Date($scope.timezone.server_time);
-            graphEnd = Math.floor(serverTime.getTime() / 1000);
+            var compareTimestamp = new Date().getTime();
+            var diffFromStartToNow = parseInt(compareTimestamp - startTimestamp, 10);
+
+            graphEnd = Math.floor((serverTime.getTime() + diffFromStartToNow) / 1000);
             graphStart = graphEnd - (3600 * 4);
 
             $http.get('/Graphgenerators/getPerfdataByUuid.json', {
                 params: {
                     angular: true,
-                    host_uuid: host.Host.uuid,
+                    host_uuid: service.Host.uuid,
                     service_uuid: service.Service.uuid,
                     start: graphStart,
                     end: graphEnd,
@@ -312,12 +325,18 @@ angular.module('openITCOCKPIT')
                     var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
                     graph_data[dsCount].push([frontEndTimestamp, performance_data[dsCount].data[timestamp]]);
                 }
+                //graph_data.push(performance_data[key].data);
             }
-            var GraphDefaultsObj = new GraphDefaults();
             var color_amount = performance_data.length < 3 ? 3 : performance_data.length;
+
+            var GraphDefaultsObj = new GraphDefaults();
+
             var colors = GraphDefaultsObj.getColors(color_amount);
+
             var options = GraphDefaultsObj.getDefaultOptions();
+            options.height = '500px';
             options.colors = colors.border;
+
             options.xaxis.tickFormatter = function(val, axis){
                 var fooJS = new Date(val);
                 var fixTime = function(value){
@@ -328,10 +347,18 @@ angular.module('openITCOCKPIT')
                 };
                 return fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
             };
+            options.xaxis.mode = 'time';
+            options.xaxis.timeBase = 'milliseconds';
             options.xaxis.min = (graphStart + $scope.timezone.user_time_to_server_offset) * 1000;
             options.xaxis.max = (graphEnd + $scope.timezone.user_time_to_server_offset) * 1000;
 
-            self.plot = $.plot('#serviceGraphFlot', graph_data, options);
+            if(document.getElementById('serviceGraphFlot') && !$scope.mouseout){
+                try{
+                    self.plot = $.plot('#serviceGraphFlot', graph_data, options);
+                }catch(e){
+                    console.error(e);
+                }
+            }
         };
 
         $scope.$watch('data.hostId', function(){

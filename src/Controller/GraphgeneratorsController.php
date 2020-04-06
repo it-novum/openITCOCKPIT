@@ -30,16 +30,12 @@ namespace App\Controller;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
-use itnovum\openITCOCKPIT\Core\DbBackend;
-use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
 
 
 /**
  * Class GraphgeneratorsController
- * @property Servicestatus $Servicestatus
- * @property PerfdataBackend $PerfdataBackend
- * @property DbBackend $DbBackend
+ * @package App\Controller
  */
 class GraphgeneratorsController extends AppController {
 

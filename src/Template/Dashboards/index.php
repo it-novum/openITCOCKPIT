@@ -95,7 +95,7 @@
                                         <?php echo __('Stop sharing'); ?>
                                     </a>
                                 </li>
-                                <li class="divider"></li>
+                                <div class="dropdown-divider"></div>
                                 <li>
                                     <a href="javascript:void(0);" class="dropdown-item txt-color-red"
                                        ng-click="deleteTab(tab.id)">
@@ -134,6 +134,7 @@
                                 {{availableWidget.title}}
                             </a>
 
+                            <div class="dropdown-divider"></div>
                             <a href="javascript:void(0);"
                                ng-click="restoreDefault()"
                                class="dropdown-item dropdown-item-xs">

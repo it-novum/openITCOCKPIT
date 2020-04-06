@@ -112,7 +112,7 @@ class DatabaseCleanupCommand extends Command implements CronjobInterface {
                 $this->DbBackend->getNotificationServicesTable(),
             ];
 
-            $this->checkAndCreatePartitionsMySQL($tables, $io);
+            $this->checkAndCreatePartitionsMySQLStatusengine3($tables, $io);
         }
 
         if ($this->DbBackend->isCrateDb()) {
@@ -186,6 +186,72 @@ class DatabaseCleanupCommand extends Command implements CronjobInterface {
                 $io->info('Partition does not exists, will create it....', 0);
 
                 $Connection->execute("ALTER TABLE " . $Connection->config()['database'] . "." . $Table->getTable() . " REORGANIZE PARTITION p_max INTO (PARTITION " . $newPartitionName . " VALUES LESS THAN (TO_DAYS('" . $mysqlPartitionStartDate . "')), PARTITION p_max values LESS THAN (MAXVALUE));");
+                $io->success('   Ok');
+                //ALTER TABLE ptn_test DROP PARTITION p_2015_01
+            } else {
+                $io->success('   Ok');
+            }
+            $this->cleanupPartition($Table, $partitions, $io);
+            $io->hr();
+        }
+    }
+
+    public function checkAndCreatePartitionsMySQLStatusengine3(array $tables, ConsoleIo $io) {
+        foreach ($tables as $Table) {
+            /** @var Table $Table */
+
+            $Connection = $Table->getConnection();
+            //debug($Connection->execute('SELECT partition_name FROM information_schema.partitions')->fetchAll('assoc'));
+
+            //Get existing partitions for this table out of MySQL's information_schema
+            $query = $Connection->execute("
+                SELECT partition_name
+                FROM information_schema.partitions
+                WHERE TABLE_SCHEMA = :databaseName
+                AND TABLE_NAME = :tableName", [
+                'databaseName' => $Connection->config()['database'],
+                'tableName'    => $Table->getTable()
+            ]);
+            $result = $query->fetchAll('assoc');
+
+            $partitions = Hash::extract($result, '{n}.partition_name');
+
+            //Check if partition for current week exists
+            $currentMysqlPartitionStartDate = strtotime('00:00:00 next monday');
+            $currentMysqlPartitionStartDate = intdiv($currentMysqlPartitionStartDate, 86400);
+
+            $currentPartitionName = 'p_' . date('o_W');
+
+            $io->out('Checking for partition ' . $currentPartitionName . ' in Table "' . $Table->getTable() . '"...', 0);
+            if (!in_array($currentPartitionName, $partitions, true)) {
+                try {                                                                                                                                                                                                               // < next monday 00:00
+                    $Connection->execute("ALTER TABLE " . $Connection->config()['database'] . "." . $Table->getTable() . " REORGANIZE PARTITION p_max INTO (PARTITION " . $currentPartitionName . " VALUES LESS THAN (" . $currentMysqlPartitionStartDate . "), PARTITION p_max values LESS THAN (MAXVALUE));");
+                    $io->success('   Ok');
+                } catch (\Exception $e) {
+                    Log::error('DatabaseCleanupCommand: MySQL Error: ' . $e->getMessage());
+                }
+            } else {
+                $io->success('   Ok');
+            }
+
+
+            // Attention: look close before you change the date parameters!!!
+            // Think that there's coming a new year on 31.12 !!!
+            // TO_DAYS('2014-12-29 00:00:00')
+            $mysqlPartitionStartDate = strtotime('00:00:00 next monday +1 week');
+            $mysqlPartitionStartDate = intdiv($mysqlPartitionStartDate, 86400);
+            //p_2015_01
+            $newPartitionName = 'p_' . date('o_W', strtotime('next monday'));
+
+            $io->out('Checking for partition ' . $newPartitionName . ' in Table "' . $Table->getTable() . '"...', 0);
+
+            //Checking if this partition already exists
+            if (!in_array($newPartitionName, $partitions, true)) {
+                //This partition does not exist and we need to create it
+                $io->out('');
+                $io->info('Partition does not exists, will create it....', 0);
+
+                $Connection->execute("ALTER TABLE " . $Connection->config()['database'] . "." . $Table->getTable() . " REORGANIZE PARTITION p_max INTO (PARTITION " . $newPartitionName . " VALUES LESS THAN (" . $mysqlPartitionStartDate . "), PARTITION p_max values LESS THAN (MAXVALUE));");
                 $io->success('   Ok');
                 //ALTER TABLE ptn_test DROP PARTITION p_2015_01
             } else {
