@@ -335,13 +335,13 @@ oitc update3_to4 --migrate-acknowledgements
 oitc update3_to4 --migrate-downtimes
 
 echo "---------------------------------------------------------------"
-echo "Convert MySQL Tables from utf8_swedish_ci to utf8_general_ci..."
+echo "Convert MySQL Tables from utf8_swedish_ci to utf8mb4_general_ci..."
 
-mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${MYSQL_DATABASE} CHARACTER SET utf8 COLLATE utf8_general_ci;"
+mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${MYSQL_DATABASE} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 
 mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TABLE_NAME FROM \`information_schema\`.\`TABLES\` WHERE \`TABLE_SCHEMA\`='${MYSQL_DATABASE}' AND \`TABLE_NAME\` NOT LIKE 'nagios_%' AND \`TABLE_NAME\` NOT LIKE 'statusengine_%';" | while read TABLE_NAME; do
-    echo "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8;"
-    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8;"
+    echo "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4; ✔"
+    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4;"
 done
 
 #oitc setup

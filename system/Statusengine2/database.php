@@ -21,7 +21,7 @@ class DATABASE_CONFIG {
             'password'   => $ini_file['password'],
             'database'   => $ini_file['database'],
             'prefix'     => 'nagios_',
-            'encoding'   => 'utf8',
+            'encoding'   => 'utf8mb4',
             'port'       => 3306
         ];
     }
