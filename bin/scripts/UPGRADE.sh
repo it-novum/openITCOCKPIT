@@ -13,6 +13,7 @@ if [[ ! -f "$OLDINIFILE" ]]; then
     exit 1;
 fi
 
+chmod +x $APPDIR/bin/scripts/pre_v4_upgrade.php
 $APPDIR/bin/scripts/pre_v4_upgrade.php
 
 INIFILE=/opt/openitc/etc/mysql/mysql.cnf
@@ -67,7 +68,7 @@ if [[ -d /usr/share/openitcockpit/app/Plugin/MapModule/webroot/img/ ]]; then
     chown -R www-data:www-data /opt/openitc/frontend/plugins/MapModule/webroot/img/
 fi
 
-mdkir -p /opt/openitc/frontend/webroot/img/userimages/
+mkdir -p /opt/openitc/frontend/webroot/img/userimages/
 if [[ -d /usr/share/openitcockpit/app/webroot/userimages/ ]]; then
     cp -r /usr/share/openitcockpit/app/webroot/userimages/. /opt/openitc/frontend/webroot/img/userimages/
     chown -R www-data:www-data /opt/openitc/frontend/webroot/img/userimages
@@ -387,5 +388,24 @@ else
         echo "ERROR: could not detect php-fpm systemd service file. You need to restart php-fpm manualy"
     fi
 fi
+
+BACKUP_BASEDIR=/var/backups/openitcockpit_v3
+echo "Move openITCOCKPIT V3 Files to ${BACKUP_BASEDIR}"
+
+mkdir -p "${BACKUP_BASEDIR}/usr/share"
+mkdir -p "${BACKUP_BASEDIR}/etc"
+
+rsync -ahP /usr/share/openitcockpit "${BACKUP_BASEDIR}/usr/share/"
+rsync -ahP /etc/openitcockpit "${BACKUP_BASEDIR}/etc/"
+
+rm -rf /usr/share/openitcockpit
+rm -rf /etc/openitcockpit
+
+echo "Upgrade to openITCOCKPIT 4 done."
+echo "######################################"
+echo "# Please execute                     #"
+echo "# oitc reset_password --print        #"
+echo "# to reset your users password.      #"
+echo "######################################"
 
 date > /opt/openitc/etc/.installation_done
