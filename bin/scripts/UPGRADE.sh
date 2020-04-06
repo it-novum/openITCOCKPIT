@@ -328,7 +328,6 @@ redis-cli FLUSHALL
 
 oitc update3_to4 --email-config
 oitc update3_to4 --activate-users
-oitc update3_to4 --reset-all-passwords
 
 oitc update3_to4 --migrate-notifications
 oitc update3_to4 --migrate-statehistory
