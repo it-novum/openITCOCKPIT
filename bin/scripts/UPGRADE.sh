@@ -394,18 +394,24 @@ echo "Move openITCOCKPIT V3 Files to ${BACKUP_BASEDIR}"
 
 mkdir -p "${BACKUP_BASEDIR}/usr/share"
 mkdir -p "${BACKUP_BASEDIR}/etc"
+mkdir -p "${BACKUP_BASEDIR}/var/lib"
 
 rsync -ahP /usr/share/openitcockpit "${BACKUP_BASEDIR}/usr/share/"
 rsync -ahP /etc/openitcockpit "${BACKUP_BASEDIR}/etc/"
+rsync -ahP /var/lib/openitcockpit "${BACKUP_BASEDIR}/var/lib"
 
 rm -rf /usr/share/openitcockpit
 rm -rf /etc/openitcockpit
+rm -rf /var/lib/openitcockpit
 
+echo ""
+echo ""
 echo "Upgrade to openITCOCKPIT 4 done."
 echo "######################################"
 echo "# Please execute                     #"
 echo "# oitc reset_password --print        #"
 echo "# to reset your users password.      #"
 echo "######################################"
+echo ""
 
 date > /opt/openitc/etc/.installation_done
