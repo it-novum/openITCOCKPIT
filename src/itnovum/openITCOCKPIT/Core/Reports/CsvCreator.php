@@ -53,11 +53,11 @@ class CsvCreator {
         $this->buffer = fopen($path, 'w');
     }
 
-    function saveFile() {
+    function closeFile() {
         fclose($this->buffer);
     }
 
-    function readZip($zipPath, $files) {
+    function createZip($zipPath, $files) {
         if (file_exists($zipPath)) {
             unlink($zipPath);
         }
@@ -68,6 +68,7 @@ class CsvCreator {
         if ($zipArchive->open($zipPath, \ZipArchive::CREATE) !== true) {
             exit('Cant create zip file');
         }
+
         foreach ($files as $file) {
             $zipArchive->addFile($file, basename($file));
         }
@@ -78,11 +79,7 @@ class CsvCreator {
         }
         $basename = basename($zipPath, '.zip');
         $zipName = preg_replace("/[^a-zA-Z0-9_]+/", "", $basename) . '.zip';
-        header("Content-Type: application/zip");
-        header("Content-Disposition: attachment; filename=$zipName");
-        header("Content-Length: " . filesize($zipPath));
-
-        readfile($zipPath);
+        return $zipName;
     }
 
     function clear() {
