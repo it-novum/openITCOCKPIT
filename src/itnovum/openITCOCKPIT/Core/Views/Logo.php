@@ -90,7 +90,7 @@ class Logo {
      * @return bool
      */
     public function isCustomLogo() {
-        $file = sprintf($this->logoBasePath, APP, $this->customLogoName);
+        $file = sprintf($this->logoBaseForAbsolutePath, WWW_ROOT, $this->customLogoName);
         return file_exists($file);
     }
 
@@ -98,7 +98,7 @@ class Logo {
      * @return bool
      */
     public function isCustomSmallLogo() {
-        $file = sprintf($this->logoBasePath, APP, $this->customSmallLogoName);
+        $file = sprintf($this->logoBaseForAbsolutePath, WWW_ROOT, $this->customSmallLogoName);
         return file_exists($file);
     }
 
