@@ -42,15 +42,8 @@ angular.module('openITCOCKPIT').directive('colorpickerDirective', function(){
                         //background-color
                         var type = 'background-color';
                         break;
-
-                    default:
-                        //both
-                        //var type = 'color';
-                        break;
                 }
                 jQuery(highlightclass).css(type, color);
-
-
             };
 
         },
