@@ -13,6 +13,7 @@ if [[ ! -f "$OLDINIFILE" ]]; then
     exit 1;
 fi
 
+chmod +x $APPDIR/bin/scripts/pre_v4_upgrade.php
 $APPDIR/bin/scripts/pre_v4_upgrade.php
 
 INIFILE=/opt/openitc/etc/mysql/mysql.cnf
@@ -67,7 +68,7 @@ if [[ -d /usr/share/openitcockpit/app/Plugin/MapModule/webroot/img/ ]]; then
     chown -R www-data:www-data /opt/openitc/frontend/plugins/MapModule/webroot/img/
 fi
 
-mdkir -p /opt/openitc/frontend/webroot/img/userimages/
+mkdir -p /opt/openitc/frontend/webroot/img/userimages/
 if [[ -d /usr/share/openitcockpit/app/webroot/userimages/ ]]; then
     cp -r /usr/share/openitcockpit/app/webroot/userimages/. /opt/openitc/frontend/webroot/img/userimages/
     chown -R www-data:www-data /opt/openitc/frontend/webroot/img/userimages
@@ -327,7 +328,6 @@ redis-cli FLUSHALL
 
 oitc update3_to4 --email-config
 oitc update3_to4 --activate-users
-oitc update3_to4 --reset-all-passwords
 
 oitc update3_to4 --migrate-notifications
 oitc update3_to4 --migrate-statehistory
@@ -335,13 +335,13 @@ oitc update3_to4 --migrate-acknowledgements
 oitc update3_to4 --migrate-downtimes
 
 echo "---------------------------------------------------------------"
-echo "Convert MySQL Tables from utf8_swedish_ci to utf8_general_ci..."
+echo "Convert MySQL Tables from utf8_swedish_ci to utf8mb4_general_ci..."
 
-mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${MYSQL_DATABASE} CHARACTER SET utf8 COLLATE utf8_general_ci;"
+mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${MYSQL_DATABASE} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 
 mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TABLE_NAME FROM \`information_schema\`.\`TABLES\` WHERE \`TABLE_SCHEMA\`='${MYSQL_DATABASE}' AND \`TABLE_NAME\` NOT LIKE 'nagios_%' AND \`TABLE_NAME\` NOT LIKE 'statusengine_%';" | while read TABLE_NAME; do
-    echo "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8;"
-    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8;"
+    echo "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4; ✔"
+    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4;"
 done
 
 #oitc setup
@@ -387,5 +387,30 @@ else
         echo "ERROR: could not detect php-fpm systemd service file. You need to restart php-fpm manualy"
     fi
 fi
+
+BACKUP_BASEDIR=/var/backups/openitcockpit_v3
+echo "Move openITCOCKPIT V3 Files to ${BACKUP_BASEDIR}"
+
+mkdir -p "${BACKUP_BASEDIR}/usr/share"
+mkdir -p "${BACKUP_BASEDIR}/etc"
+mkdir -p "${BACKUP_BASEDIR}/var/lib"
+
+rsync -ahP /usr/share/openitcockpit "${BACKUP_BASEDIR}/usr/share/"
+rsync -ahP /etc/openitcockpit "${BACKUP_BASEDIR}/etc/"
+rsync -ahP /var/lib/openitcockpit "${BACKUP_BASEDIR}/var/lib"
+
+rm -rf /usr/share/openitcockpit
+rm -rf /etc/openitcockpit
+rm -rf /var/lib/openitcockpit
+
+echo ""
+echo ""
+echo "Upgrade to openITCOCKPIT 4 done."
+echo "######################################"
+echo "# Please execute                     #"
+echo "# oitc reset_password --print        #"
+echo "# to reset your users password.      #"
+echo "######################################"
+echo ""
 
 date > /opt/openitc/etc/.installation_done

@@ -49,7 +49,7 @@ return [
             'username'         => $ini_file['user'],
             'password'         => $ini_file['password'],
             'database'         => $ini_file['database'],
-            //'encoding' => 'utf8mb4',
+            'encoding'         => 'utf8mb4',
             'timezone'         => 'UTC',
             'cacheMetadata'    => true,
             'quoteIdentifiers' => false,

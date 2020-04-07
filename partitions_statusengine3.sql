@@ -9,14 +9,14 @@ CREATE TABLE `statusengine_logentries`
     `id`            bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     `entry_time`    bigint(20)          NOT NULL,
     `logentry_type` int(11)                              DEFAULT '0',
-    `logentry_data` varchar(255) COLLATE utf8_general_ci DEFAULT NULL,
-    `node_name`     varchar(255) COLLATE utf8_general_ci DEFAULT NULL,
+    `logentry_data` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+    `node_name`     varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
     PRIMARY KEY (`id`, `entry_time`),
     KEY `logentries` (`entry_time`, `logentry_data`, `node_name`),
     KEY `logentry_data_time` (`logentry_data`, `entry_time`)
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_general_ci
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci
     PARTITION BY RANGE ( entry_time DIV 86400) (
         PARTITION p_max VALUES LESS THAN ( MAXVALUE )
         );
@@ -42,8 +42,8 @@ CREATE TABLE `statusengine_host_statehistory`
     PRIMARY KEY (`hostname`, `state_time`, `state_time_usec`),
     KEY `hostname_time` (`hostname`, `state_time`)
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_general_ci
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci
     PARTITION BY RANGE ( state_time DIV 86400 ) (
         PARTITION p_max VALUES LESS THAN ( MAXVALUE )
         );
@@ -71,8 +71,8 @@ CREATE TABLE `statusengine_service_statehistory`
     KEY `host_servicename_time` (`hostname`, `service_description`, `state_time`),
     KEY `servicename_time` (`service_description`, `state_time`)
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_general_ci
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci
     PARTITION BY RANGE ( state_time DIV 86400 ) (
         PARTITION p_max VALUES LESS THAN ( MAXVALUE )
         );
@@ -103,8 +103,8 @@ CREATE TABLE `statusengine_hostchecks`
     KEY `hostname` (`hostname`, `start_time`),
     KEY `times` (`start_time`, `end_time`)
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_general_ci
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci
     PARTITION BY RANGE ( start_time DIV 86400 ) (
         PARTITION p_max VALUES LESS THAN ( MAXVALUE )
         );
@@ -135,8 +135,8 @@ CREATE TABLE `statusengine_servicechecks`
     PRIMARY KEY (`service_description`, `start_time`, `start_time_usec`),
     KEY `servicename` (`hostname`, `service_description`, `start_time`)
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_general_ci
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci
     PARTITION BY RANGE ( start_time DIV 86400 ) (
         PARTITION p_max VALUES LESS THAN ( MAXVALUE )
         );
@@ -163,8 +163,8 @@ CREATE TABLE `statusengine_host_notifications`
     KEY `hostname` (`hostname`),
     KEY `start_time` (`start_time`)
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_general_ci
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci
     PARTITION BY RANGE ( start_time DIV 86400 ) (
         PARTITION p_max VALUES LESS THAN ( MAXVALUE )
         );
@@ -192,8 +192,8 @@ CREATE TABLE `statusengine_service_notifications`
     KEY `start_time` (`start_time`),
     KEY `servicename` (`hostname`, `service_description`)
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8
-  COLLATE = utf8_general_ci
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci
     PARTITION BY RANGE ( start_time DIV 86400 ) (
         PARTITION p_max VALUES LESS THAN ( MAXVALUE )
         );
