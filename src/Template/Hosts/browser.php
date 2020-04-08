@@ -103,7 +103,7 @@ use Cake\Core\Plugin;
                             <li class="nav-item pointer" ng-show="GrafanaDashboardExists">
                                 <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab5'; hideTimeline()"
                                    role="tab">
-                                    <i class="fa fa-area-chart">&nbsp;</i> <?php echo __('Grafana'); ?>
+                                    <i class="fa fa-lg fa-area-chart">&nbsp;</i> <?php echo __('Grafana'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
@@ -1192,17 +1192,17 @@ use Cake\Core\Plugin;
                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                         <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                            class="txt-color-blueDark"
-                                           ng-mouseenter="mouseenter($event, mergedHost.uuid, service)"
+                                           ng-mouseenter="mouseenter($event, mergedHost.uuid, service.Service.uuid)"
                                            ng-mouseleave="mouseleave()"
                                            ng-if="service.Service.has_graph">
-                                            <i class="fa fa-area-chart">
+                                            <i class="fa fa-lg fa-area-chart">
                                             </i>
                                         </a>
                                     <?php else: ?>
-                                    <div ng-mouseenter="mouseenter($event, mergedHost.uuid, service)"
+                                    <div ng-mouseenter="mouseenter($event, mergedHost.uuid, service.Service.uuid)"
                                          ng-mouseleave="mouseleave()"
                                          ng-if="service.Service.has_graph">
-                                        <i class="fa fa-area-chart">
+                                        <i class="fa fa-lg fa-area-chart">
                                         </i>
                                     </div>
                                     <?php endif; ?>
@@ -1301,13 +1301,7 @@ use Cake\Core\Plugin;
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                         <?php echo $this->element('paginator_or_scroll'); ?>
 
-                        <div id="serviceGraphContainer" class="popup-graph-container">
-                            <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;"
-                                 ng-show="isLoadingGraph">
-                                <i class="fa fa-refresh fa-4x fa-spin"></i>
-                            </div>
-                            <div id="serviceGraphFlot"></div>
-                        </div>
+                        <popover-graph-directive></popover-graph-directive>
                     </div>
 
                     <div id="serviceTab2" class="tab-pane" ng-if="activeTab === 'notMonitored'">

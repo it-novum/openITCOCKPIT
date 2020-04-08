@@ -80,26 +80,37 @@ class AngularController extends AppController {
     }
 
     public function mass_delete() {
+        //Return HTML Template for PaginatorDirective
         return;
     }
 
     public function confirm_delete() {
+        //Return HTML Template for PaginatorDirective
         return;
     }
 
     public function confirm_deactivate() {
+        //Return HTML Template for PaginatorDirective
         return;
     }
 
     public function mass_activate() {
+        //Return HTML Template for PaginatorDirective
         return;
     }
 
     public function mass_deactivate() {
+        //Return HTML Template for PaginatorDirective
         return;
     }
 
     public function export() {
+        //Return HTML Template for PaginatorDirective
+        return;
+    }
+
+    public function popover_graph(){
+        //Return HTML Template for PaginatorDirective
         return;
     }
 

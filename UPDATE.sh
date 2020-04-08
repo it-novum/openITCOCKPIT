@@ -132,6 +132,8 @@ done
 echo "Running openITCOCKPIT Core database migration"
 oitc migrations migrate
 
+oitc migrations seed
+
 echo "Running openITCOCKPIT Module database migration/s"
 for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do
   if [[ "$PLUGIN" == *Module ]]; then
