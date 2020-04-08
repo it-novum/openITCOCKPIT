@@ -74,11 +74,12 @@ class PerfdataLoader {
      * @param bool $jsTimestamp
      * @param string $type
      * @param null $gauge
+     * @param bool $scale
      * @return array
      * @throws \App\Lib\Exceptions\MissingDbBackendException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp = false, $type = 'avg', $gauge = null) {
+    public function getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp = false, $type = 'avg', $gauge = null, $scale = true) {
         if ($gauge === '') {
             $gauge = null;
         }
@@ -212,6 +213,13 @@ class PerfdataLoader {
                         'data'       => $data
                     ];
                 }
+            }
+        }
+
+        if($scale === true){
+            foreach($performance_data as $index => $gauge){
+                $UnitScaler = new UnitScaler($gauge);
+                $performance_data[$index] = $UnitScaler->scale();
             }
         }
 

@@ -53,8 +53,8 @@ a:not([href]):not([tabindex]) {
 .popup-graph-container {
     position: absolute;
     /*top: 320px;*/
-    left: 495px;
-    width: 750px;
+    /*left: 495px;*/
+    width: 70%;
     height: auto;
     background-color: #FFF;
     box-shadow: 0 0 15px #9E9E9E;
@@ -63,7 +63,7 @@ a:not([href]):not([tabindex]) {
     display: none;
 }
 
-#serviceGraphFlot {
+.serviceGraphFlot {
     width: 100%;
     height: 260px;
 }

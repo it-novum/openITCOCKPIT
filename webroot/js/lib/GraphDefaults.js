@@ -59,6 +59,32 @@ var GraphDefaults = (function(){
     };
 
     /**
+     * @param index integer
+     * @returns {{fill: Array, border: Array}}
+     */
+    GraphDefaults.prototype.getColorByIndex = function(index){
+        index = parseInt(index, 10);
+
+        var color = {
+            fill: [],
+            border: []
+        };
+
+        if(index > this.defaultColors.length){
+            var randomColors = ColorGeneratorObj.generate(1, 90, 120);
+            for(var i in randomColors){
+                color.fill.push(randomColors[i]);
+                color.border.push(randomColors[i]);
+            }
+        }else{
+            color.fill.push(this.defaultColors[index][0]);
+            color.border.push(this.defaultColors[index][1]);
+        }
+
+        return color;
+    };
+
+    /**
      *
      * @returns {{width: string, legend: boolean, grid: {hoverable: boolean, markings: Array, borderWidth: {top: number, right: number, bottom: number, left: number}, borderColor: {top: string}}, tooltip: boolean, xaxis: {mode: string, timeformat: string, tickFormatter: (function(*, *): string)}, lines: {show: boolean, lineWidth: number, fill: boolean, fillColor: {colors: *[]}, steps: boolean}, series: {show: boolean, labelFormatter: (function(*, *): string)}, selection: {mode: string}}}
      */

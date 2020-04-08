@@ -1512,6 +1512,7 @@ class ServicesController extends AppController {
 
         //Parse BBCode in long output
         $BBCodeParser = new BBCodeParser();
+        $servicestatus['outputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($Servicestatus->getOutput(), true));
         $servicestatus['longOutputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($Servicestatus->getLongOutput(), true));
 
         //Add parsed perfdata information

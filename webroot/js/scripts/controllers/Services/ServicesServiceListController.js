@@ -24,14 +24,9 @@ angular.module('openITCOCKPIT')
                 currentState: 5
             }
         };
-        var startTimestamp = new Date().getTime();
-        var graphStart = 0;
-        var graphEnd = 0;
 
         $scope.init = true;
         $scope.serverResult = [];
-        $scope.isLoadingGraph = true;
-        $scope.mouseout = true;
 
         $scope.changeTab = function(tab){
             if(tab !== $scope.activeTab){
@@ -248,117 +243,6 @@ angular.module('openITCOCKPIT')
         $scope.linkForCopy = function(){
             var ids = Object.keys(MassChangeService.getSelected());
             return ids.join(',');
-        };
-
-        $scope.mouseenter = function($event, service){
-            $scope.mouseout = false;
-            $scope.isLoadingGraph = true;
-            var offset = {
-                top: $event.relatedTarget.offsetTop + 40,
-                left: $event.relatedTarget.offsetLeft + 40
-            };
-
-            if($event.relatedTarget.offsetParent && $event.relatedTarget.offsetParent.offsetTop){
-                offset.top += $event.relatedTarget.offsetParent.offsetTop;
-            }
-
-            var currentScrollPosition = $(window).scrollTop();
-
-            var margin = 15;
-            var $popupGraphContainer = $('#serviceGraphContainer');
-
-
-            if((offset.top - currentScrollPosition + margin + $popupGraphContainer.height()) > $(window).innerHeight()){
-                //There is no space in the window for the popup, we need to set it to an higher point
-                $popupGraphContainer.css({
-                    'top': parseInt(offset.top - $popupGraphContainer.height() - margin + 10),
-                    'left': parseInt(offset.left + margin),
-                    'padding': '6px'
-                });
-            }else{
-                //Default Popup
-                $popupGraphContainer.css({
-                    'top': parseInt(offset.top + margin),
-                    'left': parseInt(offset.left + margin),
-                    'padding': '6px'
-                });
-            }
-
-            $popupGraphContainer.show();
-            loadGraph(service);
-        };
-
-        $scope.mouseleave = function(){
-            $scope.mouseout = true;
-            $('#serviceGraphContainer').hide();
-            $('#serviceGraphFlot').html('');
-        };
-
-        var loadGraph = function(service){
-            var serverTime = new Date($scope.timezone.server_time);
-            var compareTimestamp = new Date().getTime();
-            var diffFromStartToNow = parseInt(compareTimestamp - startTimestamp, 10);
-
-            graphEnd = Math.floor((serverTime.getTime() + diffFromStartToNow) / 1000);
-            graphStart = graphEnd - (3600 * 4);
-
-            $http.get('/Graphgenerators/getPerfdataByUuid.json', {
-                params: {
-                    angular: true,
-                    host_uuid: service.Host.uuid,
-                    service_uuid: service.Service.uuid,
-                    start: graphStart,
-                    end: graphEnd,
-                    jsTimestamp: 1
-                }
-            }).then(function(result){
-                $scope.isLoadingGraph = false;
-                renderGraph(result.data.performance_data);
-            });
-        };
-
-        var renderGraph = function(performance_data){
-            var graph_data = [];
-            for(var dsCount in performance_data){
-                graph_data[dsCount] = [];
-                for(var timestamp in performance_data[dsCount].data){
-                    var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
-                    graph_data[dsCount].push([frontEndTimestamp, performance_data[dsCount].data[timestamp]]);
-                }
-                //graph_data.push(performance_data[key].data);
-            }
-            var color_amount = performance_data.length < 3 ? 3 : performance_data.length;
-
-            var GraphDefaultsObj = new GraphDefaults();
-
-            var colors = GraphDefaultsObj.getColors(color_amount);
-
-            var options = GraphDefaultsObj.getDefaultOptions();
-            options.height = '500px';
-            options.colors = colors.border;
-
-            options.xaxis.tickFormatter = function(val, axis){
-                var fooJS = new Date(val);
-                var fixTime = function(value){
-                    if(value < 10){
-                        return '0' + value;
-                    }
-                    return value;
-                };
-                return fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
-            };
-            options.xaxis.mode = 'time';
-            options.xaxis.timeBase = 'milliseconds';
-            options.xaxis.min = (graphStart + $scope.timezone.user_time_to_server_offset) * 1000;
-            options.xaxis.max = (graphEnd + $scope.timezone.user_time_to_server_offset) * 1000;
-
-            if(document.getElementById('serviceGraphFlot') && !$scope.mouseout){
-                try{
-                    self.plot = $.plot('#serviceGraphFlot', graph_data, options);
-                }catch(e){
-                    console.error(e);
-                }
-            }
         };
 
         $scope.$watch('data.hostId', function(){
