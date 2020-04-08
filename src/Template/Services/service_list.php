@@ -299,7 +299,8 @@
                                     </td>
 
                                     <td>
-                                        {{ service.Servicestatus.output }}
+                                        <div
+                                            ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
                                     </td>
 
                                     <td class="width-50">

@@ -461,9 +461,8 @@ use Cake\Core\Plugin;
                                             <tr>
                                                 <td><?php echo __('Output'); ?></td>
                                                 <td>
-                                                    <div
-                                                        ng-class="serviceStatusTextClass"
-                                                        ng-bind-html="servicestatus.outputHtml | trustAsHtml"></div>
+                                                    <div class="code-font" ng-class="serviceStatusTextClass"
+                                                         ng-bind-html="servicestatus.outputHtml | trustAsHtml"></div>
                                                 </td>
                                             </tr>
 

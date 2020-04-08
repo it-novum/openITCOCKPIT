@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 use Cake\I18n\Time;
+use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
@@ -461,6 +462,9 @@ class Hoststatus {
         $arr['humanState'] = $this->HostStatusAsString();
         $arr['cssClass'] = $this->HostStatusBackgroundColor();
         $arr['textClass'] = $this->HostStatusColor();
+
+        $BBCodeParser = new BBCodeParser();
+        $arr['outputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($this->getOutput(), true));
         return $arr;
     }
 

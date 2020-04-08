@@ -323,7 +323,8 @@
                                         </span>
                                 </td>
                                 <td>
-                                    {{ service.Servicestatus.output }}
+                                    <div
+                                        ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
                                 </td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">

@@ -393,9 +393,8 @@ use Cake\Core\Plugin;
                                             <tr>
                                                 <td><?php echo __('Output'); ?></td>
                                                 <td>
-                                                    <code class="no-background" ng-class="hostStatusTextClass">
-                                                        {{ hoststatus.output }}
-                                                    </code>
+                                                    <div class="code-font" ng-class="hostStatusTextClass"
+                                                        ng-bind-html="hoststatus.outputHtml | trustAsHtml"></div>
                                                 </td>
                                             </tr>
                                         </table>
@@ -1199,12 +1198,12 @@ use Cake\Core\Plugin;
                                             </i>
                                         </a>
                                     <?php else: ?>
-                                    <div ng-mouseenter="mouseenter($event, mergedHost.uuid, service.Service.uuid)"
-                                         ng-mouseleave="mouseleave()"
-                                         ng-if="service.Service.has_graph">
-                                        <i class="fa fa-lg fa-area-chart">
-                                        </i>
-                                    </div>
+                                        <div ng-mouseenter="mouseenter($event, mergedHost.uuid, service.Service.uuid)"
+                                             ng-mouseleave="mouseleave()"
+                                             ng-if="service.Service.has_graph">
+                                            <i class="fa fa-lg fa-area-chart">
+                                            </i>
+                                        </div>
                                     <?php endif; ?>
                                 </td>
 
@@ -1230,7 +1229,8 @@ use Cake\Core\Plugin;
                                 </td>
 
                                 <td>
-                                    {{ service.Servicestatus.output }}
+                                    <div
+                                        ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
                                 </td>
 
                                 <td class="width-50">

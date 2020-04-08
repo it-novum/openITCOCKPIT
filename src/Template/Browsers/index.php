@@ -549,7 +549,8 @@
                                 </td>
 
                                 <td>
-                                    {{ host.Hoststatus.output }}
+                                    <div class="cropText"
+                                         ng-bind-html="host.Hoststatus.outputHtml | trustAsHtml"></div>
                                 </td>
 
                                 <td>
