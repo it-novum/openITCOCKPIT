@@ -2231,6 +2231,7 @@ class ServicesController extends AppController {
         }
         $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus'], $UserTime);
         $servicestatus = $Servicestatus->toArrayForBrowser();
+        $servicestatus['outputHtml'] = $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($Servicestatus->getOutput(), true));
         $servicestatus['longOutputHtml'] = $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($Servicestatus->getLongOutput(), true));
 
         $PerfdataChecker = new PerfdataChecker(
