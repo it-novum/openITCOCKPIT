@@ -96,13 +96,13 @@ class UnitScaler {
     public function __construct($gauge) {
         $this->gauge = $gauge;
         $this->unit = $gauge['datasource']['unit'];
-        if(!empty($gauge['data'])) {
+        if (!empty($gauge['data'])) {
             $this->maxValue = max($gauge['data']);
         }
     }
 
     public function scale() {
-        if($this->maxValue === null){
+        if ($this->maxValue === null) {
             return $this->gauge;
         }
 
@@ -230,7 +230,7 @@ class UnitScaler {
                 'factor' => 1000
             ],
             3 => [
-                'unit'   => ['s', 'sec'],
+                'unit'   => ['s', 'sec', 'seconds'],
                 'factor' => 60
             ],
             4 => [
@@ -261,7 +261,7 @@ class UnitScaler {
         // is data (IEC)
         $data = [
             0 => [
-                'unit'   => ['B'],
+                'unit'   => ['B', 'bytes'],
                 'factor' => 1024
             ],
             1 => [
@@ -453,15 +453,19 @@ class UnitScaler {
             'rps',  // Reads per per second
             'wps',  // Writes per second
 
-            'W',  // Watt
-            'V',  //Volt
-            'A',  //Amper
-            'C',  //Celsius
-            '°C', //Celsius
-            'F',  //Farenheit
-            '°F', //Farenheit
-            'K',  //Kelvin
-            'J'   //Joul
+            'W',       // Watt
+            'V',       // Volt
+            'volts',   // Prometheus
+            'A',       // Amper
+            'amperes', // Prometheus
+            'C',       // Celsius
+            '°C',      // Celsius,
+            'celsius', // Prometheus
+            'F',       // Farenheit
+            '°F',      // Farenheit
+            'K',       // Kelvin
+            'J',       // Joul
+            'joules'   // Prometheus
         ];
 
         foreach ($unitsToGenerate as $unit) {
