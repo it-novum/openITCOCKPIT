@@ -23,7 +23,7 @@
 //  confirmation.
 ?>
 
-<div class="popup-graph-container" id="serviceGraphContainer">
+<div class="popup-graph-container" id="serviceGraphContainer-{{graphPopoverId}}">
     <div class="row">
         <div class="col-sm-12 col-md-12 col-lg-6" ng-show="isLoadingGraph">
             <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;" ng-show="isLoadingGraph">
@@ -33,7 +33,7 @@
 
         <div class="col-sm-12 col-md-12 col-lg-6" ng-repeat="(index, value) in popoverPerfdata" ng-if="index < 3">
             <div class="text-center">{{value.datasource.name}}</div>
-            <div id="serviceGraphFlot-{{index}}" class="serviceGraphFlot"></div>
+            <div id="serviceGraphFlot-{{graphPopoverId}}-{{index}}" class="serviceGraphFlot"></div>
         </div>
     </div>
 </div>

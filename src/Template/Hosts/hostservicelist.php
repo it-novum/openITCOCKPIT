@@ -1,3 +1,6 @@
+<!-- This is used in hostgroups extended -->
+
+<popover-graph-directive></popover-graph-directive>
 <table class="table table-striped m-0 table-bordered table-hover table-sm">
     <thead>
     <tr>
@@ -46,7 +49,7 @@
             <i class="fa fa-power-off" title="is in downtime"></i>
         </th>
         <th class="width-20 text-center">
-            <i class="fa fa-area-chart" title="Grapher"></i>
+            <i class="fa fa-lg fa-area-chart" title="Grapher"></i>
         </th>
         <th class="width-20 text-center">
             <strong title="<?php echo __('Passively transferred service'); ?>">
@@ -94,17 +97,17 @@
             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                 <a ui-sref="ServicesBrowser({id: service.Service.id})"
                    class="txt-color-blueDark"
-                   ng-mouseenter="mouseenter($event, service.Host, service)"
+                   ng-mouseenter="mouseenter($event, service.Host.uuid, service.Service.uuid)"
                    ng-mouseleave="mouseleave()"
                    ng-if="service.Service.has_graph">
-                    <i class="fa fa-area-chart">
+                    <i class="fa fa-lg fa-area-chart">
                     </i>
                 </a>
             <?php else: ?>
-                <div ng-mouseenter="mouseenter($event, service.Host, service)"
+                <div ng-mouseenter="mouseenter($event, service.Host.uuid, service.Service.uuid)"
                      ng-mouseleave="mouseleave()"
                      ng-if="service.Service.has_graph">
-                    <i class="fa fa-area-chart">
+                    <i class="fa fa-lg fa-area-chart">
                     </i>
                 </div>
             <?php endif; ?>
@@ -179,3 +182,4 @@
     </tr>
     </tbody>
 </table>
+

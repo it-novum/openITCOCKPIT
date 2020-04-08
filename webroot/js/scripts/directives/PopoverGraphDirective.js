@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($http, SudoService, $timeout){
+angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($http, UuidService){
     return {
         restrict: 'E',
         templateUrl: '/angular/popover_graph.html',
@@ -9,6 +9,8 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
             $scope.popoverPerfdata = {};
 
             $scope.popoverTimer = null;
+
+            $scope.graphPopoverId = UuidService.v4();
 
             $scope.doLoadGraph = function(hostUuid, serviceUuid){
                 var serverTime = new Date($scope.timezone.server_time);
@@ -79,9 +81,9 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                         };
                     }
 
-                    if(document.getElementById('serviceGraphFlot-' + index) && !$scope.mouseout){
+                    if(document.getElementById('serviceGraphFlot-' + $scope.graphPopoverId + '-' + index) && !$scope.mouseout){
                         try{
-                            self.plot = $.plot('#serviceGraphFlot-' + index, [graph_data], options);
+                            self.plot = $.plot('#serviceGraphFlot-' + $scope.graphPopoverId + '-' + index, [graph_data], options);
                         }catch(e){
                             console.error(e);
                         }
@@ -92,7 +94,6 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
         },
 
         link: function($scope, element, attr){
-
             $scope.mouseenter = function($event, hostUuid, serviceUuid){
                 if($scope.popoverTimer === null){
                     $scope.popoverTimer = setTimeout(function(){
@@ -110,7 +111,7 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                         var currentScrollPosition = $(window).scrollTop();
 
                         var margin = 15;
-                        var $popupGraphContainer = $('#serviceGraphContainer');
+                        var $popupGraphContainer = $('#serviceGraphContainer-' + $scope.graphPopoverId);
 
                         if((offset.top - currentScrollPosition + margin + $popupGraphContainer.height()) > $(window).innerHeight()){
                             //There is no space in the window for the popup, we need to set it to an higher point
@@ -145,8 +146,7 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                     $scope.popoverTimer = null;
                 }
 
-                $('#serviceGraphContainer').hide();
-                $('#serviceGraphFlot').html('');
+                $('#serviceGraphContainer-' + $scope.graphPopoverId).hide();
             };
 
         }
