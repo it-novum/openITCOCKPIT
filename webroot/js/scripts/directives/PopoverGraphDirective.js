@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($http, UuidService){
     return {
         restrict: 'E',
-        templateUrl: '/angular/popover_graph.html',
+        templateUrl: '/angular/popover_graph.html', // This template is also used by PopoverPrometheusGraphDirective
 
         controller: function($scope){
             var startTimestamp = new Date().getTime();
