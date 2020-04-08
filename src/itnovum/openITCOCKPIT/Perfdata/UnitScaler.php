@@ -222,7 +222,7 @@ class UnitScaler {
                 'factor' => 1000
             ],
             1 => [
-                'unit'   => ['us', 'µs'],
+                'unit'   => ['µs', 'us'],
                 'factor' => 1000
             ],
             2 => [
