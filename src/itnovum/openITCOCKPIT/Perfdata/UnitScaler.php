@@ -465,7 +465,7 @@ class UnitScaler {
             '°F',      // Farenheit
             'K',       // Kelvin
             'J',       // Joul
-            'joules'   // Prometheus
+            'joules',  // Prometheus
         ];
 
         foreach ($unitsToGenerate as $unit) {
@@ -486,6 +486,79 @@ class UnitScaler {
                 }
             }
         }
+
+        // is unit of mass
+        $massUnits = [
+            0 => [
+                'unit'   => ['ng'],
+                'factor' => 1000
+            ],
+            1 => [
+                'unit'   => ['µg', 'ug'],
+                'factor' => 1000
+            ],
+            2 => [
+                'unit'   => ['mg'],
+                'factor' => 1000
+            ],
+            3 => [
+                'unit'   => ['g', 'grams'],
+                'factor' => 1000
+            ],
+            4 => [
+                'unit'   => ['kg', 'kilo'],
+                'factor' => 1000
+            ],
+            5 => [
+                'unit'   => ['t'],
+                'factor' => 1000
+            ]
+        ];
+        foreach ($massUnits as $index => $massUnit) {
+            if (in_array($this->unit, $massUnit['unit'], true)) {
+                return [
+                    'units' => $massUnits,
+                    'index' => $index
+                ];
+            }
+        }
+
+        // is unit of lengths
+        $lengthsUnits = [
+            0 => [
+                'unit'   => ['nm'],
+                'factor' => 1000
+            ],
+            1 => [
+                'unit'   => ['µm', 'um'],
+                'factor' => 1000
+            ],
+            2 => [
+                'unit'   => ['mm'],
+                'factor' => 1000
+            ],
+            3 => [
+                'unit'   => ['cm'],
+                'factor' => 10
+            ],
+            4 => [
+                'unit'   => ['m'],
+                'factor' => 100
+            ],
+            5 => [
+                'unit'   => ['km'],
+                'factor' => 1000
+            ]
+        ];
+        foreach ($lengthsUnits as $index => $lengthsUnit) {
+            if (in_array($this->unit, $lengthsUnit['unit'], true)) {
+                return [
+                    'units' => $lengthsUnits,
+                    'index' => $index
+                ];
+            }
+        }
+
 
         return false;
     }
