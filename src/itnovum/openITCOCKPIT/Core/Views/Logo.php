@@ -31,6 +31,7 @@ class Logo {
 
     private $logoBasePath = '%s/img/logos/%s';
     private $logoBaseForAbsolutePath = '%simg/logos/%s';
+    private $logoPdfPath = '%s/img/%s';
 
     private $customLogoName = 'logo_custom.png';
     private $customSmallLogoName = 'logo_small_custom.png';
@@ -90,7 +91,7 @@ class Logo {
      * @return bool
      */
     public function isCustomLogo() {
-        $file = sprintf($this->logoBasePath, APP, $this->customLogoName);
+        $file = sprintf($this->logoBaseForAbsolutePath, WWW_ROOT, $this->customLogoName);
         return file_exists($file);
     }
 
@@ -98,7 +99,7 @@ class Logo {
      * @return bool
      */
     public function isCustomSmallLogo() {
-        $file = sprintf($this->logoBasePath, APP, $this->customSmallLogoName);
+        $file = sprintf($this->logoBaseForAbsolutePath, WWW_ROOT, $this->customSmallLogoName);
         return file_exists($file);
     }
 
@@ -144,19 +145,83 @@ class Logo {
         return sprintf($this->logoBaseForAbsolutePath, WWW_ROOT, $this->customSmallLogoName);
     }
 
+    /**
+     * @return string
+     */
+    public function getPdfLogoName() {
+        if ($this->isCustomPdfLogo()) {
+            return $this->customLogoName;
+        }
+
+        return $this->logoName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSmallPdfLogoName() {
+        if ($this->isCustomSmallPdfLogo()) {
+            return $this->customSmallLogoName;
+        }
+
+        return $this->smallLogoName;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCustomPdfLogo() {
+        $file = sprintf($this->logoPdfPath, WWW_ROOT, $this->customLogoName);
+        return file_exists($file);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCustomSmallPdfLogo() {
+        $file = sprintf($this->logoPdfPath, WWW_ROOT, $this->customSmallLogoName);
+        return file_exists($file);
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogoPdfForHtml() {
+        return sprintf($this->logoPdfPath, '', $this->getPdfLogoName());
+    }
+
+    /**
+     * @return string
+     */
+    public function getSmallLogoPdfForHtml() {
+        return sprintf($this->logoPdfPath, '', $this->getSmallPdfLogoName());
+    }
 
     /**
      * @return string
      */
     public function getLogoPdfPath() {
-        return sprintf('%s/img/%s', WWW_ROOT, $this->getLogoName());
+        return sprintf($this->logoPdfPath, WWW_ROOT, $this->getPdfLogoName());
+    }
+
+    /**
+     * @return string
+     */
+    public function getCustomLogoPdfPath() {
+        return sprintf($this->logoPdfPath, WWW_ROOT, $this->customLogoName);
     }
 
     /**
      * @return string
      */
     public function getSmallLogoPdfPath() {
-        return sprintf('%s/img/%s', WWW_ROOT, $this->getSmallLogoName());
+        return sprintf($this->logoPdfPath, WWW_ROOT, $this->getSmallPdfLogoName());
     }
 
+    /**
+     * @return string
+     */
+    public function getCustomSmallLogoPdfPath() {
+        return sprintf($this->logoPdfPath, WWW_ROOT, $this->customSmallLogoName);
+    }
 }

@@ -652,4 +652,26 @@ class DaterangesCreator {
         $dateNow->setTime(23, 59, 59);
         return $dateNow->getTimestamp();
     }
+
+    /**
+     * @param $year
+     * @param $quarter
+     * @param bool $isStart
+     * @return bool|string
+     */
+    public static function getQuarterDates($year, $quarter, $isStart = true) {
+        switch ($quarter) {
+            case 1:
+                return $isStart ? strtotime('01.01.' . $year.' 00:00:00') : strtotime('31.03.' . $year. '23:59:59');
+            case 2:
+                return $isStart ? strtotime('01.04.' . $year.' 00:00:00') : strtotime('30.06.' . $year. '23:59:59');
+            case 3:
+                return $isStart ? strtotime('01.07.' . $year.' 00:00:00') : strtotime('30.09.' . $year. '23:59:59');
+            case 4:
+                return $isStart ? strtotime('01.10.' . $year.' 00:00:00') : strtotime('31.12.' . $year. '23:59:59');
+            default:
+                return false;
+
+        }
+    }
 }
