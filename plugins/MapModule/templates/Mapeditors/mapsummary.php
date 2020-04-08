@@ -84,7 +84,8 @@
                                 <?php echo __('Output'); ?>
                             </div>
                             <div class="col-lg-8 no-padding">
-                                {{summaryState.Hoststatus.output}}
+                                <div class="cropText"
+                                     ng-bind-html="summaryState.Hoststatus.outputHtml | trustAsHtml"></div>
                             </div>
                         </div>
                         <div class="row">
@@ -198,7 +199,8 @@
                         </div>
                         <!-- Output -->
                         <div class="col-lg-4 cropText">
-                            {{service.Servicestatus.output}}
+                            <div class="cropText"
+                                ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
                         </div>
                     </div>
                 </div>
@@ -288,7 +290,8 @@
                                 <?php echo __('Output'); ?>
                             </div>
                             <div class="col-lg-8 no-padding">
-                                {{summaryState.Servicestatus.output}}
+                                <div class="cropText"
+                                     ng-bind-html="summaryState.Servicestatus.outputHtml | trustAsHtml"></div>
                             </div>
                         </div>
                         <div class="row">
@@ -590,7 +593,8 @@
                             <i class="fa fa-eye-slash"></i>
                         </div>
                         <div class="col-lg-4 cropText">
-                            {{service.Servicestatus.output}}
+                            <div class="cropText"
+                                 ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
                         </div>
                     </div>
                 </div>
@@ -747,7 +751,8 @@
                                 <i class="fa fa-eye-slash"></i>
                             </div>
                             <div class="col-lg-4 cropText" title="notOkHost.Hoststatus.output">
-                                {{notOkHost.Hoststatus.output}}
+                                <div class="cropText"
+                                     ng-bind-html="notOkHost.Hoststatus.outputHtml | trustAsHtml"></div>
                             </div>
                         </div>
                         <div class="row padding-top-10" ng-show="summaryState.NotOkServices.length > 0">

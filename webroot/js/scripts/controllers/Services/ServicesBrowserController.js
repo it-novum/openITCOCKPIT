@@ -55,6 +55,8 @@ angular.module('openITCOCKPIT')
         };
         $scope.graphAutoRefreshInterval = 0;
 
+        $scope.currentGraphUnit = null;
+
         var flappingInterval;
         var zoomCallbackWasBind = false;
         var graphAutoRefreshIntervalId = null;
@@ -382,8 +384,8 @@ angular.module('openITCOCKPIT')
                             value = value.toFixed(4);
                         }
                         var tooltip_text = value;
-                        if(item.series['unit']){
-                            tooltip_text += ' ' + item.series.unit;
+                        if($scope.currentGraphUnit){
+                            tooltip_text += ' ' + $scope.currentGraphUnit;
                         }
 
                         showTooltip(item.pageX, item.pageY, tooltip_text, item.datapoint[0]);
@@ -516,6 +518,11 @@ angular.module('openITCOCKPIT')
             options.yaxis = {
                 axisLabel: performance_data.datasource.unit
             };
+
+            $scope.currentGraphUnit = null;
+            if(performance_data.datasource.unit){
+                $scope.currentGraphUnit = performance_data.datasource.unit;
+            }
 
             plot = $.plot('#graphCanvas', [graph_data], options);
 

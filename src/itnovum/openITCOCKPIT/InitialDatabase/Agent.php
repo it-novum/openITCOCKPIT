@@ -1570,11 +1570,11 @@ class Agent extends Importer {
                 'servicetemplatecommandargumentvalues'      => [
                     [
                         'commandargument_id' => '$ARG1$',
-                        'value'              => ' ',
+                        'value'              => '',
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => ' ',
+                        'value'              => '',
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
@@ -1594,7 +1594,7 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG7$',
-                        'value'              => ' ',
+                        'value'              => '',
                     ],
                 ],
                 'customvariables'                           => [],
@@ -1750,7 +1750,7 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG5$',
-                        'value'              => ' ',
+                        'value'              => '',
                     ],
                     [
                         'commandargument_id' => '$ARG6$',
@@ -1758,7 +1758,7 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG7$',
-                        'value'              => ' ',
+                        'value'              => '',
                     ],
                     [
                         'commandargument_id' => '$ARG8$',
@@ -1830,7 +1830,7 @@ class Agent extends Importer {
                 'servicetemplatecommandargumentvalues'      => [
                     [
                         'commandargument_id' => '$ARG1$',
-                        'value'              => ' ',
+                        'value'              => '',
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
@@ -1838,7 +1838,7 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
-                        'value'              => ' ',
+                        'value'              => '',
                     ],
                     [
                         'commandargument_id' => '$ARG4$',

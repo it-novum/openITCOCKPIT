@@ -422,14 +422,6 @@
                                 <?php echo __('No entries match the selection'); ?>
                             </div>
                         </div>
-
-                        <div id="serviceGraphContainer" class="popup-graph-container">
-                            <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;"
-                                 ng-show="isLoadingGraph">
-                                <i class="fa fa-refresh fa-4x fa-spin"></i>
-                            </div>
-                            <div id="serviceGraphFlot"></div>
-                        </div>
                     </div>
                 </div>
             </div>

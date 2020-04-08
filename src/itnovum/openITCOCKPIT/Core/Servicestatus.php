@@ -24,6 +24,7 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
+use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class Servicestatus {
@@ -441,6 +442,9 @@ class Servicestatus {
         $arr['humanState'] = $this->ServiceStatusAsString();
         $arr['cssClass'] = $this->ServiceStatusBackgroundColor();
         $arr['textClass'] = $this->ServiceStatusColor();
+
+        $BBCodeParser = new BBCodeParser();
+        $arr['outputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($this->getOutput(), true));
         return $arr;
     }
 

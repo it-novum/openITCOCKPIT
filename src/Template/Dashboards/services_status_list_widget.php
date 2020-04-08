@@ -255,7 +255,8 @@
                 {{ service.Servicestatus.last_state_change }}
             </td>
             <td>
-                {{ service.Servicestatus.output }}
+                <div
+                    ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
             </td>
         </tr>
         </tbody>

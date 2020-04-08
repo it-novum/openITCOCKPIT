@@ -55,6 +55,7 @@ class GraphgeneratorsController extends AppController {
         $end = (int)$this->request->getQuery('end', '');
         $jsTimestamp = (bool)$this->request->getQuery('jsTimestamp', 0);
         $gauge = $this->request->getQuery('gauge', '');
+        $scale = $this->request->getQuery('scale', 'true') === 'true';
 
         $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
         if (is_numeric($hours)) {
@@ -69,7 +70,7 @@ class GraphgeneratorsController extends AppController {
         }
 
         try {
-            $performance_data = $PerfdataLoader->getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp, 'avg', $gauge);
+            $performance_data = $PerfdataLoader->getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp, 'avg', $gauge, $scale);
             $this->set('performance_data', $performance_data);
             $this->viewBuilder()->setOption('serialize', ['performance_data']);
 
