@@ -404,9 +404,8 @@ if (!$QueryHandler->exists()): ?>
                                                 <tr>
                                                     <td><?php echo __('Output'); ?></td>
                                                     <td>
-                                                        <code class="no-background" ng-class="hostStatusTextClass">
-                                                            {{ hoststatus.output }}
-                                                        </code>
+                                                        <div ng-class="hostStatusTextClass"
+                                                             ng-bind-html="hoststatus.outputHtml | trustAsHtml"></div>
                                                     </td>
                                                 </tr>
                                             </table>
