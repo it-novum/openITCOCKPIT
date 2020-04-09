@@ -40,28 +40,32 @@ class GrafanaSeriesOverrides {
      */
     public function __construct(GrafanaTargetCollection $targetCollection) {
         if ($targetCollection->canDisplayUnits() && sizeof($targetCollection->getUnits()) === 2) {
-            $units = [];
+
+            foreach ($targetCollection->getUnits() as $index => $unit) {
+                $unitsToAxis[$unit] = $index + 1;
+            }
+
             foreach ($targetCollection->getTargets() as $target) {
                 /** @var GrafanaTarget $target */
 
-                //Avoid > 2 Y-Axes
-                if (!isset($units[$target->getUnit()])) {
-                    $units[$target->getUnit()] = true;
-                    if ($target->getAlias()) {
-                        $alias = str_replace('/', '\/', $target->getAlias());
-                        $override = [
-                            'alias' => $alias,
-                            'yaxis' => sizeof($this->overrides) + 1
-                        ];
-                    } else {
-                        $alias = str_replace('/', '\/', $target->getTarget());
-                        $override = [
-                            'alias' => $alias,
-                            'yaxis' => sizeof($this->overrides) + 1
-                        ];
-                    }
-                    $this->overrides[] = $override;
+                // Get Y-axis id for current metric / unit
+                $axisId = $unitsToAxis[$target->getUnit()];
+
+                if ($target->getAlias()) {
+                    $alias = str_replace('/', '\/', $target->getAlias());
+                    $override = [
+                        'alias' => $alias,
+                        'yaxis' => $axisId
+                    ];
+                } else {
+                    $alias = str_replace('/', '\/', $target->getTarget());
+                    $override = [
+                        'alias' => $alias,
+                        'yaxis' => $axisId
+                    ];
                 }
+
+                $this->overrides[] = $override;
             }
         }
     }
