@@ -824,11 +824,7 @@ class Agent extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -894,17 +890,9 @@ class Agent extends Importer {
                     ]
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -970,17 +958,9 @@ class Agent extends Importer {
                     ]
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -1046,17 +1026,9 @@ class Agent extends Importer {
                     ]
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -1118,17 +1090,9 @@ class Agent extends Importer {
                     ]
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -1194,17 +1158,9 @@ class Agent extends Importer {
                     ]
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -1274,17 +1230,9 @@ class Agent extends Importer {
                     ]
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -1354,17 +1302,9 @@ class Agent extends Importer {
                     ]
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -1434,17 +1374,9 @@ class Agent extends Importer {
                     ]
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -1506,17 +1438,9 @@ class Agent extends Importer {
                     ]
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -1598,17 +1522,9 @@ class Agent extends Importer {
                     ],
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -1670,17 +1586,9 @@ class Agent extends Importer {
                     ]
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -1766,17 +1674,9 @@ class Agent extends Importer {
                     ],
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -1846,17 +1746,9 @@ class Agent extends Importer {
                     ],
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -1918,17 +1810,9 @@ class Agent extends Importer {
                     ]
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -1998,17 +1882,9 @@ class Agent extends Importer {
                     ]
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -2082,17 +1958,9 @@ class Agent extends Importer {
                     ]
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -2154,17 +2022,9 @@ class Agent extends Importer {
                     ]
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
             [
@@ -2222,17 +2082,9 @@ class Agent extends Importer {
                     ],
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
 
 
@@ -2301,17 +2153,9 @@ class Agent extends Importer {
                     ],
                 ],
                 'customvariables'                           => [],
-                'servicegroups'                             => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ],
+                'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
         ];
         return $data;
