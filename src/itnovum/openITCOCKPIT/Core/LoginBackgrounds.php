@@ -300,6 +300,11 @@ class LoginBackgrounds {
             $season = 'easter';
         }
 
+        //Easter Sunday
+        if ($today === date('d.m', $easter_sunday)) {
+            $season = 'easter';
+        }
+
         //Easter Monday
         if ($today === strtotime('next monday', $easter_sunday)) {
             $season = 'easter';
