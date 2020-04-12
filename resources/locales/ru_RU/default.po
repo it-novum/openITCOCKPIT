@@ -2382,7 +2382,7 @@ msgstr "Карта"
 
 #: plugins/MapModule/src/Model/Table/MapUploadsTable.php:224
 msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini"
-msgstr ""
+msgstr "Загруженный файл превышает директиву upload_max_filesize в php.ini"
 
 #: plugins/MapModule/src/Model/Table/MapUploadsTable.php:231
 msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form"
@@ -2390,23 +2390,23 @@ msgstr ""
 
 #: plugins/MapModule/src/Model/Table/MapUploadsTable.php:238
 msgid "The uploaded file was only partially uploaded"
-msgstr ""
+msgstr "Загруженный файл превышает директиву MAX_FILE_SIZE, указанную в форме HTML"
 
 #: plugins/MapModule/src/Model/Table/MapUploadsTable.php:245
 msgid "No file was uploaded"
-msgstr ""
+msgstr "Файл не был загружен"
 
 #: plugins/MapModule/src/Model/Table/MapUploadsTable.php:252
 msgid "Missing a temporary folder."
-msgstr ""
+msgstr "Отсутствует временная папка."
 
 #: plugins/MapModule/src/Model/Table/MapUploadsTable.php:259
 msgid "Failed to write file to disk."
-msgstr ""
+msgstr "Не удалось записать файл на диск."
 
 #: plugins/MapModule/src/Model/Table/MapUploadsTable.php:266
 msgid "A PHP extension stopped the file upload."
-msgstr ""
+msgstr "Расширение PHP остановило загрузку файла."
 
 #: plugins/MapModule/src/Model/Table/MapsTable.php:183
 #: plugins/MapModule/src/Model/Table/MapsTable.php:187
@@ -2416,7 +2416,7 @@ msgstr ""
 #: src/Model/Table/ContactsTable.php:182
 #: src/Model/Table/ContactsTable.php:186
 msgid "You have to choose at least one option."
-msgstr ""
+msgstr "Вы должны выбрать хотя бы один вариант"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:33
 #: plugins/MapModule/templates/Mapeditors/view.php:33
@@ -2428,75 +2428,75 @@ msgstr ""
 #: plugins/MapModule/templates/Rotations/edit.php:33
 #: plugins/MapModule/templates/Rotations/index.php:33
 msgid "Map Module"
-msgstr ""
+msgstr "Модуль карты"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:41
 msgid "Map editor"
-msgstr ""
+msgstr "Редактор карт"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:50
 #: plugins/MapModule/templates/Maps/edit.php:50
 msgid "Edit map:"
-msgstr ""
+msgstr "Редактировать карту:"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:58
 msgid "Enable grid"
-msgstr ""
+msgstr "Включить сетку"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:62
 msgid "Grid size"
-msgstr ""
+msgstr "Размер сетки"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:175
 msgid "Add item"
-msgstr ""
+msgstr "Добавьте предмет"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:179
 msgid "Add line"
-msgstr ""
+msgstr "Добавить строку"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:183
 msgid "Add summary status item"
-msgstr ""
+msgstr "Добавить сводку статуса"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:190
 msgid "Add gadget"
-msgstr ""
+msgstr "Добавить гаджет"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:196
 #: plugins/MapModule/templates/Mapeditors/edit.php:1008
 msgid "Change background image"
-msgstr ""
+msgstr "Изменить фоновое изображение"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:203
 msgid "Add stateless text"
-msgstr ""
+msgstr "Добавить текст без состояния"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:208
 msgid "Add stateless icon"
-msgstr ""
+msgstr "Добавить значок без состояния"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:227
 msgid "Click to hide layer"
-msgstr ""
+msgstr "Нажмите, чтобы скрыть слой"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:231
 msgid "Click to show layer"
-msgstr ""
+msgstr "Нажмите, чтобы показать слой"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:251
 msgid "Add or edit map item"
-msgstr ""
+msgstr "Добавить или изменить элемент карты"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:256
 msgid "Upload iconset"
-msgstr ""
+msgstr "Загрузить набор иконок"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:268
 #: plugins/MapModule/templates/Mapeditors/edit.php:533
 #: plugins/MapModule/templates/Mapeditors/edit.php:1522
 msgid "Select object type"
-msgstr ""
+msgstr "Выберите тип объекта"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:276
 #: plugins/MapModule/templates/Mapeditors/edit.php:541
@@ -2538,7 +2538,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:73
 #: src/Template/element/Systemdowntimes/tabs.php:30
 msgid "Host"
-msgstr ""
+msgstr "Узел"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:279
 #: plugins/MapModule/templates/Mapeditors/edit.php:544
@@ -2575,7 +2575,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:82
 #: src/Template/element/Systemdowntimes/tabs.php:38
 msgid "Service"
-msgstr ""
+msgstr "Служба"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:282
 #: plugins/MapModule/templates/Mapeditors/edit.php:547
@@ -2583,24 +2583,24 @@ msgstr ""
 #: src/Template/Containers/index.php:95
 #: src/Template/Systemdowntimes/add.php:153
 msgid "Hostgroup"
-msgstr ""
+msgstr "Группа узлов"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:285
 #: plugins/MapModule/templates/Mapeditors/edit.php:550
 #: plugins/MapModule/templates/Mapeditors/edit.php:1539
 #: src/Template/Containers/index.php:99
 msgid "Servicegroup"
-msgstr ""
+msgstr "Группа служб"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:297
 #: plugins/MapModule/templates/Mapeditors/edit.php:563
 #: plugins/MapModule/templates/Mapeditors/edit.php:1551
 msgid "Select object"
-msgstr ""
+msgstr "Выберите объект"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:315
 msgid "Select iconset"
-msgstr ""
+msgstr "Выберите набор иконок"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:342
 #: plugins/MapModule/templates/Mapeditors/edit.php:852
@@ -2608,7 +2608,7 @@ msgstr ""
 #: plugins/MapModule/templates/Mapeditors/edit.php:1402
 #: plugins/MapModule/templates/Mapeditors/edit.php:1570
 msgid "Position X"
-msgstr ""
+msgstr "Положение X"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:353
 #: plugins/MapModule/templates/Mapeditors/edit.php:373
@@ -2628,7 +2628,7 @@ msgstr ""
 #: plugins/MapModule/templates/Mapeditors/edit.php:1601
 #: plugins/MapModule/templates/Mapeditors/edit.php:1623
 msgid "0"
-msgstr ""
+msgstr "0"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:362
 #: plugins/MapModule/templates/Mapeditors/edit.php:872
@@ -2636,7 +2636,7 @@ msgstr ""
 #: plugins/MapModule/templates/Mapeditors/edit.php:1422
 #: plugins/MapModule/templates/Mapeditors/edit.php:1590
 msgid "Position Y"
-msgstr ""
+msgstr "Положение Y"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:384
 #: plugins/MapModule/templates/Mapeditors/edit.php:666
@@ -2645,7 +2645,7 @@ msgstr ""
 #: plugins/MapModule/templates/Mapeditors/edit.php:1444
 #: plugins/MapModule/templates/Mapeditors/edit.php:1637
 msgid "Select layer"
-msgstr ""
+msgstr "Выберите слой"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:397
 #: plugins/MapModule/templates/Mapeditors/edit.php:679
@@ -2654,7 +2654,7 @@ msgstr ""
 #: plugins/MapModule/templates/Mapeditors/edit.php:1457
 #: plugins/MapModule/templates/Mapeditors/edit.php:1650
 msgid "Layers could be used to stack items on a map. Empty layers will be deleted automatically."
-msgstr ""
+msgstr "Слои могут быть использованы для размещения элементов на карте. Пустые слои будут удалены автоматически."
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:402
 #: plugins/MapModule/templates/Mapeditors/edit.php:684
@@ -2663,7 +2663,7 @@ msgstr ""
 #: plugins/MapModule/templates/Mapeditors/edit.php:1462
 #: plugins/MapModule/templates/Mapeditors/edit.php:1655
 msgid "Add new layer"
-msgstr ""
+msgstr "Добавить новый слой"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:419
 #: plugins/MapModule/templates/Mapeditors/edit.php:701
@@ -2672,99 +2672,99 @@ msgstr ""
 #: src/Template/Automaps/add.php:277
 #: src/Template/Automaps/edit.php:279
 msgid "Show Label"
-msgstr ""
+msgstr "Показать ярлык"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:427
 #: plugins/MapModule/templates/Mapeditors/edit.php:1678
 msgid "Label position"
-msgstr ""
+msgstr "Положение этикетки"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:435
 #: plugins/MapModule/templates/Mapeditors/edit.php:1686
 msgid "Left"
-msgstr ""
+msgstr "Слева"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:441
 #: plugins/MapModule/templates/Mapeditors/edit.php:1692
 msgid "Top"
-msgstr ""
+msgstr "Сверху"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:447
 #: plugins/MapModule/templates/Mapeditors/edit.php:1698
 msgid "Bottom"
-msgstr ""
+msgstr "Снизу"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:453
 #: plugins/MapModule/templates/Mapeditors/edit.php:1704
 msgid "Right"
-msgstr ""
+msgstr "Справа"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:462
 msgid "Upload new iconset (as .zip package)"
-msgstr ""
+msgstr "Загрузить новый набор иконок (в виде ZIP-пакета)"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:466
 #: plugins/MapModule/templates/Mapeditors/edit.php:1044
 #: plugins/MapModule/templates/Mapeditors/edit.php:1473
 #: src/Template/Profile/edit.php:334
 msgid "Max allowed file size: "
-msgstr ""
+msgstr "Максимально допустимый размер файла"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:481
 msgid "To upload a own iconset, you need to compress all required icons into a .zip archive."
-msgstr ""
+msgstr "Чтобы загрузить собственный набор значков, вам нужно сжать все необходимые значки в ZIP-архив."
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:483
 msgid "All icons needs to be PNG images. In addition you should follow the"
-msgstr ""
+msgstr "Все иконки должны быть в формате PNG. Кроме того, вы должны следовать"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:485
 msgid "openITCOCKPIT color guidelines."
-msgstr ""
+msgstr "рекомендациям openITCOCKPIT по цветам."
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:489
 msgid "Required icons: "
-msgstr ""
+msgstr "Обязательные значки:"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:496
 msgid "Go back to settings"
-msgstr ""
+msgstr "Вернуться к настройкам"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:523
 msgid "Add or edit line"
-msgstr ""
+msgstr "Добавить или изменить строку"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:553
 msgid "Stateless line"
-msgstr ""
+msgstr "Линия без статуса"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:582
 msgid "Start X"
-msgstr ""
+msgstr "Начало X"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:602
 msgid "Start Y"
-msgstr ""
+msgstr "Начать Y"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:624
 msgid "End X"
-msgstr ""
+msgstr "Конец Х"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:644
 msgid "End Y"
-msgstr ""
+msgstr "Конец Y"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:729
 msgid "Add or edit gadget"
-msgstr ""
+msgstr "Добавить или изменить гаджет"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:760
 msgid "Select gadget type"
-msgstr ""
+msgstr "Выберите тип гаджета"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:808
 msgid "Select output type"
-msgstr ""
+msgstr "Выберите тип выхода"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:815
 #: src/Template/Dashboards/services_status_list_widget.php:211
@@ -2776,143 +2776,143 @@ msgstr ""
 #: src/Template/Services/service_list.php:207
 #: src/Template/Statehistories/service.php:224
 msgid "Service output"
-msgstr ""
+msgstr "Вывод службы"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:816
 #: src/Template/email/html/notification_service.php:170
 msgid "Service long output"
-msgstr ""
+msgstr "Длинный выход службы"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:827
 #: plugins/MapModule/templates/Mapeditors/edit.php:1223
 #: src/Template/Documentations/view.php:179
 msgid "Font size"
-msgstr ""
+msgstr "Размер шрифта"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:839
 msgid "13"
-msgstr ""
+msgstr "13"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:894
 msgid "Width"
-msgstr ""
+msgstr "Ширина"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:912
 #: plugins/MapModule/templates/Mapeditors/edit.php:935
 msgid "Keep blank for default width"
-msgstr ""
+msgstr "Оставьте пустым для стандартной ширины"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:917
 msgid "Height"
-msgstr ""
+msgstr "Высота"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1018
 msgid "Choose background image"
-msgstr ""
+msgstr "Выберите фоновое изображение"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1040
 msgid "Upload new background image"
-msgstr ""
+msgstr "Загрузить новое фоновое изображение"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1075
 msgid "Add or edit stateless text"
-msgstr ""
+msgstr "Добавить или редактировать текст без статуса"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1089
 #: src/Template/Documentations/view.php:257
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1105
 #: src/Template/Documentations/view.php:274
 msgid "Description Text"
-msgstr ""
+msgstr "Текст описания"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1115
 #: src/Template/Documentations/view.php:284
 msgid "Official page for openITCOCKPIT"
-msgstr ""
+msgstr "Официальная страница для openITCOCKPIT"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1131
 #: src/Template/Documentations/view.php:297
 msgid "Open in new tab"
-msgstr ""
+msgstr "Открыть в новой вкладке"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1145
 msgid "Insert link"
-msgstr ""
+msgstr "Вставить ссылку"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1227
 #: src/Template/Automaps/add.php:330
 #: src/Template/Automaps/edit.php:332
 #: src/Template/Documentations/view.php:183
 msgid "Smallest"
-msgstr ""
+msgstr "Наименьший"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1229
 #: src/Template/Automaps/add.php:331
 #: src/Template/Automaps/edit.php:333
 #: src/Template/Documentations/view.php:185
 msgid "Smaller"
-msgstr ""
+msgstr "Меньший"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1231
 #: src/Template/Automaps/add.php:332
 #: src/Template/Automaps/edit.php:334
 #: src/Template/Documentations/view.php:187
 msgid "Small"
-msgstr ""
+msgstr "Небольшой"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1233
 #: src/Template/Automaps/add.php:334
 #: src/Template/Automaps/edit.php:336
 #: src/Template/Documentations/view.php:189
 msgid "Big"
-msgstr ""
+msgstr "Большой"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1235
 #: src/Template/Automaps/add.php:335
 #: src/Template/Automaps/edit.php:337
 #: src/Template/Documentations/view.php:191
 msgid "Bigger"
-msgstr ""
+msgstr "Больший"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1237
 #: src/Template/Automaps/add.php:336
 #: src/Template/Automaps/edit.php:338
 #: src/Template/Documentations/view.php:193
 msgid "Biggest"
-msgstr ""
+msgstr "Самый большой"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1365
 msgid "Add or edit stateless icon"
-msgstr ""
+msgstr "Добавить или редактировать значок без статуса"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1469
 msgid "Upload new icon"
-msgstr ""
+msgstr "Загрузить новый значок"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1511
 msgid "Add or edit summary state item"
-msgstr ""
+msgstr "Добавить или редактировать сводку статуса"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1612
 msgid "Radius"
-msgstr ""
+msgstr "Радиус"
 
 #: plugins/MapModule/templates/Mapeditors/edit.php:1630
 msgid "Keep blank for default radius"
-msgstr ""
+msgstr "Оставьте пустым для стандартного радиуса"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:38
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:214
 msgid " (DISABLED)"
-msgstr ""
+msgstr " (ОТКЛЮЧЕН)"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:48
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:224
 msgid "Hostname"
-msgstr ""
+msgstr "Имя узла"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:58
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:261
@@ -2997,7 +2997,7 @@ msgstr ""
 #: src/Template/element/load_downtime_report_data.php:268
 #: src/Template/element/load_downtime_report_data.php:411
 msgid "Description"
-msgstr ""
+msgstr "Описание"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:66
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:172
@@ -3030,7 +3030,7 @@ msgstr ""
 #: src/Template/email/html/notification_host.php:144
 #: src/Template/email/html/notification_service.php:159
 msgid "State"
-msgstr ""
+msgstr "Статус"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:77
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:196
@@ -3040,7 +3040,7 @@ msgstr ""
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:748
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:783
 msgid "Not in monitoring"
-msgstr ""
+msgstr "Не в мониторинге"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:84
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:175
@@ -3064,18 +3064,18 @@ msgstr ""
 #: src/Template/email/html/notification_host.php:151
 #: src/Template/email/html/notification_service.php:166
 msgid "Output"
-msgstr ""
+msgstr "Выход"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:92
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:296
 #: src/Template/Services/details.php:133
 msgid "Perfdata"
-msgstr ""
+msgstr "Данные о производительности"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:100
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:304
 msgid "Current attempt"
-msgstr ""
+msgstr "Текущая попытка"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:108
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:312
@@ -3098,7 +3098,7 @@ msgstr ""
 #: src/Template/Services/pdf/list_to_pdf.php:77
 #: src/Template/Services/service_list.php:197
 msgid "Last check"
-msgstr ""
+msgstr "Последняя проверка"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:116
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:320
@@ -3115,27 +3115,27 @@ msgstr ""
 #: src/Template/Services/index.php:395
 #: src/Template/Services/service_list.php:202
 msgid "Next check"
-msgstr ""
+msgstr "Следующая проверка"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:125
 msgid "Summary State"
-msgstr ""
+msgstr "Сводка статусов"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:135
 msgid "Summary Output"
-msgstr ""
+msgstr "Сводка выводов"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:140
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:387
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:534
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:657
 msgid "Services: "
-msgstr ""
+msgstr "Службы"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:234
 #: src/Template/Services/browser.php:530
 msgid "Host state"
-msgstr ""
+msgstr "Состояние узла"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:328
 #: src/Template/Browsers/index.php:447
@@ -3148,7 +3148,7 @@ msgstr ""
 #: src/Template/Services/pdf/list_to_pdf.php:76
 #: src/Template/Services/service_list.php:192
 msgid "Last state change"
-msgstr ""
+msgstr "Последнее изменение состояния"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:343
 #: src/Template/Hostgroups/add.php:34
@@ -3167,41 +3167,41 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:91
 #: src/Template/element/Systemdowntimes/tabs.php:46
 msgid "Host group"
-msgstr ""
+msgstr "Группа узлов"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:352
 #: src/Template/Hostgroups/index.php:124
 #: src/Template/Systemdowntimes/hostgroup.php:216
 msgid "Host group name"
-msgstr ""
+msgstr "Название группы узлов"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:370
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:515
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:633
 msgid "Summary state"
-msgstr ""
+msgstr "Сводка статусов"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:381
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:531
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:651
 msgid "Summary output"
-msgstr ""
+msgstr "Сводка выводов"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:384
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:654
 msgid "Hosts: "
-msgstr ""
+msgstr "Узлы"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:393
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:662
 msgid "Hosts overview"
-msgstr ""
+msgstr "Обзор узлов"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:416
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:539
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:685
 msgid "Services overview"
-msgstr ""
+msgstr "Обзор службов"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:488
 #: src/Template/Servicegroups/add.php:34
@@ -3213,63 +3213,63 @@ msgstr ""
 #: src/Template/Servicegroups/extended.php:34
 #: src/Template/Servicegroups/extended.php:91
 msgid "Service group"
-msgstr ""
+msgstr "Группа служб"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:497
 #: src/Template/Servicegroups/index.php:124
 msgid "Service group name"
-msgstr ""
+msgstr "Название группы служб"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:615
 #: plugins/MapModule/templates/Maps/copy.php:70
 #: plugins/MapModule/templates/Maps/index.php:127
 msgid "Map name"
-msgstr ""
+msgstr "Название карты"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:625
 #: plugins/MapModule/templates/Maps/copy.php:86
 #: plugins/MapModule/templates/Maps/index.php:131
 msgid "Map title"
-msgstr ""
+msgstr "Заглавие карты"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:712
 msgid "Host and services are not in state UP/OK"
-msgstr ""
+msgstr "Узлы и службы не в состоянии UP/ОК"
 
 #: plugins/MapModule/templates/Mapeditors/mapsummary.php:716
 msgid " maximum 20"
-msgstr ""
+msgstr "максимум 20"
 
 #: plugins/MapModule/templates/Mapeditors/view.php:50
 msgid "View map:"
-msgstr ""
+msgstr "Показать карту"
 
 #: plugins/MapModule/templates/Mapeditors/view.php:67
 msgid "Fullscreen"
-msgstr ""
+msgstr "Полноэкранный"
 
 #: plugins/MapModule/templates/Mapeditors/view.php:72
 msgid "Leave fullscreen"
-msgstr ""
+msgstr "Оставьте полноэкранный"
 
 #: plugins/MapModule/templates/Maps/add.php:51
 msgid "Create new map"
-msgstr ""
+msgstr "Создать новую карту"
 
 #: plugins/MapModule/templates/Maps/add.php:86
 #: plugins/MapModule/templates/Maps/edit.php:86
 msgid "Map Name"
-msgstr ""
+msgstr "Название карты"
 
 #: plugins/MapModule/templates/Maps/add.php:99
 #: plugins/MapModule/templates/Maps/edit.php:99
 msgid "Map Title"
-msgstr ""
+msgstr "Заглавие карты"
 
 #: plugins/MapModule/templates/Maps/add.php:112
 #: plugins/MapModule/templates/Maps/edit.php:112
 msgid "Refresh interval"
-msgstr ""
+msgstr "Интервал обновления"
 
 #: plugins/MapModule/templates/Maps/add.php:129
 #: src/Template/Agentchecks/add.php:121
@@ -3300,11 +3300,11 @@ msgstr ""
 #: src/Template/Users/add_from_ldap.php:479
 #: src/Template/Users/edit.php:439
 msgid "Create another"
-msgstr ""
+msgstr "Создать другой"
 
 #: plugins/MapModule/templates/Maps/add.php:132
 msgid "Create map"
-msgstr ""
+msgstr "Создать карту"
 
 #: plugins/MapModule/templates/Maps/copy.php:41
 #: plugins/MapModule/templates/Maps/copy.php:122
@@ -3351,31 +3351,31 @@ msgstr ""
 #: src/Template/element/servicetemplate_mass_changes.php:37
 #: src/Template/element/timeperiod_mass_changes.php:37
 msgid "Copy"
-msgstr ""
+msgstr "Копировать"
 
 #: plugins/MapModule/templates/Maps/copy.php:49
 msgid "Copy map/s"
-msgstr ""
+msgstr "Копировать карту/ы"
 
 #: plugins/MapModule/templates/Maps/copy.php:64
 msgid "Source map:"
-msgstr ""
+msgstr "Исходная карта"
 
 #: plugins/MapModule/templates/Maps/copy.php:78
 msgid "Name of the new map"
-msgstr ""
+msgstr "Название новой карты"
 
 #: plugins/MapModule/templates/Maps/copy.php:94
 msgid "Title of the new map"
-msgstr ""
+msgstr "Заглавие новой карты"
 
 #: plugins/MapModule/templates/Maps/copy.php:102
 msgid "Refresh Interval"
-msgstr ""
+msgstr "Интервал обновления"
 
 #: plugins/MapModule/templates/Maps/copy.php:110
 msgid "Automatic maps update interval in seconds"
-msgstr ""
+msgstr "Интервал автоматического обновления карт в секундах"
 
 #: plugins/MapModule/templates/Maps/edit.php:64
 #: src/Template/Agentchecks/edit.php:67
@@ -3393,56 +3393,56 @@ msgstr ""
 #: src/Template/Usercontainerroles/edit.php:64
 #: src/Template/Usergroups/edit.php:65
 msgid "saved successfully"
-msgstr ""
+msgstr "успешно сохранено"
 
 #: plugins/MapModule/templates/Maps/edit.php:128
 msgid "Update map"
-msgstr ""
+msgstr "Обновить карту"
 
 #: plugins/MapModule/templates/Maps/index.php:88
 msgid "Filter by Map name"
-msgstr ""
+msgstr "Фильтровать по названию карты"
 
 #: plugins/MapModule/templates/Maps/index.php:101
 msgid "Filter by Map title"
-msgstr ""
+msgstr "Фильтровать по заглавию карты"
 
 #: plugins/MapModule/templates/Maps/index.php:175
 msgid "Edit in Map editor"
-msgstr ""
+msgstr "Редактировать в редакторе карт"
 
 #: plugins/MapModule/templates/Maps/index.php:202
 #: plugins/MapModule/templates/Rotations/index.php:196
 msgid "View in fullscreen"
-msgstr ""
+msgstr "Посмотреть в полноэкранном режиме"
 
 #: plugins/MapModule/templates/Rotations/add.php:51
 msgid "Create new map rotation"
-msgstr ""
+msgstr "Создать новую карту вращения"
 
 #: plugins/MapModule/templates/Rotations/add.php:64
 #: plugins/MapModule/templates/Rotations/edit.php:65
 msgid "Rotation"
-msgstr ""
+msgstr "Вращение"
 
 #: plugins/MapModule/templates/Rotations/add.php:85
 #: plugins/MapModule/templates/Rotations/edit.php:86
 msgid "Rotation Name"
-msgstr ""
+msgstr "Имя вращения"
 
 #: plugins/MapModule/templates/Rotations/add.php:98
 #: plugins/MapModule/templates/Rotations/edit.php:99
 #: plugins/MapModule/templates/Rotations/index.php:131
 msgid "Rotation interval"
-msgstr ""
+msgstr "Интервал вращения"
 
 #: plugins/MapModule/templates/Rotations/add.php:132
 msgid "Create rotation"
-msgstr ""
+msgstr "Создать вращение"
 
 #: plugins/MapModule/templates/Rotations/edit.php:51
 msgid "Edit map rotation:"
-msgstr ""
+msgstr "Изменить вращение карты"
 
 #: plugins/MapModule/templates/Rotations/edit.php:65
 #: src/Template/Automaps/edit.php:64
@@ -3454,369 +3454,369 @@ msgstr ""
 #: src/Template/Tenants/edit.php:64
 #: src/Template/Timeperiods/edit.php:77
 msgid "updated successfully"
-msgstr ""
+msgstr "Успешно обновлено"
 
 #: plugins/MapModule/templates/Rotations/edit.php:133
 msgid "Update map rotation"
-msgstr ""
+msgstr "Обновление вращение карты"
 
 #: plugins/MapModule/templates/Rotations/index.php:88
 msgid "Filter by Rotation name"
-msgstr ""
+msgstr "Фильтровать по названию вращения"
 
 #: plugins/MapModule/templates/Rotations/index.php:101
 msgid "Filter by Rotation Interval"
-msgstr ""
+msgstr "Фильтровать по интервалу вращения"
 
 #: plugins/MapModule/templates/Rotations/index.php:127
 msgid "Rotation name"
-msgstr ""
+msgstr "Имя вращения"
 
 #: plugins/MattermostModule/src/Controller/AcknowledgeController.php:74
 #: plugins/MattermostModule/src/Controller/AcknowledgeController.php:135
 msgid "Issue got acknowledged by {0} via Mattermost."
-msgstr ""
+msgstr "Проблема была подтверждена {0} через Маттермостом."
 
 #: plugins/MattermostModule/src/Controller/AcknowledgeController.php:84
 #: plugins/MattermostModule/src/Controller/AcknowledgeController.php:146
 msgid "Issue got acknowledged by **@{0}** via Mattermost."
-msgstr ""
+msgstr "Ошибка была подтверждена ** @ {0} ** через Маттермостом."
 
 #: plugins/MattermostModule/src/Lib/Menu.php:47
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:50
 msgid "Mattermost"
-msgstr ""
+msgstr "Маттермост"
 
 #: plugins/MattermostModule/src/Model/Table/MattermostSettingsTable.php:89
 msgid "For Two-way integration an API key is required."
-msgstr ""
+msgstr "Для двусторонней интеграции требуется ключ API."
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:33
 msgid "Mattermost Module"
-msgstr ""
+msgstr "Маттермост модуль"
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:59
 msgid "Webhook URL"
-msgstr ""
+msgstr "Webhook URL"
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:70
 msgid "Mattermost Webhook URL."
-msgstr ""
+msgstr "Mattermost Webhook URL."
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:85
 msgid "Enable Two-way integration"
-msgstr ""
+msgstr "Включить двустороннюю интеграцию"
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:92
 msgid "openITCOCKPIT API Key"
-msgstr ""
+msgstr "Ключ API openITCOCKPIT"
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:104
 msgid "API Key"
-msgstr ""
+msgstr "Ключ API"
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:106
 msgid "used by Mattermost for authentication against openITCOCKPIT."
-msgstr ""
+msgstr "использует Маттермост для аутентификации на openITCOCKPIT."
 
 #: plugins/MattermostModule/templates/MattermostSettings/index.php:137
 msgid "Save configuration"
-msgstr ""
+msgstr "Сохранить конфигурацию"
 
 #: plugins/NagiosModule/src/Controller/CmdController.php:91
 #: plugins/NagiosModule/src/Controller/CmdController.php:200
 msgid "Command added successfully to queue"
-msgstr ""
+msgstr "Команда успешно добавлена ​​в очередь"
 
 #: plugins/NagiosModule/src/Lib/Menu.php:44
 msgid "API"
-msgstr ""
+msgstr "API"
 
 #: plugins/NagiosModule/src/Lib/Menu.php:49
 #: plugins/NagiosModule/templates/Cmd/index.php:53
 msgid "External commands"
-msgstr ""
+msgstr "Внешние команды"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:40
 #: src/Template/Administrators/debug.php:121
 msgid "Monitoring Engine"
-msgstr ""
+msgstr "Мониторинг двигателя"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:44
 msgid "External Command"
-msgstr ""
+msgstr "Внешняя команда"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:64
 msgid "What is this API for?"
-msgstr ""
+msgstr "Для чего эта API?"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:65
 msgid "This API can be used by third party application to send commands to the monitoring backend."
-msgstr ""
+msgstr "Эта API может использоваться сторонним приложением для отправки команд бэкэнду мониторинга."
 
 #: plugins/NagiosModule/templates/Cmd/index.php:67
 msgid "This could be useful to transfer passive check results or to acknowledge host or service states."
-msgstr ""
+msgstr "Это может быть полезно для передачи результатов пассивной проверки или подтверждения состояний узла или службы."
 
 #: plugins/NagiosModule/templates/Cmd/index.php:74
 #: src/Template/Commands/add.php:95
 #: src/Template/Commands/edit.php:96
 #: src/Template/Commands/index.php:164
 msgid "Command type"
-msgstr ""
+msgstr "Тип команды"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:98
 msgid "Parameter"
-msgstr ""
+msgstr "Параметр"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:99
 msgid "Default value"
-msgstr ""
+msgstr "Стандартное значение"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:110
 msgid "required"
-msgstr ""
+msgstr "обязательный"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:121
 msgid "No parameters"
-msgstr ""
+msgstr "Без параметров"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:162
 #: plugins/NagiosModule/templates/Cmd/index.php:170
 #: plugins/NagiosModule/templates/Cmd/index.php:201
 msgid "YOUR_API_KEY_HERE"
-msgstr ""
+msgstr "YOUR_API_KEY_HERE"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:221
 #: src/Template/Agentconnector/config.php:297
 msgid "You need to create an openITCOCKPIT user defined API key first."
-msgstr ""
+msgstr "Сначала необходимо создать определенный пользователем ключ API openITCOCKPIT."
 
 #: plugins/NagiosModule/templates/Cmd/index.php:222
 #: src/Template/Agentconnector/config.php:300
 msgid "Click here for help"
-msgstr ""
+msgstr "Нажмите здесь для помощи"
 
 #: plugins/NagiosModule/templates/Cmd/index.php:227
 msgid "is not required in the URL and can be removed."
-msgstr ""
+msgstr "не требуется в URL и может быть удален."
 
 #: plugins/NagiosModule/templates/Cmd/index.php:234
 msgid "External documentation"
-msgstr ""
+msgstr "Внешняя документация"
 
 #: src/Command/AcknowledgePerMailCommand.php:171
 #: src/Command/AcknowledgePerMailCommand.php:187
 msgid "Acknowledged per mail"
-msgstr ""
+msgstr "Подтверждение по электронной почте"
 
 #: src/Command/ConnectToAgentCommand.php:114
 msgid "Missing IP or Port of the Agent"
-msgstr ""
+msgstr "Отсутствует IP или порт агента"
 
 #: src/Command/GearmanWorkerCommand.php:149
 msgid "GearmanWorker: Fork new worker child"
-msgstr ""
+msgstr "GearmanWorker: Fork новый рабочий ребёнок"
 
 #: src/Command/GearmanWorkerCommand.php:878
 msgid "Started refresh of monitoring configuration"
-msgstr ""
+msgstr "Начало обновления конфигурации мониторинга"
 
 #: src/Command/GearmanWorkerCommand.php:885
 msgid "Create Backup of current configuration"
-msgstr ""
+msgstr "Создать резервную копию текущей конфигурации"
 
 #: src/Command/GearmanWorkerCommand.php:924
 msgid "Delete old configuration"
-msgstr ""
+msgstr "Удалить старую конфигурацию"
 
 #: src/Command/GearmanWorkerCommand.php:935
 msgid "Execute pre export tasks"
-msgstr ""
+msgstr "Выполнить предварительные задачи экспорта"
 
 #: src/Command/GearmanWorkerCommand.php:947
 msgid "Create default configuration"
-msgstr ""
+msgstr "Создать стандартную конфигурацию"
 
 #: src/Command/GearmanWorkerCommand.php:950
 msgid "Create hosttemplate configuration"
-msgstr ""
+msgstr "Создать конфигурацию шаблона узла"
 
 #: src/Command/GearmanWorkerCommand.php:953
 msgid "Create host configuration"
-msgstr ""
+msgstr "Создать конфигурацию узла"
 
 #: src/Command/GearmanWorkerCommand.php:956
 msgid "Create command configuration"
-msgstr ""
+msgstr "Создать конфигурацию команды"
 
 #: src/Command/GearmanWorkerCommand.php:959
 msgid "Create contact configuration"
-msgstr ""
+msgstr "Создать конфигурацию контакта"
 
 #: src/Command/GearmanWorkerCommand.php:962
 msgid "Create contact group configuration"
-msgstr ""
+msgstr "Создать конфигурацию группы контактов"
 
 #: src/Command/GearmanWorkerCommand.php:965
 msgid "Create timeperiod configuration"
-msgstr ""
+msgstr "Создать конфигурацию временного периода"
 
 #: src/Command/GearmanWorkerCommand.php:968
 msgid "Create host group configuration"
-msgstr ""
+msgstr "Создать конфигурацию группы узлов"
 
 #: src/Command/GearmanWorkerCommand.php:971
 msgid "Create host escalation configuration"
-msgstr ""
+msgstr "Создать конфигурацию эскалации узла"
 
 #: src/Command/GearmanWorkerCommand.php:974
 msgid "Create servicetemplate configuration"
-msgstr ""
+msgstr "Создать конфигурацию шаблона службы"
 
 #: src/Command/GearmanWorkerCommand.php:977
 msgid "Create service configuration"
-msgstr ""
+msgstr "Создать конфигурацию службы"
 
 #: src/Command/GearmanWorkerCommand.php:980
 msgid "Create service escalation configuration"
-msgstr ""
+msgstr "Создать конфигурацию эскалации службы"
 
 #: src/Command/GearmanWorkerCommand.php:983
 msgid "Create service group configuration"
-msgstr ""
+msgstr "Создать конфигурацию группы служб"
 
 #: src/Command/GearmanWorkerCommand.php:986
 msgid "Create host dependency configuration"
-msgstr ""
+msgstr "Создать конфигурацию зависимости узла"
 
 #: src/Command/GearmanWorkerCommand.php:989
 msgid "Create service dependency configuration"
-msgstr ""
+msgstr "Создать конфигурацию зависимости службы"
 
 #: src/Command/GearmanWorkerCommand.php:992
 msgid "Export user defined macros"
-msgstr ""
+msgstr "Экспорт пользовательских макросов"
 
 #: src/Command/GearmanWorkerCommand.php:1024
 msgid "Execute post export tasks"
-msgstr ""
+msgstr "Выполнить задачи постэкспорта"
 
 #: src/Command/GearmanWorkerCommand.php:1036
 msgid "Verifying new configuration"
-msgstr ""
+msgstr "Проверка новой конфигурации"
 
 #: src/Command/GearmanWorkerCommand.php:1066
 msgid "Check if monitoring engine is running"
-msgstr ""
+msgstr "Проверьте, работает ли двигатель мониторинга"
 
 #: src/Command/GearmanWorkerCommand.php:1080
 msgid "Reloading monitoring engine"
-msgstr ""
+msgstr "Перезагрузка мониторинга двигателя"
 
 #: src/Command/GearmanWorkerCommand.php:1096
 msgid "Restarting monitoring engine"
-msgstr ""
+msgstr "Перезапуск двигателя мониторинга"
 
 #: src/Command/GearmanWorkerCommand.php:1115
 msgid "Execute after export command"
-msgstr ""
+msgstr "Выполнить после команды экспорта"
 
 #: src/Command/GearmanWorkerCommand.php:1150
 msgid "Refresh of configuration finished"
-msgstr ""
+msgstr "Обновление конфигурации завершено"
 
 #: src/Command/GearmanWorkerCommand.php:1250
 msgid "Copy new monitoring configuration for Satellite ["
-msgstr ""
+msgstr "Скопируйте новую конфигурацию мониторинга для Сателлита ["
 
 #: src/Command/InstantReportCommand.php:106
-msgid "Never"
+msgid "Никогда"
 msgstr ""
 
 #: src/Command/InstantReportCommand.php:107
 msgid "Daily"
-msgstr ""
+msgstr "Ежедневно"
 
 #: src/Command/InstantReportCommand.php:108
 msgid "Weekly"
-msgstr ""
+msgstr "Еженедельно"
 
 #: src/Command/InstantReportCommand.php:109
 msgid "Monthly"
-msgstr ""
+msgstr "Ежемесячно"
 
 #: src/Command/InstantReportCommand.php:110
 msgid "Yearly"
-msgstr ""
+msgstr "Ежегодно"
 
 #: src/Command/InstantReportCommand.php:202
 msgid "An error occured while sending instant report mail: "
-msgstr ""
+msgstr "Произошла ошибка при отправке мгновенного отчета по электронной почте"
 
 #: src/Command/NagiosExportCommand.php:73
 msgid "Verifying monitoring configuration files, please standby..."
-msgstr ""
+msgstr "Проверка файлов конфигурации мониторинга, пожалуйста, в режиме ожидания..."
 
 #: src/Command/RolesCommand.php:105
 msgid "Checking permissions for user group \"{0}\"..."
-msgstr ""
+msgstr "Проверка разрешений для группы пользователей \"{0}\"..."
 
 #: src/Command/RolesCommand.php:332
 msgid "Restore default permissions for user group \"Administrator\""
-msgstr ""
+msgstr "Восстановить стандартные разрешения для группы пользователей \"Администратор \""
 
 #: src/Command/RolesCommand.php:412
 msgid "Re-Enable default permissions for user group \"{0}\" but keep custom changes."
-msgstr ""
+msgstr "Повторно включите стандартные разрешения для группы пользователей \"{0}\", но сохраните пользовательские изменения."
 
 #: src/Command/SetupCommand.php:114
 msgid "Setup will continue in {0} seconds. Press CTRL + C to abort."
-msgstr ""
+msgstr "Установка продолжится через {0} секунд. Нажмите CTRL + C, чтобы отменить."
 
 #: src/Command/SetupCommand.php:127
 msgid "This shell helps you to setup your fresh installation of openITCOCKPIT."
-msgstr ""
+msgstr "Эта оболочка поможет вам установить новую версию openITCOCKPIT."
 
 #: src/Command/SetupCommand.php:128
 msgid "Warning:"
-msgstr ""
+msgstr "Предупреждение:"
 
 #: src/Command/SetupCommand.php:129
 msgid "Only run this command, if you installed openITCOCKPIT right now and never logged in to the interface!"
-msgstr ""
+msgstr "Запускайте эту команду, только если вы установили openITCOCKPIT прямо сейчас и никогда не входили в интерфейс!"
 
 #: src/Command/SetupCommand.php:130
 msgid "If you continue, you will lose all your archive data!"
-msgstr ""
+msgstr "Если вы продолжите, вы потеряете все свои архивные данные!"
 
 #: src/Command/SetupCommand.php:149
 msgid "Setup openITCOCKPIT and create your first user."
-msgstr ""
+msgstr "Настройте openITCOCKPIT и создайте своего первого пользователя."
 
 #: src/Command/SetupCommand.php:158
 msgid "You can now open the web frontend in your browser and login. Have a nice day!"
-msgstr ""
+msgstr "еперь вы можете открыть веб-интерфейс в вашем браузере и войти в систему. Хорошего дня!"
 
 #: src/Command/SetupCommand.php:322
 msgid "Please enter the FQDN or IP address of your openITCOCKPIT Server. If you do not know your IP address enter a random one and change it via the interface later."
-msgstr ""
+msgstr "Пожалуйста, введите полное доменное имя или IP-адрес вашего сервера openITCOCKPIT. Если вы не знаете свой IP-адрес, введите случайный и измените его через интерфейс позже."
 
 #: src/Command/SetupCommand.php:527
 msgid "User \"{0}\" created successfully"
-msgstr ""
+msgstr "Пользователь \"{0}\" успешно создан"
 
 #: src/Command/SetupCommand.php:552
 msgid "Hostname was set to \"{0}\""
-msgstr ""
+msgstr "Имя узла было установлено на \"{0}\""
 
 #: src/Command/SetupCommand.php:568
 msgid "E-Mail sender was set to \"{0}\""
-msgstr ""
+msgstr "Отправителю электронной почты было присвоено значение \"{0}\""
 
 #: src/Command/SetupCommand.php:584
 msgid "Mail configuration \"{0}\" saved successfully."
-msgstr ""
+msgstr "Настройка электронной почты \"{0}\" успешно сохранена."
 
 #: src/Controller/AcknowledgementsController.php:69
 #: src/Controller/AgentconfigsController.php:71
@@ -3833,7 +3833,7 @@ msgstr ""
 #: src/Controller/ServicesController.php:2207
 #: src/Controller/StatehistoriesController.php:67
 msgid "Invalid host"
-msgstr ""
+msgstr "Неверный узел"
 
 #: src/Controller/AcknowledgementsController.php:139
 #: src/Controller/NotificationsController.php:241
@@ -3844,42 +3844,42 @@ msgstr ""
 #: src/Controller/ServicesController.php:1256
 #: src/Controller/StatehistoriesController.php:133
 msgid "Invalid service"
-msgstr ""
+msgstr "Неверная служба"
 
 #: src/Controller/AdministratorsController.php:76
 msgid "Community - unregistered"
-msgstr ""
+msgstr "Community - незарегистрированно"
 
 #: src/Controller/AdministratorsController.php:78
 #: src/Template/Packetmanager/index.php:204
 msgid "Enterprise"
-msgstr ""
+msgstr "Enterprise"
 
 #: src/Controller/AdministratorsController.php:80
 msgid "Community - registered"
-msgstr ""
+msgstr "Community - регистрированно"
 
 #: src/Controller/AdministratorsController.php:353
 msgid "System test mail from "
-msgstr ""
+msgstr "Тест системы электронной почты от "
 
 #: src/Controller/AdministratorsController.php:369
 msgid "Test mail send to: "
-msgstr ""
+msgstr "Тестовое электронное письмо отправьте по адресу: "
 
 #: src/Controller/AdministratorsController.php:374
 msgid "An error occured while sending test mail: "
-msgstr ""
+msgstr "Произошла ошибка при отправке тестового электронного письма: "
 
 #: src/Controller/AgentchecksController.php:126
 #: src/Controller/AgentchecksController.php:166
 msgid "Agentcheck not found"
-msgstr ""
+msgstr "Проверка агента не найдена"
 
 #: src/Controller/AgentconfigsController.php:271
 #: src/Controller/AgentconfigsController.php:309
 msgid "Agentconfig not found"
-msgstr ""
+msgstr "Конфигурация агента не найдена"
 
 #: src/Controller/AgentconfigsController.php:365
 #: src/Controller/ServicesController.php:542
@@ -3888,59 +3888,59 @@ msgstr ""
 #: src/Controller/ServicetemplatesController.php:115
 #: src/Controller/ServicetemplatesController.php:512
 msgid "Invalid service template"
-msgstr ""
+msgstr "Неверный шаблон службы"
 
 #: src/Controller/AgentconnectorController.php:198
 msgid "Invalid agent"
-msgstr ""
+msgstr "Неверный агент"
 
 #: src/Controller/AngularController.php:414
 msgid "You are not permitted to access this object."
-msgstr ""
+msgstr "Вам не разрешен доступ к этому объекту."
 
 #: src/Controller/AngularController.php:435
 msgid "Object could not be found."
-msgstr ""
+msgstr "Объект не может быть найден."
 
 #: src/Controller/AngularController.php:585
 #: src/Template/Systemdowntimes/add.php:81
 #: src/Template/Systemdowntimes/add.php:155
 msgid "In maintenance"
-msgstr ""
+msgstr "В обслуживании"
 
 #: src/Controller/AppController.php:328
 msgid "Permission denied"
-msgstr ""
+msgstr "В доступе отказано"
 
 #: src/Controller/AppController.php:329
 msgid "You are not permitted to access this object"
-msgstr ""
+msgstr "Вам не разрешен доступ к этому объекту"
 
 #: src/Controller/AutomapsController.php:140
 #: src/Controller/AutomapsController.php:214
 msgid "Automap not found"
-msgstr ""
+msgstr "Автокарта не найдена"
 
 #: src/Controller/AutomapsController.php:361
 msgid "Invalid Automap"
-msgstr ""
+msgstr "Неверная автокарта"
 
 #: src/Controller/BrowsersController.php:99
 msgid "root"
-msgstr ""
+msgstr "root"
 
 #: src/Controller/CalendarsController.php:139
 #: src/Controller/CalendarsController.php:221
 msgid "Invalid calendar"
-msgstr ""
+msgstr "Неверный календарь"
 
 #: src/Controller/CalendarsController.php:244
 msgid "Calendar deleted successfully"
-msgstr ""
+msgstr "Календарь успешно удален"
 
 #: src/Controller/CalendarsController.php:251
 msgid "Issue while deleting calendar"
-msgstr ""
+msgstr "Проблема при удалении календаря"
 
 #: src/Controller/CommandsController.php:83
 #: src/Controller/CommandsController.php:225
@@ -3952,7 +3952,7 @@ msgstr ""
 #: src/Controller/ServicetemplatesController.php:680
 #: src/Controller/ServicetemplatesController.php:775
 msgid "Invalid command"
-msgstr ""
+msgstr "Неверная команда"
 
 #: src/Controller/CommandsController.php:235
 #: src/Controller/ContactgroupsController.php:279
@@ -3962,40 +3962,40 @@ msgstr ""
 #: src/Controller/TenantsController.php:322
 #: src/Controller/TimeperiodsController.php:277
 msgid "Used by other objects"
-msgstr ""
+msgstr "Используется другими объектами"
 
 #: src/Controller/CommandsController.php:243
 msgid "Issue while deleting command"
-msgstr ""
+msgstr "Проблема при удалении команды"
 
 #: src/Controller/ConfigurationFilesController.php:211
 msgid "Config successfully restored to default"
-msgstr ""
+msgstr "Конфигурация успешно восстановлена ​​до стандартной"
 
 #: src/Controller/ContactgroupsController.php:100
 msgid "Invalid contact group"
-msgstr ""
+msgstr "Неверная контактная группа"
 
 #: src/Controller/ContactgroupsController.php:180
 #: src/Controller/ContactgroupsController.php:260
 #: src/Controller/ContactgroupsController.php:455
 msgid "Contact group not found"
-msgstr ""
+msgstr "Контактная группа не найдена"
 
 #: src/Controller/ContactgroupsController.php:287
 #: src/Controller/ContactsController.php:344
 msgid "Issue while deleting contact"
-msgstr ""
+msgstr "Проблема при удалении контакта"
 
 #: src/Controller/ContactsController.php:126
 #: src/Controller/ContactsController.php:547
 msgid "Invalid contact"
-msgstr ""
+msgstr "Неверный контакт"
 
 #: src/Controller/ContactsController.php:209
 #: src/Controller/ContactsController.php:315
 msgid "Contact not found"
-msgstr ""
+msgstr "Контакт не найден"
 
 #: src/Controller/ContainersController.php:72
 #: src/Controller/ContainersController.php:124
@@ -4006,106 +4006,106 @@ msgstr ""
 #: src/Controller/ServicedependenciesController.php:250
 #: src/Controller/ServiceescalationsController.php:262
 msgid "Invalid container"
-msgstr ""
+msgstr "Неверный контейнер"
 
 #: src/Controller/ContainersController.php:169
 msgid "Container not found"
-msgstr ""
+msgstr "Контейнер не найден"
 
 #: src/Controller/CronjobsController.php:117
 msgid "Invalid cronjob"
-msgstr ""
+msgstr "Неверный кронджоб"
 
 #: src/Controller/CurrentstatereportsController.php:181
 msgid "Currentstatereport_"
-msgstr ""
+msgstr "Отчет о текущем состоянии_"
 
 #: src/Controller/DashboardsController.php:220
 #: src/Controller/DashboardsController.php:276
 msgid "Successfully saved"
-msgstr ""
+msgstr "Успешно сохранено"
 
 #: src/Controller/DashboardsController.php:300
 msgid "Successfully deleted"
-msgstr ""
+msgstr "Успешно удален"
 
 #: src/Controller/DashboardsController.php:305
 msgid "Error while deleting Widget"
-msgstr ""
+msgstr "Ошибка при удалении виджета"
 
 #: src/Controller/DocumentationsController.php:233
 msgid "MySQL performance"
-msgstr ""
+msgstr "Производительность MySQL"
 
 #: src/Controller/DocumentationsController.php:239
 msgid "Browser Push Notifications"
-msgstr ""
+msgstr "Push-уведомления браузера"
 
 #: src/Controller/DowntimereportsController.php:127
 msgid "No downtimes within specified time found ({0} - {1}) !"
-msgstr ""
+msgstr "В течение указанного времени не найдено ни одного обслуживания ({0} - {1})!"
 
 #: src/Controller/DowntimereportsController.php:220
-msgid "! No downtimes within specified time found ({0} - {1}) !"
+msgid "! В течение указанного времени не найдено ни одного обслуживания ({0} - {1}) !"
 msgstr ""
 
 #: src/Controller/DowntimereportsController.php:236
 msgid "Downtimereport_"
-msgstr ""
+msgstr "Отчет об обслуживании_"
 
 #: src/Controller/DowntimesController.php:220
 msgid "Comment can not be empty"
-msgstr ""
+msgstr "Комментарий не может быть пустым"
 
 #: src/Controller/DowntimesController.php:224
 msgid "Start date can not be empty"
-msgstr ""
+msgstr "Дата начала не может быть пустой"
 
 #: src/Controller/DowntimesController.php:228
 msgid "Start time can not be empty"
-msgstr ""
+msgstr "Время начала не может быть пустым"
 
 #: src/Controller/DowntimesController.php:232
 msgid "End date can not be empty"
-msgstr ""
+msgstr "Дата окончания не может быть пустой"
 
 #: src/Controller/DowntimesController.php:236
 msgid "End time can not be empty"
-msgstr ""
+msgstr "Время окончания не может быть пустым"
 
 #: src/Controller/DowntimesController.php:243
 #: src/Controller/DowntimesController.php:247
 msgid "Date is not valid"
-msgstr ""
+msgstr "Дата недействительна"
 
 #: src/Controller/DowntimesController.php:356
 msgid "Successfully"
-msgstr ""
+msgstr "Успешно"
 
 #: src/Controller/ExportsController.php:136
 msgid "Refresh of monitoring configuration successfully!"
-msgstr ""
+msgstr "Обновление конфигурации мониторинга успешно!"
 
 #: src/Controller/HostdependenciesController.php:93
 #: src/Controller/HostdependenciesController.php:219
 msgid "Host dependency not found"
-msgstr ""
+msgstr "Зависимость от узла не найдена"
 
 #: src/Controller/HostdependenciesController.php:242
 #: src/Controller/HostescalationsController.php:253
 #: src/Controller/ServicedependenciesController.php:238
 #: src/Controller/ServiceescalationsController.php:246
 msgid "This is only allowed via API."
-msgstr ""
+msgstr "Это разрешено только через API."
 
 #: src/Controller/HostescalationsController.php:96
 #: src/Controller/HostescalationsController.php:230
 msgid "Host escalation not found"
-msgstr ""
+msgstr "Эскалация узла не найдена"
 
 #: src/Controller/HostescalationsController.php:271
 msgid "Invalid hosttemplate"
-msgstr ""
+msgstr "Неверный шаблон узла"
 
 #: src/Controller/HostgroupsController.php:121
 #: src/Controller/HostgroupsController.php:219
@@ -4114,59 +4114,59 @@ msgstr ""
 #: src/Controller/HostgroupsController.php:595
 #: src/Controller/ServicegroupsController.php:670
 msgid "Invalid Hostgroup"
-msgstr ""
+msgstr "Неверная группа узлов"
 
 #: src/Controller/HostgroupsController.php:426
 #: src/Controller/HostsController.php:231
 #: src/Controller/ServicegroupsController.php:773
 msgid "ok"
-msgstr ""
+msgstr "ok"
 
 #: src/Controller/HostgroupsController.php:427
 #: src/Controller/HostsController.php:232
 #: src/Controller/ServicegroupsController.php:774
 msgid "warning"
-msgstr ""
+msgstr "предупреждение"
 
 #: src/Controller/HostgroupsController.php:428
 #: src/Controller/HostsController.php:233
 #: src/Controller/ServicegroupsController.php:775
 msgid "critical"
-msgstr ""
+msgstr "критично"
 
 #: src/Controller/HostgroupsController.php:429
 #: src/Controller/HostsController.php:234
 #: src/Controller/ServicegroupsController.php:776
 msgid "unknown"
-msgstr ""
+msgstr "неизвестно"
 
 #: src/Controller/HostgroupsController.php:458
 msgid "up"
-msgstr ""
+msgstr "включен"
 
 #: src/Controller/HostgroupsController.php:459
 msgid "down"
-msgstr ""
+msgstr "остановлен"
 
 #: src/Controller/HostgroupsController.php:460
 msgid "unreachable"
-msgstr ""
+msgstr "недоступно"
 
 #: src/Controller/HostgroupsController.php:559
 msgid "Hostgroups_"
-msgstr ""
+msgstr "Группы узлов_"
 
 #: src/Controller/HostsController.php:486
 #: src/Controller/HostsController.php:491
 msgid "This field cannot be left empty"
-msgstr ""
+msgstr "Это поле нельзя оставлять пустым"
 
 #: src/Controller/HostsController.php:506
 #: src/Controller/HostsController.php:655
 #: src/Controller/HostsController.php:2665
 #: src/Controller/HosttemplatesController.php:107
 msgid "Invalid host template"
-msgstr ""
+msgstr "Неверный шаблон узла"
 
 #: src/Controller/HostsController.php:585
 #: src/Controller/HostsController.php:742
@@ -4175,203 +4175,203 @@ msgstr ""
 #: src/Controller/HostsController.php:1815
 #: src/Controller/HostsController.php:1840
 msgid "Host not found"
-msgstr ""
+msgstr "Узел не найден"
 
 #: src/Controller/HostsController.php:1278
 msgid "Host successfully disabled"
-msgstr ""
+msgstr "Узел успешно отключен"
 
 #: src/Controller/HostsController.php:1286
 msgid "Issue while disabling host"
-msgstr ""
+msgstr "Проблема при отключении узла"
 
 #: src/Controller/HostsController.php:1343
 msgid "Host successfully enabled"
-msgstr ""
+msgstr "Узел успешно включен"
 
 #: src/Controller/HostsController.php:1351
 msgid "Issue while enabling host"
-msgstr ""
+msgstr "Проблема при включении узла"
 
 #: src/Controller/HostsController.php:1392
 msgid "Issue while deleting host"
-msgstr ""
+msgstr "Проблема при удалении узла"
 
 #: src/Controller/HostsController.php:1408
 msgid "Issue while deleting host. Service used by other objects."
-msgstr ""
+msgstr "Проблема при удалении узла. Службы используются другими объектами."
 
 #: src/Controller/HostsController.php:1436
 msgid "Host successfully deleted"
-msgstr ""
+msgstr "Узел успешно удален"
 
 #: src/Controller/HostsController.php:1442
 msgid "Error while deleting host"
-msgstr ""
+msgstr "Ошибка при удалении узла"
 
 #: src/Controller/HostsController.php:2160
 msgid "Hosts_"
-msgstr ""
+msgstr "Узлы_"
 
 #: src/Controller/HostsController.php:2232
 msgid "Invalid request parameter"
-msgstr ""
+msgstr "Неверный параметр запроса"
 
 #: src/Controller/HosttemplatesController.php:210
 #: src/Controller/HosttemplatesController.php:291
 #: src/Controller/HosttemplatesController.php:465
 msgid "Host template not found"
-msgstr ""
+msgstr "Шаблон узла не найден"
 
 #: src/Controller/HosttemplatesController.php:314
 msgid "Issue while deleting host template"
-msgstr ""
+msgstr "Проблема при удалении шаблона узла"
 
 #: src/Controller/HosttemplatesController.php:324
 msgid "Host template successfully deleted"
-msgstr ""
+msgstr "Шаблон узла успешно удален"
 
 #: src/Controller/HosttemplatesController.php:330
 msgid "Error while deleting host template"
-msgstr ""
+msgstr "Ошибка при удалении шаблона узла"
 
 #: src/Controller/HosttemplatesController.php:533
 #: src/Controller/ServicetemplatesController.php:846
 msgid "Invalid Container"
-msgstr ""
+msgstr "Неверный контейнер"
 
 #: src/Controller/InstantreportsController.php:142
 #: src/Controller/InstantreportsController.php:245
 #: src/itnovum/openITCOCKPIT/Core/Reports/InstantreportCreator.php:103
 msgid "Instant report not found"
-msgstr ""
+msgstr "Мгновенный отчет не найден"
 
 #: src/Controller/InstantreportsController.php:220
 msgid "No report data specified time found ({0} - {1}) !"
-msgstr ""
+msgstr "Данные отчета за указанное время не найдены ({0} - {1}) !"
 
 #: src/Controller/InstantreportsController.php:328
 msgid "! No data within specified time found ({0} - {1}) !"
-msgstr ""
+msgstr "! Данные в течение указанного времени не найдены ({0} - {1}) !"
 
 #: src/Controller/LocationsController.php:94
 #: src/Controller/LocationsController.php:178
 #: src/Controller/LocationsController.php:268
 msgid "Invalid location"
-msgstr ""
+msgstr "Неверное местонахождение"
 
 #: src/Controller/ProfileController.php:60
 #: src/Controller/UsersController.php:258
 #: src/Controller/UsersController.php:341
 #: src/Controller/UsersController.php:422
 msgid "User not found"
-msgstr ""
+msgstr "Пользователь не найден"
 
 #: src/Controller/ProfileController.php:138
 msgid "Current password is incorrect"
-msgstr ""
+msgstr "Неверный текущий пароль"
 
 #: src/Controller/ProfileController.php:157
 msgid "Password changed successfully."
-msgstr ""
+msgstr "Пароль успешно изменён"
 
 #: src/Controller/ProfileController.php:219
 msgid "File Upload success!"
-msgstr ""
+msgstr "Загрузка файла успешно"
 
 #: src/Controller/ProfileController.php:225
 #: src/Controller/ProfileController.php:226
 msgid "Could not save image data, may be wrong data type. Allowed types are .png, .jpg and .gif"
-msgstr ""
+msgstr "Не удалось сохранить данные изображения, возможно, неверный тип данных. Разрешенные типы: .png, .jpg и .gif"
 
 #: src/Controller/ProfileController.php:250
 #: src/Controller/ProfileController.php:283
 msgid "Invalid API key"
-msgstr ""
+msgstr "Неверный ключ API"
 
 #: src/Controller/ProfileController.php:295
 msgid "API key updated successfully"
-msgstr ""
+msgstr "Ключ API успешно обновлен"
 
 #: src/Controller/ProfileController.php:362
 msgid "API key created successfully"
-msgstr ""
+msgstr "API ключ успешно создан"
 
 #: src/Controller/ProfileController.php:388
 msgid "Api key deleted successfully"
-msgstr ""
+msgstr "Ключ API успешно удален"
 
 #: src/Controller/ProfileController.php:394
 msgid "Could not delete api key"
-msgstr ""
+msgstr "Не удалось удалить ключ API"
 
 #: src/Controller/ProfileController.php:443
 msgid "File deleted sucessfully"
-msgstr ""
+msgstr "Файл успешно удален"
 
 #: src/Controller/ServicedependenciesController.php:92
 #: src/Controller/ServicedependenciesController.php:215
 msgid "Service dependency not found"
-msgstr ""
+msgstr "Зависимость службы не найдена"
 
 #: src/Controller/ServiceescalationsController.php:90
 #: src/Controller/ServiceescalationsController.php:223
 msgid "Service escalation not found"
-msgstr ""
+msgstr "Эскалация службы не найдена"
 
 #: src/Controller/ServicegroupsController.php:122
 #: src/Controller/ServicegroupsController.php:216
 #: src/Controller/ServicegroupsController.php:296
 #: src/Controller/ServicegroupsController.php:377
 msgid "Invalid Servicegroup"
-msgstr ""
+msgstr "Неверная группа служб"
 
 #: src/Controller/ServicegroupsController.php:582
 msgid "Servicegroups_"
-msgstr ""
+msgstr "Группа служб_"
 
 #: src/Controller/ServicesController.php:638
 #: src/Controller/ServicesController.php:1343
 #: src/Controller/ServicesController.php:1376
 #: src/Controller/ServicesController.php:1906
 msgid "Service not found"
-msgstr ""
+msgstr "Службу не найден"
 
 #: src/Controller/ServicesController.php:850
 msgid "Issue while deleting service"
-msgstr ""
+msgstr "Проблема при удалении службы"
 
 #: src/Controller/ServicesController.php:860
 msgid "Service successfully deleted"
-msgstr ""
+msgstr "Службу успешно удален"
 
 #: src/Controller/ServicesController.php:866
 msgid "Error while deleting service"
-msgstr ""
+msgstr "Ошибка при удалении службы"
 
 #: src/Controller/ServicesController.php:1209
 msgid "Issue while disabling service"
-msgstr ""
+msgstr "Проблема при отключении службы"
 
 #: src/Controller/ServicesController.php:1238
 msgid "Service successfully disabled"
-msgstr ""
+msgstr "Служба успешно отключена"
 
 #: src/Controller/ServicesController.php:1274
 msgid "Could not enable service, because associated host is also disabled."
-msgstr ""
+msgstr "Не удалось включить службу, поскольку связанный узел также отключен."
 
 #: src/Controller/ServicesController.php:1285
 msgid "Issue while enabling service"
-msgstr ""
+msgstr "Проблема при включении службы"
 
 #: src/Controller/ServicesController.php:1314
 msgid "Service successfully enabled"
-msgstr ""
+msgstr "Служба успешно включена"
 
 #: src/Controller/ServicesController.php:1782
 msgid "Services_"
-msgstr ""
+msgstr "Службы_"
 
 #: src/Controller/ServicesController.php:2340
 #: src/Controller/ServicetemplatesController.php:243
@@ -4379,186 +4379,186 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:63
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:64
 msgid "None"
-msgstr ""
+msgstr "Отсутствует"
 
 #: src/Controller/ServicetemplategroupsController.php:108
 #: src/Controller/ServicetemplategroupsController.php:295
 msgid "Invalid service template group"
-msgstr ""
+msgstr "Неверная группа шаблонов служб"
 
 #: src/Controller/ServicetemplategroupsController.php:197
 #: src/Controller/ServicetemplategroupsController.php:416
 msgid "Service template group not found"
-msgstr ""
+msgstr "Группа шаблонов служб не найдена"
 
 #: src/Controller/ServicetemplategroupsController.php:550
 #: src/Controller/ServicetemplategroupsController.php:727
 msgid "No service template ids set"
-msgstr ""
+msgstr "Не установлены идентификаторы шаблонов служб"
 
 #: src/Controller/ServicetemplategroupsController.php:859
 msgid "No matching host group \"{0}\" found."
-msgstr ""
+msgstr "Не найдено подходящей группы узлов \"{0}\"."
 
 #: src/Controller/ServicetemplategroupsController.php:976
 msgid "Created {0} new services"
-msgstr ""
+msgstr "Создано {0} новых службов"
 
 #: src/Controller/ServicetemplategroupsController.php:1021
 msgid "Invalid container id"
-msgstr ""
+msgstr "Неверный идентификатор контейнера"
 
 #: src/Controller/ServicetemplatesController.php:225
 #: src/Controller/ServicetemplatesController.php:321
 msgid "Service template not found"
-msgstr ""
+msgstr "Шаблон службы не найден"
 
 #: src/Controller/ServicetemplatesController.php:344
 msgid "Issue while deleting service template"
-msgstr ""
+msgstr "Проблема при удалении шаблона службы"
 
 #: src/Controller/ServicetemplatesController.php:354
 msgid "Service template successfully deleted"
-msgstr ""
+msgstr "Шаблон службы успешно удален"
 
 #: src/Controller/ServicetemplatesController.php:360
 msgid "Error while deleting service template"
-msgstr ""
+msgstr "Ошибка при удалении шаблона службы"
 
 #: src/Controller/StatisticsController.php:108
 msgid "Error while saving data"
-msgstr ""
+msgstr "Ошибка при сохранении данных"
 
 #: src/Controller/StatisticsController.php:113
 msgid "Record successfully saved"
-msgstr ""
+msgstr "Запись успешно сохранена"
 
 #: src/Controller/StatusmapsController.php:202
 msgid "Invalid request parameters"
-msgstr ""
+msgstr "Неверные параметры запроса"
 
 #: src/Controller/SystemdowntimesController.php:321
 #: src/Controller/SystemdowntimesController.php:428
 #: src/Controller/SystemdowntimesController.php:535
 #: src/Controller/SystemdowntimesController.php:646
 msgid "You have to select at least on object."
-msgstr ""
+msgstr "Вы должны выбрать хотя бы один объект."
 
 #: src/Controller/SystemdowntimesController.php:778
 msgid "Invalide Systemdowntime"
-msgstr ""
+msgstr "Неверное обслуживание"
 
 #: src/Controller/SystemdowntimesController.php:784
 msgid "Systemdowntime successfully deleted"
-msgstr ""
+msgstr "Обслуживание успешно удалено"
 
 #: src/Controller/SystemdowntimesController.php:791
 msgid "Error while deleting systemdowntime"
-msgstr ""
+msgstr "Ошибка при удалении обслуживания"
 
 #: src/Controller/SystemfailuresController.php:146
 msgid "System failure not found"
-msgstr ""
+msgstr "Системный сбой не найден"
 
 #: src/Controller/TenantsController.php:93
 #: src/Controller/TenantsController.php:179
 #: src/Controller/TenantsController.php:268
 msgid "Invalid tenant"
-msgstr ""
+msgstr "Неверный арендатор"
 
 #: src/Controller/TenantsController.php:307
 msgid "Tenant deleted successfully"
-msgstr ""
+msgstr "Арендатор успешно удален"
 
 #: src/Controller/TenantsController.php:312
 msgid "Could not delete tenant"
-msgstr ""
+msgstr "Не удалось удалить арендатора"
 
 #: src/Controller/TenantsController.php:329
 msgid "Issue while deleting tenant"
-msgstr ""
+msgstr "Проблема при удалении арендатора"
 
 #: src/Controller/TimeperiodsController.php:115
 #: src/Controller/TimeperiodsController.php:445
 msgid "Invalid timeperiod"
-msgstr ""
+msgstr "Неверный период времени"
 
 #: src/Controller/TimeperiodsController.php:262
 msgid "Timeperiod not found"
-msgstr ""
+msgstr "Период времени не найден"
 
 #: src/Controller/TimeperiodsController.php:285
 msgid "Issue while deleting timeperiod"
-msgstr ""
+msgstr "Проблема при удалении периода времени"
 
 #: src/Controller/UsergroupsController.php:90
 msgid "Invalid usergroup"
-msgstr ""
+msgstr "Неверная группа пользователей"
 
 #: src/Controller/UsergroupsController.php:199
 #: src/Controller/UsergroupsController.php:289
 msgid "User group not found"
-msgstr ""
+msgstr "Группа пользователей не найдена"
 
 #: src/Controller/UsersController.php:115
 msgid "Invalid username or password"
-msgstr ""
+msgstr "Неверное имя пользователя или пароль"
 
 #: src/Controller/UsersController.php:450
 msgid "Your "
-msgstr ""
+msgstr "Ваш"
 
 #: src/Controller/UsersController.php:450
 msgid " got reset!"
-msgstr ""
+msgstr "получил сброс"
 
 #: src/Controller/UsersController.php:474
 msgid "Password reset successfully. The new password was send to {0}"
-msgstr ""
+msgstr "Пароль успешно сброшен. Новый пароль был отправлен на {0}"
 
 #: src/Form/CurrentstatereportForm.php:44
 #: src/Form/CurrentstatereportForm.php:45
 msgid "You must specify at least one service."
-msgstr ""
+msgstr "Вы должны указать хотя бы одну службу."
 
 #: src/Form/CurrentstatereportForm.php:51
 msgid "You must specify at least one service status."
-msgstr ""
+msgstr "Вы должны указать хотя бы один статус службы."
 
 #: src/Identifier/SslIdentifier.php:53
 msgid "Invalid client certificate"
-msgstr ""
+msgstr "Неверный сертификат клиента"
 
 #: src/Model/Entity/Host.php:401
 #: src/Model/Entity/Service.php:347
 msgid "Used by Autoreport module"
-msgstr ""
+msgstr "Используется модулем автоотчета"
 
 #: src/Model/Entity/Host.php:410
 #: src/Model/Entity/Service.php:356
 msgid "Used by Eventcorrelation module"
-msgstr ""
+msgstr "Используется модулем корреляции событий"
 
 #: src/Model/Table/AgentconfigsTable.php:74
 #: src/Model/Table/AgentconfigsTable.php:79
 #: src/Model/Table/AgentconfigsTable.php:83
 #: src/Model/Table/AgentconfigsTable.php:88
 msgid "Password can not be blank if basic auth is enabled."
-msgstr ""
+msgstr "Пароль не может быть пустым, если включена базовая аутентификация."
 
 #: src/Model/Table/AutomapsTable.php:77
 #: src/Model/Table/AutomapsTable.php:79
 msgid "You need to select at least one container"
-msgstr ""
+msgstr "Вам нужно выбрать хотя бы один контейнер"
 
 #: src/Model/Table/AutomapsTable.php:136
 msgid "Font size out of range (1-7)"
-msgstr ""
+msgstr "Размер шрифта вне диапазона (1-7)"
 
 #: src/Model/Table/CalendarsTable.php:84
 #: src/Model/Table/CommandsTable.php:82
 msgid "This command name has already been taken."
-msgstr ""
+msgstr "Имя этой команды уже занято."
 
 #: src/Model/Table/ChangelogsTable.php:546
 #: src/Template/Systemdowntimes/add.php:97
@@ -4571,7 +4571,7 @@ msgstr ""
 #: src/Template/Timeperiods/edit.php:28
 #: src/itnovum/openITCOCKPIT/Core/Views/Systemdowntime.php:161
 msgid "Monday"
-msgstr ""
+msgstr "Понедельник"
 
 #: src/Model/Table/ChangelogsTable.php:547
 #: src/Template/Systemdowntimes/add.php:98
@@ -4584,7 +4584,7 @@ msgstr ""
 #: src/Template/Timeperiods/edit.php:29
 #: src/itnovum/openITCOCKPIT/Core/Views/Systemdowntime.php:162
 msgid "Tuesday"
-msgstr ""
+msgstr "Вторник"
 
 #: src/Model/Table/ChangelogsTable.php:548
 #: src/Template/Systemdowntimes/add.php:99
@@ -4597,7 +4597,7 @@ msgstr ""
 #: src/Template/Timeperiods/edit.php:30
 #: src/itnovum/openITCOCKPIT/Core/Views/Systemdowntime.php:163
 msgid "Wednesday"
-msgstr ""
+msgstr "Среда"
 
 #: src/Model/Table/ChangelogsTable.php:549
 #: src/Template/Systemdowntimes/add.php:100
@@ -4610,7 +4610,7 @@ msgstr ""
 #: src/Template/Timeperiods/edit.php:31
 #: src/itnovum/openITCOCKPIT/Core/Views/Systemdowntime.php:164
 msgid "Thursday"
-msgstr ""
+msgstr "Четверг"
 
 #: src/Model/Table/ChangelogsTable.php:550
 #: src/Template/Systemdowntimes/add.php:101
@@ -4623,7 +4623,7 @@ msgstr ""
 #: src/Template/Timeperiods/edit.php:32
 #: src/itnovum/openITCOCKPIT/Core/Views/Systemdowntime.php:165
 msgid "Friday"
-msgstr ""
+msgstr "Пятница"
 
 #: src/Model/Table/ChangelogsTable.php:551
 #: src/Template/Systemdowntimes/add.php:102
@@ -4636,7 +4636,7 @@ msgstr ""
 #: src/Template/Timeperiods/edit.php:33
 #: src/itnovum/openITCOCKPIT/Core/Views/Systemdowntime.php:166
 msgid "Saturday"
-msgstr ""
+msgstr "Суббота"
 
 #: src/Model/Table/ChangelogsTable.php:552
 #: src/Template/Systemdowntimes/add.php:103
@@ -4649,7 +4649,7 @@ msgstr ""
 #: src/Template/Timeperiods/edit.php:34
 #: src/itnovum/openITCOCKPIT/Core/Views/Systemdowntime.php:167
 msgid "Sunday"
-msgstr ""
+msgstr "Воскресенье"
 
 #: src/Model/Table/ChangelogsTable.php:592
 #: src/Model/Table/ChangelogsTable.php:602
@@ -4657,11 +4657,11 @@ msgstr ""
 #: src/Model/Table/ChangelogsTable.php:613
 #: src/Model/Table/ChangelogsTable.php:617
 msgid "Command arguments"
-msgstr ""
+msgstr "Командные аргументы"
 
 #: src/Model/Table/ChangelogsTable.php:594
 msgid "Time ranges"
-msgstr ""
+msgstr "Временные диапазоны"
 
 #: src/Model/Table/ChangelogsTable.php:596
 #: src/Model/Table/ChangelogsTable.php:601
@@ -4669,40 +4669,40 @@ msgstr ""
 #: src/Model/Table/ChangelogsTable.php:612
 #: src/Model/Table/ChangelogsTable.php:616
 msgid "Custom variables"
-msgstr ""
+msgstr "Пользовательские переменные"
 
 #: src/Model/Table/ChangelogsTable.php:606
 #: src/Model/Table/ChangelogsTable.php:618
 msgid "Event handler command arguments"
-msgstr ""
+msgstr "Аргументы команды обработчика событий"
 
 #: src/Model/Table/CommandsTable.php:57
 #: src/Template/Commands/add.php:104
 #: src/Template/Commands/edit.php:105
 #: src/Template/Commands/index.php:100
 msgid "Service check command"
-msgstr ""
+msgstr "Команда проверки (служба)"
 
 #: src/Model/Table/CommandsTable.php:58
 #: src/Template/Commands/add.php:105
 #: src/Template/Commands/edit.php:106
 #: src/Template/Commands/index.php:112
 msgid "Host check command"
-msgstr ""
+msgstr "Команда проверки (узел)"
 
 #: src/Model/Table/CommandsTable.php:59
 #: src/Template/Commands/add.php:106
 #: src/Template/Commands/edit.php:107
 #: src/Template/Commands/index.php:124
 msgid "Notification command"
-msgstr ""
+msgstr "Команда уведомления"
 
 #: src/Model/Table/CommandsTable.php:60
 #: src/Template/Commands/add.php:107
 #: src/Template/Commands/edit.php:108
 #: src/Template/Commands/index.php:136
 msgid "Eventhandler command"
-msgstr ""
+msgstr "Команда обработчика событий"
 
 #: src/Model/Table/CommandsTable.php:87
 #: src/Model/Table/ContainersTable.php:228
@@ -4710,26 +4710,26 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/ConfigGenerator.php:198
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:97
 msgid "This field cannot be left blank."
-msgstr ""
+msgstr "Это поле не может быть пустым."
 
 #: src/Model/Table/ContactgroupsTable.php:88
 #: src/Model/Table/ContactgroupsTable.php:92
 msgid "You have to choose at least one contact."
-msgstr ""
+msgstr "Вы должны выбрать хотя бы один контакт"
 
 #: src/Model/Table/ContactsTable.php:131
 #: src/Model/Table/ContactsTable.php:138
 msgid "You must at least specify either the email address or the phone number."
-msgstr ""
+msgstr "Вы должны хотя бы указать адрес электронной почты или номер телефона."
 
 #: src/Model/Table/ContactsTable.php:134
 msgid "Invalid email address"
-msgstr ""
+msgstr "Неверный адрес электронной почты"
 
 #: src/Model/Table/ContactsTable.php:159
 #: src/Model/Table/ContactsTable.php:165
 msgid "You have to choose at least one command."
-msgstr ""
+msgstr "Вы должны выбрать хотя бы одну команду."
 
 #: src/Model/Table/ContactsTable.php:192
 #: src/Model/Table/HostsTable.php:411
@@ -4737,43 +4737,43 @@ msgstr ""
 #: src/Model/Table/ServicesTable.php:419
 #: src/Model/Table/ServicetemplatesTable.php:386
 msgid "Macro name needs to be unique"
-msgstr ""
+msgstr "Имя макроса должно быть уникальным"
 
 #: src/Model/Table/ContainersTable.php:259
 msgid "This name already exists."
-msgstr ""
+msgstr "Это имя уже существует."
 
 #: src/Model/Table/ContainersTable.php:394
 msgid "You need root privileges"
-msgstr ""
+msgstr "Вам нужны права root"
 
 #: src/Model/Table/CustomvariablesTable.php:58
 msgid "Macro name cannot be left blank."
-msgstr ""
+msgstr "Название макроса нельзя оставлять пустым."
 
 #: src/Model/Table/CustomvariablesTable.php:59
 msgid "Macro name contains illegal characters"
-msgstr ""
+msgstr "Имя макроса содержит недопустимые символы"
 
 #: src/Model/Table/CustomvariablesTable.php:65
 msgid "Macro value cannot be left blank."
-msgstr ""
+msgstr "Значение макроса не может быть пустым"
 
 #: src/Model/Table/DashboardTabsTable.php:131
 msgid "Default"
-msgstr ""
+msgstr "Стандарт"
 
 #: src/Model/Table/HostdependenciesTable.php:113
 #: src/Model/Table/HostdependenciesTable.php:117
 #: src/Model/Table/HostescalationsTable.php:133
 #: src/Model/Table/HostescalationsTable.php:137
 msgid "You have to choose at least one host."
-msgstr ""
+msgstr "Вы должны выбрать хотя бы один узел."
 
 #: src/Model/Table/HostdependenciesTable.php:120
 #: src/Model/Table/HostdependenciesTable.php:124
 msgid "You have to choose at least one dependent host."
-msgstr ""
+msgstr "Вы должны выбрать хотя бы один зависимой узел."
 
 #: src/Model/Table/HostescalationsTable.php:123
 #: src/Model/Table/HostescalationsTable.php:129
@@ -4782,26 +4782,26 @@ msgstr ""
 #: src/Model/Table/ServiceescalationsTable.php:124
 #: src/Model/Table/ServiceescalationsTable.php:130
 msgid "You must specify at least one contact or contact group."
-msgstr ""
+msgstr "Вы должны указать хотя бы один контакт или группу контактов."
 
 #: src/Model/Table/HostescalationsTable.php:142
 #: src/Model/Table/HostescalationsTable.php:152
 #: src/Model/Table/ServiceescalationsTable.php:144
 #: src/Model/Table/ServiceescalationsTable.php:154
 msgid "The first notification must be before the last notification."
-msgstr ""
+msgstr "Первое уведомление должно быть до последнего уведомления."
 
 #: src/Model/Table/HostgroupsTable.php:102
 #: src/Model/Table/ServicegroupsTable.php:100
 msgid "Not a valid URL."
-msgstr ""
+msgstr "Неверный URL."
 
 #: src/Model/Table/HostsTable.php:224
 #: src/Model/Table/HosttemplatesTable.php:159
 #: src/Model/Table/ServicesTable.php:222
 #: src/Model/Table/ServicetemplatesTable.php:184
 msgid "This value must be between 1 and 5"
-msgstr ""
+msgstr "Это значение должно быть от 1 до 5"
 
 #: src/Model/Table/HostsTable.php:236
 #: src/Model/Table/HostsTable.php:248
@@ -4816,14 +4816,14 @@ msgstr ""
 #: src/Model/Table/ServicetemplatesTable.php:207
 #: src/Model/Table/ServicetemplatesTable.php:213
 msgid "This value need to be at least 1"
-msgstr ""
+msgstr "Это значение должно быть не менее 1"
 
 #: src/Model/Table/HostsTable.php:242
 #: src/Model/Table/HosttemplatesTable.php:176
 #: src/Model/Table/ServicesTable.php:234
 #: src/Model/Table/ServicetemplatesTable.php:201
 msgid "This value need to be at least 0"
-msgstr ""
+msgstr "Это значение должно быть не менее 0"
 
 #: src/Model/Table/HostsTable.php:260
 #: src/Model/Table/HosttemplatesTable.php:194
@@ -4831,21 +4831,21 @@ msgstr ""
 #: src/Model/Table/ServicetemplatesTable.php:219
 #: src/Model/Table/ServicetemplatesTable.php:226
 msgid "Please select a check period"
-msgstr ""
+msgstr "Пожалуйста, выберите период проверки"
 
 #: src/Model/Table/HostsTable.php:266
 #: src/Model/Table/HosttemplatesTable.php:200
 #: src/Model/Table/ServicesTable.php:258
 #: src/Model/Table/ServicetemplatesTable.php:225
 msgid "Please select a check command"
-msgstr ""
+msgstr "Пожалуйста, выберите команду проверки"
 
 #: src/Model/Table/HostsTable.php:272
 #: src/Model/Table/HosttemplatesTable.php:206
 #: src/Model/Table/ServicesTable.php:269
 #: src/Model/Table/ServicetemplatesTable.php:236
 msgid "Please select a notify period"
-msgstr ""
+msgstr "Пожалуйста, выберите период уведомления"
 
 #: src/Model/Table/HostsTable.php:281
 #: src/Model/Table/HostsTable.php:290
@@ -4870,7 +4870,7 @@ msgstr ""
 #: src/Model/Table/ServicetemplatesTable.php:281
 #: src/Model/Table/ServicetemplatesTable.php:290
 msgid "You must specify at least one notification option."
-msgstr ""
+msgstr "Вы должны указать хотя бы одну опцию уведомления."
 
 #: src/Model/Table/HostsTable.php:326
 #: src/Model/Table/HostsTable.php:331
@@ -4894,167 +4894,167 @@ msgstr ""
 #: src/Model/Table/ServicetemplatesTable.php:322
 #: src/Model/Table/ServicetemplatesTable.php:331
 msgid "You must specify at least one flap detection option."
-msgstr ""
+msgstr "Вы должны указать хотя бы одну опцию обнаружения закрылков."
 
 #: src/Model/Table/InstantreportsTable.php:119
 msgid "You must specify at least one user"
-msgstr ""
+msgstr "Вы должны указать хотя бы одного пользователя"
 
 #: src/Model/Table/InstantreportsTable.php:124
 msgid "Please select a valid interval type"
-msgstr ""
+msgstr "Пожалуйста, выберите правильный тип интервала"
 
 #: src/Model/Table/InstantreportsTable.php:133
 msgid "You must specify at least one host group"
-msgstr ""
+msgstr "Вы должны указать хотя бы одну группу узлов"
 
 #: src/Model/Table/InstantreportsTable.php:139
 msgid "You must specify at least one host"
-msgstr ""
+msgstr "Вы должны указать хотя бы один узел"
 
 #: src/Model/Table/InstantreportsTable.php:145
 msgid "You must specify at least one service group"
-msgstr ""
+msgstr "Вы должны указать хотя бы одну группу служб"
 
 #: src/Model/Table/InstantreportsTable.php:151
 msgid "You must specify at least one service"
-msgstr ""
+msgstr "Вы должны указать хотя бы одну службу"
 
 #: src/Model/Table/LocationsTable.php:94
 #: src/Model/Table/LocationsTable.php:104
 msgid "It is required to specify valid values for LONGITUDE and LATITUDE"
-msgstr ""
+msgstr "Требуется указать допустимые значения для LONGITUDE и LATITUDE"
 
 #: src/Model/Table/ProxiesTable.php:55
 msgid "This field needs to be numeric."
-msgstr ""
+msgstr "Это поле должно быть числовым."
 
 #: src/Model/Table/ProxiesTable.php:57
 #: src/Model/Table/ProxiesTable.php:58
 msgid "Port needs to be between 0 and 65535"
-msgstr ""
+msgstr "Порт должен быть между 0 и 65535"
 
 #: src/Model/Table/RegistersTable.php:92
 msgid "Please enter a license key"
-msgstr ""
+msgstr "Пожалуйста, введите лицензионный ключ"
 
 #: src/Model/Table/RegistersTable.php:129
 msgid "Invalid license key"
-msgstr ""
+msgstr "Неверный лицензионный ключ"
 
 #: src/Model/Table/ServicedependenciesTable.php:114
 #: src/Model/Table/ServicedependenciesTable.php:118
 #: src/Model/Table/ServiceescalationsTable.php:134
 #: src/Model/Table/ServiceescalationsTable.php:138
 msgid "You have to choose at least one service."
-msgstr ""
+msgstr "Вы должны выбрать хотя бы одну службу."
 
 #: src/Model/Table/ServicedependenciesTable.php:121
 #: src/Model/Table/ServicedependenciesTable.php:125
 msgid "You have to choose at least one dependent service."
-msgstr ""
+msgstr "Вы должны выбрать хотя бы одну зависимую службу."
 
 #: src/Model/Table/ServicesTable.php:204
 msgid "Please enter a service name."
-msgstr ""
+msgstr "Пожалуйста, введите название службы."
 
 #: src/Model/Table/ServicesTable.php:434
 msgid "This field cannot be 0"
-msgstr ""
+msgstr "Это поле не может быть 0"
 
 #: src/Model/Table/ServicetemplategroupsTable.php:94
 msgid "You must select at least one service template."
-msgstr ""
+msgstr "Вы должны выбрать хотя бы один шаблон службы."
 
 #: src/Model/Table/ServicetemplatesTable.php:401
 msgid "This field cannot be empty"
-msgstr ""
+msgstr "Это поле не может быть пустым"
 
 #: src/Model/Table/ServicetemplatesTable.php:1174
 msgid "Generic templates"
-msgstr ""
+msgstr "Общие шаблоны"
 
 #: src/Model/Table/ServicetemplatesTable.php:1178
 msgid "EVC templates"
-msgstr ""
+msgstr "EVC шаблоны"
 
 #: src/Model/Table/ServicetemplatesTable.php:1182
 msgid "SLA templates"
-msgstr ""
+msgstr "SLA шаблоны"
 
 #: src/Model/Table/ServicetemplatesTable.php:1186
 msgid "Checkmk templates"
-msgstr ""
+msgstr "Checkmk шаблоны"
 
 #: src/Model/Table/ServicetemplatesTable.php:1189
 msgid "Agent templates"
-msgstr ""
+msgstr "Шаблоны агентов"
 
 #: src/Model/Table/SystemdowntimesTable.php:97
 msgid "Please select at least on object."
-msgstr ""
+msgstr "Пожалуйста, выберите хотя бы один объект."
 
 #: src/Model/Table/SystemdowntimesTable.php:102
 msgid "You have to select at least one weekday"
-msgstr ""
+msgstr "Вы должны выбрать хотя бы один день"
 
 #: src/Model/Table/SystemdowntimesTable.php:131
 msgid "Weekdays needs to be in range (1-7)."
-msgstr ""
+msgstr "Дни должны быть в диапазоне (1-7)."
 
 #: src/Model/Table/SystemdowntimesTable.php:157
 msgid "Weekdays needs to be in range (1-31)."
-msgstr ""
+msgstr "Дни должны быть в диапазоне (1-31)."
 
 #: src/Model/Table/SystemdowntimesTable.php:191
 msgid "Start time needs to be a valid date."
-msgstr ""
+msgstr "Время начала должно быть действительной датой."
 
 #: src/Model/Table/SystemdowntimesTable.php:219
 msgid "End time needs to be a valid date."
-msgstr ""
+msgstr "Время окончания должно быть действительной датой."
 
 #: src/Model/Table/SystemdowntimesTable.php:254
 msgid "\"From\" date should be greater then \"to\" date."
-msgstr ""
+msgstr "\"С\" дата должна быть больше чем \"до\" дата."
 
 #: src/Model/Table/SystemdowntimesTable.php:259
 msgid "Duration needs to be greater than zero."
-msgstr ""
+msgstr "Продолжительность должна быть больше нуля."
 
 #: src/Model/Table/SystemdowntimesTable.php:286
 msgid "This field needs to be 0 or 1"
-msgstr ""
+msgstr "Это поле должно быть 0 или 1"
 
 #: src/Model/Table/SystemfailuresTable.php:71
 #: src/Model/Table/SystemfailuresTable.php:81
 msgid "Please enter a valid date"
-msgstr ""
+msgstr "Пожалуйста, введите правильную дату"
 
 #: src/Model/Table/SystemfailuresTable.php:74
 #: src/Model/Table/SystemfailuresTable.php:84
 msgid "Start time must be before end time."
-msgstr ""
+msgstr "Время начала должно быть раньше времени окончания."
 
 #: src/Model/Table/TimeperiodTimerangesTable.php:72
 msgid "The start time must be before the end time."
-msgstr ""
+msgstr "Время начала должно быть раньше времени окончания."
 
 #: src/Model/Table/TimeperiodTimerangesTable.php:87
 msgid "The end time must be after the start time."
-msgstr ""
+msgstr "Время окончания должно быть позже времени начала."
 
 #: src/Model/Table/UsercontainerrolesTable.php:78
 #: src/Model/Table/UsercontainerrolesTable.php:82
 msgid "You have to choose at least one container."
-msgstr ""
+msgstr "Вы должны выбрать хотя бы один контейнер."
 
 #: src/Model/Table/UsersTable.php:103
 #: src/Model/Table/UsersTable.php:108
 #: src/Model/Table/UsersTable.php:112
 #: src/Model/Table/UsersTable.php:117
 msgid "You need to select at least one container or container role."
-msgstr ""
+msgstr "Вам необходимо выбрать хотя бы один контейнер или роль контейнера."
 
 #: src/Model/Table/UsersTable.php:123
 msgid "You have to select a user role."
