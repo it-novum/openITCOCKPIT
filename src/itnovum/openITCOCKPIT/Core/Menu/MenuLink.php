@@ -52,7 +52,9 @@ class MenuLink {
         $this->action = $action;
         $this->plugin = $plugin;
         $this->icon = $icon;
-        $this->tags = $tags;
+        foreach ($tags as $tag){
+            $this->tags[] = strtolower($tag);
+        }
         $this->order = $order;
     }
 
