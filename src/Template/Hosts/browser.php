@@ -1277,6 +1277,10 @@ use Cake\Core\Plugin;
                                                     <?php echo __('Disable'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php
+                                            $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                                            echo $AdditionalLinks->getLinksAsHtmlList('services', 'index', 'list');
+                                            ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(mergedHost.name, service))"

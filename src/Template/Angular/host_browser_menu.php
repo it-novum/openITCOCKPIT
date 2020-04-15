@@ -151,6 +151,10 @@
                             <?php echo __('openITCOCKPIT Agent discovery'); ?>
                         </a>
                     <?php endif; ?>
+                    <?php
+                    $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                    echo $AdditionalLinks->getLinksAsHtmlList('hosts', 'browser', 'list');
+                    ?>
                 </div>
             </div>
         </div>

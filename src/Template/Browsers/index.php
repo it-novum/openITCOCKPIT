@@ -628,6 +628,10 @@
                                                     <?php echo __('Disable'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php
+                                            $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                                            echo $AdditionalLinks->getLinksAsHtmlList('hosts', 'index', 'list');
+                                            ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(host))"
