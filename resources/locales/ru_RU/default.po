@@ -4894,7 +4894,7 @@ msgstr "Вы должны указать хотя бы одну опцию ув�
 #: src/Model/Table/ServicetemplatesTable.php:322
 #: src/Model/Table/ServicetemplatesTable.php:331
 msgid "You must specify at least one flap detection option."
-msgstr "Вы должны указать хотя бы одну опцию обнаружения закрылков."
+msgstr "Вы должны указать хотя бы одну опцию обнаружения колебаний."
 
 #: src/Model/Table/InstantreportsTable.php:119
 msgid "You must specify at least one user"
@@ -5058,62 +5058,62 @@ msgstr "Вам необходимо выбрать хотя бы один кон
 
 #: src/Model/Table/UsersTable.php:123
 msgid "You have to select a user role."
-msgstr ""
+msgstr "Вы должны выбрать роль пользователя"
 
 #: src/Model/Table/UsersTable.php:186
 msgid "You have to select a user"
-msgstr ""
+msgstr "Вы должны выбрать пользователя"
 
 #: src/Model/Table/UsersTable.php:199
 msgid "DN could not left be blank."
-msgstr ""
+msgstr "DN не может быть пустым."
 
 #: src/Model/Table/UsersTable.php:222
 msgid "Minimum amount is 1"
-msgstr ""
+msgstr "Минимум 1"
 
 #: src/Model/Table/UsersTable.php:223
 msgid "Maximum amount is 1000"
-msgstr ""
+msgstr "Максимум 1000"
 
 #: src/Model/Table/WidgetsTable.php:80
 #: src/Model/Table/WidgetsTable.php:86
 #: src/Model/Table/WidgetsTable.php:92
 #: src/Model/Table/WidgetsTable.php:98
 msgid "This field needs a numeric value."
-msgstr ""
+msgstr "Это поле должно быть числовым значением."
 
 #: src/Model/Table/WidgetsTable.php:155
 msgid "Welcome"
-msgstr ""
+msgstr "Добро пожаловать!"
 
 #: src/Model/Table/WidgetsTable.php:167
 msgid "Parent outages"
-msgstr ""
+msgstr "Сбои родительской системы"
 
 #: src/Model/Table/WidgetsTable.php:180
 msgid "Hosts pie chart"
-msgstr ""
+msgstr "Круговая диаграмма узлов"
 
 #: src/Model/Table/WidgetsTable.php:192
 msgid "Hosts pie chart 180"
-msgstr ""
+msgstr "Круговая диаграмма узлов 180"
 
 #: src/Model/Table/WidgetsTable.php:200
 msgid "Services pie chart"
-msgstr ""
+msgstr "Круговая диаграмма служб"
 
 #: src/Model/Table/WidgetsTable.php:212
 msgid "Services pie chart 180"
-msgstr ""
+msgstr "Круговая диаграмма служб 180"
 
 #: src/Model/Table/WidgetsTable.php:220
 msgid "Traffic light"
-msgstr ""
+msgstr "Светофор"
 
 #: src/Model/Table/WidgetsTable.php:228
 msgid "Tachometer"
-msgstr ""
+msgstr "Тахометр"
 
 #: src/Model/Table/WidgetsTable.php:236
 #: src/Template/Systemdowntimes/host.php:49
@@ -5121,38 +5121,38 @@ msgstr ""
 #: src/Template/Systemdowntimes/node.php:49
 #: src/Template/Systemdowntimes/service.php:49
 msgid "Notice"
-msgstr ""
+msgstr "Уведомление"
 
 #: src/Model/Table/WidgetsTable.php:258
 msgid "Hosts in downtime"
-msgstr ""
+msgstr "Узел в обслуживании"
 
 #: src/Model/Table/WidgetsTable.php:273
 msgid "Services in downtime"
-msgstr ""
+msgstr "Служба в обслуживании"
 
 #: src/Model/Table/WidgetsTable.php:288
 msgid "Host status list"
-msgstr ""
+msgstr "Список статусов узлов"
 
 #: src/Model/Table/WidgetsTable.php:296
 #: src/Template/Browsers/index.php:94
 msgid "Host status overview"
-msgstr ""
+msgstr "Обзор состояния узлов"
 
 #: src/Model/Table/WidgetsTable.php:307
 msgid "Service status list"
-msgstr ""
+msgstr "Список статуса служб"
 
 #: src/Model/Table/WidgetsTable.php:315
 #: src/Template/Browsers/index.php:140
 msgid "Service status overview"
-msgstr ""
+msgstr "Обзор состояния служб"
 
 #: src/Template/Acknowledgements/host.php:38
 #: src/Template/Acknowledgements/service.php:38
 msgid "acknowledgement history"
-msgstr ""
+msgstr "История подтверждений"
 
 #: src/Template/Acknowledgements/host.php:64
 #: src/Template/Acknowledgements/service.php:64
@@ -5183,7 +5183,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/add_servicedowntime.php:224
 #: src/Template/Systemfailures/add.php:103
 msgid "From"
-msgstr ""
+msgstr "От"
 
 #: src/Template/Acknowledgements/host.php:68
 #: src/Template/Acknowledgements/service.php:68
@@ -5199,7 +5199,7 @@ msgstr ""
 #: src/Template/Statehistories/host.php:68
 #: src/Template/Statehistories/service.php:68
 msgid "From date"
-msgstr ""
+msgstr "С даты"
 
 #: src/Template/Acknowledgements/host.php:81
 #: src/Template/Acknowledgements/service.php:81
@@ -5218,7 +5218,7 @@ msgstr ""
 #: src/Template/Statehistories/host.php:81
 #: src/Template/Statehistories/service.php:81
 msgid "Filter by output"
-msgstr ""
+msgstr "Фильтровать по выводу"
 
 #: src/Template/Acknowledgements/host.php:92
 #: src/Template/Acknowledgements/service.php:92
@@ -5241,7 +5241,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/add.php:202
 #: src/Template/Systemfailures/add.php:133
 msgid "To"
-msgstr ""
+msgstr "До"
 
 #: src/Template/Acknowledgements/host.php:96
 #: src/Template/Acknowledgements/service.php:96
@@ -5257,12 +5257,12 @@ msgstr ""
 #: src/Template/Statehistories/host.php:96
 #: src/Template/Statehistories/service.php:96
 msgid "To date"
-msgstr ""
+msgstr "До даты"
 
 #: src/Template/Acknowledgements/host.php:109
 #: src/Template/Acknowledgements/service.php:109
 msgid "Filter by author"
-msgstr ""
+msgstr "Фильтровать по автору"
 
 #: src/Template/Acknowledgements/host.php:120
 #: src/Template/Acknowledgements/service.php:120
@@ -5275,7 +5275,7 @@ msgstr ""
 #: src/Template/Statehistories/host.php:107
 #: src/Template/Statehistories/service.php:107
 msgid "States"
-msgstr ""
+msgstr "Статус"
 
 #: src/Template/Acknowledgements/host.php:131
 #: src/Template/Angular/submit_host_result.php:26
@@ -5319,7 +5319,7 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Reports/StatehistoryConverter.php:242
 #: src/itnovum/openITCOCKPIT/Core/Views/HoststatusIcon.php:87
 msgid "Down"
-msgstr ""
+msgstr "Остановлен"
 
 #: src/Template/Acknowledgements/host.php:143
 #: src/Template/Angular/submit_host_result.php:27
@@ -5361,7 +5361,7 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Reports/StatehistoryConverter.php:243
 #: src/itnovum/openITCOCKPIT/Core/Views/HoststatusIcon.php:88
 msgid "Unreachable"
-msgstr ""
+msgstr "Недоступно"
 
 #: src/Template/Acknowledgements/host.php:170
 #: src/Template/Acknowledgements/service.php:182
@@ -5377,13 +5377,13 @@ msgstr ""
 #: src/Template/Statehistories/host.php:199
 #: src/Template/Statehistories/service.php:211
 msgid "Date"
-msgstr ""
+msgstr "Дата"
 
 #: src/Template/Acknowledgements/host.php:174
 #: src/Template/Acknowledgements/service.php:186
 #: src/Template/Systemfailures/add.php:75
 msgid "Author"
-msgstr ""
+msgstr "Автор"
 
 #: src/Template/Acknowledgements/host.php:178
 #: src/Template/Acknowledgements/service.php:190
@@ -5410,7 +5410,7 @@ msgstr ""
 #: src/Template/Systemfailures/add.php:90
 #: src/Template/Systemfailures/index.php:136
 msgid "Comment"
-msgstr ""
+msgstr "Комментарий"
 
 #: src/Template/Acknowledgements/host.php:182
 #: src/Template/Acknowledgements/service.php:194
@@ -5421,21 +5421,21 @@ msgstr ""
 #: src/Template/Services/browser.php:420
 #: src/Template/Services/details.php:247
 msgid "Sticky"
-msgstr ""
+msgstr "Липкий"
 
 #: src/Template/Acknowledgements/host.php:204
 #: src/Template/Acknowledgements/service.php:217
 #: src/Template/Systemsettings/index.php:118
 #: src/Template/Systemsettings/index.php:153
 msgid "True"
-msgstr ""
+msgstr "Настоящий"
 
 #: src/Template/Acknowledgements/host.php:208
 #: src/Template/Acknowledgements/service.php:221
 #: src/Template/Systemsettings/index.php:119
 #: src/Template/Systemsettings/index.php:152
 msgid "False"
-msgstr ""
+msgstr "Фальшивый"
 
 #: src/Template/Acknowledgements/service.php:131
 #: src/Template/Angular/submit_service_result.php:25
@@ -5490,7 +5490,7 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Reports/StatehistoryConverter.php:248
 #: src/itnovum/openITCOCKPIT/Core/Views/ServicestatusIcon.php:90
 msgid "Warning"
-msgstr ""
+msgstr "Предупреждение"
 
 #: src/Template/Acknowledgements/service.php:143
 #: src/Template/Angular/submit_service_result.php:26
@@ -5543,7 +5543,7 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Reports/StatehistoryConverter.php:249
 #: src/itnovum/openITCOCKPIT/Core/Views/ServicestatusIcon.php:91
 msgid "Critical"
-msgstr ""
+msgstr "Критично"
 
 #: src/Template/Acknowledgements/service.php:155
 #: src/Template/Angular/submit_service_result.php:27
@@ -5593,94 +5593,94 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Reports/StatehistoryConverter.php:250
 #: src/itnovum/openITCOCKPIT/Core/Views/ServicestatusIcon.php:92
 msgid "Unknown"
-msgstr ""
+msgstr "Неизвестно"
 
 #: src/Template/Administrators/debug.php:45
 msgid "Debugging information"
-msgstr ""
+msgstr "Отладочная информация"
 
 #: src/Template/Administrators/debug.php:53
 msgid "Show SQL query log"
-msgstr ""
+msgstr "Показать журнал SQL-запросов"
 
 #: src/Template/Administrators/debug.php:62
 #: src/Template/Exports/index.php:60
 msgid "Critical error!"
-msgstr ""
+msgstr "Критическая ошибка!"
 
 #: src/Template/Administrators/debug.php:64
 msgid "Could not connect to Gearman Job Server! No background tasks will get executed!"
-msgstr ""
+msgstr "Не удалось подключиться к Gearman Job серверу! Фоновые задачи не будут выполняться!"
 
 #: src/Template/Administrators/debug.php:76
 #: src/Template/Packetmanager/index.php:58
 msgid "Ubuntu Trusty 14.04 end of life!"
-msgstr ""
+msgstr "Ubuntu Trusty 14.04 конец жизни!"
 
 #: src/Template/Administrators/debug.php:78
 #: src/Template/Packetmanager/index.php:60
 msgid "Official end of life of Ubuntu Trusty scheduled for April 2019."
-msgstr ""
+msgstr "Официальный конец жизни Ubuntu Trusty запланирован на апрель 2019 года."
 
 #: src/Template/Administrators/debug.php:79
 #: src/Template/Packetmanager/index.php:61
 msgid "Therefore openITCOCKPIT 3.5 will be the last release for Ubuntu Trusty. Please update to Ubuntu Xenial to receive further updates."
-msgstr ""
+msgstr "Поэтому openITCOCKPIT 3.5 станет последним выпуском для Ubuntu Trusty. Пожалуйста, обновите Ubuntu Xenial для получения дальнейших обновлений."
 
 #: src/Template/Administrators/debug.php:81
 #: src/Template/Administrators/debug.php:95
 #: src/Template/Packetmanager/index.php:63
 #: src/Template/Packetmanager/index.php:77
 msgid "Need help updating your system? Please don't hesitate to contact our enterprise support {0}."
-msgstr ""
+msgstr "Нужна помощь в обновлении вашей системы? Пожалуйста, не стесняйтесь обращаться в нашу службу поддержки предприятия {0}."
 
 #: src/Template/Administrators/debug.php:90
 #: src/Template/Packetmanager/index.php:72
 msgid "Debian Jessie 8 end of life!"
-msgstr ""
+msgstr "Debian Jessie 8 конец жизни!"
 
 #: src/Template/Administrators/debug.php:92
 #: src/Template/Packetmanager/index.php:74
 msgid "Debian Jessie is not supported by the Debian security team anymore!"
-msgstr ""
+msgstr "Debian Jessie больше не поддерживается командой безопасности Debian."
 
 #: src/Template/Administrators/debug.php:93
 #: src/Template/Packetmanager/index.php:75
 msgid "Therefore openITCOCKPIT 3.5 will be the last release for Debian Jessie. Please update to Debian Stretch to receive further updates."
-msgstr ""
+msgstr "Поэтому openITCOCKPIT 3.5 станет последним выпуском для Debian Jessie. Пожалуйста, обновите Debian Stretch для получения дальнейших обновлений."
 
 #: src/Template/Administrators/debug.php:105
 msgid "Interface information"
-msgstr ""
+msgstr "Информация об интерфейсе"
 
 #: src/Template/Administrators/debug.php:112
 msgid "System name"
-msgstr ""
+msgstr "Имя системы"
 
 #: src/Template/Administrators/debug.php:115
 #: src/Template/Nagiostats/index.php:194
 msgid "Version"
-msgstr ""
+msgstr "Версия"
 
 #: src/Template/Administrators/debug.php:118
 msgid "Edition"
-msgstr ""
+msgstr "Издание"
 
 #: src/Template/Administrators/debug.php:124
 msgid "Path for config"
-msgstr ""
+msgstr "Путь к конфигурации"
 
 #: src/Template/Administrators/debug.php:127
 msgid "Path for backups"
-msgstr ""
+msgstr "Путь к резервным копиям"
 
 #: src/Template/Administrators/debug.php:130
 msgid "Command interface"
-msgstr ""
+msgstr "Командный интерфейс"
 
 #: src/Template/Administrators/debug.php:144
 msgid "Process information"
-msgstr ""
+msgstr "Информация о процессе"
 
 #: src/Template/Administrators/debug.php:156
 #: src/Template/Administrators/debug.php:170
@@ -5688,29 +5688,29 @@ msgstr ""
 #: src/Template/Errors/error404.php:30
 #: src/Template/Exports/index.php:165
 msgid "Error"
-msgstr ""
+msgstr "Ошибка"
 
 #: src/Template/Administrators/debug.php:158
 msgid "Gearman-Job-Server is not running, openITCOCKPIT could not check the state of background daemons"
-msgstr ""
+msgstr "Gearman-Job-Server не работает, openITCOCKPIT не может проверить состояние фоновых демонов"
 
 #: src/Template/Administrators/debug.php:160
 msgid "Please start Gearman-Job-Server first"
-msgstr ""
+msgstr "Пожалуйста, сначала запустите Gearman-Job-Server"
 
 #: src/Template/Administrators/debug.php:171
 msgid "gearman_worker is not running, openITCOCKPIT could not check the state of background daemons"
-msgstr ""
+msgstr "gearman_worker не работает, openITCOCKPIT не может проверить состояние фоновых демонов"
 
 #: src/Template/Administrators/debug.php:173
 msgid "Please start gearman_worker first"
-msgstr ""
+msgstr "Пожалуйста, запустите gearman_worker первым"
 
 #: src/Template/Administrators/debug.php:183
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:35
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:60
 msgid "Monitoring engine"
-msgstr ""
+msgstr "Двигатель Мониторинга"
 
 #: src/Template/Administrators/debug.php:186
 #: src/Template/Administrators/debug.php:199
@@ -5728,7 +5728,7 @@ msgstr ""
 #: src/Template/Downtimes/host.php:280
 #: src/Template/Downtimes/service.php:293
 msgid "Running"
-msgstr ""
+msgstr "Работает"
 
 #: src/Template/Administrators/debug.php:189
 #: src/Template/Administrators/debug.php:202
@@ -5741,301 +5741,301 @@ msgstr ""
 #: src/Template/Administrators/debug.php:303
 #: src/Template/Administrators/debug.php:317
 msgid "Not running!"
-msgstr ""
+msgstr "Не работает"
 
 #: src/Template/Administrators/debug.php:196
 msgid "Database connector"
-msgstr ""
+msgstr "Соединитель базы данных"
 
 #: src/Template/Administrators/debug.php:204
 #: src/Template/Administrators/debug.php:229
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:63
 msgid "Statusengine"
-msgstr ""
+msgstr "Statusengine"
 
 #: src/Template/Administrators/debug.php:216
 msgid "NDOUtils"
-msgstr ""
+msgstr "NDOUtils"
 
 #: src/Template/Administrators/debug.php:221
 msgid "Perfdata processor"
-msgstr ""
+msgstr "Процессор данных производительности"
 
 #: src/Template/Administrators/debug.php:241
 msgid "NPCD"
-msgstr ""
+msgstr "NPCD"
 
 #: src/Template/Administrators/debug.php:246
 #: src/Template/Administrators/debug.php:581
 msgid "Queuing engine"
-msgstr ""
+msgstr "Queuing engine"
 
 #: src/Template/Administrators/debug.php:255
 msgid "Gearman Worker"
-msgstr ""
+msgstr "Gearman Worker"
 
 #: src/Template/Administrators/debug.php:263
 msgid "Execute background jobs like refresh of monitoring configuration."
-msgstr ""
+msgstr "Выполнять фоновые задания, такие как обновление конфигурации мониторинга."
 
 #: src/Template/Administrators/debug.php:269
 msgid "OITC Cmd"
-msgstr ""
+msgstr "OITC Cmd"
 
 #: src/Template/Administrators/debug.php:277
 msgid "External command interface used by Check_MK to pass check results."
-msgstr ""
+msgstr "Внешний командный интерфейс, используемый Check_MK для передачи результатов проверки."
 
 #: src/Template/Administrators/debug.php:283
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:67
 msgid "phpNSTA"
-msgstr ""
+msgstr "phpNSTA"
 
 #: src/Template/Administrators/debug.php:291
 msgid "phpNSTA is only installed and running if you are using Distributed Monitoring."
-msgstr ""
+msgstr "phpNSTA устанавливается и работает только в том случае, если вы используете распределенный мониторинг."
 
 #: src/Template/Administrators/debug.php:297
 msgid "Push notification service"
-msgstr ""
+msgstr "Сервис push-уведомлений"
 
 #: src/Template/Administrators/debug.php:305
 msgid "Service required to send push notifications to your browser window."
-msgstr ""
+msgstr "Сервис, необходимый для отправки push-уведомлений в окно вашего браузера."
 
 #: src/Template/Administrators/debug.php:311
 msgid "NodeJS Server"
-msgstr ""
+msgstr "NodeJS Server"
 
 #: src/Template/Administrators/debug.php:319
 msgid "Service required to run server side JavaScript to render charts to email notifications and PDF reports."
-msgstr ""
+msgstr "Служба требуется для запуска серверного JavaScript для отображения диаграмм в уведомлениях по электронной почте и отчетах в формате PDF."
 
 #: src/Template/Administrators/debug.php:340
 msgid "Server information"
-msgstr ""
+msgstr "Информация о сервере"
 
 #: src/Template/Administrators/debug.php:347
 #: src/Template/Hosts/copy.php:101
 msgid "Address"
-msgstr ""
+msgstr "Адрес"
 
 #: src/Template/Administrators/debug.php:350
 msgid "Webserver"
-msgstr ""
+msgstr "Веб сервер"
 
 #: src/Template/Administrators/debug.php:353
 msgid "HTTPS / TLS"
-msgstr ""
+msgstr "HTTPS / TLS"
 
 #: src/Template/Administrators/debug.php:356
 msgid "OS"
-msgstr ""
+msgstr "OS"
 
 #: src/Template/Administrators/debug.php:359
 msgid "Kernel"
-msgstr ""
+msgstr "Ядро"
 
 #: src/Template/Administrators/debug.php:362
 msgid "Architecture"
-msgstr ""
+msgstr "Архитектура"
 
 #: src/Template/Administrators/debug.php:365
 msgid "PHP version"
-msgstr ""
+msgstr "Версия PHP"
 
 #: src/Template/Administrators/debug.php:368
 msgid "PHP Memory limit"
-msgstr ""
+msgstr "Ограничение памяти PHP"
 
 #: src/Template/Administrators/debug.php:371
 msgid "PHP Max. execution time"
-msgstr ""
+msgstr "PHP Максимальное время выполнения"
 
 #: src/Template/Administrators/debug.php:374
 msgid "PHP loaded extensions"
-msgstr ""
+msgstr "PHP загруженные расширения"
 
 #: src/Template/Administrators/debug.php:377
 msgid "CPU model"
-msgstr ""
+msgstr "Модель процессора"
 
 #: src/Template/Administrators/debug.php:380
 msgid "Number of CPU cores"
-msgstr ""
+msgstr "Количество ядер процессора"
 
 #: src/Template/Administrators/debug.php:396
 msgid "CPU load"
-msgstr ""
+msgstr "Загрузка процессора"
 
 #: src/Template/Administrators/debug.php:406
 msgid "Keep history"
-msgstr ""
+msgstr "Хранить историю"
 
 #: src/Template/Administrators/debug.php:415
 msgid "Current load:"
-msgstr ""
+msgstr "Текущая нагрузка"
 
 #: src/Template/Administrators/debug.php:436
 msgid "1 Minute"
-msgstr ""
+msgstr "1 минута"
 
 #: src/Template/Administrators/debug.php:444
 msgid "5 Minutes"
-msgstr ""
+msgstr "5 минут"
 
 #: src/Template/Administrators/debug.php:452
 msgid "15 Minutes"
-msgstr ""
+msgstr "15 минут"
 
 #: src/Template/Administrators/debug.php:476
 msgid "Memory and disk usage"
-msgstr ""
+msgstr "Использование памяти и диска"
 
 #: src/Template/Administrators/debug.php:487
 #: src/Template/Agentconnector/config.php:884
 msgid "Memory usage"
-msgstr ""
+msgstr "Использование памяти"
 
 #: src/Template/Administrators/debug.php:490
 #: src/Template/Administrators/debug.php:529
 msgid "Total:"
-msgstr ""
+msgstr "Общее:"
 
 #: src/Template/Administrators/debug.php:492
 #: src/Template/Administrators/debug.php:531
 msgid "Used:"
-msgstr ""
+msgstr "Используемый:"
 
 #: src/Template/Administrators/debug.php:496
 msgid "Cached:"
-msgstr ""
+msgstr "Сохраненная копия:"
 
 #: src/Template/Administrators/debug.php:500
 msgid "Buffers:"
-msgstr ""
+msgstr "Буфер"
 
 #: src/Template/Administrators/debug.php:526
 #: src/Template/Agentconnector/config.php:901
 msgid "Swap usage"
-msgstr ""
+msgstr "Использование свопа"
 
 #: src/Template/Administrators/debug.php:548
 #: src/Template/Agentconnector/config.php:931
 msgid "Disk usage"
-msgstr ""
+msgstr "Disk usage"
 
 #: src/Template/Administrators/debug.php:553
 msgid "Size"
-msgstr ""
+msgstr "Размер"
 
 #: src/Template/Administrators/debug.php:554
 msgid "Available"
-msgstr ""
+msgstr "Доступный"
 
 #: src/Template/Administrators/debug.php:555
 msgid "Mount point"
-msgstr ""
+msgstr "Точка монтирования"
 
 #: src/Template/Administrators/debug.php:596
 msgid "Queue name"
-msgstr ""
+msgstr "Имя очереди"
 
 #: src/Template/Administrators/debug.php:599
 msgid "Jobs waiting"
-msgstr ""
+msgstr "Работы в ожидании"
 
 #: src/Template/Administrators/debug.php:602
 msgid "Active jobs"
-msgstr ""
+msgstr "Активные работы"
 
 #: src/Template/Administrators/debug.php:605
 msgid "Worker available"
-msgstr ""
+msgstr "Worker available"
 
 #: src/Template/Administrators/debug.php:636
 msgid "Email configuration"
-msgstr ""
+msgstr "Конфигурация электронной почты"
 
 #: src/Template/Administrators/debug.php:643
 msgid "Mail server address"
-msgstr ""
+msgstr "Адрес почтового сервера"
 
 #: src/Template/Administrators/debug.php:646
 msgid "Mail server port"
-msgstr ""
+msgstr "Порт почтового сервера"
 
 #: src/Template/Administrators/debug.php:649
 msgid "Transport method"
-msgstr ""
+msgstr "Транспортный метод"
 
 #: src/Template/Administrators/debug.php:652
 #: src/Template/Agentconfigs/config.php:146
 #: src/Template/Users/login.php:48
 msgid "Username"
-msgstr ""
+msgstr "Имя пользователя"
 
 #: src/Template/Administrators/debug.php:655
 #: src/Template/Agentconfigs/config.php:164
 #: src/Template/Users/login.php:57
 msgid "Password"
-msgstr ""
+msgstr "Пароль"
 
 #: src/Template/Administrators/debug.php:657
 msgid "Password hidden due to security please see the file /opt/openitc/frontend/config/email.php for detailed configuration information."
-msgstr ""
+msgstr "Пароль скрыт из-за безопасности, см. файл /opt/openitc/frontend/config/email.php для получения подробной информации о конфигурации."
 
 #: src/Template/Administrators/debug.php:663
 msgid "Send test Email to"
-msgstr ""
+msgstr "Отправить тестовое электронное письмо на"
 
 #: src/Template/Administrators/debug.php:678
 msgid "Client information"
-msgstr ""
+msgstr "Информация о клиенте"
 
 #: src/Template/Administrators/debug.php:685
 msgid "Client OS"
-msgstr ""
+msgstr "Клиентская ОС"
 
 #: src/Template/Administrators/debug.php:688
 msgid "Client browser"
-msgstr ""
+msgstr "Клиентский браузер"
 
 #: src/Template/Administrators/debug.php:691
 msgid "Client IP address"
-msgstr ""
+msgstr "IP-адрес клиента"
 
 #: src/Template/Administrators/querylog.php:34
 msgid "Databases query log"
-msgstr ""
+msgstr "Журнал запросов к базам данных"
 
 #: src/Template/Administrators/querylog.php:47
 msgid "Databases"
-msgstr ""
+msgstr "Базы данных"
 
 #: src/Template/Administrators/querylog.php:48
 msgid "query log"
-msgstr ""
+msgstr "Журнал запросов"
 
 #: src/Template/Administrators/querylog.php:53
 msgid "Successfully connected"
-msgstr ""
+msgstr "Успешно подключен"
 
 #: src/Template/Administrators/querylog.php:57
 msgid "Used query log slots"
-msgstr ""
+msgstr "Используемые слоты журнала запросов"
 
 #: src/Template/Administrators/querylog.php:62
 msgid "Truncate log"
-msgstr ""
+msgstr "Очистить журнал"
 
 #: src/Template/Administrators/querylog.php:71
 msgid "Connection error"
-msgstr ""
+msgstr "Ошибка подключения"
 
 #: src/Template/Administrators/querylog.php:72
 msgid "Could not connect to Query Log WebSocket Server. Did you execute"
-msgstr ""
+msgstr "Не удалось подключиться к серверу Query Log WebSocket. Вы выполнили"
 
 #: src/Template/Agentchecks/add.php:34
 #: src/Template/Agentchecks/edit.php:34
@@ -6047,7 +6047,7 @@ msgstr ""
 #: src/Template/Agentconnector/config.php:50
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:577
 msgid "openITCOCKPIT Agent"
-msgstr ""
+msgstr "openITCOCKPIT Агент"
 
 #: src/Template/Agentchecks/add.php:39
 #: src/Template/Agentchecks/edit.php:39
@@ -6055,16 +6055,16 @@ msgstr ""
 #: src/Template/Currentstatereports/pdf/create_pdf_report.php:117
 #: src/Template/element/load_current_state_report_data.php:109
 msgid "Checks"
-msgstr ""
+msgstr "Проверки"
 
 #: src/Template/Agentchecks/add.php:52
 msgid "Create new openITCOCKPIT Agent check"
-msgstr ""
+msgstr "Создать новый openITCOCKPIT Агент проверки"
 
 #: src/Template/Agentchecks/add.php:66
 #: src/Template/Agentchecks/edit.php:67
 msgid "Agent check"
-msgstr ""
+msgstr "Проверка агента"
 
 #: src/Template/Agentchecks/add.php:70
 #: src/Template/Agentchecks/edit.php:71
@@ -6110,23 +6110,23 @@ msgstr ""
 #: src/Template/Usergroups/edit.php:69
 #: src/Template/Usergroups/index.php:123
 msgid "Name"
-msgstr ""
+msgstr "Название"
 
 #: src/Template/Agentchecks/add.php:78
 #: src/Template/Agentchecks/edit.php:79
 msgid "The name of the check is equal to the key from the agents JSON output."
-msgstr ""
+msgstr "Имя проверки равно ключу из вывода JSON агентов."
 
 #: src/Template/Agentchecks/add.php:85
 #: src/Template/Agentchecks/edit.php:86
 #: src/Template/Agentchecks/index.php:123
 msgid "Plugin name"
-msgstr ""
+msgstr "Название плагина"
 
 #: src/Template/Agentchecks/add.php:93
 #: src/Template/Agentchecks/edit.php:94
 msgid "The name of the check plugin used by the poller."
-msgstr ""
+msgstr "Имя проверочного плагина, используемого опросчиком."
 
 #: src/Template/Agentchecks/add.php:100
 #: src/Template/Agentchecks/edit.php:103
@@ -6140,296 +6140,296 @@ msgstr ""
 #: src/Template/Servicetemplates/used_by.php:34
 #: src/Template/Servicetemplates/used_by.php:50
 msgid "Service template"
-msgstr ""
+msgstr "Шаблон службы"
 
 #: src/Template/Agentchecks/add.php:125
 msgid "Create agent check"
-msgstr ""
+msgstr "Создать проверку агента"
 
 #: src/Template/Agentchecks/edit.php:52
 msgid "Edit openITCOCKPIT Agent check:"
-msgstr ""
+msgstr "Редактировать проверку openITCOCKPIT агента:"
 
 #: src/Template/Agentchecks/edit.php:126
 msgid "Update agent check"
-msgstr ""
+msgstr "Обновить проверку агента"
 
 #: src/Template/Agentchecks/index.php:54
 msgid "Agent checks overview"
-msgstr ""
+msgstr "Обзор проверок агента"
 
 #: src/Template/Agentchecks/index.php:86
 msgid "Filter by agent check name"
-msgstr ""
+msgstr "Фильтр по имени проверки агента"
 
 #: src/Template/Agentchecks/index.php:100
 #: src/Template/Servicetemplates/index.php:88
 msgid "Filter by service template name"
-msgstr ""
+msgstr "Фильтровать по названию шаблона службы"
 
 #: src/Template/Agentchecks/index.php:119
 msgid "Agent check name"
-msgstr ""
+msgstr "Имя проверки агента"
 
 #: src/Template/Agentchecks/index.php:127
 #: src/Template/Servicetemplates/copy.php:69
 #: src/Template/Servicetemplates/index.php:165
 msgid "Service template name"
-msgstr ""
+msgstr "Название шаблона службы"
 
 #: src/Template/Agentconfigs/config.php:47
 #: src/Template/Agentconfigs/scan.php:47
 msgid "Agent configuration for device:"
-msgstr ""
+msgstr "Конфигурация агента для устройства:"
 
 #: src/Template/Agentconfigs/config.php:58
 #: src/Template/Agentconfigs/scan.php:71
 msgid "Agent configuration"
-msgstr ""
+msgstr "Конфигурация агента"
 
 #: src/Template/Agentconfigs/config.php:66
 msgid "Port number"
-msgstr ""
+msgstr "Номер порта"
 
 #: src/Template/Agentconfigs/config.php:86
 msgid "Use HTTPS"
-msgstr ""
+msgstr "Использовать HTTPS"
 
 #: src/Template/Agentconfigs/config.php:104
 msgid "Enable lazy HTTPS"
-msgstr ""
+msgstr "Включить ленивый HTTPS"
 
 #: src/Template/Agentconfigs/config.php:117
 msgid "Disable strict certificate check. This is less secure! (For example to use self-signed certificates)"
-msgstr ""
+msgstr "Отключить строгую проверку сертификата. Это менее безопасно! (Например, использовать самозаверяющие сертификаты)"
 
 #: src/Template/Agentconfigs/config.php:125
 msgid "Enable basic auth"
-msgstr ""
+msgstr "Включить базовую аутентификацию"
 
 #: src/Template/Agentconfigs/config.php:138
 msgid "Enable HTTP basic auth."
-msgstr ""
+msgstr "Включить базовую аутентификацию HTTP."
 
 #: src/Template/Agentconfigs/config.php:184
 msgid "Update agent config and execute discovery."
-msgstr ""
+msgstr "Обновите конфигурацию агента и выполните обнаружение."
 
 #: src/Template/Agentconfigs/scan.php:32
 msgid "Scan"
-msgstr ""
+msgstr "Сканирование"
 
 #: src/Template/Agentconfigs/scan.php:54
 msgid "Rerun discovery"
-msgstr ""
+msgstr "Повторное обнаружение"
 
 #: src/Template/Agentconfigs/scan.php:61
 msgid "Edit agent configuration"
-msgstr ""
+msgstr "Редактировать конфигурацию агента"
 
 #: src/Template/Agentconfigs/scan.php:78
 msgid "Executing remote discovery..."
-msgstr ""
+msgstr "Выполнение удаленного обнаружения..."
 
 #: src/Template/Agentconfigs/scan.php:86
 msgid "Could not connect to agent."
-msgstr ""
+msgstr "Не удалось подключиться к агенту."
 
 #: src/Template/Agentconfigs/scan.php:102
 msgid "Health"
-msgstr ""
+msgstr "Работоспособность"
 
 #: src/Template/Agentconfigs/scan.php:123
 #: src/Template/Agentconnector/config.php:1048
 msgid "Processes"
-msgstr ""
+msgstr "Процессы"
 
 #: src/Template/Agentconfigs/scan.php:144
 msgid "Creating Services..."
-msgstr ""
+msgstr "Создание служб..."
 
 #: src/Template/Agentconfigs/scan.php:156
 msgid "Create services"
-msgstr ""
+msgstr "Создание служб"
 
 #: src/Template/Agentconnector/agents.php:38
 msgid "Agents"
-msgstr ""
+msgstr "Агенты"
 
 #: src/Template/Agentconnector/agents.php:49
 msgid "Agents overview"
-msgstr ""
+msgstr "Обзор агентов"
 
 #: src/Template/Agentconnector/agents.php:81
 msgid "Filter by host uuid"
-msgstr ""
+msgstr "Фильтровать по uuid узла"
 
 #: src/Template/Agentconnector/agents.php:95
 msgid "Filter by agent ip"
-msgstr ""
+msgstr "Фильтровать по агенту ip"
 
 #: src/Template/Agentconnector/agents.php:114
 msgid "Is trusted"
-msgstr ""
+msgstr "Доверенно"
 
 #: src/Template/Agentconnector/agents.php:122
 msgid "Agent IP Address"
-msgstr ""
+msgstr "IP-адрес агента"
 
 #: src/Template/Agentconnector/agents.php:126
 msgid "Certificate generation date"
-msgstr ""
+msgstr "Дата создания сертификата"
 
 #: src/Template/Agentconnector/agents.php:178
 msgid "Trust Agent"
-msgstr ""
+msgstr "Доверительный агент"
 
 #: src/Template/Agentconnector/agents.php:184
 msgid "Untrust Agent"
-msgstr ""
+msgstr "Недоверительной агент"
 
 #: src/Template/Agentconnector/agents.php:229
 msgid "Trust"
-msgstr ""
+msgstr "Доверенно"
 
 #: src/Template/Agentconnector/agents.php:235
 msgid "Untrust"
-msgstr ""
+msgstr "Недоверенно"
 
 #: src/Template/Agentconnector/config.php:85
 msgid "If you changed some configuration, you should run the remote configuration update before you continue. Otherwise you are maybe not able to connect to the agent again threw the web interface. In that case you have to copy the configuration manually to the agent."
-msgstr ""
+msgstr "Если вы изменили какую-либо конфигурацию, вам следует запустить обновление удаленной конфигурации, прежде чем продолжить. В противном случае, возможно, вы не сможете снова подключиться к агенту через веб-интерфейс. В этом случае вы должны скопировать конфигурацию вручную агенту."
 
 #: src/Template/Agentconnector/config.php:95
 msgid "Run remote configuration update"
-msgstr ""
+msgstr "Запустите удаленное обновление конфигурации"
 
 #: src/Template/Agentconnector/config.php:102
 msgid "We found agent check results of this host. It seems the agent is already configured."
-msgstr ""
+msgstr "Мы нашли результаты проверки агента этого узла. Кажется, агент уже настроен."
 
 #: src/Template/Agentconnector/config.php:109
 msgid "Skip configuration generation"
-msgstr ""
+msgstr "Пропустить генерацию конфигурации"
 
 #: src/Template/Agentconnector/config.php:122
 msgid "Select host and agent mode"
-msgstr ""
+msgstr "Выберите узел и режим агента"
 
 #: src/Template/Agentconnector/config.php:128
 msgid "Basic agent configuration"
-msgstr ""
+msgstr "Базовая конфигурация агента"
 
 #: src/Template/Agentconnector/config.php:134
 msgid "Installation guide"
-msgstr ""
+msgstr "Инструкция по установке"
 
 #: src/Template/Agentconnector/config.php:140
 msgid "Create agent services"
-msgstr ""
+msgstr "Создать агентские службы"
 
 #: src/Template/Agentconnector/config.php:146
 #: src/Template/Agentconnector/config.php:1203
 msgid "Save changes"
-msgstr ""
+msgstr "Сохранить изменения"
 
 #: src/Template/Agentconnector/config.php:156
 #: src/Template/Statusmaps/index.php:113
 msgid "Reset"
-msgstr ""
+msgstr "Сброс настроек"
 
 #: src/Template/Agentconnector/config.php:163
 #: src/Template/Agentconnector/config.php:168
 #: src/Template/Agentconnector/config.php:173
 #: src/Template/Agentconnector/config.php:178
 msgid "Next"
-msgstr ""
+msgstr "Следующий"
 
 #: src/Template/Agentconnector/config.php:195
 msgid "Register Agent in pull mode"
-msgstr ""
+msgstr "Зарегистрировать агента в режиме pull"
 
 #: src/Template/Agentconnector/config.php:202
 msgid "If you configure the Agent in pull mode, it has to be reachable threw the network."
-msgstr ""
+msgstr "Если вы настраиваете Агента в режиме извлечения, он должен быть доступным через сеть."
 
 #: src/Template/Agentconnector/config.php:204
 msgid "openITCOCKPIT will try to connect to the agent using the hosts IP Address."
-msgstr ""
+msgstr "openITCOCKPIT попытается подключиться к агенту, используя IP-адрес узла."
 
 #: src/Template/Agentconnector/config.php:206
 msgid "It will fetch the check results in a minutely check interval."
-msgstr ""
+msgstr "Он будет получать результаты проверки с интервалом проверки каждую минуту."
 
 #: src/Template/Agentconnector/config.php:217
 msgid "Continue with pull mode"
-msgstr ""
+msgstr "Продолжить в режиме pull"
 
 #: src/Template/Agentconnector/config.php:229
 msgid "Register Agent in push mode"
-msgstr ""
+msgstr "Зарегистрировать агента в режиме push"
 
 #: src/Template/Agentconnector/config.php:236
 msgid "If you configure the agent in push mode, it needs to establish a connection to the openITCOCKPIT server in your network."
-msgstr ""
+msgstr "Если вы настраиваете агента в режиме push, ему необходимо установить соединение с сервером openITCOCKPIT в вашей сети."
 
 #: src/Template/Agentconnector/config.php:238
 msgid "The agent will send the check results in a specific interval to the openITCOCKPIT server."
-msgstr ""
+msgstr "Агент отправит результаты проверки через определенный интервал времени на сервер openITCOCKPIT."
 
 #: src/Template/Agentconnector/config.php:249
 msgid "Continue with push mode"
-msgstr ""
+msgstr "Продолжить в режиме push"
 
 #: src/Template/Agentconnector/config.php:270
 msgid "openITCOCKPIT Server Address"
-msgstr ""
+msgstr "openITCOCKPIT Адрес сервера"
 
 #: src/Template/Agentconnector/config.php:278
 msgid "External address or FQDN (example: https://demo.openitcockpit.io)"
-msgstr ""
+msgstr "Внешний адрес или полное доменное имя (пример: https://demo.openitcockpit.io)"
 
 #: src/Template/Agentconnector/config.php:286
 msgid "openITCOCKPIT Api-Key"
-msgstr ""
+msgstr "openICOCKPIT API-ключ"
 
 #: src/Template/Agentconnector/config.php:294
 msgid "Api-Key"
-msgstr ""
+msgstr "Ключ API"
 
 #: src/Template/Agentconnector/config.php:309
 msgid "Agent address"
-msgstr ""
+msgstr "Адрес агента"
 
 #: src/Template/Agentconnector/config.php:317
 msgid "Address or FQDN"
-msgstr ""
+msgstr "Адрес или полное доменное имя"
 
 #: src/Template/Agentconnector/config.php:325
 msgid "Agent port"
-msgstr ""
+msgstr "Порт агента"
 
 #: src/Template/Agentconnector/config.php:335
 msgid "Port"
-msgstr ""
+msgstr "Порт"
 
 #: src/Template/Agentconnector/config.php:343
 msgid "Default check interval"
-msgstr ""
+msgstr "Стандартный интервал проверки"
 
 #: src/Template/Agentconnector/config.php:352
 #: src/Template/Angular/interval_input.php:108
 #: src/Template/Angular/interval_input_with_differ.php:111
 msgid "Interval in seconds"
-msgstr ""
+msgstr "Интервал в секундах"
 
 #: src/Template/Agentconnector/config.php:366
 msgid "Try autossl mode"
-msgstr ""
+msgstr "Попробуйте режим autossl"
 
 #: src/Template/Agentconnector/config.php:369
 msgid "If enabled, the agent tries to auto generate a ssl certificate for all incoming connection."
-msgstr ""
+msgstr "Если этот параметр включен, агент пытается автоматически сгенерировать SSL-сертификат для всех входящих соединений."
 
 #: src/Template/Agentconnector/config.php:371
 msgid "Pull mode: The certificate (including updates) will be transferred from openITCOCKPIT to the agent."
@@ -6437,307 +6437,307 @@ msgstr ""
 
 #: src/Template/Agentconnector/config.php:373
 msgid "Push mode: The certificate (including updates) will be requested from the agent. It has to be trusted manually to get the certificate."
-msgstr ""
+msgstr "Режим push: сертификат (включая обновления) будет передан из openITCOCKPIT агенту. Надо доверять вручную, чтобы получить сертификат."
 
 #: src/Template/Agentconnector/config.php:387
 msgid "Print verbose output"
-msgstr ""
+msgstr "Вывести подробный вывод"
 
 #: src/Template/Agentconnector/config.php:390
 msgid "Print administrator information on cli"
-msgstr ""
+msgstr "Распечатать информацию об администраторе в командной строке"
 
 #: src/Template/Agentconnector/config.php:404
 msgid "Print stacktrace output"
-msgstr ""
+msgstr "Распечатать вывод трассировки стека"
 
 #: src/Template/Agentconnector/config.php:407
 msgid "Print extended administrator information (stacktraces) on cli"
-msgstr ""
+msgstr "Вывести расширенную информацию администратора (трассировки стека) в командной строке"
 
 #: src/Template/Agentconnector/config.php:421
 msgid "Enable remote configuration update mode"
-msgstr ""
+msgstr "Включить режим удаленного обновления конфигурации"
 
 #: src/Template/Agentconnector/config.php:424
 msgid "Enables the remote agent configuration update mode."
-msgstr ""
+msgstr "Включает режим обновления конфигурации удаленного агента."
 
 #: src/Template/Agentconnector/config.php:426
 msgid "Should only be configured after an successful ssl configuration."
-msgstr ""
+msgstr "Должен быть настроен только после успешной конфигурации ssl."
 
 #: src/Template/Agentconnector/config.php:429
 msgid "Warning: Remote code execution is possible if the certificate was stolen or no ssl was configured."
-msgstr ""
+msgstr "Предупреждение: Удаленное выполнение кода возможно, если сертификат был украден или ssl не был настроен."
 
 #: src/Template/Agentconnector/config.php:438
 msgid "Enable HTTP Basic Auth"
-msgstr ""
+msgstr "Включить базовую аутентификацию HTTP"
 
 #: src/Template/Agentconnector/config.php:446
 msgid "username:password"
-msgstr ""
+msgstr "имя пользователя:пароль"
 
 #: src/Template/Agentconnector/config.php:460
 msgid "Enable custom checks"
-msgstr ""
+msgstr "Включить пользовательские проверки"
 
 #: src/Template/Agentconnector/config.php:463
 msgid "Add custom check configuration path to default configuration and enables custom checks"
-msgstr ""
+msgstr "Добавить путь конфигурации настраиваемой проверки в стандартную конфигурацию и включить настраиваемые проверки"
 
 #: src/Template/Agentconnector/config.php:471
 msgid "Set max custom check threads"
-msgstr ""
+msgstr "Установить максимальное количество пользовательских проверочных потоков"
 
 #: src/Template/Agentconnector/config.php:482
 msgid "Set maximum amount of threads used for customchecks."
-msgstr ""
+msgstr "Установите максимальное количество потоков, используемых для пользовательских проверок."
 
 #: src/Template/Agentconnector/config.php:484
 msgid "It should be increased with increasing number of custom checks, but consider: each thread needs (a bit) memory."
-msgstr ""
+msgstr "Это должно быть увеличено с увеличением числа пользовательских проверок, но учтите: каждому потоку нужна (немного) память."
 
 #: src/Template/Agentconnector/config.php:498
 msgid "Use Fahrenheit"
-msgstr ""
+msgstr "Используйте Фаренгейт"
 
 #: src/Template/Agentconnector/config.php:501
 msgid "Use Fahrenheit temperature unit instead of Celsius."
-msgstr ""
+msgstr "Используйте единицу измерения температуры по Фаренгейту вместо Цельсия."
 
 #: src/Template/Agentconnector/config.php:515
 msgid "Enable docker status checks"
-msgstr ""
+msgstr "Включить проверку статуса докера"
 
 #: src/Template/Agentconnector/config.php:529
 msgid "Enable qemu status checks"
-msgstr ""
+msgstr "Включить проверку статуса qemu"
 
 #: src/Template/Agentconnector/config.php:543
 msgid "Enable cpu status checks"
-msgstr ""
+msgstr "Включить проверку статуса процессора"
 
 #: src/Template/Agentconnector/config.php:557
 msgid "Enable sensor status checks"
-msgstr ""
+msgstr "Включить проверку состояния датчика"
 
 #: src/Template/Agentconnector/config.php:571
 msgid "Enable process status checks"
-msgstr ""
+msgstr "Включить проверки статуса процесса"
 
 #: src/Template/Agentconnector/config.php:585
 msgid "Include process child ids"
-msgstr ""
+msgstr "Включить дочерние идентификаторы процесса"
 
 #: src/Template/Agentconnector/config.php:588
 msgid "Add process child ids to the default process status check (computationally intensive)."
-msgstr ""
+msgstr "Добавьте дочерние идентификаторы процесса к стандартной проверке состояния процесса (требует большого объема вычислений)."
 
 #: src/Template/Agentconnector/config.php:602
 msgid "Enable network status checks"
-msgstr ""
+msgstr "Включить проверки состояния сети"
 
 #: src/Template/Agentconnector/config.php:616
 msgid "Enable disk status checks"
-msgstr ""
+msgstr "Включить проверку статуса диска"
 
 #: src/Template/Agentconnector/config.php:630
 msgid "Enable network I/O calculation"
-msgstr ""
+msgstr "Включить подсчет ввода / вывода в сети"
 
 #: src/Template/Agentconnector/config.php:644
 msgid "Enable disk I/O calculation"
-msgstr ""
+msgstr "Включить расчет дискового ввода-вывода"
 
 #: src/Template/Agentconnector/config.php:658
 msgid "Enable windows services status checks"
-msgstr ""
+msgstr "Включить проверки состояния служб Windows"
 
 #: src/Template/Agentconnector/config.php:669
 #: src/Template/Agentconnector/config.php:750
 msgid "agent.cnf:"
-msgstr ""
+msgstr "agent.cnf:"
 
 #: src/Template/Agentconnector/config.php:675
 #: src/Template/Agentconnector/config.php:756
 msgid "customchecks.cnf:"
-msgstr ""
+msgstr "customchecks.cnf:"
 
 #: src/Template/Agentconnector/config.php:691
 msgid "Download the agent installer for your system from our official openITCOCKPIT Website:"
-msgstr ""
+msgstr "Загрузите установщик агента для вашей системы с нашей openITCOCKPIT официальной сайтмы:"
 
 #: src/Template/Agentconnector/config.php:693
 msgid "Download here"
-msgstr ""
+msgstr "Скачать здесь"
 
 #: src/Template/Agentconnector/config.php:695
 msgid "After the installation you have to update the default configuration files with the recently generated configuration"
-msgstr ""
+msgstr "После установки вы должны обновить стандартные конфигурационные файлы с недавно сгенерированной конфигурацией"
 
 #: src/Template/Agentconnector/config.php:706
 msgid "Config file default paths:"
-msgstr ""
+msgstr "Стандартные пути файла конфигурации:"
 
 #: src/Template/Agentconnector/config.php:714
 msgid "Windows:"
-msgstr ""
+msgstr "Windows:"
 
 #: src/Template/Agentconnector/config.php:716
 msgid "C:\\Program Files\\openitcockpit-agent\\config.cnf"
-msgstr ""
+msgstr "C:\\Program Files\\openitcockpit-agent\\config.cnf"
 
 #: src/Template/Agentconnector/config.php:720
 #: src/Template/Agentconnector/config.php:790
 msgid "Linux:"
-msgstr ""
+msgstr "Linux:"
 
 #: src/Template/Agentconnector/config.php:722
 msgid "/etc/openitcockpit-agent/config.cnf"
-msgstr ""
+msgstr "/etc/openitcockpit-agent/config.cnf"
 
 #: src/Template/Agentconnector/config.php:726
 #: src/Template/Agentconnector/config.php:796
 msgid "macOS:"
-msgstr ""
+msgstr "macOS:"
 
 #: src/Template/Agentconnector/config.php:728
 msgid "/Library/openitcockpit-agent/config.cnf"
-msgstr ""
+msgstr "/Library/openitcockpit-agent/config.cnf"
 
 #: src/Template/Agentconnector/config.php:741
 msgid "Depending on your system, go to the configuration directory and replace the contents of the .cnf files with the following content:"
-msgstr ""
+msgstr "В зависимости от вашей системы перейдите в каталог конфигурации и замените содержимое файлов .cnf следующим содержимым:"
 
 #: src/Template/Agentconnector/config.php:743
 msgid "If the custom check configuration file is set, be sure, the file path matches the path for your specific system."
-msgstr ""
+msgstr "Если установлен файл конфигурации с пользовательской проверкой, убедитесь, что путь к файлу совпадает с путем для вашей конкретной системы."
 
 #: src/Template/Agentconnector/config.php:765
 msgid "Restart the agent to apply the new configuration:"
-msgstr ""
+msgstr "Перезапустите агент, чтобы применить новую конфигурацию:"
 
 #: src/Template/Agentconnector/config.php:775
 msgid "Run as administrator:"
-msgstr ""
+msgstr "Запустить от имени администратора:"
 
 #: src/Template/Agentconnector/config.php:784
 msgid "Windows CMD:"
-msgstr ""
+msgstr "Windows CMD:"
 
 #: src/Template/Agentconnector/config.php:785
 msgid "sc stop oitcAgentSvc && sc\n                                                                            start oitcAgentSvc"
-msgstr ""
+msgstr "sc stop oitcAgentSvc && sc\n                                                                            start oitcAgentSvc"
 
 #: src/Template/Agentconnector/config.php:791
 msgid "systemctl restart\n                                                                            openitcockpit-agent"
-msgstr ""
+msgstr "systemctl restart\n                                                                            openitcockpit-agent"
 
 #: src/Template/Agentconnector/config.php:797
 msgid "/bin/launchctl restart\n                                                                            com.it-novum.openitcockpit.agent"
-msgstr ""
+msgstr "/bin/launchctl restart\n                                                                            com.it-novum.openitcockpit.agent"
 
 #: src/Template/Agentconnector/config.php:821
 msgid "Wait get check results from the configured agent ..."
-msgstr ""
+msgstr "Подождите, получите результаты проверки от настроенного агента ..."
 
 #: src/Template/Agentconnector/config.php:823
 msgid "Please choose the options you want to monitor"
-msgstr ""
+msgstr "Пожалуйста, выберите параметры, которые вы хотите контролировать"
 
 #: src/Template/Agentconnector/config.php:830
 msgid "Be patient, a background job is asking the openITCOCKPIT Server (every 10 seconds) for agent check results."
-msgstr ""
+msgstr "Будьте терпеливы, фоновая работа запрашивает у сервера openITCOCKPIT каждые 10 секунд результаты проверки агента."
 
 #: src/Template/Agentconnector/config.php:832
 msgid "Please make sure the agent is running and right configured."
-msgstr ""
+msgstr "Пожалуйста, убедитесь, что агент работает и правильно настроен."
 
 #: src/Template/Agentconnector/config.php:850
 msgid "CPU percentage"
-msgstr ""
+msgstr "Процент загрузки процессора"
 
 #: src/Template/Agentconnector/config.php:867
 msgid "System load"
-msgstr ""
+msgstr "Загрузка системы"
 
 #: src/Template/Agentconnector/config.php:911
 msgid "Disk IO"
-msgstr ""
+msgstr "Дисковый ввод-вывод"
 
 #: src/Template/Agentconnector/config.php:951
 msgid "Fans"
-msgstr ""
+msgstr "Вентиляторы"
 
 #: src/Template/Agentconnector/config.php:971
 msgid "Temperatures"
-msgstr ""
+msgstr "Температуры"
 
 #: src/Template/Agentconnector/config.php:998
 msgid "Battery"
-msgstr ""
+msgstr "Батарея"
 
 #: src/Template/Agentconnector/config.php:1008
 msgid "Network device IO"
-msgstr ""
+msgstr "Сетевое устройство IO"
 
 #: src/Template/Agentconnector/config.php:1028
 msgid "Network device stats"
-msgstr ""
+msgstr "Статистика сетевых устройств"
 
 #: src/Template/Agentconnector/config.php:1068
 msgid "Windows services"
-msgstr ""
+msgstr "Службы Windows"
 
 #: src/Template/Agentconnector/config.php:1088
 msgid "Docker container running"
-msgstr ""
+msgstr "Docker контейнер работает"
 
 #: src/Template/Agentconnector/config.php:1108
 msgid "Docker container cpu usage"
-msgstr ""
+msgstr "Использование процессора Docker-контейнером"
 
 #: src/Template/Agentconnector/config.php:1128
 msgid "Docker container memory usage"
-msgstr ""
+msgstr "Использование памяти контейнера Docker"
 
 #: src/Template/Agentconnector/config.php:1148
 msgid "QEMU vm running"
-msgstr ""
+msgstr "QEMU vm работает"
 
 #: src/Template/Agentconnector/config.php:1168
 msgid "Customchecks"
-msgstr ""
+msgstr "Индивидуальные проверки"
 
 #: src/Template/Agentconnector/config.php:1205
 msgid "Setup finished"
-msgstr ""
+msgstr "Настройка завершена"
 
 #: src/Template/Agentconnector/config.php:1212
 msgid "Please wait during service creation ..."
-msgstr ""
+msgstr "Пожалуйста, подождите при создании служб ..."
 
 #: src/Template/Agentconnector/config.php:1219
 msgid "Agent services successfully created."
-msgstr ""
+msgstr "Агентские службы успешно созданы."
 
 #: src/Template/Agentconnector/config.php:1222
 msgid "Next steps: Run an export and keep your agent running :)"
-msgstr ""
+msgstr "Следующие шаги: Запустите экспорт и продолжайте работу агента :)"
 
 #: src/Template/Agentconnector/config.php:1228
 msgid "No services were created."
-msgstr ""
+msgstr "Службы не были созданы."
 
 #: src/Template/Agentconnector/config.php:1234
 msgid "To activate automatic ssl certificate generation for this agent, click here to trust it: "
-msgstr ""
+msgstr "Чтобы активировать автоматическую генерацию ssl-сертификата для этого агента, нажмите здесь, чтобы доверять ему:"
 
 #: src/Template/Agentconnector/config.php:1240
 msgid "Show untrusted agent"
-msgstr ""
+msgstr "Показать ненадежного агента"
 
 #: src/Template/Angular/acknowledge_host.php:7
 #: src/Template/Browsers/index.php:722
@@ -6746,32 +6746,32 @@ msgstr ""
 #: src/Template/Hosts/index.php:714
 #: src/Template/element/host_mass_changes.php:87
 msgid "Acknowledge host status"
-msgstr ""
+msgstr "Подтвердить статус узла"
 
 #: src/Template/Angular/acknowledge_host.php:19
 #: src/Template/Angular/disable_host_notifications.php:19
 #: src/Template/Angular/enable_host_notifications.php:19
 #: src/Template/Angular/reschedule_host.php:16
 msgid "Select method"
-msgstr ""
+msgstr "Выберите метод"
 
 #: src/Template/Angular/acknowledge_host.php:27
 #: src/Template/Angular/disable_host_notifications.php:27
 #: src/Template/Angular/downtime_host.php:26
 #: src/Template/Angular/enable_host_notifications.php:27
 msgid "Individual hosts"
-msgstr ""
+msgstr "Отдельные узлы"
 
 #: src/Template/Angular/acknowledge_host.php:28
 #: src/Template/Angular/disable_host_notifications.php:28
 #: src/Template/Angular/downtime_host.php:27
 #: src/Template/Angular/enable_host_notifications.php:28
 msgid "Hosts including services"
-msgstr ""
+msgstr "Узлы вместе со службами"
 
 #: src/Template/Angular/acknowledge_host.php:60
 msgid "Sticky acknowledgements will be stay until the host is back in state Up"
-msgstr ""
+msgstr "Прикрепленные подтверждения будут оставаться до тех пор, пока узел не вернется в состояние UP."
 
 #: src/Template/Angular/acknowledge_host.php:65
 #: src/Template/Angular/acknowledge_service.php:46
@@ -6784,18 +6784,18 @@ msgstr ""
 #: src/Template/Angular/submit_host_result.php:53
 #: src/Template/Angular/submit_service_result.php:54
 msgid "Executing command"
-msgstr ""
+msgstr "Выполнение команды"
 
 #: src/Template/Angular/acknowledge_service.php:8
 #: src/Template/Servicegroups/extended.php:137
 #: src/Template/Services/browser.php:792
 #: src/Template/Services/details.php:159
 msgid "Acknowledge service status"
-msgstr ""
+msgstr "Подтвердить статус службы"
 
 #: src/Template/Angular/acknowledge_service.php:41
 msgid "Sticky acknowledgements will be stay until the service is back in state Ok"
-msgstr ""
+msgstr "Прикрепленные подтверждения будут оставаться до тех пор, пока служба не вернется в состояние ОК."
 
 #: src/Template/Angular/confirm_deactivate.php:6
 #: src/Template/Angular/confirm_delete.php:6
@@ -6819,11 +6819,11 @@ msgstr ""
 #: src/Template/element/tenant_mass_changes.php:44
 #: src/Template/element/timeperiod_mass_changes.php:51
 msgid "Attention!"
-msgstr ""
+msgstr "Внимание!"
 
 #: src/Template/Angular/confirm_deactivate.php:11
 msgid "Do you really want deactivate the selected object?"
-msgstr ""
+msgstr "Вы действительно хотите деактивировать выбранный объект?"
 
 #: src/Template/Angular/confirm_deactivate.php:20
 #: src/Template/Angular/mass_deactivate.php:46
@@ -6846,21 +6846,21 @@ msgstr ""
 #: src/Template/element/host_mass_changes.php:61
 #: src/Template/element/service_mass_changes.php:47
 msgid "Disable"
-msgstr ""
+msgstr "Отключить"
 
 #: src/Template/Angular/confirm_delete.php:11
 #: src/Template/Angular/mass_delete.php:16
 msgid "Do you really want delete the selected object?"
-msgstr ""
+msgstr "Вы действительно хотите удалить выбранный объект?"
 
 #: src/Template/Angular/disable_host_flap_detection.php:7
 msgid "Disable host flap detection"
-msgstr ""
+msgstr "Отключить обнаружение колебаний узла"
 
 #: src/Template/Angular/disable_host_flap_detection.php:19
 #: src/Template/Angular/disable_service_flap_detection.php:18
 msgid "Yes, I would like to temporarily <strong>disable</strong> flap detection."
-msgstr ""
+msgstr "Да, я хотел бы временно <strong>отключить</strong> обнаружение колебаний."
 
 #: src/Template/Angular/disable_host_flap_detection.php:23
 #: src/Template/Angular/disable_host_notifications.php:40
@@ -6871,7 +6871,7 @@ msgstr ""
 #: src/Template/Angular/enable_service_flap_detection.php:22
 #: src/Template/Angular/enable_service_notifications.php:23
 msgid "This option is only temporary. It does not affect your configuration. This is an external command and only saved in the memory of your monitoring engine."
-msgstr ""
+msgstr "Эта опция только временная. Это не влияет на вашу конфигурацию. Это внешняя команда, которая сохраняется только в памяти вашего механизма мониторинга."
 
 #: src/Template/Angular/disable_host_flap_detection.php:42
 #: src/Template/Angular/disable_host_notifications.php:59
@@ -6883,24 +6883,24 @@ msgstr ""
 #: src/Template/Angular/enable_service_notifications.php:42
 #: src/Template/Angular/reschedule_host.php:39
 msgid "Execute"
-msgstr ""
+msgstr "Выполнить"
 
 #: src/Template/Angular/disable_host_notifications.php:7
 msgid "Disable host notification"
-msgstr ""
+msgstr "Отключить уведомление узла"
 
 #: src/Template/Angular/disable_host_notifications.php:36
 #: src/Template/Angular/disable_service_notifications.php:19
 msgid "Yes, I would like to temporarily <strong>disable</strong> notifications."
-msgstr ""
+msgstr "Да, я хочу временно <strong>отключить</strong> уведомления."
 
 #: src/Template/Angular/disable_service_flap_detection.php:7
 msgid "Disable service flap detection"
-msgstr ""
+msgstr "Отключить обнаружение колебаний службы"
 
 #: src/Template/Angular/disable_service_notifications.php:7
 msgid "Disable service notifications"
-msgstr ""
+msgstr "Отключить уведомления службы"
 
 #: src/Template/Angular/downtime_host.php:7
 #: src/Template/Angular/downtime_service.php:7
@@ -6913,7 +6913,7 @@ msgstr ""
 #: src/Template/element/host_mass_changes.php:83
 #: src/Template/element/service_mass_changes.php:62
 msgid "Set planned maintenance times"
-msgstr ""
+msgstr "Установите запланированное время обслуживания"
 
 #: src/Template/Angular/downtime_host.php:18
 #: src/Template/Systemdowntimes/add.php:80
@@ -6922,205 +6922,205 @@ msgstr ""
 #: src/Template/Systemdowntimes/add_hostdowntime.php:85
 #: src/Template/Systemdowntimes/add_hostgroupdowntime.php:85
 msgid "Maintenance period for"
-msgstr ""
+msgstr "Период обслуживания для"
 
 #: src/Template/Angular/downtime_host.php:28
 msgid "Hosts and dependent Hosts (triggered)"
-msgstr ""
+msgstr "Узлы и зависимые узлы (сработавшие)"
 
 #: src/Template/Angular/downtime_host.php:30
 msgid "Hosts and dependent Hosts (non-triggered)"
-msgstr ""
+msgstr "Узлы и зависимые узлы (не сработавшие)"
 
 #: src/Template/Angular/downtime_host.php:45
 #: src/Template/Angular/downtime_host.php:48
 #: src/Template/Angular/downtime_service.php:23
 #: src/Template/Angular/downtime_service.php:26
 msgid "In progress"
-msgstr ""
+msgstr "В процессе"
 
 #: src/Template/Angular/duration_input.php:28
 #: src/Template/Angular/interval_input.php:33
 #: src/Template/Angular/interval_input_with_differ.php:33
 msgid "1m"
-msgstr ""
+msgstr "1м"
 
 #: src/Template/Angular/duration_input.php:29
 #: src/Template/Angular/interval_input.php:34
 #: src/Template/Angular/interval_input_with_differ.php:34
 msgid "1 minute"
-msgstr ""
+msgstr "1 минута"
 
 #: src/Template/Angular/duration_input.php:33
 #: src/Template/Angular/interval_input.php:38
 #: src/Template/Angular/interval_input_with_differ.php:38
 msgid "2m"
-msgstr ""
+msgstr "2м"
 
 #: src/Template/Angular/duration_input.php:34
 #: src/Template/Angular/interval_input.php:39
 #: src/Template/Angular/interval_input_with_differ.php:39
 msgid "2 minutes"
-msgstr ""
+msgstr "2 минуты"
 
 #: src/Template/Angular/duration_input.php:38
 #: src/Template/Angular/interval_input.php:43
 #: src/Template/Angular/interval_input_with_differ.php:43
 msgid "5m"
-msgstr ""
+msgstr "5м"
 
 #: src/Template/Angular/duration_input.php:39
 #: src/Template/Angular/interval_input.php:44
 #: src/Template/Angular/interval_input_with_differ.php:44
 msgid "5 minutes"
-msgstr ""
+msgstr "5 минут"
 
 #: src/Template/Angular/duration_input.php:43
 #: src/Template/Angular/interval_input.php:48
 #: src/Template/Angular/interval_input_with_differ.php:48
 msgid "10m"
-msgstr ""
+msgstr "10м"
 
 #: src/Template/Angular/duration_input.php:44
 #: src/Template/Angular/interval_input.php:49
 #: src/Template/Angular/interval_input_with_differ.php:49
 msgid "10 minutes"
-msgstr ""
+msgstr "10 минут"
 
 #: src/Template/Angular/duration_input.php:48
 #: src/Template/Angular/interval_input.php:53
 #: src/Template/Angular/interval_input_with_differ.php:53
 msgid "15m"
-msgstr ""
+msgstr "15м"
 
 #: src/Template/Angular/duration_input.php:49
 #: src/Template/Angular/interval_input.php:54
 #: src/Template/Angular/interval_input_with_differ.php:54
 msgid "15 minutes"
-msgstr ""
+msgstr "15 минут"
 
 #: src/Template/Angular/duration_input.php:53
 #: src/Template/Angular/interval_input.php:58
 #: src/Template/Angular/interval_input_with_differ.php:58
 msgid "30m"
-msgstr ""
+msgstr "30м"
 
 #: src/Template/Angular/duration_input.php:54
 #: src/Template/Angular/interval_input.php:59
 #: src/Template/Angular/interval_input_with_differ.php:59
 msgid "30 minutes"
-msgstr ""
+msgstr "30 минут"
 
 #: src/Template/Angular/duration_input.php:58
 #: src/Template/Angular/interval_input.php:63
 #: src/Template/Angular/interval_input_with_differ.php:63
 msgid "45m"
-msgstr ""
+msgstr "45м"
 
 #: src/Template/Angular/duration_input.php:59
 #: src/Template/Angular/interval_input.php:64
 #: src/Template/Angular/interval_input_with_differ.php:64
 msgid "45 minutes"
-msgstr ""
+msgstr "45 минут"
 
 #: src/Template/Angular/duration_input.php:63
 #: src/Template/Angular/interval_input.php:68
 #: src/Template/Angular/interval_input_with_differ.php:68
 msgid "1h"
-msgstr ""
+msgstr "1ч"
 
 #: src/Template/Angular/duration_input.php:64
 #: src/Template/Angular/interval_input.php:69
 #: src/Template/Angular/interval_input_with_differ.php:69
 msgid "1 hour"
-msgstr ""
+msgstr "1 час"
 
 #: src/Template/Angular/duration_input.php:68
 #: src/Template/Angular/interval_input.php:73
 #: src/Template/Angular/interval_input_with_differ.php:73
 msgid "1.5h"
-msgstr ""
+msgstr "1.5ч"
 
 #: src/Template/Angular/duration_input.php:69
 #: src/Template/Angular/interval_input.php:74
 #: src/Template/Angular/interval_input_with_differ.php:74
 msgid "1.5 hours"
-msgstr ""
+msgstr "1.5 часа"
 
 #: src/Template/Angular/duration_input.php:73
 #: src/Template/Angular/interval_input.php:78
 #: src/Template/Angular/interval_input_with_differ.php:78
 msgid "2h"
-msgstr ""
+msgstr "2ч"
 
 #: src/Template/Angular/duration_input.php:74
 #: src/Template/Angular/interval_input.php:79
 #: src/Template/Angular/interval_input_with_differ.php:79
 msgid "2 hours"
-msgstr ""
+msgstr "2 часа"
 
 #: src/Template/Angular/duration_input.php:78
 #: src/Template/Angular/interval_input.php:83
 #: src/Template/Angular/interval_input_with_differ.php:83
 msgid "4h"
-msgstr ""
+msgstr "4ч"
 
 #: src/Template/Angular/duration_input.php:79
 #: src/Template/Angular/interval_input.php:84
 #: src/Template/Angular/interval_input_with_differ.php:84
 msgid "4 hours"
-msgstr ""
+msgstr "4 часа"
 
 #: src/Template/Angular/duration_input.php:83
 msgid "8h"
-msgstr ""
+msgstr "8ч"
 
 #: src/Template/Angular/duration_input.php:84
 msgid "8 hours"
-msgstr ""
+msgstr "8 часов"
 
 #: src/Template/Angular/duration_input.php:109
 msgid "Duration in minutes"
-msgstr ""
+msgstr "Продолжительность в минутах"
 
 #: src/Template/Angular/enable_host_flap_detection.php:7
 msgid "Enable host flap detection"
-msgstr ""
+msgstr "Включить обнаружение колебаний узла"
 
 #: src/Template/Angular/enable_host_flap_detection.php:19
 #: src/Template/Angular/enable_service_flap_detection.php:18
 msgid "Yes, I would like to temporarily <strong>enable</strong> flap detection."
-msgstr ""
+msgstr "Да, я хотел бы временно <strong>отключить</strong> обнаружение колебаний."
 
 #: src/Template/Angular/enable_host_notifications.php:7
 msgid "Enable host notification"
-msgstr ""
+msgstr "Включить уведомление узла"
 
 #: src/Template/Angular/enable_host_notifications.php:36
 #: src/Template/Angular/enable_service_notifications.php:19
 msgid "Yes, I would like to temporarily <strong>enable</strong> notifications."
-msgstr ""
+msgstr "Да, я хотел бы временно <strong>включить</strong> уведомления."
 
 #: src/Template/Angular/enable_service_flap_detection.php:7
 msgid "Enable service flap detection"
-msgstr ""
+msgstr "Включить обнаружение колебаний службы"
 
 #: src/Template/Angular/enable_service_notifications.php:7
 msgid "Enable service notifications"
-msgstr ""
+msgstr "Включить уведомления службы"
 
 #: src/Template/Angular/forbidden.php:37
 msgid "403 Forbidden"
-msgstr ""
+msgstr "403 Запрещено"
 
 #: src/Template/Angular/forbidden.php:56
 msgid "You do not have the required permissions."
-msgstr ""
+msgstr "У вас нет необходимых разрешений."
 
 #: src/Template/Angular/host_browser_menu.php:52
 #: src/Template/Angular/service_browser_menu.php:57
 msgid "Back to overview"
-msgstr ""
+msgstr "Вернуться к обзору"
 
 #: src/Template/Angular/host_browser_menu.php:57
 #: src/Template/Angular/service_browser_menu.php:62
@@ -7134,12 +7134,12 @@ msgstr ""
 #: src/Template/element/host_mass_changes.php:78
 #: src/Template/element/service_mass_changes.php:57
 msgid "Reset check time"
-msgstr ""
+msgstr "Сбросить время проверки"
 
 #: src/Template/Angular/host_browser_menu.php:67
 #: src/Template/Angular/service_browser_menu.php:72
 msgid "Object documentation"
-msgstr ""
+msgstr "Документация по объекту"
 
 #: src/Template/Angular/host_browser_menu.php:80
 #: src/Template/Angular/service_browser_menu.php:85
@@ -7150,32 +7150,32 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:150
 #: src/itnovum/openITCOCKPIT/Core/Timeline/Groups.php:49
 msgid "Notifications"
-msgstr ""
+msgstr "Уведомления"
 
 #: src/Template/Angular/host_browser_menu.php:88
 #: src/Template/Angular/service_browser_menu.php:93
 msgid "Check history"
-msgstr ""
+msgstr "История проверок"
 
 #: src/Template/Angular/host_browser_menu.php:96
 #: src/Template/Angular/service_browser_menu.php:101
 msgid "State history"
-msgstr ""
+msgstr "История состояниев"
 
 #: src/Template/Angular/host_browser_menu.php:104
 #: src/Template/Angular/service_browser_menu.php:109
 msgid "Acknowledgement history"
-msgstr ""
+msgstr "История подтверждений"
 
 #: src/Template/Angular/host_browser_menu.php:111
 #: src/Template/Angular/service_browser_menu.php:116
 msgid "External link"
-msgstr ""
+msgstr "Внешняя ссылка"
 
 #: src/Template/Angular/host_browser_menu.php:120
 #: src/Template/Angular/service_browser_menu.php:125
 msgid "Edit host"
-msgstr ""
+msgstr "Редактировать узел"
 
 #: src/Template/Angular/host_browser_menu.php:129
 #: src/Template/Angular/service_browser_menu.php:142
@@ -7186,7 +7186,7 @@ msgstr ""
 #: src/Template/Services/service_list.php:405
 #: src/Template/Servicetemplates/index.php:291
 msgid "More actions"
-msgstr ""
+msgstr "Больше действий"
 
 #: src/Template/Angular/host_browser_menu.php:137
 #: src/Template/Angular/service_browser_menu.php:150
@@ -7194,7 +7194,7 @@ msgstr ""
 #: src/Template/Hosts/index.php:596
 #: src/Template/Hosts/not_monitored.php:296
 msgid "Service list"
-msgstr ""
+msgstr "Список служб"
 
 #: src/Template/Angular/host_browser_menu.php:144
 #: src/Template/Browsers/index.php:610
@@ -7203,28 +7203,28 @@ msgstr ""
 #: src/Template/Servicetemplategroups/allocate_to_host.php:47
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:47
 msgid "Allocate service template group"
-msgstr ""
+msgstr "Выделить группу шаблонов служб"
 
 #: src/Template/Angular/host_browser_menu.php:151
 #: src/Template/Hosts/index.php:618
 #: src/Template/Hosts/not_monitored.php:318
 msgid "openITCOCKPIT Agent discovery"
-msgstr ""
+msgstr "openITCOCKPIT Агент обнаружение"
 
 #: src/Template/Angular/human_time.php:28
 msgid "hour"
-msgstr ""
+msgstr "час"
 
 #: src/Template/Angular/human_time.php:33
 msgid "hours"
-msgstr ""
+msgstr "часов"
 
 #: src/Template/Angular/human_time.php:37
 #: src/Template/Angular/human_time.php:43
 #: src/Template/Angular/human_time.php:49
 #: src/Template/Angular/human_time.php:55
 msgid "and"
-msgstr ""
+msgstr "и"
 
 #: src/Template/Angular/human_time.php:39
 #: src/Template/Nagiostats/index.php:79
@@ -7232,7 +7232,7 @@ msgstr ""
 #: src/Template/Nagiostats/index.php:332
 #: src/Template/Nagiostats/index.php:452
 msgid "minute"
-msgstr ""
+msgstr "минут"
 
 #: src/Template/Angular/human_time.php:45
 #: src/Template/Nagiostats/index.php:86
@@ -7248,25 +7248,25 @@ msgstr ""
 #: src/Template/Nagiostats/index.php:466
 #: src/Template/Nagiostats/index.php:473
 msgid "minutes"
-msgstr ""
+msgstr "минут"
 
 #: src/Template/Angular/human_time.php:51
 msgid "second"
-msgstr ""
+msgstr "Секунда"
 
 #: src/Template/Angular/human_time.php:57
 msgid "seconds"
-msgstr ""
+msgstr "Секунд"
 
 #: src/Template/Angular/interval_input.php:28
 #: src/Template/Angular/interval_input_with_differ.php:28
 msgid "30s"
-msgstr ""
+msgstr "30с"
 
 #: src/Template/Angular/interval_input.php:29
 #: src/Template/Angular/interval_input_with_differ.php:29
 msgid "30 seconds"
-msgstr ""
+msgstr "30 секунд"
 
 #: src/Template/Angular/macros.php:46
 #: src/Template/Commands/add.php:257
@@ -7277,15 +7277,15 @@ msgstr ""
 #: src/Template/Nagiostats/index.php:189
 #: src/Template/Systemsettings/index.php:79
 msgid "Value"
-msgstr ""
+msgstr "Значение"
 
 #: src/Template/Angular/mass_activate.php:15
 msgid "Do you really want activate the selected objects?"
-msgstr ""
+msgstr "Вы действительно хотите активировать выбранные объекты?"
 
 #: src/Template/Angular/mass_activate.php:34
 msgid "Activating..."
-msgstr ""
+msgstr "Активация..."
 
 #: src/Template/Angular/mass_activate.php:46
 #: src/Template/Hostgroups/extended.php:391
@@ -7298,141 +7298,141 @@ msgstr ""
 #: src/Template/Statistics/index.php:58
 #: src/Template/Statistics/index.php:65
 msgid "Enable"
-msgstr ""
+msgstr "Включить"
 
 #: src/Template/Angular/mass_deactivate.php:15
 msgid "Do you really want deactivate the selected objects?"
-msgstr ""
+msgstr "Вы действительно хотите деактивировать выбранные объекты?"
 
 #: src/Template/Angular/mass_deactivate.php:34
 msgid "Deactivating..."
-msgstr ""
+msgstr "Деактивация..."
 
 #: src/Template/Angular/mass_delete.php:41
 #: src/Template/Hostgroups/add_hosts_to_hostgroup.php:31
 msgid "Deleting..."
-msgstr ""
+msgstr "Удаление..."
 
 #: src/Template/Angular/mass_delete_host_downtimes.php:15
 msgid "Do you really want to cancel the selected host downtimes?"
-msgstr ""
+msgstr "Вы действительно хотите отменить обслуживание выбранного узла?"
 
 #: src/Template/Angular/mass_delete_host_downtimes.php:27
 msgid "Also cancel corresponding service downtimes."
-msgstr ""
+msgstr "Также отмените соответствующее обслуживание служб."
 
 #: src/Template/Angular/mass_delete_host_downtimes.php:33
 #: src/Template/Angular/mass_delete_service_downtimes.php:19
 msgid "Canceling..."
-msgstr ""
+msgstr "Отмена..."
 
 #: src/Template/Angular/mass_delete_host_downtimes.php:45
 #: src/Template/Angular/mass_delete_service_downtimes.php:31
 msgid "Cancel downtime"
-msgstr ""
+msgstr "Отмена обслуживания"
 
 #: src/Template/Angular/mass_delete_service_downtimes.php:15
 msgid "Do you really want to cancel the selected service downtimes?"
-msgstr ""
+msgstr "Вы действительно хотите отменить выбранное обслуживание служб?"
 
 #: src/Template/Angular/not_found.php:56
 msgid "Looks like the object you are looking for has vanished"
-msgstr ""
+msgstr "Похоже, объект, который вы ищете, исчез"
 
 #: src/Template/Angular/paginator.php:30
 #: src/Template/Instantreports/send_emails_list.php:168
 msgid "Page"
-msgstr ""
+msgstr "Страница"
 
 #: src/Template/Angular/paginator.php:32
 #: src/Template/Instantreports/send_emails_list.php:168
 msgid "of"
-msgstr ""
+msgstr "из"
 
 #: src/Template/Angular/paginator.php:34
 #: src/Template/Instantreports/send_emails_list.php:168
 msgid "Total"
-msgstr ""
+msgstr "Все"
 
 #: src/Template/Angular/paginator.php:36
 #: src/Template/Instantreports/send_emails_list.php:168
 msgid "entries"
-msgstr ""
+msgstr "записи"
 
 #: src/Template/Angular/queryhandler.php:3
 msgid "Monitoring Engine is not running!"
-msgstr ""
+msgstr "Механизм мониторинга не работает!"
 
 #: src/Template/Angular/queryhandler.php:5
 msgid "File {{queryHandler.path}} does not exists"
-msgstr ""
+msgstr "Файл {{queryHandler.path}} не существует"
 
 #: src/Template/Angular/reload_required.php:7
 msgid "Reload of interface required"
-msgstr ""
+msgstr "Требуется перезагрузка интерфейса"
 
 #: src/Template/Angular/reload_required.php:17
 msgid "To apply changes, a reload of the interface is required."
-msgstr ""
+msgstr "Чтобы применить изменения, требуется перезагрузка интерфейса."
 
 #: src/Template/Angular/reload_required.php:21
 msgid "Automatically reload in {{ delay - i }} seconds."
-msgstr ""
+msgstr "Автоматическая перезагрузка через {{delay - i}} секунд."
 
 #: src/Template/Angular/reschedule_host.php:24
 msgid "Only host"
-msgstr ""
+msgstr "Только узел"
 
 #: src/Template/Angular/reschedule_host.php:25
 msgid "Host and services"
-msgstr ""
+msgstr "Узел и службы"
 
 #: src/Template/Angular/scroll.php:30
 msgid "Paginator disabled for better performance. Running in scroll mode."
-msgstr ""
+msgstr "Paginator отключен для лучшей производительности. Работает в режиме scroll."
 
 #: src/Template/Angular/send_host_notification.php:7
 msgid "Send custom host notification"
-msgstr ""
+msgstr "Отправить пользовательское уведомление узла"
 
 #: src/Template/Angular/send_host_notification.php:32
 #: src/Template/Angular/send_service_notification.php:33
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:238
 msgid "Force"
-msgstr ""
+msgstr "Форсированный"
 
 #: src/Template/Angular/send_host_notification.php:35
 #: src/Template/Angular/send_service_notification.php:36
 msgid "Time period and notifications disabled configuration will be ignored"
-msgstr ""
+msgstr "Период времени и отключенные уведомления конфигурации будут игнорироваться"
 
 #: src/Template/Angular/send_host_notification.php:47
 #: src/Template/Angular/send_service_notification.php:48
 msgid "Broadcast"
-msgstr ""
+msgstr "Broadcast"
 
 #: src/Template/Angular/send_host_notification.php:50
 #: src/Template/Angular/send_service_notification.php:51
 msgid "Notification will also be sent to escalation contacts"
-msgstr ""
+msgstr "Уведомление также будет отправлено контактам эскалации"
 
 #: src/Template/Angular/send_service_notification.php:8
 msgid "Send custom service notification"
-msgstr ""
+msgstr "Отправить уведомление о службы"
 
 #: src/Template/Angular/service_browser_menu.php:41
 #: src/Template/email/html/notification_service.php:103
 msgid "on"
-msgstr ""
+msgstr "на"
 
 #: src/Template/Angular/service_browser_menu.php:133
 msgid "Edit service"
-msgstr ""
+msgstr "Редактировать службу"
 
 #: src/Template/Angular/submit_host_result.php:8
 #: src/Template/Angular/submit_service_result.php:7
 msgid "Passive transfer of check result"
-msgstr ""
+msgstr "Пассивная передача результата проверки"
 
 #: src/Template/Angular/submit_host_result.php:17
 #: src/Template/Angular/submit_service_result.php:17
@@ -7451,7 +7451,7 @@ msgstr ""
 #: src/Template/element/load_downtime_report_data.php:139
 #: src/Template/element/load_downtime_report_data.php:280
 msgid "Status"
-msgstr ""
+msgstr "Статус"
 
 #: src/Template/Angular/submit_host_result.php:25
 #: src/Template/Browsers/index.php:300
@@ -7473,12 +7473,12 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Reports/StatehistoryConverter.php:241
 #: src/itnovum/openITCOCKPIT/Core/Views/HoststatusIcon.php:86
 msgid "Up"
-msgstr ""
+msgstr "Up"
 
 #: src/Template/Angular/submit_host_result.php:49
 #: src/Template/Angular/submit_service_result.php:50
 msgid "Force to hard state"
-msgstr ""
+msgstr "Форсировать жесткий тип статуса"
 
 #: src/Template/Angular/submit_service_result.php:24
 #: src/Template/Automaps/index.php:169
@@ -7508,100 +7508,100 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Reports/StatehistoryConverter.php:247
 #: src/itnovum/openITCOCKPIT/Core/Views/ServicestatusIcon.php:89
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: src/Template/Angular/system_health.php:3
 msgid "System health"
-msgstr ""
+msgstr "Работоспособность системы"
 
 #: src/Template/Angular/system_health.php:15
 msgid "System Health"
-msgstr ""
+msgstr "Работоспособность системы"
 
 #: src/Template/Angular/system_health.php:29
 msgid "Cannot retrieve system health data"
-msgstr ""
+msgstr "Не удается получить данные о работоспособности системы"
 
 #: src/Template/Angular/system_health.php:45
 msgid "Monitoring engine is not running!"
-msgstr ""
+msgstr "Механизм мониторинга не работает!"
 
 #: src/Template/Angular/system_health.php:60
 msgid "Gearman job server not reachable!"
-msgstr ""
+msgstr "Gearman job сервер недоступен!"
 
 #: src/Template/Angular/system_health.php:75
 msgid "Service gearman_worker is not running!"
-msgstr ""
+msgstr "Служба gearman_worker не работает!"
 
 #: src/Template/Angular/system_health.php:90
 msgid "Database connector NDOUtils is not running!"
-msgstr ""
+msgstr "Коннектор базы данных NDOUtils не работает!"
 
 #: src/Template/Angular/system_health.php:105
 msgid "Database connector Statusengine is not running!"
-msgstr ""
+msgstr "Соединитель базы данных Statusengine не работает!"
 
 #: src/Template/Angular/system_health.php:121
 msgid "Performance data processer Statusengine is not running!"
-msgstr ""
+msgstr "Обработчик данных о производительности Statusengine не работает!"
 
 #: src/Template/Angular/system_health.php:136
 msgid "Performance data processer NPCD is not running!"
-msgstr ""
+msgstr "Процессор обработки данных NPCD не работает!"
 
 #: src/Template/Angular/system_health.php:151
 msgid "Service sudo_server is not running!"
-msgstr ""
+msgstr "Служба sudo_server не работает!"
 
 #: src/Template/Angular/system_health.php:166
 msgid "Service oitc_cmd is not running!"
-msgstr ""
+msgstr "Служба oitc_cmd не работает!"
 
 #: src/Template/Angular/system_health.php:181
 msgid "Service push_notification is not running!"
-msgstr ""
+msgstr "Служба push_notification не работает!"
 
 #: src/Template/Angular/system_health.php:196
 msgid "NodeJS Server is not running"
-msgstr ""
+msgstr "NodeJS сервер не работает!"
 
 #: src/Template/Angular/system_health.php:208
 msgid "Current CPU load is too high!"
-msgstr ""
+msgstr "Текущая загрузка процессора слишком высока!"
 
 #: src/Template/Angular/system_health.php:223
 msgid "High memory usage."
-msgstr ""
+msgstr "Высокое использование памяти."
 
 #: src/Template/Angular/system_health.php:245
 msgid "High Swap usage"
-msgstr ""
+msgstr "Высокое использование свопа"
 
 #: src/Template/Angular/system_health.php:268
 msgid "Low disk space left for mountpoint:"
-msgstr ""
+msgstr "Недостаточно места на диске для точки монтирования"
 
 #: src/Template/Angular/system_health.php:295
 msgid "Service phpnsta is not running!"
-msgstr ""
+msgstr "Служба phpnsta не работает!"
 
 #: src/Template/Angular/system_health.php:307
 msgid "Alright!"
-msgstr ""
+msgstr "Хорошо!"
 
 #: src/Template/Angular/system_health.php:310
 msgid "No issues detected. System operates normally."
-msgstr ""
+msgstr "Проблем не обнаружено. Система работает нормально."
 
 #: src/Template/Angular/system_health.php:326
 msgid "Could not detect system health status."
-msgstr ""
+msgstr "Не удалось определить состояние системы."
 
 #: src/Template/Angular/template_diff.php:27
 #: src/Template/Angular/template_diff_button.php:27
 msgid "Click to restore the template default value:"
-msgstr ""
+msgstr "Нажмите, чтобы восстановить стандартное значение шаблона"
 
 #: src/Template/Angular/top_search.php:27
 #: src/Template/Services/add.php:536
@@ -7611,7 +7611,7 @@ msgstr ""
 #: src/Template/Services/edit.php:609
 #: src/Template/Services/edit.php:612
 msgid "host"
-msgstr ""
+msgstr "узел"
 
 #: src/Template/Angular/top_search.php:27
 #: src/Template/Angular/top_search.php:38
@@ -7656,7 +7656,7 @@ msgstr ""
 #: src/Template/Timeperiods/used_by.php:126
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:184
 msgid "Hosts"
-msgstr ""
+msgstr "Узлы"
 
 #: src/Template/Angular/top_search.php:45
 #: src/Template/Angular/top_search.php:47
@@ -7699,7 +7699,7 @@ msgstr ""
 #: src/Template/Timeperiods/used_by.php:212
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:194
 msgid "Services"
-msgstr ""
+msgstr "Службы"
 
 #: src/Template/Angular/top_search.php:52
 #: src/Template/Angular/top_search.php:54
@@ -7708,24 +7708,24 @@ msgstr ""
 #: src/Template/Hosts/disabled.php:204
 #: src/Template/Services/service_list.php:752
 msgid "UUID"
-msgstr ""
+msgstr "UUID"
 
 #: src/Template/Angular/top_search.php:64
 msgid "Type to search"
-msgstr ""
+msgstr "Введите для поиска"
 
 #: src/Template/Angular/user_timezone.php:4
 msgid "Server time"
-msgstr ""
+msgstr "Время сервера"
 
 #: src/Template/Angular/user_timezone.php:14
 msgid "Your local time"
-msgstr ""
+msgstr "Ваше местное время"
 
 #: src/Template/Angular/version_check.php:1
 #: src/Template/Packetmanager/index.php:149
 msgid "New version available!"
-msgstr ""
+msgstr "Доступна новая версия!"
 
 #: src/Template/Automaps/add.php:34
 #: src/Template/Automaps/edit.php:34
@@ -7733,17 +7733,17 @@ msgstr ""
 #: src/Template/Automaps/index.php:48
 #: src/Template/Automaps/view.php:34
 msgid "Auto Maps"
-msgstr ""
+msgstr "Авто Карты"
 
 #: src/Template/Automaps/add.php:48
 msgid "Create new auto map"
-msgstr ""
+msgstr "Создать новую авто карту"
 
 #: src/Template/Automaps/add.php:62
 #: src/Template/Automaps/edit.php:64
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:94
 msgid "Auto Map"
-msgstr ""
+msgstr "Авто Карта"
 
 #: src/Template/Automaps/add.php:77
 #: src/Template/Automaps/edit.php:79
@@ -7757,110 +7757,110 @@ msgstr ""
 #: src/Template/Servicetemplategroups/add.php:80
 #: src/Template/Servicetemplategroups/edit.php:81
 msgid "Please select a container."
-msgstr ""
+msgstr "Пожалуйста, выберите контейнер."
 
 #: src/Template/Automaps/add.php:96
 #: src/Template/Automaps/edit.php:98
 #: src/Template/Automaps/view.php:81
 msgid "Recursive"
-msgstr ""
+msgstr "Рекурсивный"
 
 #: src/Template/Automaps/add.php:130
 #: src/Template/Automaps/edit.php:132
 #: src/Template/Automaps/index.php:129
 msgid "Host RegEx"
-msgstr ""
+msgstr "Узел RegEx"
 
 #: src/Template/Automaps/add.php:141
 #: src/Template/Automaps/edit.php:143
 msgid "{0} hosts matching to regular expression."
-msgstr ""
+msgstr "{0} узлов, соответствующих регулярному выражению."
 
 #: src/Template/Automaps/add.php:147
 #: src/Template/Automaps/edit.php:149
 #: src/Template/Automaps/index.php:133
 msgid "Service RegEx"
-msgstr ""
+msgstr "Служба RegEx"
 
 #: src/Template/Automaps/add.php:158
 #: src/Template/Automaps/edit.php:160
 msgid "{0} services matching to regular expression."
-msgstr ""
+msgstr "{0} служба соответствующих регулярному выражению."
 
 #: src/Template/Automaps/add.php:167
 #: src/Template/Automaps/edit.php:169
 msgid "Filter and display options"
-msgstr ""
+msgstr "Параметры фильтра и отображения"
 
 #: src/Template/Automaps/add.php:180
 #: src/Template/Automaps/edit.php:182
 msgid "Show Ok"
-msgstr ""
+msgstr "Показать Ok"
 
 #: src/Template/Automaps/add.php:195
 #: src/Template/Automaps/edit.php:197
 msgid "Show Warning"
-msgstr ""
+msgstr "Показать Предупреждения"
 
 #: src/Template/Automaps/add.php:210
 #: src/Template/Automaps/edit.php:212
 msgid "Show Critical"
-msgstr ""
+msgstr "Показать Критично"
 
 #: src/Template/Automaps/add.php:225
 #: src/Template/Automaps/edit.php:227
 msgid "Show Unknown"
-msgstr ""
+msgstr "Показать Неизвестно"
 
 #: src/Template/Automaps/add.php:240
 #: src/Template/Automaps/edit.php:242
 msgid "Show Downtime"
-msgstr ""
+msgstr "Показать Обслуживания"
 
 #: src/Template/Automaps/add.php:255
 #: src/Template/Automaps/edit.php:257
 msgid "Show Acknowledged"
-msgstr ""
+msgstr "Показать Подтверждения"
 
 #: src/Template/Automaps/add.php:262
 #: src/Template/Automaps/edit.php:264
 msgid "Display options"
-msgstr ""
+msgstr "Показать варианты"
 
 #: src/Template/Automaps/add.php:294
 #: src/Template/Automaps/edit.php:296
 msgid "Group by Host"
-msgstr ""
+msgstr "Группировать по узлу"
 
 #: src/Template/Automaps/add.php:311
 #: src/Template/Automaps/edit.php:313
 msgid "Use pagination"
-msgstr ""
+msgstr "Используйте нумерацию страниц"
 
 #: src/Template/Automaps/add.php:315
 #: src/Template/Automaps/edit.php:317
 msgid "Will may decrease loading performance if disabled."
-msgstr ""
+msgstr "Может отключить производительность загрузки, если отключено."
 
 #: src/Template/Automaps/add.php:322
 #: src/Template/Automaps/edit.php:324
 msgid "Icon size"
-msgstr ""
+msgstr "Размер значка"
 
 #: src/Template/Automaps/add.php:333
 #: src/Template/Automaps/edit.php:335
 msgid "Normal"
-msgstr ""
+msgstr "Обычный"
 
 #: src/Template/Automaps/add.php:339
 #: src/Template/Automaps/edit.php:341
 msgid "Please select a icon size."
-msgstr ""
+msgstr "Пожалуйста, выберите размер значка."
 
 #: src/Template/Automaps/add.php:352
 #: src/Template/Automaps/edit.php:354
 msgid "Icon Preview"
-msgstr ""
+msgstr "Предварительный просмотр значка"
 
 #: src/Template/Automaps/add.php:362
 #: src/Template/Automaps/add.php:370
@@ -7891,7 +7891,7 @@ msgstr ""
 #: src/Template/Automaps/edit.php:429
 #: src/Template/Automaps/edit.php:430
 msgid "Example host"
-msgstr ""
+msgstr "Пример Узел"
 
 #: src/Template/Automaps/add.php:370
 #: src/Template/Automaps/add.php:371
@@ -7906,7 +7906,7 @@ msgstr ""
 #: src/Template/Automaps/edit.php:422
 #: src/Template/Automaps/edit.php:423
 msgid "Service 1"
-msgstr ""
+msgstr "Служба 1"
 
 #: src/Template/Automaps/add.php:377
 #: src/Template/Automaps/add.php:378
@@ -7921,23 +7921,23 @@ msgstr ""
 #: src/Template/Automaps/edit.php:429
 #: src/Template/Automaps/edit.php:430
 msgid "Service 2"
-msgstr ""
+msgstr "Служба 2"
 
 #: src/Template/Automaps/add.php:444
 msgid "Create auto map"
-msgstr ""
+msgstr "Создать авто карту"
 
 #: src/Template/Automaps/edit.php:48
 msgid "Edit auto map: "
-msgstr ""
+msgstr "Изменить авто карту"
 
 #: src/Template/Automaps/edit.php:442
 msgid "Update auto map"
-msgstr ""
+msgstr "Обновить авто карту"
 
 #: src/Template/Automaps/index.php:82
 msgid "Filter by auto map name"
-msgstr ""
+msgstr "Фильтр по имени авто карты"
 
 #: src/Template/Automaps/index.php:95
 #: src/Template/Calendars/index.php:92
@@ -7947,15 +7947,15 @@ msgstr ""
 #: src/Template/Tenants/index.php:98
 #: src/Template/Usergroups/index.php:97
 msgid "Filter by description"
-msgstr ""
+msgstr "Фильтр по описанию"
 
 #: src/Template/Automaps/index.php:136
 msgid "Status filters"
-msgstr ""
+msgstr "Фильтры статуса"
 
 #: src/Template/Automaps/index.php:139
 msgid "Recursive container"
-msgstr ""
+msgstr "Рекурсивный контейнер"
 
 #: src/Template/Automaps/index.php:171
 #: src/Template/Hostdependencies/index.php:507
@@ -7963,7 +7963,7 @@ msgstr ""
 #: src/Template/Servicedependencies/index.php:535
 #: src/Template/Servicedependencies/index.php:569
 msgid "O"
-msgstr ""
+msgstr "O"
 
 #: src/Template/Automaps/index.php:176
 #: src/Template/Contacts/index.php:233
@@ -7971,7 +7971,7 @@ msgstr ""
 #: src/Template/Servicedependencies/index.php:574
 #: src/Template/Serviceescalations/index.php:473
 msgid "W"
-msgstr ""
+msgstr "W"
 
 #: src/Template/Automaps/index.php:181
 #: src/Template/Contacts/index.php:238
@@ -7979,7 +7979,7 @@ msgstr ""
 #: src/Template/Servicedependencies/index.php:579
 #: src/Template/Serviceescalations/index.php:478
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: src/Template/Automaps/index.php:186
 #: src/Template/Contacts/index.php:200
@@ -7991,7 +7991,7 @@ msgstr ""
 #: src/Template/Servicedependencies/index.php:584
 #: src/Template/Serviceescalations/index.php:483
 msgid "U"
-msgstr ""
+msgstr "U"
 
 #: src/Template/Automaps/index.php:189
 #: src/Template/Dashboards/hosts_status_list_widget.php:83
@@ -8000,7 +8000,7 @@ msgstr ""
 #: src/Template/Services/browser.php:1025
 #: src/Template/Statusmaps/index.php:162
 msgid "Acknowledged"
-msgstr ""
+msgstr "Подтвержден"
 
 #: src/Template/Automaps/index.php:194
 #: src/Template/Browsers/index.php:375
@@ -8009,7 +8009,7 @@ msgstr ""
 #: src/Template/Services/index.php:292
 #: src/Template/Statusmaps/index.php:156
 msgid "In downtime"
-msgstr ""
+msgstr "В обслуживании"
 
 #: src/Template/Automaps/index.php:203
 #: src/Template/Automaps/view.php:84
@@ -8034,7 +8034,7 @@ msgstr ""
 #: src/Template/Statusmaps/index.php:149
 #: src/Template/Users/index.php:216
 msgid "Disabled"
-msgstr ""
+msgstr "Выключен"
 
 #: src/Template/Automaps/index.php:207
 #: src/Template/Automaps/view.php:88
@@ -8044,73 +8044,73 @@ msgstr ""
 #: src/Template/Cronjobs/index.php:201
 #: src/Template/Cronjobs/index.php:298
 msgid "Enabled"
-msgstr ""
+msgstr "Включен"
 
 #: src/Template/Automaps/view.php:49
 msgid "View auto map: "
-msgstr ""
+msgstr "Посмотреть авто карту: "
 
 #: src/Template/Automaps/view.php:73
 msgid "Regular expression for hosts"
-msgstr ""
+msgstr "Регулярное выражение для узлов"
 
 #: src/Template/Automaps/view.php:77
 msgid "Regular expression for services"
-msgstr ""
+msgstr "Регулярное выражение для служб"
 
 #: src/Template/Backups/index.php:34
 msgid "Backups"
-msgstr ""
+msgstr "Резервные копии"
 
 #: src/Template/Backups/index.php:38
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:555
 msgid "Backup / Restore"
-msgstr ""
+msgstr "Восстановления резервной копии"
 
 #: src/Template/Backups/index.php:47
 msgid "Backup management"
-msgstr ""
+msgstr "Управление резервным копированием"
 
 #: src/Template/Backups/index.php:57
 msgid "Backupfile for Restore"
-msgstr ""
+msgstr "Резервный файл для восстановления"
 
 #: src/Template/Backups/index.php:76
 msgid "Delete file"
-msgstr ""
+msgstr "Удалить файл"
 
 #: src/Template/Backups/index.php:80
 msgid "Download file"
-msgstr ""
+msgstr "Скачать файл"
 
 #: src/Template/Backups/index.php:84
 msgid "Start Restore"
-msgstr ""
+msgstr "Начать восстановление"
 
 #: src/Template/Backups/index.php:98
 msgid "Filename for Backup"
-msgstr ""
+msgstr "Имя файла для резервного копирования"
 
 #: src/Template/Backups/index.php:115
 msgid "Start Backup"
-msgstr ""
+msgstr "Начать резервное копирование"
 
 #: src/Template/Browsers/index.php:52
 #: src/Template/Containers/show_details.php:111
 msgid "Nodes"
-msgstr ""
+msgstr "Контейнерные узлы"
 
 #: src/Template/Browsers/index.php:65
 msgid "Type to filter..."
-msgstr ""
+msgstr "Пиши для фильтрации..."
 
 #: src/Template/Browsers/index.php:100
 msgid "No hosts associated with this node"
-msgstr ""
+msgstr "No nodes associated with this container node"
 
 #: src/Template/Browsers/index.php:198
 msgid "browser"
-msgstr ""
+msgstr "браузер"
 
 #: src/Template/Browsers/index.php:232
 #: src/Template/Dashboards/host_status_overview_widget.php:68
@@ -8138,7 +8138,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/host.php:165
 #: src/Template/Systemdowntimes/service.php:165
 msgid "Filter by host name"
-msgstr ""
+msgstr "Фильтровать по имени узла"
 
 #: src/Template/Browsers/index.php:245
 #: src/Template/Hosts/disabled.php:126
@@ -8146,13 +8146,13 @@ msgstr ""
 #: src/Template/Hosts/not_monitored.php:131
 #: src/Template/Statusmaps/index.php:80
 msgid "Filter by IP address"
-msgstr ""
+msgstr "Фильтровать по IP-адресу"
 
 #: src/Template/Browsers/index.php:275
 #: src/Template/Hosts/index.php:178
 #: src/Template/Services/index.php:162
 msgid "Filter by tags"
-msgstr ""
+msgstr "Фильтровать по тегам"
 
 #: src/Template/Browsers/index.php:289
 #: src/Template/Currentstatereports/index.php:96
@@ -8160,28 +8160,28 @@ msgstr ""
 #: src/Template/Hosts/browser.php:1030
 #: src/Template/Services/index.php:194
 msgid "Service status"
-msgstr ""
+msgstr "Статус служб"
 
 #: src/Template/Browsers/index.php:333
 #: src/Template/Currentstatereports/index.php:152
 #: src/Template/Hosts/index.php:254
 #: src/Template/Services/index.php:250
 msgid "Acknowledgements"
-msgstr ""
+msgstr "Подтверждения"
 
 #: src/Template/Browsers/index.php:344
 #: src/Template/Currentstatereports/index.php:163
 #: src/Template/Hosts/index.php:265
 #: src/Template/Services/index.php:261
 msgid "Acknowledge"
-msgstr ""
+msgstr "Подтверждение"
 
 #: src/Template/Browsers/index.php:356
 #: src/Template/Currentstatereports/index.php:175
 #: src/Template/Hosts/index.php:277
 #: src/Template/Services/index.php:273
 msgid "Not acknowledged"
-msgstr ""
+msgstr "Не подтвержден"
 
 #: src/Template/Browsers/index.php:364
 #: src/Template/Currentstatereports/index.php:183
@@ -8192,19 +8192,19 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:349
 #: src/itnovum/openITCOCKPIT/Core/Timeline/Groups.php:44
 msgid "Downtimes"
-msgstr ""
+msgstr "Обслуживания"
 
 #: src/Template/Browsers/index.php:387
 #: src/Template/Currentstatereports/index.php:206
 #: src/Template/Hosts/index.php:308
 #: src/Template/Services/index.php:304
 msgid "Not in downtime"
-msgstr ""
+msgstr "Не в обслуживании"
 
 #: src/Template/Browsers/index.php:410
 #: src/Template/Hosts/index.php:354
 msgid "Hoststatus"
-msgstr ""
+msgstr "Статус узла"
 
 #: src/Template/Browsers/index.php:414
 #: src/Template/Dashboards/hosts_status_list_widget.php:164
@@ -8213,7 +8213,7 @@ msgstr ""
 #: src/Template/Services/index.php:359
 #: src/Template/Services/service_list.php:166
 msgid "is acknowledged"
-msgstr ""
+msgstr "подтвержден"
 
 #: src/Template/Browsers/index.php:419
 #: src/Template/Dashboards/hosts_status_list_widget.php:169
@@ -8222,21 +8222,21 @@ msgstr ""
 #: src/Template/Services/index.php:364
 #: src/Template/Services/service_list.php:171
 msgid "is in downtime"
-msgstr ""
+msgstr "в обслуживании"
 
 #: src/Template/Browsers/index.php:423
 #: src/Template/Hosts/browser.php:1045
 #: src/Template/Services/index.php:369
 #: src/Template/Services/service_list.php:176
 msgid "Grapher"
-msgstr ""
+msgstr "Grapher"
 
 #: src/Template/Browsers/index.php:427
 #: src/Template/Browsers/index.php:512
 #: src/Template/Hosts/index.php:367
 #: src/Template/Hosts/index.php:442
 msgid "Shared"
-msgstr ""
+msgstr "Общий"
 
 #: src/Template/Browsers/index.php:431
 #: src/Template/Browsers/index.php:523
@@ -8244,7 +8244,7 @@ msgstr ""
 #: src/Template/Hosts/index.php:453
 #: src/Template/Hosts/not_monitored.php:224
 msgid "Passively transferred host"
-msgstr ""
+msgstr "Пассивно перенесенный узел"
 
 #: src/Template/Browsers/index.php:436
 #: src/Template/Dashboards/hosts_status_list_widget.php:173
@@ -8265,7 +8265,7 @@ msgstr ""
 #: src/Template/email/html/notification_host.php:132
 #: src/Template/email/html/notification_service.php:147
 msgid "Host name"
-msgstr ""
+msgstr "Имя узла"
 
 #: src/Template/Browsers/index.php:441
 #: src/Template/Currentstatereports/pdf/create_pdf_report.php:92
@@ -8281,7 +8281,7 @@ msgstr ""
 #: src/Template/element/load_downtime_report_data.php:274
 #: src/Template/element/load_downtime_report_data.php:417
 msgid "IP address"
-msgstr ""
+msgstr "IP адрес"
 
 #: src/Template/Browsers/index.php:457
 #: src/Template/Currentstatereports/pdf/create_pdf_report.php:110
@@ -8291,7 +8291,7 @@ msgstr ""
 #: src/Template/Statehistories/host.php:211
 #: src/Template/element/load_current_state_report_data.php:98
 msgid "Host output"
-msgstr ""
+msgstr "Выход узла"
 
 #: src/Template/Browsers/index.php:462
 #: src/Template/Hosts/browser.php:837
@@ -8302,7 +8302,7 @@ msgstr ""
 #: src/Template/Hosts/not_monitored.php:154
 #: src/Template/Hosts/not_monitored.php:206
 msgid "Instance"
-msgstr ""
+msgstr "Инстанция"
 
 #: src/Template/Browsers/index.php:488
 #: src/Template/Currentstatereports/index.php:317
@@ -8317,23 +8317,23 @@ msgstr ""
 #: src/Template/Services/index.php:454
 #: src/Template/Services/service_list.php:237
 msgid "Sticky Acknowledgedment"
-msgstr ""
+msgstr "Липкое подтверждение"
 
 #: src/Template/Browsers/index.php:519
 #: src/Template/Hosts/index.php:449
 msgid "Restricted view"
-msgstr ""
+msgstr "Ограниченный вид"
 
 #: src/Template/Browsers/index.php:596
 #: src/Template/Hosts/disabled.php:283
 #: src/Template/Hosts/index.php:572
 #: src/Template/Hosts/not_monitored.php:280
 msgid "Sharing"
-msgstr ""
+msgstr "Делить"
 
 #: src/Template/Browsers/index.php:603
 msgid "Service List"
-msgstr ""
+msgstr "Список служб"
 
 #: src/Template/Browsers/index.php:618
 #: src/Template/Browsers/index.php:700
@@ -8341,14 +8341,14 @@ msgstr ""
 #: src/Template/Hosts/index.php:611
 #: src/Template/Hosts/not_monitored.php:311
 msgid "Append to host group"
-msgstr ""
+msgstr "Добавить в группу узлов"
 
 #: src/Template/Browsers/index.php:688
 #: src/Template/Hosts/index.php:686
 #: src/Template/Hosts/not_monitored.php:383
 #: src/Template/element/host_mass_changes.php:55
 msgid "Edit details"
-msgstr ""
+msgstr "Редактировать детали"
 
 #: src/Template/Browsers/index.php:710
 #: src/Template/Hostgroups/extended.php:145
@@ -8359,7 +8359,7 @@ msgstr ""
 #: src/Template/element/host_mass_changes.php:92
 #: src/Template/element/service_mass_changes.php:71
 msgid "Disable notification"
-msgstr ""
+msgstr "Отключить уведомления"
 
 #: src/Template/Browsers/index.php:714
 #: src/Template/Hostgroups/extended.php:152
@@ -8372,7 +8372,7 @@ msgstr ""
 #: src/Template/element/host_mass_changes.php:97
 #: src/Template/element/service_mass_changes.php:76
 msgid "Enable notifications"
-msgstr ""
+msgstr "Включить уведомления"
 
 #: src/Template/Calendars/add.php:34
 #: src/Template/Calendars/edit.php:34
