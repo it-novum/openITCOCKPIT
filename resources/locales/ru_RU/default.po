@@ -8560,7 +8560,7 @@ msgstr "Контактные группы"
 #: src/Template/Systemdowntimes/add_hostgroupdowntime.php:67
 #: src/Template/Systemdowntimes/hostgroup.php:38
 msgid "Host groups"
-msgstr ""
+msgstr "Группа узлов"
 
 #: src/Template/Changelogs/index.php:131
 #: src/Template/Commands/used_by.php:93
@@ -8574,7 +8574,7 @@ msgstr ""
 #: src/Template/Hosttemplates/used_by.php:34
 #: src/Template/Timeperiods/used_by.php:144
 msgid "Host templates"
-msgstr ""
+msgstr "Шаблоны узлов"
 
 #: src/Template/Changelogs/index.php:133
 #: src/Template/Containers/show_details.php:429
@@ -8600,7 +8600,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:164
 #: src/Template/Servicetemplates/edit.php:168
 msgid "Service groups"
-msgstr ""
+msgstr "Группы служб"
 
 #: src/Template/Changelogs/index.php:134
 #: src/Template/Commands/used_by.php:111
@@ -8618,7 +8618,7 @@ msgstr ""
 #: src/Template/Servicetemplates/index.php:53
 #: src/Template/Timeperiods/used_by.php:229
 msgid "Service templates"
-msgstr ""
+msgstr "Шаблоны служб"
 
 #: src/Template/Changelogs/index.php:135
 #: src/Template/Containers/show_details.php:664
@@ -8629,65 +8629,65 @@ msgstr ""
 #: src/Template/Timeperiods/index.php:49
 #: src/Template/Timeperiods/used_by.php:34
 msgid "Time periods"
-msgstr ""
+msgstr "Периоды времени"
 
 #: src/Template/Changelogs/index.php:159
 #: src/Template/Macros/index.php:92
 #: src/Template/Services/service_list.php:69
 msgid "Actions"
-msgstr ""
+msgstr "Действия"
 
 #: src/Template/Changelogs/index.php:226
 msgid "Activate"
-msgstr ""
+msgstr "Включить"
 
 #: src/Template/Changelogs/index.php:239
 msgid "Deactivate"
-msgstr ""
+msgstr "Выключить"
 
 #: src/Template/Changelogs/index.php:283
 msgid "by"
-msgstr ""
+msgstr "по"
 
 #: src/Template/Changelogs/index.php:295
 msgid "by Cronjob"
-msgstr ""
+msgstr "by Cronjob"
 
 #: src/Template/Commands/add.php:52
 msgid "Create new command"
-msgstr ""
+msgstr "Создать новую команду"
 
 #: src/Template/Commands/add.php:58
 #: src/Template/Commands/edit.php:59
 msgid "Default macros overview"
-msgstr ""
+msgstr "Обзор стандартных макросов"
 
 #: src/Template/Commands/add.php:62
 #: src/Template/Commands/edit.php:63
 msgid "$USERn$ overview"
-msgstr ""
+msgstr "$USERn$ обзор"
 
 #: src/Template/Commands/add.php:75
 #: src/Template/Commands/edit.php:76
 msgid "command"
-msgstr ""
+msgstr "команда"
 
 #: src/Template/Commands/add.php:83
 #: src/Template/Commands/edit.php:84
 #: src/Template/Macros/index.php:48
 msgid "Security notice"
-msgstr ""
+msgstr "Уведомление о безопасности"
 
 #: src/Template/Commands/add.php:85
 #: src/Template/Commands/edit.php:86
 msgid "User defined macros inside of command_line could lead to unwanted code execution."
-msgstr ""
+msgstr "Пользовательские макросы внутри command_line могут привести к выполнению нежелательного кода."
 
 #: src/Template/Commands/add.php:87
 #: src/Template/Commands/edit.php:88
 #: src/Template/Macros/index.php:52
 msgid "It is recommended to only provide access for a certain group of users to edit commands and user defined macros."
-msgstr ""
+msgstr "Рекомендуется предоставлять доступ только определенной группе пользователей для редактирования команд и пользовательских макросов."
 
 #: src/Template/Commands/add.php:131
 #: src/Template/Commands/copy.php:85
@@ -8695,52 +8695,52 @@ msgstr ""
 #: src/Template/Hosts/browser.php:385
 #: src/Template/Services/browser.php:456
 msgid "Command line"
-msgstr ""
+msgstr "Командная строка"
 
 #: src/Template/Commands/add.php:145
 #: src/Template/Commands/edit.php:146
 msgid "user defined macro"
-msgstr ""
+msgstr "пользовательский макрос"
 
 #: src/Template/Commands/add.php:151
 #: src/Template/Commands/edit.php:152
 msgid "A $-sign needs to be escaped manually (\\$). Semicolons (;) needs to be defined as {0}."
-msgstr ""
+msgstr "Знак-$ должен быть экранирован вручную (\\ $). Точки с запятой (;) должны быть определены как {0}."
 
 #: src/Template/Commands/add.php:153
 #: src/Template/Commands/edit.php:154
 msgid "Nagios supports up to 32 $ARGx$ macros ($ARG1$ through $ARG32$)"
-msgstr ""
+msgstr "Nagios поддерживает до 32 макросов $ARGx$ (от $ARG1$ до $ARG32$)"
 
 #: src/Template/Commands/add.php:169
 #: src/Template/Commands/edit.php:170
 msgid "Arguments"
-msgstr ""
+msgstr "Аргументы"
 
 #: src/Template/Commands/add.php:187
 #: src/Template/Commands/edit.php:188
 msgid "Please enter a name"
-msgstr ""
+msgstr "Пожалуйста, введите имя"
 
 #: src/Template/Commands/add.php:206
 #: src/Template/Commands/edit.php:207
 msgid "empty arguments will be removed automatically"
-msgstr ""
+msgstr "пустые аргументы будут удалены автоматически"
 
 #: src/Template/Commands/add.php:213
 #: src/Template/Commands/edit.php:214
 msgid "Add argument"
-msgstr ""
+msgstr "Добавить аргумент"
 
 #: src/Template/Commands/add.php:222
 msgid "Create command"
-msgstr ""
+msgstr "Создать команду"
 
 #: src/Template/Commands/add.php:241
 #: src/Template/Commands/edit.php:242
 #: src/Template/Macros/index.php:34
 msgid "User defined macros"
-msgstr ""
+msgstr "Пользовательские макросы"
 
 #: src/Template/Commands/add.php:281
 #: src/Template/Commands/edit.php:282
@@ -8748,85 +8748,85 @@ msgstr ""
 #: src/Template/Macros/index.php:227
 #: src/Template/Macros/index.php:333
 msgid "Hide value"
-msgstr ""
+msgstr "Скрыть значение"
 
 #: src/Template/Commands/add.php:288
 #: src/Template/Commands/edit.php:289
 #: src/Template/Macros/index.php:118
 msgid "Show value"
-msgstr ""
+msgstr "Показать значение"
 
 #: src/Template/Commands/add.php:315
 #: src/Template/Commands/edit.php:316
 msgid "Mismatch in number of defined arguments detected"
-msgstr ""
+msgstr "Обнаружено несоответствие количества определенных аргументов"
 
 #: src/Template/Commands/add.php:323
 #: src/Template/Commands/edit.php:324
 msgid "Different amount of used {0} variables compared to defined arguments!"
-msgstr ""
+msgstr "Различное количество используемых {0} переменных по сравнению с определенными аргументами!"
 
 #: src/Template/Commands/add.php:329
 #: src/Template/Commands/edit.php:330
 msgid "Number of used {0} variables:"
-msgstr ""
+msgstr "Количество использованных {0} переменных:"
 
 #: src/Template/Commands/add.php:332
 #: src/Template/Commands/edit.php:333
 msgid "Number of defined arguments:"
-msgstr ""
+msgstr "Количество определенных аргументов:"
 
 #: src/Template/Commands/add.php:338
 #: src/Template/Commands/edit.php:339
 msgid "Save anyway"
-msgstr ""
+msgstr "Сохранить в любом случае"
 
 #: src/Template/Commands/add.php:353
 #: src/Template/Commands/edit.php:354
 msgid "List of all available default macros"
-msgstr ""
+msgstr "Список всех доступных стандартных макросов"
 
 #: src/Template/Commands/add.php:370
 #: src/Template/Commands/edit.php:371
 msgid "Macro"
-msgstr ""
+msgstr "Макрос"
 
 #: src/Template/Commands/copy.php:47
 msgid "Copy command/s"
-msgstr ""
+msgstr "Скопировать команду/ы"
 
 #: src/Template/Commands/copy.php:62
 msgid "Source command:"
-msgstr ""
+msgstr "Исходная команда:"
 
 #: src/Template/Commands/copy.php:69
 #: src/Template/Commands/index.php:160
 msgid "Command name"
-msgstr ""
+msgstr "Название команды"
 
 #: src/Template/Commands/copy.php:77
 msgid "Name of the new command"
-msgstr ""
+msgstr "Название новой команды"
 
 #: src/Template/Commands/edit.php:52
 msgid "Edit command:"
-msgstr ""
+msgstr "Редактировать команду:"
 
 #: src/Template/Commands/edit.php:223
 msgid "Update command"
-msgstr ""
+msgstr "Обновить команду"
 
 #: src/Template/Commands/index.php:38
 msgid "Index"
-msgstr ""
+msgstr "Индекс"
 
 #: src/Template/Commands/index.php:80
 msgid "Filter by command name"
-msgstr ""
+msgstr "Фильтровать по имени команды"
 
 #: src/Template/Commands/index.php:89
 msgid "Command types"
-msgstr ""
+msgstr "Типы команд"
 
 #: src/Template/Commands/index.php:211
 #: src/Template/Commands/used_by.php:38
@@ -8840,11 +8840,11 @@ msgstr ""
 #: src/Template/Timeperiods/index.php:187
 #: src/Template/Timeperiods/used_by.php:38
 msgid "Used by"
-msgstr ""
+msgstr "Использован"
 
 #: src/Template/Commands/used_by.php:46
 msgid "Command"
-msgstr ""
+msgstr "Команда"
 
 #: src/Template/Commands/used_by.php:52
 #: src/Template/Contactgroups/used_by.php:51
@@ -8852,77 +8852,77 @@ msgstr ""
 #: src/Template/Servicetemplates/used_by.php:56
 #: src/Template/Timeperiods/used_by.php:52
 msgid "is used by"
-msgstr ""
+msgstr "используется"
 
 #: src/Template/Commands/used_by.php:54
 #: src/Template/Contactgroups/used_by.php:53
 #: src/Template/Timeperiods/used_by.php:54
 msgid "objects."
-msgstr ""
+msgstr "объектами."
 
 #: src/Template/Commands/used_by.php:166
 msgid "This command is not used by any object"
-msgstr ""
+msgstr "Эта команда не используется ни одним объектом"
 
 #: src/Template/ConfigurationFiles/db_backend.php:36
 #: src/Template/ConfigurationFiles/perfdata_backend.php:36
 msgid "Database backend"
-msgstr ""
+msgstr "База данных бэкенд"
 
 #: src/Template/ConfigurationFiles/db_backend.php:44
 msgid "Statusengine 3 - MySQL"
-msgstr ""
+msgstr "Statusengine 3 - MySQL"
 
 #: src/Template/ConfigurationFiles/db_backend.php:45
 msgid "Statusengine 3 - CrateDB"
-msgstr ""
+msgstr "Statusengine 3 - CrateDB"
 
 #: src/Template/ConfigurationFiles/db_backend.php:46
 msgid "Statusengine 2 / NDOUtils - MySQL"
-msgstr ""
+msgstr "Statusengine 2 / NDOUtils - MySQL"
 
 #: src/Template/ConfigurationFiles/edit.php:34
 msgid "Configuration file"
-msgstr ""
+msgstr "Файл конфигурации"
 
 #: src/Template/ConfigurationFiles/edit.php:47
 msgid "Edit configuration file "
-msgstr ""
+msgstr "Изменить файл конфигурации"
 
 #: src/Template/ConfigurationFiles/edit.php:52
 #: src/Template/ConfigurationFiles/edit.php:99
 #: src/Template/Dashboards/index.php:142
 msgid "Restore default"
-msgstr ""
+msgstr "Сброс настроек"
 
 #: src/Template/ConfigurationFiles/edit.php:92
 msgid "Do you really want to restore default configuration? All manual changes will be lost."
-msgstr ""
+msgstr "Вы действительно хотите восстановить стандартную конфигурацию? Все ручные изменения будут потеряны."
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:37
 msgid "Carbon storage path"
-msgstr ""
+msgstr "Carbon storage путь"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:73
 msgid "Carbon Cache instances"
-msgstr ""
+msgstr "Carbon Cache инстанции"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:90
 msgid "Carbon C Relay workers"
-msgstr ""
+msgstr "Carbon C Relay workers"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:107
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:254
 msgid "Carbon storage schema"
-msgstr ""
+msgstr "Carbon storage схема"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:123
 msgid "Local Graphite-Web port"
-msgstr ""
+msgstr "Local Graphite-Web порт"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:140
 msgid "Graphite-Web timezone"
-msgstr ""
+msgstr "Graphite-Web часовой пояс"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:163
 #: src/Template/Dashboards/welcome_widget.php:41
@@ -8931,7 +8931,7 @@ msgstr ""
 #: src/Template/Users/add_from_ldap.php:431
 #: src/Template/Users/edit.php:366
 msgid "Server timezone is:"
-msgstr ""
+msgstr "Часовой пояс сервера:"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:167
 #: src/Template/Profile/edit.php:259
@@ -8939,148 +8939,148 @@ msgstr ""
 #: src/Template/Users/add_from_ldap.php:435
 #: src/Template/Users/edit.php:370
 msgid "Current server time:"
-msgstr ""
+msgstr "Текущее время сервера:"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:176
 msgid "Local Carbon C Relay port"
-msgstr ""
+msgstr "Local Carbon C Relay порт"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:193
 msgid "Network configuration"
-msgstr ""
+msgstr "Конфигурация сети"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:201
 msgid "Automatically"
-msgstr ""
+msgstr "Автоматически"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:202
 msgid "Manually"
-msgstr ""
+msgstr "Вручную"
 
 #: src/Template/ConfigurationFiles/graphing_docker.php:254
 msgid "Docker Compose subnet"
-msgstr ""
+msgstr "Docker Compose подсеть"
 
 #: src/Template/ConfigurationFiles/index.php:34
 #: src/Template/ConfigurationFiles/index.php:47
 msgid "Configuration file editor"
-msgstr ""
+msgstr "Редактор конфигурационного файла"
 
 #: src/Template/ConfigurationFiles/index.php:58
 msgid "File name"
-msgstr ""
+msgstr "Имя файла"
 
 #: src/Template/ConfigurationFiles/nagios_cfg.php:108
 msgid "Critical (default)"
-msgstr ""
+msgstr "Критический (стандарт)"
 
 #: src/Template/ConfigurationFiles/nagios_cfg.php:111
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: src/Template/ConfigurationFiles/perfdata_backend.php:44
 msgid "Whisper (Statusengine 3 / Statusengine 2)"
-msgstr ""
+msgstr "Whisper (Statusengine 3 / Statusengine 2)"
 
 #: src/Template/ConfigurationFiles/perfdata_backend.php:45
 msgid "Crate (Statusengine 3)"
-msgstr ""
+msgstr "Crate (Statusengine 3)"
 
 #: src/Template/ConfigurationFiles/perfdata_backend.php:46
 msgid "Rrdtool (Statusengine 2 / NPCD)"
-msgstr ""
+msgstr "Rrdtool (Statusengine 2 / NPCD)"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:47
 msgid "Use check_result_path"
-msgstr ""
+msgstr "Используйте check_result_path"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:48
 msgid "Use external command file (nagios.cmd)"
-msgstr ""
+msgstr "Использовать внешний командный файл (nagios.cmd)"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:49
 msgid "Use Naemon Query Handler (nagios.qh recommended)"
-msgstr ""
+msgstr "Использовать Naemon Query Handler (рекомендуется nagios.qh)"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:96
 msgid "SSH configuration"
-msgstr ""
+msgstr "Конфигурация SSH"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:205
 msgid "Logging"
-msgstr ""
+msgstr "Ведение журнала"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:217
 msgid "Disable loging"
-msgstr ""
+msgstr "Отключить ведение журнала"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:218
 msgid "Only some information about phpNSTA"
-msgstr ""
+msgstr "Только немного информации о phpNSTA"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:219
 msgid "Process fork information"
-msgstr ""
+msgstr "Информация о форке процесса"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:220
 msgid "File operation information"
-msgstr ""
+msgstr "Информация о работе с файлом"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:221
 msgid "Nagios process information"
-msgstr ""
+msgstr "Информация о процессе Nagios"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:222
 msgid "SSH tunnel information"
-msgstr ""
+msgstr "Информация о туннеле SSH"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:223
 msgid "System time synchronization information"
-msgstr ""
+msgstr "Информация о синхронизации системного времени"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:224
 msgid "Events triggerd by the SAT-Systems"
-msgstr ""
+msgstr "События, инициируемые SAT-системами"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:225
 msgid "Child process monitoring"
-msgstr ""
+msgstr "Мониторинг дочерних процессов"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:226
 msgid "Data for Mod_Gearman"
-msgstr ""
+msgstr "Данные для Mod_Gearman"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:227
 msgid "Bulk Transmission"
-msgstr ""
+msgstr "Массовая передача"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:228
 msgid "Custom data transmission"
-msgstr ""
+msgstr "Передача пользовательских данных"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:229
 msgid "ALL"
-msgstr ""
+msgstr "ВСЕ"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:291
 msgid "Supervisor"
-msgstr ""
+msgstr "Supervisor"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:326
 msgid "Time synchronisation"
-msgstr ""
+msgstr "Синхронизация времени"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:358
 msgid "Hour"
-msgstr ""
+msgstr "Час"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:359
 msgid "Day"
-msgstr ""
+msgstr "День"
 
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:360
 msgid "Minute"
-msgstr ""
+msgstr "Минута"
 
 #: src/Template/Contactgroups/add.php:34
 #: src/Template/Contactgroups/add.php:62
@@ -9089,72 +9089,72 @@ msgstr ""
 #: src/Template/Contactgroups/used_by.php:34
 #: src/Template/Contactgroups/used_by.php:46
 msgid "Contact group"
-msgstr ""
+msgstr "Контактная группа"
 
 #: src/Template/Contactgroups/add.php:47
 msgid "Create new contact group"
-msgstr ""
+msgstr "Создать новую группу контактов"
 
 #: src/Template/Contactgroups/add.php:133
 msgid "Create contact group"
-msgstr ""
+msgstr "Создать контактную группу"
 
 #: src/Template/Contactgroups/copy.php:47
 msgid "Copy contact group/s"
-msgstr ""
+msgstr "Скопировать контактную группу/ы"
 
 #: src/Template/Contactgroups/copy.php:62
 msgid "Source contact group:"
-msgstr ""
+msgstr "Источник контактной группы:"
 
 #: src/Template/Contactgroups/copy.php:69
 #: src/Template/Contactgroups/index.php:124
 msgid "Contact group name"
-msgstr ""
+msgstr "Имя контактной группы"
 
 #: src/Template/Contactgroups/copy.php:77
 msgid "Name of the new contact group"
-msgstr ""
+msgstr "Имя новой контактной группы"
 
 #: src/Template/Contactgroups/edit.php:47
 msgid "Edit contact group:"
-msgstr ""
+msgstr "Изменить группу контактов:"
 
 #: src/Template/Contactgroups/edit.php:129
 msgid "Update contact group"
-msgstr ""
+msgstr "Обновить контактную группу"
 
 #: src/Template/Contactgroups/index.php:85
 msgid "Filter by contact group name"
-msgstr ""
+msgstr "Фильтр по имени группы контактов"
 
 #: src/Template/Contactgroups/index.php:98
 msgid "Filter by contact group description"
-msgstr ""
+msgstr "Фильтр по описанию группы контактов"
 
 #: src/Template/Contactgroups/index.php:131
 msgid "Number of contacts"
-msgstr ""
+msgstr "Количество контактов"
 
 #: src/Template/Contactgroups/index.php:156
 msgid "Empty"
-msgstr ""
+msgstr "Пустой"
 
 #: src/Template/Contactgroups/index.php:195
 msgid "Used By"
-msgstr ""
+msgstr "Использован"
 
 #: src/Template/Contactgroups/mass_delete.php:43
 #: src/Template/Containers/show_details.php:30
 #: src/Template/Servicedependencies/edit.php:465
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:181
 msgid "Monitoring"
-msgstr ""
+msgstr "Мониторинг"
 
 #: src/Template/Contactgroups/mass_delete.php:45
 #: src/Template/Containers/index.php:91
 msgid "Contactgroup"
-msgstr ""
+msgstr "Контактная группа"
 
 #: src/Template/Contactgroups/mass_delete.php:45
 #: src/Template/Hostescalations/add.php:263
@@ -9162,17 +9162,17 @@ msgstr ""
 #: src/Template/Serviceescalations/add.php:264
 #: src/Template/Serviceescalations/edit.php:263
 msgid "Contactgroups"
-msgstr ""
+msgstr "Контактные группы"
 
 #: src/Template/Contactgroups/mass_delete.php:56
 msgid "contact group"
-msgstr ""
+msgstr "контактная группа"
 
 #: src/Template/Contactgroups/mass_delete.php:56
 #: src/Template/Contactgroups/mass_delete.php:74
 #: src/Template/Contactgroups/mass_delete.php:93
 msgid "contactgroups"
-msgstr ""
+msgstr "контактные группы"
 
 #: src/Template/Contactgroups/mass_delete.php:59
 #: src/Template/Errors/error403.php:49
@@ -9180,28 +9180,28 @@ msgstr ""
 #: src/Template/Systemdowntimes/add.php:45
 #: src/Template/layout/error.php:40
 msgid "Back"
-msgstr ""
+msgstr "Назад"
 
 #: src/Template/Contactgroups/mass_delete.php:74
 msgid "The following {0} will deleted"
-msgstr ""
+msgstr "Следующие {0} будут удалены"
 
 #: src/Template/Contactgroups/mass_delete.php:74
 #: src/Template/Contactgroups/mass_delete.php:93
 msgid "contactgroup"
-msgstr ""
+msgstr "контактная группа"
 
 #: src/Template/Contactgroups/mass_delete.php:93
 msgid "The following {0} can't be deleted."
-msgstr ""
+msgstr "Следующее {0} не может быть удалено."
 
 #: src/Template/Contactgroups/mass_delete.php:94
 msgid "(Used by other object)"
-msgstr ""
+msgstr "(Используется другим объектом)"
 
 #: src/Template/Contactgroups/mass_delete.php:101
 msgid "Used by ..."
-msgstr ""
+msgstr "Использован ..."
 
 #: src/Template/Contactgroups/used_by.php:70
 #: src/Template/Hosts/add.php:130
@@ -9212,7 +9212,7 @@ msgstr ""
 #: src/Template/Hosttemplates/edit.php:63
 #: src/Template/Hosttemplates/used_by.php:46
 msgid "Host template"
-msgstr ""
+msgstr "Шаблон узла"
 
 #: src/Template/Contactgroups/used_by.php:140
 #: src/Template/Contactgroups/used_by.php:148
@@ -9228,7 +9228,7 @@ msgstr ""
 #: src/Template/Timeperiods/used_by.php:115
 #: src/Template/Timeperiods/used_by.php:118
 msgid "Host escalation"
-msgstr ""
+msgstr "Эскалация узлов"
 
 #: src/Template/Contactgroups/used_by.php:158
 #: src/Template/Contactgroups/used_by.php:166
@@ -9244,11 +9244,11 @@ msgstr ""
 #: src/Template/Timeperiods/used_by.php:202
 #: src/Template/Timeperiods/used_by.php:205
 msgid "Service escalation"
-msgstr ""
+msgstr "Эскалация служб"
 
 #: src/Template/Contacts/add.php:46
 msgid "Create new contact"
-msgstr ""
+msgstr "Создать новый контакт"
 
 #: src/Template/Contacts/add.php:59
 #: src/Template/Contacts/add_from_ldap.php:55
@@ -9258,7 +9258,7 @@ msgstr ""
 #: src/Template/Notifications/service_notification.php:185
 #: src/Template/Notifications/services.php:273
 msgid "Contact"
-msgstr ""
+msgstr "Контакт"
 
 #: src/Template/Contacts/add.php:106
 #: src/Template/Contacts/add_from_ldap.php:144
@@ -9268,7 +9268,7 @@ msgstr ""
 #: src/Template/Registers/index.php:106
 #: src/Template/Users/index.php:178
 msgid "Email"
-msgstr ""
+msgstr "Электронное письмо"
 
 #: src/Template/Contacts/add.php:120
 #: src/Template/Contacts/add_from_ldap.php:164
@@ -9277,7 +9277,7 @@ msgstr ""
 #: src/Template/Contacts/index.php:149
 #: src/Template/Users/index.php:182
 msgid "Phone"
-msgstr ""
+msgstr "Телефон"
 
 #: src/Template/Contacts/add.php:134
 #: src/Template/Contacts/add_from_ldap.php:180
@@ -9295,38 +9295,38 @@ msgstr ""
 #: src/Template/Users/add_from_ldap.php:64
 #: src/Template/Users/edit.php:67
 msgid "User"
-msgstr ""
+msgstr "Пользователь"
 
 #: src/Template/Contacts/add.php:148
 #: src/Template/Contacts/add_from_ldap.php:195
 #: src/Template/Contacts/edit.php:153
 msgid "For browser notifications, a user needs to be assigned to the contact. User Id will be automatically available as $_CONTACTOITCUSERID$ contact macro."
-msgstr ""
+msgstr "Для уведомлений в браузере пользователю необходимо назначить контакт. Идентификатор пользователя будет автоматически доступен в виде макроса контакта $_CONTACTOITCUSERID$."
 
 #: src/Template/Contacts/add.php:158
 #: src/Template/Contacts/add_from_ldap.php:209
 #: src/Template/Contacts/edit.php:163
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:62
 msgid "Host notification"
-msgstr ""
+msgstr "Уведомление узла"
 
 #: src/Template/Contacts/add.php:164
 #: src/Template/Contacts/add_from_ldap.php:216
 #: src/Template/Contacts/edit.php:169
 msgid "Host time period"
-msgstr ""
+msgstr "Период времени узла"
 
 #: src/Template/Contacts/add.php:181
 #: src/Template/Contacts/add_from_ldap.php:235
 #: src/Template/Contacts/edit.php:186
 msgid "Host commands"
-msgstr ""
+msgstr "Команды узла"
 
 #: src/Template/Contacts/add.php:206
 #: src/Template/Contacts/add_from_ldap.php:256
 #: src/Template/Contacts/edit.php:211
 msgid "Host notifications enabled"
-msgstr ""
+msgstr "Уведомления узла включены"
 
 #: src/Template/Contacts/add.php:217
 #: src/Template/Contacts/add.php:357
@@ -9335,7 +9335,7 @@ msgstr ""
 #: src/Template/Contacts/edit.php:222
 #: src/Template/Contacts/edit.php:362
 msgid "Push notifications to browser"
-msgstr ""
+msgstr "Push-уведомления в браузер"
 
 #: src/Template/Contacts/add.php:235
 #: src/Template/Contacts/add.php:374
@@ -9372,7 +9372,7 @@ msgstr ""
 #: src/Template/Servicetemplates/edit.php:523
 #: src/Template/Servicetemplates/edit.php:638
 msgid "Recovery"
-msgstr ""
+msgstr "Восстановление"
 
 #: src/Template/Contacts/add.php:250
 #: src/Template/Contacts/add.php:394
@@ -9421,7 +9421,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/add_hostgroupdowntime.php:63
 #: src/Template/Systemdowntimes/add_servicedowntime.php:63
 msgid "Downtime"
-msgstr ""
+msgstr "Обслуживание"
 
 #: src/Template/Contacts/add.php:265
 #: src/Template/Contacts/add_from_ldap.php:335
@@ -9431,32 +9431,32 @@ msgstr ""
 #: src/Template/Hosttemplates/add.php:437
 #: src/Template/Hosttemplates/edit.php:438
 msgid "Host notification options"
-msgstr ""
+msgstr "Параметры уведомлений узла"
 
 #: src/Template/Contacts/add.php:297
 #: src/Template/Contacts/add_from_ldap.php:377
 #: src/Template/Contacts/edit.php:302
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:63
 msgid "Service notification"
-msgstr ""
+msgstr "Уведомление службы"
 
 #: src/Template/Contacts/add.php:303
 #: src/Template/Contacts/add_from_ldap.php:384
 #: src/Template/Contacts/edit.php:308
 msgid "Service time period"
-msgstr ""
+msgstr "Период времени службы"
 
 #: src/Template/Contacts/add.php:321
 #: src/Template/Contacts/add_from_ldap.php:403
 #: src/Template/Contacts/edit.php:326
 msgid "Service commands"
-msgstr ""
+msgstr "Команды службы"
 
 #: src/Template/Contacts/add.php:345
 #: src/Template/Contacts/add_from_ldap.php:424
 #: src/Template/Contacts/edit.php:350
 msgid "Service notifications enabled"
-msgstr ""
+msgstr "Уведомления службы включены"
 
 #: src/Template/Contacts/add.php:409
 #: src/Template/Contacts/add_from_ldap.php:508
@@ -9466,32 +9466,32 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:554
 #: src/Template/Servicetemplates/edit.php:557
 msgid "Service notification options"
-msgstr ""
+msgstr "Параметры уведомлений службы"
 
 #: src/Template/Contacts/add.php:441
 #: src/Template/Contacts/add_from_ldap.php:548
 #: src/Template/Contacts/edit.php:446
 msgid "Read more about browser push notification in the"
-msgstr ""
+msgstr "знайте больше о push-уведомлениях браузера в"
 
 #: src/Template/Contacts/add.php:443
 #: src/Template/Contacts/add_from_ldap.php:550
 #: src/Template/Contacts/edit.php:448
 #: src/Template/Documentations/view.php:77
 msgid "documentation"
-msgstr ""
+msgstr "в документации"
 
 #: src/Template/Contacts/add.php:453
 #: src/Template/Contacts/add_from_ldap.php:561
 #: src/Template/Contacts/edit.php:458
 msgid "Define contact macros"
-msgstr ""
+msgstr "Определить контактные макросы"
 
 #: src/Template/Contacts/add.php:465
 #: src/Template/Contacts/add_from_ldap.php:572
 #: src/Template/Contacts/edit.php:470
 msgid "CONTACT"
-msgstr ""
+msgstr "КОНТАКТ"
 
 #: src/Template/Contacts/add.php:477
 #: src/Template/Contacts/add_from_ldap.php:583
@@ -9505,105 +9505,105 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:830
 #: src/Template/Servicetemplates/edit.php:833
 msgid "Add new macro"
-msgstr ""
+msgstr "Добавить новый макрос"
 
 #: src/Template/Contacts/add.php:491
 #: src/Template/Contacts/add_from_ldap.php:599
 msgid "Create contact"
-msgstr ""
+msgstr "Создать контакт"
 
 #: src/Template/Contacts/add_from_ldap.php:32
 #: src/Template/Contacts/index.php:59
 #: src/Template/Users/index.php:64
 msgid "Import from LDAP"
-msgstr ""
+msgstr "Импорт из LDAP"
 
 #: src/Template/Contacts/add_from_ldap.php:42
 msgid "Import contact from LDAP"
-msgstr ""
+msgstr "Импортировать контакт из LDAP"
 
 #: src/Template/Contacts/add_from_ldap.php:80
 #: src/Template/Profile/edit.php:94
 #: src/Template/Users/add_from_ldap.php:189
 msgid "SAM-Account-Name"
-msgstr ""
+msgstr "SAM-Account-Name"
 
 #: src/Template/Contacts/add_from_ldap.php:101
 #: src/Template/Users/add_from_ldap.php:226
 msgid "Connected LDAP server"
-msgstr ""
+msgstr "Подключенный сервер LDAP"
 
 #: src/Template/Contacts/add_from_ldap.php:104
 #: src/Template/Users/add_from_ldap.php:229
 msgid "Used filter query"
-msgstr ""
+msgstr "Используется фильтр запроса"
 
 #: src/Template/Contacts/add_from_ldap.php:107
 #: src/Template/Users/add_from_ldap.php:232
 msgid "Base DN"
-msgstr ""
+msgstr "Base DN"
 
 #: src/Template/Contacts/add_from_ldap.php:157
 msgid "Imported value from LDAP."
-msgstr ""
+msgstr "Импортированное значение из LDAP."
 
 #: src/Template/Contacts/copy.php:47
 msgid "Copy contact/s"
-msgstr ""
+msgstr "Копировать контакт/ы"
 
 #: src/Template/Contacts/copy.php:62
 msgid "Source contact:"
-msgstr ""
+msgstr "Исходный контакт:"
 
 #: src/Template/Contacts/copy.php:68
 #: src/Template/Contacts/index.php:137
 msgid "Contact name"
-msgstr ""
+msgstr "Имя контакта"
 
 #: src/Template/Contacts/copy.php:76
 msgid "Name of the new contact"
-msgstr ""
+msgstr "Имя нового контакта"
 
 #: src/Template/Contacts/edit.php:46
 msgid "Edit contact: "
-msgstr ""
+msgstr "Изменить контакт: "
 
 #: src/Template/Contacts/edit.php:492
 msgid "Update contact"
-msgstr ""
+msgstr "Обновить контакт"
 
 #: src/Template/Contacts/index.php:84
 #: src/Template/Notifications/index.php:161
 #: src/Template/Notifications/services.php:161
 msgid "Filter by contact name"
-msgstr ""
+msgstr "Фильтровать по имени контакта"
 
 #: src/Template/Contacts/index.php:97
 msgid "Filter by contact email"
-msgstr ""
+msgstr "Фильтровать по электронной почте"
 
 #: src/Template/Contacts/index.php:110
 msgid "Filter by contact phone"
-msgstr ""
+msgstr "Фильтр по контактному телефону"
 
 #: src/Template/Contacts/index.php:152
 #: src/Template/Notifications/index.php:59
 #: src/Template/Notifications/services.php:59
 msgid "Host notifications"
-msgstr ""
+msgstr "Уведомления узла"
 
 #: src/Template/Contacts/index.php:155
 #: src/Template/Notifications/index.php:66
 #: src/Template/Notifications/services.php:66
 msgid "Service notifications"
-msgstr ""
+msgstr "Уведомления службы"
 
 #: src/Template/Contacts/index.php:190
 #: src/Template/Contacts/index.php:228
 #: src/Template/Hostescalations/index.php:454
 #: src/Template/Serviceescalations/index.php:468
 msgid "R"
-msgstr ""
+msgstr "R"
 
 #: src/Template/Contacts/index.php:195
 #: src/Template/Hostdependencies/index.php:512
@@ -9613,71 +9613,71 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:127
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:130
 msgid "D"
-msgstr ""
+msgstr "D"
 
 #: src/Template/Contacts/used_by.php:47
 msgid "Used by..."
-msgstr ""
+msgstr "Использован..."
 
 #: src/Template/Contacts/used_by.php:155
 #: src/Template/Containers/show_details.php:286
 #: src/Template/Hostescalations/index.php:34
 #: src/Template/Timeperiods/used_by.php:108
 msgid "Host escalations"
-msgstr ""
+msgstr "Эскалация узлов"
 
 #: src/Template/Contacts/used_by.php:173
 #: src/Template/Containers/show_details.php:525
 #: src/Template/Serviceescalations/index.php:34
 #: src/Template/Timeperiods/used_by.php:195
 msgid "Service escalations"
-msgstr ""
+msgstr "Эскалация служб"
 
 #: src/Template/Contacts/used_by.php:192
 msgid "This contact is not used by any object"
-msgstr ""
+msgstr "Этот контакт не используется ни одним объектом"
 
 #: src/Template/Containers/index.php:30
 msgid "System"
-msgstr ""
+msgstr "Система"
 
 #: src/Template/Containers/index.php:35
 #: src/Template/Containers/index.php:49
 #: src/Template/Systemdowntimes/node.php:38
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:488
 msgid "Containers"
-msgstr ""
+msgstr "Контейнеры"
 
 #: src/Template/Containers/index.php:75
 msgid "Global"
-msgstr ""
+msgstr "Глобальный"
 
 #: src/Template/Containers/index.php:79
 #: src/Template/Containers/index.php:376
 #: src/Template/Tenants/add.php:63
 #: src/Template/Tenants/edit.php:64
 msgid "Tenant"
-msgstr ""
+msgstr "Клиент"
 
 #: src/Template/Containers/index.php:83
 #: src/Template/Containers/index.php:387
 #: src/Template/Locations/add.php:63
 #: src/Template/Locations/edit.php:64
 msgid "Location"
-msgstr ""
+msgstr "Местоположение"
 
 #: src/Template/Containers/index.php:87
 #: src/Template/Containers/index.php:392
 msgid "Node"
-msgstr ""
+msgstr "Контейнерный узел"
 
 #: src/Template/Containers/index.php:103
 msgid "Servicetemplategroup"
-msgstr ""
+msgstr "Группа шаблонов служб"
 
 #: src/Template/Containers/index.php:114
 msgid "Tree"
-msgstr ""
+msgstr "Дерево"
 
 #: src/Template/Containers/index.php:173
 #: src/Template/Containers/index.php:211
@@ -9687,52 +9687,52 @@ msgstr ""
 #: src/Template/Locations/index.php:185
 #: src/Template/Tenants/index.php:184
 msgid "Show details"
-msgstr ""
+msgstr "Показать детали"
 
 #: src/Template/Containers/index.php:359
 msgid "Add new container"
-msgstr ""
+msgstr "Добавить новый контейнер"
 
 #: src/Template/Containers/index.php:369
 msgid "Select container type"
-msgstr ""
+msgstr "Выберите тип контейнера"
 
 #: src/Template/Containers/index.php:414
 #: src/Template/Containers/index.php:774
 #: src/Template/Systemdowntimes/node.php:216
 msgid "Container name"
-msgstr ""
+msgstr "Название контейнера"
 
 #: src/Template/Containers/index.php:442
 #: src/Template/Locations/index.php:124
 msgid "Location name"
-msgstr ""
+msgstr "Название местоположения"
 
 #: src/Template/Containers/index.php:457
 msgid "Optional fields for location"
-msgstr ""
+msgstr "Необязательные поля для местоположения"
 
 #: src/Template/Containers/index.php:483
 #: src/Template/Locations/add.php:110
 #: src/Template/Locations/edit.php:112
 msgid "Latitude"
-msgstr ""
+msgstr "Широта"
 
 #: src/Template/Containers/index.php:499
 #: src/Template/Locations/add.php:118
 #: src/Template/Locations/edit.php:120
 msgid " Latitude must be a number between -90 and 90 degree inclusive."
-msgstr ""
+msgstr " Широта должна быть числом от -90 до 90 градусов включительно."
 
 #: src/Template/Containers/index.php:512
 #: src/Template/Locations/add.php:130
 #: src/Template/Locations/edit.php:132
 msgid "Longitude"
-msgstr ""
+msgstr "Долгота"
 
 #: src/Template/Containers/index.php:528
 msgid "Longitude must be a number -180 and 180 degree inclusive."
-msgstr ""
+msgstr "Долгота должна быть числом -180 и 180 градусов включительно."
 
 #: src/Template/Containers/index.php:540
 #: src/Template/Locations/add.php:150
@@ -9742,16 +9742,16 @@ msgstr ""
 #: src/Template/Users/add_from_ldap.php:408
 #: src/Template/Users/edit.php:343
 msgid "Timezone"
-msgstr ""
+msgstr "Часовой пояс"
 
 #: src/Template/Containers/index.php:561
 msgid "Optional fields for tenant"
-msgstr ""
+msgstr "Необязательные поля для клиента"
 
 #: src/Template/Containers/index.php:576
 #: src/Template/Tenants/index.php:124
 msgid "Tenant name"
-msgstr ""
+msgstr "Имя клиента"
 
 #: src/Template/Containers/index.php:613
 #: src/Template/Profile/edit.php:60
@@ -9762,12 +9762,12 @@ msgstr ""
 #: src/Template/Users/add_from_ldap.php:258
 #: src/Template/Users/edit.php:203
 msgid "First name"
-msgstr ""
+msgstr "Имя"
 
 #: src/Template/Containers/index.php:622
 #: src/Template/Containers/index.php:641
 msgid "John"
-msgstr ""
+msgstr "Джон"
 
 #: src/Template/Containers/index.php:632
 #: src/Template/Profile/edit.php:77
@@ -9778,65 +9778,65 @@ msgstr ""
 #: src/Template/Users/add_from_ldap.php:276
 #: src/Template/Users/edit.php:216
 msgid "Last name"
-msgstr ""
+msgstr "Фамилия"
 
 #: src/Template/Containers/index.php:651
 #: src/Template/Containers/index.php:670
 #: src/Template/Tenants/add.php:119
 #: src/Template/Tenants/edit.php:120
 msgid "Street"
-msgstr ""
+msgstr "Улица"
 
 #: src/Template/Containers/index.php:660
 #: src/Template/Containers/index.php:679
 msgid "Any street"
-msgstr ""
+msgstr "Любая улица"
 
 #: src/Template/Containers/index.php:689
 #: src/Template/Tenants/add.php:132
 #: src/Template/Tenants/edit.php:133
 msgid "Zip code"
-msgstr ""
+msgstr "Индекс"
 
 #: src/Template/Containers/index.php:698
 msgid "12345"
-msgstr ""
+msgstr "12345"
 
 #: src/Template/Containers/index.php:708
 #: src/Template/Tenants/add.php:146
 #: src/Template/Tenants/edit.php:147
 msgid "City"
-msgstr ""
+msgstr "Город"
 
 #: src/Template/Containers/index.php:717
 msgid "Any city"
-msgstr ""
+msgstr "Любой город"
 
 #: src/Template/Containers/index.php:731
 msgid "Create new node"
-msgstr ""
+msgstr "Создать новый контейнерный узел"
 
 #: src/Template/Containers/index.php:735
 #: src/Template/Tenants/add.php:49
 msgid "Create new tenant"
-msgstr ""
+msgstr "Создать нового клиента"
 
 #: src/Template/Containers/index.php:739
 #: src/Template/Locations/add.php:49
 msgid "Create new location"
-msgstr ""
+msgstr "Создать новое местоположение"
 
 #: src/Template/Containers/index.php:755
 msgid "Edit container name"
-msgstr ""
+msgstr "Изменить имя контейнера"
 
 #: src/Template/Containers/show_details.php:32
 msgid "Container overview"
-msgstr ""
+msgstr "Обзор контейнера"
 
 #: src/Template/Containers/show_details.php:44
 msgid "Objects overview"
-msgstr ""
+msgstr "Обзор объектов"
 
 #: src/Template/Containers/show_details.php:56
 #: src/Template/Locations/add.php:35
@@ -9845,11 +9845,11 @@ msgstr ""
 #: src/Template/Locations/index.php:50
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:498
 msgid "Locations"
-msgstr ""
+msgstr "Места"
 
 #: src/Template/Containers/show_details.php:161
 msgid " ... invalid host group"
-msgstr ""
+msgstr "... неверная группа узлов"
 
 #: src/Template/Containers/show_details.php:242
 #: src/Template/Hostdependencies/add.php:35
@@ -9858,7 +9858,7 @@ msgstr ""
 #: src/Template/Hostdependencies/index.php:50
 #: src/Template/Timeperiods/used_by.php:91
 msgid "Host dependencies"
-msgstr ""
+msgstr "Узловые зависимости"
 
 #: src/Template/Containers/show_details.php:250
 #: src/Template/Containers/show_details.php:253
@@ -9867,21 +9867,21 @@ msgstr ""
 #: src/Template/Timeperiods/used_by.php:98
 #: src/Template/Timeperiods/used_by.php:101
 msgid "Host dependency"
-msgstr ""
+msgstr "Зависимость узла"
 
 #: src/Template/Containers/show_details.php:330
 #: src/Template/Servicetemplategroups/index.php:34
 #: src/Template/Servicetemplategroups/index.php:50
 msgid "Service template groups"
-msgstr ""
+msgstr "Группы шаблонов служб"
 
 #: src/Template/Containers/show_details.php:346
 msgid " ... invalid service template group"
-msgstr ""
+msgstr "... неверная группа служб шаблонов"
 
 #: src/Template/Containers/show_details.php:443
 msgid " ... invalid service group"
-msgstr ""
+msgstr "... неверная группа служб"
 
 #: src/Template/Containers/show_details.php:480
 #: src/Template/Servicedependencies/add.php:35
@@ -9891,7 +9891,7 @@ msgstr ""
 #: src/Template/Servicedependencies/index.php:50
 #: src/Template/Timeperiods/used_by.php:178
 msgid "Service dependencies"
-msgstr ""
+msgstr "Службшне зависимости"
 
 #: src/Template/Containers/show_details.php:489
 #: src/Template/Containers/show_details.php:492
@@ -9901,36 +9901,36 @@ msgstr ""
 #: src/Template/Timeperiods/used_by.php:185
 #: src/Template/Timeperiods/used_by.php:188
 msgid "Service dependency"
-msgstr ""
+msgstr "Зависимость службы"
 
 #: src/Template/Containers/show_details.php:583
 msgid " ... invalid contact group"
-msgstr ""
+msgstr "... неверная группа контактов"
 
 #: src/Template/Containers/show_details.php:707
 msgid "Satellites"
-msgstr ""
+msgstr "Сателлит"
 
 #: src/Template/Cronjobs/index.php:34
 msgid "Cron jobs"
-msgstr ""
+msgstr "Cron jobs"
 
 #: src/Template/Cronjobs/index.php:50
 msgid "Cronjobs"
-msgstr ""
+msgstr "Cronjobs"
 
 #: src/Template/Cronjobs/index.php:70
 #: src/Template/Cronjobs/index.php:157
 #: src/Template/Cronjobs/index.php:256
 msgid "Task"
-msgstr ""
+msgstr "Задание"
 
 #: src/Template/Cronjobs/index.php:71
 #: src/Template/Cronjobs/index.php:139
 #: src/Template/Cronjobs/index.php:238
 #: src/Template/Macros/index.php:164
 msgid "Plugin"
-msgstr ""
+msgstr "Плагин"
 
 #: src/Template/Cronjobs/index.php:72
 #: src/Template/Cronjobs/index.php:175
