@@ -9938,15 +9938,15 @@ msgstr "Плагин"
 #: src/Template/Hostescalations/index.php:295
 #: src/Template/Serviceescalations/index.php:309
 msgid "Interval"
-msgstr ""
+msgstr "Интервал"
 
 #: src/Template/Cronjobs/index.php:73
 msgid "Last scheduled"
-msgstr ""
+msgstr "Последний запланированный"
 
 #: src/Template/Cronjobs/index.php:74
 msgid "Is currently running"
-msgstr ""
+msgstr "В настоящее время работает"
 
 #: src/Template/Cronjobs/index.php:86
 #: src/Template/Dashboards/hosts_downtime_widget.php:194
@@ -9978,7 +9978,7 @@ msgstr ""
 #: src/Template/element/tenant_mass_changes.php:47
 #: src/Template/element/timeperiod_mass_changes.php:54
 msgid "Yes"
-msgstr ""
+msgstr "Да"
 
 #: src/Template/Cronjobs/index.php:87
 #: src/Template/Dashboards/hosts_downtime_widget.php:195
@@ -10009,82 +10009,82 @@ msgstr ""
 #: src/Template/element/tenant_mass_changes.php:48
 #: src/Template/element/timeperiod_mass_changes.php:55
 msgid "No"
-msgstr ""
+msgstr "Нет"
 
 #: src/Template/Cronjobs/index.php:130
 msgid "Add Cronjob"
-msgstr ""
+msgstr "Добавить Cronjob"
 
 #: src/Template/Cronjobs/index.php:186
 #: src/Template/Cronjobs/index.php:285
 msgid "Cronjob schedule interval in minutes"
-msgstr ""
+msgstr "Интервал расписания Cronjob в минутах"
 
 #: src/Template/Cronjobs/index.php:206
 #: src/Template/Cronjobs/index.php:303
 msgid "Determine if this cronjob should be executed."
-msgstr ""
+msgstr "Определите, следует ли выполнять этот cronjob."
 
 #: src/Template/Cronjobs/index.php:229
 msgid "Edit Cronjob"
-msgstr ""
+msgstr "Редактировать Cronjob"
 
 #: src/Template/Currentstatereports/index.php:34
 msgid "Current state report"
-msgstr ""
+msgstr "Отчет о текущем состоянии"
 
 #: src/Template/Currentstatereports/index.php:47
 msgid "Create new current state report"
-msgstr ""
+msgstr "Создать новый отчет о текущем состоянии"
 
 #: src/Template/Currentstatereports/index.php:54
 #: src/Template/Downtimereports/index.php:81
 #: src/Template/Instantreports/generate.php:75
 msgid "Report created successfully"
-msgstr ""
+msgstr "Отчет успешно создан"
 
 #: src/Template/Currentstatereports/index.php:54
 #: src/Template/Downtimereports/index.php:81
 #: src/Template/Instantreports/generate.php:75
 msgid "Report could not be created"
-msgstr ""
+msgstr "Отчет не может быть создан"
 
 #: src/Template/Currentstatereports/index.php:77
 #: src/Template/Downtimereports/index.php:112
 #: src/Template/Instantreports/generate.php:95
 msgid "Report format"
-msgstr ""
+msgstr "Формат отчета"
 
 #: src/Template/Currentstatereports/index.php:85
 #: src/Template/Downtimereports/index.php:120
 #: src/Template/Instantreports/generate.php:103
 msgid "PDF"
-msgstr ""
+msgstr "PDF"
 
 #: src/Template/Currentstatereports/index.php:86
 #: src/Template/Downtimereports/index.php:121
 #: src/Template/Instantreports/generate.php:104
-msgid "HTML"
-msgstr ""
+msgid "PDF"
+msgstr "PDF"
 
 #: src/Template/Currentstatereports/index.php:214
 #: src/Template/Services/index.php:312
 msgid "Check type"
-msgstr ""
+msgstr "Тип проверки"
 
 #: src/Template/Currentstatereports/index.php:224
 #: src/Template/Services/index.php:322
 msgid "Active service"
-msgstr ""
+msgstr "Активная служба"
 
 #: src/Template/Currentstatereports/index.php:236
 #: src/Template/Services/index.php:334
 msgid "Passive service"
-msgstr ""
+msgstr "Пассивная служба"
 
 #: src/Template/Currentstatereports/index.php:246
 msgid "Generating report..."
-msgstr ""
+msgstr "Генерация отчета ..."
 
 #: src/Template/Currentstatereports/index.php:282
 #: src/Template/Currentstatereports/index.php:342
@@ -10101,7 +10101,7 @@ msgstr ""
 #: src/Template/Statehistories/host.php:207
 #: src/Template/Statehistories/service.php:220
 msgid "State type"
-msgstr ""
+msgstr "Тип статуса"
 
 #: src/Template/Currentstatereports/index.php:294
 #: src/Template/Currentstatereports/index.php:394
@@ -10124,7 +10124,7 @@ msgstr ""
 #: src/Template/Services/service_list.php:288
 #: src/Template/Services/service_list.php:295
 msgid "n/a"
-msgstr ""
+msgstr "недоступно"
 
 #: src/Template/Currentstatereports/index.php:300
 #: src/Template/Currentstatereports/index.php:407
@@ -10134,7 +10134,7 @@ msgstr ""
 #: src/Template/Services/browser.php:765
 #: src/Template/Services/details.php:108
 msgid "Hard state"
-msgstr ""
+msgstr "Твердное состояние"
 
 #: src/Template/Currentstatereports/index.php:305
 #: src/Template/Currentstatereports/index.php:411
@@ -10144,7 +10144,7 @@ msgstr ""
 #: src/Template/Services/browser.php:770
 #: src/Template/Services/details.php:117
 msgid "Soft state"
-msgstr ""
+msgstr "Мягкое состояние"
 
 #: src/Template/Currentstatereports/index.php:320
 #: src/Template/Currentstatereports/index.php:372
@@ -10161,7 +10161,7 @@ msgstr ""
 #: src/Template/Services/service_list.php:180
 #: src/Template/Services/service_list.php:265
 msgid "Passively transferred service"
-msgstr ""
+msgstr "Пассивно передаваемая служба"
 
 #: src/Template/Currentstatereports/index.php:339
 #: src/Template/Dashboards/hosts_status_list_widget.php:177
@@ -10175,99 +10175,99 @@ msgstr ""
 #: src/Template/Services/browser.php:735
 #: src/Template/Services/details.php:81
 msgid "State since"
-msgstr ""
+msgstr "Статус с"
 
 #: src/Template/Currentstatereports/index.php:344
 #: src/Template/Servicechecks/index.php:227
 #: src/Template/Services/browser.php:474
 msgid "Performance data"
-msgstr ""
+msgstr "Данные о производительности"
 
 #: src/Template/Currentstatereports/index.php:450
 msgid "No performance data available"
-msgstr ""
+msgstr "Данные о производительности отсутствуют"
 
 #: src/Template/Currentstatereports/index.php:472
 msgid "Create current state report"
-msgstr ""
+msgstr "Создать отчет о текущем состоянии"
 
 #: src/Template/Currentstatereports/pdf/create_pdf_report.php:63
 #: src/Template/element/load_current_state_report_data.php:41
 msgid "Current state report "
-msgstr ""
+msgstr "Отчет о текущем состоянии "
 
 #: src/Template/Currentstatereports/pdf/create_pdf_report.php:64
 #: src/Template/element/load_current_state_report_data.php:42
 msgid "Date: "
-msgstr ""
+msgstr "Дата: "
 
 #: src/Template/Currentstatereports/pdf/create_pdf_report.php:104
 #: src/Template/Hostgroups/pdf/list_to_pdf.php:86
 #: src/Template/Servicegroups/pdf/list_to_pdf.php:92
 #: src/Template/element/load_current_state_report_data.php:90
 msgid "Status since"
-msgstr ""
+msgstr "Статус с"
 
 #: src/Template/Dashboards/host_status_overview_widget.php:76
 #: src/Template/Hosts/disabled.php:189
 #: src/Template/Hosts/index.php:210
 #: src/Template/Hosts/not_monitored.php:194
 msgid "Host status"
-msgstr ""
+msgstr "Статус узла"
 
 #: src/Template/Dashboards/host_status_overview_widget.php:116
 #: src/Template/Dashboards/service_status_overview_widget.php:141
 msgid "Properties"
-msgstr ""
+msgstr "Свойства"
 
 #: src/Template/Dashboards/host_status_overview_widget.php:128
 #: src/Template/Dashboards/hosts_status_list_widget.php:96
 #: src/Template/Dashboards/service_status_overview_widget.php:153
 #: src/Template/Dashboards/services_status_list_widget.php:109
 msgid "Not Acknowledged"
-msgstr ""
+msgstr "Не подтверждено"
 
 #: src/Template/Dashboards/host_status_overview_widget.php:141
 #: src/Template/Dashboards/hosts_status_list_widget.php:122
 #: src/Template/Dashboards/service_status_overview_widget.php:166
 #: src/Template/Dashboards/services_status_list_widget.php:135
 msgid "Not in Downtime"
-msgstr ""
+msgstr "Не в обслуживании"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:6
 #: src/Template/Dashboards/hosts_status_list_widget.php:6
 #: src/Template/Dashboards/services_downtime_widget.php:6
 #: src/Template/Dashboards/services_status_list_widget.php:6
 msgid "Pause scrolling"
-msgstr ""
+msgstr "Пауза прокрутки"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:11
 #: src/Template/Dashboards/hosts_status_list_widget.php:11
 #: src/Template/Dashboards/services_downtime_widget.php:11
 #: src/Template/Dashboards/services_status_list_widget.php:11
 msgid "Start scrolling"
-msgstr ""
+msgstr "Начать прокрутку"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:20
 #: src/Template/Dashboards/hosts_status_list_widget.php:20
 #: src/Template/Dashboards/services_downtime_widget.php:20
 #: src/Template/Dashboards/services_status_list_widget.php:20
 msgid "Scroll interval:"
-msgstr ""
+msgstr "Интервал прокрутки:"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:43
 #: src/Template/Dashboards/services_downtime_widget.php:44
 #: src/Template/Downtimes/host.php:223
 #: src/Template/Downtimes/service.php:236
 msgid "Is running"
-msgstr ""
+msgstr "Это работает"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:56
 #: src/Template/Dashboards/services_downtime_widget.php:57
 #: src/Template/Downtimes/host.php:235
 #: src/Template/Downtimes/service.php:248
 msgid "Was not cancelled"
-msgstr ""
+msgstr "Не был отменен"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:69
 #: src/Template/Dashboards/hosts_downtime_widget.php:149
@@ -10278,14 +10278,14 @@ msgstr ""
 #: src/Template/Downtimes/service.php:260
 #: src/Template/Downtimes/service.php:329
 msgid "Was cancelled"
-msgstr ""
+msgstr "Был отменен"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:82
 #: src/Template/Dashboards/services_downtime_widget.php:83
 #: src/Template/Downtimes/host.php:259
 #: src/Template/Downtimes/service.php:272
 msgid "Hide expired"
-msgstr ""
+msgstr "Скрыть, если истек"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:106
 #: src/Template/Dashboards/services_downtime_widget.php:121
@@ -10297,14 +10297,14 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:204
 #: src/Template/Systemfailures/index.php:85
 msgid "Filter by comment"
-msgstr ""
+msgstr "Фильтровать по комментарию"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:133
 #: src/Template/Dashboards/services_downtime_widget.php:153
 #: src/Template/Downtimes/host.php:295
 #: src/Template/Downtimes/service.php:312
 msgid "Created"
-msgstr ""
+msgstr "Созданный"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:137
 #: src/Template/Dashboards/services_downtime_widget.php:157
@@ -10314,7 +10314,7 @@ msgstr ""
 #: src/Template/Timeperiods/edit.php:179
 #: src/Template/Users/login.php:112
 msgid "Start"
-msgstr ""
+msgstr "Начало"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:141
 #: src/Template/Dashboards/services_downtime_widget.php:161
@@ -10323,7 +10323,7 @@ msgstr ""
 #: src/Template/Timeperiods/add.php:197
 #: src/Template/Timeperiods/edit.php:201
 msgid "End"
-msgstr ""
+msgstr "Конец"
 
 #: src/Template/Dashboards/hosts_downtime_widget.php:145
 #: src/Template/Dashboards/services_downtime_widget.php:165
@@ -10338,7 +10338,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/node.php:240
 #: src/Template/Systemdowntimes/service.php:258
 msgid "Duration"
-msgstr ""
+msgstr "Продолжительность"
 
 #: src/Template/Dashboards/hosts_status_list_widget.php:109
 #: src/Template/Dashboards/services_status_list_widget.php:122
