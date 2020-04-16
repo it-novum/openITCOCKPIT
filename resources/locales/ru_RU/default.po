@@ -8379,11 +8379,11 @@ msgstr "Включить уведомления"
 #: src/Template/Calendars/index.php:34
 #: src/Template/Calendars/index.php:47
 msgid "Calendars"
-msgstr ""
+msgstr "Календари"
 
 #: src/Template/Calendars/add.php:46
 msgid "Create new calendar"
-msgstr ""
+msgstr "Создать новый календарь"
 
 #: src/Template/Calendars/add.php:60
 #: src/Template/Calendars/edit.php:61
@@ -8391,79 +8391,79 @@ msgstr ""
 #: src/Template/Timeperiods/edit.php:124
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:250
 msgid "Calendar"
-msgstr ""
+msgstr "Календарь"
 
 #: src/Template/Calendars/add.php:61
 #: src/Template/Calendars/edit.php:62
 msgid "Add holiday "
-msgstr ""
+msgstr "Добавить праздник "
 
 #: src/Template/Calendars/add.php:61
 #: src/Template/Calendars/edit.php:62
 msgid "Delete ALL holidays"
-msgstr ""
+msgstr "Удалить ВСЕ праздники"
 
 #: src/Template/Calendars/add.php:62
 #: src/Template/Calendars/edit.php:63
 msgid "Delete MONTH events"
-msgstr ""
+msgstr "Удалить события МЕСЯЦА"
 
 #: src/Template/Calendars/add.php:62
 #: src/Template/Calendars/edit.php:63
 msgid "Delete ALL events"
-msgstr ""
+msgstr "Удалить ВСЕ события"
 
 #: src/Template/Calendars/add.php:122
 msgid "Create calendar"
-msgstr ""
+msgstr "Создать календарь"
 
 #: src/Template/Calendars/add.php:142
 #: src/Template/Calendars/edit.php:139
 msgid "Add new bank holiday"
-msgstr ""
+msgstr "Добавить новый праздник"
 
 #: src/Template/Calendars/add.php:155
 #: src/Template/Calendars/add.php:193
 #: src/Template/Calendars/edit.php:152
 #: src/Template/Calendars/edit.php:190
 msgid "Title"
-msgstr ""
+msgstr "Название"
 
 #: src/Template/Calendars/add.php:180
 #: src/Template/Calendars/edit.php:177
 msgid "Edit holiday"
-msgstr ""
+msgstr "Редактировать праздник"
 
 #: src/Template/Calendars/edit.php:46
 msgid "Edit calendar:"
-msgstr ""
+msgstr "Изменить календарь:"
 
 #: src/Template/Calendars/edit.php:119
 msgid "Update calendar"
-msgstr ""
+msgstr "Обновить календарь"
 
 #: src/Template/Calendars/index.php:38
 #: src/Template/Contacts/index.php:38
 #: src/Template/Systemsettings/index.php:38
 msgid "index"
-msgstr ""
+msgstr "индекс"
 
 #: src/Template/Calendars/index.php:79
 msgid "Filter by calendar name"
-msgstr ""
+msgstr "Фильтровать по названию календаря"
 
 #: src/Template/Calendars/index.php:119
 msgid "Calendar name"
-msgstr ""
+msgstr "Название календаря"
 
 #: src/Template/Changelogs/index.php:39
 #: src/Template/Changelogs/index.php:52
 msgid "Change log"
-msgstr ""
+msgstr "Журнал изменений"
 
 #: src/Template/Changelogs/index.php:121
 msgid "Object type"
-msgstr ""
+msgstr "Тип объекта"
 
 #: src/Template/Changelogs/index.php:126
 #: src/Template/Commands/add.php:39
@@ -8475,7 +8475,7 @@ msgstr ""
 #: src/Template/Commands/used_by.php:34
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:220
 msgid "Commands"
-msgstr ""
+msgstr "Команды"
 
 #: src/Template/Changelogs/index.php:127
 #: src/Template/Commands/used_by.php:74
@@ -8511,7 +8511,7 @@ msgstr ""
 #: src/Template/Timeperiods/used_by.php:74
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:210
 msgid "Contacts"
-msgstr ""
+msgstr "Контакты"
 
 #: src/Template/Changelogs/index.php:128
 #: src/Template/Contactgroups/copy.php:34
@@ -8534,7 +8534,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:494
 #: src/Template/Servicetemplates/edit.php:497
 msgid "Contact groups"
-msgstr ""
+msgstr "Контактные группы"
 
 #: src/Template/Changelogs/index.php:130
 #: src/Template/Containers/show_details.php:147
