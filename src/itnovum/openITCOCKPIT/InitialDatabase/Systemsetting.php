@@ -692,7 +692,15 @@ class Systemsetting extends Importer {
                 'section'  => 'TICKET_SYSTEM',
                 'created'  => '2020-01-29 09:28:17',
                 'modified' => '2020-01-29 09:28:17'
-            ]
+            ],
+            (int)80 => [
+                'key'      => 'FRONTEND.REPLACE_USER_MACROS',
+                'value'    => '0',
+                'info'     => 'If enabled $USERn$ macros will get replaced in the command_line in host and service status overviews',
+                'section'  => 'FRONTEND',
+                'created'  => '2020-04-17 08:43:17',
+                'modified' => '2020-04-17 08:43:17'
+            ],
         ];
 
         return $data;

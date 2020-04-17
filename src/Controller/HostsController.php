@@ -45,6 +45,7 @@ use App\Model\Table\HostcommandargumentvaluesTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\MacrosTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
@@ -85,6 +86,7 @@ use itnovum\openITCOCKPIT\Core\Timeline\Groups;
 use itnovum\openITCOCKPIT\Core\Timeline\NotificationSerializer;
 use itnovum\openITCOCKPIT\Core\Timeline\StatehistorySerializer;
 use itnovum\openITCOCKPIT\Core\Timeline\TimeRangeSerializer;
+use itnovum\openITCOCKPIT\Core\UserDefinedMacroReplacer;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
@@ -1884,6 +1886,21 @@ class HostsController extends AppController {
         // Replace $ARGn$
         $ArgnReplacer = new CommandArgReplacer($mergedHost['hostcommandargumentvalues']);
         $hostCommandLine = $ArgnReplacer->replace($hostCommandLine);
+
+        // Replace $USERn$ Macros (if enabled)
+        try {
+            $systemsettingsEntity = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.REPLACE_USER_MACROS');
+            if ($systemsettingsEntity->get('value') === '1') {
+                /** @var MacrosTable $MacrosTable */
+                $MacrosTable = TableRegistry::getTableLocator()->get('Macros');
+                $macros = $MacrosTable->getAllMacrosInCake2Format();
+
+                $UserMacroReplacer = new UserDefinedMacroReplacer($macros);
+                $hostCommandLine = $UserMacroReplacer->replaceMacros($hostCommandLine);
+            }
+        } catch (RecordNotFoundException $e) {
+            // Rocket not found in systemsettings - do not replace $USERn$ macros
+        }
 
         $mergedHost['hostCommandLine'] = $hostCommandLine;
 

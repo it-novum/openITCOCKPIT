@@ -503,16 +503,17 @@ use Cake\Core\Plugin;
                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    <div class="col-xs-12" ng-show="servicestatus.longOutputHtml">
-                                        <div><?php echo __('Long output'); ?></div>
-                                        <div class="well">
-                                            <code class="no-background">
-                                                <div ng-bind-html="servicestatus.longOutputHtml | trustAsHtml"></div>
-                                            </code>
+                                <div class="row padding-bottom-10"  ng-show="servicestatus.longOutputHtml">
+                                    <div class="col-12">
+                                        <h5 class="margin-top-5"><?php echo __('Long output'); ?></h5>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="card bg-light">
+                                            <div class="card-body" ng-bind-html="servicestatus.longOutputHtml | trustAsHtml"></div>
                                         </div>
                                     </div>
                                 </div>
+
                                 <!-- Host state overview table -->
                                 <div class="row">
                                     <div class="col-lg-12">

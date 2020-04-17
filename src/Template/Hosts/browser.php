@@ -394,7 +394,7 @@ use Cake\Core\Plugin;
                                                 <td><?php echo __('Output'); ?></td>
                                                 <td>
                                                     <div class="code-font" ng-class="hostStatusTextClass"
-                                                        ng-bind-html="hoststatus.outputHtml | trustAsHtml"></div>
+                                                         ng-bind-html="hoststatus.outputHtml | trustAsHtml"></div>
                                                 </td>
                                             </tr>
                                         </table>
@@ -426,13 +426,13 @@ use Cake\Core\Plugin;
                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    <div class="col-xs-12" ng-show="hoststatus.longOutputHtml">
-                                        <div><?php echo __('Long output'); ?></div>
-                                        <div class="well">
-                                            <code class="no-background">
-                                                <div ng-bind-html="hoststatus.longOutputHtml | trustAsHtml"></div>
-                                            </code>
+                                <div class="row padding-bottom-10"  ng-show="hoststatus.longOutputHtml">
+                                    <div class="col-12">
+                                        <h5 class="margin-top-5"><?php echo __('Long output'); ?></h5>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="card bg-light">
+                                            <div class="card-body" ng-bind-html="hoststatus.longOutputHtml | trustAsHtml"></div>
                                         </div>
                                     </div>
                                 </div>
