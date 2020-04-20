@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="DowntimereportsIndex">
-            <i class="fas fa-clipboard-list"></i> <?php echo __('Downtime report'); ?>
+            <i class="fa fa-file-invoice"></i> <?php echo __('Downtime report'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
