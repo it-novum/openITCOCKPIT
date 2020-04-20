@@ -42,6 +42,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigurator;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigValue;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigValueInt;
@@ -55,7 +56,7 @@ class Update3To4Command extends Command {
     /**
      * @var int
      */
-    private $limit = 200;
+    private $limit = 1000;
 
     /**
      * @var ConsoleIo
@@ -415,54 +416,40 @@ class Update3To4Command extends Command {
         $this->migrateParitions('nagios_statehistory', 'statusengine_host_statehistory');
 
 
-        $hostStatehistoryCount = $this->getHostStatehistoryMigrationQuery(0, true);
-        $numberOfSelects = ceil($hostStatehistoryCount / $this->limit);
-
-        if ($hostStatehistoryCount == 0) {
-            return;
-        }
+        $sql = "INSERT IGNORE INTO statusengine_host_statehistory
+                (hostname, state_time, state_time_usec, state, state_change, is_hardstate, current_check_attempt, max_check_attempts, last_state, last_hard_state, output, long_output)
+                    SELECT nagios_objects.name1,
+                        UNIX_TIMESTAMP(nagios_statehistory.state_time),
+                        LPAD(FLOOR(RAND() * 999999.99), 6, 0),
+                        state,
+                        state_change,
+                        state_type,
+                        current_check_attempt,
+                        max_check_attempts,
+                        last_state,
+                        last_hard_state,
+                        output,
+                        long_output
+                    FROM nagios_statehistory
+                    INNER JOIN nagios_objects ON nagios_objects.object_id = nagios_statehistory.object_id
+                    WHERE nagios_objects.objecttype_id = 1;";
 
         $this->io->out('Migrating host statehistory');
-        $ProgressBar = new Manager(0, $numberOfSelects);
+        $this->io->info('This could take up to several hours depending on your systems performance.');
+        $this->io->out('');
+        $this->io->info('No progress bar will be shown.');
 
-        $query = "
-        INSERT IGNORE INTO statusengine_host_statehistory
-        (hostname, state_time, state_time_usec, state, state_change, is_hardstate, current_check_attempt, max_check_attempts, last_state, last_hard_state, output, long_output)
-        VALUES%s";
+        $start = time();
+        $connection = ConnectionManager::get('default');
+        $statement = $connection->execute($sql);
+        $end = time();
 
-        $baseValues = '(?,?,?,?,?,?,?,?,?,?,?,?)';
-        for ($i = 0; $i < $numberOfSelects; $i++) {
-            $offset = $this->limit * $i;
+        $UserTime = new UserTime(date_default_timezone_get(), 'Y-m-d H:i:s');
 
-            $values = [];
-            $params = [];
-            foreach ($this->getHostStatehistoryMigrationQuery($offset) as $record) {
-                $values[] = $baseValues;
-
-                $params[] = $record['Objects']['name1'];
-                $params[] = strtotime($record['state_time']);
-                $params[] = $this->getMicrotime();
-                $params[] = $record['state'];
-                $params[] = $record['state_change'];
-                $params[] = $record['state_type'];
-                $params[] = $record['current_check_attempt'];
-                $params[] = $record['max_check_attempts'];
-                $params[] = $record['last_state'];
-                $params[] = $record['last_hard_state'];
-                $params[] = $record['output'];
-                $params[] = $record['long_output'];
-            }
-
-            $sql = sprintf($query, implode(',', $values));
-            $connection = ConnectionManager::get('default');
-
-            $statement = $connection->execute(
-                $sql,
-                $params
-            );
-
-            $ProgressBar->update(($i + 1));
-        }
+        $this->io->out(sprintf(
+            'Migration done. This operation took: %s',
+            $UserTime->secondsInHumanShort(($end - $start))
+        ));
         $this->io->out('');
     }
 
@@ -470,55 +457,42 @@ class Update3To4Command extends Command {
         $this->migrateParitions('nagios_statehistory', 'statusengine_service_statehistory');
 
 
-        $serviceStatehistoryCount = $this->getServiceStatehistoryMigrationQuery(0, true);
-        $numberOfSelects = ceil($serviceStatehistoryCount / $this->limit);
-
-        if ($serviceStatehistoryCount == 0) {
-            return;
-        }
+        $sql = "INSERT IGNORE INTO statusengine_service_statehistory
+                (hostname, service_description, state_time, state_time_usec, state, state_change, is_hardstate, current_check_attempt, max_check_attempts, last_state, last_hard_state, output, long_output)
+                    SELECT nagios_objects.name1,
+                        nagios_objects.name2,
+                        UNIX_TIMESTAMP(nagios_statehistory.state_time),
+                        LPAD(FLOOR(RAND() * 999999.99), 6, 0),
+                        state,
+                        state_change,
+                        state_type,
+                        current_check_attempt,
+                        max_check_attempts,
+                        last_state,
+                        last_hard_state,
+                        output,
+                        long_output
+                    FROM nagios_statehistory
+                    INNER JOIN nagios_objects ON nagios_objects.object_id = nagios_statehistory.object_id
+                    WHERE nagios_objects.objecttype_id = 2
+                    ;";
 
         $this->io->out('Migrating service statehistory');
-        $ProgressBar = new Manager(0, $numberOfSelects);
+        $this->io->info('This could take up to several hours depending on your systems performance.');
+        $this->io->out('');
+        $this->io->info('No progress bar will be shown.');
 
-        $query = "
-        INSERT IGNORE INTO statusengine_service_statehistory
-        (hostname, service_description, state_time, state_time_usec, state, state_change, is_hardstate, current_check_attempt, max_check_attempts, last_state, last_hard_state, output, long_output)
-        VALUES%s";
+        $start = time();
+        $connection = ConnectionManager::get('default');
+        $statement = $connection->execute($sql);
+        $end = time();
 
-        $baseValues = '(?,?,?,?,?,?,?,?,?,?,?,?,?)';
-        for ($i = 0; $i < $numberOfSelects; $i++) {
-            $offset = $this->limit * $i;
+        $UserTime = new UserTime(date_default_timezone_get(), 'Y-m-d H:i:s');
 
-            $values = [];
-            $params = [];
-            foreach ($this->getServiceStatehistoryMigrationQuery($offset) as $record) {
-                $values[] = $baseValues;
-
-                $params[] = $record['Objects']['name1'];
-                $params[] = $record['Objects']['name2'];
-                $params[] = strtotime($record['state_time']);
-                $params[] = $this->getMicrotime();
-                $params[] = $record['state'];
-                $params[] = $record['state_change'];
-                $params[] = $record['state_type'];
-                $params[] = $record['current_check_attempt'];
-                $params[] = $record['max_check_attempts'];
-                $params[] = $record['last_state'];
-                $params[] = $record['last_hard_state'];
-                $params[] = $record['output'];
-                $params[] = $record['long_output'];
-            }
-
-            $sql = sprintf($query, implode(',', $values));
-            $connection = ConnectionManager::get('default');
-
-            $statement = $connection->execute(
-                $sql,
-                $params
-            );
-
-            $ProgressBar->update(($i + 1));
-        }
+        $this->io->out(sprintf(
+            'Migration done. This operation took: %s',
+            $UserTime->secondsInHumanShort(($end - $start))
+        ));
         $this->io->out('');
     }
 
