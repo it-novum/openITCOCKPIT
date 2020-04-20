@@ -23,14 +23,17 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\Views\Logo;
+
 /**
  * @var \App\View\AppView $this
  */
 
+$logo = new Logo();
 ?>
 <aside id="pageSidebar" class="page-sidebar">
     <div class="page-logo" ui-sref="DashboardsIndex">
-        <img src="/img/favicons/favicon-32x32.png" alt="logo" aria-roledescription="logo" style="width: 28px;">
+        <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="logo" aria-roledescription="logo" style="width: 28px;">
         <span class="page-logo-text mr-1">{{systemname}}</span>
         <span class="position-absolute text-white opacity-50 small pos-top pos-right mr-2 mt-n2"></span>
     </div>

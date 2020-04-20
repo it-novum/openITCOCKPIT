@@ -36,6 +36,9 @@ class Logo {
     private $customLogoName = 'logo_custom.png';
     private $customSmallLogoName = 'logo_small_custom.png';
 
+    private $headerLogoName = 'logo_header.png';
+    private $customHeaderLogoName = 'logo_custom_header.png';
+
 
     /**
      * @return string
@@ -152,7 +155,6 @@ class Logo {
         if ($this->isCustomPdfLogo()) {
             return $this->customLogoName;
         }
-
         return $this->logoName;
     }
 
@@ -163,7 +165,6 @@ class Logo {
         if ($this->isCustomSmallPdfLogo()) {
             return $this->customSmallLogoName;
         }
-
         return $this->smallLogoName;
     }
 
@@ -223,5 +224,30 @@ class Logo {
      */
     public function getCustomSmallLogoPdfPath() {
         return sprintf($this->logoPdfPath, WWW_ROOT, $this->customSmallLogoName);
+    }
+
+    /**
+     * @return string
+     */
+    public function getHeaderLogoName() {
+        if ($this->isCustomHeaderLogo()) {
+            return $this->customHeaderLogoName;
+        }
+        return $this->headerLogoName;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCustomHeaderLogo() {
+        $file = sprintf($this->logoBasePath, WWW_ROOT, $this->customHeaderLogoName);
+        return file_exists($file);
+    }
+
+    /**
+     * @return string
+     */
+    public function getHeaderLogoForHtml() {
+        return sprintf($this->logoBasePath, '', $this->getHeaderLogoName());
     }
 }
