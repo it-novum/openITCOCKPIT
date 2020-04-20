@@ -106,7 +106,7 @@ class Menu {
                     'reports_category',
                     __('Reports'),
                     4,
-                    'fa fa-file-text'
+                    'fa fa-file-invoice'
                 ))
                     ->addLink(new MenuLink(
                         __('Instant reports'),
@@ -114,7 +114,7 @@ class Menu {
                         'instantreports',
                         'index',
                         '',
-                        'fa fa-file-image-o',
+                        'fa fa-file-invoice',
                         ['instantreports'],
                         1
                     ))
@@ -124,7 +124,7 @@ class Menu {
                         'downtimereports',
                         'index',
                         '',
-                        'fa fa-file-image-o',
+                        'fa fa-file-invoice',
                         [],
                         2
                     ))
@@ -134,7 +134,7 @@ class Menu {
                         'currentstatereports',
                         'index',
                         '',
-                        'fa fa-file-image-o',
+                        'fa fa-file-invoice',
                         [],
                         3
                     ))

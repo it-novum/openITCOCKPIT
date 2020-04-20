@@ -40,7 +40,7 @@ $Logo = new Logo();
 ?>
 <div class="jarviswidget">
     <header>
-        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-file-image-o"></i> </span>
+        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-file-invoice"></i> </span>
         <h2 class="hidden-mobile hidden-tablet"><?php echo __(h($instantReportDetails['name'])); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php echo $this->Utils->backButton() ?>

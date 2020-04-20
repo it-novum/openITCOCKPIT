@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="CurrentstatereportsIndex">
-            <i class="fas fa-clipboard-list"></i> <?php echo __('Current state report'); ?>
+            <i class="fa fa-file-invoice"></i> <?php echo __('Current state report'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">

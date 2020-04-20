@@ -10343,148 +10343,148 @@ msgstr "Продолжительность"
 #: src/Template/Dashboards/hosts_status_list_widget.php:109
 #: src/Template/Dashboards/services_status_list_widget.php:122
 msgid "In Downtime"
-msgstr ""
+msgstr "В обслуживание"
 
 #: src/Template/Dashboards/hosts_status_list_widget.php:147
 msgid "Filter by host output"
-msgstr ""
+msgstr "Фильтровать по выходу узла"
 
 #: src/Template/Dashboards/index.php:82
 msgid "Rename"
-msgstr ""
+msgstr "Переименовать"
 
 #: src/Template/Dashboards/index.php:89
 msgid "Start sharing"
-msgstr ""
+msgstr "Начать делиться"
 
 #: src/Template/Dashboards/index.php:96
 msgid "Stop sharing"
-msgstr ""
+msgstr "Закончить делиться"
 
 #: src/Template/Dashboards/index.php:113
 msgid "Setup tab rotation"
-msgstr ""
+msgstr "Настройка поворота вкладок"
 
 #: src/Template/Dashboards/index.php:118
 msgid "Lock for edit"
-msgstr ""
+msgstr "Блокировка для редактирования"
 
 #: src/Template/Dashboards/index.php:128
 msgid "Add Widget"
-msgstr ""
+msgstr "Добавить виджет"
 
 #: src/Template/Dashboards/index.php:154
 msgid "Add tab"
-msgstr ""
+msgstr "Добавить вкладку"
 
 #: src/Template/Dashboards/index.php:161
 msgid "Fullscreen mode"
-msgstr ""
+msgstr "Полноэкранный режим"
 
 #: src/Template/Dashboards/index.php:183
 msgid "Edit title"
-msgstr ""
+msgstr "Изменить заголовок"
 
 #: src/Template/Dashboards/index.php:238
 msgid "Remove widget"
-msgstr ""
+msgstr "Удалить виджет"
 
 #: src/Template/Dashboards/index.php:269
 #: src/Template/Dashboards/index.php:282
 #: src/Template/Dashboards/index.php:526
 msgid "Edit widget title"
-msgstr ""
+msgstr "Изменить заголовок виджета"
 
 #: src/Template/Dashboards/index.php:293
 #: src/Template/Dashboards/index.php:550
 msgid "Save widget Title"
-msgstr ""
+msgstr "Сохранить название виджета"
 
 #: src/Template/Dashboards/index.php:310
 #: src/Template/Dashboards/index.php:333
 msgid "Create new tab"
-msgstr ""
+msgstr "Создать новую вкладку"
 
 #: src/Template/Dashboards/index.php:321
 msgid "Tab name"
-msgstr ""
+msgstr "Название вкладки"
 
 #: src/Template/Dashboards/index.php:341
 #: src/Template/Dashboards/index.php:363
 msgid "Create from shared tab"
-msgstr ""
+msgstr "Создать из общей вкладки"
 
 #: src/Template/Dashboards/index.php:348
 msgid "Select shared tab"
-msgstr ""
+msgstr "Выберите общую вкладку"
 
 #: src/Template/Dashboards/index.php:387
 #: src/Template/Users/add.php:311
 #: src/Template/Users/add_from_ldap.php:378
 #: src/Template/Users/edit.php:313
 msgid "Tab rotation interval"
-msgstr ""
+msgstr "Интервал вращения вкладки"
 
 #: src/Template/Dashboards/index.php:398
 msgid "Set tab rotation interval"
-msgstr ""
+msgstr "Установить интервал вращения вкладки"
 
 #: src/Template/Dashboards/index.php:413
 msgid "If you only have one tab, the rotation will just refresh the data of your current tab."
-msgstr ""
+msgstr "Если у вас есть только одна вкладка, вращение просто обновит данные вашей текущей вкладки."
 
 #: src/Template/Dashboards/index.php:435
 #: src/Template/Dashboards/index.php:459
 msgid "Rename tab"
-msgstr ""
+msgstr "Переименовать вкладку"
 
 #: src/Template/Dashboards/index.php:448
 msgid "New tab name"
-msgstr ""
+msgstr "Имя новой вкладки"
 
 #: src/Template/Dashboards/index.php:479
 msgid "For your dashboard is an update available"
-msgstr ""
+msgstr "Для вашей приборной панели доступно обновление"
 
 #: src/Template/Dashboards/index.php:490
 msgid "You created this dashboard out of an \"shared\" dashboard. The original dashboard was updated."
-msgstr ""
+msgstr "Вы создали эту панель инструментов из \"общей\" панели инструментов. Оригинальная панель инструментов была обновлена."
 
 #: src/Template/Dashboards/index.php:492
 msgid "This means the original dashboard was reorder, new objects where added or existing objects gets deleted."
-msgstr ""
+msgstr "Это означает, что исходная панель инструментов была переупорядочена, новые объекты, где добавлены или существующие объекты, удаляются."
 
 #: src/Template/Dashboards/index.php:493
 msgid "You can now choose if you want to update your dashboard or keep your current dashboard."
-msgstr ""
+msgstr "Теперь вы можете выбрать, хотите ли вы обновить свою панель мониторинга или сохранить текущую панель мониторинга."
 
 #: src/Template/Dashboards/index.php:495
 msgid "Warning: By updating your dashboard, local modifications will get lost."
-msgstr ""
+msgstr "Предупреждение: при обновлении панели инструментов локальные изменения будут потеряны."
 
 #: src/Template/Dashboards/index.php:503
 msgid "Never perform an update for this dashboard"
-msgstr ""
+msgstr "Никогда не выполнять обновление для этой панели"
 
 #: src/Template/Dashboards/index.php:507
 msgid "Yes update"
-msgstr ""
+msgstr "Да, обновить"
 
 #: src/Template/Dashboards/index.php:511
 msgid "No thanks"
-msgstr ""
+msgstr "Спасибо, не надо"
 
 #: src/Template/Dashboards/index.php:536
 msgid "New title of widget"
-msgstr ""
+msgstr "Новый заголовок виджета"
 
 #: src/Template/Dashboards/notice_widget.php:50
 msgid "Insert text, html or markdown code"
-msgstr ""
+msgstr "Вставьте текст, HTML или markdown код"
 
 #: src/Template/Dashboards/parent_outages_widget.php:29
 msgid "Currently are no network segment issues"
-msgstr ""
+msgstr "В настоящее время нет проблем с сегментами сети"
 
 #: src/Template/Dashboards/service_status_overview_widget.php:81
 #: src/Template/Dashboards/services_downtime_widget.php:108
@@ -10502,11 +10502,11 @@ msgstr ""
 #: src/Template/Servicetemplates/index.php:114
 #: src/Template/Systemdowntimes/service.php:178
 msgid "Filter by service name"
-msgstr ""
+msgstr "Фильтровать по названию службы"
 
 #: src/Template/Dashboards/services_status_list_widget.php:173
 msgid "Filter by service output"
-msgstr ""
+msgstr "Фильтровать по выходу службы"
 
 #: src/Template/Dashboards/services_status_list_widget.php:203
 #: src/Template/Hosts/browser.php:1056
@@ -10532,24 +10532,24 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:234
 #: src/Template/email/html/notification_service.php:139
 msgid "Service name"
-msgstr ""
+msgstr "Наименование службы"
 
 #: src/Template/Dashboards/tacho_widget.php:94
 #: src/Template/Dashboards/traffic_light_widget.php:82
 msgid "Show label"
-msgstr ""
+msgstr "Показать метку"
 
 #: src/Template/Dashboards/welcome_widget.php:31
 msgid "hosts are monitored"
-msgstr ""
+msgstr "узлы контролируются"
 
 #: src/Template/Dashboards/welcome_widget.php:34
 msgid "services are monitored"
-msgstr ""
+msgstr "службы контролируются"
 
 #: src/Template/Dashboards/welcome_widget.php:37
 msgid "Your selected Timezone is "
-msgstr ""
+msgstr "Ваш выбранный часовой пояс"
 
 #: src/Template/DeletedHosts/index.php:38
 #: src/Template/DeletedHosts/index.php:75
@@ -10558,12 +10558,12 @@ msgstr ""
 #: src/Template/Hosts/not_monitored.php:83
 #: src/Template/Services/service_list.php:125
 msgid "Deleted"
-msgstr ""
+msgstr "Удаленный"
 
 #: src/Template/DeletedHosts/index.php:47
 #: src/Template/Hosts/not_monitored.php:54
 msgid "Deleted hosts"
-msgstr ""
+msgstr "Удаленные узлы"
 
 #: src/Template/DeletedHosts/index.php:55
 #: src/Template/Hosts/disabled.php:59
@@ -10575,7 +10575,7 @@ msgstr ""
 #: src/Template/Services/index.php:68
 #: src/Template/Services/not_monitored.php:56
 msgid "Monitored"
-msgstr ""
+msgstr "Контролируемые"
 
 #: src/Template/DeletedHosts/index.php:62
 #: src/Template/Hosts/browser.php:999
@@ -10593,40 +10593,40 @@ msgstr ""
 #: src/Template/element/load_instant_report_data.php:302
 #: src/Template/pdf/create_pdf_report.php:302
 msgid "Not monitored"
-msgstr ""
+msgstr "Не контролируемые"
 
 #: src/Template/DeletedHosts/index.php:144
 #: src/Template/Services/service_list.php:760
 msgid "Performance data deleted"
-msgstr ""
+msgstr "Данные о производительности удалены"
 
 #: src/Template/Documentations/view.php:40
 msgid "Host template:"
-msgstr ""
+msgstr "Шаблон узла:"
 
 #: src/Template/Documentations/view.php:56
 msgid "Service template:"
-msgstr ""
+msgstr "Шаблон службы:"
 
 #: src/Template/Documentations/view.php:76
 msgid "Object"
-msgstr ""
+msgstr "Объект"
 
 #: src/Template/Documentations/view.php:81
 msgid "Last update"
-msgstr ""
+msgstr "Последнее обновление"
 
 #: src/Template/Documentations/view.php:93
 msgid "No documentation has been written yet for this object. Click on \"Edit\" to start writing."
-msgstr ""
+msgstr "Никакой документации еще не было написано для этого объекта. Нажмите \"Изменить\", чтобы начать писать."
 
 #: src/Template/Documentations/view.php:248
 msgid "Insert hyperlink"
-msgstr ""
+msgstr "Вставить гиперссылку"
 
 #: src/Template/Documentations/view.php:304
 msgid "Insert"
-msgstr ""
+msgstr "Вставить"
 
 #: src/Template/Documentations/wiki.php:34
 #: src/Template/Documentations/wiki.php:47
@@ -10634,60 +10634,60 @@ msgstr ""
 #: src/Template/Servicetemplates/index.php:237
 #: src/Template/element/sidebar.php:113
 msgid "Documentation"
-msgstr ""
+msgstr "Документация"
 
 #: src/Template/Documentations/wiki.php:38
 msgid "Wiki"
-msgstr ""
+msgstr "Wiki"
 
 #: src/Template/Documentations/wiki.php:48
 msgid "wiki"
-msgstr ""
+msgstr "wiki"
 
 #: src/Template/Documentations/wiki.php:56
 msgid "New to openITCOCKPIT?"
-msgstr ""
+msgstr "Новый для openITCOCKPITа?"
 
 #: src/Template/Documentations/wiki.php:59
 msgid "We recommend every new user to read our"
-msgstr ""
+msgstr "Мы рекомендуем каждому новому пользователю прочитать наше "
 
 #: src/Template/Documentations/wiki.php:61
 msgid "beginners guide."
-msgstr ""
+msgstr "руководство для начинающих."
 
 #: src/Template/Documentations/wiki.php:63
 msgid "This guide provides information about the basic concept of openITCOCKPIT and how to monitor your first host."
-msgstr ""
+msgstr "Это руководство содержит информацию об основной концепции openITCOCKPIT и о том, как контролировать ваш первый узел."
 
 #: src/Template/Documentations/wiki.php:68
 msgid "Beginners guide."
-msgstr ""
+msgstr "Руководство для начинающих."
 
 #: src/Template/Documentations/wiki.php:75
 msgid "Technical documentation"
-msgstr ""
+msgstr "Техническая документация"
 
 #: src/Template/Documentations/wiki.php:78
 msgid "The technical documentation of openITCOCKPIT containers detailed information about additional Modules, background processes, the usage of the JSON-API and so on."
-msgstr ""
+msgstr "Техническая документация openITCOCKPIT содержит подробную информацию о дополнительных модулях, фоновых процессах, использовании JSON-API и так далее."
 
 #: src/Template/Documentations/wiki.php:84
 msgid "Technical documentation (EN)"
-msgstr ""
+msgstr "Техническая документация (EN)"
 
 #: src/Template/Documentations/wiki.php:89
 msgid "Technische Dokumentation (DE)"
-msgstr ""
+msgstr "Техническая документация (DE)"
 
 #: src/Template/Documentations/wiki.php:97
 msgid "Additional help"
-msgstr ""
+msgstr "Дополнительная помощь"
 
 #: src/Template/Downtimereports/index.php:34
 #: src/Template/Downtimereports/index.php:47
 msgid "Downtime report"
-msgstr ""
+msgstr "Отчет о техническом обслуживании"
 
 #: src/Template/Downtimereports/index.php:85
 #: src/Template/Instantreports/add.php:195
@@ -10695,14 +10695,14 @@ msgstr ""
 #: src/Template/Instantreports/index.php:155
 #: src/Template/Instantreports/index.php:224
 msgid "Evaluation"
-msgstr ""
+msgstr "Оценка"
 
 #: src/Template/Downtimereports/index.php:102
 #: src/Template/Instantreports/add.php:214
 #: src/Template/Instantreports/edit.php:215
 #: src/Template/Instantreports/index.php:180
 msgid "Hosts and Services"
-msgstr ""
+msgstr "Узлы и службы"
 
 #: src/Template/Downtimereports/index.php:130
 #: src/Template/Hostdependencies/add.php:172
@@ -10716,13 +10716,13 @@ msgstr ""
 #: src/Template/Servicedependencies/index.php:400
 #: src/Template/Serviceescalations/index.php:310
 msgid "Timeperiod"
-msgstr ""
+msgstr "Временной период"
 
 #: src/Template/Downtimereports/index.php:134
 #: src/Template/Downtimereports/index.php:179
 #: src/Template/Servicedependencies/edit.php:621
 msgid "Please choose a timeperiod"
-msgstr ""
+msgstr "Пожалуйста, выберите период времени"
 
 #: src/Template/Downtimereports/index.php:153
 #: src/Template/Downtimereports/index.php:167
@@ -10737,44 +10737,44 @@ msgstr ""
 #: src/Template/Systemdowntimes/add_servicedowntime.php:204
 #: src/Template/Systemdowntimes/add_servicedowntime.php:237
 msgid "DD.MM.YYYY"
-msgstr ""
+msgstr "DD.MM.YYYY"
 
 #: src/Template/Downtimereports/index.php:175
 #: src/Template/Instantreports/add.php:256
 #: src/Template/Instantreports/edit.php:257
 msgid "Reflection state"
-msgstr ""
+msgstr "Состояние отражения"
 
 #: src/Template/Downtimereports/index.php:183
 #: src/Template/Instantreports/add.php:265
 #: src/Template/Instantreports/edit.php:266
 msgid "soft and hard state"
-msgstr ""
+msgstr "Мягкое и твердое состояние"
 
 #: src/Template/Downtimereports/index.php:184
 #: src/Template/Instantreports/add.php:268
 #: src/Template/Instantreports/edit.php:269
 msgid "only hard state"
-msgstr ""
+msgstr "Только твердое состояние"
 
 #: src/Template/Downtimereports/index.php:194
 msgid "Dynamic color"
-msgstr ""
+msgstr "Динамический цвет"
 
 #: src/Template/Downtimereports/index.php:223
 msgid "Create downtime report"
-msgstr ""
+msgstr "Создать отчет об обслуживании"
 
 #: src/Template/Downtimereports/index.php:244
 #: src/Template/Downtimereports/pdf/create_pdf_report.php:81
 #: src/Template/element/load_downtime_report_data.php:91
 msgid "Involved in outages (Hosts):"
-msgstr ""
+msgstr "Участие в отключениях (узлах):"
 
 #: src/Template/Downtimereports/index.php:271
 #: src/Template/element/load_downtime_report_data.php:247
 msgid "Hosts without outages:"
-msgstr ""
+msgstr "Узлы без сбоев:"
 
 #: src/Template/Downtimereports/pdf/create_pdf_report.php:55
 #: src/Template/Instantreports/generate.php:152
@@ -10783,7 +10783,7 @@ msgstr ""
 #: src/Template/element/load_instant_report_data.php:54
 #: src/Template/pdf/create_pdf_report.php:66
 msgid "Analysis period: "
-msgstr ""
+msgstr "Период анализа:"
 
 #: src/Template/Downtimereports/pdf/create_pdf_report.php:157
 #: src/Template/Downtimereports/pdf/create_pdf_report.php:307
@@ -10791,17 +10791,17 @@ msgstr ""
 #: src/Template/element/load_downtime_report_data.php:301
 #: src/Template/element/load_downtime_report_data.php:434
 msgid "Involved in outages (Services):"
-msgstr ""
+msgstr "Участие в отключениях (службы):"
 
 #: src/Template/Downtimereports/pdf/create_pdf_report.php:173
 #: src/Template/Downtimereports/pdf/create_pdf_report.php:323
 #: src/Template/element/load_downtime_report_data.php:176
 msgid "Servicetemplate"
-msgstr ""
+msgstr "Шаблон службы"
 
 #: src/Template/Downtimereports/pdf/create_pdf_report.php:240
 msgid " Hosts without outages:"
-msgstr ""
+msgstr " Узлы без сбоев:"
 
 #: src/Template/Downtimes/host.php:50
 #: src/Template/Downtimes/service.php:50
@@ -10810,14 +10810,14 @@ msgstr ""
 #: src/Template/Servicegroups/extended.php:55
 #: src/Template/Services/index.php:52
 msgid "Command sent successfully"
-msgstr ""
+msgstr "Команда успешно отправлена"
 
 #: src/Template/Downtimes/host.php:52
 #: src/Template/Downtimes/service.php:52
 #: src/Template/Hostgroups/extended.php:56
 #: src/Template/Servicegroups/extended.php:56
 msgid "Data refresh in"
-msgstr ""
+msgstr "Обновление данных за"
 
 #: src/Template/Downtimes/host.php:53
 #: src/Template/Downtimes/service.php:53
@@ -10826,19 +10826,19 @@ msgstr ""
 #: src/Template/Servicegroups/extended.php:56
 #: src/Template/Services/index.php:53
 msgid "seconds..."
-msgstr ""
+msgstr "секунд..."
 
 #: src/Template/Downtimes/host.php:65
 #: src/Template/Downtimes/host.php:76
 #: src/Template/Downtimes/service.php:76
 msgid "Host downtimes"
-msgstr ""
+msgstr "Обслуживание узлов"
 
 #: src/Template/Downtimes/host.php:85
 #: src/Template/Downtimes/service.php:65
 #: src/Template/Downtimes/service.php:85
 msgid "Service downtimes"
-msgstr ""
+msgstr "Обслуживание служб"
 
 #: src/Template/Downtimes/host.php:98
 #: src/Template/Downtimes/service.php:98
@@ -10853,7 +10853,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:113
 #: src/Template/element/Downtimes/create_dropdown.php:27
 msgid "Create downtime"
-msgstr ""
+msgstr "Создать обслуживание"
 
 #: src/Template/Downtimes/host.php:104
 #: src/Template/Downtimes/service.php:104
@@ -10864,7 +10864,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:119
 #: src/Template/element/Downtimes/create_dropdown.php:35
 msgid "Create host downtime"
-msgstr ""
+msgstr "Создать обслуживание узлов"
 
 #: src/Template/Downtimes/host.php:110
 #: src/Template/Downtimes/service.php:110
@@ -10875,7 +10875,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:125
 #: src/Template/element/Downtimes/create_dropdown.php:43
 msgid "Create service downtime"
-msgstr ""
+msgstr "Создать обслуживание служб"
 
 #: src/Template/Downtimes/host.php:116
 #: src/Template/Downtimes/service.php:116
@@ -10886,7 +10886,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:131
 #: src/Template/element/Downtimes/create_dropdown.php:51
 msgid "Create host group downtime"
-msgstr ""
+msgstr "Создать обслуживание для группы узлов"
 
 #: src/Template/Downtimes/host.php:122
 #: src/Template/Downtimes/service.php:122
@@ -10897,7 +10897,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:137
 #: src/Template/element/Downtimes/create_dropdown.php:59
 msgid "Create container downtime"
-msgstr ""
+msgstr "Создать обслуживание контейнера"
 
 #: src/Template/Downtimes/host.php:189
 #: src/Template/Downtimes/service.php:202
@@ -10906,7 +10906,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/node.php:178
 #: src/Template/Systemdowntimes/service.php:191
 msgid "Filter by user"
-msgstr ""
+msgstr "Фильтровать по пользователю"
 
 #: src/Template/Downtimes/host.php:212
 #: src/Template/Downtimes/service.php:225
@@ -10915,98 +10915,98 @@ msgstr ""
 #: src/Template/Servicedependencies/index.php:348
 #: src/Template/Serviceescalations/index.php:313
 msgid "Options"
-msgstr ""
+msgstr "Опции"
 
 #: src/Template/Downtimes/icon.php:28
 msgid "Downtime currently running"
-msgstr ""
+msgstr "Текущее обслуживание"
 
 #: src/Template/Downtimes/icon.php:34
 msgid "Downtime is expired"
-msgstr ""
+msgstr "Срок обслуживания истек"
 
 #: src/Template/Downtimes/icon.php:40
 msgid "Downtime was cancelled"
-msgstr ""
+msgstr "Техническое обслуживание было отменено"
 
 #: src/Template/Downtimes/icon.php:46
 msgid "Downtime not started yet"
-msgstr ""
+msgstr "Обслуживание еще не началось"
 
 #: src/Template/Errors/error403.php:32
 msgid "403"
-msgstr ""
+msgstr "403"
 
 #: src/Template/Errors/error404.php:32
 msgid "404"
-msgstr ""
+msgstr "404"
 
 #: src/Template/Exports/index.php:34
 #: src/Template/Exports/index.php:47
 msgid "Export"
-msgstr ""
+msgstr "Экспорт"
 
 #: src/Template/Exports/index.php:38
 msgid "Apply configuration"
-msgstr ""
+msgstr "Применить конфигурацию"
 
 #: src/Template/Exports/index.php:48
 #: src/Template/element/header.php:86
 #: src/Template/element/header.php:92
 msgid "Refresh monitoring configuration"
-msgstr ""
+msgstr "Обновить конфигурацию мониторинга"
 
 #: src/Template/Exports/index.php:62
 msgid "Could not connect to Gearman Job Server"
-msgstr ""
+msgstr "Не удалось подключиться к Gearman Job серверу"
 
 #: src/Template/Exports/index.php:81
 msgid "Create backup of current configuration"
-msgstr ""
+msgstr "Создать резервную копию текущей конфигурации"
 
 #: src/Template/Exports/index.php:93
 msgid "Select instances which the new configuration should get pushed."
-msgstr ""
+msgstr "Выберите инстанции, которые новая конфигурация должна получить."
 
 #: src/Template/Exports/index.php:105
 msgid "Instances name"
-msgstr ""
+msgstr "Имя инстанции"
 
 #: src/Template/Exports/index.php:146
 msgid "Save selection"
-msgstr ""
+msgstr "Сохранить выбор"
 
 #: src/Template/Exports/index.php:158
 msgid "Tasks"
-msgstr ""
+msgstr "Задачи"
 
 #: src/Template/Exports/index.php:166
 msgid "Error while refreshing monitoring configuration."
-msgstr ""
+msgstr "Ошибка при обновлении конфигурации мониторинга."
 
 #: src/Template/Exports/index.php:174
 msgid "New configuration is invalid"
-msgstr ""
+msgstr "Новая конфигурация неверна"
 
 #: src/Template/Exports/index.php:206
 msgid "Refresh in progress "
-msgstr ""
+msgstr "Обновление в процессе "
 
 #: src/Template/Exports/index.php:213
 msgid "Launch refresh"
-msgstr ""
+msgstr "Запустить обновление"
 
 #: src/Template/Hostchecks/index.php:38
 #: src/Template/Servicechecks/index.php:38
 msgid "check history"
-msgstr ""
+msgstr "история проверок"
 
 #: src/Template/Hostchecks/index.php:150
 #: src/Template/Servicechecks/index.php:162
 #: src/Template/Statehistories/host.php:150
 #: src/Template/Statehistories/service.php:162
 msgid "State Types"
-msgstr ""
+msgstr "Типы статуса"
 
 #: src/Template/Hostchecks/index.php:161
 #: src/Template/Hostchecks/index.php:235
@@ -11017,7 +11017,7 @@ msgstr ""
 #: src/Template/Statehistories/service.php:173
 #: src/Template/Statehistories/service.php:249
 msgid "Soft"
-msgstr ""
+msgstr "Мягкий"
 
 #: src/Template/Hostchecks/index.php:173
 #: src/Template/Hostchecks/index.php:231
@@ -11028,35 +11028,35 @@ msgstr ""
 #: src/Template/Statehistories/service.php:185
 #: src/Template/Statehistories/service.php:245
 msgid "Hard"
-msgstr ""
+msgstr "Твердый"
 
 #: src/Template/Hostchecks/index.php:203
 #: src/Template/Servicechecks/index.php:215
 #: src/Template/Statehistories/host.php:203
 #: src/Template/Statehistories/service.php:216
 msgid "Check attempt"
-msgstr ""
+msgstr "Номер попытки проверки"
 
 #: src/Template/Hostdependencies/add.php:49
 msgid "Create new host dependency"
-msgstr ""
+msgstr "Создать новую зависимость узла"
 
 #: src/Template/Hostdependencies/add.php:76
 #: src/Template/Hostdependencies/edit.php:76
 msgid "Host dependencies are an advanced feature that allow you to\n                                    suppress notifications for hosts based on the status of one or more other hosts."
-msgstr ""
+msgstr "Зависимости узлов - это расширенная функция, которая позволяет\n                                     подавлять уведомления для узлов на основе состояния одного или нескольких других узлов."
 
 #: src/Template/Hostdependencies/add.php:109
 #: src/Template/Hostdependencies/edit.php:109
 #: src/Template/Hostdependencies/index.php:369
 msgid "Dependent hosts"
-msgstr ""
+msgstr "Зависимые узлы"
 
 #: src/Template/Hostdependencies/add.php:152
 #: src/Template/Hostdependencies/edit.php:152
 #: src/Template/Hostdependencies/index.php:371
 msgid "Dependent host groups"
-msgstr ""
+msgstr "Зависимые группы узлов"
 
 #: src/Template/Hostdependencies/add.php:200
 #: src/Template/Hostdependencies/edit.php:200
@@ -11068,7 +11068,7 @@ msgstr ""
 #: src/Template/Servicedependencies/index.php:361
 #: src/Template/Servicedependencies/index.php:401
 msgid "Inherits parent"
-msgstr ""
+msgstr "Наследует родитель"
 
 #: src/Template/Hostdependencies/add.php:212
 #: src/Template/Hostdependencies/edit.php:212
@@ -11078,7 +11078,7 @@ msgstr ""
 #: src/Template/Servicedependencies/edit.php:650
 #: src/Template/Servicedependencies/index.php:402
 msgid "Execution failure criteria"
-msgstr ""
+msgstr "Критерии неудачи исполнения"
 
 #: src/Template/Hostdependencies/add.php:267
 #: src/Template/Hostdependencies/add.php:347
@@ -11099,7 +11099,7 @@ msgstr ""
 #: src/Template/Servicedependencies/index.php:553
 #: src/Template/Servicedependencies/index.php:587
 msgid "Pending"
-msgstr ""
+msgstr "В ожидании"
 
 #: src/Template/Hostdependencies/add.php:281
 #: src/Template/Hostdependencies/edit.php:281
@@ -11111,7 +11111,7 @@ msgstr ""
 #: src/Template/Servicedependencies/index.php:251
 #: src/Template/Servicedependencies/index.php:558
 msgid "Execution none"
-msgstr ""
+msgstr "Исполнение нет"
 
 #: src/Template/Hostdependencies/add.php:292
 #: src/Template/Hostdependencies/edit.php:292
@@ -11121,7 +11121,7 @@ msgstr ""
 #: src/Template/Servicedependencies/edit.php:787
 #: src/Template/Servicedependencies/index.php:403
 msgid "Notification failure criteria"
-msgstr ""
+msgstr "Критерии ошибки уведомления"
 
 #: src/Template/Hostdependencies/add.php:361
 #: src/Template/Hostdependencies/edit.php:361
@@ -11133,55 +11133,55 @@ msgstr ""
 #: src/Template/Servicedependencies/index.php:341
 #: src/Template/Servicedependencies/index.php:592
 msgid "Notification none"
-msgstr ""
+msgstr "Уведомление нет"
 
 #: src/Template/Hostdependencies/add.php:373
 msgid "Create host dependency"
-msgstr ""
+msgstr "Создать зависимость узла"
 
 #: src/Template/Hostdependencies/edit.php:49
 msgid "Edit host dependency"
-msgstr ""
+msgstr "Редактировать зависимость узла"
 
 #: src/Template/Hostdependencies/edit.php:373
 msgid "Update host dependency"
-msgstr ""
+msgstr "Обновление зависимости узла"
 
 #: src/Template/Hostdependencies/index.php:97
 msgid "You can either search for  <b>\"host\"</b> OR <b>\"dependent host\"</b>. Opposing field will be reset automatically"
-msgstr ""
+msgstr "Вы можете найти <b>\"узел\"</b> ИЛИ <b>\"зависимый узел\"</b>. Противоположное поле будет сброшено автоматически"
 
 #: src/Template/Hostdependencies/index.php:112
 msgid "Filter by dependent host name"
-msgstr ""
+msgstr "Фильтровать по имени зависимого узла"
 
 #: src/Template/Hostdependencies/index.php:128
 #: src/Template/Hostescalations/index.php:128
 msgid "Filter by host group"
-msgstr ""
+msgstr "Фильтр по группе узлов"
 
 #: src/Template/Hostdependencies/index.php:138
 msgid "You can either search for  <b>\"host group\"</b> OR <b>\"dependent host group\"</b>.  Opposing field will be reset automatically"
-msgstr ""
+msgstr "Вы можете выполнить поиск <b>\"группы узлов \"</b> ИЛИ <b>\"зависимой группы узлов\"</b>. Противоположное поле будет сброшено автоматически"
 
 #: src/Template/Hostdependencies/index.php:153
 msgid "Filter by dependent host group"
-msgstr ""
+msgstr "Фильтровать по зависимой группе узлов"
 
 #: src/Template/Hostdependencies/index.php:168
 #: src/Template/Servicedependencies/index.php:168
 msgid "Execution fail on ..."
-msgstr ""
+msgstr "Ошибка выполнения на ..."
 
 #: src/Template/Hostdependencies/index.php:244
 #: src/Template/Servicedependencies/index.php:258
 msgid "Notification fail on ..."
-msgstr ""
+msgstr "Сбой уведомления на ..."
 
 #: src/Template/Hostdependencies/index.php:346
 #: src/Template/Servicedependencies/index.php:374
 msgid "Not inherits parent"
-msgstr ""
+msgstr "Не наследует родитель"
 
 #: src/Template/Hostdependencies/index.php:522
 #: src/Template/Hostdependencies/index.php:551
@@ -11191,59 +11191,59 @@ msgstr ""
 #: src/Template/Servicedependencies/index.php:589
 #: src/Template/Servicegroups/extended.php:211
 msgid "P"
-msgstr ""
+msgstr "P"
 
 #: src/Template/Hostdependencies/index.php:527
 #: src/Template/Hostdependencies/index.php:556
 #: src/Template/Servicedependencies/index.php:560
 #: src/Template/Servicedependencies/index.php:594
 msgid "N"
-msgstr ""
+msgstr "N"
 
 #: src/Template/Hostescalations/add.php:49
 msgid "Create new host escalation"
-msgstr ""
+msgstr "Создать новую эскалацию узла"
 
 #: src/Template/Hostescalations/add.php:76
 #: src/Template/Hostescalations/edit.php:76
 msgid "Notification escalations could be used to notify a certain user group in case of an emergency.\nOnce a host or service escalated, contacts, contact group and notification options will be overwritten by the escalation."
-msgstr ""
+msgstr "Эскалации уведомлений могут быть использованы для уведомления определенной группы пользователей в случае чрезвычайной ситуации.\nПосле эскалации узла или службы контакты, группа контактов и параметры уведомлений будут перезаписаны."
 
 #: src/Template/Hostescalations/add.php:109
 #: src/Template/Hostescalations/edit.php:109
 msgid "Excluded Hosts"
-msgstr ""
+msgstr "Исключенные узлы"
 
 #: src/Template/Hostescalations/add.php:152
 #: src/Template/Hostescalations/edit.php:152
 msgid "Excluded host groups"
-msgstr ""
+msgstr "Исключенные группы узлов"
 
 #: src/Template/Hostescalations/add.php:172
 #: src/Template/Hostescalations/edit.php:172
 #: src/Template/Serviceescalations/add.php:173
 #: src/Template/Serviceescalations/edit.php:172
 msgid "First notification"
-msgstr ""
+msgstr "Первое уведомление"
 
 #: src/Template/Hostescalations/add.php:181
 #: src/Template/Hostescalations/edit.php:181
 #: src/Template/Serviceescalations/add.php:182
 #: src/Template/Serviceescalations/edit.php:181
 msgid "Number of notifications that passed before the escalation rule will\n                                    overwrite notification settings."
-msgstr ""
+msgstr "Количество уведомлений, переданных до правила эскалации, будет \n                                    перезаписывать настройки уведомлений."
 
 #: src/Template/Hostescalations/add.php:191
 #: src/Template/Hostescalations/edit.php:191
 #: src/Template/Serviceescalations/add.php:192
 #: src/Template/Serviceescalations/edit.php:191
 msgid "Last notification"
-msgstr ""
+msgstr "Последнее уведомление"
 
 #: src/Template/Hostescalations/add.php:200
 #: src/Template/Hostescalations/edit.php:200
 msgid "If number of last_notification is reached, the notification rule\n                                    will be disabled and the notification options of the host or service will be used again."
-msgstr ""
+msgstr "Если достигнут номер last_notification, правило уведомления \n                                    будет отключено, и параметры уведомления узла или службы будут использоваться снова."
 
 #: src/Template/Hostescalations/add.php:211
 #: src/Template/Hostescalations/edit.php:211
@@ -11261,58 +11261,58 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:456
 #: src/Template/Servicetemplates/edit.php:459
 msgid "Notification interval"
-msgstr ""
+msgstr "Интервал уведомления"
 
 #: src/Template/Hostescalations/add.php:224
 #: src/Template/Hostescalations/edit.php:224
 #: src/Template/Serviceescalations/add.php:225
 #: src/Template/Serviceescalations/edit.php:224
 msgid "Escalation period"
-msgstr ""
+msgstr "Период эскалации"
 
 #: src/Template/Hostescalations/add.php:228
 #: src/Template/Hostescalations/edit.php:228
 #: src/Template/Serviceescalations/add.php:229
 #: src/Template/Serviceescalations/edit.php:228
 msgid "Please choose a escalation timeperiod"
-msgstr ""
+msgstr "Пожалуйста, выберите период времени эскалации"
 
 #: src/Template/Hostescalations/add.php:284
 #: src/Template/Hostescalations/edit.php:284
 #: src/Template/Serviceescalations/add.php:285
 #: src/Template/Serviceescalations/edit.php:284
 msgid "Escalation options"
-msgstr ""
+msgstr "Варианты эскалации"
 
 #: src/Template/Hostescalations/add.php:334
 msgid "Create host escalation"
-msgstr ""
+msgstr "Создать эскалацию узла"
 
 #: src/Template/Hostescalations/edit.php:49
 msgid "Edit host escalation"
-msgstr ""
+msgstr "Изменить эскалацию узла"
 
 #: src/Template/Hostescalations/edit.php:334
 msgid "Update host escalation"
-msgstr ""
+msgstr "Update node escalation"
 
 #: src/Template/Hostescalations/index.php:50
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:260
 msgid "Host Escalations"
-msgstr ""
+msgstr "Эскалации узлов"
 
 #: src/Template/Hostescalations/index.php:97
 msgid "You can either search for  <b>\"host\"</b> OR <b>\"excluded host\"</b>. Opposing Field will be reset automatically"
-msgstr ""
+msgstr "Вы можете найти <b>\"узел\"</b> ИЛИ <b>\"исключенный узел\"</b>. Противоположное поле будет сброшено автоматически"
 
 #: src/Template/Hostescalations/index.php:112
 #: src/Template/Hostescalations/index.php:153
 msgid "Filter by excluded host group"
-msgstr ""
+msgstr "Фильтровать по исключенной группе узлов"
 
 #: src/Template/Hostescalations/index.php:138
 msgid "You can either search for  <b>\"host group\"</b> OR <b>\"excluded host group\"</b>.  Opposing Field will be reset automatically"
-msgstr ""
+msgstr "Вы можете выполнить поиск <b>\"группы узлов\"</b> ИЛИ <b>\"исключенной группы узлов\"</b>. Противоположное поле будет сброшено автоматически"
 
 #: src/Template/Hostescalations/index.php:168
 #: src/Template/Serviceescalations/index.php:168
@@ -12010,7 +12010,7 @@ msgstr ""
 #: src/Template/Services/edit.php:620
 #: src/Template/Services/edit.php:623
 msgid "host template"
-msgstr ""
+msgstr "шаблон узла"
 
 #: src/Template/Hosts/browser.php:540
 #: src/Template/Hosttemplates/add.php:337
@@ -13356,7 +13356,7 @@ msgstr ""
 #: src/Template/Services/edit.php:597
 #: src/Template/Services/edit.php:600
 msgid "service template"
-msgstr ""
+msgstr "шаблон службы"
 
 #: src/Template/Services/add.php:704
 #: src/Template/Services/edit.php:774
@@ -15497,11 +15497,11 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:354
 msgid "Host Downtimes"
-msgstr ""
+msgstr "Обслуживание узлов"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:364
 msgid "Service Downtimes"
-msgstr ""
+msgstr "Обслуживание служб"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:374
 msgid "Recurring Host Downtimes"
