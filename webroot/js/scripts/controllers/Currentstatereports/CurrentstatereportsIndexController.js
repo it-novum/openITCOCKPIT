@@ -17,8 +17,7 @@ angular.module('openITCOCKPIT')
             Servicestatus: {
                 hasBeenAcknowledged: null,
                 inDowntime: null,
-                passive: null,
-                current_state: []
+                passive: null
             }
         };
 
