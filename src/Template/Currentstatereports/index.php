@@ -248,7 +248,7 @@
                         </div>
                         <!-- HTML report start -->
                         <div ng-repeat="servicestatusObject in servicestatus" class="margin-10">
-                            <div class="padding-5">
+                            <div>
                                 <div class="row bg-{{servicestatusObject.Hoststatus.humanState}} padding-10">
                                     <div class="col-lg-10 font-md">
                                         <span class="txt-color-white"
@@ -418,7 +418,7 @@
                                             <span ng-if="serviceDetails.Servicestatus.perfdataArray"
                                                   ng-repeat="(label, perfdata) in serviceDetails.Servicestatus.perfdataArray">
                                                 <span ng-if="$index === 0">
-                                                    <div class="progress progress-md bg-downtime position-relative"
+                                                    <div class="progress progress-md bg-primary position-relative"
                                                          style="margin-bottom: 0px;">
                                                         <div
                                                             style="width: {{getProgressbarData(perfdata, label).currentPercentage}}%; position: unset;"
