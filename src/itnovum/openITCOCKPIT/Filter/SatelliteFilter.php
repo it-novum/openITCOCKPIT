@@ -36,7 +36,10 @@ class SatelliteFilter extends Filter {
             'like' => [
                 'Satellites.name',
                 'Satellites.address'
-            ]
+            ],
+            'equals'   => [
+                'Satellites.sync_method'
+            ],
         ];
         return $this->getConditionsByFilters($filters);
     }
