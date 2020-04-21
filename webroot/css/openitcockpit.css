@@ -1108,6 +1108,7 @@ a[target]:not(.btn) {
     -webkit-box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0, 0 0 1px 0 rgba(60, 64, 67, 0.08), 0 0 2px 1px rgba(60, 64, 67, 0.1);
     box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0, 0 0 1px 0 rgba(60, 64, 67, 0.08), 0 0 2px 1px rgba(60, 64, 67, 0.1);
     z-index: 1;
+    color: inherit;
 }
 
 .menu-item,
