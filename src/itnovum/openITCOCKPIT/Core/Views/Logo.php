@@ -250,4 +250,11 @@ class Logo {
     public function getHeaderLogoForHtml() {
         return sprintf($this->logoBasePath, '', $this->getHeaderLogoName());
     }
+
+    /**
+     * @return string
+     */
+    public function getCustomHeaderLogoPath() {
+        return sprintf($this->logoBasePath, WWW_ROOT, $this->customHeaderLogoName);
+    }
 }
