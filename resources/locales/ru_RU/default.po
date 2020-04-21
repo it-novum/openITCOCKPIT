@@ -11317,84 +11317,84 @@ msgstr "Вы можете выполнить поиск <b>\"группы узл
 #: src/Template/Hostescalations/index.php:168
 #: src/Template/Serviceescalations/index.php:168
 msgid "Notification options"
-msgstr ""
+msgstr "Варианты уведомлений"
 
 #: src/Template/Hostescalations/index.php:180
 #: src/Template/Serviceescalations/index.php:180
 msgid "Filter by first notification"
-msgstr ""
+msgstr "Фильтровать по первому уведомлению"
 
 #: src/Template/Hostescalations/index.php:197
 #: src/Template/Serviceescalations/index.php:197
 msgid "Filter by last notification"
-msgstr ""
+msgstr "Фильтровать по последнему уведомлению"
 
 #: src/Template/Hostescalations/index.php:215
 #: src/Template/Serviceescalations/index.php:215
 msgid "Filter by notification interval"
-msgstr ""
+msgstr "Фильтровать по интервалу уведомлений"
 
 #: src/Template/Hostescalations/index.php:225
 #: src/Template/Serviceescalations/index.php:225
 msgid "Escalate on ..."
-msgstr ""
+msgstr "Эскалация на ..."
 
 #: src/Template/Hostescalations/index.php:290
 msgid "Excluded hosts"
-msgstr ""
+msgstr "Исключенные узлы"
 
 #: src/Template/Hostescalations/index.php:292
 msgid "Excluded hosts groups"
-msgstr ""
+msgstr "Группы исключенных узлов"
 
 #: src/Template/Hostescalations/index.php:293
 #: src/Template/Serviceescalations/index.php:307
 msgid "First"
-msgstr ""
+msgstr "Первый"
 
 #: src/Template/Hostescalations/index.php:294
 #: src/Template/Serviceescalations/index.php:308
 msgid "Last"
-msgstr ""
+msgstr "Последний"
 
 #: src/Template/Hostgroups/add.php:47
 #: src/Template/Hostgroups/add_hosts_to_hostgroup.php:44
 msgid "Create new host group"
-msgstr ""
+msgstr "Создать новую группу узлов"
 
 #: src/Template/Hostgroups/add.php:111
 #: src/Template/Hostgroups/edit.php:112
 msgid "Host group URL"
-msgstr ""
+msgstr "URL группы узлов"
 
 #: src/Template/Hostgroups/add.php:167
 msgid "Create host group"
-msgstr ""
+msgstr "Создать группу узлов"
 
 #: src/Template/Hostgroups/add_hosts_to_hostgroup.php:7
 msgid "Append host/s to host group"
-msgstr ""
+msgstr "Добавить узел(ы) к группе узлов"
 
 #: src/Template/Hostgroups/add_hosts_to_hostgroup.php:16
 msgid "Selected hosts"
-msgstr ""
+msgstr "Выбранные узлы"
 
 #: src/Template/Hostgroups/add_hosts_to_hostgroup.php:48
 msgid "Append existing host group"
-msgstr ""
+msgstr "Добавить к существующей группе узлов"
 
 #: src/Template/Hostgroups/append.php:38
 msgid "Append hosts to host group"
-msgstr ""
+msgstr "Добавить узлы в группу узлов"
 
 #: src/Template/Hostgroups/append.php:47
-msgid "Append hosts"
+msgid "Добавить узлы"
 msgstr ""
 
 #: src/Template/Hostgroups/append.php:48
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:48
 msgid "to host group"
-msgstr ""
+msgstr "в группу узлов"
 
 #: src/Template/Hostgroups/append.php:86
 #: src/Template/Servicegroups/append.php:86
@@ -11404,53 +11404,53 @@ msgstr ""
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:122
 #: src/Template/Servicetemplategroups/append.php:86
 msgid "Please notice:"
-msgstr ""
+msgstr "Пожалуйста отметьте:"
 
 #: src/Template/Hostgroups/append.php:87
 msgid "Hosts that could not be assigned to the selected host group due to container permissions, will be removed automatically"
-msgstr ""
+msgstr "Узлы, которые не могут быть назначены выбранной группе узлов из-за разрешений контейнера, будут удалены автоматически"
 
 #: src/Template/Hostgroups/edit.php:47
 msgid "Edit host group:"
-msgstr ""
+msgstr "Изменить группу узлов:"
 
 #: src/Template/Hostgroups/edit.php:164
 msgid "Update host group"
-msgstr ""
+msgstr "Обновить группу узлов"
 
 #: src/Template/Hostgroups/extended.php:38
 #: src/Template/Servicegroups/extended.php:38
 msgid "Extended overview"
-msgstr ""
+msgstr "Расширенный обзор"
 
 #: src/Template/Hostgroups/extended.php:66
 msgid "Host Groups (0)"
-msgstr ""
+msgstr "Группы узлов (0)"
 
 #: src/Template/Hostgroups/extended.php:67
 #: src/Template/Servicegroups/extended.php:67
 msgid "UUID: "
-msgstr ""
+msgstr "UUID: "
 
 #: src/Template/Hostgroups/extended.php:107
 #: src/Template/Servicegroups/extended.php:107
 msgid "Action"
-msgstr ""
+msgstr "Действие"
 
 #: src/Template/Hostgroups/extended.php:227
 #: src/Template/Hosts/index.php:406
 msgid "Service Summary "
-msgstr ""
+msgstr "Суммирование служб"
 
 #: src/Template/Hostgroups/index.php:85
 #: src/Template/Systemdowntimes/hostgroup.php:165
 msgid "Filter by host group name"
-msgstr ""
+msgstr "Фильтр по имени группы узлов"
 
 #: src/Template/Hostgroups/index.php:185
 #: src/Template/Servicegroups/index.php:185
 msgid "Extended view"
-msgstr ""
+msgstr "Расширенный обзор"
 
 #: src/Template/Hostgroups/index.php:226
 #: src/Template/Hosts/index.php:680
@@ -11460,33 +11460,33 @@ msgstr ""
 #: src/Template/element/hostgroup_mass_changes.php:42
 #: src/Template/element/servicegroup_mass_changes.php:42
 msgid "List as PDF"
-msgstr ""
+msgstr "Список в формате PDF"
 
 #: src/Template/Hostgroups/pdf/list_to_pdf.php:70
 msgid "Number of Hostgroups: "
-msgstr ""
+msgstr "Количество групп узлов: "
 
 #: src/Template/Hostgroups/pdf/list_to_pdf.php:75
 #: src/Template/Hosts/pdf/list_to_pdf.php:65
 #: src/Template/Servicegroups/pdf/list_to_pdf.php:76
 msgid "Number of Hosts: "
-msgstr ""
+msgstr "Количество узлов: "
 
 #: src/Template/Hostgroups/pdf/list_to_pdf.php:156
 msgid "This host group has no hosts"
-msgstr ""
+msgstr "Эта группа узлов не имеет узлов"
 
 #: src/Template/Hosts/add.php:54
 msgid "/root container selected!"
-msgstr ""
+msgstr "/root контейнер выбран!"
 
 #: src/Template/Hosts/add.php:55
 msgid "Choosing a tenant container is recommended for later permission purposes"
-msgstr ""
+msgstr "Выбор клиентского контейнера рекомендуется для более поздних разрешений"
 
 #: src/Template/Hosts/add.php:66
 msgid "Create new host"
-msgstr ""
+msgstr "Создать новый узел"
 
 #: src/Template/Hosts/add.php:86
 #: src/Template/Hosts/edit.php:72
@@ -11498,7 +11498,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:69
 #: src/Template/Servicetemplates/edit.php:73
 msgid "Basic configuration"
-msgstr ""
+msgstr "Базовая конфигурация"
 
 #: src/Template/Hosts/add.php:112
 #: src/Template/Hosts/browser.php:800
@@ -11507,44 +11507,44 @@ msgstr ""
 #: src/Template/Hosts/sharing.php:38
 #: src/Template/Hosts/sharing.php:88
 msgid "Shared containers"
-msgstr ""
+msgstr "Общие контейнеры"
 
 #: src/Template/Hosts/add.php:141
 #: src/Template/Hosts/edit.php:130
 msgid "Please select a host template."
-msgstr ""
+msgstr "Пожалуйста, выберите шаблон узла."
 
 #: src/Template/Hosts/add.php:163
 #: src/Template/Hosts/edit.php:152
 msgid "Could not resolve hostname."
-msgstr ""
+msgstr "Не удалось разрешить имя узла"
 
 #: src/Template/Hosts/add.php:174
 #: src/Template/Hosts/edit.php:163
 msgid "DNS Lookup"
-msgstr ""
+msgstr "DNS Lookup"
 
 #: src/Template/Hosts/add.php:181
 #: src/Template/Hosts/edit.php:170
 #: src/Template/email/html/notification_host.php:140
 #: src/Template/email/html/notification_service.php:155
 msgid "Host address"
-msgstr ""
+msgstr "Адрес узла"
 
 #: src/Template/Hosts/add.php:187
 #: src/Template/Hosts/edit.php:176
 msgid "IPv4/IPv6 address or FQDN"
-msgstr ""
+msgstr "IPv4 / IPv6 адрес или полное доменное имя"
 
 #: src/Template/Hosts/add.php:195
 #: src/Template/Hosts/edit.php:184
 msgid "Could not resolve address."
-msgstr ""
+msgstr "Не удалось разрешить адрес."
 
 #: src/Template/Hosts/add.php:246
 #: src/Template/Hosts/edit.php:235
 msgid "Parent hosts"
-msgstr ""
+msgstr "Родительские узлы"
 
 #: src/Template/Hosts/add.php:265
 #: src/Template/Hosts/browser.php:818
@@ -11558,7 +11558,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:185
 #: src/Template/Servicetemplates/edit.php:189
 msgid "Tags"
-msgstr ""
+msgstr "Теги"
 
 #: src/Template/Hosts/add.php:287
 #: src/Template/Hosts/edit.php:276
@@ -11570,7 +11570,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:200
 #: src/Template/Servicetemplates/edit.php:204
 msgid "Press return to separate tags"
-msgstr ""
+msgstr "Нажмите возврат, чтобы разделить теги"
 
 #: src/Template/Hosts/add.php:293
 #: src/Template/Hosts/browser.php:757
@@ -11584,13 +11584,13 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:207
 #: src/Template/Servicetemplates/edit.php:211
 msgid "Priority"
-msgstr ""
+msgstr "Приоритет"
 
 #: src/Template/Hosts/add.php:308
 #: src/Template/Hosts/browser.php:827
 #: src/Template/Hosts/edit.php:297
 msgid "Satellite"
-msgstr ""
+msgstr "Сателлит"
 
 #: src/Template/Hosts/add.php:331
 #: src/Template/Hosts/edit.php:320
@@ -11602,7 +11602,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:221
 #: src/Template/Servicetemplates/edit.php:225
 msgid "Check configuration"
-msgstr ""
+msgstr "Конфигурация проверки"
 
 #: src/Template/Hosts/add.php:337
 #: src/Template/Hosts/browser.php:407
@@ -11618,7 +11618,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:227
 #: src/Template/Servicetemplates/edit.php:231
 msgid "Check period"
-msgstr ""
+msgstr "Период проверки команды"
 
 #: src/Template/Hosts/add.php:353
 #: src/Template/Hosts/add.php:403
@@ -11635,7 +11635,7 @@ msgstr ""
 #: src/Template/Servicetemplates/copy.php:132
 #: src/Template/Servicetemplates/edit.php:316
 msgid "Due to active checking is disabled, this command will only be used as freshness check command."
-msgstr ""
+msgstr "В связи с тем, что активная проверка отключена, эта команда будет использоваться только как команда проверки свежести."
 
 #: src/Template/Hosts/add.php:371
 #: src/Template/Hosts/edit.php:360
@@ -11646,7 +11646,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:254
 #: src/Template/Servicetemplates/edit.php:258
 msgid "Enable active checks"
-msgstr ""
+msgstr "Включить активные проверки"
 
 #: src/Template/Hosts/add.php:380
 #: src/Template/Hosts/edit.php:369
@@ -11657,7 +11657,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:258
 #: src/Template/Servicetemplates/edit.php:262
 msgid "If disabled the check command won't be executed. This is useful if an external program sends state data to openITCOCKPIT."
-msgstr ""
+msgstr "Если отключено, команда проверки не будет выполнена. Это полезно, если внешняя программа отправляет данные о состоянии в openITCOCKPIT."
 
 #: src/Template/Hosts/add.php:387
 #: src/Template/Hosts/add.php:536
@@ -11674,7 +11674,7 @@ msgstr ""
 #: src/Template/Servicetemplates/copy.php:116
 #: src/Template/Servicetemplates/edit.php:304
 msgid "Check command"
-msgstr ""
+msgstr "Команда проверки"
 
 #: src/Template/Hosts/add.php:440
 #: src/Template/Hosts/edit.php:429
@@ -11688,7 +11688,7 @@ msgstr ""
 #: src/Template/Servicetemplates/copy.php:158
 #: src/Template/Servicetemplates/edit.php:349
 msgid "This command does not have any parameters."
-msgstr ""
+msgstr "Эта команда не имеет никаких параметров."
 
 #: src/Template/Hosts/add.php:446
 #: src/Template/Hosts/browser.php:414
@@ -11702,7 +11702,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:352
 #: src/Template/Servicetemplates/edit.php:355
 msgid "Check interval"
-msgstr ""
+msgstr "Интервал проверки"
 
 #: src/Template/Hosts/add.php:461
 #: src/Template/Hosts/browser.php:421
@@ -11716,7 +11716,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:366
 #: src/Template/Servicetemplates/edit.php:369
 msgid "Retry interval"
-msgstr ""
+msgstr "Интервал повтора"
 
 #: src/Template/Hosts/add.php:479
 #: src/Template/Hosts/edit.php:468
@@ -11728,7 +11728,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:382
 #: src/Template/Servicetemplates/edit.php:385
 msgid "Max. number of check attempts"
-msgstr ""
+msgstr "Максимальное количество попыток проверки"
 
 #: src/Template/Hosts/add.php:510
 #: src/Template/Hosts/edit.php:499
@@ -11736,7 +11736,7 @@ msgstr ""
 #: src/Template/Hosttemplates/add.php:313
 #: src/Template/Hosttemplates/edit.php:314
 msgid "Number of failed attempts before the host will switch into hard state."
-msgstr ""
+msgstr "Количество неудачных попыток, прежде чем узел перейдет в твердое состояние."
 
 #: src/Template/Hosts/add.php:513
 #: src/Template/Hosts/edit.php:502
@@ -11748,7 +11748,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:413
 #: src/Template/Servicetemplates/edit.php:416
 msgid "Worst case time delay until notification command gets executed after state hits a non ok state: "
-msgstr ""
+msgstr "В худшем случае задержка, пока команда уведомления не будет выполнена после того, как состояние достигнет состояния не OK:"
 
 #: src/Template/Hosts/add.php:530
 #: src/Template/Hosts/edit.php:519
@@ -11760,7 +11760,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:429
 #: src/Template/Servicetemplates/edit.php:432
 msgid "Notification configuration"
-msgstr ""
+msgstr "Конфигурация уведомлений"
 
 #: src/Template/Hosts/add.php:698
 #: src/Template/Hosts/edit.php:685
@@ -11772,7 +11772,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:592
 #: src/Template/Servicetemplates/edit.php:595
 msgid "Misc. configuration"
-msgstr ""
+msgstr "Разная конфигурация"
 
 #: src/Template/Hosts/add.php:704
 #: src/Template/Hosts/copy.php:118
@@ -11781,7 +11781,7 @@ msgstr ""
 #: src/Template/Hosttemplates/add.php:478
 #: src/Template/Hosttemplates/edit.php:479
 msgid "Host URL"
-msgstr ""
+msgstr "URL узла"
 
 #: src/Template/Hosts/add.php:718
 #: src/Template/Hosts/edit.php:705
@@ -11789,7 +11789,7 @@ msgstr ""
 #: src/Template/Hosttemplates/add.php:487
 #: src/Template/Hosttemplates/edit.php:488
 msgid "The macros $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$ and $HOSTADDRESS$ will be replaced"
-msgstr ""
+msgstr "Макросы $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$ и $HOSTADDRESS$ будут заменены"
 
 #: src/Template/Hosts/add.php:727
 #: src/Template/Hosts/browser.php:844
@@ -11803,7 +11803,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:617
 #: src/Template/Servicetemplates/edit.php:620
 msgid "Notes"
-msgstr ""
+msgstr "Заметки"
 
 #: src/Template/Hosts/add.php:773
 #: src/Template/Hosts/browser.php:738
@@ -11816,7 +11816,7 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:666
 #: src/Template/Servicetemplates/edit.php:669
 msgid "Flap detection enabled"
-msgstr ""
+msgstr "Обнаружение колебаний включено"
 
 #: src/Template/Hosts/add.php:787
 #: src/Template/Hosts/edit.php:774
@@ -11827,112 +11827,112 @@ msgstr ""
 #: src/Template/Servicetemplates/add.php:677
 #: src/Template/Servicetemplates/edit.php:680
 msgid "Flap detection options"
-msgstr ""
+msgstr "Варианты обнаружение колебаний"
 
 #: src/Template/Hosts/add.php:832
 #: src/Template/Hosts/edit.php:817
 #: src/Template/Hosttemplates/add.php:586
 #: src/Template/Hosttemplates/edit.php:588
 msgid "Host macro configuration"
-msgstr ""
+msgstr "Конфигурация узла макроса"
 
 #: src/Template/Hosts/add.php:843
 #: src/Template/Hosts/edit.php:828
 #: src/Template/Hosttemplates/add.php:597
 #: src/Template/Hosttemplates/edit.php:599
 msgid "HOST"
-msgstr ""
+msgstr "УЗЕЛ"
 
 #: src/Template/Hosts/add.php:855
 #: src/Template/Hosts/edit.php:840
 msgid "Macros in green color are inherited from the host template."
-msgstr ""
+msgstr "Макросы зеленого цвета наследуются от шаблона узла."
 
 #: src/Template/Hosts/add.php:880
 msgid "Create host and setup agent"
-msgstr ""
+msgstr "Создать узел и настройка агента"
 
 #: src/Template/Hosts/add.php:886
 msgid "Create host"
-msgstr ""
+msgstr "Создать узел"
 
 #: src/Template/Hosts/add.php:898
 msgid "Save and create service"
-msgstr ""
+msgstr "Сохранить и создать службу"
 
 #: src/Template/Hosts/add.php:905
 msgid "Save and setup agent"
-msgstr ""
+msgstr "Сохранение и настройка агента"
 
 #: src/Template/Hosts/add.php:911
 msgid "Save and run Check_MK discovery"
-msgstr ""
+msgstr "Сохраните и запустите обнаружение с Check_MK"
 
 #: src/Template/Hosts/browser.php:38
 #: src/Template/Services/browser.php:37
 #: src/Template/Services/details.php:44
 msgid "Command sent successfully. Refresh in 5 seconds"
-msgstr ""
+msgstr "Команда успешно отправлена. Обновить через 5 секунд"
 
 #: src/Template/Hosts/browser.php:77
 #: src/Template/Services/browser.php:77
 msgid "Status information"
-msgstr ""
+msgstr "Информация о статусе"
 
 #: src/Template/Hosts/browser.php:83
 msgid "Device information"
-msgstr ""
+msgstr "Информация об устройстве"
 
 #: src/Template/Hosts/browser.php:90
 #: src/Template/Services/browser.php:90
 msgid "Timeline"
-msgstr ""
+msgstr "Хроника"
 
 #: src/Template/Hosts/browser.php:98
 #: src/Template/Services/browser.php:98
 msgid "ServiceNow"
-msgstr ""
+msgstr "ServiceNow"
 
 #: src/Template/Hosts/browser.php:247
 msgid "This host is currently disabled!"
-msgstr ""
+msgstr "Этот узел сейчас отключен!"
 
 #: src/Template/Hosts/browser.php:254
 #: src/Template/Services/browser.php:248
 msgid "Status overview"
-msgstr ""
+msgstr "Обзор статуса"
 
 #: src/Template/Hosts/browser.php:267
 msgid "The host is currently in a planned maintenance period"
-msgstr ""
+msgstr "В данный момент узел находится в плановом периоде обслуживания"
 
 #: src/Template/Hosts/browser.php:271
 #: src/Template/Services/browser.php:265
 #: src/Template/Services/browser.php:375
 #: src/Template/Services/details.php:204
 msgid "Downtime was set by"
-msgstr ""
+msgstr "Техническое обслуживание было установлено"
 
 #: src/Template/Hosts/browser.php:273
 #: src/Template/Services/browser.php:267
 #: src/Template/Services/browser.php:377
 #: src/Template/Services/details.php:206
 msgid "with an duration of"
-msgstr ""
+msgstr "с продолжительностью"
 
 #: src/Template/Hosts/browser.php:278
 #: src/Template/Services/browser.php:272
 #: src/Template/Services/browser.php:382
 #: src/Template/Services/details.php:211
 msgid "Start time:"
-msgstr ""
+msgstr "Начало:"
 
 #: src/Template/Hosts/browser.php:280
 #: src/Template/Services/browser.php:274
 #: src/Template/Services/browser.php:384
 #: src/Template/Services/details.php:213
 msgid "End time:"
-msgstr ""
+msgstr "Конец:"
 
 #: src/Template/Hosts/browser.php:285
 #: src/Template/Hosts/browser.php:325
@@ -11943,63 +11943,63 @@ msgstr ""
 #: src/Template/Services/details.php:218
 #: src/Template/Services/details.php:258
 msgid "Comment: "
-msgstr ""
+msgstr "Комментарий"
 
 #: src/Template/Hosts/browser.php:312
 #: src/Template/Services/browser.php:418
 msgid "State of host is acknowledged"
-msgstr ""
+msgstr "Статус узла подтвержден"
 
 #: src/Template/Hosts/browser.php:319
 #: src/Template/Services/browser.php:313
 #: src/Template/Services/browser.php:425
 #: src/Template/Services/details.php:252
 msgid "Acknowledgement was set by"
-msgstr ""
+msgstr "Подтверждение было установлено"
 
 #: src/Template/Hosts/browser.php:321
 #: src/Template/Services/browser.php:315
 #: src/Template/Services/browser.php:427
 #: src/Template/Services/details.php:254
 msgid "at"
-msgstr ""
+msgstr "в"
 
 #: src/Template/Hosts/browser.php:339
 msgid "The state of this host is currently flapping!"
-msgstr ""
+msgstr "Статус этого узла в данный момент колеблется!"
 
 #: src/Template/Hosts/browser.php:352
 msgid "Problem with parent host detected!"
-msgstr ""
+msgstr "Обнаружена проблема с родительским узлом!"
 
 #: src/Template/Hosts/browser.php:432
 #: src/Template/Services/browser.php:512
 msgid "Long output"
-msgstr ""
+msgstr "Длинный выход"
 
 #: src/Template/Hosts/browser.php:443
 msgid "Parent host overview"
-msgstr ""
+msgstr "Обзор родительского узла"
 
 #: src/Template/Hosts/browser.php:450
 msgid "Parent host state"
-msgstr ""
+msgstr "Состояние родительского узла"
 
 #: src/Template/Hosts/browser.php:451
 msgid "Parent host name"
-msgstr ""
+msgstr "Имя родительского узла"
 
 #: src/Template/Hosts/browser.php:474
 #: src/Template/Services/browser.php:560
 msgid "Notification overview"
-msgstr ""
+msgstr "Обзор уведомлений"
 
 #: src/Template/Hosts/browser.php:480
 #: src/Template/Services/add.php:519
 #: src/Template/Services/browser.php:567
 #: src/Template/Services/edit.php:592
 msgid "Contacts and contact groups got inherited from"
-msgstr ""
+msgstr "Контакты и контактные группы унаследованы от"
 
 #: src/Template/Hosts/browser.php:485
 #: src/Template/Hosts/browser.php:488
@@ -12022,196 +12022,196 @@ msgstr "шаблон узла"
 #: src/Template/Servicetemplates/add.php:436
 #: src/Template/Servicetemplates/edit.php:439
 msgid "Notification period"
-msgstr ""
+msgstr "Период уведомления"
 
 #: src/Template/Hosts/browser.php:550
 #: src/Template/Services/browser.php:664
 msgid "Notifications enabled"
-msgstr ""
+msgstr "Уведомления включены"
 
 #: src/Template/Hosts/browser.php:565
 #: src/Template/Services/browser.php:679
 msgid "Notify on"
-msgstr ""
+msgstr "Уведомить о"
 
 #: src/Template/Hosts/browser.php:570
 #: src/Template/Services/browser.php:684
 msgid "Recover"
-msgstr ""
+msgstr "Восстановление"
 
 #: src/Template/Hosts/browser.php:658
 #: src/Template/Services/browser.php:779
 msgid "Reset check time "
-msgstr ""
+msgstr "Сбросить время проверки"
 
 #: src/Template/Hosts/browser.php:664
 #: src/Template/Services/browser.php:785
 #: src/Template/Services/details.php:152
 msgid "Schedule maintenance"
-msgstr ""
+msgstr "Плановое обслуживание"
 
 #: src/Template/Hosts/browser.php:677
 #: src/Template/Services/browser.php:798
 #: src/Template/Services/details.php:167
 msgid "Passive transfer check result"
-msgstr ""
+msgstr "Результат проверки пассивного перевода"
 
 #: src/Template/Hosts/browser.php:684
 #: src/Template/Services/browser.php:805
 #: src/Template/Services/details.php:174
 msgid "Enable flap detection"
-msgstr ""
+msgstr "Включить обнаружение колебаний"
 
 #: src/Template/Hosts/browser.php:691
 #: src/Template/Services/browser.php:812
 #: src/Template/Services/details.php:181
 msgid "Disable flap detection"
-msgstr ""
+msgstr "Отключить обнаружение колебаний"
 
 #: src/Template/Hosts/browser.php:705
 #: src/Template/Services/browser.php:826
 msgid "Disable notifications"
-msgstr ""
+msgstr "Отключить уведомления"
 
 #: src/Template/Hosts/browser.php:711
 msgid "Send custom host notification "
-msgstr ""
+msgstr "Отправить уведомление пользовательского узла"
 
 #: src/Template/Hosts/browser.php:728
 msgid "Host overview"
-msgstr ""
+msgstr "Обзор узла"
 
 #: src/Template/Hosts/browser.php:773
 #: src/Template/Services/browser.php:898
 #: src/Template/Services/browser.php:912
 msgid "Copy to clipboard"
-msgstr ""
+msgstr "Скопировать в буфер обмена"
 
 #: src/Template/Hosts/browser.php:869
 #: src/Template/Services/browser.php:961
 msgid "Outages: "
-msgstr ""
+msgstr "Отключения: "
 
 #: src/Template/Hosts/browser.php:875
 #: src/Template/Services/browser.php:966
 msgid "No data available !"
-msgstr ""
+msgstr "Данные недоступны !"
 
 #: src/Template/Hosts/browser.php:884
 #: src/Template/Services/browser.php:976
 msgid "Legend"
-msgstr ""
+msgstr "Легенда"
 
 #: src/Template/Hosts/browser.php:886
 #: src/Template/Services/browser.php:978
 msgid "State types"
-msgstr ""
+msgstr "Типы статуса"
 
 #: src/Template/Hosts/browser.php:892
 msgid "Up soft"
-msgstr ""
+msgstr "Включен мягкий"
 
 #: src/Template/Hosts/browser.php:896
 msgid "Down soft"
-msgstr ""
+msgstr "Отключен мягкий"
 
 #: src/Template/Hosts/browser.php:900
 msgid "Unreachable soft"
-msgstr ""
+msgstr "Недоступный мягкий"
 
 #: src/Template/Hosts/browser.php:906
 msgid "Up hard"
-msgstr ""
+msgstr "Включен твердый"
 
 #: src/Template/Hosts/browser.php:910
 msgid "Down hard"
-msgstr ""
+msgstr "Отключен твердый"
 
 #: src/Template/Hosts/browser.php:914
 msgid "Unreachable hard"
-msgstr ""
+msgstr "Недоступный твердый"
 
 #: src/Template/Hosts/browser.php:929
 #: src/Template/Services/browser.php:1029
 msgid "Notification"
-msgstr ""
+msgstr "Уведомление"
 
 #: src/Template/Hosts/browser.php:940
 #: src/Template/Services/browser.php:1040
 msgid "Downtime cancelled"
-msgstr ""
+msgstr "Техническое обслуживание отменено"
 
 #: src/Template/Hosts/browser.php:959
 #: src/Template/Services/browser.php:1059
 msgid "No permissions"
-msgstr ""
+msgstr "Нет разрешений"
 
 #: src/Template/Hosts/browser.php:994
 #: src/Template/Services/service_list.php:110
 #: src/Template/Users/index.php:220
 msgid "Active"
-msgstr ""
+msgstr "Активный"
 
 #: src/Template/Hosts/browser.php:1035
 msgid "Acknowledgedment"
-msgstr ""
+msgstr "Подтверждение"
 
 #: src/Template/Hosts/browser.php:1040
 msgid "in Downtime"
-msgstr ""
+msgstr "в обслуживании"
 
 #: src/Template/Hosts/browser.php:1316
 #: src/Template/Hosts/browser.php:1411
 msgid "Servicestatus"
-msgstr ""
+msgstr "Статус службы"
 
 #: src/Template/Hosts/copy.php:47
 msgid "Copy host/s"
-msgstr ""
+msgstr "Копировать узел/ы"
 
 #: src/Template/Hosts/copy.php:62
 msgid "Source host:"
-msgstr ""
+msgstr "Исходный узел:"
 
 #: src/Template/Hosts/copy.php:78
 #: src/Template/Services/copy.php:108
 msgid "Name of the new host"
-msgstr ""
+msgstr "Имя нового узла"
 
 #: src/Template/Hosts/copy.php:109
 msgid "Address of the new host"
-msgstr ""
+msgstr "Адрес нового узла"
 
 #: src/Template/Hosts/disabled.php:51
 msgid "Disabled hosts"
-msgstr ""
+msgstr "Отключенные узлы"
 
 #: src/Template/Hosts/disabled.php:153
 #: src/Template/Hosts/index.php:320
 #: src/Template/Hosts/not_monitored.php:158
 msgid "Filter by instance"
-msgstr ""
+msgstr "Фильтровать по инстанции"
 
 #: src/Template/Hosts/disabled.php:200
 msgid "Hosttemplate name"
-msgstr ""
+msgstr "Имя шаблона узла"
 
 #: src/Template/Hosts/edit.php:48
 msgid "Edit host:"
-msgstr ""
+msgstr "Редактировать узел:"
 
 #: src/Template/Hosts/edit.php:92
 msgid "Objects in /root can't be moved to other containers"
-msgstr ""
+msgstr "Объекты в /root не могут быть перемещены в другие контейнеры"
 
 #: src/Template/Hosts/edit.php:863
 msgid "Update host"
-msgstr ""
+msgstr "Обновить узел"
 
 #: src/Template/Hosts/edit_details.php:38
 #: src/Template/Hosts/edit_details.php:48
 msgid "Edit host detail"
-msgstr ""
+msgstr "Редактировать детали узла"
 
 #: src/Template/Hosts/edit_details.php:73
 #: src/Template/Hosts/edit_details.php:113
@@ -12226,90 +12226,90 @@ msgstr ""
 #: src/Template/Hosts/edit_details.php:394
 #: src/Template/Hosts/edit_details.php:418
 msgid "Unlock for edit"
-msgstr ""
+msgstr "Разблокировать для редактирования"
 
 #: src/Template/Hosts/edit_details.php:100
 #: src/Template/Hosts/edit_details.php:331
 #: src/Template/Hosts/edit_details.php:374
 msgid "Keep existing"
-msgstr ""
+msgstr "Сохранить существующие"
 
 #: src/Template/Hosts/edit_details.php:438
 msgid "Save details"
-msgstr ""
+msgstr "Сохранить детали"
 
 #: src/Template/Hosts/index.php:46
 #: src/Template/Services/index.php:53
 msgid "Page refresh in"
-msgstr ""
+msgstr "Обновление страницы в"
 
 #: src/Template/Hosts/index.php:111
 #: src/Template/Services/index.php:95
 msgid "Unhandled only"
-msgstr ""
+msgstr "Только необработанныe"
 
 #: src/Template/Hosts/index.php:197
 #: src/Template/Services/index.php:181
 msgid "Filter by excluded tags"
-msgstr ""
+msgstr "Фильтровать по исключенным тегам"
 
 #: src/Template/Hosts/index.php:700
 #: src/Template/Hosts/not_monitored.php:397
 #: src/Template/element/host_mass_changes.php:67
 msgid "Add to host group"
-msgstr ""
+msgstr "Добавить в группу узлов"
 
 #: src/Template/Hosts/pdf/list_to_pdf.php:52
 msgid "Hosts Overview"
-msgstr ""
+msgstr "Обзор узлов"
 
 #: src/Template/Hosts/sharing.php:46
 msgid "Sharing for"
-msgstr ""
+msgstr "Поделиться для"
 
 #: src/Template/Hosts/sharing.php:63
 msgid "Host sharing"
-msgstr ""
+msgstr "Дележ узлов"
 
 #: src/Template/Hosts/sharing.php:63
 msgid "edit successfully"
-msgstr ""
+msgstr "редактирование успешно"
 
 #: src/Template/Hosts/sharing.php:66
 msgid "Primary container"
-msgstr ""
+msgstr "Основной контейнер"
 
 #: src/Template/Hosts/sharing.php:79
 msgid "Due to dependencies it is not possible to change the primary container in this view."
-msgstr ""
+msgstr "Из-за зависимостей невозможно изменить основной контейнер в этом представлении."
 
 #: src/Template/Hosts/sharing.php:108
 msgid "Update sharing"
-msgstr ""
+msgstr "Обновление дележа"
 
 #: src/Template/Hosttemplates/add.php:48
 msgid "Create new host template"
-msgstr ""
+msgstr "Создать новый шаблон узла"
 
 #: src/Template/Hosttemplates/add.php:89
 #: src/Template/Hosttemplates/edit.php:90
 #: src/Template/Servicetemplates/add.php:94
 #: src/Template/Servicetemplates/edit.php:98
 msgid "Template name"
-msgstr ""
+msgstr "Имя шаблона"
 
 #: src/Template/Hosttemplates/add.php:210
 #: src/Template/Hosttemplates/edit.php:211
 msgid "Check Command"
-msgstr ""
+msgstr "Команда проверки"
 
 #: src/Template/Hosttemplates/add.php:626
 msgid "Create host template"
-msgstr ""
+msgstr "Создать шаблон узла"
 
 #: src/Template/Hosttemplates/copy.php:47
 msgid "Copy host template/s"
-msgstr ""
+msgstr "Скопировать шаблон/ы узла"
 
 #: src/Template/Hosttemplates/copy.php:62
 msgid "Source host template:"
