@@ -248,7 +248,7 @@
                         </div>
                         <!-- HTML report start -->
                         <div ng-repeat="servicestatusObject in servicestatus" class="margin-10">
-                            <div class="padding-10">
+                            <div class="padding-5">
                                 <div class="row bg-{{servicestatusObject.Hoststatus.humanState}} padding-10">
                                     <div class="col-lg-10 font-md">
                                         <span class="txt-color-white"
@@ -269,7 +269,7 @@
                                         {{servicestatusObject.Hoststatus.lastHardStateChange}}
                                     </div>
                                 </div>
-                                <div style="border-top:1px solid whitesmoke;margin-top:10px;padding:10px 0px;">
+                                <div class="padding-10">
                                     <div class="row font-sm">
                                         <div class="col-lg-2">
                                             <?php echo __('Last check'); ?>
