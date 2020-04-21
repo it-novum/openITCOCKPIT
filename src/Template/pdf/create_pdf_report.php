@@ -52,7 +52,7 @@ $Logo = new Logo();
 <div class="well">
     <div class="row no-padding">
         <div class="col-md-9 text-left">
-            <i class="fa fa-file-image-o txt-color-blueDark"></i>
+            <i class="fa fa-file-invoice txt-color-blueDark"></i>
             <?php echo __(h($instantReportDetails['name'])); ?>
         </div>
         <div class="col-md-3 text-left">

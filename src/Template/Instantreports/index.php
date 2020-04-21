@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="InstantreportsIndex">
-            <i class="fas fa-clipboard-list"></i> <?php echo __('Instant reports'); ?>
+            <i class="fa fa-file-invoice"></i> <?php echo __('Instant reports'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -375,7 +375,7 @@
                                             <?php if ($this->Acl->hasPermission('generate', 'instantreports')): ?>
                                                 <a class="dropdown-item"
                                                    ui-sref="InstantreportsGenerate({id:instantreport.Instantreport.id})">
-                                                    <i class="fas fa-clipboard-list"></i>
+                                                    <i class="fa fa-file-invoice"></i>
                                                     <?php echo __('Generate'); ?>
                                                 </a>
                                             <?php endif; ?>
