@@ -87,9 +87,7 @@ class SudoMessasgeInterface implements MessageComponentInterface {
         /** @var ExportsTable $ExportsTable */
         $this->ExportsTable = TableRegistry::getTableLocator()->get('Exports');
 
-        Configure::load('NagiosModule.config');
-        $naemonExternalCommandsFile = Configure::read('NagiosModule.PREFIX') . Configure::read('NagiosModule.NAGIOS_CMD');
-        $this->ExternalCommands = new ExternalCommands($naemonExternalCommandsFile);
+        $this->ExternalCommands = new ExternalCommands();
 
         $this->requestor = null;
     }
@@ -220,20 +218,8 @@ class SudoMessasgeInterface implements MessageComponentInterface {
                 $this->ExternalCommands->setServiceAck(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'comment' => $msg->data[2], 'author' => $msg->data[3], 'sticky' => $msg->data[4]]);
                 break;
 
-            case 'submitServiceAckWithQuery':
-                $this->ExternalCommands->setServiceAckWithQuery(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1], 'comment' => $msg->data[2], 'author' => $msg->data[3], 'sticky' => $msg->data[4]]);
-                break;
-
             case 'submitHoststateAck':
                 $this->ExternalCommands->setHostAck(['hostUuid' => $msg->data[0], 'comment' => $msg->data[1], 'author' => $msg->data[2], 'sticky' => $msg->data[3], 'type' => $msg->data[4]]);
-                break;
-
-            case 'submitHostAckWithQuery':
-                $this->ExternalCommands->setHostAckWithQuery(['hostUuid' => $msg->data[0], 'comment' => $msg->data[1], 'author' => $msg->data[2], 'sticky' => $msg->data[3], 'type' => $msg->data[4]]);
-                break;
-
-            case 'submitHostgroupAck':
-                $this->ExternalCommands->setHostgroupAck(['hostgroupUuid' => $msg->data[0], 'comment' => $msg->data[1], 'author' => $msg->data[2], 'sticky' => $msg->data[3], 'type' => $msg->data[4]]);
                 break;
 
             case 'submitServiceDowntime':
@@ -244,10 +230,6 @@ class SudoMessasgeInterface implements MessageComponentInterface {
                 $this->ExternalCommands->setHostDowntime(['hostUuid' => $msg->data[0], 'start' => strtotime($msg->data[1]), 'end' => strtotime($msg->data[2]), 'comment' => $msg->data[3], 'author' => $msg->data[4], 'downtimetype' => $msg->data[5]]);
                 break;
 
-            case 'submitHostgroupDowntime':
-                $this->ExternalCommands->setHostgroupDowntime(['hostgroupUuid' => $msg->data[0], 'start' => strtotime($msg->data[1]), 'end' => strtotime($msg->data[2]), 'comment' => $msg->data[3], 'author' => $msg->data[4], 'downtimetype' => $msg->data[5]]);
-                break;
-
             case 'submitDisableHostNotifications':
                 $this->ExternalCommands->disableHostNotifications(['uuid' => $msg->data[0], 'type' => $msg->data[1]]);
                 break;
@@ -256,35 +238,12 @@ class SudoMessasgeInterface implements MessageComponentInterface {
                 $this->ExternalCommands->enableHostNotifications(['uuid' => $msg->data[0], 'type' => $msg->data[1]]);
                 break;
 
-            case 'submitDisableHostgroupNotifications':
-                $this->ExternalCommands->disableHostgroupNotifications(['hostgroupUuid' => $msg->data[0], 'type' => $msg->data[1]]);
-                break;
-
-            case 'submitEnableHostgroupNotifications':
-                $this->ExternalCommands->enableHostgroupNotifications(['hostgroupUuid' => $msg->data[0], 'type' => $msg->data[1]]);
-                break;
-
             case 'submitDisableServiceNotifications':
                 $this->ExternalCommands->disableServiceNotifications(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1]]);
                 break;
 
             case 'submitEnableServiceNotifications':
                 $this->ExternalCommands->enableServiceNotifications(['hostUuid' => $msg->data[0], 'serviceUuid' => $msg->data[1]]);
-                break;
-
-            case 'submitDeleteHostDowntime':
-                $this->ExternalCommands->deleteHostDowntime($msg->data[0]);
-                if (isset($msg->data[1])) { // deleting service downtimes too
-                    $servicesArr = explode(',', $msg->data[1]);
-                    foreach ($servicesArr as $serviceDowntimeId) {
-                        if ($serviceDowntimeId === '0' || empty($serviceDowntimeId)) continue;
-                        $this->ExternalCommands->deleteServiceDowntime($serviceDowntimeId);
-                    }
-                }
-                break;
-
-            case 'submitDeleteServiceDowntime':
-                $this->ExternalCommands->deleteServiceDowntime($msg->data[0]);
                 break;
         }
     }

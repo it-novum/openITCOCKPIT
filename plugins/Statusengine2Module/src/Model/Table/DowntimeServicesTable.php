@@ -68,7 +68,7 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('nagios_downtimehistory');
@@ -88,7 +88,7 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         //Readonly table
         return $validator;
     }
@@ -100,7 +100,7 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         //Readonly table
         return $rules;
     }
@@ -366,7 +366,7 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
             ->bind(':end2', $endDateSqlFormat, 'date');
 
         $query->enableHydration($enableHydration);
-        if($disableResultsCasting){
+        if ($disableResultsCasting) {
             $query->disableResultsCasting();
         }
         $query->all();
@@ -420,5 +420,51 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
         }
 
         return $query->first();
+    }
+
+    /**
+     * @param int $internalDowntimeId
+     * @return array
+     */
+    public function getHostAndServiceUuidWithDowntimeByInternalDowntimeId($internalDowntimeId) {
+        $result = $this->find()
+            ->select([
+                'DowntimeServices.author_name',
+                'DowntimeServices.comment_data',
+                'DowntimeServices.entry_time',
+                'DowntimeServices.scheduled_start_time',
+                'DowntimeServices.scheduled_end_time',
+                'DowntimeServices.duration',
+                'DowntimeServices.was_started',
+                'DowntimeServices.internal_downtime_id',
+                'DowntimeServices.downtimehistory_id',
+                'DowntimeServices.was_cancelled',
+
+                'Objects.name1',
+                'Objects.name2',
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = DowntimeServices.object_id', 'DowntimeServices.downtime_type = 1'] //Downtime.downtime_type = 1 Service downtime
+            )
+            ->where([
+                'DowntimeServices.internal_downtime_id' => $internalDowntimeId
+            ])
+            ->disableHydration()
+            ->first();
+
+        if ($result === null) {
+            return [];
+        }
+
+        return [
+            'DowntimeServices' => $result,
+            'Hosts'            => [
+                'uuid' => $result['Objects']['name1']
+            ],
+            'Services'         => [
+                'uuid' => $result['Objects']['name2']
+            ]
+        ];
     }
 }

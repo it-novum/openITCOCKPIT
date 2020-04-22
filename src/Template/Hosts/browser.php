@@ -67,7 +67,7 @@ use Cake\Core\Plugin;
                     <span class="fw-300"><i>{{ mergedHost.name }}</i></span>
                 </h2>
                 <div class="panel-toolbar">
-                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="loadHost()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean flex-column flex-sm-row" role="tablist">
