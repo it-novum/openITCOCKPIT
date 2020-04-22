@@ -172,12 +172,41 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
             <?= $this->element('header') ?>
             <!-- HEADER END -->
 
-
             <div id="uglyDropdownMenuHack"></div>
             <!-- BEGIN Page Content -->
             <!-- the #js-page-content id is needed for some plugins to initialize -->
             <main id="js-page-content" role="main" class="page-content" ng-controller="LayoutController">
                 <div id="content" style="opacity: 1;">
+
+                    <div class="alert alert-danger" role="alert" style="display:none;" id="globalSudoServerCouldNotConnect">
+                        <div class="d-flex align-items-center">
+                            <div class="alert-icon width-3">
+                                <div class="icon-stack  icon-stack-sm">
+                                    <i class="base base-9 icon-stack-3x opacity-100 text-danger"></i>
+                                    <i class="fas fa-exclamation-circle icon-stack-1x opacity-100 color-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <span class="h5"> <?= __('Attention!') ?></span>
+                                <?= __('Could not connect to SudoServer. External commands may not work. Please try to reload this page.'); ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-danger" role="alert" style="display:none;" id="globalSudoServerLostConnection">
+                        <div class="d-flex align-items-center">
+                            <div class="alert-icon width-3">
+                                <div class="icon-stack  icon-stack-sm">
+                                    <i class="base base-9 icon-stack-3x opacity-100 text-danger"></i>
+                                    <i class="fas fa-bolt icon-stack-1x opacity-100 color-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <span class="h5"> <?= __('Attention!') ?></span>
+                                <?= __('Lost connection to SudoServer. External commands may not work. Please try to reload this page.'); ?>
+                            </div>
+                        </div>
+                    </div>
 
                     <div ui-view>
                         <?= $this->Flash->render() ?>
