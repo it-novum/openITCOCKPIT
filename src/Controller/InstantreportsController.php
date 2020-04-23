@@ -221,6 +221,9 @@ class InstantreportsController extends AppController {
         $instantreportId = $this->request->getData('instantreport_id');
         $fromDate = strtotime($this->request->getData('from_date') . ' 00:00:00');
         $toDate = strtotime($this->request->getData('to_date') . ' 23:59:59');
+        if($toDate > time()){
+            $toDate = time();
+        }
 
         $User = new User($this->getUser());
 
