@@ -122,6 +122,17 @@ class HttpLoader {
         }
     }
 
+    public function updateAgentProtocol($saveHTTPS = true) {
+        /** @var $AgentconfigsTable AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+        if (isset($this->config['host_id'])) {
+            $Agentconfig = $AgentconfigsTable->getConfigOrEmptyEntity($this->config['host_id']);
+            $Agentconfig = $AgentconfigsTable->patchEntity($Agentconfig, ['use_https' => intval($saveHTTPS)]);
+            $AgentconfigsTable->save($Agentconfig);
+        }
+    }
+
     /**
      * @param bool $checkConfig
      *
@@ -169,10 +180,16 @@ class HttpLoader {
         }
 
         if (isset($response) && $response->getStatusCode() !== 200) {
+            $errorMessage = $response->getBody()->getContents();
+
+            if (strpos($errorMessage, 'SSL routines:ssl3_get_record:wrong version number') !== false) {
+                $this->updateAgentProtocol(!boolval(intval($config['use_https'])));
+            }
+
             return [
                 'response' => null,
                 'config'   => $configResult,
-                'error'    => $response->getBody()->getContents(),
+                'error'    => $errorMessage,
                 'success'  => false
             ];
         } else if (!isset($response)) {
