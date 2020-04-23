@@ -279,12 +279,13 @@
                                                                 <?php echo __('openITCOCKPIT Server Address'); ?>
                                                             </label>
 
-                                                            <div class="col-xs-12 col-md-9">
+                                                            <div class="col-xs-12 col-md-9"
+                                                                 ng-init="agentconfig['oitc-url']='https://<?= h($_SERVER['SERVER_ADDR']) ?>'">
                                                                 <input
                                                                     id="agentconfig['oitc-url']"
                                                                     class="form-control"
                                                                     type="text"
-                                                                    placeholder="<?php echo __('External address or FQDN (example: https://demo.openitcockpit.io)'); ?>"
+                                                                    placeholder="<?php echo __('External address or FQDN (example: https://{0})', $_SERVER['SERVER_ADDR']); ?>"
                                                                     ng-model="agentconfig['oitc-url']">
                                                             </div>
                                                         </div>
@@ -818,13 +819,13 @@
 
                                             <div class="widget-body col-xs-12 col-md-3">
                                                 <p><b><?= __('agent.cnf:'); ?></b></p>
-                                                <textarea readonly ng-model="configTemplate"
+                                                <textarea class="form-control" readonly ng-model="configTemplate"
                                                           style="min-height: 580px; width: 100%;"></textarea>
                                             </div>
                                             <div class="widget-body col-xs-12 col-md-3" style="padding-right: 35px;"
                                                  ng-if="agentconfig.customchecks">
                                                 <p><b><?= __('customchecks.cnf:'); ?></b></p>
-                                                <textarea readonly ng-model="configTemplateCustomchecks"
+                                                <textarea class="form-control" readonly ng-model="configTemplateCustomchecks"
                                                           style="min-height: 580px; width: 100%;"></textarea>
                                             </div>
 
@@ -899,13 +900,13 @@
                                             <div class="row col-12">
                                                 <div class="widget-body col-xs-12 col-md-3">
                                                     <p><b><?= __('agent.cnf:'); ?></b></p>
-                                                    <textarea readonly ng-model="configTemplate"
+                                                    <textarea class="form-control" readonly ng-model="configTemplate"
                                                               style="min-height: 580px; width: 100%;"></textarea>
                                                 </div>
                                                 <div class="widget-body col-xs-12 col-md-3"
                                                      ng-if="agentconfig.customchecks">
                                                     <p><b><?= __('customchecks.cnf:'); ?></b></p>
-                                                    <textarea readonly ng-model="configTemplateCustomchecks"
+                                                    <textarea class="form-control" readonly ng-model="configTemplateCustomchecks"
                                                               style="min-height: 580px; width: 100%;"></textarea>
                                                 </div>
                                             </div>

@@ -402,4 +402,55 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
 
         return $query->first();
     }
+
+    /**
+     * @param int $internalDowntimeId
+     * @return array
+     */
+    public function getHostAndServiceUuidWithDowntimeByInternalDowntimeId($internalDowntimeId) {
+        $result = $this->find()
+            ->select([
+                'DowntimeServices.hostname',
+                'DowntimeServices.service_description',
+                'DowntimeServices.author_name',
+                'DowntimeServices.comment_data',
+                'DowntimeServices.entry_time',
+                'DowntimeServices.scheduled_start_time',
+                'DowntimeServices.scheduled_end_time',
+                'DowntimeServices.duration',
+                'DowntimeServices.was_started',
+                'DowntimeServices.internal_downtime_id',
+                'DowntimeServices.was_cancelled',
+
+                'Hosts.uuid',
+                'Services.uuid'
+            ])
+            ->innerJoin(
+                ['Hosts' => 'hosts'],
+                ['DowntimeServices.hostname = Hosts.uuid']
+            )
+            ->innerJoin(
+                ['Services' => 'services'],
+                ['DowntimeServices.service_description = Services.uuid']
+            )
+            ->where([
+                'DowntimeServices.internal_downtime_id' => $internalDowntimeId
+            ])
+            ->disableHydration()
+            ->first();
+
+        if ($result === null) {
+            return [];
+        }
+
+        return [
+            'DowntimeServices' => $result,
+            'Hosts'         => [
+                'uuid' => $result['hostname']
+            ],
+            'Services'         => [
+                'uuid' => $result['service_description']
+            ]
+        ];
+    }
 }

@@ -1749,8 +1749,8 @@ class HostsTable extends Table {
         $query = $this->find('list');
         $MY_RIGHTS = $HostConditions->getContainerIds();
 
-        if($returnEmptyArrayIfMyRightsIsEmpty === true){
-            if(empty($MY_RIGHTS)){
+        if ($returnEmptyArrayIfMyRightsIsEmpty === true) {
+            if (empty($MY_RIGHTS)) {
                 //User has no permissions to edit hosts/services
                 return [];
             }
@@ -3564,6 +3564,29 @@ class HostsTable extends Table {
             ])
             ->all();
         return $query->toArray();
+    }
+
+    /**
+     * @param string $uuid
+     * @return null|int
+     */
+    public function getSatelliteIdByUuid(string $uuid) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.satellite_id'
+            ])
+            ->where([
+                'Hosts.uuid' => $uuid
+            ])
+            ->disableHydration()
+            ->first();
+
+        if ($query === null) {
+            return null;
+        }
+
+        return $query['satellite_id'];
     }
 
 }

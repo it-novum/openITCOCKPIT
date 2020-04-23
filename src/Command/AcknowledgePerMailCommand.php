@@ -90,9 +90,7 @@ class AcknowledgePerMailCommand extends Command implements CronjobInterface {
      * @return array
      */
     private function ackHostsAndServices(ConsoleIo $io) {
-        Configure::load('NagiosModule.config');
-        $naemonExternalCommandsFile = Configure::read('NagiosModule.PREFIX') . Configure::read('NagiosModule.NAGIOS_CMD');
-        $ExternalCommands = new ExternalCommands($naemonExternalCommandsFile);
+        $ExternalCommands = new ExternalCommands();
 
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');

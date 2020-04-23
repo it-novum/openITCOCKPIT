@@ -271,14 +271,15 @@ class AgentconnectorController extends AppController {
                 $GearmanClient->sendBackground('cmd_external_command', [
                     'command'     => 'PROCESS_SERVICE_CHECK_RESULT',
                     'parameters'  => [
-                        $config['uuid'], //host_name
-                        $pluginConfig['uuid'], //service_description
-                        $Plugin->getStatuscode(),
-                        $pluginOutput
+                        'hostUuid'      => $config['uuid'],
+                        'serviceUuid'   => $pluginConfig['uuid'],
+                        'status_code'   => $Plugin->getStatuscode(),
+                        'plugin_output' => $pluginOutput,
+                        'long_output'   => ''
                     ],
-                    'satelliteId' => 0,
-                    'timestamp'   => time()
+                    'satelliteId' => 0 // Agent check results are always Master system!,
                 ]);
+
                 $receivedChecks++;
             }
         }
