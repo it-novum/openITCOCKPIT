@@ -96,6 +96,9 @@ class DaterangesCreator {
             if ($current_time_slice_start < $date_start) {
                 continue;
             }
+            if($time_slice['end']> time()){
+                $time_slice['end'] = time();
+            }
             if ($current_time_slice_start > $date_end) {
                 return $time_slices_new;
             }
