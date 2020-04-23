@@ -7482,7 +7482,7 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Reports/StatehistoryConverter.php:241
 #: src/itnovum/openITCOCKPIT/Core/Views/HoststatusIcon.php:86
 msgid "Up"
-msgstr "Oben"
+msgstr "Verfügbar"
 
 #: src/Template/Angular/submit_host_result.php:49
 #: src/Template/Angular/submit_service_result.php:50
