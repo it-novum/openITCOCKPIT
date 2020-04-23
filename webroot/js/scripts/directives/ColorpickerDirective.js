@@ -24,15 +24,11 @@ angular.module('openITCOCKPIT').directive('colorpickerDirective', function(){
                         }
                         $scope.$apply();
                     },
-                    change: function(color){
-                        console.log(color);
-                    }
                 });
 
                 jQuery($scope.element).spectrum("set", $scope.post[$scope.key]);
 
                 $scope.$watch('post.' + $scope.key, function(){
-                    console.log($scope.post[$scope.key]);
                     jQuery($scope.element).spectrum("set", $scope.post[$scope.key]);
                 }, true);
             });
