@@ -324,6 +324,20 @@ class AgentServicesToCreate {
                         }
                     }
                     break;
+                case 'systemd_services':
+                    if (isset($objects['result'])) {
+                        foreach ($objects['result'] as $systemd_service) {
+                            foreach ($receiverPluginNames as $receiverPluginName) {
+                                $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
+
+                                $service['servicecommandargumentvalues'][0]['value'] = $systemd_service['unit'];
+                                $service['agent_wizard_option_description'] = $systemd_service['unit'];
+
+                                $this->addServiceToCreate($service, $receiverPluginName, $services, $systemd_service['unit'], 0);
+                            }
+                        }
+                    }
+                    break;
             }
         }
     }

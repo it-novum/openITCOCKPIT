@@ -195,6 +195,11 @@ class Agent extends Importer {
                 'servicetemplate_id' => '370731ed-34d4-48f4-933e-90e488bb390f'
             ],
             [
+                'name'               => 'systemd_services',
+                'plugin_name'        => 'SystemdService',
+                'servicetemplate_id' => 'd21e3462-7430-4d38-b92a-853bcfc12356'
+            ],
+            [
                 'name'               => 'dockerstats',
                 'plugin_name'        => 'DockerContainerRunning',
                 'servicetemplate_id' => 'ca73653f-2bba-4542-b11b-0bbd0ecc8b7a'
@@ -615,6 +620,27 @@ class Agent extends Importer {
                         'name'       => '$ARG4$',
                         'human_name' => 'Strict'
                     ]
+                ]
+            ],
+
+            [
+                'name'             => 'check_oitc_agent_systemd_service_running',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '44cf7fa5-38cc-45fb-aa5c-d4bb082e195d',
+                'description'      => "Returns the state of a systemd service.\n" .
+                    "Match: String that must match with the service unit name. (e.g. cron.service)\n" .
+                    "Strict: Decides if the match must be completely or just in a part (1/0).\n",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Match'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Strict'
+                    ],
                 ]
             ],
 
@@ -1744,6 +1770,70 @@ class Agent extends Importer {
                         'commandargument_id' => '$ARG4$',
                         'value'              => '0',
                     ],
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [],
+                'contactgroups'                             => [],
+                'contacts'                                  => []
+            ],
+
+            [
+                'uuid'                                      => 'd21e3462-7430-4d38-b92a-853bcfc12356',
+                'template_name'                             => 'OITC_AGENT_SYSTEMD_SERVICES',
+                'name'                                      => 'Check systemd service running',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '44cf7fa5-38cc-45fb-aa5c-d4bb082e195d',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '1',
+                    ]
                 ],
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
