@@ -207,7 +207,7 @@ angular.module('openITCOCKPIT')
                         Agentconfig: {
                             id: $scope.agentconfigId,
                             port: $scope.agentconfig.port,
-                            use_https: $scope.agentconfig['try-autossl'],
+                            //use_https: $scope.agentconfig['try-autossl'],
                             basic_auth: basicAuth,
                             username: basicAuthUsername,
                             password: basicAuthPassword

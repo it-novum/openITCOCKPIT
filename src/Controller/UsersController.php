@@ -223,6 +223,8 @@ class UsersController extends AppController {
                 return 'German';
             case 'fr_FR':
                 return 'French';
+            case 'ru_RU':
+                return 'Russian';
         }
         return 'unknown';
     }

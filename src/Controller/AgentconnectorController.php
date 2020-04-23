@@ -332,7 +332,7 @@ class AgentconnectorController extends AppController {
                     $agentconfig['password'] = explode(':', $this->request->getData('config')['auth'])[1];
                 }
                 $agentconfig['port'] = $this->request->getData('config')['port'];
-                $agentconfig['use_https'] = intval($this->request->getData('config')['try-autossl'] === 'true' || $this->request->getData('config')['try-autossl'] === true);
+                //$agentconfig['use_https'] = intval($this->request->getData('config')['try-autossl'] === 'true' || $this->request->getData('config')['try-autossl'] === true);
                 $agentconfigEntity = $AgentconfigsTable->patchEntity($agentconfigEntity, $agentconfig);
                 $AgentconfigsTable->save($agentconfigEntity);
             }
@@ -435,8 +435,8 @@ class AgentconnectorController extends AppController {
         if ($AgentconfigsTable->existsByHostId($hostId)) {
             $agentconfig = $AgentconfigsTable->getConfigByHostId($hostId, true);
 
+            $HttpLoader = new HttpLoader($agentconfig, $host->get('address'));
             try {
-                $HttpLoader = new HttpLoader($agentconfig, $host->get('address'));
                 $response = $HttpLoader->queryAgent(true);
 
                 if (isset($response['response']) && !empty($response['response'])) {
@@ -447,7 +447,11 @@ class AgentconnectorController extends AppController {
                 }
                 $this->set('mode', 'pull');
             } catch (\Exception | GuzzleException $e) {
-                $this->set('error', $e->getMessage());
+                $errorMessage = $e->getMessage();
+                if (strpos($errorMessage, 'SSL routines:ssl3_get_record:wrong version number') !== false) {
+                    $HttpLoader->updateAgentProtocol(!boolval($agentconfig['use_https']));
+                }
+                $this->set('error', $errorMessage);
             }
         }
 
