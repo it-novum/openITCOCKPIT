@@ -201,7 +201,7 @@
 
 
                                 <div class="form-group" ng-show="post.report_format == 2">
-                                    <label class="col-xs-12 col-lg-1 control-label" for="setColorDynamically">
+                                    <label class="control-label" for="setColorDynamically">
                                         <?php echo __('Dynamic color'); ?>
                                     </label>
                                     <div class="col-xs-12 col-lg-10 smart-form">

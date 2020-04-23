@@ -165,47 +165,47 @@
                                 <td>{{automap.service_regex}}</td>
 
                                 <td>
-                                        <span class="label-forced label-success margin-right-5"
-                                              title="<?php echo __('Ok'); ?>"
-                                              ng-show="automap.show_ok">
-                                            <?php echo __('O'); ?>
-                                        </span>
-                                    <span class="label-forced label-warning margin-right-5"
+                                    <span class="badge badge-success margin-right-5"
+                                          title="<?php echo __('Ok'); ?>"
+                                          ng-show="automap.show_ok">
+                                        <?php echo __('O'); ?>
+                                    </span>
+                                    <span class="badge badge-warning margin-right-5"
                                           title="<?php echo __('Warning'); ?>"
                                           ng-show="automap.show_warning">
-                                            <?php echo __('W'); ?>
-                                        </span>
-                                    <span class="label-forced label-danger margin-right-5"
+                                        <?php echo __('W'); ?>
+                                    </span>
+                                    <span class="badge badge-danger margin-right-5"
                                           title="<?php echo __('Critical'); ?>"
                                           ng-show="automap.show_critical">
-                                            <?php echo __('C'); ?>
-                                        </span>
-                                    <span class="label-forced label-default margin-right-5"
+                                        <?php echo __('C'); ?>
+                                    </span>
+                                    <span class="badge badge-secondary margin-right-5"
                                           title="<?php echo __('Unknown'); ?>"
                                           ng-show="automap.show_unknown">
-                                            <?php echo __('U'); ?>
-                                        </span>
-                                    <span class="label-forced label-primary margin-right-5"
+                                        <?php echo __('U'); ?>
+                                    </span>
+                                    <span class="badge badge-primary margin-right-5"
                                           title="<?php echo __('Acknowledged'); ?>"
                                           ng-show="automap.show_acknowledged">
-                                            <i class="fa fa-user"></i>
-                                        </span>
-                                    <span class="label-forced label-primary"
+                                       <i class="fa fa-user"></i>
+                                    </span>
+                                    <span class="badge badge-primary"
                                           title="<?php echo __('In downtime'); ?>"
                                           ng-show="automap.show_downtime">
-                                            <i class="fa fa-power-off"></i>
-                                        </span>
+                                        <i class="fa fa-power-off"></i>
+                                    </span>
                                 </td>
 
                                 <td>
-                                        <span class="label-forced label-danger"
-                                              ng-hide="automap.recursive">
-                                            <?php echo __('Disabled'); ?>
-                                        </span>
-                                    <span class="label-forced label-success"
+                                    <span class="badge badge-danger"
+                                          ng-hide="automap.recursive">
+                                        <?php echo __('Disabled'); ?>
+                                    </span>
+                                    <span class="badge badge-success"
                                           ng-show="automap.recursive">
-                                            <?php echo __('Enabled'); ?>
-                                        </span>
+                                        <?php echo __('Enabled'); ?>
+                                    </span>
                                 </td>
 
 
