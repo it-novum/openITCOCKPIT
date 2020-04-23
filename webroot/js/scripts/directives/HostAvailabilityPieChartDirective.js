@@ -8,7 +8,7 @@ angular.module('openITCOCKPIT').directive('hostAvailabilityPieChart', function($
         },
         controller: function($scope){
             $timeout(function(){
-                var paper = new Raphael(document.getElementById('hostPieChart-' + $scope.chartId), 400, 130)
+                var paper = new Raphael(document.getElementById('hostPieChart-' + $scope.chartId), 600, 130)
                     .pielicious(100, 50, 100, {
                         data: [
                             $scope.data.reportData[0],

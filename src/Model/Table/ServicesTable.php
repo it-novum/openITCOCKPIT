@@ -1293,7 +1293,7 @@ class ServicesTable extends Table {
 
             //Compare service command arguments
             $servicecommandargumentvalues = $service['servicecommandargumentvalues'];
-            if (empty($_servicecommandargumentvalues)) {
+            if (empty($servicecommandargumentvalues)) {
                 $servicecommandargumentvalues = $service['servicetemplate']['servicetemplatecommandargumentvalues'];
             }
 
