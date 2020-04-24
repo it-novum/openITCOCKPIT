@@ -50,7 +50,7 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
 <body>
 <div class="row">
     <div class="col-6 padding-left-15 font-lg">
-        <i class="fa fa-file-image-o" style="font-size: 20px!important;"></i>
+        <i class="fa fa-file-invoice" style="font-size: 20px!important;"></i>
         <?php echo h($instantReport['reportDetails']['name']); ?>
     </div>
     <div class="col-6">

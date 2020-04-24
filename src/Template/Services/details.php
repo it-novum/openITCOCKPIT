@@ -124,7 +124,8 @@
                                 <?php echo __('Output'); ?>
                             </div>
                             <div class="col-xs-12 col-md-10">
-                                {{ servicestatus.output }}
+                                <div
+                                    ng-bind-html="servicestatus.outputHtml | trustAsHtml"></div>
                             </div>
                         </div>
 

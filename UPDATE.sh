@@ -9,12 +9,27 @@ if [[ $1 == "--help" ]]; then
   exit 0
 fi
 
+INIFILE=/opt/openitc/etc/mysql/mysql.cnf
+DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
+BASHCONF=/opt/openitc/etc/mysql/bash.conf
+
+if [[ ! -f "$BASHCONF" ]]; then
+  MYSQL_USER=$(php -r "echo parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf')['user'];")
+  MYSQL_DATABASE=$(php -r "echo parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf')['database'];")
+  MYSQL_PASSWORD=$(awk '$1 == "password" { print }' "/opt/openitc/etc/mysql/mysql.cnf" |cut -d= -f2 | sed 's/^\s*//' | sed 's/\s*$//' | sed 's_/_\\/_g')
+  MYSQL_HOST=$(php -r "echo parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf')['host'];")
+  MYSQL_PORT=$(php -r "echo parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf')['port'];")
+
+  echo "dbc_dbuser='${MYSQL_USER}'" >$BASHCONF
+  echo "dbc_dbpass='${MYSQL_PASSWORD}'" >>$BASHCONF
+  echo "dbc_dbserver='${MYSQL_HOST}'" >>$BASHCONF
+  echo "dbc_dbport='${MYSQL_PORT}'" >>$BASHCONF
+  echo "dbc_dbname='${MYSQL_DATABASE}'" >>$BASHCONF
+fi
+
 . /opt/openitc/etc/mysql/bash.conf
 
 APPDIR="/opt/openitc/frontend"
-
-INIFILE=/opt/openitc/etc/mysql/mysql.cnf
-DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
 
 echo "Create mysqldump of your current database"
 BACKUP_TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')
@@ -104,8 +119,20 @@ mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-p
   --ignore-table=$dbc_dbname.statusengine_users \
   >$BACKUP_DIR/openitcockpit_dump_$BACKUP_TIMESTAMP.sql
 
+echo "---------------------------------------------------------------"
+echo "Convert MySQL Tables from utf8_general_ci to utf8mb4_general_ci..."
+
+mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${dbc_dbname} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+
+mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TABLE_NAME FROM \`information_schema\`.\`TABLES\` WHERE \`TABLE_SCHEMA\`='${dbc_dbname}' AND \`TABLE_NAME\` NOT LIKE 'nagios_%' AND \`TABLE_COLLATION\`='utf8_general_ci'" | while read TABLE_NAME; do
+    echo "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4; ✔"
+    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4;"
+done
+
 echo "Running openITCOCKPIT Core database migration"
 oitc migrations migrate
+
+oitc migrations seed
 
 echo "Running openITCOCKPIT Module database migration/s"
 for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do

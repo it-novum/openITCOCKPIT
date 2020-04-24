@@ -549,7 +549,8 @@
                                 </td>
 
                                 <td>
-                                    {{ host.Hoststatus.output }}
+                                    <div class="cropText"
+                                         ng-bind-html="host.Hoststatus.outputHtml | trustAsHtml"></div>
                                 </td>
 
                                 <td>
@@ -627,6 +628,10 @@
                                                     <?php echo __('Disable'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php
+                                            $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                                            echo $AdditionalLinks->getLinksAsHtmlList('hosts', 'index', 'list');
+                                            ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(host))"

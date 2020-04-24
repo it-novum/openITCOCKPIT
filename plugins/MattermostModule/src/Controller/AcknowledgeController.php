@@ -64,19 +64,18 @@ class AcknowledgeController extends AppController {
         }
 
         $GearmanClient = new Gearman();
-        $command = 'ACKNOWLEDGE_HOST_PROBLEM';
-        $parameters = [
-            $hostUuid,
-            1, //sticky
-            0, //notify - do not enable - loop!
-            1, //persistent
-            $data['user_name'],
-            __('Issue got acknowledged by {0} via Mattermost.', $data['user_name'])
-        ];
+
         $GearmanClient->sendBackground('cmd_external_command', [
-            'command'     => $command,
-            'parameters'  => $parameters,
-            'satelliteId' => $host['satellite_id']
+            'command'     => 'ACKNOWLEDGE_HOST_PROBLEM',
+            'parameters'  => [
+                'hostUuid'   => $hostUuid,
+                'sticky'     => 1,
+                'notify'     => 0, // do not enable - loop!
+                'persistent' => 1,
+                'author'     => $data['user_name'],
+                'comment'    => __('Issue got acknowledged by {0} via Mattermost.', $data['user_name']),
+            ],
+            'satelliteId' => null
         ]);
 
         //Update Mattermost message
@@ -124,21 +123,19 @@ class AcknowledgeController extends AppController {
         }
 
         $GearmanClient = new Gearman();
-        $command = 'ACKNOWLEDGE_SVC_PROBLEM';
-        $parameters = [
-            $hostUuid,
-            $serviceUuid,
-            1, //sticky
-            0, //notify - do not enable - loop!
-            1, //persistent
-            $data['user_name'],
-            __('Issue got acknowledged by {0} via Mattermost.', $data['user_name'])
-        ];
 
         $GearmanClient->sendBackground('cmd_external_command', [
-            'command'     => $command,
-            'parameters'  => $parameters,
-            'satelliteId' => $host['satellite_id']
+            'command'     => 'ACKNOWLEDGE_SVC_PROBLEM',
+            'parameters'  => [
+                'hostUuid'    => $hostUuid,
+                'serviceUuid' => $serviceUuid,
+                'sticky'      => 1,
+                'notify'      => 0, // do not enable - loop!
+                'persistent'  => 1,
+                'author'      => $data['user_name'],
+                'comment'     => __('Issue got acknowledged by {0} via Mattermost.', $data['user_name']),
+            ],
+            'satelliteId' => null
         ]);
 
         //Update Mattermost message

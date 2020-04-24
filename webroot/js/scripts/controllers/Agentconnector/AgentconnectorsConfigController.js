@@ -41,6 +41,7 @@ angular.module('openITCOCKPIT')
                 netio: true,
                 diskio: true,
                 winservices: true,
+                systemdservices: true,
                 alfrescostats: false,
                 'alfresco-jmxuser': 'monitorRole',
                 'alfresco-jmxpassword': 'change_asap',
@@ -71,6 +72,7 @@ angular.module('openITCOCKPIT')
                 NetStats: [],
                 Process: [],
                 WindowsService: [],
+                SystemdService: [],
                 DockerContainerRunning: [],
                 DockerContainerCPU: [],
                 DockerContainerMemory: [],
@@ -207,7 +209,7 @@ angular.module('openITCOCKPIT')
                         Agentconfig: {
                             id: $scope.agentconfigId,
                             port: $scope.agentconfig.port,
-                            use_https: $scope.agentconfig['try-autossl'],
+                            //use_https: $scope.agentconfig['try-autossl'],
                             basic_auth: basicAuth,
                             username: basicAuthUsername,
                             password: basicAuthPassword

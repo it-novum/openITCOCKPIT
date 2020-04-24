@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo -g www-data /opt/openitc/frontend/bin/cake "$@"
+sudo -g www-data --preserve-env=OITC_DEBUG /opt/openitc/frontend/bin/cake "$@"

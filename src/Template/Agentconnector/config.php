@@ -279,12 +279,13 @@
                                                                 <?php echo __('openITCOCKPIT Server Address'); ?>
                                                             </label>
 
-                                                            <div class="col-xs-12 col-md-9">
+                                                            <div class="col-xs-12 col-md-9"
+                                                                 ng-init="agentconfig['oitc-url']='https://<?= h($_SERVER['SERVER_ADDR']) ?>'">
                                                                 <input
                                                                     id="agentconfig['oitc-url']"
                                                                     class="form-control"
                                                                     type="text"
-                                                                    placeholder="<?php echo __('External address or FQDN (example: https://demo.openitcockpit.io)'); ?>"
+                                                                    placeholder="<?php echo __('External address or FQDN (example: https://{0})', $_SERVER['SERVER_ADDR']); ?>"
                                                                     ng-model="agentconfig['oitc-url']">
                                                             </div>
                                                         </div>
@@ -675,6 +676,20 @@
                                                                 class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
+                                                                       id="agentconfig.systemdservices"
+                                                                       ng-model="agentconfig.systemdservices">
+                                                                <label class="custom-control-label"
+                                                                       for="agentconfig.systemdservices">
+                                                                    <?php echo __('Enable systemd services status check'); ?>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group col-12">
+                                                            <div
+                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                <input type="checkbox"
+                                                                       class="custom-control-input"
                                                                        id="agentconfig.alfrescostats"
                                                                        ng-model="agentconfig.alfrescostats">
                                                                 <label class="custom-control-label"
@@ -818,13 +833,14 @@
 
                                             <div class="widget-body col-xs-12 col-md-3">
                                                 <p><b><?= __('agent.cnf:'); ?></b></p>
-                                                <textarea readonly ng-model="configTemplate"
+                                                <textarea class="form-control" readonly ng-model="configTemplate"
                                                           style="min-height: 580px; width: 100%;"></textarea>
                                             </div>
                                             <div class="widget-body col-xs-12 col-md-3" style="padding-right: 35px;"
                                                  ng-if="agentconfig.customchecks">
                                                 <p><b><?= __('customchecks.cnf:'); ?></b></p>
-                                                <textarea readonly ng-model="configTemplateCustomchecks"
+                                                <textarea class="form-control" readonly
+                                                          ng-model="configTemplateCustomchecks"
                                                           style="min-height: 580px; width: 100%;"></textarea>
                                             </div>
 
@@ -899,13 +915,14 @@
                                             <div class="row col-12">
                                                 <div class="widget-body col-xs-12 col-md-3">
                                                     <p><b><?= __('agent.cnf:'); ?></b></p>
-                                                    <textarea readonly ng-model="configTemplate"
+                                                    <textarea class="form-control" readonly ng-model="configTemplate"
                                                               style="min-height: 580px; width: 100%;"></textarea>
                                                 </div>
                                                 <div class="widget-body col-xs-12 col-md-3"
                                                      ng-if="agentconfig.customchecks">
                                                     <p><b><?= __('customchecks.cnf:'); ?></b></p>
-                                                    <textarea readonly ng-model="configTemplateCustomchecks"
+                                                    <textarea class="form-control" readonly
+                                                              ng-model="configTemplateCustomchecks"
                                                               style="min-height: 580px; width: 100%;"></textarea>
                                                 </div>
                                             </div>
@@ -982,7 +999,8 @@
                                                     <br>
                                                     <?= __('Please make sure the agent is running and right configured.'); ?>
                                                 </p>
-                                                <p ng-hide="servicesToCreate || !servicesToCreateError || servicesToCreateError == ''" class="txt-color-red">
+                                                <p ng-hide="servicesToCreate || !servicesToCreateError || servicesToCreateError == ''"
+                                                   class="txt-color-red">
                                                     <?= __('During agent check the following error occurred:'); ?><br>
                                                     {{servicesToCreateError}}
                                                     <br><br>
@@ -1234,6 +1252,26 @@
                                                                         multiple
                                                                         ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.WindowsService"
                                                                         ng-model="choosenServicesToMonitor.WindowsService">
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div ng-show="servicesToCreate.SystemdService"
+                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                <label class="control-label"
+                                                                       for="choosenServicesToMonitor.SystemdService">
+                                                                    <?php echo __('Systemd services'); ?>
+                                                                    ({{countObj(servicesToCreate.SystemdService)}})
+                                                                </label>
+                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                    <select
+                                                                        id="choosenServicesToMonitor.SystemdService"
+                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                        class="form-control"
+                                                                        chosen="servicesToCreate.SystemdService"
+                                                                        multiple
+                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.SystemdService"
+                                                                        ng-model="choosenServicesToMonitor.SystemdService">
                                                                     </select>
                                                                 </div>
                                                             </div>

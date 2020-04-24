@@ -14,7 +14,15 @@ angular.module('openITCOCKPIT')
 
         var _onError = function(event){
             _hasError = true;
+            $('#globalSudoServerCouldNotConnect').show();
             console.error(event);
+        };
+
+        var _onClose = function(event){
+            console.error(event);
+            if(_hasError === false){
+                $('#globalSudoServerLostConnection').show();
+            }
         };
 
         var _onResponse = function(event){
@@ -41,6 +49,7 @@ angular.module('openITCOCKPIT')
             _connection.onopen = _onResponse;
             _connection.onmessage = _parseResponse;
             _connection.onerror = _onError;
+            _connection.onclose = _onClose;
 
             var keepAliveInterval = $interval(function(){
                 keepAlive();
@@ -107,6 +116,9 @@ angular.module('openITCOCKPIT')
             },
             onError: function(callback){
                 _onError = callback;
+            },
+            onClose: function(callback){
+                _onClose = callback;
             },
             onResponse: function(callback){
                 _onResponse = callback;

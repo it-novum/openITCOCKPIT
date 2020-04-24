@@ -17,6 +17,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
@@ -1292,7 +1293,7 @@ class ServicesTable extends Table {
 
             //Compare service command arguments
             $servicecommandargumentvalues = $service['servicecommandargumentvalues'];
-            if (empty($_servicecommandargumentvalues)) {
+            if (empty($servicecommandargumentvalues)) {
                 $servicecommandargumentvalues = $service['servicetemplate']['servicetemplatecommandargumentvalues'];
             }
 
@@ -2502,9 +2503,10 @@ class ServicesTable extends Table {
 
         if ($ServicestatusConditions->hasConditions()) {
             $whereServicestatusConditions = $ServicestatusConditions->getConditions();
-            if (isset($whereServicestatusConditions['Servicestatus.current_state'])) {
+
+            if (isset($whereServicestatusConditions['Servicestatus.current_state IN'])) {
                 $query->andWhere([
-                    'Servicestatus.current_state IN ' => array_values($whereServicestatusConditions['Servicestatus.current_state'])
+                    'Servicestatus.current_state IN ' => array_values($whereServicestatusConditions['Servicestatus.current_state IN'])
                 ]);
             }
             if (isset($whereServicestatusConditions['Servicestatus.scheduled_downtime_depth'])) {
@@ -2512,7 +2514,7 @@ class ServicesTable extends Table {
                     'Servicestatus.scheduled_downtime_depth' => 0
                 ]);
             }
-            if (isset($whereServicestatusConditions['Servicestatus.scheduled_downtime_depth > '])) {
+            if (isset($whereServicestatusConditions['Servicestatus.scheduled_downtime_depth >'])) {
                 $query->andWhere([
                     'Servicestatus.scheduled_downtime_depth > ' => 0
                 ]);
@@ -2552,7 +2554,6 @@ class ServicesTable extends Table {
                 $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
             }
         }
-
         return $result;
     }
 

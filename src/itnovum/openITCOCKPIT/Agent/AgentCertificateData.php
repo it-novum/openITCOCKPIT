@@ -25,6 +25,12 @@ class AgentCertificateData {
     //needs: mkdir -p /opt/openitc/agent && chown www-data:www-data -R /opt/openitc/agent
 
 
+    public function __construct() {
+        if (!is_file($this->getCaCertPath())) {
+            $this->generateServerCA();
+        }
+    }
+
     public function isEccCa() {
         return $this->ECC_CA;
     }

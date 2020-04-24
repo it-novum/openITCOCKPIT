@@ -20,7 +20,7 @@ return [
             /*
              * You do not need to set this flag to use full utf-8 encoding (internal default since CakePHP 3.6).
              */
-            //'encoding' => 'utf8mb4',
+            'encoding'         => 'utf8mb4',
             'timezone'         => 'UTC',
             'flags'            => [],
             'cacheMetadata'    => true,
@@ -49,7 +49,7 @@ return [
             'username'         => $ini_file['user'],
             'password'         => $ini_file['password'],
             'database'         => $ini_file['database'],
-            //'encoding' => 'utf8mb4',
+            'encoding'         => 'utf8mb4',
             'timezone'         => 'UTC',
             'cacheMetadata'    => true,
             'quoteIdentifiers' => false,

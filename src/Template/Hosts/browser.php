@@ -67,7 +67,7 @@ use Cake\Core\Plugin;
                     <span class="fw-300"><i>{{ mergedHost.name }}</i></span>
                 </h2>
                 <div class="panel-toolbar">
-                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="loadHost()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean flex-column flex-sm-row" role="tablist">
@@ -103,7 +103,7 @@ use Cake\Core\Plugin;
                             <li class="nav-item pointer" ng-show="GrafanaDashboardExists">
                                 <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab5'; hideTimeline()"
                                    role="tab">
-                                    <i class="fa fa-area-chart">&nbsp;</i> <?php echo __('Grafana'); ?>
+                                    <i class="fa fa-lg fa-area-chart">&nbsp;</i> <?php echo __('Grafana'); ?>
                                 </a>
                             </li>
                         <?php endif; ?>
@@ -393,9 +393,8 @@ use Cake\Core\Plugin;
                                             <tr>
                                                 <td><?php echo __('Output'); ?></td>
                                                 <td>
-                                                    <code class="no-background" ng-class="hostStatusTextClass">
-                                                        {{ hoststatus.output }}
-                                                    </code>
+                                                    <div class="code-font" ng-class="hostStatusTextClass"
+                                                         ng-bind-html="hoststatus.outputHtml | trustAsHtml"></div>
                                                 </td>
                                             </tr>
                                         </table>
@@ -427,13 +426,13 @@ use Cake\Core\Plugin;
                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    <div class="col-xs-12" ng-show="hoststatus.longOutputHtml">
-                                        <div><?php echo __('Long output'); ?></div>
-                                        <div class="well">
-                                            <code class="no-background">
-                                                <div ng-bind-html="hoststatus.longOutputHtml | trustAsHtml"></div>
-                                            </code>
+                                <div class="row padding-bottom-10"  ng-show="hoststatus.longOutputHtml">
+                                    <div class="col-12">
+                                        <h5 class="margin-top-5"><?php echo __('Long output'); ?></h5>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="card bg-light">
+                                            <div class="card-body" ng-bind-html="hoststatus.longOutputHtml | trustAsHtml"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1192,19 +1191,19 @@ use Cake\Core\Plugin;
                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                         <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                            class="txt-color-blueDark"
-                                           ng-mouseenter="mouseenter($event, mergedHost.uuid, service)"
+                                           ng-mouseenter="mouseenter($event, mergedHost.uuid, service.Service.uuid)"
                                            ng-mouseleave="mouseleave()"
                                            ng-if="service.Service.has_graph">
-                                            <i class="fa fa-area-chart">
+                                            <i class="fa fa-lg fa-area-chart">
                                             </i>
                                         </a>
                                     <?php else: ?>
-                                    <div ng-mouseenter="mouseenter($event, mergedHost.uuid, service)"
-                                         ng-mouseleave="mouseleave()"
-                                         ng-if="service.Service.has_graph">
-                                        <i class="fa fa-area-chart">
-                                        </i>
-                                    </div>
+                                        <div ng-mouseenter="mouseenter($event, mergedHost.uuid, service.Service.uuid)"
+                                             ng-mouseleave="mouseleave()"
+                                             ng-if="service.Service.has_graph">
+                                            <i class="fa fa-lg fa-area-chart">
+                                            </i>
+                                        </div>
                                     <?php endif; ?>
                                 </td>
 
@@ -1230,7 +1229,8 @@ use Cake\Core\Plugin;
                                 </td>
 
                                 <td>
-                                    {{ service.Servicestatus.output }}
+                                    <div
+                                        ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
                                 </td>
 
                                 <td class="width-50">
@@ -1277,6 +1277,10 @@ use Cake\Core\Plugin;
                                                     <?php echo __('Disable'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php
+                                            $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                                            echo $AdditionalLinks->getLinksAsHtmlList('services', 'index', 'list');
+                                            ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(mergedHost.name, service))"
@@ -1301,13 +1305,7 @@ use Cake\Core\Plugin;
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                         <?php echo $this->element('paginator_or_scroll'); ?>
 
-                        <div id="serviceGraphContainer" class="popup-graph-container">
-                            <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;"
-                                 ng-show="isLoadingGraph">
-                                <i class="fa fa-refresh fa-4x fa-spin"></i>
-                            </div>
-                            <div id="serviceGraphFlot"></div>
-                        </div>
+                        <popover-graph-directive></popover-graph-directive>
                     </div>
 
                     <div id="serviceTab2" class="tab-pane" ng-if="activeTab === 'notMonitored'">

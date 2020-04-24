@@ -204,7 +204,7 @@
                                     <i class="fa fa-power-off" title="is in downtime"></i>
                                 </th>
                                 <th class="width-20 text-center">
-                                    <i class="fa fa-area-chart" title="Grapher"></i>
+                                    <i class="fa fa-lg fa-area-chart" title="Grapher"></i>
                                 </th>
                                 <th class="width-20 text-center">
                                     <strong title="<?php echo __('Passively transferred service'); ?>">
@@ -264,17 +264,17 @@
                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                         <a ui-sref="ServicesBrowser({id: service.Service.id})"
                                            class="txt-color-blueDark"
-                                           ng-mouseenter="mouseenter($event, service.Host, service)"
+                                           ng-mouseenter="mouseenter($event, service.Host.uuid, service.Service.uuid)"
                                            ng-mouseleave="mouseleave()"
                                            ng-if="service.Service.has_graph">
-                                            <i class="fa fa-area-chart">
+                                            <i class="fa fa-lg fa-area-chart">
                                             </i>
                                         </a>
                                     <?php else: ?>
-                                        <div ng-mouseenter="mouseenter($event, service.Host, service)"
+                                        <div ng-mouseenter="mouseenter($event, service.Host.uuid, service.Service.uuid)"
                                              ng-mouseleave="mouseleave()"
                                              ng-if="service.Service.has_graph">
-                                            <i class="fa fa-area-chart">
+                                            <i class="fa fa-lg fa-area-chart">
                                             </i>
                                         </div>
                                     <?php endif; ?>
@@ -323,7 +323,8 @@
                                         </span>
                                 </td>
                                 <td>
-                                    {{ service.Servicestatus.output }}
+                                    <div
+                                        ng-bind-html="service.Servicestatus.outputHtml | trustAsHtml"></div>
                                 </td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
@@ -392,13 +393,7 @@
                             </div>
                         </div>
 
-                        <div id="serviceGraphContainer" class="popup-graph-container">
-                            <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;"
-                                 ng-show="isLoadingGraph">
-                                <i class="fa fa-refresh fa-4x fa-spin"></i>
-                            </div>
-                            <div id="serviceGraphFlot"></div>
-                        </div>
+                        <popover-graph-directive></popover-graph-directive>
                     </div>
                 </div>
             </div>

@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="CurrentstatereportsIndex">
-            <i class="fas fa-clipboard-list"></i> <?php echo __('Current state report'); ?>
+            <i class="fa fa-file-invoice"></i> <?php echo __('Current state report'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -247,9 +247,9 @@
                             </div>
                         </div>
                         <!-- HTML report start -->
-                        <div ng-repeat="servicestatusObject in servicestatus">
-                            <div class="bg-{{servicestatusObject.Hoststatus.humanState}} padding-10">
-                                <div class="row">
+                        <div ng-repeat="servicestatusObject in servicestatus" class="margin-10">
+                            <div>
+                                <div class="row bg-{{servicestatusObject.Hoststatus.humanState}} padding-10">
                                     <div class="col-lg-10 font-md">
                                         <span class="txt-color-white"
                                               style="font-size:20px;text-shadow: 2px 4px 3px rgba(0,0,0,0.3);">
@@ -269,8 +269,7 @@
                                         {{servicestatusObject.Hoststatus.lastHardStateChange}}
                                     </div>
                                 </div>
-                                <div style="border-top:1px solid whitesmoke;margin-top:10px;padding:10px 0px;"
-                                     class="txt-color-white">
+                                <div class="padding-10">
                                     <div class="row font-sm">
                                         <div class="col-lg-2">
                                             <?php echo __('Last check'); ?>
@@ -329,7 +328,7 @@
                                     </div>
                                 </div>
 
-                                <table class="table m-0 table-hover table-sm txt-color-white greenTable"
+                                <table class="table table-hover m-0 table-sm"
                                        ng-if="servicestatusObject.Services">
                                     <thead>
                                     <tr>
@@ -349,13 +348,13 @@
                                         ng-init="showDetails[serviceDetails.Service.id] = false">
                                         <td>
                                             <span class="fa-stack">
-                                                <i class="fa fa-gear fa-stack-2x"
+                                                <i class="fa fa-gear fa-stack-2x txt-color-blueLight"
                                                    style="text-shadow: 1px 2px 1px rgba(0,0,0,0.3);"></i>
                                                 <i class="fa fa-heartbeat fa-stack-1x cornered cornered-lr {{serviceDetails.Servicestatus.humanState}} font-sm"
                                                    style="text-shadow: 1px 2px 1px rgba(0,0,0,0.3);"></i>
                                             </span>
                                             <span
-                                                class="badge bg-{{serviceDetails.Servicestatus.humanState}} text-uppercase padding-top-2 padding-bottom-2">
+                                                class="badge bg-{{serviceDetails.Servicestatus.humanState}} text-uppercase padding-top-2 padding-bottom-2 text-white">
                                                 {{serviceDetails.Servicestatus.humanState}}
                                             </span>
                                         </td>
@@ -419,7 +418,7 @@
                                             <span ng-if="serviceDetails.Servicestatus.perfdataArray"
                                                   ng-repeat="(label, perfdata) in serviceDetails.Servicestatus.perfdataArray">
                                                 <span ng-if="$index === 0">
-                                                    <div class="progress progress-md bg-downtime position-relative"
+                                                    <div class="progress progress-md bg-primary position-relative"
                                                          style="margin-bottom: 0px;">
                                                         <div
                                                             style="width: {{getProgressbarData(perfdata, label).currentPercentage}}%; position: unset;"

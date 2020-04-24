@@ -1,28 +1,28 @@
 var GraphDefaults = (function(){
     function GraphDefaults(){
-        this.defaultFillColor = '#459EE7';
-        this.defaultBorderColor = '#1F78C1';
+        this.defaultFillColor = '#4285F4';
+        this.defaultBorderColor = '#4073E0';
 
-        this.okFillColor = '#8FC426';
-        this.okBorderColor = '#629E51';
+        this.okFillColor = '#00C851';
+        this.okBorderColor = '#00B44D';
 
-        this.criticalFillColor = '#E54126';
-        this.criticalBorderColor = '#BF1B00';
+        this.criticalFillColor = '#CC0000';
+        this.criticalBorderColor = '#C00000';
 
-        this.warningFillColor = '#fff552';
-        this.warningBorderColor = '#e0de12';
+        this.warningFillColor = '#ffbb33';
+        this.warningBorderColor = '#E7931D';
 
         this.unknownFillColor = '#9B9B9B';
         this.unknownBorderColor = '#757575';
 
         this.defaultColors = [
             [this.defaultFillColor, this.defaultBorderColor],
-            ['#FF7368', '#E24D42'],
+            ['#ffbb33', '#E7931D'],
             ['#B054DE', '#8a2eb8'],
-            ['#AF3528', '#890F02'],
-            ['#88C477', '#699e00'],
+            ['#CC0000', '#C00000'],
+            ['#00C851', '#00B44D'],
             ['#262626', '#000000'],
-            ['#3470DA', '#0E4AB4']
+            ['#4285F4', '#4073E0']
         ];
     }
 
@@ -56,6 +56,32 @@ var GraphDefaults = (function(){
         }
 
         return colors;
+    };
+
+    /**
+     * @param index integer
+     * @returns {{fill: Array, border: Array}}
+     */
+    GraphDefaults.prototype.getColorByIndex = function(index){
+        index = parseInt(index, 10);
+
+        var color = {
+            fill: [],
+            border: []
+        };
+
+        if(index > this.defaultColors.length){
+            var randomColors = ColorGeneratorObj.generate(1, 90, 120);
+            for(var i in randomColors){
+                color.fill.push(randomColors[i]);
+                color.border.push(randomColors[i]);
+            }
+        }else{
+            color.fill.push(this.defaultColors[index][0]);
+            color.border.push(this.defaultColors[index][1]);
+        }
+
+        return color;
     };
 
     /**

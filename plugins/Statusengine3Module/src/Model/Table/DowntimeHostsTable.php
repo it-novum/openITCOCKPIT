@@ -189,6 +189,7 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
     public function getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId) {
         $result = $this->find()
             ->select([
+                'DowntimeHosts.hostname',
                 'DowntimeHosts.author_name',
                 'DowntimeHosts.comment_data',
                 'DowntimeHosts.entry_time',

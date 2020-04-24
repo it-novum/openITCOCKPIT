@@ -53,8 +53,8 @@ a:not([href]):not([tabindex]) {
 .popup-graph-container {
     position: absolute;
     /*top: 320px;*/
-    left: 495px;
-    width: 750px;
+    /*left: 495px;*/
+    width: 70%;
     height: auto;
     background-color: #FFF;
     box-shadow: 0 0 15px #9E9E9E;
@@ -63,7 +63,7 @@ a:not([href]):not([tabindex]) {
     display: none;
 }
 
-#serviceGraphFlot {
+.serviceGraphFlot {
     width: 100%;
     height: 260px;
 }
@@ -1108,6 +1108,7 @@ a[target]:not(.btn) {
     -webkit-box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0, 0 0 1px 0 rgba(60, 64, 67, 0.08), 0 0 2px 1px rgba(60, 64, 67, 0.1);
     box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0, 0 0 1px 0 rgba(60, 64, 67, 0.08), 0 0 2px 1px rgba(60, 64, 67, 0.1);
     z-index: 1;
+    color: inherit;
 }
 
 .menu-item,
@@ -1183,4 +1184,10 @@ label.menu-open-button:hover {
     background-image: url("/img/logos/bgs/enterprise_edition.png");
     background-repeat: no-repeat;
     background-color: #cb2522;
+}
+
+.card-img-top {
+    width: 100%;
+    height: 15vw;
+    object-fit: contain;
 }

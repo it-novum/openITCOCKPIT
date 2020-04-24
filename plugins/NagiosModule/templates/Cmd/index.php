@@ -246,3 +246,5 @@
         </div>
     </div>
 </div>
+
+<?php echo $this->element('apikey_help'); ?>

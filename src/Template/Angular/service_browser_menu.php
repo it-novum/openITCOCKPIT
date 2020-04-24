@@ -150,6 +150,10 @@
                             <?php echo __('Service list'); ?>
                         </a>
                     <?php endif; ?>
+                    <?php
+                    $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                    echo $AdditionalLinks->getLinksAsHtmlList('services', 'browser', 'list');
+                    ?>
                 </div>
             </div>
         </div>

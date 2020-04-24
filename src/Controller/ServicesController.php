@@ -47,6 +47,7 @@ use App\Model\Table\DeletedServicesTable;
 use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\MacrosTable;
 use App\Model\Table\ServicecommandargumentvaluesTable;
 use App\Model\Table\ServiceeventcommandargumentvaluesTable;
 use App\Model\Table\ServicegroupsTable;
@@ -55,6 +56,7 @@ use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -90,6 +92,7 @@ use itnovum\openITCOCKPIT\Core\Timeline\Groups;
 use itnovum\openITCOCKPIT\Core\Timeline\NotificationSerializer;
 use itnovum\openITCOCKPIT\Core\Timeline\StatehistorySerializer;
 use itnovum\openITCOCKPIT\Core\Timeline\TimeRangeSerializer;
+use itnovum\openITCOCKPIT\Core\UserDefinedMacroReplacer;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
@@ -1447,6 +1450,21 @@ class ServicesController extends AppController {
         $ArgnReplacer = new CommandArgReplacer($mergedService['servicecommandargumentvalues']);
         $serviceCommandLine = $ArgnReplacer->replace($serviceCommandLine);
 
+        // Replace $USERn$ Macros (if enabled)
+        try {
+            $systemsettingsEntity = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.REPLACE_USER_MACROS');
+            if ($systemsettingsEntity->get('value') === '1') {
+                /** @var MacrosTable $MacrosTable */
+                $MacrosTable = TableRegistry::getTableLocator()->get('Macros');
+                $macros = $MacrosTable->getAllMacrosInCake2Format();
+
+                $UserMacroReplacer = new UserDefinedMacroReplacer($macros);
+                $serviceCommandLine = $UserMacroReplacer->replaceMacros($serviceCommandLine);
+            }
+        } catch (RecordNotFoundException $e) {
+            // Rocket not found in systemsettings - do not replace $USERn$ macros
+        }
+
         $mergedService['serviceCommandLine'] = $serviceCommandLine;
 
         // Convert interval values for humans
@@ -1512,6 +1530,7 @@ class ServicesController extends AppController {
 
         //Parse BBCode in long output
         $BBCodeParser = new BBCodeParser();
+        $servicestatus['outputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($Servicestatus->getOutput(), true));
         $servicestatus['longOutputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($Servicestatus->getLongOutput(), true));
 
         //Add parsed perfdata information
@@ -2003,11 +2022,11 @@ class ServicesController extends AppController {
             $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
             if (!empty($hoststatus)) {
                 $isHardstate = false;
-                if(isset($hoststatus['Hoststatus']['state_type'])){
+                if (isset($hoststatus['Hoststatus']['state_type'])) {
                     $isHardstate = ($hoststatus['Hoststatus']['state_type']) ? true : false;
                 }
 
-                if(isset($hoststatus['Hoststatus']['is_hardstate'])){
+                if (isset($hoststatus['Hoststatus']['is_hardstate'])) {
                     $isHardstate = ($hoststatus['Hoststatus']['is_hardstate']) ? true : false;
                 }
 
@@ -2065,11 +2084,11 @@ class ServicesController extends AppController {
             $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
             if (!empty($servicestatus)) {
                 $isHardstate = false;
-                if(isset($servicestatus['Servicestatus']['state_type'])){
+                if (isset($servicestatus['Servicestatus']['state_type'])) {
                     $isHardstate = ($servicestatus['Servicestatus']['state_type']) ? true : false;
                 }
 
-                if(isset($servicestatus['Servicestatus']['is_hardstate'])){
+                if (isset($servicestatus['Servicestatus']['is_hardstate'])) {
                     $isHardstate = ($servicestatus['Servicestatus']['is_hardstate']) ? true : false;
                 }
 
@@ -2551,9 +2570,9 @@ class ServicesController extends AppController {
 
         if ($onlyHostsWithWritePermission) {
             $writeContainers = [];
-            foreach($containerIds as $index => $containerId){
-                if(isset($this->MY_RIGHTS_LEVEL[$containerId])){
-                    if($this->MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT){
+            foreach ($containerIds as $index => $containerId) {
+                if (isset($this->MY_RIGHTS_LEVEL[$containerId])) {
+                    if ($this->MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT) {
                         $writeContainers[] = $containerId;
                     }
                 }

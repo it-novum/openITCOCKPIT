@@ -292,64 +292,102 @@ class DowntimesController extends AppController {
 
         $GearmanClient = new Gearman();
 
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         $DowntimeHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
         $DowntimeServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
 
         switch ($this->request->getData('type')) {
             case 'host':
-                /** @var HostsTable $HostsTable */
-                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
                 $includeServices = true;
                 if (!empty($this->request->getData('includeServices'))) {
                     $includeServices = (bool)$this->request->getData('includeServices');
                 }
 
+                //Find current downtime
+                $downtime = $DowntimeHostsTable->getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId);
+                if (empty($downtime)) {
+                    $this->set('success', false);
+                    $this->set('message', __('Could not find downtime'));
+                    $this->viewBuilder()->setOption('serialize', ['success', 'message']);
+                    return;
+                }
+
+                $Downtime = new Downtime($downtime['DowntimeHosts']);
+
+                try {
+                    $host = $HostsTable->getHostByUuid($downtime['Hosts']['uuid']);
+                } catch (RecordNotFoundException $e) {
+                    $this->set('success', false);
+                    $this->set('message', $e->getMessage());
+                    $this->viewBuilder()->setOption('serialize', ['success', 'message']);
+                    return;
+                }
+
                 if ($includeServices) {
-                    //Find current downtime
-                    $downtime = $DowntimeHostsTable->getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId);
-                    if (!empty($downtime)) {
-                        $Downtime = new Downtime($downtime['DowntimeHosts']);
-                        try {
-                            $host = $HostsTable->getHostByUuid($downtime['Hosts']['uuid']);
-                            $servicesInternalDowntimeIds = $DowntimeServicesTable->getServiceDowntimesByHostAndDowntime(
-                                $host->get('id'),
-                                $Downtime
-                            );
+                    $servicesInternalDowntimeIds = $DowntimeServicesTable->getServiceDowntimesByHostAndDowntime(
+                        $host->get('id'),
+                        $Downtime
+                    );
 
-                            //Delete Host downtime
-                            $GearmanClient->sendBackground('deleteHostDowntime', [
-                                'internal_downtime_id' => $internalDowntimeId
+                    //Delete Host downtime
+                    $GearmanClient->sendBackground('deleteHostDowntime', [
+                        'internal_downtime_id' => $internalDowntimeId,
+                        'satellite_id'         => $host->get('satellite_id'),
+                        'hostUuid'             => $host->get('uuid'),
+                        'downtime'             => $Downtime->toArray()
+                    ]);
+
+                    //Delete corresponding service downtimes
+                    foreach ($servicesInternalDowntimeIds as $serviceInternalDowntimeId) {
+                        $serviceDowntimeArray = $DowntimeServicesTable->getHostAndServiceUuidWithDowntimeByInternalDowntimeId($serviceInternalDowntimeId);
+                        if (!empty($serviceDowntimeArray)) {
+                            $ServiceDowntime = new Downtime($serviceDowntimeArray['DowntimeServices']);
+
+                            $GearmanClient->sendBackground('deleteServiceDowntime', [
+                                'internal_downtime_id' => $internalDowntimeId,
+                                'satellite_id'         => $host->get('satellite_id'),
+                                'hostUuid'             => $host->get('uuid'),
+                                'serviceUuid'          => $serviceDowntimeArray['Services']['uuid'],
+                                'downtime'             => $ServiceDowntime->toArray()
                             ]);
-
-                            //Delete corresponding service downtimes
-                            foreach ($servicesInternalDowntimeIds as $serviceInternalDowntimeId) {
-                                $GearmanClient->sendBackground('deleteServiceDowntime', [
-                                    'internal_downtime_id' => $serviceInternalDowntimeId
-                                ]);
-                            }
-
-                        } catch (RecordNotFoundException $e) {
-                            $this->set('success', false);
-                            $this->set('message', $e->getMessage());
-                            $this->viewBuilder()->setOption('serialize', ['success', 'message']);
-                            return;
                         }
-
                     }
                 } else {
                     //Only delete Host downtime
                     $GearmanClient->sendBackground('deleteHostDowntime', [
-                        'internal_downtime_id' => $internalDowntimeId
+                        'internal_downtime_id' => $internalDowntimeId,
+                        'satellite_id'         => $host->get('satellite_id'),
+                        'hostUuid'             => $host->get('uuid'),
+                        'downtime'             => $Downtime->toArray()
                     ]);
                 }
                 break;
 
             default:
                 //Only delete Service downtime
-                $GearmanClient->sendBackground('deleteServiceDowntime', [
-                    'internal_downtime_id' => $internalDowntimeId
-                ]);
+                $serviceDowntimeArray = $DowntimeServicesTable->getHostAndServiceUuidWithDowntimeByInternalDowntimeId($internalDowntimeId);
+                if (!empty($serviceDowntimeArray)) {
+                    $ServiceDowntime = new Downtime($serviceDowntimeArray['DowntimeServices']);
+
+                    try {
+                        $host = $HostsTable->getHostByUuid($serviceDowntimeArray['Hosts']['uuid']);
+                    } catch (RecordNotFoundException $e) {
+                        $this->set('success', false);
+                        $this->set('message', $e->getMessage());
+                        $this->viewBuilder()->setOption('serialize', ['success', 'message']);
+                        return;
+                    }
+
+                    $GearmanClient->sendBackground('deleteServiceDowntime', [
+                        'internal_downtime_id' => $internalDowntimeId,
+                        'satellite_id'         => $host->get('satellite_id'),
+                        'hostUuid'             => $host->get('uuid'),
+                        'serviceUuid'          => $serviceDowntimeArray['Services']['uuid'],
+                        'downtime'             => $ServiceDowntime->toArray()
+                    ]);
+                }
+
                 break;
         }
         $this->set('success', true);

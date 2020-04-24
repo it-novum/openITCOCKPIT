@@ -59,4 +59,10 @@ interface DowntimehistoryServicesTableInterface {
      */
     public function byServiceUuid($uuid = null, $isRunning = false);
 
+    /**
+     * @param int $internalDowntimeId
+     * @return array
+     */
+    public function getHostAndServiceUuidWithDowntimeByInternalDowntimeId($internalDowntimeId);
+
 }

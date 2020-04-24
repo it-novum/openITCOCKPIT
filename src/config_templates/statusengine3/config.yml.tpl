@@ -83,6 +83,7 @@ mysql:
   username: {{mysql_user}}
   password: {{mysql_password}}
   database: {{mysql_database}}
+  encoding: utf8mb4
 
 # If Statusengine should save historical data to CrateDB
 # WARNING: Do not set use_crate and use_mysql to 1 at the same time!

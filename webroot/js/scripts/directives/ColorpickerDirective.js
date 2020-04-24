@@ -22,16 +22,18 @@ angular.module('openITCOCKPIT').directive('colorpickerDirective', function(){
                         if($scope.highlightclass != null && $scope.highlighttype != null){
                             $scope.preview($scope.highlightclass, $scope.highlighttype, color.toHexString());
                         }
-
                         $scope.$apply();
-                    }
+                    },
                 });
 
                 jQuery($scope.element).spectrum("set", $scope.post[$scope.key]);
+
+                $scope.$watch('post.' + $scope.key, function(){
+                    jQuery($scope.element).spectrum("set", $scope.post[$scope.key]);
+                }, true);
             });
 
             $scope.preview = function(highlightclass, highlighttype, color){
-
                 switch(highlighttype){
                     case'color':
                         //font color
@@ -42,17 +44,9 @@ angular.module('openITCOCKPIT').directive('colorpickerDirective', function(){
                         //background-color
                         var type = 'background-color';
                         break;
-
-                    default:
-                        //both
-                        //var type = 'color';
-                        break;
                 }
                 jQuery(highlightclass).css(type, color);
-
-
             };
-
         },
 
         link: function($scope, element, attr, ctrl){

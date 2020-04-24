@@ -31,10 +31,8 @@ use App\Form\CurrentstatereportForm;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
-use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
-use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
@@ -140,8 +138,7 @@ class CurrentstatereportsController extends AppController {
             $ServiceFilter->indexFilter()
         );
 
-
-        $ServiceConditions->setServiceIds($this->request->getData('services'));
+        $ServiceConditions->setServiceIds($data['services']);
         $ServiceConditions->setContainerIds($this->MY_RIGHTS);
         $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
             'Hosts.name'  => 'asc',
@@ -149,16 +146,16 @@ class CurrentstatereportsController extends AppController {
         ]));
 
         $ServicestatusConditions = new ServicestatusConditions($this->DbBackend);
-        $ServicestatusConditions->currentState($this->request->getData('Servicestatus.current_state'));
+        $ServicestatusConditions->currentState($data['Servicestatus']['current_state']);
 
-        if ($this->request->getData('Servicestatus.hasBeenAcknowledged') !== null) {
-            $ServicestatusConditions->setProblemHasBeenAcknowledged($this->request->getData('Servicestatus.hasBeenAcknowledged'));
+        if (!empty($data['Servicestatus']['hasBeenAcknowledged'])) {
+            $ServicestatusConditions->setProblemHasBeenAcknowledged($data['Servicestatus']['hasBeenAcknowledged']);
         }
-        if ($this->request->getData('Servicestatus.inDowntime') !== null) {
-            $ServicestatusConditions->setScheduledDowntimeDepth($this->request->getData('Servicestatus.inDowntime'));
+        if (!empty($data['Servicestatus']['inDowntime'])) {
+            $ServicestatusConditions->setScheduledDowntimeDepth($data['Servicestatus']['inDowntime']);
         }
-        if ($this->request->getData('Servicestatus.passive') !== null) {
-            $ServicestatusConditions->setActiveChecksEnabled($this->request->getData('Servicestatus.passive'));
+        if (!empty($data['Servicestatus']['passive'])) {
+            $ServicestatusConditions->setActiveChecksEnabled($data['Servicestatus']['passive']);
         }
 
         $all_services = $this->createReport(
