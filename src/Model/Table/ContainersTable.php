@@ -688,7 +688,8 @@ class ContainersTable extends Table {
             ->disableHydration();
         $childrenContainers = $query->toArray();
 
-        debug($childrenContainers);
+        return $childrenContainers;
+        //debug($childrenContainers);
         /**
          * 'CT_GLOBAL'               => 1,
          * 'CT_TENANT'               => 2,
