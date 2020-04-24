@@ -44,6 +44,12 @@ angular.module('openITCOCKPIT').directive('colorpickerDirective', function(){
                         //background-color
                         var type = 'background-color';
                         break;
+
+                    case 'background-image':
+                        //background-image
+                        var type = 'background-image';
+                        color = 'linear-gradient(to top, ' + color + ', ' + color + ')';
+                        break;
                 }
                 jQuery(highlightclass).css(type, color);
             };
