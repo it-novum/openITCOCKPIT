@@ -781,10 +781,15 @@ fieldset[disabled] .btn-unknown.active {
 .elementHighlighter{
     color: #c51162 !important;
     background-color: #a51eff !important;
+    background-image: linear-gradient(to top, #a51eff, #a51eff) !important;
 }
 
 .elementBackgroundHighlighter{
     background-color: #a51eff !important;
+}
+
+.elementBackgroundImageHighlighter{
+    background-image: linear-gradient(to top, #a51eff, #a51eff) !important;
 }
 
 .elementFontHighlighter{
