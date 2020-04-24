@@ -24,6 +24,7 @@ Thumbs.db
 #######################
 # PHPUnit
 .phpunit.result.cache
+build/*
 # PHP Composer
 composer.lock
 # vim
