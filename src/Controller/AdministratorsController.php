@@ -346,8 +346,8 @@ class AdministratorsController extends AppController {
             $Mailer->setEmailFormat('both');
             $Mailer->setAttachments([
                 'logo.png' => [
-                    'file' => $Logo->getSmallLogoDiskPath(),
-                    'mimetype' => 'image/png',
+                    'file'      => $Logo->getSmallLogoDiskPath(),
+                    'mimetype'  => 'image/png',
                     'contentId' => '100'
                 ]
             ]);
