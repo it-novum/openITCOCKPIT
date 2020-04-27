@@ -4,6 +4,9 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnits;
 
 $GrafanaUnits = new GrafanaTargetUnits();
 $allGrafanaUnits = $GrafanaUnits->getUnits();
+
+$GrafanaColors = new \itnovum\openITCOCKPIT\Grafana\GrafanaColors();
+
 ?>
 <div class="grafana-panel padding-5">
 
@@ -31,7 +34,8 @@ $allGrafanaUnits = $GrafanaUnits->getUnits();
     </div>
 
     <div class="padding-2 row margin-5 slightBorder" ng-repeat="metric in panel.metrics">
-        <ol class="breadcrumb breadcrumb-seperator-1 noWordBreak col-11" style="padding-top: 0px; padding-bottom: 0px; margin-bottom: 0px;">
+        <ol class="breadcrumb breadcrumb-seperator-1 noWordBreak col-10"
+            style="padding-top: 0px; padding-bottom: 0px; margin-bottom: 0px;">
             <li class="breadcrumb-item">
                 <?php if ($this->Acl->hasPermission('browser', 'hosts', '')): ?>
                     <a href="/hosts/browser/{{metric.Host.id}}">{{metric.Host.hostname}}</a>
@@ -50,6 +54,10 @@ $allGrafanaUnits = $GrafanaUnits->getUnits();
                 {{metric.metric}}
             </li>
         </ol>
+        <div class="actions col-1">
+            <div ng-if="metric.color"
+                 class="grafana-child-color" style="background-color: {{metric.color}};"></div>
+        </div>
         <div class="actions col-1" style="padding-top: 4px;">
             <i class="fa fa-trash text-danger float-right pointer"
                ng-click="removeMetric(metric)"></i>
@@ -65,7 +73,6 @@ $allGrafanaUnits = $GrafanaUnits->getUnits();
 
 
 </div>
-
 
 
 <!-- Add new metric to panel modal -->
@@ -110,6 +117,39 @@ $allGrafanaUnits = $GrafanaUnits->getUnits();
                         </select>
                     </div>
                 </div>
+                <div class="row padding-top-10 padding-bottom-10">
+                    <div class="col-12">
+                        <?= _('Color'); ?>
+                    </div>
+
+                    <?php foreach ($GrafanaColors->getColors() as $color): ?>
+                        <div class="col-xs-12 col-mg-6 col-lg-3 padding-top-10">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <div class="grafana-main-color"
+                                             ng-class="{'grafana-selected-color': currentMetricColor === '<?= h($color['main']); ?>'}"
+                                             ng-click="currentMetricColor='<?= h($color['main']); ?>'"
+                                             style="background: <?= h($color['main']); ?>"></div>
+                                    </td>
+                                    <td class="padding-left-10">
+                                        <?= h($color['name']); ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="padding-top-10" colspan="2">
+                                        <?php foreach ($color['children'] as $childColor): ?>
+                                            <div class="grafana-child-color"
+                                                 ng-class="{'grafana-selected-color': currentMetricColor === '<?= h($childColor); ?>'}"
+                                                 ng-click="currentMetricColor='<?= h($childColor); ?>'"
+                                                 style="background: <?= h($childColor); ?>;display: inline-block;"></div>
+                                        <?php endforeach; ?>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" ng-click="saveMetric()">
@@ -122,7 +162,6 @@ $allGrafanaUnits = $GrafanaUnits->getUnits();
         </div>
     </div>
 </div>
-
 
 
 <!-- Panel options modal -->
@@ -192,7 +231,6 @@ $allGrafanaUnits = $GrafanaUnits->getUnits();
 </div>
 
 
-
 <!-- Panel options modal -->
 <div id="panelOptionsModal_{{rowId}}_{{panelId}}" class="modal" role="dialog">
     <div class="modal-dialog modal-lg">
@@ -235,16 +273,17 @@ $allGrafanaUnits = $GrafanaUnits->getUnits();
                         <div class="form-group">
                             <!-- Date comes from API and PHP. PHP is required for the optgroup API data is used to tell Angular to render the chosen box-->
                             <select
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="grafanaUnits"
-                                    ng-init="panel.unit = panel.unit || 'none'"
-                                    ng-model="panel.unit"
-                                    ng-model-options="{debounce: 500}">
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="grafanaUnits"
+                                ng-init="panel.unit = panel.unit || 'none'"
+                                ng-model="panel.unit"
+                                ng-model-options="{debounce: 500}">
                                 <?php foreach ($allGrafanaUnits as $category => $units): ?>
                                     <optgroup label="<?php echo h($category); ?>">
                                         <?php foreach ($units as $unitKey => $unitName): ?>
-                                            <option value="<?php echo h($unitKey); ?>"><?php echo h($unitName); ?></option>
+                                            <option
+                                                value="<?php echo h($unitKey); ?>"><?php echo h($unitName); ?></option>
                                         <?php endforeach; ?>
                                     </optgroup>
                                 <?php endforeach;; ?>

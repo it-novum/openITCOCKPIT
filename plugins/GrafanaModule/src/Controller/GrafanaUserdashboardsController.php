@@ -41,6 +41,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Psr7\Request;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
@@ -743,7 +744,8 @@ class GrafanaUserdashboardsController extends AppController {
                                     $this->replaceUmlauts($metric['Host']['hostname']),
                                     $this->replaceUmlauts($metric['Service']['servicename']),
                                     $this->replaceUmlauts($metric['metric'])
-                                )//Alias
+                                ),//Alias
+                                $metric['color'] ?? null
                             ));
                     }
                     $GrafanaPanel->addTargets(
