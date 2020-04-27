@@ -146,7 +146,7 @@ angular.module('openITCOCKPIT')
                             color: colorNotMonitored //color for icon
                         }
                     },
-                    contactgroup: {
+                    contactgroups: {
                         shape: 'icon',
                         color: colorNotMonitored, // color for edges
                         icon: {
@@ -194,6 +194,47 @@ angular.module('openITCOCKPIT')
                             color: colorUp,
                             size: 15
                         }
+                    },
+                    hosttemplates: {
+                        shape: 'icon',
+                        color: colorUp, // color for edges
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf044',
+                            color: colorUp,
+                            size: 15
+                        }
+                    },
+                    servicetemplates: {
+                        shape: 'icon',
+                        color: colorDown, // color for edges
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf044',
+                            color: colorUp,
+                            size: 15
+                        }
+                    },
+
+                    contacts: {
+                        shape: 'icon',
+                        color: colorNotMonitored, // color for edges
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf2bd',
+                            color: colorNotMonitored, //color for icon
+                            size: 15
+                        }
+                    },
+                    timeperiods: {
+                        shape: 'icon',
+                        color: colorUp, // color for edges
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf017',
+                            color: colorUp,
+                            size: 15
+                        }
                     }
                 },
                 nodes: {
@@ -207,6 +248,19 @@ angular.module('openITCOCKPIT')
                 },
                 physics: {
                     forceAtlas2Based: {
+                        gravitationalConstant: -26,
+                        centralGravity: 0.005,
+                        springLength: 230,
+                        springConstant: 0.18
+                    },
+                    maxVelocity: 146,
+                    solver: "forceAtlas2Based",
+                    timestep: 0.35,
+                    stabilization: { iterations: 150 }
+                },
+                /*
+                physics: {
+                    forceAtlas2Based: {
                         gravitationalConstant: -138,
                         centralGravity: 0.02,
                         springLength: 100
@@ -214,6 +268,7 @@ angular.module('openITCOCKPIT')
                     minVelocity: 0.75,
                     solver: "forceAtlas2Based",
                 },
+                 */
                 interaction: {
                     hover: true,
                     dragNodes: false,
@@ -225,9 +280,11 @@ angular.module('openITCOCKPIT')
                 },
                 layout: {
                     improvedLayout: false,
+                    /*
                     hierarchical: {
                         direction: "LR"
                     }
+                     */
                 }
             };
 
