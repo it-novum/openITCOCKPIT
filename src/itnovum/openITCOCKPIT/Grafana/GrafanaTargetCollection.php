@@ -59,9 +59,9 @@ class GrafanaTargetCollection {
             /**
              * @var GrafanaTarget $grafanaTarget
              */
-            if(isset($this->abc[$key])){
+            if (isset($this->abc[$key])) {
                 $refId = $this->abc[$key];
-            }else{
+            } else {
                 $refId = sprintf('A%s', $key);
             }
 
@@ -81,6 +81,24 @@ class GrafanaTargetCollection {
             $targetsArray[] = $target;
         }
         return $targetsArray;
+    }
+
+    /**
+     * @return array
+     */
+    public function getColorsAsArray() {
+        $colorsArray = [];
+        foreach ($this->targets as $key => $grafanaTarget) {
+            /**
+             * @var GrafanaTarget $grafanaTarget
+             */
+            if ($grafanaTarget->getColor() !== null) {
+                $alias = str_replace("'", '', $grafanaTarget->getAlias());
+                
+                $colorsArray[$alias] = $grafanaTarget->getColor();
+            }
+        }
+        return $colorsArray;
     }
 
     /**

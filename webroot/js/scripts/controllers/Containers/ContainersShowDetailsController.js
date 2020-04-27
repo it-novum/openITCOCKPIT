@@ -88,33 +88,43 @@ angular.module('openITCOCKPIT')
                 clickToUse: false,
                 groups: {
                     root: {
-                        //f0ac
                         shape: 'ellipse',
-                        color: colorNotMonitored, // color for edges
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf0ac',
-                            color: colorNotMonitored //color for icon
+                            color: colorNotMonitored, //color for icon,
+
                         },
                         margin: {
                             top: 10,
                             bottom: 20,
                             left: 5,
                             right: 5
-                        }
+                        },
+                        color: {
+                            border: 'black',
+                            background: 'white',
+                            highlight: {
+                                border: 'yellow',
+                                background: 'orange'
+                            }
+                        },
+                        fontColor: 'red'
                     },
                     tenant: {
                         shape: 'icon',
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf015'
+                            code: '\uf015',
+                            size: 20
                         }
                     },
                     location: {
                         shape: 'icon',
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf124'
+                            code: '\uf124',
+                            size: 20
                         }
                     },
                     node: {
@@ -123,7 +133,8 @@ angular.module('openITCOCKPIT')
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf0c1',
-                            color: colorNotMonitored //color for icon
+                            color: colorNotMonitored, //color for icon
+                            size: 20
                         }
                     },
                     devicegroup: {
@@ -140,7 +151,7 @@ angular.module('openITCOCKPIT')
                         color: colorNotMonitored, // color for edges
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf0c1',
+                            code: '\uf0c0',
                             color: colorNotMonitored //color for icon
                         }
                     },
@@ -149,8 +160,9 @@ angular.module('openITCOCKPIT')
                         color: colorNotMonitored, // color for edges
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf0c1',
-                            color: colorNotMonitored //color for icon
+                            code: '\uf233',
+                            color: colorNotMonitored, //color for icon
+                            size: 20
                         }
                     },
                     servicegroup: {
@@ -158,8 +170,9 @@ angular.module('openITCOCKPIT')
                         color: colorNotMonitored, // color for edges
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf0c1',
-                            color: colorNotMonitored //color for icon
+                            code: '\uf085',
+                            color: colorNotMonitored, //color for icon
+                            size: 20
                         }
                     },
                     servicetemplategroup: {
@@ -167,115 +180,19 @@ angular.module('openITCOCKPIT')
                         color: colorNotMonitored, // color for edges
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf0c1',
-                            color: colorNotMonitored //color for icon
+                            code: '\uf0c5',
+                            color: colorNotMonitored, //color for icon
+                            size: 20
                         }
                     },
-                    hostUp: {
+                    hosts: {
                         shape: 'icon',
                         color: colorUp, // color for edges
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf058',
-                            color: colorUp
-                        }
-                    },
-                    hostDown: {
-                        shape: 'icon',
-                        color: colorDown,
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf06a',
-                            color: colorDown
-                        }
-                    },
-                    hostUnreachable: {
-                        shape: 'icon',
-                        color: colorUnreachable,
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf059',
-                            color: colorUnreachable
-                        }
-                    },
-                    isInDowntimeUp: {
-                        shape: 'icon',
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf011',
-                            color: colorUp
-                        }
-                    },
-                    isInDowntimeDown: {
-                        shape: 'icon',
-                        color: colorDown,
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf011',
-                            color: colorDown
-                        }
-                    },
-                    isInDowntimeUnreachable: {
-                        shape: 'icon',
-                        color: colorUnreachable,
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf011',
-                            color: colorUnreachable
-                        }
-                    },
-                    isAcknowledgedUp: {
-                        shape: 'icon',
-                        color: colorUp, // color for edges
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf007',
-                            color: colorUp
-                        }
-                    },
-                    isAcknowledgedDown: {
-                        shape: 'icon',
-                        color: colorDown,
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf007',
-                            color: colorDown
-                        }
-                    },
-                    isAcknowledgedUnreachable: {
-                        shape: 'icon',
-                        color: colorUnreachable,
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf007',
-                            color: colorUnreachable
-                        }
-                    },
-                    isAcknowledgedAndIsInDowntimeUp: {
-                        shape: 'icon',
-                        color: colorUp, // color for edges
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf0f0',
-                            color: colorUp
-                        }
-                    },
-                    isAcknowledgedAndIsInDowntimeDown: {
-                        shape: 'icon',
-                        color: colorDown,
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf0f0',
-                            color: colorDown
-                        }
-                    },
-                    isAcknowledgedAndIsInDowntimeUnreachable: {
-                        shape: 'icon',
-                        color: colorUnreachable,
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf0f0',
-                            color: colorUnreachable
+                            code: '\uf108',
+                            color: colorUp,
+                            size: 15
                         }
                     }
                 },
@@ -307,8 +224,10 @@ angular.module('openITCOCKPIT')
 
                 },
                 layout: {
-                    randomSeed: 1000,
-                    improvedLayout: false
+                    improvedLayout: false,
+                    hierarchical: {
+                        direction: "LR"
+                    }
                 }
             };
 

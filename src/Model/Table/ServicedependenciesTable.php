@@ -46,7 +46,7 @@ class ServicedependenciesTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
         $this->addBehavior('Timestamp');
 
@@ -92,7 +92,7 @@ class ServicedependenciesTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -134,7 +134,7 @@ class ServicedependenciesTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
 
         return $rules;
@@ -521,6 +521,24 @@ class ServicedependenciesTable extends Table {
             $query->where(['Servicedependencies.container_id IN' => $MY_RIGHTS]);
         }
         $query->enableHydration($enableHydration);
+
+        $result = $query->all();
+        return $this->emptyArrayIfNull($result->toArray());
+    }
+
+    /**
+     * @param $containerId
+     * @return array
+     */
+    public function getServicedependenciesByContainerId($containerId) {
+        $query = $this->find()
+            ->select([
+                'Servicedependencies.id'
+            ])
+            ->where([
+                'container_id' => $containerId,
+            ])
+            ->disableHydration();
 
         $result = $query->all();
         return $this->emptyArrayIfNull($result->toArray());
