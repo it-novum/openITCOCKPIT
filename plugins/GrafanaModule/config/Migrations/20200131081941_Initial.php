@@ -31,10 +31,10 @@ use Migrations\AbstractMigration;
  * Class Initial
  *
  * Created via:
- * oitc4 migrations create -p GrafanaModule Initial
+ * oitc migrations create -p GrafanaModule Initial
  *
  * Run migration:
- * oitc4 migrations migrate -p GrafanaModule
+ * oitc migrations migrate -p GrafanaModule
  *
  */
 class Initial extends AbstractMigration {

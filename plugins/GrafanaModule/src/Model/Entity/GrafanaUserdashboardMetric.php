@@ -39,6 +39,7 @@ use Cake\ORM\Entity;
  * @property string $metric
  * @property int $host_id
  * @property int $service_id
+ * @property string color
  *
  * @property GrafanaUserdashboardPanel $grafana_userdashboard_panel
  * @property Host $host
@@ -59,6 +60,7 @@ class GrafanaUserdashboardMetric extends Entity {
         'metric'                      => true,
         'host_id'                     => true,
         'service_id'                  => true,
+        'color'                       => true,
         'grafana_userdashboard_panel' => true,
         'host'                        => true,
         'service'                     => true,
