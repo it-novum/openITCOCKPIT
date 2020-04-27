@@ -630,4 +630,23 @@ class HostescalationsTable extends Table {
         $result = $query->all();
         return $this->emptyArrayIfNull($result->toArray());
     }
+
+    /**
+     * @param $containerId
+     * @return array
+     */
+    public function getHostescalationsByContainerId($containerId) {
+        $query = $this->find()
+            ->select([
+                'Hostescalations.id'
+            ])
+            ->where([
+                'container_id' => $containerId,
+
+            ])
+            ->disableHydration();
+
+        $result = $query->all();
+        return $this->emptyArrayIfNull($result->toArray());
+    }
 }
