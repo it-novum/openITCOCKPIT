@@ -7,7 +7,6 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\SystemdowntimesConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
@@ -331,16 +330,18 @@ class SystemdowntimesTable extends Table {
             ])
             ->contain([
                 'Hosts' => function (Query $query) use ($MY_RIGHTS) {
-                    if (!empty($MY_RIGHTS)) {
-                        $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
-                            'HostsToContainersSharing.host_id = Hosts.id'
-                        ]);
-                        $query->where([
-                            'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
-                        ]);
-                    }
-
-                    $query->contain('HostsToContainersSharing');
+                    $query->contain([
+                        'HostsToContainersSharing' => function (Query $query) use ($MY_RIGHTS) {
+                            if (!empty($MY_RIGHTS)) {
+                                $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                                    'HostsToContainersSharing.host_id = Hosts.id'
+                                ]);
+                                $query->where([
+                                    'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                                ]);
+                            }
+                        }
+                    ]);
                     return $query;
                 }
             ])
@@ -400,15 +401,18 @@ class SystemdowntimesTable extends Table {
                 'Services' => function (Query $query) use ($MY_RIGHTS) {
                     $query->contain([
                         'Hosts' => function (Query $query) use ($MY_RIGHTS) {
-                            if (!empty($MY_RIGHTS)) {
-                                $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
-                                    'HostsToContainersSharing.host_id = Hosts.id'
-                                ]);
-                                $query->where([
-                                    'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
-                                ]);
-                            }
-                            $query->contain('HostsToContainersSharing');
+                            $query->contain([
+                                'HostsToContainersSharing' => function (Query $query) use ($MY_RIGHTS) {
+                                    if (!empty($MY_RIGHTS)) {
+                                        $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                                            'HostsToContainersSharing.host_id = Hosts.id'
+                                        ]);
+                                        $query->where([
+                                            'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                                        ]);
+                                    }
+                                }
+                            ]);
                             return $query;
                         },
                         'Servicetemplates'

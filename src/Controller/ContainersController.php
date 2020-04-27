@@ -649,49 +649,15 @@ class ContainersController extends AppController {
         if ($this->hasRootPrivileges) {
             $MY_RIGHTS = [];
         }
-        $containerTypes = [
-            1 => 'root',
-            2 => 'tenant',
-            3 => 'location',
-            4 => 'devicegroup',
-            5 => 'node',
-            6 => 'contactgroup',
-            7 => 'hostgroup',
-            8 => 'servicegroup',
-            9 => 'servicetemplategroup',
-        ];
 
         $container = $ContainersTable->getContainerById($id, $MY_RIGHTS);
         $subContainers = $ContainersTable->getContainerWithAllChildren($id);
 
+        $containerMap = $ContainersTable->getContainerMap($container, $subContainers);
+//debug($containerMap);die();
+//return;
 
-        $nodes[] = [
-            'id'     => $container['id'],
-            'label'  => $container['name'],
-            'group'  => $containerTypes[$container['containertype_id']]
-        ];
-        $edges = [];
 
-        foreach ($subContainers as $subContainer) {
-            $nodes[] = [
-                'id'     => $subContainer['id'],
-                'label'  => $subContainer['name'],
-                'group'  => $containerTypes[$subContainer['containertype_id']]
-            ];
-
-            $edges[] = [
-                'from'   => $container['id'] ,
-                'to'     => $subContainer['id'],
-                'color'  => [
-                    'inherit' => 'to',
-                ],
-                'arrows' => 'to'
-            ];
-        }
-        $containerMap = [
-            'nodes' => $nodes,
-            'edges' => $edges
-        ];
         $this->set('containerMap', $containerMap);
         $this->viewBuilder()->setOption('serialize', ['containerMap']);
 

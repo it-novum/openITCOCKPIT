@@ -42,7 +42,7 @@ class ServicetemplategroupsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('servicetemplategroups');
@@ -71,7 +71,7 @@ class ServicetemplategroupsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -104,7 +104,7 @@ class ServicetemplategroupsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
         $rules->add($rules->existsIn(['container_id'], 'Containers'));
 
@@ -392,7 +392,7 @@ class ServicetemplategroupsTable extends Table {
                 'Servicetemplategroups.id'
             ])
             ->contain([
-                'Servicetemplates'    => function (Query $query) {
+                'Servicetemplates' => function (Query $query) {
                     return $query
                         ->disableAutoFields()
                         ->select(['id']);
@@ -414,5 +414,35 @@ class ServicetemplategroupsTable extends Table {
             return [];
         }
         return $result->toArray();
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getServicetemplatesByServicetemplategroupId($id) {
+        $servicetemplates = $this->find()
+            ->contain([
+                // Get all services that are in this service group through the service template AND
+                // which does NOT have any own service groups
+                'servicetemplates' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'id',
+                            'name'
+                        ]);
+                    return $query;
+                }
+            ])
+            ->where([
+                'Servicegroups.id' => $id
+            ])
+            ->disableHydration()
+            ->first();
+
+        if(empty($servicetemplates)){
+            return [];
+        }
+        return $servicetemplates->toArray();
     }
 }

@@ -886,4 +886,24 @@ class InstantreportsTable extends Table {
         $result = $query->all();
         return $this->emptyArrayIfNull($result->toArray());
     }
+
+    /**
+     * @param $containerId
+     * @return array
+     */
+    public function getInstantreportsByContainerId($containerId) {
+        $query = $this->find()
+            ->select([
+                'Instantreports.id',
+                'Instantreports.name'
+            ])
+            ->where([
+                'Instantreports.container_id' => $containerId
+            ])
+        ->disableHydration();
+
+        $result = $query->all();
+        return $this->emptyArrayIfNull($result->toArray());
+    }
+
 }
