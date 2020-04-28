@@ -440,9 +440,63 @@ class ServicetemplategroupsTable extends Table {
             ->disableHydration()
             ->first();
 
-        if(empty($servicetemplates)){
+        if (empty($servicetemplates)) {
             return [];
         }
         return $servicetemplates->toArray();
+    }
+
+    /**
+     * @param int $containerId
+     * @param string $type
+     * @param string $index
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServicetemplategroupsByContainerIdExact($containerId, $type = 'all', $index = 'container_id', $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->select([
+                'Servicetemplategroups.id',
+                'Containers.id',
+                'Containers.name'
+            ])
+            ->contain([
+                'Containers'
+            ])
+            ->where([
+                'Containers.parent_id'        => $containerId,
+                'Containers.containertype_id' => CT_SERVICETEMPLATEGROUP
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+        $query->order([
+            'Containers.name' => 'asc'
+        ]);
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            if ($index === 'id') {
+                $list[$row['id']] = $row['container']['name'];
+            } else {
+                $list[$row['container']['id']] = $row['container']['name'];
+            }
+        }
+
+        return $list;
     }
 }

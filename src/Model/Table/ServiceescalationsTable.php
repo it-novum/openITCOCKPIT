@@ -645,21 +645,47 @@ class ServiceescalationsTable extends Table {
     }
 
     /**
-     * @param $containerId
+     * @param int $containerId
+     * @param string $type
+     * @param array $MY_RIGHTS
+     * @param array $where
      * @return array
      */
-    public function getServiceescalationsByContainerId($containerId) {
-        $query = $this->find()
-            ->select([
-                'Serviceescalations.id'
-            ])
-            ->where([
-                'container_id' => $containerId,
+    public function getServiceescalationsByContainerIdExact($containerId, $type = 'all', $index = 'id', $MY_RIGHTS = [], $where = []) {
+        $_where = [
+            'Serviceescalations.container_id' => $containerId
+        ];
 
-            ])
-            ->disableHydration();
+        $where = Hash::merge($_where, $where);
 
-        $result = $query->all();
-        return $this->emptyArrayIfNull($result->toArray());
+        $query = $this->find();
+        $query->select([
+            'Serviceescalations.' . $index,
+        ]);
+        $query->where($where);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Serviceescalations.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row[$index]] = __('Service escalation #{0}', $row['id']);
+        }
+
+        return $list;
     }
 }

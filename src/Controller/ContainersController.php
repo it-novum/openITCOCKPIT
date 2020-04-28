@@ -651,7 +651,7 @@ class ContainersController extends AppController {
         }
 
         $container = $ContainersTable->getContainerById($id, $MY_RIGHTS);
-        $subContainers = $ContainersTable->getContainerWithAllChildren($id);
+        $subContainers = $ContainersTable->getContainerWithAllChildren($id, $MY_RIGHTS);
 //debug($container);
 //debug($subContainers);
 //die();

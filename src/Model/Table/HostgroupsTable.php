@@ -381,7 +381,7 @@ class HostgroupsTable extends Table {
                         'Containers.name'
                     ]);
                 },
-                'Hosts' => function (Query $q) {
+                'Hosts'      => function (Query $q) {
                     return $q->contain([
                         'HostsToContainersSharing',
                         'Services' => function (Query $q) {
@@ -426,8 +426,8 @@ class HostgroupsTable extends Table {
         }
         $selected = array_filter($selected);
 
-        if($returnEmptyArrayIfMyRightsIsEmpty){
-            if(empty($HostgroupConditions->getContainerIds())){
+        if ($returnEmptyArrayIfMyRightsIsEmpty) {
+            if (empty($HostgroupConditions->getContainerIds())) {
                 return [];
             }
         }
@@ -924,12 +924,12 @@ class HostgroupsTable extends Table {
                 'Hostgroups.id'
             ])
             ->contain([
-                'Hosts'    => function (Query $query) {
+                'Hosts'         => function (Query $query) {
                     return $query
                         ->disableAutoFields()
                         ->select(['id']);
                 },
-                'Hosttemplates'    => function (Query $query) {
+                'Hosttemplates' => function (Query $query) {
                     return $query
                         ->disableAutoFields()
                         ->select(['id']);
@@ -951,5 +951,59 @@ class HostgroupsTable extends Table {
             return [];
         }
         return $result->toArray();
+    }
+
+    /**
+     * @param int $containerId
+     * @param string $type
+     * @param string $index
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getHostgroupsByContainerIdExact($containerId, $type = 'all', $index = 'container_id', $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->select([
+                'Hostgroups.id',
+                'Containers.id',
+                'Containers.name'
+            ])
+            ->contain([
+                'Containers'
+            ])
+            ->where([
+                'Containers.parent_id'        => $containerId,
+                'Containers.containertype_id' => CT_HOSTGROUP
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+        $query->order([
+            'Containers.name' => 'asc'
+        ]);
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            if ($index === 'id') {
+                $list[$row['id']] = $row['container']['name'];
+            } else {
+                $list[$row['container']['id']] = $row['container']['name'];
+            }
+        }
+
+        return $list;
     }
 }
