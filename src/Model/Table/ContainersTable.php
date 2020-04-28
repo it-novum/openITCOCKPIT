@@ -692,6 +692,9 @@ class ContainersTable extends Table {
             'Containers.lft',
             'Containers.rght'
         ])
+            ->where([
+                'Containers.containertype_id IN ' => [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]
+            ])
             ->disableHydration();
         $containers = $query->toArray();
         $containers[] = $parentContainer;
@@ -762,54 +765,37 @@ class ContainersTable extends Table {
                 case CT_TENANT:
                 case CT_LOCATION:
                 case CT_NODE:
-                    if (is_null($container['parent_id'])) {
-                        //  $containers[$index]['childsElements']['tenants'] = $TenantsTable->getTenants('list');
-                    }
-                    //$containers[$index]['childsElements']['locations'] = $LocationsTable->
                     $containers[$index]['childsElements']['hosts'] = $HostsTable->getHostsByContainerId($container['id'], 'list');
-                    /*
-                    $childrenContainers[$index]['childsElements']['hosts'] = $HostsTable->getHostsByContainerId($childContainer['id'], 'all', 'id',[
-                            'Hosts.container_id' => $childContainer['id']
-                        ]);
-                    */
                     $containers[$index]['childsElements']['hosttemplates'] = $HosttemplatesTable->getHosttemplatesByContainerId($container['id'], 'list');
                     $containers[$index]['childsElements']['hostgroups'] = $HostgroupsTable->getHostgroupsByContainerId($container['id'], 'list');
                     $containers[$index]['childsElements']['servicetemplates'] = $ServicetemplatesTable->getServicetemplatesByContainerId($container['id'], 'list');
-                    //$childrenContainers[$index]['childsElements']['servicetemplategroups'] = $ServicetemplategroupsTable->getServicetemplategroupByContainerId($childContainer['id']);
+                    $childrenContainers[$index]['childsElements']['servicetemplategroups'] = $ServicetemplategroupsTable->getServicetemplategroupByContainerId($container['id']);
                     $containers[$index]['childsElements']['servicegroups'] = $ServicegroupsTable->getServicegroupsByContainerId($container['id'], 'list');
                     $containers[$index]['childsElements']['timeperiods'] = $TimeperiodsTable->getTimeperiodByContainerIdsAsList($container['id']);
                     $containers[$index]['childsElements']['contacts'] = $ContactsTable->contactsByContainerId($container['id'], 'list');
                     $containers[$index]['childsElements']['contactGroups'] = $ContactgroupsTable->getContactgroupsByContainerId($container['id'], 'list');
-                    /*
 
-                                        $childrenContainers[$index]['childsElements']['hostDependencies'] = $HostdependenciesTable->getHostdependenciesByContainerId($childContainer['id']);
-                                        $childrenContainers[$index]['childsElements']['hostEscalations'] = $HostescalationsTable->getHostescalationsByContainerId($childContainer['id']);
-                                        $childrenContainers[$index]['childsElements']['serviceDependencies'] = $ServicedependenciesTable->getServicedependenciesByContainerId($childContainer['id']);
-                                        $childrenContainers[$index]['childsElements']['serviceEscalations'] = $ServiceescalationsTable->getServiceescalationsByContainerId($childContainer['id']);
 
-                                        $childrenContainers[$index]['childsElements']['instantReports'] = $InstantreportsTable->getInstantreportsByContainerId($childContainer['id']);
-                                        if (isset($AutoreportsTable)) {
-                                            $childrenContainers[$index]['childsElements']['autoReports'] = $AutoreportsTable->getAutoreportsByContainerId($childContainer['id']);
-                                        }
-                                        if(isset($SatellitesTable)){
-                                            $childrenContainers[$index]['childsElements']['satellites'] = $SatellitesTable->getSatellitesByContainerId($childContainer['id']);
-                                        }
-                    */
-                    break;
-                case CT_CONTACTGROUP:
-                    $containers[$index]['childsElements']['contacts'] = $ContactsTable->contactsByContainerId($container['id'], 'list');
-                    break;
-                case CT_HOSTGROUP:
-                    $containers[$index]['childsElements']['hosts'] = $HostsTable->getHostsByContainerId($container['id'], 'list');
-                    break;
-                case CT_SERVICEGROUP:
-                    $containers[$index]['childsElements']['services'] = $ServicegroupsTable->getServiceIdsByServicegroupId($container['id'], 'list');
-                    break;
-                case CT_SERVICETEMPLATEGROUP:
-                    $containers[$index]['childsElements']['servicetemplates'] = $ServicetemplategroupsTable->getServicetemplatesByServicetemplategroupId($container['id']);
+                    // label Type_#Id
+                    $childrenContainers[$index]['childsElements']['hostDependencies'] = $HostdependenciesTable->getHostdependenciesByContainerId($container['id']);
+                    $childrenContainers[$index]['childsElements']['hostEscalations'] = $HostescalationsTable->getHostescalationsByContainerId($container['id']);
+                    $childrenContainers[$index]['childsElements']['serviceDependencies'] = $ServicedependenciesTable->getServicedependenciesByContainerId($container['id']);
+                    $childrenContainers[$index]['childsElements']['serviceEscalations'] = $ServiceescalationsTable->getServiceescalationsByContainerId($container['id']);
+
+
+
+                    $childrenContainers[$index]['childsElements']['instantReports'] = $InstantreportsTable->getInstantreportsByContainerId($container['id']);
+                    if (isset($AutoreportsTable)) {
+                        $childrenContainers[$index]['childsElements']['autoReports'] = $AutoreportsTable->getAutoreportsByContainerId($container['id']);
+                    }
+                    if(isset($SatellitesTable)){
+                        $childrenContainers[$index]['childsElements']['satellites'] = $SatellitesTable->getSatellitesByContainerId($container['id']);
+                    }
                     break;
             }
         }
+        debug($containers);
+        die();
         return $containers;
     }
 
