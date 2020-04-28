@@ -845,7 +845,7 @@ class ContainersTable extends Table {
 
         $nodes = [];
         $edges = [];
-
+        $cluster = [];
 
         foreach ($subContainers as $subContainer) {
             //$subContainers -> all containers by id
@@ -876,11 +876,13 @@ class ContainersTable extends Table {
                 foreach ($childMap['edges'] as $edge) {
                     $edges[] = $edge;
                 }
+                $cluster = array_merge($cluster, $childMap['cluster']);
             }
         }
         $containerMap = [
-            'nodes' => $nodes,
-            'edges' => $edges
+            'nodes'   => $nodes,
+            'edges'   => $edges,
+            'cluster' => $cluster
         ];
 
         return $containerMap;
@@ -894,17 +896,24 @@ class ContainersTable extends Table {
     private function getNodeAndEdgesForChilds(int $containerId, array $childsArray) {
         $nodes = [];
         $edges = [];
+        $cluster = [];
 //debug($containerId);
 //debug($childsArray);die();
         foreach ($childsArray as $childObjectName => $childs) {
 
-            if (sizeof($childs) > 0) {
+            $sizeof = sizeof($childs);
+            if ($sizeof > 0) {
                 //Create cluster node
                 //This contains all childs (example: Servicetemplates and attatch all Servicetemplates to THIS node!)
                 $nodes[] = [
                     'id'            => $containerId . '_' . $childObjectName, //1_tenant
-                    'label'         => $childObjectName.' ('.sizeof($childs).')', // tnant
+                    'label'         => $childObjectName, // tenant
                     'createCluster' => $containerId . '_' . $childObjectName //1_tenant
+                ];
+                $cluster[] = [
+                    'name'  => $containerId . '_' . $childObjectName,
+                    'label' => $childObjectName,
+                    'size'  => $sizeof
                 ];
                 $edges[] = [
                     'from' => $containerId,
@@ -922,10 +931,10 @@ class ContainersTable extends Table {
             // Example: Attatch all servicetemplates to servicetemplate cluster
             foreach ($childs as $id => $childName) {
                 $nodes[] = [
-                    'id'    => $childObjectName . '_' . $childName . '_' . $id,
+                    'id'    => $childObjectName . '_' . $childName . '_' . $id,  //tenant_TenantName_tenantId
                     'label' => $childName,
                     'group' => $childObjectName,
-                    'cid'   => $containerId . '_' . $childObjectName
+                    'cid'   => $containerId . '_' . $childObjectName //1_tenant
                 ];
                 $edges[] = [
                     'from' => $containerId . '_' . $childObjectName,
@@ -937,11 +946,26 @@ class ContainersTable extends Table {
                     'arrows' => 'to'
                     */
                 ];
+
+                if ($sizeof === 1) {
+                    // A cluster of one element is always expande in VisJS
+                    // We add a hidden fake element to make the cluster collapse
+                    $nodes[] = [
+                        'id'     => 'fake_' . $childObjectName . '_' . $childName . '_' . $id,  //fake_tenant_TenantName_tenantId
+                        'cid'    => $containerId . '_' . $childObjectName, //1_tenant,
+                        'hidden' => true
+                    ];
+                    $edges[] = [
+                        'from' => $containerId . '_' . $childObjectName,
+                        'to'   => 'fake_' . $childObjectName . '_' . $childName . '_' . $id
+                    ];
+                }
             }
         }
         return [
-            'nodes' => $nodes,
-            'edges' => $edges
+            'nodes'   => $nodes,
+            'edges'   => $edges,
+            'cluster' => $cluster
         ];
     }
 }

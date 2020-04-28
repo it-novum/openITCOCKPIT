@@ -107,6 +107,11 @@
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="clearFilter();">
                         <i class="fas fa-undo"></i> <?php echo __('Reset'); ?>
                     </button>
+
+                    <button class="btn btn-xs btn-success shadow-0" ng-click="toggleFullscreenMode()"
+                            title="<?php echo __('Fullscreen mode'); ?>">
+                        <i class="fa fa-expand-arrows-alt"></i>
+                    </button>
                 </div>
             </div>
             <div class="panel-container show">

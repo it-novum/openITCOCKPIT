@@ -23,6 +23,45 @@ angular.module('openITCOCKPIT')
             }
         }
 
+        document.addEventListener("fullscreenchange", function(){
+            if(document.fullscreenElement === null){
+                $scope.fullscreen = false;
+            }
+
+        }, false);
+
+        $scope.toggleFullscreenMode = function(){
+            var elem = document.getElementById('containermap');
+            if($scope.fullscreen === true){
+                if(document.exitFullscreen){
+                    document.exitFullscreen();
+                }else if(document.webkitExitFullscreen){
+                    document.webkitExitFullscreen();
+                }else if(document.mozCancelFullScreen){
+                    document.mozCancelFullScreen();
+                }else if(document.msExitFullscreen){
+                    document.msExitFullscreen();
+                }
+            }else{
+                if(elem.requestFullscreen){
+                    elem.requestFullscreen();
+                }else if(elem.mozRequestFullScreen){
+                    elem.mozRequestFullScreen();
+                }else if(elem.webkitRequestFullscreen){
+                    elem.webkitRequestFullscreen();
+                }else if(elem.msRequestFullscreen){
+                    elem.msRequestFullscreen();
+                }
+
+                $('#credits-container').css({
+                    'width': $(window).width(),
+                    'height': $(window).height()
+                });
+            }
+        };
+
+
+
         angular.element(document).ready(function(){
             $scope.container = document.getElementById('containermap');
 
@@ -54,10 +93,12 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 var nodesData = result.data.containerMap.nodes;
                 var edgesData = result.data.containerMap.edges;
+                var cluster = result.data.containerMap.cluster;
+
                 $scope.nodesCount = nodesData.length;
                 if(nodesData.length > 0){
                     //$('#statusmap-progress-icon').show();
-                    $scope.loadVisMap(nodesData, edgesData);
+                    $scope.loadVisMap(nodesData, edgesData, cluster);
                 }else{
                     $scope.isEmpty = true;
                 }
@@ -74,7 +115,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.loadVisMap = function(nodesData, edgesData){
+        $scope.loadVisMap = function(nodesData, edgesData, cluster){
             $scope.nodes.clear();
             $scope.edges.clear();
 
@@ -254,22 +295,26 @@ angular.module('openITCOCKPIT')
             };
             var network = new vis.Network(container, data, options);
             network.on("selectNode", function(params) {
-                if (params.nodes.length == 1) {
+                if (params.nodes.length === 1) {
                     if (network.isCluster(params.nodes[0]) == true) {
-                        console.log('open cluster node');
-
-                        /*
-                        the naming here is a bit confusing. The method .cluster() creates a cluster and .openCluster() releases the clustered nodes and edges from the cluster and then disposes of it. There's no way to close it because it no longer exists.
-                        Source: https://github.com/visjs/vis-network/issues/354#issuecomment-574260404
-                        */
-
+                        // The method .cluster() creates a cluster and .openCluster() releases the clustered nodes and
+                        // edges from the cluster and then disposes of it. There's no way to close it because it no longer exists.
+                        // Source: https://github.com/visjs/vis-network/issues/354#issuecomment-574260404
                         network.openCluster(params.nodes[0]);
                     }else{
                         //Was a cluster and want to get closed down?
-                        for(var index in nodesArray){
-                            if(nodesArray[index].hasOwnProperty('createCluster') && nodesArray[index].id === params.nodes[0]){
+                        for(var index in nodesData){
+                            if(nodesData[index].hasOwnProperty('createCluster') && nodesData[index].id === params.nodes[0]){
 
-                                var node = nodesArray[index];
+                                var node = nodesData[index];
+
+                                //Lookup cluster configuration
+                                var clusterLabel = 'ERR';
+                                for(var k in cluster){
+                                    if(cluster[k].name === node.createCluster){
+                                        clusterLabel = "" + cluster[k].size;
+                                    }
+                                }
 
                                 //Recluster
                                 var  clusterOptions = {
@@ -278,8 +323,8 @@ angular.module('openITCOCKPIT')
                                         return nodeOptions.cid === node.createCluster;
                                     },
                                     clusterNodeProperties: {
-                                        label: '5 (sizeof)',
-                                        color: node.color
+                                        label: clusterLabel,
+                                        color: node.color || 'red'
                                     }
                                 };
                                 network.clustering.cluster(clusterOptions);
@@ -288,13 +333,15 @@ angular.module('openITCOCKPIT')
                     }
                 }
             });
-            for(var index in objectsForCluster){
+
+            //Create all visJS clusters on page load
+            for(var index in cluster){
                 var  clusterOptions = {
                     joinCondition:function(nodeOptions) {
-                        return nodeOptions.cid === objectsForCluster[index];
+                        return nodeOptions.cid === cluster[index].name;
                     },
                     clusterNodeProperties: {
-                        label: '5 (sizeof)'
+                        label: "" + cluster[index].size //cast to string because of reasons
                     }
                 };
                 network.clustering.cluster(clusterOptions);
