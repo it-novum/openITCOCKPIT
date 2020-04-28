@@ -124,7 +124,9 @@ angular.module('openITCOCKPIT')
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf015',
-                            size: 20
+                            size: 30,
+                            color: 'red',
+                            fontColor: 'red'
                         }
                     },
                     location: {
@@ -132,7 +134,9 @@ angular.module('openITCOCKPIT')
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf124',
-                            size: 20
+                            size: 30,
+                            color: 'orange',
+                            fontColor: 'orange'
                         }
                     },
                     node: {
@@ -142,7 +146,9 @@ angular.module('openITCOCKPIT')
                             face: 'FontAwesome',
                             code: '\uf0c1',
                             color: colorNotMonitored, //color for icon
-                            size: 20
+                            size: 30,
+                            color: 'purple',
+                            fontColor: 'purple'
                         }
                     },
                     devicegroup: {

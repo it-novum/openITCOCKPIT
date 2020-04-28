@@ -762,8 +762,8 @@ class ContainersTable extends Table {
                 case CT_TENANT:
                 case CT_LOCATION:
                 case CT_NODE:
-                    if(is_null($container['parent_id'])){
-                        $containers[$index]['childsElements']['tenants'] = $TenantsTable->getTenants('list');
+                    if (is_null($container['parent_id'])) {
+                        //  $containers[$index]['childsElements']['tenants'] = $TenantsTable->getTenants('list');
                     }
                     //$containers[$index]['childsElements']['locations'] = $LocationsTable->
                     $containers[$index]['childsElements']['hosts'] = $HostsTable->getHostsByContainerId($container['id'], 'list');
@@ -776,25 +776,25 @@ class ContainersTable extends Table {
                     $containers[$index]['childsElements']['hostgroups'] = $HostgroupsTable->getHostgroupsByContainerId($container['id'], 'list');
                     $containers[$index]['childsElements']['servicetemplates'] = $ServicetemplatesTable->getServicetemplatesByContainerId($container['id'], 'list');
                     //$childrenContainers[$index]['childsElements']['servicetemplategroups'] = $ServicetemplategroupsTable->getServicetemplategroupByContainerId($childContainer['id']);
-                    $containers[$index]['childsElements']['servicegroups'] = $ServicegroupsTable->getServicegroupsByContainerId($container['id'],'list');
+                    $containers[$index]['childsElements']['servicegroups'] = $ServicegroupsTable->getServicegroupsByContainerId($container['id'], 'list');
                     $containers[$index]['childsElements']['timeperiods'] = $TimeperiodsTable->getTimeperiodByContainerIdsAsList($container['id']);
                     $containers[$index]['childsElements']['contacts'] = $ContactsTable->contactsByContainerId($container['id'], 'list');
                     $containers[$index]['childsElements']['contactGroups'] = $ContactgroupsTable->getContactgroupsByContainerId($container['id'], 'list');
-/*
+                    /*
 
-                    $childrenContainers[$index]['childsElements']['hostDependencies'] = $HostdependenciesTable->getHostdependenciesByContainerId($childContainer['id']);
-                    $childrenContainers[$index]['childsElements']['hostEscalations'] = $HostescalationsTable->getHostescalationsByContainerId($childContainer['id']);
-                    $childrenContainers[$index]['childsElements']['serviceDependencies'] = $ServicedependenciesTable->getServicedependenciesByContainerId($childContainer['id']);
-                    $childrenContainers[$index]['childsElements']['serviceEscalations'] = $ServiceescalationsTable->getServiceescalationsByContainerId($childContainer['id']);
+                                        $childrenContainers[$index]['childsElements']['hostDependencies'] = $HostdependenciesTable->getHostdependenciesByContainerId($childContainer['id']);
+                                        $childrenContainers[$index]['childsElements']['hostEscalations'] = $HostescalationsTable->getHostescalationsByContainerId($childContainer['id']);
+                                        $childrenContainers[$index]['childsElements']['serviceDependencies'] = $ServicedependenciesTable->getServicedependenciesByContainerId($childContainer['id']);
+                                        $childrenContainers[$index]['childsElements']['serviceEscalations'] = $ServiceescalationsTable->getServiceescalationsByContainerId($childContainer['id']);
 
-                    $childrenContainers[$index]['childsElements']['instantReports'] = $InstantreportsTable->getInstantreportsByContainerId($childContainer['id']);
-                    if (isset($AutoreportsTable)) {
-                        $childrenContainers[$index]['childsElements']['autoReports'] = $AutoreportsTable->getAutoreportsByContainerId($childContainer['id']);
-                    }
-                    if(isset($SatellitesTable)){
-                        $childrenContainers[$index]['childsElements']['satellites'] = $SatellitesTable->getSatellitesByContainerId($childContainer['id']);
-                    }
-*/
+                                        $childrenContainers[$index]['childsElements']['instantReports'] = $InstantreportsTable->getInstantreportsByContainerId($childContainer['id']);
+                                        if (isset($AutoreportsTable)) {
+                                            $childrenContainers[$index]['childsElements']['autoReports'] = $AutoreportsTable->getAutoreportsByContainerId($childContainer['id']);
+                                        }
+                                        if(isset($SatellitesTable)){
+                                            $childrenContainers[$index]['childsElements']['satellites'] = $SatellitesTable->getSatellitesByContainerId($childContainer['id']);
+                                        }
+                    */
                     break;
                 case CT_CONTACTGROUP:
                     $containers[$index]['childsElements']['contacts'] = $ContactsTable->contactsByContainerId($container['id'], 'list');
@@ -836,13 +836,13 @@ class ContainersTable extends Table {
             14 => 'instantreports',
             15 => 'autoreports'
         ];
-        /*
+
         $nodes[] = [
             'id'    => $rootContainer['id'],
             'label' => $rootContainer['name'],
-            'group' => $containerTypes[$rootContainer['containertype_id']]
+            'group' => $possibleClusterTypes[$rootContainer['containertype_id']]
         ];
-        */
+
         $nodes = [];
         $edges = [];
 
@@ -856,14 +856,17 @@ class ContainersTable extends Table {
                 'group' => $possibleClusterTypes[$subContainer['containertype_id']]
             ];
 
-            $edges[] = [
-                'from'   => $rootContainer['id'],
-                'to'     => $subContainer['id'],
-                'color'  => [
-                    'inherit' => 'to',
-                ],
-                'arrows' => 'to'
-            ];
+            if ($rootContainer['id'] !== $subContainer['id']) {
+                $edges[] = [
+                    'from'   => $rootContainer['id'],
+                    'to'     => $subContainer['id'],
+                    'color'  => [
+                        'inherit' => 'to',
+                    ],
+                    'arrows' => 'to'
+                ];
+            }
+
 
             $childMap = $this->getNodeAndEdgesForChilds($subContainer['id'], $subContainer['childsElements']);
             if (!empty($childMap['nodes']) && !empty($childMap['edges'])) {
@@ -894,17 +897,18 @@ class ContainersTable extends Table {
 //debug($containerId);
 //debug($childsArray);die();
         foreach ($childsArray as $childObjectName => $childs) {
-            if(sizeof($childs) > 0){
+
+            if (sizeof($childs) > 0) {
                 //Create cluster node
                 //This contains all childs (example: Servicetemplates and attatch all Servicetemplates to THIS node!)
                 $nodes[] = [
-                    'id' => $containerId.'_'.$childObjectName, //1_tenant
-                    'label' => $childObjectName, // tnant
-                    'createCluster' => $containerId.'_'.$childObjectName //1_tenant
+                    'id'            => $containerId . '_' . $childObjectName, //1_tenant
+                    'label'         => $childObjectName.' ('.sizeof($childs).')', // tnant
+                    'createCluster' => $containerId . '_' . $childObjectName //1_tenant
                 ];
                 $edges[] = [
-                    'from'   => $containerId,
-                    'to'     => $containerId.'_'.$childObjectName,
+                    'from' => $containerId,
+                    'to'   => $containerId . '_' . $childObjectName,
                     /*
                     'color'  => [
                         'inherit' => 'to',
@@ -918,14 +922,14 @@ class ContainersTable extends Table {
             // Example: Attatch all servicetemplates to servicetemplate cluster
             foreach ($childs as $id => $childName) {
                 $nodes[] = [
-                    'id'    => $childObjectName.'_'.$childName . '_' . $id,
+                    'id'    => $childObjectName . '_' . $childName . '_' . $id,
                     'label' => $childName,
                     'group' => $childObjectName,
-                    'cid' => $containerId.'_'.$childObjectName
+                    'cid'   => $containerId . '_' . $childObjectName
                 ];
                 $edges[] = [
-                    'from'   => $containerId.'_'.$childObjectName,
-                    'to'     => $childObjectName.'_'.$childName . '_' . $id
+                    'from' => $containerId . '_' . $childObjectName,
+                    'to'   => $childObjectName . '_' . $childName . '_' . $id
                     /*
                     'color'  => [
                         'inherit' => 'to',
