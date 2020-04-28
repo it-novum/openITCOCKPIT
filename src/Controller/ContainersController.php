@@ -652,7 +652,9 @@ class ContainersController extends AppController {
 
         $container = $ContainersTable->getContainerById($id, $MY_RIGHTS);
         $subContainers = $ContainersTable->getContainerWithAllChildren($id);
-
+debug($container);
+debug($subContainers);
+die();
         $containerMap = $ContainersTable->getContainerMap($container, $subContainers);
 //debug($containerMap);die();
 //return;

@@ -77,7 +77,16 @@ angular.module('openITCOCKPIT')
         $scope.loadVisMap = function(nodesData, edgesData){
             $scope.nodes.clear();
             $scope.edges.clear();
-            var network = null;
+
+
+            // create a network
+            var container = document.getElementById('containermap');
+            $scope.nodes.add(nodesData);
+            $scope.edges.add(edgesData);
+            var data = {
+                nodes: nodesData,
+                edges: edgesData
+            };
 
             var colorUp = '#00C851';
             var colorDown = '#CC0000';
@@ -85,7 +94,6 @@ angular.module('openITCOCKPIT')
             var colorNotMonitored = '#4285F4';
 
             var options = {
-                clickToUse: false,
                 groups: {
                     root: {
                         shape: 'ellipse',
@@ -237,102 +245,55 @@ angular.module('openITCOCKPIT')
                         }
                     }
                 },
-                nodes: {
-                    borderWidth: 0.5,
-                },
-                edges: {
-                    width: 0.2,
-                    smooth: {
-                        enabled: false
-                    }
-                },
-                physics: {
-                    forceAtlas2Based: {
-                        gravitationalConstant: -26,
-                        centralGravity: 0.005,
-                        springLength: 230,
-                        springConstant: 0.18
-                    },
-                    maxVelocity: 146,
-                    solver: "forceAtlas2Based",
-                    timestep: 0.35,
-                    stabilization: { iterations: 150 }
-                },
-                /*
-                physics: {
-                    forceAtlas2Based: {
-                        gravitationalConstant: -138,
-                        centralGravity: 0.02,
-                        springLength: 100
-                    },
-                    minVelocity: 0.75,
-                    solver: "forceAtlas2Based",
-                },
-                 */
-                interaction: {
-                    hover: true,
-                    dragNodes: false,
-                    keyboard: {
-                        enabled: false
-                    },
-                    hideEdgesOnDrag: true
-
-                },
-                layout: {
-                    improvedLayout: false,
-                    /*
-                    hierarchical: {
-                        direction: "LR"
-                    }
-                     */
-                }
             };
+            var network = new vis.Network(container, data, options);
+            network.on("selectNode", function(params) {
+                if (params.nodes.length == 1) {
+                    if (network.isCluster(params.nodes[0]) == true) {
+                        console.log('open cluster node');
 
-            $scope.nodes.add(nodesData);
-            $scope.edges.add(edgesData);
+                        /*
+                        the naming here is a bit confusing. The method .cluster() creates a cluster and .openCluster() releases the clustered nodes and edges from the cluster and then disposes of it. There's no way to close it because it no longer exists.
+                        Source: https://github.com/visjs/vis-network/issues/354#issuecomment-574260404
+                        */
 
-            var data = {
-                nodes: $scope.nodes,
-                edges: $scope.edges
-            };
+                        network.openCluster(params.nodes[0]);
+                    }else{
+                        //Was a cluster and want to get closed down?
+                        for(var index in nodesArray){
+                            if(nodesArray[index].hasOwnProperty('createCluster') && nodesArray[index].id === params.nodes[0]){
 
+                                var node = nodesArray[index];
 
-            containerTree = new vis.Network($scope.container, data, options);
-            containerTree.fit({
-                locked: false,
-                animation: {
-                    duration: 500,
-                    easingFunction: 'linear'
-                }
-            });
-            containerTree.on('stabilizationProgress', function(params){
-                var currentPercentage = Math.round(params.iterations / params.total * 100);
-                $('#statusmap-progress-icon .progress:first').attr('data-progress', currentPercentage);
-            });
-            containerTree.once('stabilizationIterationsDone', function(){
-                $('#statusmap-progress-icon').hide();
-                containerTree.setOptions({physics: false});
-            });
-
-            containerTree.on('click', function(properties){
-                if(properties.nodes.length === 0){
-                    containerTree.fit({
-                        locked: false,
-                        animation: {
-                            duration: 500,
-                            easingFunction: 'linear'
+                                //Recluster
+                                var  clusterOptions = {
+                                    joinCondition:function(nodeOptions) {
+                                        //console.log(node);
+                                        return nodeOptions.cid === node.createCluster;
+                                    },
+                                    clusterNodeProperties: {
+                                        label: '5 (sizeof)',
+                                        color: node.color
+                                    }
+                                };
+                                network.clustering.cluster(clusterOptions);
+                            }
                         }
-                    });
-                    return;
+                    }
                 }
-
-                var nodeId = properties.nodes[0];
-                if(nodeId === 0){
-                    return false;
-                }
-                $scope.containSummaryObject = data.nodes.get(nodeId);
-                $scope.$apply();
             });
+            for(var index in objectsForCluster){
+                var  clusterOptions = {
+                    joinCondition:function(nodeOptions) {
+                        return nodeOptions.cid === objectsForCluster[index];
+                    },
+                    clusterNodeProperties: {
+                        label: '5 (sizeof)'
+                    }
+                };
+                network.clustering.cluster(clusterOptions);
+            }
+
         };
 
         $scope.$watch('post.Container.id', function(){
