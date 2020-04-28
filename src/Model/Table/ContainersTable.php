@@ -794,8 +794,6 @@ class ContainersTable extends Table {
                     break;
             }
         }
-        debug($containers);
-        die();
         return $containers;
     }
 
