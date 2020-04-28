@@ -292,6 +292,28 @@ angular.module('openITCOCKPIT')
                         }
                     }
                 },
+                physics: {
+                    forceAtlas2Based: {
+                        gravitationalConstant: -138,
+                        centralGravity: 0.02,
+                        springLength: 100
+                    },
+                    minVelocity: 0.75,
+                    solver: "forceAtlas2Based",
+                },
+                interaction: {
+                    hover: true,
+                    dragNodes: false,
+                    keyboard: {
+                        enabled: false
+                    },
+                    hideEdgesOnDrag: true
+
+                },
+                layout: {
+                    randomSeed: 1000,
+                    improvedLayout: false
+                }
             };
             var network = new vis.Network(container, data, options);
             network.on("selectNode", function(params) {
