@@ -56,8 +56,7 @@
 
     <input id="search-fld"
            type="text"
-           class="form-control"
-           style="border: 1px solid #f6f6f6"
+           class="form-control top-search-boder"
            placeholder="<?= __('Type to search') ?>"
            ng-model="searchStr"
            ng-keydown="isReturnKey($event)"

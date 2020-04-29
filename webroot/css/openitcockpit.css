@@ -1191,3 +1191,7 @@ label.menu-open-button:hover {
     height: 15vw;
     object-fit: contain;
 }
+
+.top-search-boder{
+    border: 1px solid #f6f6f6;
+}
