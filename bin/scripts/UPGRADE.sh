@@ -353,6 +353,15 @@ rm -rf /etc/nginx/sites-enabled/openitc
 ln -s /etc/nginx/sites-available/openitc /etc/nginx/sites-enabled/openitc
 rm -f /etc/nginx/sites-enabled/default
 
+set +e
+if systemctl is-active --quiet nagios.service; then
+  systemctl stop nagios.service
+    RC=$?
+  if [ $RC -eq 0 ]; then
+    systemctl kill -s SIGKILL nagios.service
+    fi
+fi
+
 systemctl restart\
  statusengine.service\
  nagios.service\
