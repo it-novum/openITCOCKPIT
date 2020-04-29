@@ -116,36 +116,35 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
+
+                    <!-- Loader -->
+                    <div class="row padding-top-80" style="display:none;" id="visProgressbarLoader">
+                        <div class="col-12">
+                            <div class="visloader-progressbar-center">
+                                <div class="text-center">
+                                    {{nodesCount}} <?php echo __(' nodes'); ?>
+                                    <span class="statusmap-progress-dots"></span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped bg-secondary progress-bar-animated"
+                                         role="progressbar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Loader -->
+
+
                     <div class="frame-wrap">
                         <div class="margin-top-10" ng-if="isEmpty">
                             <div class="text-center text-danger italic">
                                 <?php echo __('No entries match the selection'); ?>
                             </div>
                         </div>
-                        <div id="containermap"></div>
+                        <div id="containermap" class="bg-color-white"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div id="statusmap-progress-icon">
-    <center>
-        <div>
-            <?php echo __('Loading visualization for '); ?>
-        </div>
-        <div>
-            {{nodesCount}} <?php echo __(' nodes'); ?>
-            <span class="statusmap-progress-dots"></span>
-        </div>
-    </center>
-    <div class="progress" data-progress="0">
-        <div class="progress_mask isFull">
-            <div class="progress_fill"></div>
-        </div>
-        <div class="progress_mask">
-            <div class="progress_fill"></div>
-        </div>
-    </div>
-</div>
-

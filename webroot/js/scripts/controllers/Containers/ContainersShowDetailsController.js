@@ -97,7 +97,7 @@ angular.module('openITCOCKPIT')
 
                 $scope.nodesCount = nodesData.length;
                 if(nodesData.length > 0){
-                    //$('#statusmap-progress-icon').show();
+                    $('#visProgressbarLoader').show(); //AngularJS is to slow
                     $scope.loadVisMap(nodesData, edgesData, cluster);
                 }else{
                     $scope.isEmpty = true;
@@ -293,13 +293,13 @@ angular.module('openITCOCKPIT')
                     }
                 },
                 physics: {
-                    forceAtlas2Based: {
+                    /*forceAtlas2Based: {
                         gravitationalConstant: -138,
                         centralGravity: 0.02,
                         springLength: 100
                     },
                     minVelocity: 0.75,
-                    solver: "forceAtlas2Based",
+                    solver: "forceAtlas2Based",*/
                 },
                 interaction: {
                     hover: true,
@@ -316,6 +316,28 @@ angular.module('openITCOCKPIT')
                 }
             };
             var network = new vis.Network(container, data, options);
+
+
+            network.fit({
+                locked: false,
+                animation: {
+                    duration: 500,
+                    easingFunction: 'linear'
+                }
+            });
+            network.on('stabilizationProgress', function(params){
+                var currentPercentage = Math.round(params.iterations / params.total * 100);
+                $('#visProgressbarLoader .progress-bar:first').css('width', currentPercentage + '%');
+            });
+            network.once('stabilizationIterationsDone', function(){
+                $('#visProgressbarLoader').hide(); //AngularJS is to slow
+                network.setOptions({physics: false});
+
+                setTimeout(function(){
+                    network.setOptions({physics: true});
+                }, 250);
+            });
+
             network.on("selectNode", function(params) {
                 if (params.nodes.length === 1) {
                     if (network.isCluster(params.nodes[0]) == true) {

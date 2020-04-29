@@ -1059,6 +1059,11 @@ div.required .control-label::after {
     text-align: center;
 }
 
+.visloader-progressbar-center {
+    width: 200px;
+    margin: auto;
+}
+
 .header-icon .notification-message,
 .header-icon .notification-title,
 .header-icon .d-flex {
