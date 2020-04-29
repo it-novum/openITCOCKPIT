@@ -431,7 +431,7 @@
 
                                                 <span ng-if="$index > 0"
                                                       ng-hide="!showDetails[serviceDetails.Service.id]">
-                                                   <div class="progress progress-md bg-downtime position-relative"
+                                                   <div class="progress progress-md bg-primary position-relative"
                                                         style="margin-top: 4px;">
                                                         <div
                                                             style="width: {{getProgressbarData(perfdata, label).currentPercentage}}%; position: unset;"
