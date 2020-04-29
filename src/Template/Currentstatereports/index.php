@@ -376,8 +376,7 @@
                                         </td>
                                         <td>
                                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                <a ui-sref="ServicesBrowser({id:serviceDetails.Service.id})"
-                                                   class="txt-color-white">
+                                                <a ui-sref="ServicesBrowser({id:serviceDetails.Service.id})">
                                                     {{serviceDetails.Service.servicename}}
                                                 </a>
                                             <?php else: ?>
@@ -432,13 +431,13 @@
 
                                                 <span ng-if="$index > 0"
                                                       ng-hide="!showDetails[serviceDetails.Service.id]">
-                                                   <div class="progress progress-md bg-downtime position-relative"
+                                                   <div class="progress progress-md bg-primary position-relative"
                                                         style="margin-top: 4px;">
                                                         <div
                                                             style="width: {{getProgressbarData(perfdata, label).currentPercentage}}%; position: unset;"
                                                             class="progress-bar bg-{{getProgressbarData(perfdata, label).backgroundColorClass}}">
                                                                 <span
-                                                                    class="justify-content-center d-flex position-absolute w-100">{{getProgressbarData(perfdata, label).perfdataString}}</span>
+                                                                    class="justify-content-center d-flex position-absolute w-100 ellipsis">{{getProgressbarData(perfdata, label).perfdataString}}</span>
                                                         </div>
                                                      </div>
                                                 </span>
