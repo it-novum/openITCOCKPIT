@@ -56,7 +56,7 @@ angular.module('openITCOCKPIT')
                 $scope.init = false;
                 $scope.nodesCount = nodesData.length;
                 if(nodesData.length > 0){
-                    $('#statusmap-progress-icon').show();
+                    $('#visProgressbarLoader').show(); //AngularJS is to slow
                     $scope.loadVisMap(nodesData, edgesData);
                 }else{
                     $scope.isEmpty = true;
@@ -69,7 +69,7 @@ angular.module('openITCOCKPIT')
 
         $scope.resetVis = function(){
             if(!$scope.init){
-                $('#statusmap-progress-icon .progress:first').attr('data-progress', 0);
+                $('#visProgressbarLoader .progress-bar:first').css('width', '0%');
                 $($scope.container).html('');
             }
         };
@@ -272,10 +272,10 @@ angular.module('openITCOCKPIT')
             });
             network.on('stabilizationProgress', function(params){
                 var currentPercentage = Math.round(params.iterations / params.total * 100);
-                $('#statusmap-progress-icon .progress:first').attr('data-progress', currentPercentage);
+                $('#visProgressbarLoader .progress-bar:first').css('width', currentPercentage + '%');
             });
             network.once('stabilizationIterationsDone', function(){
-                $('#statusmap-progress-icon').hide();
+                $('#visProgressbarLoader').hide(); //AngularJS is to slow
                 network.setOptions({physics: false});
             });
 

@@ -61,7 +61,6 @@ angular.module('openITCOCKPIT')
         };
 
 
-
         angular.element(document).ready(function(){
             $scope.container = document.getElementById('containermap');
 
@@ -110,7 +109,7 @@ angular.module('openITCOCKPIT')
 
         $scope.resetVis = function(){
             if(!$scope.init){
-                $('#statusmap-progress-icon .progress:first').attr('data-progress', 0);
+                $('#visProgressbarLoader .progress-bar:first').css('width', '0%');
                 $($scope.container).html('');
             }
         };
@@ -338,9 +337,9 @@ angular.module('openITCOCKPIT')
                 }, 250);
             });
 
-            network.on("selectNode", function(params) {
-                if (params.nodes.length === 1) {
-                    if (network.isCluster(params.nodes[0]) == true) {
+            network.on("selectNode", function(params){
+                if(params.nodes.length === 1){
+                    if(network.isCluster(params.nodes[0]) == true){
                         // The method .cluster() creates a cluster and .openCluster() releases the clustered nodes and
                         // edges from the cluster and then disposes of it. There's no way to close it because it no longer exists.
                         // Source: https://github.com/visjs/vis-network/issues/354#issuecomment-574260404
@@ -361,8 +360,8 @@ angular.module('openITCOCKPIT')
                                 }
 
                                 //Recluster
-                                var  clusterOptions = {
-                                    joinCondition:function(nodeOptions) {
+                                var clusterOptions = {
+                                    joinCondition: function(nodeOptions){
                                         //console.log(node);
                                         return nodeOptions.cid === node.createCluster;
                                     },
@@ -380,8 +379,8 @@ angular.module('openITCOCKPIT')
 
             //Create all visJS clusters on page load
             for(var index in cluster){
-                var  clusterOptions = {
-                    joinCondition:function(nodeOptions) {
+                var clusterOptions = {
+                    joinCondition: function(nodeOptions){
                         return nodeOptions.cid === cluster[index].name;
                     },
                     clusterNodeProperties: {
