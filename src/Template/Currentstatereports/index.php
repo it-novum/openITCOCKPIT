@@ -340,7 +340,8 @@
                                         <th><?php echo __('Next check'); ?></th>
                                         <th><?php echo __('State type'); ?></th>
                                         <th><?php echo __('Output'); ?></th>
-                                        <th style="max-width:300px;"><?php echo __('Performance data'); ?></th>
+                                        <th style="max-width:300px;" ><?php echo __('Performance data'); ?></th>
+                                        <th></th>
                                     </tr>
                                     </thead>
                                     <tbody>

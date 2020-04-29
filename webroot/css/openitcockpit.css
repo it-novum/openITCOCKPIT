@@ -1197,6 +1197,10 @@ label.menu-open-button:hover {
     object-fit: contain;
 }
 
+.top-search-border {
+    border: 1px solid #f6f6f6;
+}
+
 .grafana-main-color {
     width: 30px;
     height: 30px;
