@@ -14,6 +14,7 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
 
             $scope.currentServiceId = null;
             $scope.currentServiceMetric = null;
+            $scope.currentMetricColor = null;
             $scope.rowId = parseInt($scope.panel.row, 10);
             $scope.init = true;
             $scope.humanUnit = '';
@@ -37,6 +38,7 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
                         panel_id: parseInt($scope.panelId, 10), //int
                         service_id: $scope.currentServiceId, //int
                         metric: $scope.currentServiceMetric, //String
+                        color: $scope.currentMetricColor, //String or null
                         userdashboard_id: $scope.id //int
                     }
                 };

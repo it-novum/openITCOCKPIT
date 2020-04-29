@@ -46,7 +46,7 @@ class ServiceescalationsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
         $this->addBehavior('Timestamp');
 
@@ -100,7 +100,7 @@ class ServiceescalationsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -174,7 +174,7 @@ class ServiceescalationsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
 
         return $rules;
@@ -642,5 +642,50 @@ class ServiceescalationsTable extends Table {
 
         $result = $query->all();
         return $this->emptyArrayIfNull($result->toArray());
+    }
+
+    /**
+     * @param int $containerId
+     * @param string $type
+     * @param array $MY_RIGHTS
+     * @param array $where
+     * @return array
+     */
+    public function getServiceescalationsByContainerIdExact($containerId, $type = 'all', $index = 'id', $MY_RIGHTS = [], $where = []) {
+        $_where = [
+            'Serviceescalations.container_id' => $containerId
+        ];
+
+        $where = Hash::merge($_where, $where);
+
+        $query = $this->find();
+        $query->select([
+            'Serviceescalations.' . $index,
+        ]);
+        $query->where($where);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Serviceescalations.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row[$index]] = __('Service escalation #{0}', $row['id']);
+        }
+
+        return $list;
     }
 }

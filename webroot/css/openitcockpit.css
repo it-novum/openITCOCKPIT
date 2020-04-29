@@ -1156,7 +1156,7 @@ label.menu-open-button:hover {
 }
 
 /** package manager **/
-.pm-h4{
+.pm-h4 {
     padding-top: 5px;
     margin-bottom: 0;
 }
@@ -1174,13 +1174,13 @@ label.menu-open-button:hover {
     overflow: auto;
 }
 
-.community-bg-header{
+.community-bg-header {
     background-image: url("/img/logos/bgs/community_edition.png");
     background-repeat: no-repeat;
     background-color: #3182b1;
 }
 
-.enterprise-bg-header{
+.enterprise-bg-header {
     background-image: url("/img/logos/bgs/enterprise_edition.png");
     background-repeat: no-repeat;
     background-color: #cb2522;
@@ -1192,6 +1192,22 @@ label.menu-open-button:hover {
     object-fit: contain;
 }
 
-.top-search-boder{
+.top-search-boder {
     border: 1px solid #f6f6f6;
+}
+
+.grafana-main-color {
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+}
+
+.grafana-child-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+}
+
+.grafana-selected-color {
+    border: 10px double #FFF;
 }

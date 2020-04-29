@@ -23,6 +23,45 @@ angular.module('openITCOCKPIT')
             }
         }
 
+        document.addEventListener("fullscreenchange", function(){
+            if(document.fullscreenElement === null){
+                $scope.fullscreen = false;
+            }
+
+        }, false);
+
+        $scope.toggleFullscreenMode = function(){
+            var elem = document.getElementById('containermap');
+            if($scope.fullscreen === true){
+                if(document.exitFullscreen){
+                    document.exitFullscreen();
+                }else if(document.webkitExitFullscreen){
+                    document.webkitExitFullscreen();
+                }else if(document.mozCancelFullScreen){
+                    document.mozCancelFullScreen();
+                }else if(document.msExitFullscreen){
+                    document.msExitFullscreen();
+                }
+            }else{
+                if(elem.requestFullscreen){
+                    elem.requestFullscreen();
+                }else if(elem.mozRequestFullScreen){
+                    elem.mozRequestFullScreen();
+                }else if(elem.webkitRequestFullscreen){
+                    elem.webkitRequestFullscreen();
+                }else if(elem.msRequestFullscreen){
+                    elem.msRequestFullscreen();
+                }
+
+                $('#credits-container').css({
+                    'width': $(window).width(),
+                    'height': $(window).height()
+                });
+            }
+        };
+
+
+
         angular.element(document).ready(function(){
             $scope.container = document.getElementById('containermap');
 
@@ -54,10 +93,12 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 var nodesData = result.data.containerMap.nodes;
                 var edgesData = result.data.containerMap.edges;
+                var cluster = result.data.containerMap.cluster;
+
                 $scope.nodesCount = nodesData.length;
                 if(nodesData.length > 0){
                     //$('#statusmap-progress-icon').show();
-                    $scope.loadVisMap(nodesData, edgesData);
+                    $scope.loadVisMap(nodesData, edgesData, cluster);
                 }else{
                     $scope.isEmpty = true;
                 }
@@ -74,10 +115,19 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.loadVisMap = function(nodesData, edgesData){
+        $scope.loadVisMap = function(nodesData, edgesData, cluster){
             $scope.nodes.clear();
             $scope.edges.clear();
-            var network = null;
+
+
+            // create a network
+            var container = document.getElementById('containermap');
+            $scope.nodes.add(nodesData);
+            $scope.edges.add(edgesData);
+            var data = {
+                nodes: nodesData,
+                edges: edgesData
+            };
 
             var colorUp = '#00C851';
             var colorDown = '#CC0000';
@@ -85,36 +135,49 @@ angular.module('openITCOCKPIT')
             var colorNotMonitored = '#4285F4';
 
             var options = {
-                clickToUse: false,
                 groups: {
                     root: {
-                        //f0ac
                         shape: 'ellipse',
-                        color: colorNotMonitored, // color for edges
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf0ac',
-                            color: colorNotMonitored //color for icon
+                            color: colorNotMonitored, //color for icon,
+
                         },
                         margin: {
                             top: 10,
                             bottom: 20,
                             left: 5,
                             right: 5
-                        }
+                        },
+                        color: {
+                            border: 'black',
+                            background: 'white',
+                            highlight: {
+                                border: 'yellow',
+                                background: 'orange'
+                            }
+                        },
+                        fontColor: 'red'
                     },
                     tenant: {
                         shape: 'icon',
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf015'
+                            code: '\uf015',
+                            size: 30,
+                            color: 'red',
+                            fontColor: 'red'
                         }
                     },
                     location: {
                         shape: 'icon',
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf124'
+                            code: '\uf124',
+                            size: 30,
+                            color: 'orange',
+                            fontColor: 'orange'
                         }
                     },
                     node: {
@@ -123,7 +186,10 @@ angular.module('openITCOCKPIT')
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf0c1',
-                            color: colorNotMonitored //color for icon
+                            color: colorNotMonitored, //color for icon
+                            size: 30,
+                            color: 'purple',
+                            fontColor: 'purple'
                         }
                     },
                     devicegroup: {
@@ -135,12 +201,12 @@ angular.module('openITCOCKPIT')
                             color: colorNotMonitored //color for icon
                         }
                     },
-                    contactgroup: {
+                    contactgroups: {
                         shape: 'icon',
                         color: colorNotMonitored, // color for edges
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf0c1',
+                            code: '\uf0c0',
                             color: colorNotMonitored //color for icon
                         }
                     },
@@ -149,8 +215,9 @@ angular.module('openITCOCKPIT')
                         color: colorNotMonitored, // color for edges
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf0c1',
-                            color: colorNotMonitored //color for icon
+                            code: '\uf233',
+                            color: colorNotMonitored, //color for icon
+                            size: 20
                         }
                     },
                     servicegroup: {
@@ -158,8 +225,9 @@ angular.module('openITCOCKPIT')
                         color: colorNotMonitored, // color for edges
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf0c1',
-                            color: colorNotMonitored //color for icon
+                            code: '\uf085',
+                            color: colorNotMonitored, //color for icon
+                            size: 20
                         }
                     },
                     servicetemplategroup: {
@@ -167,125 +235,61 @@ angular.module('openITCOCKPIT')
                         color: colorNotMonitored, // color for edges
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf0c1',
-                            color: colorNotMonitored //color for icon
+                            code: '\uf0c5',
+                            color: colorNotMonitored, //color for icon
+                            size: 20
                         }
                     },
-                    hostUp: {
+                    hosts: {
                         shape: 'icon',
                         color: colorUp, // color for edges
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf058',
-                            color: colorUp
+                            code: '\uf108',
+                            color: colorUp,
+                            size: 15
                         }
                     },
-                    hostDown: {
-                        shape: 'icon',
-                        color: colorDown,
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf06a',
-                            color: colorDown
-                        }
-                    },
-                    hostUnreachable: {
-                        shape: 'icon',
-                        color: colorUnreachable,
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf059',
-                            color: colorUnreachable
-                        }
-                    },
-                    isInDowntimeUp: {
-                        shape: 'icon',
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf011',
-                            color: colorUp
-                        }
-                    },
-                    isInDowntimeDown: {
-                        shape: 'icon',
-                        color: colorDown,
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf011',
-                            color: colorDown
-                        }
-                    },
-                    isInDowntimeUnreachable: {
-                        shape: 'icon',
-                        color: colorUnreachable,
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf011',
-                            color: colorUnreachable
-                        }
-                    },
-                    isAcknowledgedUp: {
+                    hosttemplates: {
                         shape: 'icon',
                         color: colorUp, // color for edges
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf007',
-                            color: colorUp
+                            code: '\uf044',
+                            color: colorUp,
+                            size: 15
                         }
                     },
-                    isAcknowledgedDown: {
+                    servicetemplates: {
                         shape: 'icon',
-                        color: colorDown,
+                        color: colorDown, // color for edges
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf007',
-                            color: colorDown
+                            code: '\uf044',
+                            color: colorUp,
+                            size: 15
                         }
                     },
-                    isAcknowledgedUnreachable: {
+
+                    contacts: {
                         shape: 'icon',
-                        color: colorUnreachable,
+                        color: colorNotMonitored, // color for edges
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf007',
-                            color: colorUnreachable
+                            code: '\uf2bd',
+                            color: colorNotMonitored, //color for icon
+                            size: 15
                         }
                     },
-                    isAcknowledgedAndIsInDowntimeUp: {
+                    timeperiods: {
                         shape: 'icon',
                         color: colorUp, // color for edges
                         icon: {
                             face: 'FontAwesome',
-                            code: '\uf0f0',
-                            color: colorUp
+                            code: '\uf017',
+                            color: colorUp,
+                            size: 15
                         }
-                    },
-                    isAcknowledgedAndIsInDowntimeDown: {
-                        shape: 'icon',
-                        color: colorDown,
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf0f0',
-                            color: colorDown
-                        }
-                    },
-                    isAcknowledgedAndIsInDowntimeUnreachable: {
-                        shape: 'icon',
-                        color: colorUnreachable,
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf0f0',
-                            color: colorUnreachable
-                        }
-                    }
-                },
-                nodes: {
-                    borderWidth: 0.5,
-                },
-                edges: {
-                    width: 0.2,
-                    smooth: {
-                        enabled: false
                     }
                 },
                 physics: {
@@ -311,52 +315,60 @@ angular.module('openITCOCKPIT')
                     improvedLayout: false
                 }
             };
+            var network = new vis.Network(container, data, options);
+            network.on("selectNode", function(params) {
+                if (params.nodes.length === 1) {
+                    if (network.isCluster(params.nodes[0]) == true) {
+                        // The method .cluster() creates a cluster and .openCluster() releases the clustered nodes and
+                        // edges from the cluster and then disposes of it. There's no way to close it because it no longer exists.
+                        // Source: https://github.com/visjs/vis-network/issues/354#issuecomment-574260404
+                        network.openCluster(params.nodes[0]);
+                    }else{
+                        //Was a cluster and want to get closed down?
+                        for(var index in nodesData){
+                            if(nodesData[index].hasOwnProperty('createCluster') && nodesData[index].id === params.nodes[0]){
 
-            $scope.nodes.add(nodesData);
-            $scope.edges.add(edgesData);
+                                var node = nodesData[index];
 
-            var data = {
-                nodes: $scope.nodes,
-                edges: $scope.edges
-            };
+                                //Lookup cluster configuration
+                                var clusterLabel = 'ERR';
+                                for(var k in cluster){
+                                    if(cluster[k].name === node.createCluster){
+                                        clusterLabel = "" + cluster[k].size;
+                                    }
+                                }
 
-
-            containerTree = new vis.Network($scope.container, data, options);
-            containerTree.fit({
-                locked: false,
-                animation: {
-                    duration: 500,
-                    easingFunction: 'linear'
-                }
-            });
-            containerTree.on('stabilizationProgress', function(params){
-                var currentPercentage = Math.round(params.iterations / params.total * 100);
-                $('#statusmap-progress-icon .progress:first').attr('data-progress', currentPercentage);
-            });
-            containerTree.once('stabilizationIterationsDone', function(){
-                $('#statusmap-progress-icon').hide();
-                containerTree.setOptions({physics: false});
-            });
-
-            containerTree.on('click', function(properties){
-                if(properties.nodes.length === 0){
-                    containerTree.fit({
-                        locked: false,
-                        animation: {
-                            duration: 500,
-                            easingFunction: 'linear'
+                                //Recluster
+                                var  clusterOptions = {
+                                    joinCondition:function(nodeOptions) {
+                                        //console.log(node);
+                                        return nodeOptions.cid === node.createCluster;
+                                    },
+                                    clusterNodeProperties: {
+                                        label: clusterLabel,
+                                        color: node.color || 'red'
+                                    }
+                                };
+                                network.clustering.cluster(clusterOptions);
+                            }
                         }
-                    });
-                    return;
+                    }
                 }
-
-                var nodeId = properties.nodes[0];
-                if(nodeId === 0){
-                    return false;
-                }
-                $scope.containSummaryObject = data.nodes.get(nodeId);
-                $scope.$apply();
             });
+
+            //Create all visJS clusters on page load
+            for(var index in cluster){
+                var  clusterOptions = {
+                    joinCondition:function(nodeOptions) {
+                        return nodeOptions.cid === cluster[index].name;
+                    },
+                    clusterNodeProperties: {
+                        label: "" + cluster[index].size //cast to string because of reasons
+                    }
+                };
+                network.clustering.cluster(clusterOptions);
+            }
+
         };
 
         $scope.$watch('post.Container.id', function(){

@@ -72,8 +72,15 @@ class GrafanaPanel {
     /**
      * @var array
      */
+    private $color = [];
+
+    /**
+     * @var array
+     */
     private $panel = [
-        "aliasColors"     => [],
+        "aliasColors"     => [
+            //Insert colors here
+        ],
         "bars"            => false,
         "datasource"      => null,
         "fill"            => 1,
@@ -154,6 +161,7 @@ class GrafanaPanel {
         $this->panel['id'] = $this->panelId;
         $this->panel['title'] = $this->title;
         $this->panel['targets'] = $this->targets;
+        $this->panel['aliasColors'] = $this->color;
         $this->panel['span'] = $this->span;
 
         if ($this->SeriesOverrides->hasOverrides()) {
@@ -187,6 +195,7 @@ class GrafanaPanel {
         GrafanaThresholdCollection $ThresholdCollection
     ) {
         $this->targets = $grafanaTargetCollection->getTargetsAsArray();
+        $this->color = $grafanaTargetCollection->getColorsAsArray();
         $this->SeriesOverrides = $SeriesOverrides;
         $this->YAxes = $YAxes;
         $this->ThresholdCollection = $ThresholdCollection;

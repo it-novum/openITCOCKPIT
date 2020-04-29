@@ -11,7 +11,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use EventcorrelationModule\Model\Table\EventcorrelationsTable;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
 
@@ -237,6 +236,42 @@ class TenantsTable extends Table {
             ->where([
                 'container_id IN' => $containerIds
             ])
+            ->contain([
+                'containers'
+            ])
+            ->disableHydration()
+            ->all();
+
+        switch ($type) {
+            case 'list':
+                $list = [];
+                foreach ($this->emptyArrayIfNull($query->toArray()) as $tenant) {
+                    $list[$tenant[$index]] = $tenant['Containers']['name'];
+                }
+                return $list;
+                break;
+
+            default:
+                return $this->emptyArrayIfNull($query->toArray());
+                break;
+        }
+    }
+
+    /**
+     * @param array|int $containerIds
+     * @param string $type
+     * @param string $index
+     * @return array|null
+     */
+    public function getTenants($type = 'all', $index = 'id', $MY_RIGHTS = []) {
+        $query = $this->find();
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query
             ->contain([
                 'containers'
             ])

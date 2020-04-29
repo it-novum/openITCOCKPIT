@@ -47,6 +47,22 @@ class FileDebugger {
     }
 
     /**
+     * @param mixed $jsonString
+     * @param string $filename
+     */
+    public static function dumpJson($jsonString, $filename = '/tmp/debug.log', $wipe = false) {
+
+        $trace = Debugger::trace();
+        $file = fopen($filename, 'a+');
+        fwrite($file, '************* ' . date('H:i:s - d.m.Y') . ' ************* ' . PHP_EOL);
+        fwrite($file, json_encode(json_decode($jsonString), JSON_PRETTY_PRINT));
+        fwrite($file, PHP_EOL . 'Stack trace' . PHP_EOL);
+        fwrite($file, $trace);
+        fwrite($file, PHP_EOL . PHP_EOL . PHP_EOL);
+        fclose($file);
+    }
+
+    /**
      * @param mixed $data
      * @param string $filename
      */
@@ -95,7 +111,7 @@ class FileDebugger {
         }
     }
 
-    public static function dieQuery(Query $query){
+    public static function dieQuery(Query $query) {
         $sql = (string)$query;
 
         $result = \SqlFormatter::format($sql, true);

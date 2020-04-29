@@ -207,12 +207,18 @@ class AngularController extends AppController {
         ];
 
         if ($showstatsinmenu) {
+
+            $MY_RIGHTS = [];
+            if($this->hasRootPrivileges === false){
+                $MY_RIGHTS = $this->MY_RIGHTS;
+            }
+
             if ($this->DbBackend->isNdoUtils()) {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-                $hoststatusCount = $HostsTable->getHoststatusCount($this->MY_RIGHTS, false);
-                $servicestatusCount = $HostsTable->getServicestatusCount($this->MY_RIGHTS, false);
+                $hoststatusCount = $HostsTable->getHoststatusCount($MY_RIGHTS, false);
+                $servicestatusCount = $HostsTable->getServicestatusCount($MY_RIGHTS, false);
             }
 
             if ($this->DbBackend->isCrateDb()) {
@@ -224,8 +230,8 @@ class AngularController extends AppController {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-                $hoststatusCount = $HostsTable->getHoststatusCountStatusengine3($this->MY_RIGHTS, false);
-                $servicestatusCount = $HostsTable->getServicestatusCountStatusengine3($this->MY_RIGHTS, false);
+                $hoststatusCount = $HostsTable->getHoststatusCountStatusengine3($MY_RIGHTS, false);
+                $servicestatusCount = $HostsTable->getServicestatusCountStatusengine3($MY_RIGHTS, false);
             }
 
         }

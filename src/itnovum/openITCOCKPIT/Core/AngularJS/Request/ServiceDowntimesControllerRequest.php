@@ -53,14 +53,14 @@ class ServiceDowntimesControllerRequest extends AngularRequest {
 
     public function hideExpired() {
         if ($this->queryHasField('hideExpired')) {
-            return $this->getQueryFieldValue('hideExpired') === 'true';
+            return $this->getQueryFieldValue('hideExpired') === 'true' || $this->getQueryFieldValue('hideExpired') === '1';
         }
         return true;
     }
 
     public function isRunning() {
         if ($this->queryHasField('isRunning')) {
-            return $this->getQueryFieldValue('isRunning') === 'true';
+            return $this->getQueryFieldValue('isRunning') === 'true' || $this->getQueryFieldValue('isRunning') === '1';
         }
         return false;
     }
