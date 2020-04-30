@@ -1261,4 +1261,21 @@ class HosttemplatesTable extends Table {
 
         return $list;
     }
+
+    /**
+     * @param $name
+     * @param string[] $contain
+     * @return array
+     */
+    public function getHosttemplateByWildcardName($name, $contain = ['Containers']) {
+        $query = $this->find()
+            ->where([
+                'Hosttemplates.name LIKE' => $name
+            ])
+            ->contain($contain)
+            ->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
 }
