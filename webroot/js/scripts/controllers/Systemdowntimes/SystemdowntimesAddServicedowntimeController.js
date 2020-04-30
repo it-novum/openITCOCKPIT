@@ -70,6 +70,11 @@ angular.module('openITCOCKPIT')
                     });
 
                     if($scope.data.createAnother === false){
+                        if($scope.post.Systemdowntime.is_recurring){
+                            RedirectService.redirectWithFallback('SystemdowntimesService');
+                            return;
+                        }
+
                         RedirectService.redirectWithFallback('DowntimesService');
                     }else{
                         clearForm();
