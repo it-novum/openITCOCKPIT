@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
@@ -25,6 +26,7 @@ use Cake\Validation\Validator;
 class MacrosTable extends Table {
 
     use Cake2ResultTableTrait;
+    use PaginationAndScrollIndexTrait;
 
     /**
      * Nagios supports up to 256 $USERx$ macros ($USER1$ through $USER256$)
@@ -38,7 +40,7 @@ class MacrosTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('macros');
@@ -54,7 +56,7 @@ class MacrosTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -85,7 +87,7 @@ class MacrosTable extends Table {
         return $validator;
     }
 
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['name']));
         return $rules;
     }
@@ -131,6 +133,21 @@ class MacrosTable extends Table {
      */
     public function existsById($id) {
         return $this->exists(['Macros.id' => $id]);
+    }
+
+    /**
+     * @param $name
+     * @return array
+     */
+    public function getMacrosByWildcardName($name) {
+        $query = $this->find()
+            ->where([
+                'Macros.description LIKE' => $name
+            ])
+            ->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
     }
 
 }
