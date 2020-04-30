@@ -1267,7 +1267,7 @@ class HosttemplatesTable extends Table {
      * @param string[] $contain
      * @return array
      */
-    public function getHosttemplateByWildcardName($name, $contain = ['Containers']) {
+    public function getHosttemplatesByWildcardName($name, $contain = ['Containers']) {
         $query = $this->find()
             ->where([
                 'Hosttemplates.name LIKE' => $name
