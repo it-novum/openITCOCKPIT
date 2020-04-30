@@ -1438,8 +1438,8 @@ class ServicetemplatesTable extends Table {
     }
 
     /**
-     * @param int $id
-     * @param array $contain
+     * @param $name
+     * @param string[] $contain
      * @return array
      */
     public function getServicetemplatesByWildcardName($name, $contain = ['Containers']) {
