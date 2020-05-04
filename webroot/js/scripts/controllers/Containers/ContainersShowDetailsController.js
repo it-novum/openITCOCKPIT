@@ -11,6 +11,8 @@ angular.module('openITCOCKPIT')
             backState: null
         };
 
+        $scope.tabName = 'Containers';
+
         $scope.nodes = new vis.DataSet();
         $scope.edges = new vis.DataSet();
 
@@ -57,13 +59,14 @@ angular.module('openITCOCKPIT')
 
 
         angular.element(document).ready(function(){
-            $scope.container = document.getElementById('containermap');
-
-            var offset = $($scope.container).offset();
-            var height = (window.innerHeight - offset.top);
-            $($($scope.container)).css({
-                'height': height
-            });
+            if($scope.tabName === 'ContainersMap'){
+                $scope.container = document.getElementById('containermap');
+                var offset = $($scope.container).offset();
+                var height = (window.innerHeight - offset.top);
+                $($($scope.container)).css({
+                    'height': height
+                });
+            }
         });
 
         $scope.loadContainers = function(){
@@ -82,21 +85,31 @@ angular.module('openITCOCKPIT')
         $scope.loadContainerDetails = function(){
             $http.get('/containers/showDetails/' + $scope.post.Container.id + '.json', {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'asTree': ($scope.tabName === 'ContainersMap') ? true : false
                 }
             }).then(function(result){
-                var nodesData = result.data.containerMap.nodes;
-                var edgesData = result.data.containerMap.edges;
-                var cluster = result.data.containerMap.cluster;
+                if($scope.tabName === 'ContainersMap'){
+                    var nodesData = result.data.containerMap.nodes;
+                    var edgesData = result.data.containerMap.edges;
+                    var cluster = result.data.containerMap.cluster;
 
-                $scope.nodesCount = nodesData.length;
-                if(nodesData.length > 0){
-                    $('#visProgressbarLoader').show(); //AngularJS is to slow
-                    $scope.loadVisMap(nodesData, edgesData, cluster);
+                    $scope.nodesCount = nodesData.length;
+                    if(nodesData.length > 0){
+                        $('#visProgressbarLoader').show(); //AngularJS is to slow
+                        $scope.loadVisMap(nodesData, edgesData, cluster);
+                    }else{
+                        $scope.isEmpty = true;
+                    }
+                    $scope.mutex = false;
                 }else{
-                    $scope.isEmpty = true;
+                    $scope.containersWithChilds = result.data.containersWithChilds;
+                    if($scope.containersWithChilds.length > 0){
+                        $scope.isEmpty = false;
+                    }
                 }
-                $scope.mutex = false;
+
+
             }, function errorCallback(result){
                 console.log('Invalid JSON');
             });

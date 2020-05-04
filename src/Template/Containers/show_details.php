@@ -62,10 +62,24 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Container map'); ?>
+                    <?php echo __('Container '); ?>
                     <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
+                    <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
+                        <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
+                            <li class="nav-item pointer">
+                                <a class="nav-link active" data-toggle="tab" ng-click="tabName='Containers'" role="tab">
+                                    <i class="fas fa-layer-group"></i>&nbsp;</i> <?php echo __('Containers'); ?>
+                                </a>
+                            </li>
+                            <li class="nav-item pointer">
+                                <a class="nav-link" data-toggle="tab" ng-click="tabName='ContainersMap'" role="tab">
+                                    <i class="fas fa-sitemap"></i>&nbsp;</i> <?php echo __('Containers map'); ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
                     <div class="form-group no-margin padding-right-10">
                         <div class="input-group input-group-sm">
                             <div class="input-group-prepend">
@@ -116,32 +130,68 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-
-                    <!-- Loader -->
-                    <div class="row padding-top-80" style="display:none;" id="visProgressbarLoader">
-                        <div class="col-12">
-                            <div class="visloader-progressbar-center">
-                                <div class="text-center">
-                                    {{nodesCount}} <?php echo __(' nodes'); ?>
-                                    <span class="statusmap-progress-dots"></span>
-                                </div>
-                                <div class="progress">
-                                    <div class="progress-bar progress-bar-striped bg-secondary progress-bar-animated"
-                                         role="progressbar"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Loader -->
-
-
                     <div class="frame-wrap">
-                        <div class="margin-top-10" ng-if="isEmpty">
-                            <div class="text-center text-danger italic">
-                                <?php echo __('No entries match the selection'); ?>
+                        <div ng-show="tabName == 'Containers'">
+                            <div class="margin-top-10" ng-hide="isEmpty">
+                                <table class="table m-0 table-bordered table-hover table-sm">
+                                    <tr ng-repeat-start="container in containersWithChilds">
+                                        <th colspan="2" class="table-dark">
+                                            <h4>{{container.name}}</h4>
+                                        </th>
+                                    </tr>
+                                    <?php foreach(['hosts', 'hosttemplates', 'contacts'] as $object): ?>
+                                            <tr ng-show="container.childsElements.<?= $object; ?>">
+                                                <td>
+                                                    <?= $object; ?>{{container.childsElements.<?= $object; ?>}}
+                                                </td>
+                                                <td>
+                                                    <ul class="margin-0">
+                                                        <li ng-repeat="(key, name) in container.childsElements.<?= $object; ?>">
+                                                            {{name}}
+                                                        </li>
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                    <?php endforeach; ?>
+                                    <tr ng-repeat-end="">
+                                    </tr>
+                              </table>
+                            </div>
+                            <div class="margin-top-10" ng-if="isEmpty">
+                                <div class="text-center text-danger italic">
+                                    <?php echo __('No entries match the selection'); ?>
+                                </div>
                             </div>
                         </div>
-                        <div id="containermap" class="bg-color-white"></div>
+                        <div ng-show="tabName == 'ContainersMap'">
+                            <!-- Loader -->
+                            <div class="row padding-top-80" style="display:none;" id="visProgressbarLoader">
+                                <div class="col-12">
+                                    <div class="visloader-progressbar-center">
+                                        <div class="text-center">
+                                            {{nodesCount}} <?php echo __(' nodes'); ?>
+                                            <span class="statusmap-progress-dots"></span>
+                                        </div>
+                                        <div class="progress">
+                                            <div
+                                                class="progress-bar progress-bar-striped bg-secondary progress-bar-animated"
+                                                role="progressbar"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Loader -->
+
+
+                            <div class="frame-wrap">
+                                <div class="margin-top-10" ng-if="isEmpty">
+                                    <div class="text-center text-danger italic">
+                                        <?php echo __('No entries match the selection'); ?>
+                                    </div>
+                                </div>
+                                <div id="containermap" class="bg-color-white"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

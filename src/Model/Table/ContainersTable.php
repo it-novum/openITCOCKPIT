@@ -701,11 +701,6 @@ class ContainersTable extends Table {
         $containers[] = $parentContainer;
         $containers = Hash::sort($containers, '{n}.id', 'asc');
 
-        /** Container Objects */
-        /** @var TenantsTable $TenantsTable */
-        $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
-        /** @var LocationsTable $LocationsTable */
-        $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
 
         /** Monitoring Objects */
         /** @var HosttemplatesTable $HosttemplatesTable */
@@ -736,19 +731,23 @@ class ContainersTable extends Table {
         $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
         /** @var $ServiceescalationsTable ServiceescalationsTable */
         $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+
+        /** Reports Objects */
+
+        /** @var $InstantreportsTable InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
         if (Plugin::isLoaded('AutoreportModule')) {
             /** @var $AutoreportsTable AutoreportsTable */
             $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
         }
+
+        /** Satellites Objects */
+
         if (Plugin::isLoaded('DistributeModule')) {
             /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
         }
-        /** @var $InstantreportsTable InstantreportsTable */
-        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
 
-
-        //debug($containers);
         /**
          * 'CT_GLOBAL'               => 1,
          * 'CT_TENANT'               => 2,
@@ -759,6 +758,7 @@ class ContainersTable extends Table {
          * 'CT_SERVICEGROUP'         => 8,
          * 'CT_SERVICETEMPLATEGROUP' => 9,
          */
+
 
         foreach ($containers as $index => $container) {
             switch ($container['containertype_id']) {
@@ -882,8 +882,9 @@ class ContainersTable extends Table {
         $nodes = [];
         $edges = [];
         $cluster = [];
-//debug($containerId);
-//debug($childsArray);die();
+
+
+
         foreach ($childsArray as $childObjectName => $childs) {
 
             $sizeof = sizeof($childs);
@@ -903,12 +904,6 @@ class ContainersTable extends Table {
                 $edges[] = [
                     'from' => $containerId,
                     'to'   => $containerId . '_' . $childObjectName,
-                    /*
-                    'color'  => [
-                        'inherit' => 'to',
-                    ],
-                    'arrows' => 'to'
-                    */
                 ];
             }
 
@@ -924,12 +919,6 @@ class ContainersTable extends Table {
                 $edges[] = [
                     'from' => $containerId . '_' . $childObjectName,
                     'to'   => $childObjectName . '_' . $childName . '_' . $id.'_'.$containerId
-                    /*
-                    'color'  => [
-                        'inherit' => 'to',
-                    ],
-                    'arrows' => 'to'
-                    */
                 ];
 
                 if ($sizeof === 1) {
