@@ -52,11 +52,6 @@ angular.module('openITCOCKPIT')
                 }else if(elem.msRequestFullscreen){
                     elem.msRequestFullscreen();
                 }
-
-                $('#credits-container').css({
-                    'width': $(window).width(),
-                    'height': $(window).height()
-                });
             }
         };
 
