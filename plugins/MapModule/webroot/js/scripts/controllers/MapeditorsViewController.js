@@ -57,6 +57,7 @@ angular.module('openITCOCKPIT')
             document.getElementById('pageSidebar').style.display = 'none';
             document.getElementById('header').style.display = 'none';
             document.getElementById('js-page-content').classList.add('margin-left-0');
+            document.getElementsByTagName('sidebar')[0].style.display = 'none';
             $('#content > .ng-scope > .breadcrumb').css('display', 'none');
         };
 
@@ -64,6 +65,7 @@ angular.module('openITCOCKPIT')
             document.getElementById('pageSidebar').style.display = 'flex';
             document.getElementById('header').style.display = 'flex';
             document.getElementById('js-page-content').classList.remove('margin-left-0');
+            document.getElementsByTagName('sidebar')[0].style.display = 'flex';
             $('#content > .ng-scope > .breadcrumb').css('display', 'flex');
         };
 
