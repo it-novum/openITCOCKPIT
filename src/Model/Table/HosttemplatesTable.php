@@ -5,9 +5,11 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Hosttemplate;
 use App\Model\Entity\User;
+use Cake\Core\Plugin;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -45,6 +47,7 @@ class HosttemplatesTable extends Table {
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
     use CustomValidationTrait;
+    use PluginManagerTableTrait;
 
     /**
      * Initialize method
@@ -457,22 +460,28 @@ class HosttemplatesTable extends Table {
      * @return array
      */
     public function getHosttemplateForEdit($id) {
+        $contain = [
+            'Contactgroups',
+            'Contacts',
+            'Hostgroups',
+            'Customvariables',
+            'Hosttemplatecommandargumentvalues' => [
+                'Commandarguments'
+            ],
+            'CheckCommand'                      => [
+                'Commandarguments'
+            ]
+        ];
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $contain[] = 'PrometheusExporters';
+        };
+
         $query = $this->find()
             ->where([
                 'Hosttemplates.id' => $id
             ])
-            ->contain([
-                'Contactgroups',
-                'Contacts',
-                'Hostgroups',
-                'Customvariables',
-                'Hosttemplatecommandargumentvalues' => [
-                    'Commandarguments'
-                ],
-                'CheckCommand'                      => [
-                    'Commandarguments'
-                ]
-            ])
+            ->contain($contain)
             ->disableHydration()
             ->first();
 
@@ -485,6 +494,9 @@ class HosttemplatesTable extends Table {
         ];
         $hosttemplate['contactgroups'] = [
             '_ids' => Hash::extract($query, 'contactgroups.{n}.id')
+        ];
+        $hosttemplate['prometheus_exporters'] = [
+            '_ids' => Hash::extract($query, 'prometheus_exporters.{n}.id')
         ];
 
         // Merge new command arguments that are missing in the host template to host template command arguments

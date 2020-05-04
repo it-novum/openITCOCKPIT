@@ -627,7 +627,7 @@
                                     <i class="fas fa-broadcast-tower"></i> <?php echo __('Prometheus Exporters'); ?>
                                 </div>
                                 <div class="card-body">
-                                    <div class="form-group" ng-class="{'has-error': errors.exporters}">
+                                    <div class="form-group" ng-class="{'has-error': errors.prometheus_exporters}">
                                         <label class="control-label" for="ExportersSelect">
                                             <?php echo __('Exporters'); ?>
                                         </label>
@@ -638,12 +638,12 @@
                                             chosen="exporters"
                                             multiple
                                             ng-options="exporter.key as exporter.value for exporter in exporters"
-                                            ng-model="post.Hosttemplate.exporters._ids">
+                                            ng-model="post.Hosttemplate.prometheus_exporters._ids">
                                         </select>
                                         <div class="help-block">
                                             <?php echo __('To monitor this host using Prometheus please select the exporters that are installed on the host.'); ?>
                                         </div>
-                                        <div ng-repeat="error in errors.exporters">
+                                        <div ng-repeat="error in errors.prometheus_exporters">
                                             <div class="help-block text-danger">{{ error }}</div>
                                         </div>
                                     </div>

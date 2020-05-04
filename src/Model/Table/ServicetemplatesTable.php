@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Servicetemplate;
 use Cake\Core\Plugin;
@@ -49,6 +50,7 @@ class ServicetemplatesTable extends Table {
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
     use CustomValidationTrait;
+    use PluginManagerTableTrait;
 
     /**
      * Initialize method

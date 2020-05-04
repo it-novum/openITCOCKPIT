@@ -54,7 +54,10 @@ angular.module('openITCOCKPIT')
                         _ids: []
                     },
                     customvariables: [],
-                    hosttemplatecommandargumentvalues: []
+                    hosttemplatecommandargumentvalues: [],
+                    prometheus_exporters: {
+                        _ids: []
+                    },
                 }
             };
         };
