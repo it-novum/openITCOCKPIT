@@ -141,8 +141,8 @@
                                     </tr>
                                     <?php foreach(['hosts', 'hosttemplates', 'contacts'] as $object): ?>
                                             <tr ng-show="container.childsElements.<?= $object; ?>">
-                                                <td>
-                                                    <?= $object; ?>{{container.childsElements.<?= $object; ?>}}
+                                                <td class="col-sm-3">
+                                                    <?= $object; ?>
                                                 </td>
                                                 <td>
                                                     <ul class="margin-0">
