@@ -76,6 +76,9 @@
                                 ng-model="post.Map.containers._ids"
                                 multiple>
                             </select>
+                            <div ng-show="post.Map.containers._ids.length === 0" class="warning-glow">
+                                <?php echo __('Please select a container.'); ?>
+                            </div>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>

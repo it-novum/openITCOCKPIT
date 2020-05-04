@@ -68,7 +68,7 @@ angular.module('openITCOCKPIT')
             }
 
             var hasManyAssociations = [
-                'hostgroups', 'contacts', 'contactgroups'
+                'hostgroups', 'contacts', 'contactgroups', 'prometheus_exporters'
             ];
             for(index in hasManyAssociations){
                 field = hasManyAssociations[index];
@@ -210,6 +210,7 @@ angular.module('openITCOCKPIT')
                 $scope.hostgroups = result.data.hostgroups;
                 $scope.satellites = result.data.satellites;
                 $scope.sharingContainers = result.data.sharingContainers;
+                $scope.exporters = result.data.exporters;
             });
         };
 

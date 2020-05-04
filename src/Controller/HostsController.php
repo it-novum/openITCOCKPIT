@@ -64,6 +64,7 @@ use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
@@ -2617,8 +2618,16 @@ class HostsController extends AppController {
             $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
             $satellites[0] = $masterInstanceName;
         }
-
         $satellites = Api::makeItJavaScriptAble($satellites);
+
+        $exporters = [];
+        if(Plugin::isLoaded('PrometheusModule')){
+            /** @var \PrometheusModule\Model\Table\PrometheusExportersTable $PrometheusExportersTable  */
+            $PrometheusExportersTable = TableRegistry::getTableLocator()->get('PrometheusModule.PrometheusExporters');
+
+            $exporters = $PrometheusExportersTable->getExportersByContainerId($containerIds, 'list', 'id');
+            $exporters = Api::makeItJavaScriptAble($exporters);
+        }
 
         $this->set('hosttemplates', $hosttemplates);
         $this->set('hostgroups', $hostgroups);
@@ -2628,6 +2637,7 @@ class HostsController extends AppController {
         $this->set('contactgroups', $contactgroups);
         $this->set('satellites', $satellites);
         $this->set('sharingContainers', $sharingContainers);
+        $this->set('exporters', $exporters);
 
         $this->viewBuilder()->setOption('serialize', [
             'hosttemplates',
@@ -2637,7 +2647,8 @@ class HostsController extends AppController {
             'contacts',
             'contactgroups',
             'satellites',
-            'sharingContainers'
+            'sharingContainers',
+            'exporters'
         ]);
     }
 

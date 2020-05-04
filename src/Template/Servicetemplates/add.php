@@ -82,7 +82,7 @@
                                         ng-model="post.Servicetemplate.container_id">
                                     </select>
                                     <div ng-show="post.Servicetemplate.container_id < 1" class="warning-glow">
-                                        <?php echo __('Please select a host.'); ?>
+                                        <?php echo __('Please select a container.'); ?>
                                     </div>
                                     <div ng-repeat="error in errors.container_id">
                                         <div class="help-block text-danger">{{ error }}</div>

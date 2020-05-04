@@ -67,7 +67,8 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='HostsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='HostsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -866,6 +867,46 @@
                         </div>
                         <!-- HOST MACRO CONFIGURATION END -->
 
+                        <?php if (\Cake\Core\Plugin::isLoaded('PrometheusModule')): ?>
+                            <!-- PROMETHEUS CONFIGURATION START -->
+                            <div class="card margin-bottom-10" ng-show="post.Host.hosttemplate_id">
+                                <div class="card-header">
+                                    <i class="fas fa-broadcast-tower"></i> <?php echo __('Prometheus Exporters'); ?>
+                                </div>
+
+                                <div class="card-body">
+                                    <div class="form-group" ng-class="{'has-error': errors.prometheus_exporters}">
+                                        <label class="control-label" for="ExportersSelect">
+                                            <?php echo __('Exporters'); ?>
+                                        </label>
+
+                                        <div class="input-group" style="width: 100%;">
+                                            <select
+                                                id="ExportersSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="exporters"
+                                                multiple
+                                                ng-options="exporter.key as exporter.value for exporter in exporters"
+                                                ng-model="post.Host.prometheus_exporters._ids">
+                                            </select>
+                                            <template-diff ng-show="post.Host.hosttemplate_id"
+                                                           value="post.Host.prometheus_exporters._ids"
+                                                           template-value="hosttemplate.Hosttemplate.prometheus_exporters._ids"></template-diff>
+                                        </div>
+                                        <div class="help-block">
+                                            <?php echo __('To monitor this host using Prometheus please select the exporters that are installed on the host.'); ?>
+                                        </div>
+                                        <div ng-repeat="error in errors.prometheus_exporters">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- PROMETHEUS CONFIGURATION END -->
+                        <?php endif; ?>
+
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">
@@ -876,7 +917,7 @@
 
                                     <div class="btn-group" ng-if="!data.createAnother">
                                         <a onclick="return false;" ng-click="submit('AgentconnectorsConfig')"
-                                                class="btn btn-primary waves-effect waves-themed text-white">
+                                           class="btn btn-primary waves-effect waves-themed text-white">
                                             <?php echo __('Create host and setup agent'); ?>
                                         </a>
                                     </div>
@@ -900,20 +941,25 @@
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('add', 'agentconnector')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
-                                                   ng-click="submit('AgentconnectorsConfig')" ng-if="!data.createAnother">
+                                                   ng-click="submit('AgentconnectorsConfig')"
+                                                   ng-if="!data.createAnother">
                                                     <i class="fa fa fa-gear"></i>
                                                     <?php echo __('Save and setup agent'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <a ui-sref="MkModuleMkdiscovery" href="javascript:void(0);"
-                                               class="dropdown-item">
-                                                <i class="fa fa fa-share-alt"></i>
-                                                <?php echo __('Save and run Check_MK discovery'); ?>
-                                            </a>
+
+                                            <?php if (\Cake\Core\Plugin::isLoaded('MkModule') && $this->Acl->hasPermission('index', 'scans', 'MkModule')): ?>
+                                                <a ui-sref="MkModuleMkdiscovery" href="javascript:void(0);"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa fa-share-alt"></i>
+                                                    <?php echo __('Save and run Check_MK discovery'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
 
-                                    <a back-button href="javascript:void(0);" fallback-state='HostsIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);" fallback-state='HostsIndex'
+                                       class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

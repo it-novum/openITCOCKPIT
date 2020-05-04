@@ -75,6 +75,9 @@
                                 ng-model="post.Rotation.container_id"
                                 multiple>
                             </select>
+                            <div ng-show="post.Rotation.container_id < 1" class="warning-glow">
+                                <?php echo __('Please select a container.'); ?>
+                            </div>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>

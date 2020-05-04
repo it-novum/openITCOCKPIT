@@ -72,6 +72,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 ng-options="container.key as container.value for container in containers"
                                 ng-model="post.Serviceescalation.container_id">
                             </select>
+                            <div ng-show="post.Serviceescalation.container_id < 1" class="warning-glow">
+                                <?php echo __('Please select a container.'); ?>
+                            </div>
                             <div class="help-block">
                                 <?php echo __('Notification escalations could be used to notify a certain user group in case of an emergency.
 Once a service escalated, contacts, contact group and notification options will be overwritten by the escalation.'); ?>

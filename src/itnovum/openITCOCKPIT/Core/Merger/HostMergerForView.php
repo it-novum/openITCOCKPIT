@@ -87,6 +87,7 @@ class HostMergerForView {
         $data['hostcommandargumentvalues'] = $this->getDataForCommandarguments();
         $data['customvariables'] = $this->getDataForCustomvariables();
         $data['own_customvariables'] = (int)$this->hasOwnCustomvariables;
+        $data['prometheus_exporters'] = $this->getDataForPrometheusExporters();
 
         return [
             'Host' => $data
@@ -257,6 +258,22 @@ class HostMergerForView {
      */
     public function areContactsInheritedFromHosttemplate() {
         return $this->areContactsInheritedFromHosttemplate;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDataForPrometheusExporters() {
+        if (empty($this->host['prometheus_exporters']['_ids'])) {
+            //Host use Prometheus exporters of the Host template
+            return [
+                '_ids' => $this->hosttemplate['prometheus_exporters']['_ids']
+            ];
+        }
+
+        return [
+            '_ids' => $this->host['prometheus_exporters']['_ids']
+        ];
     }
 
 }

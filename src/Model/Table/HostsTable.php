@@ -10,6 +10,7 @@ use App\Model\Entity\Changelog;
 use App\Model\Entity\Host;
 use App\Model\Entity\Hostdependency;
 use App\Model\Entity\Hostescalation;
+use Cake\Core\Plugin;
 use Cake\Database\Expression\Comparison;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -1640,21 +1641,27 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostForEdit($id) {
+        $contain = [
+            'Contactgroups',
+            'Contacts',
+            'Hostgroups',
+            'Customvariables',
+            'Parenthosts',
+            'HostsToContainersSharing',
+            'Hostcommandargumentvalues' => [
+                'Commandarguments'
+            ]
+        ];
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $contain[] = 'PrometheusExporters';
+        };
+
         $query = $this->find()
             ->where([
                 'Hosts.id' => $id
             ])
-            ->contain([
-                'Contactgroups',
-                'Contacts',
-                'Hostgroups',
-                'Customvariables',
-                'Parenthosts',
-                'HostsToContainersSharing',
-                'Hostcommandargumentvalues' => [
-                    'Commandarguments'
-                ]
-            ])
+            ->contain($contain)
             ->disableHydration()
             ->first();
 
@@ -1673,6 +1680,9 @@ class HostsTable extends Table {
         ];
         $host['hosts_to_containers_sharing'] = [
             '_ids' => Hash::extract($query, 'hosts_to_containers_sharing.{n}.id')
+        ];
+        $host['prometheus_exporters'] = [
+            '_ids' => Hash::extract($query, 'prometheus_exporters.{n}.id')
         ];
 
         return [

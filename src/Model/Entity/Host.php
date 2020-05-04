@@ -81,6 +81,7 @@ use Cake\Utility\Hash;
  * @property \App\Model\Entity\Host[] $parenthosts
  * @property \App\Model\Entity\Service[] $services
  * @property \App\Model\Entity\Customvariable[] $customvariables
+ * @property \PrometheusModule\Model\Entity\PrometheusExporter[] $prometheus_exporters
  */
 class Host extends Entity {
 
@@ -161,7 +162,8 @@ class Host extends Entity {
         'hostgroups'                    => true,
         'parenthosts'                   => true,
         'services'                      => true,
-        'customvariables'               => true
+        'customvariables'               => true,
+        'prometheus_exporters'          => true
     ];
 
     /**

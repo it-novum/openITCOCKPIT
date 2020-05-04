@@ -72,6 +72,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 ng-options="container.key as container.value for container in containers"
                                 ng-model="post.Servicedependency.container_id">
                             </select>
+                            <div ng-show="post.Servicedependency.container_id < 1" class="warning-glow">
+                                <?php echo __('Please select a container.'); ?>
+                            </div>
                             <div class="help-block">
                                 <?php echo __('Service dependencies are an advanced feature that allow you to
                                     suppress notifications for services based on the status of one or more other services.'); ?>

@@ -90,6 +90,9 @@
                                 ng-options="container.key as container.value for container in containers"
                                 ng-model="post.container_id">
                             </select>
+                            <div ng-show="post.GrafanaUserdashboard.container_id < 1" class="warning-glow">
+                                <?php echo __('Please select a container.'); ?>
+                            </div>
                             <div ng-repeat="error in errors.container_id">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -115,7 +118,8 @@
                                     <button class="btn btn-primary" type="submit">
                                         <?php echo __('Update Grafana dashboard'); ?>
                                     </button>
-                                    <a back-button href="javascript:void(0);" fallback-state='GrafanaUserdashboardsIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);"
+                                       fallback-state='GrafanaUserdashboardsIndex' class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>
