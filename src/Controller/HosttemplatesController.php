@@ -41,6 +41,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatecommandargumentvaluesTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Core\Plugin;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -548,12 +549,22 @@ class HosttemplatesController extends AppController {
         $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
         $hostgroups = Api::makeItJavaScriptAble($hostgroups);
 
+        $exporters = [];
+        if(Plugin::isLoaded('PrometheusModule')){
+            /** @var \PrometheusModule\Model\Table\PrometheusExportersTable $PrometheusExportersTable  */
+            $PrometheusExportersTable = TableRegistry::getTableLocator()->get('PrometheusModule.PrometheusExporters');
+
+            $exporters = $PrometheusExportersTable->getExportersByContainerId($containerIds, 'list', 'id');
+            $exporters = Api::makeItJavaScriptAble($exporters);
+        }
+
         $this->set('timeperiods', $timeperiods);
         $this->set('checkperiods', $checkperiods);
         $this->set('contacts', $contacts);
         $this->set('contactgroups', $contactgroups);
         $this->set('hostgroups', $hostgroups);
-        $this->viewBuilder()->setOption('serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups']);
+        $this->set('exporters', $exporters);
+        $this->viewBuilder()->setOption('serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups', 'exporters']);
     }
 
     /**

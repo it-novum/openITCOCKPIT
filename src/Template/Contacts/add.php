@@ -70,6 +70,9 @@
                                 ng-options="container.key as container.value for container in containers"
                                 ng-model="post.Contact.containers._ids">
                             </select>
+                            <div ng-show="post.Contact.containers._ids.length === 0" class="warning-glow">
+                                <?php echo __('Please select a container.'); ?>
+                            </div>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>

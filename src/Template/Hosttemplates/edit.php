@@ -80,6 +80,9 @@
                                         ng-options="container.key as container.value for container in containers"
                                         ng-model="post.Hosttemplate.container_id">
                                     </select>
+                                    <div ng-show="post.Hosttemplate.container_id < 1" class="warning-glow">
+                                        <?php echo __('Please select a container.'); ?>
+                                    </div>
                                     <div ng-repeat="error in errors.container_id">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>

@@ -88,6 +88,9 @@ $weekdays = [
                                 ng-options="container.key as container.value for container in containers"
                                 ng-model="post.Timeperiod.container_id">
                             </select>
+                            <div ng-show="post.Timeperiod.container_id < 1" class="warning-glow">
+                                <?php echo __('Please select a container.'); ?>
+                            </div>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>

@@ -49,7 +49,8 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -79,6 +80,9 @@
                                         ng-options="container.key as container.value for container in containers"
                                         ng-model="post.Hosttemplate.container_id">
                                     </select>
+                                    <div ng-show="post.Hosttemplate.container_id < 1" class="warning-glow">
+                                        <?php echo __('Please select a container.'); ?>
+                                    </div>
                                     <div ng-repeat="error in errors.container_id">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
@@ -444,7 +448,8 @@
                                     </legend>
                                     <div class="row">
                                         <?php foreach ($hostOptions as $hostOption): ?>
-                                            <div class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                            <div
+                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
                                                 ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
                                                 <input type="checkbox"
                                                        class="custom-control-input"
@@ -615,6 +620,39 @@
                         </div>
                         <!-- HOST MACRO CONFIGURATION END -->
 
+                        <?php if (\Cake\Core\Plugin::isLoaded('PrometheusModule')): ?>
+                            <!-- PROMETHEUS CONFIGURATION START -->
+                            <div class="card margin-bottom-10">
+                                <div class="card-header">
+                                    <i class="fas fa-broadcast-tower"></i> <?php echo __('Prometheus Exporters'); ?>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group" ng-class="{'has-error': errors.exporters}">
+                                        <label class="control-label" for="ExportersSelect">
+                                            <?php echo __('Exporters'); ?>
+                                        </label>
+                                        <select
+                                            id="ExportersSelect"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="exporters"
+                                            multiple
+                                            ng-options="exporter.key as exporter.value for exporter in exporters"
+                                            ng-model="post.Hosttemplate.exporters._ids">
+                                        </select>
+                                        <div class="help-block">
+                                            <?php echo __('To monitor this host using Prometheus please select the exporters that are installed on the host.'); ?>
+                                        </div>
+                                        <div ng-repeat="error in errors.exporters">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- PROMETHEUS CONFIGURATION END -->
+                        <?php endif; ?>
+
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">
@@ -625,7 +663,8 @@
                                     <button class="btn btn-primary" type="submit">
                                         <?php echo __('Create host template'); ?>
                                     </button>
-                                    <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex'
+                                       class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

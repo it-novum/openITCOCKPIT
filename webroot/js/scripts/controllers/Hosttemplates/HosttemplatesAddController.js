@@ -125,6 +125,7 @@ angular.module('openITCOCKPIT')
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
                 $scope.hostgroups = result.data.hostgroups;
+                $scope.exporters = result.data.exporters;
             });
         };
 
