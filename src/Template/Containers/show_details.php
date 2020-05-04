@@ -49,7 +49,7 @@
             chosen="{containers}"
             ng-model="post.Container.id"
             callback="loadContainers"
-            ng-options="container.key as container.value for container in containers"
+            ng-options="container.key as container.value for container in containers | filter: { key: '!'+<?= CT_GLOBAL; ?>}"
             ng-model-options="{debounce: 500}">
         </select>
 
