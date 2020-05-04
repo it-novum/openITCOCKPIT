@@ -622,6 +622,15 @@ class HosttemplatesTable extends Table {
      * @return array
      */
     public function getHosttemplatesForCopy($ids = []) {
+        $contain = [
+            'Hosttemplatecommandargumentvalues' => [
+                'Commandarguments'
+            ]
+        ];
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $contain[] = 'PrometheusExporters';
+        };
 
         $query = $this->find()
             ->select([
@@ -631,11 +640,7 @@ class HosttemplatesTable extends Table {
                 'Hosttemplates.command_id',
                 'Hosttemplates.active_checks_enabled'
             ])
-            ->contain([
-                'Hosttemplatecommandargumentvalues' => [
-                    'Commandarguments'
-                ]
-            ])
+            ->contain($contain)
             ->where(['Hosttemplates.id IN' => $ids])
             ->order(['Hosttemplates.id' => 'asc'])
             ->disableHydration()
