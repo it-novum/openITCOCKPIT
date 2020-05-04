@@ -851,6 +851,46 @@
                         </div>
                         <!-- HOST MACRO CONFIGURATION END -->
 
+                        <?php if (\Cake\Core\Plugin::isLoaded('PrometheusModule')): ?>
+                            <!-- PROMETHEUS CONFIGURATION START -->
+                            <div class="card margin-bottom-10" ng-show="post.Host.hosttemplate_id">
+                                <div class="card-header">
+                                    <i class="fas fa-broadcast-tower"></i> <?php echo __('Prometheus Exporters'); ?>
+                                </div>
+
+                                <div class="card-body">
+                                    <div class="form-group" ng-class="{'has-error': errors.prometheus_exporters}">
+                                        <label class="control-label" for="ExportersSelect">
+                                            <?php echo __('Exporters'); ?>
+                                        </label>
+
+                                        <div class="input-group" style="width: 100%;">
+                                            <select
+                                                id="ExportersSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="exporters"
+                                                multiple
+                                                ng-options="exporter.key as exporter.value for exporter in exporters"
+                                                ng-model="post.Host.prometheus_exporters._ids">
+                                            </select>
+                                            <template-diff ng-show="post.Host.hosttemplate_id"
+                                                           value="post.Host.prometheus_exporters._ids"
+                                                           template-value="hosttemplate.Hosttemplate.prometheus_exporters._ids"></template-diff>
+                                        </div>
+                                        <div class="help-block">
+                                            <?php echo __('To monitor this host using Prometheus please select the exporters that are installed on the host.'); ?>
+                                        </div>
+                                        <div ng-repeat="error in errors.prometheus_exporters">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- PROMETHEUS CONFIGURATION END -->
+                        <?php endif; ?>
+
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">

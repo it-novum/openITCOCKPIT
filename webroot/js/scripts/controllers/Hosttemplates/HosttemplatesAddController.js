@@ -57,7 +57,7 @@ angular.module('openITCOCKPIT')
                     hosttemplatecommandargumentvalues: [],
                     prometheus_exporters: {
                         _ids: []
-                    },
+                    }
                 }
             };
         };
