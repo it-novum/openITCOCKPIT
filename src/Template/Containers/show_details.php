@@ -158,7 +158,7 @@ $objectDetails = [
         'ui-sref' => 'ServiceescalationsEdit({id:id})'
     ],
     /* Reports */
-    'instantReports'        => [
+    'instantreports'        => [
         'label'   => __('Instant reports'),
         'icon'    => 'fa fa-file-invoice',
         'rights'  => [
@@ -321,14 +321,17 @@ $objectDetails['maps'] = [
                             <div class="margin-top-10" ng-hide="isEmpty">
                                 <table class="table m-0 table-bordered table-hover table-sm">
                                     <tr ng-repeat-start="container in containersWithChilds">
-                                        <th colspan="2" class="table-dark">
+                                        <th colspan="3" class="table-dark">
                                             <h4 class="margin-0">{{container.name}}</h4>
                                         </th>
                                     </tr>
                                     <?php foreach ($objectDetails as $objectType => $object): ?>
                                         <tr ng-show="container.childsElements.<?= $objectType; ?>">
-                                            <td class="col-sm-3">
+                                            <td class="width-30 text-center">
                                                 <i class="<?= $object['icon']; ?>"></i>
+                                            </td>
+                                            <td class="col-sm-3">
+
                                                 <?= $object['label']; ?>
                                             </td>
                                             <td>

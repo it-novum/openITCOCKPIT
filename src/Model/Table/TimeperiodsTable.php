@@ -233,7 +233,7 @@ class TimeperiodsTable extends Table {
 
     /**
      * @param $id
-     * @return array
+     * @return array|null
      */
     public function getTimeperiodWithTimerangesById($id) {
         $query = $this->find()
@@ -242,6 +242,10 @@ class TimeperiodsTable extends Table {
                 'Timeperiods.id' => $id
             ])
             ->first();
+        if(is_null($query)){
+            return null;
+        }
+
         return $this->formatFirstResultAsCake2($query->toArray(), false);
     }
 

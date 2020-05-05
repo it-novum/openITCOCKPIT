@@ -776,27 +776,27 @@ class ContainersTable extends Table {
                     $containers[$index]['childsElements']['hosttemplates'] = $HosttemplatesTable->getHosttemplatesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     $containers[$index]['childsElements']['hostgroups'] = $HostgroupsTable->getHostgroupsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     $containers[$index]['childsElements']['servicetemplates'] = $ServicetemplatesTable->getServicetemplatesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
-                    $childrenContainers[$index]['childsElements']['servicetemplategroups'] = $ServicetemplategroupsTable->getServicetemplategroupsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['servicetemplategroups'] = $ServicetemplategroupsTable->getServicetemplategroupsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     $containers[$index]['childsElements']['servicegroups'] = $ServicegroupsTable->getServicegroupsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     $containers[$index]['childsElements']['timeperiods'] = $TimeperiodsTable->getTimeperiodsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     $containers[$index]['childsElements']['contacts'] = $ContactsTable->getContactsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
-                    $containers[$index]['childsElements']['contactGroups'] = $ContactgroupsTable->getContactgroupsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['contactgroups'] = $ContactgroupsTable->getContactgroupsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
 
                     // label Type_#Id
-                    $childrenContainers[$index]['childsElements']['hostDependencies'] = $HostdependenciesTable->getHostdependenciesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
-                    $childrenContainers[$index]['childsElements']['hostEscalations'] = $HostescalationsTable->getHostescalationsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
-                    $childrenContainers[$index]['childsElements']['serviceDependencies'] = $ServicedependenciesTable->getServicedependenciesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
-                    $childrenContainers[$index]['childsElements']['serviceEscalations'] = $ServiceescalationsTable->getServiceescalationsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['hostdependencies'] = $HostdependenciesTable->getHostdependenciesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['hostescalations'] = $HostescalationsTable->getHostescalationsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['servicedependencies'] = $ServicedependenciesTable->getServicedependenciesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['serviceescalations'] = $ServiceescalationsTable->getServiceescalationsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
 
                     // Load Reports
-                    $childrenContainers[$index]['childsElements']['instantReports'] = $InstantreportsTable->getInstantreportsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['instantreports'] = $InstantreportsTable->getInstantreportsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     if (isset($AutoreportsTable)) {
-                        $childrenContainers[$index]['childsElements']['autoReports'] = $AutoreportsTable->getAutoreportsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                        $containers[$index]['childsElements']['autoreports'] = $AutoreportsTable->getAutoreportsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     }
 
                     // Load Satellites
                     if (isset($SatellitesTable)) {
-                        $childrenContainers[$index]['childsElements']['satellites'] = $SatellitesTable->getSatellitesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                        $containers[$index]['childsElements']['satellites'] = $SatellitesTable->getSatellitesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     }
 
                     // Load Maps
@@ -820,17 +820,18 @@ class ContainersTable extends Table {
             3  => 'location',
             4  => 'devicegroup',
             5  => 'node',
-            6  => 'contactgroup',
-            7  => 'hostgroup',
-            8  => 'servicegroup',
-            9  => 'servicetemplategroup',
+            6  => 'contactgroups',
+            7  => 'hostgroups',
+            8  => 'servicegroups',
+            9  => 'servicetemplategroups',
             10 => 'hostdependencies',
             11 => 'hostescalations',
             12 => 'servicedependencies',
             13 => 'serviceescalations',
             14 => 'instantreports',
             15 => 'autoreports',
-            16 => 'maps'
+            16 => 'maps',
+            17 => 'hosttemplates'
         ];
 
         $nodes[] = [
@@ -895,25 +896,28 @@ class ContainersTable extends Table {
         $cluster = [];
 
         $possibleClusterTypesWithLabel = [
-            'root'                 => '/root',
-            'tenant'               => __('Tenant'),
-            'location'             => __('Location'),
-            'devicegroup'          => __('Device group'),
-            'node'                 => __('Node'),
-            'hosts'                => __('Hosts'),
-            'contacts'             => __('Contacts'),
-            'contactgroup'         => __('Contact groups'),
-            'hostgroup'            => __('Host groups'),
-            'servicegroup'         => __('Service groups'),
-            'servicetemplategroup' => __('Service template groups'),
-            'hostdependencies'     => __('Host dependencies'),
-            'hostescalations'      => __('Host escalations'),
-            'servicedependencies'  => __('Service dependencies'),
-            'serviceescalations'   => __('Service escalations'),
-            'instantreports'       => __('Instant reports'),
-            'autoreports'          => __('Autoreports'),
-            'maps'                 => __('Maps'),
-            'satellites'           => __('Satellites')
+            'root'                  => '/root',
+            'tenant'                => __('Tenant'),
+            'location'              => __('Location'),
+            'devicegroup'           => __('Device group'),
+            'node'                  => __('Node'),
+            'hosts'                 => __('Hosts'),
+            'hosttemplates'         => __('Host templates'),
+            'servicetemplates'      => __('Service templates'),
+            'contacts'              => __('Contacts'),
+            'contactgroups'         => __('Contact groups'),
+            'hostgroups'            => __('Host groups'),
+            'servicegroups'         => __('Service groups'),
+            'servicetemplategroups' => __('Service template groups'),
+            'hostdependencies'      => __('Host dependencies'),
+            'hostescalations'       => __('Host escalations'),
+            'servicedependencies'   => __('Service dependencies'),
+            'serviceescalations'    => __('Service escalations'),
+            'instantreports'        => __('Instant reports'),
+            'autoreports'           => __('Autoreports'),
+            'maps'                  => __('Maps'),
+            'satellites'            => __('Satellites'),
+            'timeperiods'           => __('Time periods'),
         ];
 
 

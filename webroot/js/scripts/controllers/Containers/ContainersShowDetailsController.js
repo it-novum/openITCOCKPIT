@@ -208,16 +208,7 @@ angular.module('openITCOCKPIT')
                             color: colorNotMonitored //color for icon
                         }
                     },
-                    contactgroups: {
-                        shape: 'dot',
-                        color: '#b388ff',
-                        size: 15,
-                        icon: {
-                            code: '\uf0c0',
-                            color: '#ffffff',
-                            size: 5
-                        }
-                    },
+
                     hostgroups: {
                         shape: 'dot',
                         color: '#00e676',
@@ -228,26 +219,7 @@ angular.module('openITCOCKPIT')
                             size: 5
                         }
                     },
-                    servicetemplategroups: {
-                        shape: 'dot',
-                        color: '#f4511e',
-                        size: 15,
-                        icon: {
-                            code: '\uf085',
-                            color: '#ffffff',
-                            size: 5
-                        }
-                    },
-                    servicetemplategroup: {
-                        shape: 'dot',
-                        color: '#1c2a48',
-                        size: 15,
-                        icon: {
-                            code: '\uf0c5',
-                            color: '#ffffff',
-                            size: 5
-                        }
-                    },
+
                     hosts: {
                         shape: 'dot',
                         color: '#007bff',
@@ -264,7 +236,47 @@ angular.module('openITCOCKPIT')
                         size: 15,
                         icon: {
                             code: '\uf044',
-                            color: '#uf044',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    hostescalations: {
+                        shape: 'dot',
+                        color: '#304ffe',
+                        size: 15,
+                        icon: {
+                            code: '\uf1e2',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    hostdependencies: {
+                        shape: 'dot',
+                        color: '#66bb6a',
+                        size: 15,
+                        icon: {
+                            code: '\uf0e8',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    servicegroups: {
+                        shape: 'dot',
+                        color: '#f4511e',
+                        size: 15,
+                        icon: {
+                            code: '\uf085',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    servicetemplategroups: {
+                        shape: 'dot',
+                        color: '#1c2a48',
+                        size: 15,
+                        icon: {
+                            code: '\uf0c5',
+                            color: '#ffffff',
                             size: 5
                         }
                     },
@@ -278,12 +290,42 @@ angular.module('openITCOCKPIT')
                             size: 5
                         }
                     },
+                    serviceescalations: {
+                        shape: 'dot',
+                        color: '#45526e',
+                        size: 15,
+                        icon: {
+                            code: '\uf1e2',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    servicedependencies: {
+                        shape: 'dot',
+                        color: '#0091ea',
+                        size: 15,
+                        icon: {
+                            code: '\uf0e8',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
                     contacts: {
                         shape: 'dot',
                         color: '#9933CC',
                         size: 15,
                         icon: {
                             code: '\uf2bd',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    contactgroups: {
+                        shape: 'dot',
+                        color: '#b388ff',
+                        size: 15,
+                        icon: {
+                            code: '\uf0c0',
                             color: '#ffffff',
                             size: 5
                         }
@@ -307,7 +349,38 @@ angular.module('openITCOCKPIT')
                             color: '#ffffff',
                             size: 5
                         }
-                    }
+                    },
+                    instantreports: {
+                        shape: 'dot',
+                        color: '#0099CC',
+                        size: 15,
+                        icon: {
+                            code: '\uf1c5',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    autoreports: {
+                        shape: 'dot',
+                        color: '#ab47bc',
+                        size: 15,
+                        icon: {
+                            code: '\uf1c5',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    satellites: {
+                        shape: 'dot',
+                        color: '#01579b',
+                        size: 15,
+                        icon: {
+                            code: '\uf0c2',
+                            color: '#ffffff',
+                            size: 5,
+                            weight: 'bold'
+                        }
+                    },
                 },
                 physics: {
                     /*forceAtlas2Based: {
