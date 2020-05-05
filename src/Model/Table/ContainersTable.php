@@ -14,6 +14,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\ContainerNestedSet;
+use MapModule\Model\Table\MapsTable;
 
 /**
  * Containers Model
@@ -748,6 +749,11 @@ class ContainersTable extends Table {
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
         }
 
+        /** Maps Objects */
+
+        /** @var $MapsTable MapsTable */
+        $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+
         /**
          * 'CT_GLOBAL'               => 1,
          * 'CT_TENANT'               => 2,
@@ -792,7 +798,11 @@ class ContainersTable extends Table {
                     if (isset($SatellitesTable)) {
                         $childrenContainers[$index]['childsElements']['satellites'] = $SatellitesTable->getSatellitesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     }
-                    break;
+
+                    // Load Maps
+                    $containers[$index]['childsElements']['maps'] = $MapsTable->getMapsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+
+                break;
             }
         }
         return $containers;
@@ -819,7 +829,8 @@ class ContainersTable extends Table {
             12 => 'servicedependencies',
             13 => 'serviceescalations',
             14 => 'instantreports',
-            15 => 'autoreports'
+            15 => 'autoreports',
+            16 => 'maps'
         ];
 
         $nodes[] = [
@@ -894,6 +905,7 @@ class ContainersTable extends Table {
                 $nodes[] = [
                     'id'            => $containerId . '_' . $childObjectName, //1_tenant
                     'label'         => $childObjectName, // tenant
+                    'group' => $childObjectName,
                     'createCluster' => $containerId . '_' . $childObjectName //1_tenant
                 ];
                 $cluster[] = [

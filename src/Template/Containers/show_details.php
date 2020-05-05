@@ -195,6 +195,17 @@ if (Plugin::isLoaded('DistributeModule')) {
     ];
 }
 
+$objectDetails['maps'] = [
+    'label'   => __('Maps'),
+    'icon'    => 'fa fa-map-marker',
+    'rights'  => [
+        'action'     => 'edit',
+        'controller' => 'maps',
+        'plugin'     => 'MapModule'
+    ],
+    'ui-sref' => 'MapsEdit({id:id})'
+];
+
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">

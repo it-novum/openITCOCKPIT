@@ -174,7 +174,7 @@ angular.module('openITCOCKPIT')
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf015',
-                            size: 30,
+                            size: 35,
                             color: 'red',
                             fontColor: 'red'
                         }
@@ -184,7 +184,7 @@ angular.module('openITCOCKPIT')
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf124',
-                            size: 30,
+                            size: 35,
                             color: 'orange',
                             fontColor: 'orange'
                         }
@@ -196,7 +196,7 @@ angular.module('openITCOCKPIT')
                             face: 'FontAwesome',
                             code: '\uf0c1',
                             color: colorNotMonitored, //color for icon
-                            size: 30,
+                            size: 35,
                             color: 'purple',
                             fontColor: 'purple'
                         }
@@ -211,93 +211,103 @@ angular.module('openITCOCKPIT')
                         }
                     },
                     contactgroups: {
-                        shape: 'icon',
-                        color: colorNotMonitored, // color for edges
+                        shape: 'dot',
+                        color: '#b388ff',
+                        size: 15,
                         icon: {
-                            face: 'FontAwesome',
                             code: '\uf0c0',
-                            color: colorNotMonitored //color for icon
+                            color: '#ffffff',
+                            size: 5
                         }
                     },
-                    hostgroup: {
-                        shape: 'icon',
-                        color: colorNotMonitored, // color for edges
+                    hostgroups: {
+                        shape: 'dot',
+                        color: '#00e676',
+                        size: 15,
                         icon: {
-                            face: 'FontAwesome',
                             code: '\uf233',
-                            color: colorNotMonitored, //color for icon
-                            size: 20
+                            color: '#ffffff',
+                            size: 5
                         }
                     },
-                    servicegroup: {
-                        shape: 'icon',
-                        color: colorNotMonitored, // color for edges
+                    servicetemplategroups: {
+                        shape: 'dot',
+                        color: '#f4511e',
+                        size: 15,
                         icon: {
-                            face: 'FontAwesome',
                             code: '\uf085',
-                            color: colorNotMonitored, //color for icon
-                            size: 20
+                            color: '#ffffff',
+                            size: 5
                         }
                     },
                     servicetemplategroup: {
-                        shape: 'icon',
-                        color: colorNotMonitored, // color for edges
+                        shape: 'dot',
+                        color: '#1c2a48',
+                        size: 15,
                         icon: {
-                            face: 'FontAwesome',
                             code: '\uf0c5',
-                            color: colorNotMonitored, //color for icon
-                            size: 20
+                            color: '#ffffff',
+                            size: 5
                         }
                     },
                     hosts: {
-                        shape: 'icon',
-                        color: colorUp, // color for edges
+                        shape: 'dot',
+                        color: '#007bff',
+                        size: 15,
                         icon: {
-                            face: 'FontAwesome',
                             code: '\uf108',
-                            color: colorUp,
-                            size: 15
+                            color: '#ffffff',
+                            size: 5
                         }
                     },
                     hosttemplates: {
-                        shape: 'icon',
-                        color: colorUp, // color for edges
+                        shape: 'dot',
+                        color: '#8bc34a',
+                        size: 15,
                         icon: {
-                            face: 'FontAwesome',
                             code: '\uf044',
-                            color: colorUp,
-                            size: 15
+                            color: '#uf044',
+                            size: 5
                         }
                     },
                     servicetemplates: {
-                        shape: 'icon',
-                        color: colorDown, // color for edges
+                        shape: 'dot',
+                        color: '#009688',
+                        size: 15,
                         icon: {
-                            face: 'FontAwesome',
                             code: '\uf044',
-                            color: colorUp,
-                            size: 15
+                            color: '#ffffff',
+                            size: 5
                         }
                     },
-
                     contacts: {
-                        shape: 'icon',
-                        color: colorNotMonitored, // color for edges
+                        shape: 'dot',
+                        color: '#9933CC',
+                        size: 15,
                         icon: {
-                            face: 'FontAwesome',
                             code: '\uf2bd',
-                            color: colorNotMonitored, //color for icon
-                            size: 15
+                            color: '#ffffff',
+                            size: 5
                         }
                     },
                     timeperiods: {
-                        shape: 'icon',
-                        color: colorUp, // color for edges
+                        shape: 'dot',
+                        color: '#3f51b5',
+                        size: 15,
                         icon: {
-                            face: 'FontAwesome',
                             code: '\uf017',
-                            color: colorUp,
-                            size: 15
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    maps: {
+                        shape: 'dot',
+                        color: '#f50057',
+                        size: 15,
+                        icon: {
+                            code: '\uf041',
+                            color: '#ffffff',
+                            size: 5
                         }
                     }
                 },
@@ -377,7 +387,7 @@ angular.module('openITCOCKPIT')
                                     },
                                     clusterNodeProperties: {
                                         label: clusterLabel,
-                                        color: node.color || 'red'
+                                        color: node.color || '#97c2fc'
                                     }
                                 };
                                 network.clustering.cluster(clusterOptions);
