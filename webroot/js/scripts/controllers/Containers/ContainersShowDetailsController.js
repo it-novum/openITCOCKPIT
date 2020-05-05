@@ -408,7 +408,7 @@ angular.module('openITCOCKPIT')
                 },
                 interaction: {
                     hover: true,
-                    dragNodes: false,
+                    dragNodes: true,
                     keyboard: {
                         enabled: false
                     },
