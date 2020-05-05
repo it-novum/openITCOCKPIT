@@ -802,7 +802,7 @@ class ContainersTable extends Table {
                     // Load Maps
                     $containers[$index]['childsElements']['maps'] = $MapsTable->getMapsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
 
-                break;
+                    break;
             }
         }
         return $containers;
@@ -894,6 +894,27 @@ class ContainersTable extends Table {
         $edges = [];
         $cluster = [];
 
+        $possibleClusterTypesWithLabel = [
+            'root'                 => '/root',
+            'tenant'               => __('Tenant'),
+            'location'             => __('Location'),
+            'devicegroup'          => __('Device group'),
+            'node'                 => __('Node'),
+            'hosts'                => __('Hosts'),
+            'contacts'             => __('Contacts'),
+            'contactgroup'         => __('Contact groups'),
+            'hostgroup'            => __('Host groups'),
+            'servicegroup'         => __('Service groups'),
+            'servicetemplategroup' => __('Service template groups'),
+            'hostdependencies'     => __('Host dependencies'),
+            'hostescalations'      => __('Host escalations'),
+            'servicedependencies'  => __('Service dependencies'),
+            'serviceescalations'   => __('Service escalations'),
+            'instantreports'       => __('Instant reports'),
+            'autoreports'          => __('Autoreports'),
+            'maps'                 => __('Maps'),
+            'satellites'           => __('Satellites')
+        ];
 
 
         foreach ($childsArray as $childObjectName => $childs) {
@@ -904,13 +925,13 @@ class ContainersTable extends Table {
                 //This contains all childs (example: Servicetemplates and attatch all Servicetemplates to THIS node!)
                 $nodes[] = [
                     'id'            => $containerId . '_' . $childObjectName, //1_tenant
-                    'label'         => $childObjectName, // tenant
-                    'group' => $childObjectName,
+                    'label'         => $possibleClusterTypesWithLabel[$childObjectName], // tenant
+                    'group'         => $childObjectName,
                     'createCluster' => $containerId . '_' . $childObjectName //1_tenant
                 ];
                 $cluster[] = [
                     'name'  => $containerId . '_' . $childObjectName,
-                    'label' => $childObjectName,
+                    'label' => $possibleClusterTypesWithLabel[$childObjectName],
                     'size'  => $sizeof
                 ];
                 $edges[] = [
@@ -930,7 +951,7 @@ class ContainersTable extends Table {
                 ];
                 $edges[] = [
                     'from' => $containerId . '_' . $childObjectName,
-                    'to'   => $childObjectName . '_' . $childName . '_' . $id.'_'.$containerId
+                    'to'   => $childObjectName . '_' . $childName . '_' . $id . '_' . $containerId
                 ];
 
                 if ($sizeof === 1) {

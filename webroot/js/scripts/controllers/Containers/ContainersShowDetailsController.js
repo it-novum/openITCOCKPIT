@@ -191,14 +191,12 @@ angular.module('openITCOCKPIT')
                     },
                     node: {
                         shape: 'icon',
-                        color: colorNotMonitored, // color for edges
+                        color: '#00695c', // color for edges
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf0c1',
-                            color: colorNotMonitored, //color for icon
                             size: 35,
-                            color: 'purple',
-                            fontColor: 'purple'
+                            color: '#00695c'
                         }
                     },
                     devicegroup: {
