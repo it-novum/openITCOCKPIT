@@ -11,6 +11,8 @@ angular.module('openITCOCKPIT')
             backState: null
         };
 
+        $scope.tabName = 'Containers';
+
         $scope.nodes = new vis.DataSet();
         $scope.edges = new vis.DataSet();
 
@@ -57,13 +59,14 @@ angular.module('openITCOCKPIT')
 
 
         angular.element(document).ready(function(){
-            $scope.container = document.getElementById('containermap');
-
-            var offset = $($scope.container).offset();
-            var height = (window.innerHeight - offset.top);
-            $($($scope.container)).css({
-                'height': height
-            });
+            if($scope.tabName === 'ContainersMap'){
+                $scope.container = document.getElementById('containermap');
+                var offset = $($scope.container).offset();
+                var height = (window.innerHeight - offset.top - 70);
+                $($($scope.container)).css({
+                    'height': height
+                });
+            }
         });
 
         $scope.loadContainers = function(){
@@ -82,21 +85,33 @@ angular.module('openITCOCKPIT')
         $scope.loadContainerDetails = function(){
             $http.get('/containers/showDetails/' + $scope.post.Container.id + '.json', {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'asTree': ($scope.tabName === 'ContainersMap') ? true : false
                 }
             }).then(function(result){
-                var nodesData = result.data.containerMap.nodes;
-                var edgesData = result.data.containerMap.edges;
-                var cluster = result.data.containerMap.cluster;
+                if($scope.tabName === 'ContainersMap'){
+                    $scope.lastMapContainerId = $scope.post.Container.id;
+                    var nodesData = result.data.containerMap.nodes;
+                    var edgesData = result.data.containerMap.edges;
+                    var cluster = result.data.containerMap.cluster;
 
-                $scope.nodesCount = nodesData.length;
-                if(nodesData.length > 0){
-                    $('#visProgressbarLoader').show(); //AngularJS is to slow
-                    $scope.loadVisMap(nodesData, edgesData, cluster);
+                    $scope.nodesCount = nodesData.length;
+                    if(nodesData.length > 0){
+                        $('#visProgressbarLoader').show(); //AngularJS is to slow
+                        $scope.loadVisMap(nodesData, edgesData, cluster);
+                    }else{
+                        $scope.isEmpty = true;
+                    }
+                    $scope.mutex = false;
                 }else{
-                    $scope.isEmpty = true;
+                    $scope.lastTreeContainerId = $scope.post.Container.id;
+                    $scope.containersWithChilds = result.data.containersWithChilds;
+                    if($scope.containersWithChilds.length > 0){
+                        $scope.isEmpty = false;
+                    }
                 }
-                $scope.mutex = false;
+
+
             }, function errorCallback(result){
                 console.log('Invalid JSON');
             });
@@ -156,34 +171,32 @@ angular.module('openITCOCKPIT')
                     },
                     tenant: {
                         shape: 'icon',
+                        color: '#ff4444',
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf015',
-                            size: 30,
-                            color: 'red',
-                            fontColor: 'red'
+                            size: 35,
+                            color: '#ff4444'
                         }
                     },
                     location: {
                         shape: 'icon',
+                        color: '#ff8800', // color for edges
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf124',
-                            size: 30,
-                            color: 'orange',
-                            fontColor: 'orange'
+                            size: 35,
+                            color: '#ff8800',
                         }
                     },
                     node: {
                         shape: 'icon',
-                        color: colorNotMonitored, // color for edges
+                        color: '#00695c', // color for edges
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf0c1',
-                            color: colorNotMonitored, //color for icon
-                            size: 30,
-                            color: 'purple',
-                            fontColor: 'purple'
+                            size: 35,
+                            color: '#00695c'
                         }
                     },
                     devicegroup: {
@@ -195,98 +208,196 @@ angular.module('openITCOCKPIT')
                             color: colorNotMonitored //color for icon
                         }
                     },
-                    contactgroups: {
-                        shape: 'icon',
-                        color: colorNotMonitored, // color for edges
+
+                    hostgroups: {
+                        shape: 'dot',
+                        color: '#00e676',
+                        size: 15,
                         icon: {
-                            face: 'FontAwesome',
-                            code: '\uf0c0',
-                            color: colorNotMonitored //color for icon
-                        }
-                    },
-                    hostgroup: {
-                        shape: 'icon',
-                        color: colorNotMonitored, // color for edges
-                        icon: {
-                            face: 'FontAwesome',
                             code: '\uf233',
-                            color: colorNotMonitored, //color for icon
-                            size: 20
-                        }
-                    },
-                    servicegroup: {
-                        shape: 'icon',
-                        color: colorNotMonitored, // color for edges
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf085',
-                            color: colorNotMonitored, //color for icon
-                            size: 20
-                        }
-                    },
-                    servicetemplategroup: {
-                        shape: 'icon',
-                        color: colorNotMonitored, // color for edges
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf0c5',
-                            color: colorNotMonitored, //color for icon
-                            size: 20
-                        }
-                    },
-                    hosts: {
-                        shape: 'icon',
-                        color: colorUp, // color for edges
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf108',
-                            color: colorUp,
-                            size: 15
-                        }
-                    },
-                    hosttemplates: {
-                        shape: 'icon',
-                        color: colorUp, // color for edges
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf044',
-                            color: colorUp,
-                            size: 15
-                        }
-                    },
-                    servicetemplates: {
-                        shape: 'icon',
-                        color: colorDown, // color for edges
-                        icon: {
-                            face: 'FontAwesome',
-                            code: '\uf044',
-                            color: colorUp,
-                            size: 15
+                            color: '#ffffff',
+                            size: 5
                         }
                     },
 
-                    contacts: {
-                        shape: 'icon',
-                        color: colorNotMonitored, // color for edges
+                    hosts: {
+                        shape: 'dot',
+                        color: '#007bff',
+                        size: 15,
                         icon: {
-                            face: 'FontAwesome',
+                            code: '\uf108',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    hosttemplates: {
+                        shape: 'dot',
+                        color: '#8bc34a',
+                        size: 15,
+                        icon: {
+                            code: '\uf044',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    hostescalations: {
+                        shape: 'dot',
+                        color: '#304ffe',
+                        size: 15,
+                        icon: {
+                            code: '\uf1e2',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    hostdependencies: {
+                        shape: 'dot',
+                        color: '#66bb6a',
+                        size: 15,
+                        icon: {
+                            code: '\uf0e8',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    servicegroups: {
+                        shape: 'dot',
+                        color: '#f4511e',
+                        size: 15,
+                        icon: {
+                            code: '\uf085',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    servicetemplategroups: {
+                        shape: 'dot',
+                        color: '#1c2a48',
+                        size: 15,
+                        icon: {
+                            code: '\uf0c5',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    servicetemplates: {
+                        shape: 'dot',
+                        color: '#009688',
+                        size: 15,
+                        icon: {
+                            code: '\uf044',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    serviceescalations: {
+                        shape: 'dot',
+                        color: '#45526e',
+                        size: 15,
+                        icon: {
+                            code: '\uf1e2',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    servicedependencies: {
+                        shape: 'dot',
+                        color: '#0091ea',
+                        size: 15,
+                        icon: {
+                            code: '\uf0e8',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    contacts: {
+                        shape: 'dot',
+                        color: '#9933CC',
+                        size: 15,
+                        icon: {
                             code: '\uf2bd',
-                            color: colorNotMonitored, //color for icon
-                            size: 15
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    contactgroups: {
+                        shape: 'dot',
+                        color: '#b388ff',
+                        size: 15,
+                        icon: {
+                            code: '\uf0c0',
+                            color: '#ffffff',
+                            size: 5
                         }
                     },
                     timeperiods: {
-                        shape: 'icon',
-                        color: colorUp, // color for edges
+                        shape: 'dot',
+                        color: '#3f51b5',
+                        size: 15,
                         icon: {
-                            face: 'FontAwesome',
                             code: '\uf017',
-                            color: colorUp,
-                            size: 15
+                            color: '#ffffff',
+                            size: 5
                         }
-                    }
+                    },
+                    maps: {
+                        shape: 'dot',
+                        color: '#f50057',
+                        size: 15,
+                        icon: {
+                            code: '\uf041',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    instantreports: {
+                        shape: 'dot',
+                        color: '#0099CC',
+                        size: 15,
+                        icon: {
+                            code: '\uf1c5',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    autoreports: {
+                        shape: 'dot',
+                        color: '#ab47bc',
+                        size: 15,
+                        icon: {
+                            code: '\uf1c5',
+                            color: '#ffffff',
+                            size: 5
+                        }
+                    },
+                    satellites: {
+                        shape: 'dot',
+                        color: '#01579b',
+                        size: 15,
+                        icon: {
+                            code: '\uf0c2',
+                            color: '#ffffff',
+                            size: 5,
+                            weight: 'bold'
+                        }
+                    },
                 },
                 physics: {
+                    barnesHut: {
+                        gravitationalConstant: -2000,
+                        centralGravity: 0.3,
+                        springLength: 95,
+                        springConstant: 0.04,
+                        damping: 0.09
+                    },
+                    maxVelocity: 146,
+                    solver: 'barnesHut',
+                    timestep: 0.35,
+                    stabilization: {
+                        enabled: true,
+                        iterations: 2000,
+                        updateInterval: 25
+                    }
                     /*forceAtlas2Based: {
                         gravitationalConstant: -138,
                         centralGravity: 0.02,
@@ -297,7 +408,7 @@ angular.module('openITCOCKPIT')
                 },
                 interaction: {
                     hover: true,
-                    dragNodes: false,
+                    dragNodes: true,
                     keyboard: {
                         enabled: false
                     },
@@ -362,7 +473,7 @@ angular.module('openITCOCKPIT')
                                     },
                                     clusterNodeProperties: {
                                         label: clusterLabel,
-                                        color: node.color || 'red'
+                                        color: node.color || '#97c2fc'
                                     }
                                 };
                                 network.clustering.cluster(clusterOptions);
@@ -393,6 +504,28 @@ angular.module('openITCOCKPIT')
             }
             if($scope.post.Container.id !== null){
                 $scope.loadContainers();
+            }
+        }, true);
+
+        $scope.$watch('tabName', function(){
+            if($scope.init){
+                return;
+            }
+            if($scope.tabName === 'ContainersMap'){
+                if($scope.lastMapContainerId !== $scope.post.Container.id){
+                    $scope.loadContainerDetails();
+                }
+                $scope.container = document.getElementById('containermap');
+                var offset = $($scope.container).offset();
+                var height = (window.innerHeight - offset.top - 70);
+                $($($scope.container)).css({
+                    'height': height
+                });
+
+            }else{
+                if($scope.lastTreeContainerId !== $scope.post.Container.id){
+                    $scope.loadContainerDetails();
+                }
             }
         }, true);
 

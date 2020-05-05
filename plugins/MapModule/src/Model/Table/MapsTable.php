@@ -1991,4 +1991,51 @@ class MapsTable extends Table {
         }
         return $query->toArray();
     }
+
+    /**
+     * @param int $containerId
+     * @param string $type
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getMapsByContainerIdExact($containerId, $type = 'all', $index = 'id', $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->select([
+                'Maps.id',
+                'Maps.name'
+            ])
+            ->innerJoinWith('Containers', function (Query $q) use ($containerId, $MY_RIGHTS) {
+                $q->disableAutoFields()
+                    ->select([
+                        'Containers.id'
+                    ])
+                    ->where([
+                        'Containers.id' => $containerId
+                    ]);
+                if (!empty($MY_RIGHTS)) {
+                    $q->andWhere([
+                        'Containers.id IN' => $MY_RIGHTS
+                    ]);
+                }
+                return $q;
+            })
+            ->disableHydration();
+
+        $result = $query->toArray();
+
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row[$index]] = $row['name'];
+        }
+
+        return $list;
+    }
 }

@@ -109,9 +109,10 @@ class InstantreportsTable extends Table {
             ->notEmptyString('name');
 
         $validator
-            ->scalar('timeperiod_id')
-            ->requirePresence('timeperiod_id', 'create')
-            ->notEmptyString('timeperiod_id');
+            ->integer('timeperiod_id')
+            ->allowEmptyString('timeperiod_id', null, false)
+            ->requirePresence('timeperiod_id')
+            ->greaterThan('timeperiod_id', 0);
 
         $validator
             ->add('send_email', 'custom', [

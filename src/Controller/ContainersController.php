@@ -644,6 +644,7 @@ class ContainersController extends AppController {
         if (!$ContainersTable->existsById($id)) {
             throw new NotFoundException(__('Invalid container'));
         }
+        $containersAsTree = $this->request->getQuery('asTree', 'true') === 'true';
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
@@ -652,41 +653,14 @@ class ContainersController extends AppController {
 
         $container = $ContainersTable->getContainerById($id, $MY_RIGHTS);
         $subContainers = $ContainersTable->getContainerWithAllChildren($id, $MY_RIGHTS);
-//debug($container);
-//debug($subContainers);
-//die();
-        $containerMap = $ContainersTable->getContainerMap($container, $subContainers);
-//debug($containerMap);die();
-//return;
-
-
-        $this->set('containerMap', $containerMap);
-        $this->viewBuilder()->setOption('serialize', ['containerMap']);
-
-
-        return;
-
-        if (Plugin::isLoaded('DistributeModule')) {
-            $SatelliteModel = $ModuleManager->loadModel('Satellite');
-            $satellites = $SatelliteModel->find('all', [
-                'recursive'  => -1,
-                'fields'     => [
-                    'Satellite.id',
-                    'Satellite.name'
-                ],
-                'conditions' => [
-                    'Satellite.container_id' => $id
-                ],
-                'order'      => [
-                    'Satellite.name' => 'asc'
-                ]
-            ]);
-            if (!empty($satellites)) {
-                $containerDetails['Satellite'] = $satellites;
-            }
+        if($containersAsTree === false){
+            $containersWithChilds = Hash::filter($subContainers);
+            $this->set('containersWithChilds', $containersWithChilds);
+            $this->viewBuilder()->setOption('serialize', ['containersWithChilds']);
+        }else{
+            $containerMap = $ContainersTable->getContainerMap($container, $subContainers);
+            $this->set('containerMap', $containerMap);
+            $this->viewBuilder()->setOption('serialize', ['containerMap']);
         }
-        $this->set(compact(['containerDetails']));
-        $this->viewBuilder()->setOption('serialize', ['containerDetails']);
-
     }
 }

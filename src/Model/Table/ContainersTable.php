@@ -14,6 +14,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\ContainerNestedSet;
+use MapModule\Model\Table\MapsTable;
 
 /**
  * Containers Model
@@ -701,11 +702,6 @@ class ContainersTable extends Table {
         $containers[] = $parentContainer;
         $containers = Hash::sort($containers, '{n}.id', 'asc');
 
-        /** Container Objects */
-        /** @var TenantsTable $TenantsTable */
-        $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
-        /** @var LocationsTable $LocationsTable */
-        $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
 
         /** Monitoring Objects */
         /** @var HosttemplatesTable $HosttemplatesTable */
@@ -736,19 +732,28 @@ class ContainersTable extends Table {
         $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
         /** @var $ServiceescalationsTable ServiceescalationsTable */
         $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+
+        /** Reports Objects */
+
+        /** @var $InstantreportsTable InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
         if (Plugin::isLoaded('AutoreportModule')) {
             /** @var $AutoreportsTable AutoreportsTable */
             $AutoreportsTable = TableRegistry::getTableLocator()->get('AutoreportModule.Autoreports');
         }
+
+        /** Satellites Objects */
+
         if (Plugin::isLoaded('DistributeModule')) {
             /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
         }
-        /** @var $InstantreportsTable InstantreportsTable */
-        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
 
+        /** Maps Objects */
 
-        //debug($containers);
+        /** @var $MapsTable MapsTable */
+        $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+
         /**
          * 'CT_GLOBAL'               => 1,
          * 'CT_TENANT'               => 2,
@@ -760,6 +765,7 @@ class ContainersTable extends Table {
          * 'CT_SERVICETEMPLATEGROUP' => 9,
          */
 
+
         foreach ($containers as $index => $container) {
             switch ($container['containertype_id']) {
                 case CT_GLOBAL:
@@ -770,28 +776,32 @@ class ContainersTable extends Table {
                     $containers[$index]['childsElements']['hosttemplates'] = $HosttemplatesTable->getHosttemplatesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     $containers[$index]['childsElements']['hostgroups'] = $HostgroupsTable->getHostgroupsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     $containers[$index]['childsElements']['servicetemplates'] = $ServicetemplatesTable->getServicetemplatesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
-                    $childrenContainers[$index]['childsElements']['servicetemplategroups'] = $ServicetemplategroupsTable->getServicetemplategroupsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['servicetemplategroups'] = $ServicetemplategroupsTable->getServicetemplategroupsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     $containers[$index]['childsElements']['servicegroups'] = $ServicegroupsTable->getServicegroupsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     $containers[$index]['childsElements']['timeperiods'] = $TimeperiodsTable->getTimeperiodsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     $containers[$index]['childsElements']['contacts'] = $ContactsTable->getContactsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
-                    $containers[$index]['childsElements']['contactGroups'] = $ContactgroupsTable->getContactgroupsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['contactgroups'] = $ContactgroupsTable->getContactgroupsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
 
                     // label Type_#Id
-                    $childrenContainers[$index]['childsElements']['hostDependencies'] = $HostdependenciesTable->getHostdependenciesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
-                    $childrenContainers[$index]['childsElements']['hostEscalations'] = $HostescalationsTable->getHostescalationsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
-                    $childrenContainers[$index]['childsElements']['serviceDependencies'] = $ServicedependenciesTable->getServicedependenciesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
-                    $childrenContainers[$index]['childsElements']['serviceEscalations'] = $ServiceescalationsTable->getServiceescalationsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['hostdependencies'] = $HostdependenciesTable->getHostdependenciesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['hostescalations'] = $HostescalationsTable->getHostescalationsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['servicedependencies'] = $ServicedependenciesTable->getServicedependenciesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['serviceescalations'] = $ServiceescalationsTable->getServiceescalationsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
 
                     // Load Reports
-                    $childrenContainers[$index]['childsElements']['instantReports'] = $InstantreportsTable->getInstantreportsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['instantreports'] = $InstantreportsTable->getInstantreportsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     if (isset($AutoreportsTable)) {
-                        $childrenContainers[$index]['childsElements']['autoReports'] = $AutoreportsTable->getAutoreportsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                        $containers[$index]['childsElements']['autoreports'] = $AutoreportsTable->getAutoreportsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     }
 
                     // Load Satellites
                     if (isset($SatellitesTable)) {
-                        $childrenContainers[$index]['childsElements']['satellites'] = $SatellitesTable->getSatellitesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+                        $containers[$index]['childsElements']['satellites'] = $SatellitesTable->getSatellitesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     }
+
+                    // Load Maps
+                    $containers[$index]['childsElements']['maps'] = $MapsTable->getMapsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
+
                     break;
             }
         }
@@ -810,16 +820,18 @@ class ContainersTable extends Table {
             3  => 'location',
             4  => 'devicegroup',
             5  => 'node',
-            6  => 'contactgroup',
-            7  => 'hostgroup',
-            8  => 'servicegroup',
-            9  => 'servicetemplategroup',
+            6  => 'contactgroups',
+            7  => 'hostgroups',
+            8  => 'servicegroups',
+            9  => 'servicetemplategroups',
             10 => 'hostdependencies',
             11 => 'hostescalations',
             12 => 'servicedependencies',
             13 => 'serviceescalations',
             14 => 'instantreports',
-            15 => 'autoreports'
+            15 => 'autoreports',
+            16 => 'maps',
+            17 => 'hosttemplates'
         ];
 
         $nodes[] = [
@@ -882,8 +894,33 @@ class ContainersTable extends Table {
         $nodes = [];
         $edges = [];
         $cluster = [];
-//debug($containerId);
-//debug($childsArray);die();
+
+        $possibleClusterTypesWithLabel = [
+            'root'                  => '/root',
+            'tenant'                => __('Tenant'),
+            'location'              => __('Location'),
+            'devicegroup'           => __('Device group'),
+            'node'                  => __('Node'),
+            'hosts'                 => __('Hosts'),
+            'hosttemplates'         => __('Host templates'),
+            'servicetemplates'      => __('Service templates'),
+            'contacts'              => __('Contacts'),
+            'contactgroups'         => __('Contact groups'),
+            'hostgroups'            => __('Host groups'),
+            'servicegroups'         => __('Service groups'),
+            'servicetemplategroups' => __('Service template groups'),
+            'hostdependencies'      => __('Host dependencies'),
+            'hostescalations'       => __('Host escalations'),
+            'servicedependencies'   => __('Service dependencies'),
+            'serviceescalations'    => __('Service escalations'),
+            'instantreports'        => __('Instant reports'),
+            'autoreports'           => __('Autoreports'),
+            'maps'                  => __('Maps'),
+            'satellites'            => __('Satellites'),
+            'timeperiods'           => __('Time periods'),
+        ];
+
+
         foreach ($childsArray as $childObjectName => $childs) {
 
             $sizeof = sizeof($childs);
@@ -892,23 +929,22 @@ class ContainersTable extends Table {
                 //This contains all childs (example: Servicetemplates and attatch all Servicetemplates to THIS node!)
                 $nodes[] = [
                     'id'            => $containerId . '_' . $childObjectName, //1_tenant
-                    'label'         => $childObjectName, // tenant
+                    'label'         => $possibleClusterTypesWithLabel[$childObjectName], // tenant
+                    'group'         => $childObjectName,
                     'createCluster' => $containerId . '_' . $childObjectName //1_tenant
                 ];
                 $cluster[] = [
                     'name'  => $containerId . '_' . $childObjectName,
-                    'label' => $childObjectName,
+                    'label' => $possibleClusterTypesWithLabel[$childObjectName],
                     'size'  => $sizeof
                 ];
                 $edges[] = [
                     'from' => $containerId,
                     'to'   => $containerId . '_' . $childObjectName,
-                    /*
                     'color'  => [
                         'inherit' => 'to',
                     ],
                     'arrows' => 'to'
-                    */
                 ];
             }
 
@@ -923,13 +959,11 @@ class ContainersTable extends Table {
                 ];
                 $edges[] = [
                     'from' => $containerId . '_' . $childObjectName,
-                    'to'   => $childObjectName . '_' . $childName . '_' . $id.'_'.$containerId
-                    /*
+                    'to'   => $childObjectName . '_' . $childName . '_' . $id . '_' . $containerId,
                     'color'  => [
                         'inherit' => 'to',
                     ],
                     'arrows' => 'to'
-                    */
                 ];
 
                 if ($sizeof === 1) {

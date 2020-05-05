@@ -116,7 +116,7 @@ class InstantreportsController extends AppController {
 
             /** @var $TimeperiodsTable TimeperiodsTable */
             $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-            $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->getData('Instantreport.timeperiod_id'));
+            $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->getData('Instantreport.timeperiod_id', 0));
 
             if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
                 $this->response = $this->response->withStatus(400);
