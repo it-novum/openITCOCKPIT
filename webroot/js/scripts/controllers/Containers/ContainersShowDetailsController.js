@@ -62,7 +62,7 @@ angular.module('openITCOCKPIT')
             if($scope.tabName === 'ContainersMap'){
                 $scope.container = document.getElementById('containermap');
                 var offset = $($scope.container).offset();
-                var height = (window.innerHeight - offset.top);
+                var height = (window.innerHeight - offset.top - 70);
                 $($($scope.container)).css({
                     'height': height
                 });
@@ -90,6 +90,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 if($scope.tabName === 'ContainersMap'){
+                    $scope.lastMapContainerId = $scope.post.Container.id;
                     var nodesData = result.data.containerMap.nodes;
                     var edgesData = result.data.containerMap.edges;
                     var cluster = result.data.containerMap.cluster;
@@ -103,6 +104,7 @@ angular.module('openITCOCKPIT')
                     }
                     $scope.mutex = false;
                 }else{
+                    $scope.lastTreeContainerId = $scope.post.Container.id;
                     $scope.containersWithChilds = result.data.containersWithChilds;
                     if($scope.containersWithChilds.length > 0){
                         $scope.isEmpty = false;
@@ -406,6 +408,28 @@ angular.module('openITCOCKPIT')
             }
             if($scope.post.Container.id !== null){
                 $scope.loadContainers();
+            }
+        }, true);
+
+        $scope.$watch('tabName', function(){
+            if($scope.init){
+                return;
+            }
+            if($scope.tabName === 'ContainersMap'){
+                if($scope.lastMapContainerId !== $scope.post.Container.id){
+                    $scope.loadContainerDetails();
+                }
+                $scope.container = document.getElementById('containermap');
+                var offset = $($scope.container).offset();
+                var height = (window.innerHeight - offset.top - 70);
+                $($($scope.container)).css({
+                    'height': height
+                });
+
+            }else{
+                if($scope.lastTreeContainerId !== $scope.post.Container.id){
+                    $scope.loadContainerDetails();
+                }
             }
         }, true);
 
