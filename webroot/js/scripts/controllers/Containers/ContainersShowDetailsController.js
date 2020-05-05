@@ -171,22 +171,22 @@ angular.module('openITCOCKPIT')
                     },
                     tenant: {
                         shape: 'icon',
+                        color: '#ff4444',
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf015',
                             size: 35,
-                            color: 'red',
-                            fontColor: 'red'
+                            color: '#ff4444'
                         }
                     },
                     location: {
                         shape: 'icon',
+                        color: '#ff8800', // color for edges
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf124',
                             size: 35,
-                            color: 'orange',
-                            fontColor: 'orange'
+                            color: '#ff8800',
                         }
                     },
                     node: {
@@ -383,6 +383,21 @@ angular.module('openITCOCKPIT')
                     },
                 },
                 physics: {
+                    barnesHut: {
+                        gravitationalConstant: -2000,
+                        centralGravity: 0.3,
+                        springLength: 95,
+                        springConstant: 0.04,
+                        damping: 0.09
+                    },
+                    maxVelocity: 146,
+                    solver: 'barnesHut',
+                    timestep: 0.35,
+                    stabilization: {
+                        enabled: true,
+                        iterations: 2000,
+                        updateInterval: 25
+                    }
                     /*forceAtlas2Based: {
                         gravitationalConstant: -138,
                         centralGravity: 0.02,

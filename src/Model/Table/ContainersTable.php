@@ -941,6 +941,10 @@ class ContainersTable extends Table {
                 $edges[] = [
                     'from' => $containerId,
                     'to'   => $containerId . '_' . $childObjectName,
+                    'color'  => [
+                        'inherit' => 'to',
+                    ],
+                    'arrows' => 'to'
                 ];
             }
 
@@ -955,7 +959,11 @@ class ContainersTable extends Table {
                 ];
                 $edges[] = [
                     'from' => $containerId . '_' . $childObjectName,
-                    'to'   => $childObjectName . '_' . $childName . '_' . $id . '_' . $containerId
+                    'to'   => $childObjectName . '_' . $childName . '_' . $id . '_' . $containerId,
+                    'color'  => [
+                        'inherit' => 'to',
+                    ],
+                    'arrows' => 'to'
                 ];
 
                 if ($sizeof === 1) {
