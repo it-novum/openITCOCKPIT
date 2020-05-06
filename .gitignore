@@ -86,4 +86,5 @@ plugins/AxiosAssystModule
 plugins/DesignModule
 plugins/PrometheusModule
 plugins/TemplateExportModule
+plugins/TemplateImportModule
 
