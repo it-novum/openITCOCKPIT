@@ -90,8 +90,6 @@ class InstantreportCreator {
      */
     public function createReport($instantReportId, $fromDate, $toDate) {
         $UserTime = $this->UserTime;
-        $offset = $UserTime->getUserTimeToServerOffset();
-
         $reportData = [];
         /** @var $InstantreportsTable InstantreportsTable */
         $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
@@ -141,15 +139,18 @@ class InstantreportCreator {
             'array_sum'
         );
 
+        //User server timezone but with user date format
+        $ServerTime = new UserTime(date_default_timezone_get(), $UserTime->getFormatString());
         $reportDetails = [
             'name'       => $instantReport->get('name'),
             'evaluation' => $instantReport->get('evaluation'),
             'type'       => $instantReport->get('type'),
             'summary'    => $instantReport->get('summary'),
             'totalTime'  => $totalTime,
-            'from'       => $UserTime->format($fromDate - $offset),
-            'to'         => $UserTime->format($toDate - $offset)
+            'from'       => $ServerTime->format($fromDate),
+            'to'         => $ServerTime->format($toDate)
         ];
+
         $globalDowntimes = [];
         if ($instantReport->get('downtimes') === 1) {
             /** @var $SystemfailuresTable SystemfailuresTable */

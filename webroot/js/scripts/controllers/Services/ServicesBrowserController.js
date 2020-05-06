@@ -524,9 +524,7 @@ angular.module('openITCOCKPIT')
             options.xaxis.min = ((lastGraphStart + $scope.timezone.user_time_to_server_offset) * 1000);
             options.xaxis.max = ((graphRenderEnd + $scope.timezone.user_time_to_server_offset) * 1000);
 
-            options.yaxis = {
-                axisLabel: performance_data.datasource.unit
-            };
+            options.yaxis.axisLabel = performance_data.datasource.unit;
 
             $scope.currentGraphUnit = null;
             if(performance_data.datasource.unit){

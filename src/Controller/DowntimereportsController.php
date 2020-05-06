@@ -102,6 +102,9 @@ class DowntimereportsController extends AppController {
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
             $fromDate = strtotime($this->request->getData('from_date') . ' 00:00:00');
             $toDate = strtotime($this->request->getData('to_date') . ' 23:59:59');
+            if($toDate > time()){
+                $toDate = time();
+            }
             $evaluationType = $this->request->getData('evaluation_type');
             $reflectionState = $this->request->getData('reflection_state');
 
@@ -186,6 +189,9 @@ class DowntimereportsController extends AppController {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         $fromDate = strtotime($this->request->getQuery('data.from_date', date('d.m.Y')) . ' 00:00:00');
         $toDate = strtotime($this->request->getQuery('data.to_date', date('d.m.Y')) . ' 23:59:59');
+        if ($toDate > time()) {
+            $toDate = time();
+        }
 
         $this->set('fromDate', $fromDate);
         $this->set('toDate', $toDate);
@@ -211,6 +217,8 @@ class DowntimereportsController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
+        //User server timezone but with user date format
+        $ServerTime = new UserTime(date_default_timezone_get(), $UserTime->getFormatString());
 
         $downtimeReport = $this->createReport(
             $fromDate,
@@ -235,7 +243,7 @@ class DowntimereportsController extends AppController {
         }
 
         $this->set('downtimeReport', $downtimeReport);
-        $this->set('UserTime', $UserTime);
+        $this->set('UserTime', $ServerTime);
 
         $this->viewBuilder()->setOption(
             'pdfConfig',
