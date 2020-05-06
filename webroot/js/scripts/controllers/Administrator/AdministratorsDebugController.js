@@ -130,9 +130,7 @@ angular.module('openITCOCKPIT')
                 radius: 1
             };
 
-            options.yaxis = {
-                axisLabel: 'CPU load'
-            };
+            options.yaxis.axisLabel = 'CPU load';
 
             plot = $.plot('#graphCanvas', [chart1, chart2, chart3], options);
         };

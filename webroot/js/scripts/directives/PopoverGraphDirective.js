@@ -76,9 +76,7 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                     options.xaxis.max = (graphEnd + $scope.timezone.user_time_to_server_offset) * 1000;
 
                     if($scope.popoverPerfdata[index].datasource.unit){
-                        options.yaxis = {
-                            axisLabel: $scope.popoverPerfdata[index].datasource.unit
-                        };
+                        options.yaxis.axisLabel = $scope.popoverPerfdata[index].datasource.unit;
                     }
 
                     if(document.getElementById('serviceGraphFlot-' + $scope.graphPopoverId + '-' + index) && !$scope.mouseout){
