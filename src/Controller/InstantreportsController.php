@@ -30,38 +30,22 @@ namespace App\Controller;
 use App\Form\InstantreportForm;
 use App\itnovum\openITCOCKPIT\Core\Reports\InstantreportCreator;
 use App\Lib\Exceptions\MissingDbBackendException;
-use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\InstantreportsTable;
-use App\Model\Table\SystemfailuresTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DbBackend;
-use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
-use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
-use itnovum\openITCOCKPIT\Core\Hoststatus;
-use itnovum\openITCOCKPIT\Core\HoststatusFields;
-use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
-use itnovum\openITCOCKPIT\Core\Reports\DowntimesMerger;
-use itnovum\openITCOCKPIT\Core\Reports\StatehistoryConverter;
-use itnovum\openITCOCKPIT\Core\ServicestatusFields;
-use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
-use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
-use itnovum\openITCOCKPIT\Core\Views\Downtime;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
 use Statusengine2Module\Model\Entity\DowntimeHost;
-use Statusengine2Module\Model\Table\StatehistoryHostsTable;
-use Statusengine2Module\Model\Table\StatehistoryServicesTable;
 
 
 /**
@@ -221,14 +205,14 @@ class InstantreportsController extends AppController {
         $instantreportId = $this->request->getData('instantreport_id');
         $fromDate = strtotime($this->request->getData('from_date') . ' 00:00:00');
         $toDate = strtotime($this->request->getData('to_date') . ' 23:59:59');
-        if($toDate > time()){
-            $toDate = time();
-        }
 
         $User = new User($this->getUser());
-
+        if ($toDate > time()) {
+            $toDate = time();
+        }
+        $UserTime = $User->getUserTime();
         $InstantreportCreator = new InstantreportCreator(
-            $User->getUserTime(),
+            $UserTime,
             $this->MY_RIGHTS,
             $this->hasRootPrivileges
         );
@@ -240,7 +224,7 @@ class InstantreportsController extends AppController {
             $toDate
         );
 
-        if(isset($instantReport['error'])){
+        if (isset($instantReport['error'])) {
             $this->response = $this->response->withStatus(400);
             $this->set('error', $instantReport['error']);
             $this->viewBuilder()->setOption('serialize', ['error']);
@@ -300,11 +284,11 @@ class InstantreportsController extends AppController {
 
     /**
      * @throws MissingDbBackendException
+     * @throws \Exception
      */
     public function createPdfReport() {
         $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
-        $offset = $UserTime->getUserTimeToServerOffset();
 
 
         $requestData = $this->request->getQuery('data', []);
@@ -328,6 +312,9 @@ class InstantreportsController extends AppController {
 
         $fromDate = strtotime($this->request->getQuery('data.from_date', date('d.m.Y')) . ' 00:00:00');
         $toDate = strtotime($this->request->getQuery('data.to_date', date('d.m.Y')) . ' 23:59:59');
+        if ($toDate > time()) {
+            $toDate = time();
+        }
         $instantreportId = $this->request->getQuery('data.instantreport_id', 0);
 
 
@@ -349,7 +336,7 @@ class InstantreportsController extends AppController {
             $toDate
         );
 
-        if(isset($instantReport['error'])){
+        if (isset($instantReport['error'])) {
             $this->response = $this->response->withStatus(400);
             $this->set('error', $instantReport['error']);
             $this->viewBuilder()->setOption('serialize', ['error']);
@@ -369,13 +356,14 @@ class InstantreportsController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['error']);
         }
 
-        $this->set('fromDate', $fromDate - $offset);
-        $this->set('toDate', $toDate - $offset);
+        //User server timezone but with user date format
+        $ServerTime = new UserTime(date_default_timezone_get(), $UserTime->getFormatString());
+
+        $this->set('fromDate', $ServerTime->format($fromDate));
+        $this->set('toDate', $ServerTime->format($toDate));
 
 
         $this->set('instantReport', $instantReport);
-        $this->set('UserTime', $UserTime);
-
         $this->viewBuilder()->setOption('pdfConfig', [
                 'download' => false,
                 'filename' => sprintf('InstantReport_%s', $instantReport['reportDetails']['name']) . date('dmY_his') . '.pdf'
