@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core\Comparison;
 
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 /**
  * Class ServiceComparisonForSave
@@ -77,6 +78,51 @@ class ServiceComparisonForSave {
      */
     public function __construct($service, $servicetemplate, $hostContactAndContactgroups = [], $hosttemplateContactAndContactgroups = []) {
         $this->service = $service['Service'];
+
+        // Check for missing array keys (lazy service create)
+        if (!isset($this->service['contacts']['_ids'])) {
+            if (!empty($servicetemplate['Servicetemplate']['contacts']['_ids'])) {
+                $this->service['contacts']['_ids'] = $servicetemplate['Servicetemplate']['contacts']['_ids'];
+            } else if (!empty($hostContactAndContactgroups['contacts']['_ids'])) {
+                $this->service['contacts']['_ids'] = $hostContactAndContactgroups['contacts']['_ids'];
+            } else {
+                $this->service['contacts']['_ids'] = $hosttemplateContactAndContactgroups['contacts']['_ids'];
+            }
+        }
+
+        if (!isset($this->service['contactgroups']['_ids'])) {
+            if (!empty($servicetemplate['Servicetemplate']['contactgroups']['_ids'])) {
+                $this->service['contactgroups']['_ids'] = $servicetemplate['Servicetemplate']['contactgroups']['_ids'];
+            } else if (!empty($hostContactAndContactgroups['contactgroups']['_ids'])) {
+                $this->service['contactgroups']['_ids'] = $hostContactAndContactgroups['contactgroups']['_ids'];
+            } else {
+                $this->service['contactgroups']['_ids'] = $hosttemplateContactAndContactgroups['contactgroups']['_ids'];
+            }
+        }
+
+        if (!isset($this->service['servicegroups']['_ids'])) {
+            $this->service['servicegroups']['_ids'] = $servicetemplate['Servicetemplate']['servicegroups']['_ids'];
+        }
+
+        $hasMany = ['servicecommandargumentvalues', 'serviceeventcommandargumentvalues', 'customvariables'];
+        foreach ($hasMany as $key) {
+            if (!isset($this->service[$key])) {
+                $this->service[$key] = [];
+            }
+        }
+
+        // isset() can not handle null
+        if (!array_key_exists('command_id', $this->service)) {
+            $this->service['command_id'] = $servicetemplate['Servicetemplate']['command_id'];
+        }
+        if (!array_key_exists('eventhandler_command_id', $this->service)) {
+            $this->service['eventhandler_command_id'] = $servicetemplate['Servicetemplate']['eventhandler_command_id'];
+        }
+        if (!array_key_exists('flap_detection_enabled', $this->service)) {
+            $this->service['flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
+        }
+
+
         $this->servicetemplate = $servicetemplate['Servicetemplate'];
         $this->hostContactAndContactgroups = $hostContactAndContactgroups;
         $this->hosttemplateContactAndContactgroups = $hosttemplateContactAndContactgroups;
@@ -104,6 +150,10 @@ class ServiceComparisonForSave {
         $data['own_customvariables'] = (int)$this->hasOwnCustomvariables;
         $data['host_id'] = $this->service['host_id'];
         $data['servicetemplate_id'] = $this->service['servicetemplate_id'];
+
+        if (!empty($this->service['prometheus_alert_rule'])) {
+            $data['prometheus_alert_rule'] = $this->service['prometheus_alert_rule'];
+        }
 
         return $data;
     }
@@ -161,10 +211,10 @@ class ServiceComparisonForSave {
                 } else {
                     $data[$field] = null;
                 }
-            }else{
-                if(array_key_exists($field, $this->service)){
+            } else {
+                if (array_key_exists($field, $this->service)) {
                     //$this->service[$field] needs to be null from self::getServiceSkeleton() may be?
-                    if($this->service[$field] === null){
+                    if ($this->service[$field] === null) {
                         $data[$field] = null;
                     }
                 }
