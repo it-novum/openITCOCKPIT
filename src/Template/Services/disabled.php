@@ -263,16 +263,16 @@
                             <span ng-show="selectedElements > 0">({{selectedElements}})</span>
                         </div>
                         <div class="col-xs-12 col-md-2">
-                                <span ng-click="selectAll()" class="pointer">
-                                    <i class="fas fa-lg fa-check-square"></i>
-                                    <?php echo __('Select all'); ?>
-                                </span>
+                            <span ng-click="selectAll()" class="pointer">
+                                <i class="fas fa-lg fa-check-square"></i>
+                                <?php echo __('Select all'); ?>
+                            </span>
                         </div>
                         <div class="col-xs-12 col-md-2">
-                                <span ng-click="undoSelection()" class="pointer">
-                                    <i class="fas fa-lg fa-square"></i>
-                                    <?php echo __('Undo selection'); ?>
-                                </span>
+                            <span ng-click="undoSelection()" class="pointer">
+                                <i class="fas fa-lg fa-square"></i>
+                                <?php echo __('Undo selection'); ?>
+                            </span>
                         </div>
                         <div class="col-xs-12 col-md-2">
                             <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
@@ -280,13 +280,14 @@
                                 <?php echo __('Copy'); ?>
                             </a>
                         </div>
-                        <div class="col-xs-12 col-md-2 txt-color-red">
+                        <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                            <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fas fa-trash"></i>
                                     <?php echo __('Delete all'); ?>
                                 </span>
-                        </div>
-
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                     <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

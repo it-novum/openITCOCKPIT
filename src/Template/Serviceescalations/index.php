@@ -327,7 +327,8 @@
                                     <ul class="list-unstyled">
                                         <li ng-repeat="service in serviceescalation.services"
                                             title="{{service.servicename}}">
-                                            <div class="label-group label-breadcrumb label-breadcrumb-success padding-2">
+                                            <div
+                                                class="label-group label-breadcrumb label-breadcrumb-success padding-2">
                                                 <label class="badge badge-success label-xs">
                                                     <i class="fa fa-plus" aria-hidden="true"></i>
                                                 </label>
@@ -338,8 +339,8 @@
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                                {{service.servicename}}
-                                                            </span>
+                                                        {{service.servicename}}
+                                                    </span>
                                                 <?php endif; ?>
                                             </div>
                                             <i ng-if="service.disabled == 1"
@@ -363,8 +364,8 @@
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                                {{service.servicename}}
-                                                            </span>
+                                                        {{service.servicename}}
+                                                    </span>
                                                 <?php endif; ?>
                                             </div>
                                             <i ng-if="service.disabled == 1"
@@ -388,8 +389,8 @@
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                            {{servicegroup.container.name}}
-                                                        </span>
+                                                        {{servicegroup.container.name}}
+                                                    </span>
                                                 <?php endif; ?>
                                             </div>
                                         </li>
@@ -410,8 +411,8 @@
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                                {{servicegroup.container.name}}
-                                                            </span>
+                                                        {{servicegroup.container.name}}
+                                                    </span>
                                                 <?php endif; ?>
                                             </div>
                                         </li>
@@ -470,18 +471,18 @@
                                         <span class="label-forced badge-warning margin-right-5"
                                               title="<?php echo __('Warning'); ?>"
                                               ng-show="serviceescalation.escalate_on_warning">
-                                                    <?php echo __('W'); ?>
-                                                </span>
+                                            <?php echo __('W'); ?>
+                                        </span>
                                         <span class="label-forced badge-danger margin-right-5"
                                               title="<?php echo __('Critical'); ?>"
                                               ng-show="serviceescalation.escalate_on_critical">
-                                                    <?php echo __('C'); ?>
-                                                </span>
+                                            <?php echo __('C'); ?>
+                                        </span>
                                         <span class="label-forced badge-secondary margin-right-5"
                                               title="<?php echo __('Unknown'); ?>"
                                               ng-show="serviceescalation.escalate_on_unknown">
-                                                    <?php echo __('U'); ?>
-                                                </span>
+                                            <?php echo __('U'); ?>
+                                        </span>
                                     </div>
                                 </td>
                                 <td class="text-center">
@@ -510,7 +511,7 @@
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('edit', 'serviceescalations')): ?>
                                                 <a ui-sref="ServiceescalationsEdit({id: serviceescalation.id})"
-                                                 ng-if="serviceescalation.allowEdit"
+                                                   ng-if="serviceescalation.allowEdit"
                                                    class="dropdown-item">
                                                     <i class="fa fa-cog"></i>
                                                     <?php echo __('Edit'); ?>
@@ -554,12 +555,14 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                            </div>
+                            <?php if ($this->Acl->hasPermission('delete', 'serviceescalations')): ?>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete all'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
