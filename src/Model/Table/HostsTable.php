@@ -10,6 +10,7 @@ use App\Model\Entity\Changelog;
 use App\Model\Entity\Host;
 use App\Model\Entity\Hostdependency;
 use App\Model\Entity\Hostescalation;
+use Cake\Core\Plugin;
 use Cake\Database\Expression\Comparison;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -1640,21 +1641,27 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostForEdit($id) {
+        $contain = [
+            'Contactgroups',
+            'Contacts',
+            'Hostgroups',
+            'Customvariables',
+            'Parenthosts',
+            'HostsToContainersSharing',
+            'Hostcommandargumentvalues' => [
+                'Commandarguments'
+            ]
+        ];
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $contain[] = 'PrometheusExporters';
+        };
+
         $query = $this->find()
             ->where([
                 'Hosts.id' => $id
             ])
-            ->contain([
-                'Contactgroups',
-                'Contacts',
-                'Hostgroups',
-                'Customvariables',
-                'Parenthosts',
-                'HostsToContainersSharing',
-                'Hostcommandargumentvalues' => [
-                    'Commandarguments'
-                ]
-            ])
+            ->contain($contain)
             ->disableHydration()
             ->first();
 
@@ -1673,6 +1680,9 @@ class HostsTable extends Table {
         ];
         $host['hosts_to_containers_sharing'] = [
             '_ids' => Hash::extract($query, 'hosts_to_containers_sharing.{n}.id')
+        ];
+        $host['prometheus_exporters'] = [
+            '_ids' => Hash::extract($query, 'prometheus_exporters.{n}.id')
         ];
 
         return [
@@ -3587,6 +3597,60 @@ class HostsTable extends Table {
         }
 
         return $query['satellite_id'];
+    }
+
+    /**
+     * @param int $containerId
+     * @param string $type
+     * @param array $MY_RIGHTS
+     * @param array $where
+     * @return array
+     */
+    public function getHostsByContainerIdExact($containerId, $type = 'all', $index = 'id', $MY_RIGHTS = [], $where = []) {
+        $_where = [
+            'Hosts.disabled IN' => [0],
+            'Hosts.container_id' => $containerId
+        ];
+
+        $where = Hash::merge($_where, $where);
+
+        $query = $this->find();
+        $query->select([
+            'Hosts.' . $index,
+            'Hosts.name'
+        ]);
+        $query->where($where);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+        $query->group(['Hosts.id']);
+        $query->order([
+            'Hosts.name' => 'asc'
+        ]);
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row[$index]] = $row['name'];
+        }
+
+        return $list;
     }
 
 }

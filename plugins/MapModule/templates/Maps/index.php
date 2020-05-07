@@ -178,7 +178,7 @@
                                                    ng-if="map.allowEdit"
                                                    class="dropdown-item">
                                                     <i class="fa fa-edit"></i>
-                                                    <?php echo __('Edit'); ?>
+                                                    <?php echo __('Edit settings'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('copy', 'maps', 'mapmodule')): ?>

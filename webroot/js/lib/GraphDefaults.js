@@ -111,6 +111,17 @@ var GraphDefaults = (function(){
                 timeformat: '%d.%m.%y %H:%M:%S' // This is handled by a plugin, if it is used -> jquery.flot.time.js,
                 //timezone: 'browser'
             },
+            yaxis: {
+                tickFormatter: function(val, axis){
+                    //return val.toFixed(axis.tickDecimals); // flot.js default tickFormatter
+
+                    // Format number to US format to also get decimal separators for large numbers
+                    return new Intl.NumberFormat('en-US', {
+                        style: 'decimal',
+                        minimumFractionDigits: axis.tickDecimals
+                    }).format(val.toFixed(axis.tickDecimals));
+                }
+            },
             lines: {
                 show: true,
                 lineWidth: 1,

@@ -313,50 +313,52 @@ class SystemdowntimesTable extends Table {
      */
     public function getRecurringHostDowntimes(SystemdowntimesConditions $SystemdowntimesConditions, $PaginateOMat = null) {
         $MY_RIGHTS = $SystemdowntimesConditions->getContainerIds();
+        $query = $this->find();
+        $query->select([
+            'Systemdowntimes.id',
+            'Systemdowntimes.objecttype_id',
+            'Systemdowntimes.object_id',
+            'Systemdowntimes.downtimetype_id',
+            'Systemdowntimes.weekdays',
+            'Systemdowntimes.day_of_month',
+            'Systemdowntimes.from_time',
+            'Systemdowntimes.to_time',
+            'Systemdowntimes.duration',
+            'Systemdowntimes.comment',
+            'Systemdowntimes.author',
+            'Hosts.id',
+            'Hosts.name',
+            'Hosts.uuid',
+            'container_ids' => $query->newExpr('GROUP_CONCAT(DISTINCT HostsToContainersSharing.container_id)')
+        ])
+            ->innerJoin(['Hosts' => 'hosts'], [
+                'Hosts.id = Systemdowntimes.object_id'
+            ]);
+        $containerJoinConditions = [
+            'HostsToContainersSharing.host_id = Hosts.id'
+        ];
+        if (!empty($MY_RIGHTS)) {
+            $containerJoinConditions[] = [
+                'HostsToContainersSharing.container_id IN ' => $MY_RIGHTS
+            ];
+        }
 
-        $query = $this->find()
-            ->select([
-                'Systemdowntimes.id',
-                'Systemdowntimes.objecttype_id',
-                'Systemdowntimes.object_id',
-                'Systemdowntimes.downtimetype_id',
-                'Systemdowntimes.weekdays',
-                'Systemdowntimes.day_of_month',
-                'Systemdowntimes.from_time',
-                'Systemdowntimes.to_time',
-                'Systemdowntimes.duration',
-                'Systemdowntimes.comment',
-                'Systemdowntimes.author',
-            ])
-            ->contain([
-                'Hosts' => function (Query $query) use ($MY_RIGHTS) {
-                    $query->contain([
-                        'HostsToContainersSharing' => function (Query $query) use ($MY_RIGHTS) {
-                            if (!empty($MY_RIGHTS)) {
-                                $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
-                                    'HostsToContainersSharing.host_id = Hosts.id'
-                                ]);
-                                $query->where([
-                                    'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
-                                ]);
-                            }
-                        }
-                    ]);
-                    return $query;
-                }
-            ])
+        $query->innerJoin([
+            'HostsToContainersSharing' => 'hosts_to_containers'
+        ], $containerJoinConditions
+        )
             ->andWhere([
                 'Systemdowntimes.objecttype_id' => OBJECT_HOST
             ]);
-
         if ($SystemdowntimesConditions->hasConditions()) {
             $query->andWhere($SystemdowntimesConditions->getConditions());
         }
 
         $query->group([
             'Systemdowntimes.id'
-        ])
-            ->order($SystemdowntimesConditions->getOrder())
+        ]);
+
+        $query->order($SystemdowntimesConditions->getOrder())
             ->disableHydration();
 
         if ($PaginateOMat === null) {
@@ -394,38 +396,42 @@ class SystemdowntimesTable extends Table {
             'Systemdowntimes.duration',
             'Systemdowntimes.comment',
             'Systemdowntimes.author',
-
-            'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)')
+            'Services.id',
+            'Services.uuid',
+            'container_ids' => $query->newExpr('GROUP_CONCAT(DISTINCT HostsToContainersSharing.container_id)'),
+            'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+            'Hosts.id',
+            'Hosts.uuid',
+            'Hosts.name',
+            'Hosts.disabled',
+            'Hosts.satellite_id'
         ])
-            ->contain([
-                'Services' => function (Query $query) use ($MY_RIGHTS) {
-                    $query->contain([
-                        'Hosts' => function (Query $query) use ($MY_RIGHTS) {
-                            $query->contain([
-                                'HostsToContainersSharing' => function (Query $query) use ($MY_RIGHTS) {
-                                    if (!empty($MY_RIGHTS)) {
-                                        $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
-                                            'HostsToContainersSharing.host_id = Hosts.id'
-                                        ]);
-                                        $query->where([
-                                            'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
-                                        ]);
-                                    }
-                                }
-                            ]);
-                            return $query;
-                        },
-                        'Servicetemplates'
-                    ]);
-                    return $query;
-                },
-
-
+            ->innerJoin(['Services' => 'services'], [
+                'Services.id = Systemdowntimes.object_id'
             ])
+            ->innerJoin(['Hosts' => 'hosts'], [
+                'Hosts.id = Services.host_id'
+            ]);
+        $containerJoinConditions = [
+            'HostsToContainersSharing.host_id = Hosts.id'
+        ];
+        if (!empty($MY_RIGHTS)) {
+            $containerJoinConditions[] = [
+                'HostsToContainersSharing.container_id IN ' => $MY_RIGHTS
+            ];
+        }
+
+        $query->innerJoin([
+            'HostsToContainersSharing' => 'hosts_to_containers'
+        ], $containerJoinConditions
+        );
+
+        $query->innerJoin(['Servicetemplates' => 'servicetemplates'], [
+            'Servicetemplates.id = Services.servicetemplate_id'
+        ])
             ->andWhere([
                 'Systemdowntimes.objecttype_id' => OBJECT_SERVICE
             ]);
-
         $where = $SystemdowntimesConditions->getConditions();
         $having = null;
         if (isset($where['servicename LIKE'])) {
@@ -448,7 +454,6 @@ class SystemdowntimesTable extends Table {
         ])
             ->order($SystemdowntimesConditions->getOrder())
             ->disableHydration();
-
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $this->emptyArrayIfNull($query->toArray());

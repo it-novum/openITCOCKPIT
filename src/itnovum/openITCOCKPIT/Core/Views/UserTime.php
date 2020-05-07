@@ -246,4 +246,8 @@ class UserTime {
         return $offset;
     }
 
+    public function getFormatString(){
+        return $this->format;
+    }
+
 }

@@ -78,6 +78,7 @@ class HostComparisonForSave {
         $data['hostgroups'] = $this->getDataForHostgroups();
         $data['hostcommandargumentvalues'] = $this->getDataForCommandarguments();
         $data['customvariables'] = $this->getDataForCustomvariables();
+        $data['prometheus_exporters'] = $this->getDataForPrometheusExporters();
 
         //Add host default data
         $data['host_type'] = GENERIC_HOST;
@@ -329,6 +330,29 @@ class HostComparisonForSave {
 
         //There is a diff, save all command argument values for this host
         return $this->host['hostcommandargumentvalues'];
+    }
+
+    /**
+     * @return array
+     */
+    public function getDataForPrometheusExporters() {
+        //Where prometheus_exporters changed or edited?
+        $prometheusExportersDiff = array_diff($this->host['prometheus_exporters']['_ids'], $this->hosttemplate['prometheus_exporters']['_ids']);
+        if (empty($prometheusExportersDiff)) {
+            //Check if Prometheus exporter got removed
+            $prometheusExportersDiff = array_diff($this->hosttemplate['prometheus_exporters']['_ids'], $this->host['prometheus_exporters']['_ids']);
+        }
+
+        if (!empty($prometheusExportersDiff)) {
+            //Host use own Prometheus exporters
+            return [
+                '_ids' => $this->host['prometheus_exporters']['_ids']
+            ];
+        }
+
+        return [
+            '_ids' => []
+        ];
     }
 
 }

@@ -78,7 +78,7 @@
                 <div class="panel-content">
                     <div id="map-editor">
                         <div class="widget-body"
-                             style="overflow: auto;min-height:600px;"
+                             style="overflow: auto;min-height:600px;position:relative;"
                              mapeditor-view=""
                              map-id="map.Map.id"
                              ng-if="map"

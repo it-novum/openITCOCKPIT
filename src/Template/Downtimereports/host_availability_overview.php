@@ -60,12 +60,12 @@
                 </div>
             </div>
         </div>
-        <div class="row margin-0">
+        <div class="row margin-0 padding-top-10">
             <service-availability-overview data="service"
                                            dynamic-color="dynamicColor"
                                            ng-repeat="service in data.Services"
                                            ng-if="evaluationType == 1"
-                                           class="col-lg-3 no-padding">
+                                           class="col-lg-3 padding-left-0 padding-right-0 padding-top-10 padding-bottom-10">
             </service-availability-overview>
         </div>
     </div>

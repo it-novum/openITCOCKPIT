@@ -62,7 +62,7 @@
                           ng-init="successMessage=
             {objectName : '<?php echo __('Contact group'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
 
-                    <div class="form-group required" ng-class="{'has-error': errors.parent_id}">
+                        <div class="form-group required" ng-class="{'has-error': errors.parent_id}">
                             <label class="control-label" for="ContainersSelect">
                                 <?php echo __('Container'); ?>
                             </label>
@@ -74,6 +74,9 @@
                                 ng-options="container.key as container.value for container in containers"
                                 ng-model="post.Contactgroup.container.parent_id">
                             </select>
+                            <div ng-show="post.Contactgroup.container.parent_id < 1" class="warning-glow">
+                                <?php echo __('Please select a container.'); ?>
+                            </div>
                             <div ng-repeat="error in errors.parent_id">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -128,7 +131,8 @@
                                     <button class="btn btn-primary" type="submit">
                                         <?php echo __('Update contact group'); ?>
                                     </button>
-                                    <a back-button href="javascript:void(0);" fallback-state='ContactgroupsIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);" fallback-state='ContactgroupsIndex'
+                                       class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

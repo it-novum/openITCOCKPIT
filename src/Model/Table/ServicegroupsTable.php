@@ -434,7 +434,7 @@ class ServicegroupsTable extends Table {
 
         $query = $this->find()
             ->contain([
-                'Containers' => function (Query $q) use ($MY_RIGHTS){
+                'Containers' => function (Query $q) use ($MY_RIGHTS) {
                     $q->select([
                         'Containers.id',
                         'Containers.name'
@@ -742,12 +742,12 @@ class ServicegroupsTable extends Table {
                 'Servicegroups.id'
             ])
             ->contain([
-                'Services'    => function (Query $query) {
+                'Services'         => function (Query $query) {
                     return $query
                         ->disableAutoFields()
                         ->select(['id']);
                 },
-                'Servicetemplates'    => function (Query $query) {
+                'Servicetemplates' => function (Query $query) {
                     return $query
                         ->disableAutoFields()
                         ->select(['id']);
@@ -769,5 +769,59 @@ class ServicegroupsTable extends Table {
             return [];
         }
         return $result->toArray();
+    }
+
+    /**
+     * @param int $containerId
+     * @param string $type
+     * @param string $index
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServicegroupsByContainerIdExact($containerId, $type = 'all', $index = 'container_id', $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->select([
+                'Servicegroups.id',
+                'Containers.id',
+                'Containers.name'
+            ])
+            ->contain([
+                'Containers'
+            ])
+            ->where([
+                'Containers.parent_id'        => $containerId,
+                'Containers.containertype_id' => CT_SERVICEGROUP
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+        $query->order([
+            'Containers.name' => 'asc'
+        ]);
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            if ($index === 'id') {
+                $list[$row['id']] = $row['container']['name'];
+            } else {
+                $list[$row['container']['id']] = $row['container']['name'];
+            }
+        }
+
+        return $list;
     }
 }

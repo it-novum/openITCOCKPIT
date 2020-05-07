@@ -37,8 +37,6 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\AngularRequest;
-use itnovum\openITCOCKPIT\Core\DbBackend;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\SystemdowntimesConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -85,20 +83,19 @@ class SystemdowntimesController extends AppController {
 
         //Prepare data for API
         $all_host_recurring_downtimes = [];
-        foreach ($recurringHostDowntimes as $recurringHostDowntime) {
-            if (!isset($recurringHostDowntime['host'])) {
-                continue;
-            }
 
+        foreach ($recurringHostDowntimes as $recurringHostDowntime) {
+            if (!isset($recurringHostDowntime['Hosts'])) {
+                    continue;
+            }
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
             } else {
-                $containerIds = Hash::extract($recurringHostDowntime['host']['hosts_to_containers_sharing'], '{n}.id');
+                $containerIds = explode(',', $recurringHostDowntime['container_ids']);
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
-
-            $Host = new Host($recurringHostDowntime['host']);
+            $Host = new Host($recurringHostDowntime['Hosts']);
             $Systemdowntime = new Systemdowntime($recurringHostDowntime, $UserTime);
 
             $tmpRecord = [
@@ -108,7 +105,6 @@ class SystemdowntimesController extends AppController {
             $tmpRecord['Host']['allow_edit'] = $allowEdit;
             $all_host_recurring_downtimes[] = $tmpRecord;
         }
-
         $this->set('all_host_recurring_downtimes', $all_host_recurring_downtimes);
         $toJson = ['all_host_recurring_downtimes', 'paging'];
         if ($this->isScrollRequest()) {
@@ -130,7 +126,7 @@ class SystemdowntimesController extends AppController {
         $Conditions = new SystemdowntimesConditions();
 
         //Process conditions
-        if ($this->hasRootPrivileges) {
+        if (!$this->hasRootPrivileges) {
             $Conditions->setContainerIds($this->MY_RIGHTS);
         }
         $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntimes.from_time', 'desc'));
@@ -138,7 +134,6 @@ class SystemdowntimesController extends AppController {
 
         /** @var $SystemdowntimesTable SystemdowntimesTable */
         $SystemdowntimesTable = TableRegistry::getTableLocator()->get('Systemdowntimes');
-
         $recurringServiceDowntimes = $SystemdowntimesTable->getRecurringServiceDowntimes($Conditions, $PaginateOMat);
 
         $User = new User($this->getUser());
@@ -147,20 +142,20 @@ class SystemdowntimesController extends AppController {
         //Prepare data for API
         $all_service_recurring_downtimes = [];
         foreach ($recurringServiceDowntimes as $recurringServiceDowntime) {
-            if (!isset($recurringServiceDowntime['service'])) {
+            if (!isset($recurringServiceDowntime['Services'])) {
                 continue;
             }
 
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
             } else {
-                $containerIds = Hash::extract($recurringServiceDowntime['host']['hosts_to_containers_sharing'], '{n}.id');
+                $containerIds = explode(',', $recurringServiceDowntime['container_ids'], '{n}.id');
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
 
-            $Service = new Service($recurringServiceDowntime['service'], $recurringServiceDowntime['servicename'], $allowEdit);
-            $Host = new Host($recurringServiceDowntime['service']['host'], $allowEdit);
+            $Service = new Service($recurringServiceDowntime['Services'], $recurringServiceDowntime['servicename'], $allowEdit);
+            $Host = new Host($recurringServiceDowntime['Hosts'], $allowEdit);
             $Systemdowntime = new Systemdowntime($recurringServiceDowntime, $UserTime);
 
             $tmpRecord = [

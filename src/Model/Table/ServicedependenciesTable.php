@@ -11,6 +11,7 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicedependenciesFilter;
@@ -527,20 +528,47 @@ class ServicedependenciesTable extends Table {
     }
 
     /**
-     * @param $containerId
+     * @param int $containerId
+     * @param string $type
+     * @param array $MY_RIGHTS
+     * @param array $where
      * @return array
      */
-    public function getServicedependenciesByContainerId($containerId) {
-        $query = $this->find()
-            ->select([
-                'Servicedependencies.id'
-            ])
-            ->where([
-                'container_id' => $containerId,
-            ])
-            ->disableHydration();
+    public function getServicedependenciesByContainerIdExact($containerId, $type = 'all', $index = 'id', $MY_RIGHTS = [], $where = []) {
+        $_where = [
+            'Servicedependencies.container_id' => $containerId
+        ];
 
-        $result = $query->all();
-        return $this->emptyArrayIfNull($result->toArray());
+        $where = Hash::merge($_where, $where);
+
+        $query = $this->find();
+        $query->select([
+            'Servicedependencies.' . $index,
+        ]);
+        $query->where($where);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Servicedependencies.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row[$index]] = __('Service dependency #{0}', $row['id']);
+        }
+
+        return $list;
     }
 }

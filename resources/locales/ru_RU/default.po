@@ -12313,36 +12313,36 @@ msgstr "Скопировать шаблон/ы узла"
 
 #: src/Template/Hosttemplates/copy.php:62
 msgid "Source host template:"
-msgstr ""
+msgstr "Шаблон исходного узла:"
 
 #: src/Template/Hosttemplates/copy.php:69
 #: src/Template/Hosttemplates/index.php:111
 msgid "Host template name"
-msgstr ""
+msgstr "Имя шаблона узла"
 
 #: src/Template/Hosttemplates/copy.php:77
 msgid "Name of the new host template"
-msgstr ""
+msgstr "Имя нового шаблона узла"
 
 #: src/Template/Hosttemplates/copy.php:153
 msgid "Copy host templates"
-msgstr ""
+msgstr "Копировать шаблоны узлов"
 
 #: src/Template/Hosttemplates/edit.php:48
 msgid "Edit host template:"
-msgstr ""
+msgstr "Изменить шаблон узла:"
 
 #: src/Template/Hosttemplates/edit.php:624
 msgid "Update host template"
-msgstr ""
+msgstr "Обновить шаблон узла"
 
 #: src/Template/Hosttemplates/index.php:85
 msgid "Filter by host template name"
-msgstr ""
+msgstr "Фильтровать по имени шаблона узла"
 
 #: src/Template/Hosttemplates/used_by.php:54
 msgid "host/s."
-msgstr ""
+msgstr "узел/узлы"
 
 #: src/Template/Hosttemplates/used_by.php:107
 #: src/Template/Services/disabled.php:170
@@ -12350,11 +12350,11 @@ msgstr ""
 #: src/Template/Services/not_monitored.php:169
 #: src/Template/Servicetemplates/used_by.php:114
 msgid "Go to Service list"
-msgstr ""
+msgstr "Перейти к списку служб"
 
 #: src/Template/Hosttemplates/used_by.php:155
 msgid "This host template is not used by any host"
-msgstr ""
+msgstr "Этот шаблон узла не используется ни одним узлом"
 
 #: src/Template/Instantreports/add.php:34
 #: src/Template/Instantreports/edit.php:34
@@ -12364,11 +12364,11 @@ msgstr ""
 #: src/Template/Timeperiods/used_by.php:161
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:112
 msgid "Instant reports"
-msgstr ""
+msgstr "Мгновенные отчеты"
 
 #: src/Template/Instantreports/add.php:47
 msgid "Create new instant report"
-msgstr ""
+msgstr "Создать новый мгновенный отчет"
 
 #: src/Template/Instantreports/add.php:61
 #: src/Template/Instantreports/edit.php:62
@@ -12376,7 +12376,7 @@ msgstr ""
 #: src/Template/email/html/instantreport_mail.php:50
 #: src/Template/email/text/instantreport_mail.php:3
 msgid "Instant report"
-msgstr ""
+msgstr "Мгновенный отчет"
 
 #: src/Template/Instantreports/add.php:94
 #: src/Template/Instantreports/edit.php:95
@@ -12384,101 +12384,101 @@ msgstr ""
 #: src/Template/Instantreports/index.php:221
 #: src/Template/Logentries/index.php:146
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #: src/Template/Instantreports/add.php:111
 #: src/Template/Instantreports/edit.php:112
 msgid "Select the object type, which should be evaluated by the report."
-msgstr ""
+msgstr "Выберите тип объекта, который должен оцениваться отчетом."
 
 #: src/Template/Instantreports/add.php:232
 #: src/Template/Instantreports/edit.php:233
 msgid "Choose if <b><u>only</u></b> host, host and services or <b><u>only</u></b> services should be evaluated."
-msgstr ""
+msgstr "Выберите, должны быть оценены <b><u>только</u></b>узел, узел и службы или <b><u>только</u></b> службы."
 
 #: src/Template/Instantreports/add.php:286
 #: src/Template/Instantreports/edit.php:287
 #: src/Template/Instantreports/index.php:236
 msgid "Consider downtimes"
-msgstr ""
+msgstr "Учитывать при оценке обслуживания"
 
 #: src/Template/Instantreports/add.php:301
 #: src/Template/Instantreports/edit.php:302
 #: src/Template/Instantreports/index.php:232
 msgid "Summary display"
-msgstr ""
+msgstr "Показать суммирование"
 
 #: src/Template/Instantreports/add.php:316
 #: src/Template/Instantreports/edit.php:317
 msgid "Send email"
-msgstr ""
+msgstr "Отправить электронную почту"
 
 #: src/Template/Instantreports/add.php:324
 #: src/Template/Instantreports/edit.php:325
 #: src/Template/Instantreports/index.php:239
 msgid "Send interval"
-msgstr ""
+msgstr "Интервал отправки"
 
 #: src/Template/Instantreports/add.php:333
 #: src/Template/Instantreports/edit.php:334
 #: src/Template/Instantreports/index.php:317
 msgid "NEVER"
-msgstr ""
+msgstr "НИКОГДА"
 
 #: src/Template/Instantreports/add.php:336
 #: src/Template/Instantreports/edit.php:337
 #: src/Template/Instantreports/index.php:320
 msgid "DAY"
-msgstr ""
+msgstr "ДЕНЬ"
 
 #: src/Template/Instantreports/add.php:339
 #: src/Template/Instantreports/edit.php:340
 #: src/Template/Instantreports/index.php:323
 msgid "WEEK"
-msgstr ""
+msgstr "НЕДЕЛЯ"
 
 #: src/Template/Instantreports/add.php:342
 #: src/Template/Instantreports/edit.php:343
 #: src/Template/Instantreports/index.php:326
 msgid "MONTH"
-msgstr ""
+msgstr "МЕСЯЦ"
 
 #: src/Template/Instantreports/add.php:345
 #: src/Template/Instantreports/edit.php:346
 #: src/Template/Instantreports/index.php:329
 msgid "YEAR"
-msgstr ""
+msgstr "ГОД"
 
 #: src/Template/Instantreports/add.php:355
 #: src/Template/Instantreports/edit.php:356
 msgid "Users to send"
-msgstr ""
+msgstr "Пользователи для отправки"
 
 #: src/Template/Instantreports/add.php:375
 msgid "Create instant report"
-msgstr ""
+msgstr "Создать мгновенный отчет"
 
 #: src/Template/Instantreports/edit.php:47
 msgid "Edit instant report"
-msgstr ""
+msgstr "Изменить мгновенный отчет"
 
 #: src/Template/Instantreports/edit.php:376
 msgid "Update instant report"
-msgstr ""
+msgstr "Обновить мгновенный отчет"
 
 #: src/Template/Instantreports/generate.php:38
 #: src/Template/Instantreports/index.php:379
 #: src/Template/Instantreports/send_emails_list.php:137
 msgid "Generate"
-msgstr ""
+msgstr "Создать"
 
 #: src/Template/Instantreports/generate.php:47
 msgid "Generate instant report"
-msgstr ""
+msgstr "Создать мгновенный отчет"
 
 #: src/Template/Instantreports/generate.php:142
 msgid "Generate report"
-msgstr ""
+msgstr "Создать отчет"
 
 #: src/Template/Instantreports/generate.php:216
 #: src/Template/Instantreports/pdf/create_pdf_report.php:201
@@ -12487,7 +12487,7 @@ msgstr ""
 #: src/Template/pdf/create_pdf_report.php:198
 #: src/Template/pdf/create_pdf_report.php:232
 msgid "Hosts summary"
-msgstr ""
+msgstr "Сводка по узлам"
 
 #: src/Template/Instantreports/generate.php:235
 #: src/Template/Instantreports/pdf/create_pdf_report.php:245
@@ -12496,11 +12496,11 @@ msgstr ""
 #: src/Template/pdf/create_pdf_report.php:246
 #: src/Template/pdf/create_pdf_report.php:282
 msgid "Services summary"
-msgstr ""
+msgstr "Сводка служб"
 
 #: src/Template/Instantreports/index.php:85
 msgid "Filter by instant report name"
-msgstr ""
+msgstr "Фильтровать по имени мгновенного отчета"
 
 #: src/Template/Instantreports/index.php:228
 #: src/Template/Servicedependencies/edit.php:617
@@ -12508,16 +12508,16 @@ msgstr ""
 #: src/Template/Timeperiods/edit.php:77
 #: src/Template/Timeperiods/used_by.php:46
 msgid "Time period"
-msgstr ""
+msgstr "Временной период"
 
 #: src/Template/Instantreports/index.php:242
 #: src/Template/Instantreports/send_emails_list.php:88
 msgid "Send to"
-msgstr ""
+msgstr "Отправить"
 
 #: src/Template/Instantreports/index.php:285
 msgid "Hosts and services"
-msgstr ""
+msgstr "Узлы и службы"
 
 #: src/Template/Instantreports/pdf/create_pdf_report.php:132
 #: src/Template/element/load_instant_report_data.php:114
@@ -12526,144 +12526,144 @@ msgstr ""
 #: src/Template/pdf/create_pdf_report.php:124
 #: src/Template/pdf/create_pdf_report.php:284
 msgid "There are no time frames defined. Time evaluation report data is not available for the selected period."
-msgstr ""
+msgstr "Не определены временные рамки. Данные отчета по оценке времени недоступны для выбранного периода."
 
 #: src/Template/Instantreports/send_emails_list.php:31
 msgid "Reporting"
-msgstr ""
+msgstr "Отчеты"
 
 #: src/Template/Instantreports/send_emails_list.php:33
 msgid "Instant Report"
-msgstr ""
+msgstr "Мгновенный отчет"
 
 #: src/Template/Instantreports/send_emails_list.php:53
 msgid "Instant Reports"
-msgstr ""
+msgstr "Мгновенные отчеты"
 
 #: src/Template/Instantreports/send_emails_list.php:57
 msgid "Saved"
-msgstr ""
+msgstr "Сохраненный"
 
 #: src/Template/Instantreports/send_emails_list.php:62
 msgid "Send Emails"
-msgstr ""
+msgstr "Отправить электронную почту"
 
 #: src/Template/Locations/add.php:138
 #: src/Template/Locations/edit.php:140
 msgid " Latitude must be a number between -180 and 180 degree inclusive."
-msgstr ""
+msgstr " Широта должна быть числом от -180 до 180 градусов включительно."
 
 #: src/Template/Locations/add.php:185
 msgid "Create location"
-msgstr ""
+msgstr "Создать местоположение"
 
 #: src/Template/Locations/edit.php:49
 msgid "Edit location:"
-msgstr ""
+msgstr "Изменить местоположение:"
 
 #: src/Template/Locations/edit.php:183
 msgid "Update location"
-msgstr ""
+msgstr "Обновить местоположение"
 
 #: src/Template/Logentries/index.php:34
 #: src/Template/Logentries/index.php:47
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:160
 msgid "Log entries"
-msgstr ""
+msgstr "Записи журнала"
 
 #: src/Template/Logentries/index.php:76
 msgid "Filter by record and UUID"
-msgstr ""
+msgstr "Фильтр по записи и UUID"
 
 #: src/Template/Logentries/index.php:90
 msgid "Filter by host"
-msgstr ""
+msgstr "Фильтровать по узлу"
 
 #: src/Template/Logentries/index.php:109
 msgid "Filter by entry type"
-msgstr ""
+msgstr "Фильтровать по типу записи"
 
 #: src/Template/Logentries/index.php:151
 msgid "Record"
-msgstr ""
+msgstr "Запись"
 
 #: src/Template/Macros/index.php:50
 msgid "User defined macros can also be used inside of check commands. This could lead to unwanted code execution."
-msgstr ""
+msgstr "Пользовательские макросы также могут использоваться внутри команд проверки. Это может привести к нежелательному выполнению кода."
 
 #: src/Template/Macros/index.php:62
 msgid "Macros"
-msgstr ""
+msgstr "Макросы"
 
 #: src/Template/Macros/index.php:125
 msgid "Edit macro"
-msgstr ""
+msgstr "Редактировать макрос"
 
 #: src/Template/Macros/index.php:140
 msgid "Nagios supports up to 256 $USERx$ macros ($USER1$ through $USER256$)"
-msgstr ""
+msgstr "Nagios поддерживает до 256 макросов $USERx$ (от $USER1$ до $USER256$)"
 
 #: src/Template/Macros/index.php:155
 msgid "Add user defined macro"
-msgstr ""
+msgstr "Добавить пользовательский макрос"
 
 #: src/Template/Macros/index.php:232
 #: src/Template/Macros/index.php:338
 msgid "Blur macro value to prevent accidentally leak values if your PC is connected to a projector or television."
-msgstr ""
+msgstr "Размытие значения макроса, чтобы предотвратить случайную утечку значений, если ваш компьютер подключен к проектору или телевизору."
 
 #: src/Template/Macros/index.php:233
 #: src/Template/Macros/index.php:339
 msgid "Security notice: The value will be still written to the HTML document in plaintext!"
-msgstr ""
+msgstr "Уведомление о безопасности: значение будет по-прежнему записано в HTML-документе в виде открытого текста!"
 
 #: src/Template/Macros/index.php:257
 msgid "Edit user defined macro"
-msgstr ""
+msgstr "Изменить пользовательский макрос"
 
 #: src/Template/Macros/index.php:266
 msgid "Select macro name"
-msgstr ""
+msgstr "Выберите имя макроса"
 
 #: src/Template/Macros/index.php:279
 msgid "If you change the macro name, you manually need to edit all occurrences of the macro!"
-msgstr ""
+msgstr "Если вы измените имя макроса, вам нужно вручную отредактировать все вхождения макроса!"
 
 #: src/Template/Nagiostats/index.php:34
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:545
 msgid "Performance Info"
-msgstr ""
+msgstr "Информация о производительности"
 
 #: src/Template/Nagiostats/index.php:48
 msgid "Performance Information"
-msgstr ""
+msgstr "Информация о производительности"
 
 #: src/Template/Nagiostats/index.php:64
 msgid "Executed Active Service Checks"
-msgstr ""
+msgstr "Выполненные Активные Проверки Службы"
 
 #: src/Template/Nagiostats/index.php:73
 #: src/Template/Nagiostats/index.php:236
 #: src/Template/Nagiostats/index.php:326
 #: src/Template/Nagiostats/index.php:446
 msgid "Timeframe"
-msgstr ""
+msgstr "Временное ограничение"
 
 #: src/Template/Nagiostats/index.php:74
 #: src/Template/Nagiostats/index.php:237
 #: src/Template/Nagiostats/index.php:327
 #: src/Template/Nagiostats/index.php:447
 msgid "Checks performed"
-msgstr ""
+msgstr "Проверки выполнены"
 
 #: src/Template/Nagiostats/index.php:107
 #: src/Template/Nagiostats/index.php:360
 msgid "Since start"
-msgstr ""
+msgstr "С начала"
 
 #: src/Template/Nagiostats/index.php:125
 msgid "Active Service Checks Timings"
-msgstr ""
+msgstr "Сроки Активных Проверок Служб"
 
 #: src/Template/Nagiostats/index.php:134
 #: src/Template/Nagiostats/index.php:188
@@ -12672,173 +12672,173 @@ msgstr ""
 #: src/Template/Nagiostats/index.php:500
 #: src/Template/Systemsettings/index.php:78
 msgid "Key"
-msgstr ""
+msgstr "Ключ"
 
 #: src/Template/Nagiostats/index.php:135
 #: src/Template/Nagiostats/index.php:291
 #: src/Template/Nagiostats/index.php:387
 #: src/Template/Nagiostats/index.php:501
 msgid "Min."
-msgstr ""
+msgstr "Минимум"
 
 #: src/Template/Nagiostats/index.php:136
 #: src/Template/Nagiostats/index.php:292
 #: src/Template/Nagiostats/index.php:388
 #: src/Template/Nagiostats/index.php:502
 msgid "Max."
-msgstr ""
+msgstr "Максимум"
 
 #: src/Template/Nagiostats/index.php:142
 #: src/Template/Nagiostats/index.php:394
 msgid "Execution time"
-msgstr ""
+msgstr "Время исполнения"
 
 #: src/Template/Nagiostats/index.php:150
 #: src/Template/Nagiostats/index.php:406
 msgid "Latency"
-msgstr ""
+msgstr "Задержка"
 
 #: src/Template/Nagiostats/index.php:162
 #: src/Template/Nagiostats/index.php:298
 #: src/Template/Nagiostats/index.php:418
 #: src/Template/Nagiostats/index.php:508
 msgid "State changes"
-msgstr ""
+msgstr "Изменения состояния"
 
 #: src/Template/Nagiostats/index.php:179
 msgid "Additional information"
-msgstr ""
+msgstr "Дополнительная информация"
 
 #: src/Template/Nagiostats/index.php:198
 msgid "Core PID"
-msgstr ""
+msgstr "Основной PID"
 
 #: src/Template/Nagiostats/index.php:202
 msgid "Total hosts"
-msgstr ""
+msgstr "Всего узлов"
 
 #: src/Template/Nagiostats/index.php:206
 msgid "Total services"
-msgstr ""
+msgstr "Всего служб"
 
 #: src/Template/Nagiostats/index.php:210
 msgid "Program uptime"
-msgstr ""
+msgstr "Время работы программы"
 
 #: src/Template/Nagiostats/index.php:227
 msgid "Passive Service Checks"
-msgstr ""
+msgstr "Пассивные Проверки Служб"
 
 #: src/Template/Nagiostats/index.php:281
 msgid "Processed Passive Service Checks"
-msgstr ""
+msgstr "Обработанные Проверки Пассивных Служб"
 
 #: src/Template/Nagiostats/index.php:317
 msgid "Executed Active Host Checks"
-msgstr ""
+msgstr "Выполненные Проверки Активных Узлов"
 
 #: src/Template/Nagiostats/index.php:377
 msgid "Active Host Checks Timing"
-msgstr ""
+msgstr "Сроки Активных Проверок Узлов"
 
 #: src/Template/Nagiostats/index.php:437
 msgid "Processed Passive Host Checks"
-msgstr ""
+msgstr "Обработанные Пассивные Проверки Узлов"
 
 #: src/Template/Nagiostats/index.php:491
 msgid "Passive Host Checks"
-msgstr ""
+msgstr "Пассивные Проверки Узлов"
 
 #: src/Template/Notifications/host_notification.php:38
 #: src/Template/Notifications/service_notification.php:38
 msgid "notifications"
-msgstr ""
+msgstr "уведомления"
 
 #: src/Template/Notifications/host_notification.php:177
 #: src/Template/Notifications/index.php:246
 #: src/Template/Notifications/service_notification.php:189
 #: src/Template/Notifications/services.php:277
 msgid "Notification Method"
-msgstr ""
+msgstr "Способ уведомления"
 
 #: src/Template/Notifications/index.php:135
 #: src/Template/Notifications/services.php:135
 msgid "Filter by notification method"
-msgstr ""
+msgstr "Фильтровать по методу уведомления"
 
 #: src/Template/Packetmanager/index.php:42
 msgid "Package manager"
-msgstr ""
+msgstr "Менеджер пакетов"
 
 #: src/Template/Packetmanager/index.php:87
 msgid "Packagemanager"
-msgstr ""
+msgstr "Менеджер пакетов"
 
 #: src/Template/Packetmanager/index.php:96
 msgid "Connection error."
-msgstr ""
+msgstr "Ошибка соединения."
 
 #: src/Template/Packetmanager/index.php:111
 msgid "Your system is on the latest version!"
-msgstr ""
+msgstr "Ваша система на последней версии!"
 
 #: src/Template/Packetmanager/index.php:134
 #: src/Template/Packetmanager/index.php:183
 #: src/Template/Packetmanager/index.php:271
 #: src/Template/Packetmanager/index.php:319
 msgid "Changelog"
-msgstr ""
+msgstr "Изменения"
 
 #: src/Template/Packetmanager/index.php:158
 msgid "Please update your {0} installation to the latest version to get new features and latest security fixes."
-msgstr ""
+msgstr "Обновите установку {0} до последней версии, чтобы получить новые функции и последние исправления безопасности."
 
 #: src/Template/Packetmanager/index.php:173
 msgid "How to Update"
-msgstr ""
+msgstr "Как обновить"
 
 #: src/Template/Packetmanager/index.php:230
 msgid "This module is already installed"
-msgstr ""
+msgstr "Этот модуль уже установлен"
 
 #: src/Template/Packetmanager/index.php:236
 msgid "Installed"
-msgstr ""
+msgstr "Установлены"
 
 #: src/Template/Packetmanager/index.php:250
 msgid "Install"
-msgstr ""
+msgstr "Установка"
 
 #: src/Template/Packetmanager/index.php:282
 #: src/Template/Packetmanager/index.php:327
 msgid "Latest version"
-msgstr ""
+msgstr "Последняя версия"
 
 #: src/Template/Packetmanager/index.php:359
 msgid "Install packages"
-msgstr ""
+msgstr "Установить пакеты"
 
 #: src/Template/Packetmanager/index.php:368
 msgid "To install the selected packages, please execute the following command on your {0} system."
-msgstr ""
+msgstr "Чтобы установить выбранные пакеты, выполните следующую команду в своей системе {0}."
 
 #: src/Template/Packetmanager/index.php:378
 msgid "Installation done. Please reload your {0} web interface."
-msgstr ""
+msgstr "Установка сделана. Пожалуйста, перезагрузите ваш {0} веб-интерфейс."
 
 #: src/Template/Packetmanager/index.php:385
 msgid "To install two or more packages at once, close this window and select the next module you like to install. All selected modules will be added to the installation command."
-msgstr ""
+msgstr "Чтобы установить два или более пакетов одновременно, закройте это окно и выберите следующий модуль, который вы хотите установить. Все выбранные модули будут добавлены в команду установки."
 
 #: src/Template/Profile/edit.php:35
 #: src/Template/Profile/edit.php:51
 #: src/Template/Profile/edit.php:288
 msgid "Profile"
-msgstr ""
+msgstr "Профиль"
 
 #: src/Template/Profile/edit.php:52
 msgid "information"
-msgstr ""
+msgstr "информация"
 
 #: src/Template/Profile/edit.php:71
 #: src/Template/Profile/edit.php:88
@@ -12848,235 +12848,235 @@ msgstr ""
 #: src/Template/Users/add_from_ldap.php:270
 #: src/Template/Users/add_from_ldap.php:288
 msgid "Value imported from LDAP Server"
-msgstr ""
+msgstr "Значение, импортированное с сервера LDAP"
 
 #: src/Template/Profile/edit.php:105
 msgid "Username for the login"
-msgstr ""
+msgstr "Имя пользователя для входа"
 
 #: src/Template/Profile/edit.php:111
 #: src/Template/Users/add.php:188
 #: src/Template/Users/add_from_ldap.php:240
 #: src/Template/Users/edit.php:190
 msgid "Email address"
-msgstr ""
+msgstr "Адрес электронной почты"
 
 #: src/Template/Profile/edit.php:128
 #: src/Template/Users/add.php:253
 #: src/Template/Users/add_from_ldap.php:320
 #: src/Template/Users/edit.php:255
 msgid "Phone Number"
-msgstr ""
+msgstr "Номер телефона"
 
 #: src/Template/Profile/edit.php:152
 #: src/Template/Users/add.php:288
 #: src/Template/Users/add_from_ldap.php:355
 #: src/Template/Users/edit.php:290
 msgid "Show status badges in menu"
-msgstr ""
+msgstr "Показывать значки статуса в меню"
 
 #: src/Template/Profile/edit.php:168
 #: src/Template/Users/add.php:304
 #: src/Template/Users/add_from_ldap.php:371
 #: src/Template/Users/edit.php:306
 msgid "Recursive Browser"
-msgstr ""
+msgstr "Рекурсивный браузер"
 
 #: src/Template/Profile/edit.php:175
 #: src/Template/Users/add.php:266
 #: src/Template/Users/add_from_ldap.php:333
 #: src/Template/Users/edit.php:268
 msgid "Length of lists"
-msgstr ""
+msgstr "Длина списков"
 
 #: src/Template/Profile/edit.php:185
 msgid "This value defines how many records will load per list. You can choose between 1 and 1000"
-msgstr ""
+msgstr "Это значение определяет, сколько записей будет загружено в список. Вы можете выбрать от 1 до 1000"
 
 #: src/Template/Profile/edit.php:194
 #: src/Template/Users/edit.php:379
 msgid "Language"
-msgstr ""
+msgstr "Язык"
 
 #: src/Template/Profile/edit.php:208
 #: src/Template/Users/add.php:392
 #: src/Template/Users/edit.php:395
 msgid "These options are community translations. Feel free to extend them and open a github pull request."
-msgstr ""
+msgstr "Эти варианты являются переводами из сообщества. Не стесняйтесь расширять их и открывать запрос на github."
 
 #: src/Template/Profile/edit.php:215
 #: src/Template/Users/add.php:324
 #: src/Template/Users/add_from_ldap.php:391
 #: src/Template/Users/edit.php:326
 msgid "Date format"
-msgstr ""
+msgstr "Формат даты"
 
 #: src/Template/Profile/edit.php:269
 msgid "Update Profile"
-msgstr ""
+msgstr "Обновить профиль"
 
 #: src/Template/Profile/edit.php:289
 msgid "picture"
-msgstr ""
+msgstr "изображение"
 
 #: src/Template/Profile/edit.php:297
 msgid "Current image"
-msgstr ""
+msgstr "Текущее изображение"
 
 #: src/Template/Profile/edit.php:307
 msgid "You have no own image uploaded yet"
-msgstr ""
+msgstr "Вы еще не загрузили свое изображение"
 
 #: src/Template/Profile/edit.php:322
 msgid "Delete my image"
-msgstr ""
+msgstr "Удалить мое изображение"
 
 #: src/Template/Profile/edit.php:329
 msgid "Select image"
-msgstr ""
+msgstr "Выберите изображение"
 
 #: src/Template/Profile/edit.php:359
 #: src/Template/Profile/edit.php:423
 msgid "Change Password"
-msgstr ""
+msgstr "Изменить Пароль"
 
 #: src/Template/Profile/edit.php:369
 msgid "LDAP users need to change their password through the operating system or an LDAP account manager tool."
-msgstr ""
+msgstr "Пользователи LDAP должны изменить свой пароль через операционную систему или инструмент менеджера учетных записей LDAP."
 
 #: src/Template/Profile/edit.php:376
 msgid "Current password"
-msgstr ""
+msgstr "Текущий пароль"
 
 #: src/Template/Profile/edit.php:390
 #: src/Template/Users/add.php:402
 #: src/Template/Users/add_from_ldap.php:448
 #: src/Template/Users/edit.php:405
 msgid "New password"
-msgstr ""
+msgstr "Новый пароль"
 
 #: src/Template/Profile/edit.php:404
 #: src/Template/Users/add.php:416
 #: src/Template/Users/add_from_ldap.php:462
 #: src/Template/Users/edit.php:419
 msgid "Confirm new password"
-msgstr ""
+msgstr "Подтвердите новый пароль"
 
 #: src/Template/Profile/edit.php:441
 msgid "API keys"
-msgstr ""
+msgstr "API ключи"
 
 #: src/Template/Profile/edit.php:451
 msgid "Create new API key"
-msgstr ""
+msgstr "Создать новый ключ API"
 
 #: src/Template/Profile/edit.php:460
 msgid "No API keys created yet. You can still use the api using your username and password."
-msgstr ""
+msgstr "Ключи API еще не созданы. Вы все еще можете использовать API, используя ваше имя пользователя и пароль."
 
 #: src/Template/Profile/edit.php:462
 msgid "It's recommended to create a own API key for every external application."
-msgstr ""
+msgstr "Рекомендуется создать собственный ключ API для каждого внешнего приложения."
 
 #: src/Template/Profile/edit.php:467
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: src/Template/Profile/edit.php:473
 #: src/Template/Profile/edit.php:486
 msgid "Show"
-msgstr ""
+msgstr "Показать"
 
 #: src/Template/Profile/edit.php:506
 msgid "Create API key"
-msgstr ""
+msgstr "Создать API ключ"
 
 #: src/Template/Profile/edit.php:529
 #: src/Template/Profile/edit_apikey.php:32
 msgid "API key (read-only)"
-msgstr ""
+msgstr "Ключ API (только для чтения)"
 
 #: src/Template/Profile/edit.php:544
 #: src/Template/Profile/edit_apikey.php:47
 msgid "example"
-msgstr ""
+msgstr "пример"
 
 #: src/Template/Profile/edit.php:553
 #: src/Template/Profile/edit_apikey.php:56
 msgid "For self-signed certificates, add"
-msgstr ""
+msgstr "Для самозаверяющих сертификатов добавьте"
 
 #: src/Template/Profile/edit.php:560
 #: src/Template/Profile/edit_apikey.php:63
 msgid "example with JSON processor"
-msgstr ""
+msgstr "пример с JSON процессором"
 
 #: src/Template/Profile/edit.php:573
 msgid "Generate new key"
-msgstr ""
+msgstr "Создать новый ключ"
 
 #: src/Template/Profile/edit_apikey.php:9
 msgid "Edit API key"
-msgstr ""
+msgstr "Изменить API ключ"
 
 #: src/Template/Proxy/index.php:34
 #: src/Template/Proxy/index.php:47
 msgid "HTTP-Proxy"
-msgstr ""
+msgstr "HTTP-прокси"
 
 #: src/Template/Proxy/index.php:48
 msgid "Edit configuration"
-msgstr ""
+msgstr "Изменить конфигурацию"
 
 #: src/Template/Proxy/index.php:58
 msgid "Proxy configuration"
-msgstr ""
+msgstr "Конфигурация прокси"
 
 #: src/Template/Proxy/index.php:62
 msgid "Proxy address and Port"
-msgstr ""
+msgstr "Адрес прокси и порт"
 
 #: src/Template/Proxy/index.php:100
 msgid "Enable proxy"
-msgstr ""
+msgstr "Включить прокси"
 
 #: src/Template/Proxy/index.php:105
 msgid "If disabled the proxy server will not be used."
-msgstr ""
+msgstr "Если этот параметр отключен, прокси-сервер не будет использоваться."
 
 #: src/Template/Proxy/index.php:113
 msgid "Update Configuration"
-msgstr ""
+msgstr "Обновить конфигурацию"
 
 #: src/Template/Registers/index.php:34
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:657
 msgid "Registration"
-msgstr ""
+msgstr "Регистрация"
 
 #: src/Template/Registers/index.php:38
 msgid "License"
-msgstr ""
+msgstr "Лицензия"
 
 #: src/Template/Registers/index.php:47
 msgid "Register this openICOCKPIT instance"
-msgstr ""
+msgstr "Зарегистрируйте эту openICOCKPIT инстанцию"
 
 #: src/Template/Registers/index.php:53
 msgid "Credits"
-msgstr ""
+msgstr "Авторы"
 
 #: src/Template/Registers/index.php:62
 #: src/Template/Registers/index.php:101
 msgid "License key"
-msgstr ""
+msgstr "Лицензионный ключ"
 
 #: src/Template/Registers/index.php:77
 msgid "Get your openITCOCKPIT Enterprise Subscription today"
-msgstr ""
+msgstr "Получите подписку openITCOCKPIT Enterprise сегодня"
 
 #: src/Template/Registers/index.php:98
 msgid "Expires"
-msgstr ""
+msgstr "Истекает"
 
 #: src/Template/Registers/index.php:109
 #: src/Template/Users/add.php:227
@@ -13084,270 +13084,270 @@ msgstr ""
 #: src/Template/Users/edit.php:229
 #: src/Template/Users/index.php:186
 msgid "Company"
-msgstr ""
+msgstr "Компания"
 
 #: src/Template/Registers/index.php:123
 msgid "Register"
-msgstr ""
+msgstr "Зарегистрироваться"
 
 #: src/Template/Servicedependencies/add.php:49
 msgid "Create new service dependency"
-msgstr ""
+msgstr "Создать новую зависимость службы"
 
 #: src/Template/Servicedependencies/add.php:76
 #: src/Template/Servicedependencies/edit.php:76
 #: src/Template/Servicedependencies/edit.php:504
 msgid "Service dependencies are an advanced feature that allow you to\n                                    suppress notifications for services based on the status of one or more other services."
-msgstr ""
+msgstr "Зависимости служб - это расширенная функция, которая позволяет \n                                    подавлять уведомления для служб в зависимости от состояния одной или нескольких других служб."
 
 #: src/Template/Servicedependencies/add.php:109
 #: src/Template/Servicedependencies/edit.php:109
 #: src/Template/Servicedependencies/edit.php:549
 #: src/Template/Servicedependencies/index.php:397
 msgid "Dependent services"
-msgstr ""
+msgstr "Зависимые службы"
 
 #: src/Template/Servicedependencies/add.php:152
 #: src/Template/Servicedependencies/edit.php:152
 #: src/Template/Servicedependencies/edit.php:599
 #: src/Template/Servicedependencies/index.php:399
 msgid "Dependent service groups"
-msgstr ""
+msgstr "Зависимые группы служб"
 
 #: src/Template/Servicedependencies/add.php:401
 msgid "Create service dependency"
-msgstr ""
+msgstr "Создать зависимость служб"
 
 #: src/Template/Servicedependencies/edit.php:49
 #: src/Template/Servicedependencies/edit.php:478
 msgid "Edit service dependency"
-msgstr ""
+msgstr "Изменить зависимость служб"
 
 #: src/Template/Servicedependencies/edit.php:401
 msgid "Update service dependency"
-msgstr ""
+msgstr "Обновить зависимость служб"
 
 #: src/Template/Servicedependencies/edit.php:775
 msgid "'Execution none' option"
-msgstr ""
+msgstr "Опция 'Выполнение нет'"
 
 #: src/Template/Servicedependencies/edit.php:777
 #: src/Template/Servicedependencies/edit.php:914
 msgid "Another options will be deselected automatically!"
-msgstr ""
+msgstr "Другие параметры будут отменены автоматически!"
 
 #: src/Template/Servicedependencies/edit.php:912
 msgid "'Notification none' option"
-msgstr ""
+msgstr "Опция 'Уведомление отсутствует'"
 
 #: src/Template/Servicedependencies/edit.php:926
 msgid "Save service depependency"
-msgstr ""
+msgstr "Сохранить зависимость служб"
 
 #: src/Template/Servicedependencies/index.php:97
 msgid "You can either search for  <b>\"service\"</b> OR <b>\"dependent service\"</b>. Opposing field will be reset automatically"
-msgstr ""
+msgstr "Вы можете выполнить поиск по <b>\"службе\"</b> ИЛИ <b> \"зависимой службе\"</b>. Противоположное поле будет сброшено автоматически"
 
 #: src/Template/Servicedependencies/index.php:112
 msgid "Filter by dependent service name"
-msgstr ""
+msgstr "Фильтровать по имени зависимой службы"
 
 #: src/Template/Servicedependencies/index.php:128
 #: src/Template/Serviceescalations/index.php:128
 msgid "Filter by service group"
-msgstr ""
+msgstr "Фильтр по группе служб"
 
 #: src/Template/Servicedependencies/index.php:138
 msgid "You can either search for  <b>\"service group\"</b> OR <b>\"dependent service group\"</b>.  Opposing field will be reset automatically"
-msgstr ""
+msgstr "Вы можете выполнить поиск по <b>\"группе служб\"</b> ИЛИ <b>\"зависимой группе служб\"</b>. Противоположное поле будет сброшено автоматически"
 
 #: src/Template/Servicedependencies/index.php:153
 msgid "Filter by dependent service group"
-msgstr ""
+msgstr "Фильтр по зависимой группе служб"
 
 #: src/Template/Serviceescalations/add.php:49
 msgid "Create new service escalation"
-msgstr ""
+msgstr "Создать новую эскалацию служб"
 
 #: src/Template/Serviceescalations/add.php:77
 #: src/Template/Serviceescalations/edit.php:76
 msgid "Notification escalations could be used to notify a certain user group in case of an emergency.\nOnce a service escalated, contacts, contact group and notification options will be overwritten by the escalation."
-msgstr ""
+msgstr "Эскалации уведомлений могут использоваться для уведомления определенной группы пользователей в случае чрезвычайной ситуации.\nПосле эскалации службы контакты, группа контактов и параметры уведомлений будут перезаписаны."
 
 #: src/Template/Serviceescalations/add.php:110
 #: src/Template/Serviceescalations/edit.php:109
 #: src/Template/Serviceescalations/index.php:304
 msgid "Excluded services"
-msgstr ""
+msgstr "Исключенные службы"
 
 #: src/Template/Serviceescalations/add.php:153
 #: src/Template/Serviceescalations/edit.php:152
 #: src/Template/Serviceescalations/index.php:306
 msgid "Excluded service groups"
-msgstr ""
+msgstr "Исключенные группы служб"
 
 #: src/Template/Serviceescalations/add.php:201
 #: src/Template/Serviceescalations/edit.php:200
 msgid "If number of last_notification is reached, the notification rule\n                                    will be disabled and the notification options of the service will be used again."
-msgstr ""
+msgstr "Если достигнут номер last_notification, правило уведомления\n                                    будет отключено, и параметры уведомления службы будут использоваться снова."
 
 #: src/Template/Serviceescalations/add.php:350
 msgid "Create service escalation"
-msgstr ""
+msgstr "Создать эскалацию служб"
 
 #: src/Template/Serviceescalations/edit.php:49
 msgid "Edit Service escalation"
-msgstr ""
+msgstr "Изменить эскалацию служб"
 
 #: src/Template/Serviceescalations/edit.php:348
 msgid "Update service escalation"
-msgstr ""
+msgstr "Обновление эскалации службы"
 
 #: src/Template/Serviceescalations/index.php:50
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:270
 msgid "Service Escalations"
-msgstr ""
+msgstr "Эскалации служб"
 
 #: src/Template/Serviceescalations/index.php:97
 msgid "You can either search for  <b>\"service\"</b> OR <b>\"excluded service\"</b>. Opposing Field will be reset automatically"
-msgstr ""
+msgstr "Вы можете выполнить поиск по <b>\"службе \"</b> ИЛИ <b>\"исключенной службе\"</b>. Противоположное поле будет сброшено автоматически"
 
 #: src/Template/Serviceescalations/index.php:112
 msgid "Filter by excluded service name"
-msgstr ""
+msgstr "Фильтровать по названию исключенной службы"
 
 #: src/Template/Serviceescalations/index.php:138
 msgid "You can either search for  <b>\"service group\"</b> OR <b>\"excluded service group\"</b>.  Opposing Field will be reset automatically"
-msgstr ""
+msgstr "Вы можете выполнить поиск по <b>\"группе служб\" </b> ИЛИ <b>\"исключенной группе служб\"</b>. Противоположное поле будет сброшено автоматически"
 
 #: src/Template/Serviceescalations/index.php:153
 msgid "Filter by excluded service group"
-msgstr ""
+msgstr "Фильтр по исключенной группе служб"
 
 #: src/Template/Servicegroups/add.php:47
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:81
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:132
 msgid "Create new service group"
-msgstr ""
+msgstr "Создать новую группу служб"
 
 #: src/Template/Servicegroups/add.php:111
 #: src/Template/Servicegroups/edit.php:112
 msgid "Service group URL"
-msgstr ""
+msgstr "URL группы служб"
 
 #: src/Template/Servicegroups/add.php:167
 msgid "Create service group"
-msgstr ""
+msgstr "Создать группу служб"
 
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:57
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:111
 msgid "Append services/s to service group"
-msgstr ""
+msgstr "Добавить службу/службы в группу служб"
 
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:66
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:116
 msgid "Selected services"
-msgstr ""
+msgstr "Выбранные службы"
 
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:86
 #: src/Template/Servicegroups/add_services_to_servicegroup.php:137
 msgid "Append existing service group"
-msgstr ""
+msgstr "Добавить существующую группу служб"
 
 #: src/Template/Servicegroups/append.php:38
 msgid "Append services to service group"
-msgstr ""
+msgstr "Добавить службы в группу служб"
 
 #: src/Template/Servicegroups/append.php:47
 msgid "Append services"
-msgstr ""
+msgstr "Добавить службы"
 
 #: src/Template/Servicegroups/append.php:48
 msgid "to service group"
-msgstr ""
+msgstr "в группу служб"
 
 #: src/Template/Servicegroups/append.php:87
 msgid "Services that could not be assigned to the selected service group due to container permissions, will be removed automatically"
-msgstr ""
+msgstr "Службы, которые не могут быть назначены выбранной группе служб из-за разрешений контейнера, будут удалены автоматически"
 
 #: src/Template/Servicegroups/append.php:95
 msgid "Append to service group"
-msgstr ""
+msgstr "Добавить в группу служб"
 
 #: src/Template/Servicegroups/edit.php:47
 msgid "Edit service group:"
-msgstr ""
+msgstr "Изменить группу служб:"
 
 #: src/Template/Servicegroups/edit.php:164
 msgid "Update service group"
-msgstr ""
+msgstr "Обновить группу служб"
 
 #: src/Template/Servicegroups/extended.php:66
 msgid "Service Groups (0)"
-msgstr ""
+msgstr "Группы служб (0)"
 
 #: src/Template/Servicegroups/index.php:85
 msgid "Filter by service group name"
-msgstr ""
+msgstr "Фильтровать по имени группы служб"
 
 #: src/Template/Servicegroups/pdf/list_to_pdf.php:71
 msgid "Number of Servicegroups: "
-msgstr ""
+msgstr "Количество групп служб:"
 
 #: src/Template/Servicegroups/pdf/list_to_pdf.php:81
 #: src/Template/Services/pdf/list_to_pdf.php:65
 msgid "Number of Services: "
-msgstr ""
+msgstr "Количество служб:"
 
 #: src/Template/Servicegroups/pdf/list_to_pdf.php:107
 msgid "Service group: "
-msgstr ""
+msgstr "Группа служб"
 
 #: src/Template/Servicegroups/pdf/list_to_pdf.php:184
 msgid "There are no services defined"
-msgstr ""
+msgstr "Службы не определены"
 
 #: src/Template/Services/add.php:48
 msgid "Create new service"
-msgstr ""
+msgstr "Создать новую службу"
 
 #: src/Template/Services/add.php:86
 #: src/Template/Servicetemplategroups/allocate_to_host.php:95
 #: src/Template/Servicetemplates/add.php:85
 #: src/Template/Servicetemplates/edit.php:89
 msgid "Please select a host."
-msgstr ""
+msgstr "Пожалуйста, выберите узел."
 
 #: src/Template/Services/add.php:108
 #: src/Template/Services/edit.php:130
 msgid "Please select a service template."
-msgstr ""
+msgstr "Пожалуйста, выберите шаблон службы."
 
 #: src/Template/Services/add.php:288
 #: src/Template/Services/edit.php:350
 #: src/Template/Servicetemplates/add.php:273
 #: src/Template/Servicetemplates/edit.php:277
 msgid "Enable freshness check"
-msgstr ""
+msgstr "Включить проверку свежести"
 
 #: src/Template/Services/add.php:303
 #: src/Template/Services/edit.php:365
 #: src/Template/Servicetemplates/add.php:285
 #: src/Template/Servicetemplates/edit.php:289
 msgid "Freshness threshold"
-msgstr ""
+msgstr "Порог свежести"
 
 #: src/Template/Services/add.php:440
 #: src/Template/Services/edit.php:509
 #: src/Template/Servicetemplates/add.php:410
 #: src/Template/Servicetemplates/edit.php:413
 msgid "Number of failed attempts before the service will switch into hard state."
-msgstr ""
+msgstr "Количество неудачных попыток, прежде чем служба перейдет в твердое состояние."
 
 #: src/Template/Services/add.php:513
 #: src/Template/Services/edit.php:587
 msgid "Disable inheritance"
-msgstr ""
+msgstr "Отключить наследование"
 
 #: src/Template/Services/add.php:524
 #: src/Template/Services/add.php:527
@@ -13363,269 +13363,269 @@ msgstr "шаблон службы"
 #: src/Template/Servicetemplates/add.php:598
 #: src/Template/Servicetemplates/edit.php:601
 msgid "Service URL"
-msgstr ""
+msgstr "URL службы"
 
 #: src/Template/Services/add.php:721
 #: src/Template/Services/edit.php:791
 #: src/Template/Servicetemplates/add.php:611
 #: src/Template/Servicetemplates/edit.php:614
 msgid "The macros $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$, $HOSTADDRESS$, $SERVICEID$, $SERVICEDESC$, $SERVICEDISPLAYNAME$ will be replaced"
-msgstr ""
+msgstr "Макросы $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$, $HOSTADDRESS$, $SERVICEID$, $SERVICEDESC$, $SERVICEDISPLAYNAME$ будут заменены"
 
 #: src/Template/Services/add.php:843
 #: src/Template/Services/edit.php:913
 #: src/Template/Servicetemplates/add.php:720
 #: src/Template/Servicetemplates/edit.php:723
 msgid "Status volatile"
-msgstr ""
+msgstr "Статус изменчив"
 
 #: src/Template/Services/add.php:853
 #: src/Template/Services/edit.php:923
 #: src/Template/Servicetemplates/add.php:726
 #: src/Template/Servicetemplates/edit.php:729
 msgid "Will force the monitoring engine to send a notification on each Non-Ok check result that will occur."
-msgstr ""
+msgstr "Вынудит механизм мониторинга отправлять уведомление о каждом результате не-в-порядке проверки."
 
 #: src/Template/Services/add.php:857
 #: src/Template/Services/edit.php:927
 #: src/Template/Servicetemplates/add.php:730
 #: src/Template/Servicetemplates/edit.php:733
 msgid "Online documentation"
-msgstr ""
+msgstr "Интернет документация"
 
 #: src/Template/Services/add.php:871
 #: src/Template/Services/edit.php:941
 #: src/Template/Servicetemplates/add.php:742
 #: src/Template/Servicetemplates/edit.php:745
 msgid "Event Handler configuration"
-msgstr ""
+msgstr "Конфигурация обработчика событий"
 
 #: src/Template/Services/add.php:878
 #: src/Template/Services/edit.php:948
 #: src/Template/Servicetemplates/add.php:749
 #: src/Template/Servicetemplates/edit.php:752
 msgid "Event Handler"
-msgstr ""
+msgstr "Обработчик события"
 
 #: src/Template/Services/add.php:927
 #: src/Template/Services/edit.php:997
 #: src/Template/Servicetemplates/add.php:792
 #: src/Template/Servicetemplates/edit.php:795
 msgid "This Event Handler command does not have any parameters."
-msgstr ""
+msgstr "Эта команда обработчика событий не имеет никаких параметров."
 
 #: src/Template/Services/add.php:937
 #: src/Template/Services/edit.php:1008
 #: src/Template/Servicetemplates/add.php:801
 #: src/Template/Servicetemplates/edit.php:804
 msgid "Service macro configuration"
-msgstr ""
+msgstr "Настройка макроса службы"
 
 #: src/Template/Services/add.php:948
 #: src/Template/Services/edit.php:1019
 #: src/Template/Servicetemplates/add.php:812
 #: src/Template/Servicetemplates/edit.php:815
 msgid "SERVICE"
-msgstr ""
+msgstr "Служба"
 
 #: src/Template/Services/add.php:960
 #: src/Template/Services/edit.php:1031
 #: src/Template/Servicetemplates/add.php:824
 #: src/Template/Servicetemplates/edit.php:827
 msgid "Macros in green color are inherited from the service template."
-msgstr ""
+msgstr "Макросы зеленого цвета наследуются от шаблона службы."
 
 #: src/Template/Services/add.php:981
 msgid "Create service"
-msgstr ""
+msgstr "Создать службу"
 
 #: src/Template/Services/browser.php:83
 msgid "Service information"
-msgstr ""
+msgstr "Служебная информация"
 
 #: src/Template/Services/browser.php:141
 #: src/Template/Services/details.php:97
 msgid " Next check"
-msgstr ""
+msgstr " Следующая проверка"
 
 #: src/Template/Services/browser.php:241
 msgid "This service is currently disabled!"
-msgstr ""
+msgstr "Этот сервис в настоящее время отключен!"
 
 #: src/Template/Services/browser.php:261
 #: src/Template/Services/details.php:200
 msgid "The service is currently in a planned maintenance period"
-msgstr ""
+msgstr "Служба в настоящее время находится на плановом техническом обслуживании"
 
 #: src/Template/Services/browser.php:306
 #: src/Template/Services/details.php:245
 msgid "State of service is acknowledged"
-msgstr ""
+msgstr "Состояние службы подтверждено"
 
 #: src/Template/Services/browser.php:333
 #: src/Template/Services/details.php:273
 msgid "The state of this service is currently flapping!"
-msgstr ""
+msgstr "Состояние этой службы в настоящее время колеблется!"
 
 #: src/Template/Services/browser.php:346
 msgid "Problem with host detected!"
-msgstr ""
+msgstr "Обнаружена проблема с узлом!"
 
 #: src/Template/Services/browser.php:371
 msgid "The host of this service is currently in a planned maintenance period"
-msgstr ""
+msgstr "Узел этой службы в настоящее время находится в плановом техническом обслуживании."
 
 #: src/Template/Services/browser.php:523
 msgid "Host state overview"
-msgstr ""
+msgstr "Обзор состояния узла"
 
 #: src/Template/Services/browser.php:832
 msgid "Send custom service notification "
-msgstr ""
+msgstr "Отправить уведомление о службе "
 
 #: src/Template/Services/browser.php:848
 msgid "Service overview"
-msgstr ""
+msgstr "Обзор служб"
 
 #: src/Template/Services/browser.php:853
 msgid "Host ip address"
-msgstr ""
+msgstr "IP-адрес узла"
 
 #: src/Template/Services/browser.php:892
 msgid "Host UUID"
-msgstr ""
+msgstr "Узел UUID"
 
 #: src/Template/Services/browser.php:906
 msgid "Service UUID"
-msgstr ""
+msgstr "Служба UUID"
 
 #: src/Template/Services/browser.php:984
 msgid "Ok soft"
-msgstr ""
+msgstr "Ok мягкий"
 
 #: src/Template/Services/browser.php:988
 msgid "Warning soft"
-msgstr ""
+msgstr "Предупреждение мягкий"
 
 #: src/Template/Services/browser.php:992
 msgid "Critical soft"
-msgstr ""
+msgstr "Критично мягкий"
 
 #: src/Template/Services/browser.php:996
 msgid "Unknown soft"
-msgstr ""
+msgstr "Неизвестно мягкий"
 
 #: src/Template/Services/browser.php:1078
 msgid "graphs"
-msgstr ""
+msgstr "диаграммы"
 
 #: src/Template/Services/browser.php:1089
 msgid "Show data points"
-msgstr ""
+msgstr "Показать точки данных"
 
 #: src/Template/Services/browser.php:1108
 msgid "Timerange: "
-msgstr ""
+msgstr "Временной диапазон"
 
 #: src/Template/Services/browser.php:1124
 msgid "Datasource: "
-msgstr ""
+msgstr "Источник данных"
 
 #: src/Template/Services/copy.php:46
 msgid "Copy service/s"
-msgstr ""
+msgstr "Копировать службу/служба"
 
 #: src/Template/Services/copy.php:85
 #: src/Template/Servicetemplategroups/allocate_to_host.php:107
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:108
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:123
 msgid "Services which use a service template that could not be assigned to the selected host due to container permissions, will be removed automatically."
-msgstr ""
+msgstr "Службы, которые используют шаблон службы, который не может быть назначен выбранному узлу из-за разрешений контейнера, будут удалены автоматически."
 
 #: src/Template/Services/copy.php:94
 msgid "Source service:"
-msgstr ""
+msgstr "Исходная служба:"
 
 #: src/Template/Services/copy.php:183
 msgid "Copy services"
-msgstr ""
+msgstr "Службы для копирования"
 
 #: src/Template/Services/details.php:31
 msgid "Service status details"
-msgstr ""
+msgstr "Детали статуса службы"
 
 #: src/Template/Services/details.php:284
 msgid "Service graph"
-msgstr ""
+msgstr "График службы"
 
 #: src/Template/Services/details.php:302
 msgid "Open details"
-msgstr ""
+msgstr "Открыть детали"
 
 #: src/Template/Services/edit.php:48
 msgid "Edit service:"
-msgstr ""
+msgstr "Редактировать службу:"
 
 #: src/Template/Services/edit.php:177
 msgid "The name of CHECK_MK services can't be changed."
-msgstr ""
+msgstr "Название CHECK_MK службы не может быть изменено."
 
 #: src/Template/Services/edit.php:1048
 msgid "Update service"
-msgstr ""
+msgstr "Обновление службы"
 
 #: src/Template/Services/index.php:635
 #: src/Template/Services/service_list.php:419
 msgid "Add to service group"
-msgstr ""
+msgstr "Добавить в группу служб"
 
 #: src/Template/Services/index.php:657
 #: src/Template/Services/service_list.php:442
 #: src/Template/element/service_mass_changes.php:66
 msgid "Acknowledge status"
-msgstr ""
+msgstr "Подтвердить статус"
 
 #: src/Template/Services/load_arguments.php:68
 msgid "no parameters for this command defined"
-msgstr ""
+msgstr "параметры для этой команды не определены"
 
 #: src/Template/Services/pdf/list_to_pdf.php:52
 msgid "Services Overview"
-msgstr ""
+msgstr "Обзор служб"
 
 #: src/Template/Services/pdf/list_to_pdf.php:75
 msgid "Servicename"
-msgstr ""
+msgstr "Наименование службы"
 
 #: src/Template/Services/service_list.php:38
 msgid "Services of Host"
-msgstr ""
+msgstr "Службы узла"
 
 #: src/Template/Services/service_list.php:57
 #: src/Template/Statusmaps/index.php:47
 msgid "Please select..."
-msgstr ""
+msgstr "Пожалуйста выберите..."
 
 #: src/Template/Services/service_list.php:75
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:67
 msgid "Browser"
-msgstr ""
+msgstr "Браузер"
 
 #: src/Template/Services/service_list.php:88
 msgid "Allocate Service Template Group"
-msgstr ""
+msgstr "Выделить группу шаблонов служб"
 
 #: src/Template/Services/service_list.php:104
 msgid "of Host"
-msgstr ""
+msgstr "узла"
 
 #: src/Template/Services/service_list.php:140
 msgid "Open host in browser"
-msgstr ""
+msgstr "Открыть узел в браузере"
 
 #: src/Template/Services/service_list.php:748
 msgid "Service Name"
-msgstr ""
+msgstr "Наименование службы"
 
 #: src/Template/Servicetemplategroups/add.php:34
 #: src/Template/Servicetemplategroups/add.php:62
@@ -13639,155 +13639,155 @@ msgstr ""
 #: src/Template/Servicetemplategroups/edit.php:34
 #: src/Template/Servicetemplategroups/edit.php:63
 msgid "Service template group"
-msgstr ""
+msgstr "Группа шаблонов служб"
 
 #: src/Template/Servicetemplategroups/add.php:47
 #: src/Template/Servicetemplates/add_servicetemplates_to_servicetemplategroup.php:56
 msgid "Create new service template group"
-msgstr ""
+msgstr "Создать новую группу шаблонов служб"
 
 #: src/Template/Servicetemplategroups/add.php:135
 msgid "Create service template group"
-msgstr ""
+msgstr "Создать группу шаблонов служб"
 
 #: src/Template/Servicetemplategroups/allocate_to_host.php:38
 msgid "Allocate service template group to host"
-msgstr ""
+msgstr "Выделить группу шаблонов служб для узла"
 
 #: src/Template/Servicetemplategroups/allocate_to_host.php:48
 msgid "to host"
-msgstr ""
+msgstr "в узел"
 
 #: src/Template/Servicetemplategroups/allocate_to_host.php:77
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:77
 #: src/Template/Servicetemplategroups/append.php:79
 msgid "Please select a service template group."
-msgstr ""
+msgstr "Пожалуйста, выберите группу шаблонов служб."
 
 #: src/Template/Servicetemplategroups/allocate_to_host.php:117
 msgid "Service/s to deploy on target host:"
-msgstr ""
+msgstr "Служба/службы для создания на целевом узле:"
 
 #: src/Template/Servicetemplategroups/allocate_to_host.php:131
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:150
 msgid "Service already exist on selected host. Tick the box to create a duplicate."
-msgstr ""
+msgstr "Служба уже существует на выбранном хосте. Установите флажок, чтобы создать дубликат."
 
 #: src/Template/Servicetemplategroups/allocate_to_host.php:139
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:159
 msgid "Service already exist on selected host but is disabled. Tick the box to create a duplicate."
-msgstr ""
+msgstr "Служба уже существует на выбранном узле, но отключен. Установите флажок, чтобы создать дубликат."
 
 #: src/Template/Servicetemplategroups/allocate_to_host.php:171
 #: src/Template/Servicetemplategroups/index.php:200
 msgid "Allocate to host"
-msgstr ""
+msgstr "Добавить в узел"
 
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:38
 msgid "Allocate service template group to host group"
-msgstr ""
+msgstr "Добавить группу шаблонов служб в группу узлов"
 
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:95
 msgid "Please select a host group."
-msgstr ""
+msgstr "Пожалуйста, выберите группу узлов."
 
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:134
 msgid "Service/s to deploy on host:"
-msgstr ""
+msgstr "Служба/службы для добавления на узел:"
 
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:199
 #: src/Template/Servicetemplategroups/index.php:184
 msgid "Allocate to host group"
-msgstr ""
+msgstr "Добавить в группу узлов"
 
 #: src/Template/Servicetemplategroups/append.php:38
 msgid "Append service templates to service template group"
-msgstr ""
+msgstr "Добавить шаблоны служб в группу шаблонов служб"
 
 #: src/Template/Servicetemplategroups/append.php:47
 msgid "Append service templates"
-msgstr ""
+msgstr "Добавить шаблоны служб"
 
 #: src/Template/Servicetemplategroups/append.php:48
 msgid "to service template group"
-msgstr ""
+msgstr "в группу шаблонов служб"
 
 #: src/Template/Servicetemplategroups/append.php:87
 msgid "Service templates that could not be assigned to the selected service tempalte group due to container permissions, will be removed automatically"
-msgstr ""
+msgstr "Шаблоны служб, которые не могут быть назначены выбранной группе шаблонов служб из-за разрешений контейнера, будут удалены автоматически"
 
 #: src/Template/Servicetemplategroups/append.php:95
 msgid "Append to service template group"
-msgstr ""
+msgstr "Добавить в группу шаблонов служб"
 
 #: src/Template/Servicetemplategroups/edit.php:47
 msgid "Edit service template group:"
-msgstr ""
+msgstr "Изменить группу шаблонов служб:"
 
 #: src/Template/Servicetemplategroups/edit.php:132
 msgid "Update service template group"
-msgstr ""
+msgstr "Обновить группу шаблонов служб"
 
 #: src/Template/Servicetemplategroups/index.php:85
 msgid "Filter by service template group name"
-msgstr ""
+msgstr "Фильтровать по имени группы шаблонов служб"
 
 #: src/Template/Servicetemplategroups/index.php:98
 msgid "Filter by service template group description"
-msgstr ""
+msgstr "Фильтровать по описанию группы шаблонов служб"
 
 #: src/Template/Servicetemplategroups/index.php:124
 msgid "Service template group name"
-msgstr ""
+msgstr "Название группы шаблонов служб"
 
 #: src/Template/Servicetemplategroups/index.php:192
 msgid "Allocate to matching host group"
-msgstr ""
+msgstr "Добавить к соответствующей группе узлов"
 
 #: src/Template/Servicetemplategroups/index.php:263
 msgid "Deploying services..."
-msgstr ""
+msgstr "Создание службов ..."
 
 #: src/Template/Servicetemplates/add.php:38
 msgid "add"
-msgstr ""
+msgstr "добавить"
 
 #: src/Template/Servicetemplates/add.php:48
 msgid "Create new service template"
-msgstr ""
+msgstr "Создать новый шаблон службы"
 
 #: src/Template/Servicetemplates/add.php:105
 #: src/Template/Servicetemplates/edit.php:109
 msgid "Name of the service template."
-msgstr ""
+msgstr "Название шаблона службы."
 
 #: src/Template/Servicetemplates/add.php:112
 #: src/Template/Servicetemplates/edit.php:116
 msgid "Template Type"
-msgstr ""
+msgstr "Тип шаблона"
 
 #: src/Template/Servicetemplates/add.php:123
 #: src/Template/Servicetemplates/edit.php:127
 msgid "Defines the type of the template. Use \"Generic template\" if you are not sure."
-msgstr ""
+msgstr "Определяет тип шаблона. Используйте \"Generic template\", если вы не уверены."
 
 #: src/Template/Servicetemplates/add.php:140
 #: src/Template/Servicetemplates/edit.php:144
 msgid "Default name of services using this service template."
-msgstr ""
+msgstr "Стандартное название службы, использующих этот шаблон сервиса."
 
 #: src/Template/Servicetemplates/add.php:278
 #: src/Template/Servicetemplates/edit.php:282
 msgid "If enabled the system will check that passive checks for this service will be received as frequently as defined."
-msgstr ""
+msgstr "Если включено, система будет проверять, что пассивные проверки для этой службы будут приниматься так часто, как это определено."
 
 #: src/Template/Servicetemplates/add.php:845
 msgid "Create service template"
-msgstr ""
+msgstr "Создать шаблон службы"
 
 #: src/Template/Servicetemplates/add_servicetemplates_to_servicetemplategroup.php:32
 msgid "Append service template/s to service template group"
-msgstr ""
+msgstr "Добавить шаблон (ы) службы в группу шаблонов служб"
 
 #: src/Template/Servicetemplates/add_servicetemplates_to_servicetemplategroup.php:41
 msgid "Selected service templates"

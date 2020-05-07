@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Servicetemplate;
 use Cake\Core\Plugin;
@@ -49,6 +50,7 @@ class ServicetemplatesTable extends Table {
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
     use CustomValidationTrait;
+    use PluginManagerTableTrait;
 
     /**
      * Initialize method
@@ -204,13 +206,23 @@ class ServicetemplatesTable extends Table {
         $validator
             ->integer('check_interval')
             ->requirePresence('check_interval', 'create')
-            ->greaterThanOrEqual('check_interval', 1, __('This value need to be at least 1'))
+            ->greaterThanOrEqual('check_interval', 1, __('This value need to be at least 1'), function ($context) {
+                if (array_key_exists('active_checks_enabled', $context['data']) && $context['data']['active_checks_enabled'] == 0) {
+                    return false;
+                }
+                return true;
+            })
             ->allowEmptyString('check_interval', null, false);
 
         $validator
             ->integer('retry_interval')
             ->requirePresence('retry_interval', 'create')
-            ->greaterThanOrEqual('retry_interval', 1, __('This value need to be at least 1'))
+            ->greaterThanOrEqual('retry_interval', 1, __('This value need to be at least 1'), function ($context) {
+                if (array_key_exists('active_checks_enabled', $context['data']) && $context['data']['active_checks_enabled'] == 0) {
+                    return false;
+                }
+                return true;
+            })
             ->allowEmptyString('retry_interval', null, false);
 
         $validator
@@ -1186,6 +1198,10 @@ class ServicetemplatesTable extends Table {
             $types[MK_SERVICE] = __('Checkmk templates');
         }
 
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $types[PROMETHEUS_SERVICE] = __('Prometheus templates');
+        }
+
         $types[OITC_AGENT_SERVICE] = __('Agent templates');
 
         return $types;
@@ -1386,5 +1402,71 @@ class ServicetemplatesTable extends Table {
         }
 
         return true;
+    }
+
+    /**
+     * @param int $containerId
+     * @param string $type
+     * @param array $MY_RIGHTS
+     * @param array $where
+     * @return array
+     */
+    public function getServicetemplatesByContainerIdExact($containerId, $type = 'all', $index = 'id', $MY_RIGHTS = [], $where = []) {
+        $_where = [
+            'Servicetemplates.container_id' => $containerId
+        ];
+
+        $where = Hash::merge($_where, $where);
+
+        $query = $this->find();
+        $query->select([
+            'Servicetemplates.' . $index,
+            'Servicetemplates.name'
+        ]);
+        $query->where($where);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Servicetemplates.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+        $query->order([
+            'Servicetemplates.name' => 'asc'
+        ]);
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row[$index]] = $row['name'];
+        }
+
+        return $list;
+    }
+
+    /**
+     * @param $name
+     * @param string[] $contain
+     * @return array
+     */
+    public function getServicetemplatesByWildcardName($name, $contain = ['Containers']) {
+        $query = $this->find()
+            ->where([
+                'Servicetemplates.name LIKE' => $name
+            ])
+            ->contain($contain)
+            ->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
     }
 }

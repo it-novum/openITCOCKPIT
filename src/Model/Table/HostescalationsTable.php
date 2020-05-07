@@ -632,21 +632,47 @@ class HostescalationsTable extends Table {
     }
 
     /**
-     * @param $containerId
+     * @param int $containerId
+     * @param string $type
+     * @param array $MY_RIGHTS
+     * @param array $where
      * @return array
      */
-    public function getHostescalationsByContainerId($containerId) {
-        $query = $this->find()
-            ->select([
-                'Hostescalations.id'
-            ])
-            ->where([
-                'container_id' => $containerId,
+    public function getHostescalationsByContainerIdExact($containerId, $type = 'all', $index = 'id', $MY_RIGHTS = [], $where = []) {
+        $_where = [
+            'Hostescalations.container_id' => $containerId
+        ];
 
-            ])
-            ->disableHydration();
+        $where = Hash::merge($_where, $where);
 
-        $result = $query->all();
-        return $this->emptyArrayIfNull($result->toArray());
+        $query = $this->find();
+        $query->select([
+            'Hostescalations.' . $index,
+        ]);
+        $query->where($where);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Hostescalations.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row[$index]] = __('Host escalation #{0}', $row['id']);
+        }
+
+        return $list;
     }
 }

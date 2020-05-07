@@ -5,9 +5,11 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Hosttemplate;
 use App\Model\Entity\User;
+use Cake\Core\Plugin;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -45,6 +47,7 @@ class HosttemplatesTable extends Table {
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
     use CustomValidationTrait;
+    use PluginManagerTableTrait;
 
     /**
      * Initialize method
@@ -457,22 +460,28 @@ class HosttemplatesTable extends Table {
      * @return array
      */
     public function getHosttemplateForEdit($id) {
+        $contain = [
+            'Contactgroups',
+            'Contacts',
+            'Hostgroups',
+            'Customvariables',
+            'Hosttemplatecommandargumentvalues' => [
+                'Commandarguments'
+            ],
+            'CheckCommand'                      => [
+                'Commandarguments'
+            ]
+        ];
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $contain[] = 'PrometheusExporters';
+        };
+
         $query = $this->find()
             ->where([
                 'Hosttemplates.id' => $id
             ])
-            ->contain([
-                'Contactgroups',
-                'Contacts',
-                'Hostgroups',
-                'Customvariables',
-                'Hosttemplatecommandargumentvalues' => [
-                    'Commandarguments'
-                ],
-                'CheckCommand'                      => [
-                    'Commandarguments'
-                ]
-            ])
+            ->contain($contain)
             ->disableHydration()
             ->first();
 
@@ -485,6 +494,9 @@ class HosttemplatesTable extends Table {
         ];
         $hosttemplate['contactgroups'] = [
             '_ids' => Hash::extract($query, 'contactgroups.{n}.id')
+        ];
+        $hosttemplate['prometheus_exporters'] = [
+            '_ids' => Hash::extract($query, 'prometheus_exporters.{n}.id')
         ];
 
         // Merge new command arguments that are missing in the host template to host template command arguments
@@ -610,6 +622,15 @@ class HosttemplatesTable extends Table {
      * @return array
      */
     public function getHosttemplatesForCopy($ids = []) {
+        $contain = [
+            'Hosttemplatecommandargumentvalues' => [
+                'Commandarguments'
+            ]
+        ];
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $contain[] = 'PrometheusExporters';
+        };
 
         $query = $this->find()
             ->select([
@@ -619,11 +640,7 @@ class HosttemplatesTable extends Table {
                 'Hosttemplates.command_id',
                 'Hosttemplates.active_checks_enabled'
             ])
-            ->contain([
-                'Hosttemplatecommandargumentvalues' => [
-                    'Commandarguments'
-                ]
-            ])
+            ->contain($contain)
             ->where(['Hosttemplates.id IN' => $ids])
             ->order(['Hosttemplates.id' => 'asc'])
             ->disableHydration()
@@ -1211,5 +1228,71 @@ class HosttemplatesTable extends Table {
         }
 
         return true;
+    }
+
+    /**
+     * @param int $containerId
+     * @param string $type
+     * @param array $MY_RIGHTS
+     * @param array $where
+     * @return array
+     */
+    public function getHosttemplatesByContainerIdExact($containerId, $type = 'all', $index = 'id', $MY_RIGHTS = [], $where = []) {
+        $_where = [
+            'Hosttemplates.container_id' => $containerId
+        ];
+
+        $where = Hash::merge($_where, $where);
+
+        $query = $this->find();
+        $query->select([
+            'Hosttemplates.' . $index,
+            'Hosttemplates.name'
+        ]);
+        $query->where($where);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Hosttemplates.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+        $query->order([
+            'Hosttemplates.name' => 'asc'
+        ]);
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row[$index]] = $row['name'];
+        }
+
+        return $list;
+    }
+
+    /**
+     * @param $name
+     * @param string[] $contain
+     * @return array
+     */
+    public function getHosttemplatesByWildcardName($name, $contain = ['Containers']) {
+        $query = $this->find()
+            ->where([
+                'Hosttemplates.name LIKE' => $name
+            ])
+            ->contain($contain)
+            ->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
     }
 }
