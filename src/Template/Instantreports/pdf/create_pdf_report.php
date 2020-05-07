@@ -33,7 +33,6 @@ use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
  * @var array $instantReport
  * @var int $fromDate
  * @var int $toDate
- * @var \itnovum\openITCOCKPIT\Core\Views\UserTime $UserTime
  *
  */
 
@@ -62,10 +61,10 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
         <i class="fa fa-calendar "></i>
         <?php
         echo __('Analysis period: ');
-        echo h($UserTime->format($fromDate)); ?>
+        echo h($fromDate); ?>
         <i class="fas fa-long-arrow-alt-right"></i>
         <?php
-        echo h($UserTime->format($toDate));
+        echo h($toDate);
         ?>
     </div>
 </div>
