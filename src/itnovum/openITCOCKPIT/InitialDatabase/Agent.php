@@ -200,6 +200,11 @@ class Agent extends Importer {
                 'servicetemplate_id' => 'd21e3462-7430-4d38-b92a-853bcfc12356'
             ],
             [
+                'name'               => 'windows_eventlog',
+                'plugin_name'        => 'WindowsEventlog',
+                'servicetemplate_id' => 'dda2d5dc-7987-49a5-b4c2-0540e8aaf45e'
+            ],
+            [
                 'name'               => 'dockerstats',
                 'plugin_name'        => 'DockerContainerRunning',
                 'servicetemplate_id' => 'ca73653f-2bba-4542-b11b-0bbd0ecc8b7a'
@@ -641,6 +646,42 @@ class Agent extends Importer {
                         'name'       => '$ARG2$',
                         'human_name' => 'Strict'
                     ],
+                ]
+            ],
+
+            [
+                'name'             => 'check_oitc_agent_windows_eventlog',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'af3f0cac-f562-4830-9935-a9b2d69d494e',
+                'description'      => "Returns the state of a windows event log entry.\n" .
+                    "Log type: The windows event log type to search in. Need to be specified in the agent configuration. (e.g. 'System', 'Application', 'Security')\n" .
+                    "Default state: The service state if no log entry will be found. (default: 'ok', eg. 'ok', 'warning', 'critical', 'unknown')\n" .
+                    "Check past minutes: Check for the log entry within the last X minutes. (default: '60')\n" .
+                    "Match: String that must match with the event log source name.\n" .
+                    "Strict: Decides if the match must be completely or just in a part (1/0).\n",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Log type'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Default state'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Check past minutes'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Match'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Strict'
+                    ]
                 ]
             ],
 
@@ -1834,6 +1875,82 @@ class Agent extends Importer {
                         'commandargument_id' => '$ARG2$',
                         'value'              => '1',
                     ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [],
+                'contactgroups'                             => [],
+                'contacts'                                  => []
+            ],
+
+            [
+                'uuid'                                      => 'dda2d5dc-7987-49a5-b4c2-0540e8aaf45e',
+                'template_name'                             => 'OITC_AGENT_WINDOWS_EVENTLOG',
+                'name'                                      => 'Check windows eventlog entry',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => 'af3f0cac-f562-4830-9935-a9b2d69d494e',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '0',
+                'freshness_threshold'                       => null,
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '0',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => 'ok',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '60',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG4$',
+                        'value'              => '',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG5$',
+                        'value'              => '1',
+                    ],
                 ],
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
