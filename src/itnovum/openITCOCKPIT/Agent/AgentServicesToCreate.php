@@ -320,8 +320,17 @@ class AgentServicesToCreate {
                                 $value = $windows_service['binpath'];
                             }
 
+                            $serviceName = $windows_service['name'];
+                            if (isset($windows_service['binpath'])) {
+                                $serviceName = $windows_service['binpath'];
+                            }
+                            if (isset($windows_service['display_name'])) {
+                                $serviceName = $windows_service['display_name'];
+                            }
+
+
                             $service['servicecommandargumentvalues'][2]['value'] = $value;
-                            $service['agent_wizard_option_description'] = $value;
+                            $service['agent_wizard_option_description'] = $serviceName;
 
                             $this->addServiceToCreate($service, $receiverPluginName, $services, $value, 2);
                         }
