@@ -97,7 +97,7 @@ class ServiceComparisonForSave {
         $data['customvariables'] = $this->getDataForCustomvariables();
 
         //Add service default data
-        $data['service_type'] = GENERIC_SERVICE;
+        $data['service_type'] = $this->service['service_type'] ?? GENERIC_SERVICE;
         $data['usage_flag'] = 0;
         $data['own_contacts'] = (int)$this->hasOwnContacts;
         $data['own_contactgroups'] = (int)$this->hasOwnContacts;
