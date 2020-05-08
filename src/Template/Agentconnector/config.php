@@ -690,6 +690,20 @@
                                                                 class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
+                                                                       id="agentconfig.wineventlog"
+                                                                       ng-model="agentconfig.wineventlog">
+                                                                <label class="custom-control-label"
+                                                                       for="agentconfig.wineventlog">
+                                                                    <?php echo __('Enable windows event log check'); ?>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group col-12">
+                                                            <div
+                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                <input type="checkbox"
+                                                                       class="custom-control-input"
                                                                        id="agentconfig.alfrescostats"
                                                                        ng-model="agentconfig.alfrescostats">
                                                                 <label class="custom-control-label"
@@ -1272,6 +1286,26 @@
                                                                         multiple
                                                                         ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.SystemdService"
                                                                         ng-model="choosenServicesToMonitor.SystemdService">
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div ng-show="servicesToCreate.WindowsEventlog"
+                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                <label class="control-label"
+                                                                       for="choosenServicesToMonitor.WindowsEventlog">
+                                                                    <?php echo __('Windows event log'); ?>
+                                                                    ({{countObj(servicesToCreate.WindowsEventlog)}})
+                                                                </label>
+                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                    <select
+                                                                        id="choosenServicesToMonitor.WindowsEventlog"
+                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                        class="form-control"
+                                                                        chosen="servicesToCreate.WindowsEventlog"
+                                                                        multiple
+                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.WindowsEventlog"
+                                                                        ng-model="choosenServicesToMonitor.WindowsEventlog">
                                                                     </select>
                                                                 </div>
                                                             </div>

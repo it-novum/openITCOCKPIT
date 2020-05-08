@@ -338,6 +338,23 @@ class AgentServicesToCreate {
                         }
                     }
                     break;
+                case 'windows_eventlog':
+                    foreach ($objects as $logType => $logTypeLogs) {
+                        foreach ($logTypeLogs as $key => $eventLog) {
+                            foreach ($receiverPluginNames as $receiverPluginName) {
+                                $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
+
+                                $value = $eventLog['source_name'];
+
+                                $service['servicecommandargumentvalues'][0]['value'] = $logType;    //$logType is not part of the oitc service identifier (in ...[3]['value'])!
+                                $service['servicecommandargumentvalues'][3]['value'] = $value;
+                                $service['agent_wizard_option_description'] = sprintf('%s - (LogType: %s)', $value, $logType);
+
+                                $this->addServiceToCreate($service, $receiverPluginName, $services, $value, 3);
+                            }
+                        }
+                    }
+                    break;
             }
         }
     }

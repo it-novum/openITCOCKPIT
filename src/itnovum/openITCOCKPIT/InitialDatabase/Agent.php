@@ -658,7 +658,7 @@ class Agent extends Importer {
                 'description'      => "Returns the state of a windows event log entry.\n" .
                     "Log type: The windows event log type to search in. Need to be specified in the agent configuration. (e.g. 'System', 'Application', 'Security')\n" .
                     "Default state: The service state if no log entry will be found. (default: 'ok', eg. 'ok', 'warning', 'critical', 'unknown')\n" .
-                    "Check past minutes: Check for the log entry within the last X minutes. (default: '60')\n" .
+                    "Check past minutes: Check for the log entry within the last X minutes. (default: '60', complete log: '0')\n" .
                     "Match: String that must match with the event log source name.\n" .
                     "Strict: Decides if the match must be completely or just in a part (1/0).\n",
                 'commandarguments' => [
