@@ -510,28 +510,20 @@ class ServicesTable extends Table {
             'Services.id',
             'Services.name',
             'Services.disabled',
+            'Services.host_id'
         ])
+            ->innerJoinWith('Hosts', function (Query $q) {
+                return $q->contain('HostsToContainersSharing');
+            })
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                    ]);
+                }
+                return $q;
+            })
             ->contain([
-                'Hosts'            => function (Query $query) use ($MY_RIGHTS) {
-                    $query->enableAutoFields(false)
-                        ->select([
-                            'Hosts.name',
-                            'Hosts.id',
-                            'Hosts.uuid',
-                            'Hosts.address'
-                        ]);
-
-                    if (!empty($MY_RIGHTS)) {
-                        $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
-                            'HostsToContainersSharing.host_id = Hosts.id'
-                        ]);
-                        $query->where([
-                            'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
-                        ]);
-                    }
-
-                    return $query;
-                },
                 'Servicetemplates' => function (Query $query) {
                     $query->enableAutoFields(false)
                         ->select([

@@ -188,7 +188,7 @@
                                     <span class="badge badge-primary margin-right-5"
                                           title="<?php echo __('Acknowledged'); ?>"
                                           ng-show="automap.show_acknowledged">
-                                       <i class="fa fa-user"></i>
+                                        <i class="fa fa-user"></i>
                                     </span>
                                     <span class="badge badge-primary"
                                           title="<?php echo __('In downtime'); ?>"
@@ -286,12 +286,14 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-3 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                            </div>
+                            <?php if ($this->Acl->hasPermission('delete', 'automaps')): ?>
+                                <div class="col-xs-12 col-md-3 txt-color-red">
+                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete all'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

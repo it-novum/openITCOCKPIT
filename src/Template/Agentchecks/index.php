@@ -175,7 +175,7 @@
                                                 class="btn btn-default dropdown-toggle btn-lower-padding"><i
                                                 class="caret"></i></button>
                                         <div class="dropdown-menu dropdown-menu-right"
-                                            id="menuHack-{{agentcheck.id}}">
+                                             id="menuHack-{{agentcheck.id}}">
                                             <?php if ($this->Acl->hasPermission('edit', 'agentchecks')): ?>
                                                 <a ui-sref="AgentchecksEdit({id:agentcheck.id})"
                                                    ng-if="agentcheck.allow_edit" class="dropdown-item">
@@ -229,12 +229,14 @@
                                 <?php echo __('Copy'); ?>
                             </a>
                         </div>
-                        <div class="col-xs-12 col-md-2 txt-color-red">
-                            <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                <i class="fa fa-lg fa-trash"></i>
-                                <?php echo __('Delete all'); ?>
-                            </span>
-                        </div>
+                        <?php if ($this->Acl->hasPermission('delete', 'agentchecks')): ?>
+                            <div class="col-xs-12 col-md-2 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
                     <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>

@@ -225,23 +225,25 @@
                             </span>
                         </div>
                         <div class="col-xs-12 col-md-2">
-                                <span ng-click="trustSelected()" class="pointer">
+                            <span ng-click="trustSelected()" class="pointer">
                                 <i class="fa fa-lg fa-check"></i>
                                 <?php echo __('Trust'); ?>
                             </span>
                         </div>
                         <div class="col-xs-12 col-md-2">
-                                <span ng-click="untrustSelected()" class="pointer">
+                            <span ng-click="untrustSelected()" class="pointer">
                                 <i class="fa fa-lg fa-times-circle"></i>
                                 <?php echo __('Untrust'); ?>
                             </span>
                         </div>
-                        <div class="col-xs-12 col-md-2 txt-color-red">
-                            <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                <i class="fa fa-lg fa-trash"></i>
-                                <?php echo __('Delete all'); ?>
-                            </span>
-                        </div>
+                        <?php if ($this->Acl->hasPermission('delete', 'agentconnector')): ?>
+                            <div class="col-xs-12 col-md-2 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
                     <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>

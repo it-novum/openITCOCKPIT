@@ -398,18 +398,22 @@
                                         <?php echo __('Undo selection'); ?>
                                     </span>
                                 </div>
-                                <div class="col-xs-12 col-md-2">
-                                    <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
-                                        <i class="fas fa-lg fa-files-o"></i>
-                                        <?php echo __('Copy'); ?>
-                                    </a>
-                                </div>
-                                <div class="col-xs-12 col-md-2 txt-color-red">
-                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                        <i class="fas fa-trash"></i>
-                                        <?php echo __('Delete all'); ?>
-                                    </span>
-                                </div>
+                                <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                    <div class="col-xs-12 col-md-2">
+                                        <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
+                                            <i class="fas fa-lg fa-files-o"></i>
+                                            <?php echo __('Copy'); ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                    <div class="col-xs-12 col-md-2 txt-color-red">
+                                        <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                            <i class="fas fa-trash"></i>
+                                            <?php echo __('Delete all'); ?>
+                                        </span>
+                                    </div>
+                                <?php endif; ?>
                                 <div class="btn-group btn-group-sm">
                                     <button class="btn btn-default dropdown-toggle waves-effect waves-themed"
                                             type="button"
@@ -736,19 +740,22 @@
                                         <?php echo __('Undo selection'); ?>
                                     </span>
                                 </div>
-                                <div class="col-xs-12 col-md-2">
-                                    <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
-                                        <i class="fas fa-lg fa-files-o"></i>
-                                        <?php echo __('Copy'); ?>
-                                    </a>
-                                </div>
-                                <div class="col-xs-12 col-md-2 txt-color-red">
-                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                        <i class="fas fa-trash"></i>
-                                        <?php echo __('Delete all'); ?>
-                                    </span>
-                                </div>
-
+                                <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                    <div class="col-xs-12 col-md-2">
+                                        <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
+                                            <i class="fas fa-lg fa-files-o"></i>
+                                            <?php echo __('Copy'); ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                    <div class="col-xs-12 col-md-2 txt-color-red">
+                                        <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                            <i class="fas fa-trash"></i>
+                                            <?php echo __('Delete all'); ?>
+                                        </span>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                             <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                             <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

@@ -522,9 +522,12 @@ class ServicetemplatesController extends AppController {
             $includeDisabled = false;
         }
 
-        $services = $ServicesTable->getServicesWithHostForServicetemplateUsedBy($id, $this->MY_RIGHTS, $includeDisabled);
-
-
+        $MY_RIGHTS = [];
+        if (!$this->hasRootPrivileges) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+        $services = $ServicesTable->getServicesWithHostForServicetemplateUsedBy($id, $MY_RIGHTS, $includeDisabled);
+        
         if (empty($services)) {
             //No services found or no permissions
             $this->set('servicetemplate', $servicetemplate);
@@ -538,7 +541,6 @@ class ServicetemplatesController extends AppController {
 
         foreach ($tmpHosts as $index => $host) {
             $hostContainerIds = Hash::extract($host['hosts_to_containers_sharing'], '{n}.id');
-
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
             } else {
