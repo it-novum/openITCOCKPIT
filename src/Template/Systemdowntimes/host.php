@@ -265,19 +265,19 @@
                                 <td>{{downtime.Systemdowntime.author}}</td>
 
                                 <td>
-                                        <span class="text-muted">
-                                            AUTO[{{downtime.Systemdowntime.id}}]:
-                                        </span>
+                                    <span class="text-muted">
+                                        AUTO[{{downtime.Systemdowntime.id}}]:
+                                    </span>
                                     {{downtime.Systemdowntime.comment}}
                                 </td>
 
                                 <td>{{downtime.Systemdowntime.weekdaysHuman.join(', ')}}</td>
 
                                 <td>
-                                        <span
-                                            class="text-muted"
-                                            ng-show="downtime.Systemdowntime.dayOfMonth.length == 0">
-                                            <?php echo __('Every defined weekday'); ?></span>
+                                    <span
+                                        class="text-muted"
+                                        ng-show="downtime.Systemdowntime.dayOfMonth.length == 0">
+                                        <?php echo __('Every defined weekday'); ?></span>
                                     {{downtime.Systemdowntime.dayOfMonth.join(', ')}}
                                 </td>
 
@@ -322,12 +322,14 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                            </div>
+                            <?php if ($this->Acl->hasPermission('delete', 'systemdowntimes')): ?>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete all'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

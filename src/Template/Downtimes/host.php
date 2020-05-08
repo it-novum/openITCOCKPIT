@@ -144,9 +144,11 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text filter-text"><?php echo __('From'); ?></span>
+                                                <span
+                                                    class="input-group-text filter-text"><?php echo __('From'); ?></span>
                                             </div>
-                                            <input type="text" class="form-control form-control-sm" style="padding:0.5rem 0.875rem;"
+                                            <input type="text" class="form-control form-control-sm"
+                                                   style="padding:0.5rem 0.875rem;"
                                                    placeholder="<?php echo __('From date'); ?>"
                                                    ng-model="filter.from"
                                                    ng-model-options="{debounce: 500}">
@@ -170,9 +172,11 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text filter-text"><?php echo __('To'); ?></span>
+                                                <span
+                                                    class="input-group-text filter-text"><?php echo __('To'); ?></span>
                                             </div>
-                                            <input type="text" class="form-control form-control-sm" style="padding:0.5rem 0.875rem;"
+                                            <input type="text" class="form-control form-control-sm"
+                                                   style="padding:0.5rem 0.875rem;"
                                                    placeholder="<?php echo __('To date'); ?>"
                                                    ng-model="filter.to"
                                                    ng-model-options="{debounce: 500}">
@@ -401,12 +405,14 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                            </div>
+                            <?php if ($this->Acl->hasPermission('delete', 'downtimes')): ?>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete all'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

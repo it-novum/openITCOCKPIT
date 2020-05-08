@@ -142,7 +142,7 @@
                                         <div class="form-group">
                                             <div class="input-group  input-group-sm">
                                                 <div class="input-group-prepend">
-                                                     <span class="input-group-text">
+                                                    <span class="input-group-text">
                                                         <div class='icon-stack'>
                                                             <i class="fas fa-cogs icon-stack-3x opacity-100 "></i>
                                                             <i class="fas fa-cogs icon-stack-2x opacity-100 text-primary"></i>
@@ -428,8 +428,8 @@
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                                {{service.servicename}}
-                                                            </span>
+                                                        {{service.servicename}}
+                                                    </span>
                                                 <?php endif; ?>
                                                 <i ng-if="service.disabled == 1"
                                                    class="fa fa-power-off text-danger"
@@ -453,8 +453,8 @@
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                                {{service.servicename}}
-                                                            </span>
+                                                        {{service.servicename}}
+                                                    </span>
                                                 <?php endif; ?>
                                                 <i ng-if="service.disabled == 1"
                                                    class="fa fa-power-off text-danger"
@@ -478,8 +478,8 @@
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                            {{servicegroup.container.name}}
-                                                        </span>
+                                                        {{servicegroup.container.name}}
+                                                    </span>
                                                 <?php endif; ?>
                                             </div>
                                         </li>
@@ -500,8 +500,8 @@
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                                {{servicegroup.container.name}}
-                                                            </span>
+                                                        {{servicegroup.container.name}}
+                                                    </span>
                                                 <?php endif; ?>
                                             </div>
                                         </li>
@@ -519,13 +519,13 @@
                                     <span class="label-forced badge-success margin-right-5"
                                           title="<?php echo __('Yes'); ?>"
                                           ng-show="servicedependency.inherits_parent === 1">
-                                                    <?php echo __('Yes'); ?>
-                                            </span>
+                                        <?php echo __('Yes'); ?>
+                                    </span>
                                     <span class="label-forced badge-danger margin-right-5"
                                           title="<?php echo __('No'); ?>"
                                           ng-show="servicedependency.inherits_parent === 0">
-                                                    <?php echo __('No'); ?>
-                                            </span>
+                                        <?php echo __('No'); ?>
+                                    </span>
                                 </td>
                                 <td class="text-align-center">
                                     <div>
@@ -537,28 +537,28 @@
                                         <span class="label-forced badge-warning margin-right-5"
                                               title="<?php echo __('Warning'); ?>"
                                               ng-show="servicedependency.execution_fail_on_warning">
-                                                    <?php echo __('W'); ?>
-                                                </span>
+                                            <?php echo __('W'); ?>
+                                        </span>
                                         <span class="label-forced badge-danger margin-right-5"
                                               title="<?php echo __('Critical'); ?>"
                                               ng-show="servicedependency.execution_fail_on_critical">
-                                                    <?php echo __('C'); ?>
-                                                </span>
+                                            <?php echo __('C'); ?>
+                                        </span>
                                         <span class="label-forced badge-secondary margin-right-5"
                                               title="<?php echo __('Unknown'); ?>"
                                               ng-show="servicedependency.execution_fail_on_unknown">
-                                                    <?php echo __('U'); ?>
-                                                </span>
+                                            <?php echo __('U'); ?>
+                                        </span>
                                         <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Pending'); ?>"
                                               ng-show="servicedependency.execution_fail_on_pending">
-                                                    <?php echo __('P'); ?>
-                                                </span>
+                                            <?php echo __('P'); ?>
+                                        </span>
                                         <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Execution none'); ?>"
                                               ng-show="servicedependency.execution_none">
-                                                    <?php echo __('N'); ?>
-                                                </span>
+                                            <?php echo __('N'); ?>
+                                        </span>
                                     </div>
                                 </td>
                                 <td class="text-align-center">
@@ -571,28 +571,28 @@
                                         <span class="label-forced badge-warning margin-right-5"
                                               title="<?php echo __('Warning'); ?>"
                                               ng-show="servicedependency.notification_fail_on_warning">
-                                                    <?php echo __('W'); ?>
-                                                </span>
+                                            <?php echo __('W'); ?>
+                                        </span>
                                         <span class="label-forced badge-danger margin-right-5"
                                               title="<?php echo __('Critical'); ?>"
                                               ng-show="servicedependency.notification_fail_on_critical">
-                                                    <?php echo __('C'); ?>
-                                                </span>
+                                            <?php echo __('C'); ?>
+                                        </span>
                                         <span class="label-forced badge-secondary margin-right-5"
                                               title="<?php echo __('Unknown'); ?>"
                                               ng-show="servicedependency.notification_fail_on_unknown">
-                                                    <?php echo __('U'); ?>
-                                                </span>
+                                            <?php echo __('U'); ?>
+                                        </span>
                                         <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Pending'); ?>"
                                               ng-show="servicedependency.notification_fail_on_pending">
-                                                    <?php echo __('P'); ?>
-                                                </span>
+                                            <?php echo __('P'); ?>
+                                        </span>
                                         <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Notification none'); ?>"
                                               ng-show="servicedependency.notification_none">
-                                                    <?php echo __('N'); ?>
-                                                </span>
+                                            <?php echo __('N'); ?>
+                                        </span>
                                     </div>
                                 </td>
                                 <td class="text-center">
@@ -664,12 +664,14 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                            </div>
+                            <?php if ($this->Acl->hasPermission('delete', 'servicedependencies')): ?>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete all'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

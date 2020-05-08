@@ -150,7 +150,7 @@
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('edit', 'usercontainerroles')): ?>
                                                 <a ng-if="usercontainerrole.allow_edit"
-                                                    ui-sref="UsercontainerrolesEdit({id: usercontainerrole.id})"
+                                                   ui-sref="UsercontainerrolesEdit({id: usercontainerrole.id})"
                                                    class="dropdown-item">
                                                     <i class="fa fa-cog"></i>
                                                     <?php echo __('Edit'); ?>
@@ -159,7 +159,7 @@
                                             <?php if ($this->Acl->hasPermission('delete', 'usercontainerroles')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-if="usercontainerrole.allow_edit"
-                                                    ng-click="confirmDelete(getObjectForDelete(usercontainerrole))"
+                                                   ng-click="confirmDelete(getObjectForDelete(usercontainerrole))"
                                                    href="javascript:void(0);"
                                                    class="dropdown-item txt-color-red">
                                                     <i class="fa fa-trash"></i>
@@ -193,12 +193,14 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                            </div>
+                            <?php if ($this->Acl->hasPermission('delete', 'usercontainerroles')): ?>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete all'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

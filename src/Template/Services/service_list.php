@@ -254,9 +254,10 @@
                                                 </i>
                                             </a>
                                         <?php else: ?>
-                                            <div ng-mouseenter="mouseenter($event, service.Host.uuid, service.Service.uuid)"
-                                                 ng-mouseleave="mouseleave()"
-                                                 ng-if="service.Service.has_graph">
+                                            <div
+                                                ng-mouseenter="mouseenter($event, service.Host.uuid, service.Service.uuid)"
+                                                ng-mouseleave="mouseleave()"
+                                                ng-if="service.Service.has_graph">
                                                 <i class="fa fa-lg fa-area-chart">
                                                 </i>
                                             </div>
@@ -285,15 +286,20 @@
                                     </td>
 
                                     <td>
-                                        <span ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
+                                        <span
+                                            ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{
+                                            service.Servicestatus.lastCheck }}</span>
                                         <span ng-if="service.Service.active_checks_enabled === false">
                                             <?php echo __('n/a'); ?>
                                         </span>
                                     </td>
 
                                     <td>
-                                        <span ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
-                                        <span ng-if="service.Service.active_checks_enabled === false || host.is_satellite_host === true">
+                                        <span
+                                            ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{
+                                            service.Servicestatus.nextCheck }}</span>
+                                        <span
+                                            ng-if="service.Service.active_checks_enabled === false || host.is_satellite_host === true">
                                             <?php echo __('n/a'); ?>
                                         </span>
                                     </td>
@@ -381,29 +387,33 @@
                                     <span ng-show="selectedElements > 0">({{selectedElements}})</span>
                                 </div>
                                 <div class="col-xs-12 col-md-2">
-                                <span ng-click="selectAll()" class="pointer">
-                                    <i class="fas fa-lg fa-check-square"></i>
-                                    <?php echo __('Select all'); ?>
-                                </span>
+                                    <span ng-click="selectAll()" class="pointer">
+                                        <i class="fas fa-lg fa-check-square"></i>
+                                        <?php echo __('Select all'); ?>
+                                    </span>
                                 </div>
                                 <div class="col-xs-12 col-md-2">
-                                <span ng-click="undoSelection()" class="pointer">
-                                    <i class="fas fa-lg fa-square"></i>
-                                    <?php echo __('Undo selection'); ?>
-                                </span>
+                                    <span ng-click="undoSelection()" class="pointer">
+                                        <i class="fas fa-lg fa-square"></i>
+                                        <?php echo __('Undo selection'); ?>
+                                    </span>
                                 </div>
-                                <div class="col-xs-12 col-md-2">
-                                    <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
-                                        <i class="fas fa-lg fa-files-o"></i>
-                                        <?php echo __('Copy'); ?>
-                                    </a>
-                                </div>
-                                <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                                </div>
+                                <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                    <div class="col-xs-12 col-md-2">
+                                        <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
+                                            <i class="fas fa-lg fa-files-o"></i>
+                                            <?php echo __('Copy'); ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                    <div class="col-xs-12 col-md-2 txt-color-red">
+                                        <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                            <i class="fas fa-trash"></i>
+                                            <?php echo __('Delete all'); ?>
+                                        </span>
+                                    </div>
+                                <?php endif; ?>
                                 <div class="btn-group btn-group-sm">
                                     <button class="btn btn-default dropdown-toggle waves-effect waves-themed"
                                             type="button"
@@ -461,7 +471,8 @@
 
                         <!-- NOT MONITORED TAB START -->
                         <div ng-if="activeTab === 'notMonitored'">
-                            <table id="service_list" class="table table-striped m-0 table-bordered table-hover table-sm">
+                            <table id="service_list"
+                                   class="table table-striped m-0 table-bordered table-hover table-sm">
                                 <thead>
                                 <tr>
                                     <th class="no-sort text-center">
@@ -571,30 +582,33 @@
                                     <span ng-show="selectedElements > 0">({{selectedElements}})</span>
                                 </div>
                                 <div class="col-xs-12 col-md-2">
-                                <span ng-click="selectAll()" class="pointer">
-                                    <i class="fas fa-lg fa-check-square"></i>
-                                    <?php echo __('Select all'); ?>
-                                </span>
+                                    <span ng-click="selectAll()" class="pointer">
+                                        <i class="fas fa-lg fa-check-square"></i>
+                                        <?php echo __('Select all'); ?>
+                                    </span>
                                 </div>
                                 <div class="col-xs-12 col-md-2">
-                                <span ng-click="undoSelection()" class="pointer">
-                                    <i class="fas fa-lg fa-square"></i>
-                                    <?php echo __('Undo selection'); ?>
-                                </span>
+                                    <span ng-click="undoSelection()" class="pointer">
+                                        <i class="fas fa-lg fa-square"></i>
+                                        <?php echo __('Undo selection'); ?>
+                                    </span>
                                 </div>
-                                <div class="col-xs-12 col-md-2">
-                                    <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
-                                        <i class="fas fa-lg fa-files-o"></i>
-                                        <?php echo __('Copy'); ?>
-                                    </a>
-                                </div>
-                                <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                                </div>
-
+                                <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                    <div class="col-xs-12 col-md-2">
+                                        <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
+                                            <i class="fas fa-lg fa-files-o"></i>
+                                            <?php echo __('Copy'); ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                    <div class="col-xs-12 col-md-2 txt-color-red">
+                                        <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                            <i class="fas fa-trash"></i>
+                                            <?php echo __('Delete all'); ?>
+                                        </span>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                             <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                             <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
@@ -604,7 +618,8 @@
 
                         <!-- DISABLED TAB START -->
                         <div ng-if="activeTab === 'disabled'">
-                            <table id="service_list" class="table table-striped m-0 table-bordered table-hover table-sm">
+                            <table id="service_list"
+                                   class="table table-striped m-0 table-bordered table-hover table-sm">
                                 <thead>
                                 <tr>
                                     <th class="no-sort text-center">
@@ -714,30 +729,33 @@
                                     <span ng-show="selectedElements > 0">({{selectedElements}})</span>
                                 </div>
                                 <div class="col-xs-12 col-md-2">
-                                <span ng-click="selectAll()" class="pointer">
-                                    <i class="fas fa-lg fa-check-square"></i>
-                                    <?php echo __('Select all'); ?>
-                                </span>
+                                    <span ng-click="selectAll()" class="pointer">
+                                        <i class="fas fa-lg fa-check-square"></i>
+                                        <?php echo __('Select all'); ?>
+                                    </span>
                                 </div>
                                 <div class="col-xs-12 col-md-2">
-                                <span ng-click="undoSelection()" class="pointer">
-                                    <i class="fas fa-lg fa-square"></i>
-                                    <?php echo __('Undo selection'); ?>
-                                </span>
+                                    <span ng-click="undoSelection()" class="pointer">
+                                        <i class="fas fa-lg fa-square"></i>
+                                        <?php echo __('Undo selection'); ?>
+                                    </span>
                                 </div>
-                                <div class="col-xs-12 col-md-2">
-                                    <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
-                                        <i class="fas fa-lg fa-files-o"></i>
-                                        <?php echo __('Copy'); ?>
-                                    </a>
-                                </div>
-                                <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                                </div>
-
+                                <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
+                                    <div class="col-xs-12 col-md-2">
+                                        <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
+                                            <i class="fas fa-lg fa-files-o"></i>
+                                            <?php echo __('Copy'); ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                    <div class="col-xs-12 col-md-2 txt-color-red">
+                                        <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                            <i class="fas fa-trash"></i>
+                                            <?php echo __('Delete all'); ?>
+                                        </span>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                             <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                             <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
@@ -747,7 +765,8 @@
 
                         <!-- DELETED TAB START -->
                         <div ng-if="activeTab === 'deleted'">
-                            <table id="service_list" class="table table-striped m-0 table-bordered table-hover table-sm">
+                            <table id="service_list"
+                                   class="table table-striped m-0 table-bordered table-hover table-sm">
                                 <thead>
                                 <tr>
                                     <th class="no-sort">

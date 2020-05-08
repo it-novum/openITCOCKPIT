@@ -402,8 +402,8 @@
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                                {{host.name}}
-                                                            </span>
+                                                        {{host.name}}
+                                                    </span>
                                                 <?php endif; ?>
                                                 <i ng-if="host.disabled == 1"
                                                    class="fa fa-power-off text-danger"
@@ -427,8 +427,8 @@
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                                {{host.name}}
-                                                            </span>
+                                                        {{host.name}}
+                                                    </span>
                                                 <?php endif; ?>
                                                 <i ng-if="host.disabled == 1"
                                                    class="fa fa-power-off text-danger"
@@ -452,8 +452,8 @@
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                            {{hostgroup.container.name}}
-                                                        </span>
+                                                        {{hostgroup.container.name}}
+                                                    </span>
                                                 <?php endif; ?>
                                             </div>
                                         </li>
@@ -474,8 +474,8 @@
                                                     </a>
                                                 <?php else: ?>
                                                     <span class="badge badge-light label-xs">
-                                                                {{hostgroup.container.name}}
-                                                            </span>
+                                                        {{hostgroup.container.name}}
+                                                    </span>
                                                 <?php endif; ?>
                                             </div>
                                         </li>
@@ -493,12 +493,12 @@
                                     <span class="label-forced badge-success margin-right-5"
                                           title="<?php echo __('Yes'); ?>"
                                           ng-show="hostdependency.inherits_parent === 1">
-                                            <?php echo __('Yes'); ?>
+                                        <?php echo __('Yes'); ?>
                                     </span>
                                     <span class="label-forced badge-danger margin-right-5"
                                           title="<?php echo __('No'); ?>"
                                           ng-show="hostdependency.inherits_parent === 0">
-                                            <?php echo __('No'); ?>
+                                        <?php echo __('No'); ?>
                                     </span>
                                 </td>
                                 <td class="text-align-center">
@@ -511,22 +511,22 @@
                                         <span class="label-forced badge-danger margin-right-5"
                                               title="<?php echo __('Down'); ?>"
                                               ng-show="hostdependency.execution_fail_on_down">
-                                                    <?php echo __('D'); ?>
-                                                </span>
+                                            <?php echo __('D'); ?>
+                                        </span>
                                         <span class="label-forced badge-secondary margin-right-5"
                                               title="<?php echo __('Unreachable'); ?>"
                                               ng-show="hostdependency.execution_fail_on_unreachable">
-                                                    <?php echo __('U'); ?>
-                                                </span>
+                                            <?php echo __('U'); ?>
+                                        </span>
                                         <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Pending'); ?>"
                                               ng-show="hostdependency.execution_fail_on_pending">
-                                                    <?php echo __('P'); ?>
-                                                </span>
+                                            <?php echo __('P'); ?>
+                                        </span>
                                         <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Execution none'); ?>"
                                               ng-show="hostdependency.execution_none">
-                                                    <?php echo __('N'); ?>
+                                            <?php echo __('N'); ?>
                                         </span>
                                     </div>
                                 </td>
@@ -540,23 +540,23 @@
                                         <span class="label-forced badge-danger margin-right-5"
                                               title="<?php echo __('Down'); ?>"
                                               ng-show="hostdependency.notification_fail_on_down">
-                                                    <?php echo __('D'); ?>
-                                                </span>
+                                            <?php echo __('D'); ?>
+                                        </span>
                                         <span class="label-forced badge-secondary margin-right-5"
                                               title="<?php echo __('Unreachable'); ?>"
                                               ng-show="hostdependency.notification_fail_on_unreachable">
-                                                    <?php echo __('U'); ?>
-                                                </span>
+                                            <?php echo __('U'); ?>
+                                        </span>
                                         <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Pending'); ?>"
                                               ng-show="hostdependency.notification_fail_on_pending">
-                                                    <?php echo __('P'); ?>
-                                                </span>
+                                            <?php echo __('P'); ?>
+                                        </span>
                                         <span class="label-forced badge-primary margin-right-5"
                                               title="<?php echo __('Notification none'); ?>"
                                               ng-show="hostdependency.notification_none">
-                                                    <?php echo __('N'); ?>
-                                                </span>
+                                            <?php echo __('N'); ?>
+                                        </span>
                                     </div>
                                 </td>
                                 <td class="text-center">
@@ -628,12 +628,14 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                            </div>
+                            <?php if ($this->Acl->hasPermission('delete', 'hostdependencies')): ?>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete all'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

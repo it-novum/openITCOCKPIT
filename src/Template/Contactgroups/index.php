@@ -139,8 +139,8 @@
                             <tr ng-repeat="contactgroup in contactgroups">
                                 <td class="text-center" class="width-15">
                                     <input type="checkbox"
-                                       ng-model="massChange[contactgroup.Contactgroup.id]"
-                                       ng-show="contactgroup.Contactgroup.allow_edit">
+                                           ng-model="massChange[contactgroup.Contactgroup.id]"
+                                           ng-show="contactgroup.Contactgroup.allow_edit">
                                 </td>
 
                                 <td>{{contactgroup.Contactgroup.container.name}}</td>
@@ -153,7 +153,7 @@
                                     <span class="label-forced label-danger margin-right-5"
                                           title="<?php echo __('Down'); ?>"
                                           ng-show="contactgroup.Contactgroup.contact_count === 0">
-                                            <?php echo __('Empty'); ?>
+                                        <?php echo __('Empty'); ?>
                                     </span>
                                 </td>
                                 <td class="width-50">
@@ -231,18 +231,22 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2">
-                                <a ui-sref="ContactgroupsCopy({ids: linkForCopy()})" class="a-clean">
-                                    <i class="fas fa-lg fa-files-o"></i>
-                                    <?php echo __('Copy'); ?>
-                                </a>
-                            </div>
-                            <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                            </div>
+                            <?php if ($this->Acl->hasPermission('copy', 'contactgroups')): ?>
+                                <div class="col-xs-12 col-md-2">
+                                    <a ui-sref="ContactgroupsCopy({ids: linkForCopy()})" class="a-clean">
+                                        <i class="fas fa-lg fa-files-o"></i>
+                                        <?php echo __('Copy'); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($this->Acl->hasPermission('delete', 'contactgroups')): ?>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete all'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
 

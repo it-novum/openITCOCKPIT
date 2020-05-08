@@ -211,14 +211,14 @@
                                 <td>{{user.phone}}</td>
                                 <td>{{user.company}}</td>
                                 <td>
-                                         <span class="label-forced label-danger"
-                                               ng-hide="user.is_active">
-                                            <?php echo __('Disabled'); ?>
-                                        </span>
+                                    <span class="label-forced label-danger"
+                                          ng-hide="user.is_active">
+                                        <?php echo __('Disabled'); ?>
+                                    </span>
                                     <span class="label-forced label-success"
                                           ng-show="user.is_active">
-                                            <?php echo __('Active'); ?>
-                                        </span>
+                                        <?php echo __('Active'); ?>
+                                    </span>
                                 </td>
                                 <td>{{user.usergroup.name}}</td>
 
@@ -300,12 +300,14 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                            </div>
+                            <?php if ($this->Acl->hasPermission('delete', 'users')): ?>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete all'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

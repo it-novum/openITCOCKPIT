@@ -187,28 +187,28 @@
                                     <span class="badge badge-success margin-right-5"
                                           title="<?php echo __('Recovery'); ?>"
                                           ng-show="contact.Contact.notify_host_recovery">
-                                            <?php echo __('R'); ?>
+                                        <?php echo __('R'); ?>
                                     </span>
                                     <span class="badge badge-danger margin-right-5"
                                           title="<?php echo __('Down'); ?>"
                                           ng-show="contact.Contact.notify_host_down">
-                                            <?php echo __('D'); ?>
+                                        <?php echo __('D'); ?>
                                     </span>
                                     <span class="badge badge-secondary margin-right-5"
                                           title="<?php echo __('Unreachable'); ?>"
                                           ng-show="contact.Contact.notify_host_unreachable">
-                                            <?php echo __('U'); ?>
+                                        <?php echo __('U'); ?>
                                     </span>
                                     <span class="badge badge-primary margin-right-5"
                                           title="<?php echo __('Flapping'); ?>"
                                           ng-show="contact.Contact.notify_host_flapping">
-                                            <i class="fas fa-circle"></i>
-                                            <i class="far fa-circle"></i>
+                                        <i class="fas fa-circle"></i>
+                                        <i class="far fa-circle"></i>
                                     </span>
                                     <span class="badge badge-primary"
                                           title="<?php echo __('Downtime'); ?>"
                                           ng-show="contact.Contact.notify_host_downtime">
-                                            <i class="fa fa-power-off"></i>
+                                        <i class="fa fa-power-off"></i>
                                     </span>
                                 </td>
                                 <td>
@@ -218,7 +218,7 @@
                                     </span>
                                     <span class="badge badge-success"
                                           ng-show="contact.Contact.service_notifications_enabled">
-                                            <?php echo __('Enabled'); ?>
+                                        <?php echo __('Enabled'); ?>
                                     </span>
                                 </td>
                                 <td>
@@ -230,28 +230,28 @@
                                     <span class="badge badge-warning margin-right-5"
                                           title="<?php echo __('Warning'); ?>"
                                           ng-show="contact.Contact.notify_service_warning">
-                                            <?php echo __('W'); ?>
+                                        <?php echo __('W'); ?>
                                     </span>
                                     <span class="badge badge-danger margin-right-5"
                                           title="<?php echo __('Critical'); ?>"
                                           ng-show="contact.Contact.notify_service_critical">
-                                            <?php echo __('C'); ?>
+                                        <?php echo __('C'); ?>
                                     </span>
                                     <span class="badge badge-secondary margin-right-5"
                                           title="<?php echo __('Unknown'); ?>"
                                           ng-show="contact.Contact.notify_service_unknown">
-                                            <?php echo __('U'); ?>
+                                        <?php echo __('U'); ?>
                                     </span>
                                     <span class="badge badge-primary margin-right-5"
                                           title="<?php echo __('Flapping'); ?>"
                                           ng-show="contact.Contact.notify_service_flapping">
-                                            <i class="fas fa-circle"></i>
-                                            <i class="far fa-circle"></i>
+                                        <i class="fas fa-circle"></i>
+                                        <i class="far fa-circle"></i>
                                     </span>
                                     <span class="badge badge-primary"
                                           title="<?php echo __('Downtime'); ?>"
                                           ng-show="contact.Contact.notify_service_downtime">
-                                            <i class="fa fa-power-off"></i>
+                                        <i class="fa fa-power-off"></i>
                                     </span>
                                 </td>
 
@@ -330,18 +330,22 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2">
-                                <a ui-sref="ContactsCopy({ids: linkForCopy()})" class="a-clean">
-                                    <i class="fas fa-lg fa-files-o"></i>
-                                    <?php echo __('Copy'); ?>
-                                </a>
-                            </div>
-                            <div class="col-xs-12 col-md-4 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                            </div>
+                            <?php if ($this->Acl->hasPermission('copy', 'contacts')): ?>
+                                <div class="col-xs-12 col-md-2">
+                                    <a ui-sref="ContactsCopy({ids: linkForCopy()})" class="a-clean">
+                                        <i class="fas fa-lg fa-files-o"></i>
+                                        <?php echo __('Copy'); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($this->Acl->hasPermission('delete', 'contacts')): ?>
+                                <div class="col-xs-12 col-md-4 txt-color-red">
+                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete all'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

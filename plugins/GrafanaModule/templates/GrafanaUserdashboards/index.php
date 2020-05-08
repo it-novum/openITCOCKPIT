@@ -132,21 +132,23 @@
                                             {{ userdashboard.name }}
                                         </a>
                                         <span ng-show="userdashboard.grafana_url == ''">
-                                {{ userdashboard.name }}
-                            </span>
+                                            {{ userdashboard.name }}
+                                        </span>
 
                                         <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                             <span ng-show="userdashboard.grafana_url == ''"
                                                   class="label label-primary font-xs pointer"
                                                   ng-click="synchronizeWithGrafana(userdashboard.id)">
-                                                <span class="badge border border-primary text-primary"><?php echo __('Not synchronized'); ?></span>
+                                                <span
+                                                    class="badge border border-primary text-primary"><?php echo __('Not synchronized'); ?></span>
 
-                                </span>
+                                            </span>
                                         <?php else: ?>
                                             <span ng-show="userdashboard.grafana_url == ''"
                                                   class="label label-primary font-xs">
-                                                <span class="badge border border-primary text-primary"><?php echo __('Not synchronized'); ?></span>
-                                </span>
+                                                <span
+                                                    class="badge border border-primary text-primary"><?php echo __('Not synchronized'); ?></span>
+                                            </span>
                                         <?php endif; ?>
                                     <?php else: ?>
                                         {{ userdashboard.name }}
@@ -197,7 +199,7 @@
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('view', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                                 <div class="dropdown-divider"></div>
-                                                <a  ui-sref="GrafanaUserdashboardsView({id: userdashboard.id})"
+                                                <a ui-sref="GrafanaUserdashboardsView({id: userdashboard.id})"
                                                    class="dropdown-item">
                                                     <i class="fa fa-eye"></i>
                                                     <?php echo __('View'); ?>
@@ -239,12 +241,14 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-4 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                            </div>
+                            <?php if ($this->Acl->hasPermission('delete', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
+                                <div class="col-xs-12 col-md-4 txt-color-red">
+                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete all'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

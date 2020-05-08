@@ -38,6 +38,7 @@
         <i class="fa fa-code-fork"></i> <?php echo __('Used by'); ?>
     </li>
 </ol>
+<massdelete></massdelete>
 <div class="row">
     <div class="col-xl-12">
         <div id="panel-1" class="panel">
@@ -57,7 +58,8 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -69,7 +71,7 @@
                         <tbody>
                         <tr>
                             <th class="no-sort sorting_disabled width-15">
-                                    <i class="fa fa-check-square"></i>
+                                <i class="fa fa-check-square"></i>
                             </th>
                             <th>
                                 <?php echo __('Host name'); ?>
@@ -92,14 +94,14 @@
                                         {{ host.Host.hostname }} ({{ host.Host.address }})
 
                                         <span ng-show="host.Host.disabled" title="<?php echo __('Disabled'); ?>">
-                                    <i class="fa fa-plug"></i>
-                                </span>
+                                            <i class="fa fa-plug"></i>
+                                        </span>
                                     </a>
                                 <?php else: ?>
                                     {{ host.Host.hostname }} ({{ host.Host.address }})
                                     <span ng-show="host.Host.disabled" title="<?php echo __('Disabled'); ?>">
-                                <i class="fa fa-plug"></i>
-                            </span>
+                                        <i class="fa fa-plug"></i>
+                                    </span>
                                 <?php endif; ?>
                                 <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                     <a class="pull-right txt-color-blueDark"
@@ -161,23 +163,25 @@
                             <span ng-show="selectedElements > 0">({{selectedElements}})</span>
                         </div>
                         <div class="col-xs-12 col-md-2">
-                                <span ng-click="selectAll()" class="pointer">
-                                    <i class="fas fa-lg fa-check-square"></i>
-                                    <?php echo __('Select all'); ?>
-                                </span>
+                            <span ng-click="selectAll()" class="pointer">
+                                <i class="fas fa-lg fa-check-square"></i>
+                                <?php echo __('Select all'); ?>
+                            </span>
                         </div>
                         <div class="col-xs-12 col-md-2">
-                                <span ng-click="undoSelection()" class="pointer">
-                                    <i class="fas fa-lg fa-square"></i>
-                                    <?php echo __('Undo selection'); ?>
-                                </span>
+                            <span ng-click="undoSelection()" class="pointer">
+                                <i class="fas fa-lg fa-square"></i>
+                                <?php echo __('Undo selection'); ?>
+                            </span>
                         </div>
-                        <div class="col-xs-12 col-md-2 txt-color-red">
+                        <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
+                            <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fas fa-trash"></i>
                                     <?php echo __('Delete all'); ?>
                                 </span>
-                        </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

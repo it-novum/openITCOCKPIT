@@ -246,18 +246,22 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2">
-                                <a ui-sref="CommandsCopy({ids: linkForCopy()})" class="a-clean">
-                                    <i class="fas fa-lg fa-files-o"></i>
-                                    <?php echo __('Copy'); ?>
-                                </a>
-                            </div>
-                            <div class="col-xs-12 col-md-4 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                            </div>
+                            <?php if ($this->Acl->hasPermission('copy', 'commands')): ?>
+                                <div class="col-xs-12 col-md-2">
+                                    <a ui-sref="CommandsCopy({ids: linkForCopy()})" class="a-clean">
+                                        <i class="fas fa-lg fa-files-o"></i>
+                                        <?php echo __('Copy'); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($this->Acl->hasPermission('delete', 'commands')): ?>
+                                <div class="col-xs-12 col-md-4 txt-color-red">
+                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete all'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

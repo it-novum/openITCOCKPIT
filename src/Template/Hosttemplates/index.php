@@ -175,8 +175,8 @@
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosttemplates')): ?>
                                                 <div class="dropdown-divider"></div>
-                                                <a  ng-click="confirmDelete(getObjectForDelete(hosttemplate))"
-                                                    ng-if="hosttemplate.Hosttemplate.allow_edit"
+                                                <a ng-click="confirmDelete(getObjectForDelete(hosttemplate))"
+                                                   ng-if="hosttemplate.Hosttemplate.allow_edit"
                                                    href="javascript:void(0);"
                                                    class="dropdown-item txt-color-red">
                                                     <i class="fa fa-trash"></i>
@@ -210,18 +210,22 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2">
-                                <a ui-sref="HosttemplatesCopy({ids: linkForCopy()})" class="a-clean">
-                                    <i class="fas fa-lg fa-files-o"></i>
-                                    <?php echo __('Copy'); ?>
-                                </a>
-                            </div>
-                            <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
-                            </div>
+                            <?php if ($this->Acl->hasPermission('copy', 'hosttemplates')): ?>
+                                <div class="col-xs-12 col-md-2">
+                                    <a ui-sref="HosttemplatesCopy({ids: linkForCopy()})" class="a-clean">
+                                        <i class="fas fa-lg fa-files-o"></i>
+                                        <?php echo __('Copy'); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($this->Acl->hasPermission('delete', 'hosttemplates')): ?>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete all'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

@@ -82,6 +82,7 @@ use Cake\Utility\Hash;
  * @property \App\Model\Entity\Service[] $services
  * @property \App\Model\Entity\Customvariable[] $customvariables
  * @property \PrometheusModule\Model\Entity\PrometheusExporter[] $prometheus_exporters
+ * @property \PrometheusModule\Model\Entity\PrometheusAlertRule prometheus_alert_rule
  */
 class Host extends Entity {
 
@@ -163,7 +164,8 @@ class Host extends Entity {
         'parenthosts'                   => true,
         'services'                      => true,
         'customvariables'               => true,
-        'prometheus_exporters'          => true
+        'prometheus_exporters'          => true,
+        'prometheus_alert_rule'         => true
     ];
 
     /**

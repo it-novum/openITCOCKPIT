@@ -64,6 +64,7 @@ use Cake\Utility\Hash;
  * @property \MkModule\Model\Entity\Mkservicedata $mkservicedata
  * @property \NewModule\Model\Entity\Servicecommandargumentvalue[] $servicecommandargumentvalues
  * @property \App\Model\Entity\Servicegroup[] $servicegroups
+ * @property \PrometheusModule\Model\Entity\PrometheusAlertRule prometheus_alert_rule
  */
 class Service extends Entity {
     /**
@@ -133,6 +134,7 @@ class Service extends Entity {
         'contactgroups'                     => true,
         'contacts'                          => true,
         'servicegroups'                     => true,
+        'prometheus_alert_rule'             => true
     ];
 
     /**
