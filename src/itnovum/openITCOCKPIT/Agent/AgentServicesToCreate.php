@@ -90,19 +90,22 @@ class AgentServicesToCreate {
             if (!isset($this->servicesToCreate[$receiverPluginName])) {
                 $this->servicesToCreate[$receiverPluginName] = [];
             }
-            $this->servicesToCreate[$receiverPluginName][] = $service;
 
-            if (!isset($this->servicesForFrontend[$receiverPluginName])) {
-                $this->servicesForFrontend[$receiverPluginName] = [];
+            //condition to prevent duplicate service entries in the configuration frontend
+            if (!$this->isInExistingServices($service, $this->servicesToCreate[$receiverPluginName], $servicecommandargumentvalue, $servicecommandargumentvaluePosition)) {
+                $this->servicesToCreate[$receiverPluginName][] = $service;
+                if (!isset($this->servicesForFrontend[$receiverPluginName])) {
+                    $this->servicesForFrontend[$receiverPluginName] = [];
+                }
+                $frontendService = [
+                    'name'               => $service['name'],
+                    'servicetemplate_id' => $service['servicetemplate_id'],
+                ];
+                if (isset($service['agent_wizard_option_description'])) {
+                    $frontendService['agent_wizard_option_description'] = $service['agent_wizard_option_description'];
+                }
+                $this->servicesForFrontend[$receiverPluginName][] = $frontendService;
             }
-            $frontendService = [
-                'name'               => $service['name'],
-                'servicetemplate_id' => $service['servicetemplate_id'],
-            ];
-            if (isset($service['agent_wizard_option_description'])) {
-                $frontendService['agent_wizard_option_description'] = $service['agent_wizard_option_description'];
-            }
-            $this->servicesForFrontend[$receiverPluginName][] = $frontendService;
         }
     }
 
