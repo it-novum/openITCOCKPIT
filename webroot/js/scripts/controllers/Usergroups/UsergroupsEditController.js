@@ -52,7 +52,7 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                RedirectService.redirectWithFallback('UsergroupsEdit');
+                RedirectService.redirectWithFallback('UsergroupsIndex');
 
                 console.log('Data saved successfully');
             }, function errorCallback(result){
