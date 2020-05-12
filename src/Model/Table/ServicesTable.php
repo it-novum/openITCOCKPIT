@@ -17,7 +17,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
@@ -560,8 +559,8 @@ class ServicesTable extends Table {
         }
         $selected = array_filter($selected);
 
-        if($returnEmptyArrayIfMyRightsIsEmpty){
-            if(empty($ServiceConditions->getContainerIds())){
+        if ($returnEmptyArrayIfMyRightsIsEmpty) {
+            if (empty($ServiceConditions->getContainerIds())) {
                 return [];
             }
         }
@@ -3221,4 +3220,46 @@ class ServicesTable extends Table {
         return true;
     }
 
+    /**
+     * @param $host_id
+     * @param bool $enableActiveChecksEnabledCondition
+     * @return array
+     */
+    public function getServicesForCheckmk($host_id, $enableActiveChecksEnabledCondition = false) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.name',
+                'Services.servicetemplate_id',
+            ])
+            ->contain([
+                'Servicetemplates' => function (Query $q) {
+                    return $q->disableAutoFields()
+                        ->select([
+                            'Servicetemplates.id',
+                            'Servicetemplates.name',
+                            'Servicetemplates.active_checks_enabled'
+                        ]);
+                },
+            ]);
+
+        if($enableActiveChecksEnabledCondition){
+            $query->where([
+                'active_checks_enabled' => 0
+            ]);
+        }
+
+        $query
+            ->where([
+                'Services.host_id'      => $host_id,
+                'Services.service_type' => MK_SERVICE
+            ])
+            ->order(['Services.id' => 'asc'])
+            ->disableHydration()
+            ->all();
+        if (empty($query) || $query === null) {
+            return [];
+        }
+        return $query->toArray();
+    }
 }

@@ -3653,4 +3653,24 @@ class HostsTable extends Table {
         return $list;
     }
 
+    /**
+     * @param int $id
+     * @return array|Host|null
+     */
+    public function getHostByIdForCheckmk($id) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.name',
+                'Hosts.address',
+                'Hosts.satellite_id',
+                'Hosts.container_id',
+            ])
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->first();
+        return $query;
+    }
 }
