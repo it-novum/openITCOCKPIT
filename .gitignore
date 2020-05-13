@@ -78,6 +78,7 @@ plugins/AutoreportModule
 plugins/DistributeModule
 plugins/EventcorrelationModule
 plugins/MkModule
+plugins/CheckmkModule
 plugins/OpenstreetmapModule
 plugins/SlackModule
 plugins/ServicenowModule
