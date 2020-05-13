@@ -55,7 +55,8 @@
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
                     <?php if ($this->Acl->hasPermission('index', 'automaps')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='AutomapsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='AutomapsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -68,7 +69,7 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-                    <div class="row">
+                    <div class="row no-gutters">
                         <div class="col-xs-12 col-md-5">
                             <strong><?php echo __('Regular expression for hosts') ?>:</strong>
                             <code>{{ automap.host_regex }}</code>
@@ -95,7 +96,7 @@
                         </div>
                     </div>
 
-                    <div class="row" ng-if="automap.show_label === false && automap.group_by_host === false">
+                    <div class="row no-gutters" ng-if="automap.show_label === false && automap.group_by_host === false">
                         <!-- Only status color icons -->
                         <span ng-repeat="host in servicesByHost">
                             <span style="cursor:pointer;font-size:{{automap.font_size_html}};"
@@ -110,7 +111,7 @@
                         </span>
                     </div>
 
-                    <div class="row" ng-if="automap.show_label === false && automap.group_by_host === true">
+                    <div class="row no-gutters" ng-if="automap.show_label === false && automap.group_by_host === true">
                         <!-- Status color icons with host headline -->
                         <div class="row" ng-repeat="host in servicesByHost">
                             <div class="col-lg-12">
@@ -126,42 +127,43 @@
                                 </h3>
                             </div>
 
-                            <div class="col-xs-12">
+                            <div class="col-lg-12">
                                 <span style="cursor:pointer;font-size:{{automap.font_size_html}};"
                                       title="{{service.host.hostname}}/{{service.service.servicename}}"
-                            <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                ng-click="showServiceStatusDetails(service.service.id)"
-                            <?php endif; ?>
-                              ng-repeat="service in host.services">
-                            <servicestatusicon-automap
-                                servicestatus="service.servicestatus"></servicestatusicon-automap>
+                                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                        ng-click="showServiceStatusDetails(service.service.id)"
+                                    <?php endif; ?>
+                                      ng-repeat="service in host.services">
+                                    <servicestatusicon-automap
+                                        servicestatus="service.servicestatus"></servicestatusicon-automap>
                                 </span>
                             </div>
                         </div>
                     </div>
-
-                    <div class="row" ng-if="automap.show_label === true && automap.group_by_host === false">
+                    <div class="row no-gutters d-flex flex-row mb-3"
+                         ng-if="automap.show_label === true && automap.group_by_host === false">
                         <!-- Status color icons + Hostname/Service description -->
-                        <span ng-repeat="host in servicesByHost">
-                            <div class="col-xs-12 col-md-6 col-lg-3 ellipsis" ng-repeat="service in host.services">
-                                <span style="cursor:pointer;font-size:{{automap.font_size_html}};"
-                                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                        ng-click="showServiceStatusDetails(service.service.id)"
-                                    <?php endif; ?>
-                                      title="{{host.host.hostname}}/{{service.service.servicename}}">
-                                    <servicestatusicon-automap
-                                        servicestatus="service.servicestatus"></servicestatusicon-automap>
-                                    {{host.host.hostname}}/{{service.service.servicename}}
-                                </span>
-                            </div>
-                        </span>
+                        <div ng-repeat-start="host in servicesByHost" ng-if="false">
+                        </div>
+                        <div ng-repeat="service in host.services" ng-repeat-end=""
+                             class="col-lg-3 col-md-4 col-sm-6 col-xs-12 pointer ellipsis"
+                             style="font-size:{{automap.font_size_html}};"
+                            <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                ng-click="showServiceStatusDetails(service.service.id)"
+                            <?php endif; ?>
+                             title="{{host.host.hostname}}/{{service.service.servicename}}">
+                            <servicestatusicon-automap
+                                servicestatus="service.servicestatus"></servicestatusicon-automap>
+                            {{host.host.hostname}}/{{service.service.servicename}}
+                        </div>
+
                     </div>
 
                     <div ng-if="automap.show_label === true && automap.group_by_host === true">
                         <!-- Status color icons with host and service name and host headline -->
-                        <div class="row" ng-repeat="host in servicesByHost">
+                        <div class="row no-gutters padding-bottom-5" ng-repeat="host in servicesByHost">
                             <div class="col-lg-12">
-                                <h3 class="margin-bottom-5">
+                                <h3 class="margin-0">
                                     <i class="fa fa-desktop"></i>
                                     <strong>
                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
@@ -176,15 +178,15 @@
                             </div>
 
                             <div class="col-xs-12 col-md-6 col-lg-3 ellipsis" ng-repeat="service in host.services">
-                        <span style="cursor:pointer;font-size:{{automap.font_size_html}};"
-                            <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                ng-click="showServiceStatusDetails(service.service.id)"
-                            <?php endif; ?>
-                              title="{{host.host.hostname}}/{{service.service.servicename}}">
-                            <servicestatusicon-automap
-                                servicestatus="service.servicestatus"></servicestatusicon-automap>
-                            {{service.service.servicename}}
-                        </span>
+                                <span style="cursor:pointer;font-size:{{automap.font_size_html}};"
+                                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                        ng-click="showServiceStatusDetails(service.service.id)"
+                                    <?php endif; ?>
+                                      title="{{host.host.hostname}}/{{service.service.servicename}}">
+                                    <servicestatusicon-automap
+                                        servicestatus="service.servicestatus"></servicestatusicon-automap>
+                                    {{service.service.servicename}}
+                                </span>
                             </div>
                         </div>
                     </div>
