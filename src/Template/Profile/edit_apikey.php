@@ -13,7 +13,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group" ng-class="{'has-error': errors.description}">
+                <div class="form-group required" ng-class="{'has-error': errors.description}">
                     <label class="control-label">
                         <?php echo __('Description'); ?>
                     </label>
