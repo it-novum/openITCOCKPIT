@@ -100,11 +100,11 @@ msgstr "Последние 6 часов"
 
 #: plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:921
 msgid "Last 12 hours"
-msgstr ""
+msgstr "Последние 12 часов"
 
 #: plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:922
 msgid "Last 24 hours"
-msgstr "Последние 12 часов"
+msgstr "Последние 24 часов"
 
 #: plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:926
 msgid "Refresh every 5s"
@@ -112,11 +112,11 @@ msgstr "Обновлять каждые 5 секунд"
 
 #: plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:927
 msgid "Refresh every 10s"
-msgstr ""
+msgstr "Обновлять каждые 10 секунд"
 
 #: plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:928
 msgid "Refresh every 30s"
-msgstr "Обновлять каждые 10 секунд"
+msgstr "Обновлять каждые 30 секунд"
 
 #: plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:929
 msgid "Refresh every 1m"
@@ -2386,11 +2386,11 @@ msgstr "Загруженный файл превышает директиву up
 
 #: plugins/MapModule/src/Model/Table/MapUploadsTable.php:231
 msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form"
-msgstr ""
+msgstr "Загруженный файл превышает директиву MAX_FILE_SIZE, указанную в форме HTML"
 
 #: plugins/MapModule/src/Model/Table/MapUploadsTable.php:238
 msgid "The uploaded file was only partially uploaded"
-msgstr "Загруженный файл превышает директиву MAX_FILE_SIZE, указанную в форме HTML"
+msgstr "Загруженный файл был загружен только частично"
 
 #: plugins/MapModule/src/Model/Table/MapUploadsTable.php:245
 msgid "No file was uploaded"
@@ -3731,8 +3731,8 @@ msgid "Copy new monitoring configuration for Satellite ["
 msgstr "Скопируйте новую конфигурацию мониторинга для Сателлита ["
 
 #: src/Command/InstantReportCommand.php:106
-msgid "Никогда"
-msgstr ""
+msgid "Never"
+msgstr "Никогда"
 
 #: src/Command/InstantReportCommand.php:107
 msgid "Daily"
@@ -4046,8 +4046,8 @@ msgid "No downtimes within specified time found ({0} - {1}) !"
 msgstr "В течение указанного времени не найдено ни одного обслуживания ({0} - {1})!"
 
 #: src/Controller/DowntimereportsController.php:220
-msgid "! В течение указанного времени не найдено ни одного обслуживания ({0} - {1}) !"
-msgstr ""
+msgid "! No downtimes within specified time found ({0} - {1}) !"
+msgstr "! В течение указанного времени не найдено ни одного обслуживания ({0} - {1}) !"
 
 #: src/Controller/DowntimereportsController.php:236
 msgid "Downtimereport_"
@@ -6433,7 +6433,7 @@ msgstr "Если этот параметр включен, агент пытае
 
 #: src/Template/Agentconnector/config.php:371
 msgid "Pull mode: The certificate (including updates) will be transferred from openITCOCKPIT to the agent."
-msgstr ""
+msgstr "Режим pull: сертификат (включая обновления) будет передан из openITCOCKPITа агенту."
 
 #: src/Template/Agentconnector/config.php:373
 msgid "Push mode: The certificate (including updates) will be requested from the agent. It has to be trusted manually to get the certificate."
@@ -9393,7 +9393,7 @@ msgstr "Восстановление"
 #: src/Template/Servicetemplates/add.php:540
 #: src/Template/Servicetemplates/edit.php:543
 msgid "Flapping"
-msgstr ""
+msgstr "Колебания"
 
 #: src/Template/Contacts/add.php:255
 #: src/Template/Contacts/add.php:399
@@ -11388,8 +11388,8 @@ msgid "Append hosts to host group"
 msgstr "Добавить узлы в группу узлов"
 
 #: src/Template/Hostgroups/append.php:47
-msgid "Добавить узлы"
-msgstr ""
+msgid "Append hosts"
+msgstr "Добавить узлы"
 
 #: src/Template/Hostgroups/append.php:48
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:48
