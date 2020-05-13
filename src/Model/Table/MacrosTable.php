@@ -134,20 +134,4 @@ class MacrosTable extends Table {
     public function existsById($id) {
         return $this->exists(['Macros.id' => $id]);
     }
-
-    /**
-     * @param $name
-     * @return array
-     */
-    public function getMacrosByWildcardName($name) {
-        $query = $this->find()
-            ->where([
-                'Macros.description LIKE' => $name
-            ])
-            ->disableHydration()
-            ->all();
-
-        return $this->emptyArrayIfNull($query->toArray());
-    }
-
 }

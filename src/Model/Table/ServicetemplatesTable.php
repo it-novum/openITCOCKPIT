@@ -1452,21 +1452,4 @@ class ServicetemplatesTable extends Table {
 
         return $list;
     }
-
-    /**
-     * @param $name
-     * @param string[] $contain
-     * @return array
-     */
-    public function getServicetemplatesByWildcardName($name, $contain = ['Containers']) {
-        $query = $this->find()
-            ->where([
-                'Servicetemplates.name LIKE' => $name
-            ])
-            ->contain($contain)
-            ->disableHydration()
-            ->all();
-
-        return $this->emptyArrayIfNull($query->toArray());
-    }
 }
