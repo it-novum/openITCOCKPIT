@@ -75,11 +75,12 @@ class PerfdataLoader {
      * @param string $type
      * @param null $gauge
      * @param bool $scale
+     * @param bool $debug
      * @return array
      * @throws \App\Lib\Exceptions\MissingDbBackendException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp = false, $type = 'avg', $gauge = null, $scale = true) {
+    public function getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp = false, $type = 'avg', $gauge = null, $scale = true, $debug = false) {
         if ($gauge === '') {
             $gauge = null;
         }
@@ -95,7 +96,7 @@ class PerfdataLoader {
             if (!empty($servicestatus)) {
 
                 $GraphiteConfig = new GraphiteConfig();
-                $GraphiteLoader = new GraphiteLoader($GraphiteConfig);
+                $GraphiteLoader = new GraphiteLoader($GraphiteConfig, $debug);
 
                 if(!empty($servicestatus['Servicestatus']['perfdata'])) {
                     //Use parse perfdata string from database
@@ -200,10 +201,14 @@ class PerfdataLoader {
 
                     foreach ($tmpData as $timestamp => $value) {
                         if ($value !== null) {
-                            if ($jsTimestamp) {
-                                $data[($timestamp * 1000)] = $value;
+                            if ($debug === true) {
+                                $data[date('d.m.Y H:i:s', $timestamp)] = $value;
                             } else {
-                                $data[$timestamp] = $value;
+                                if ($jsTimestamp) {
+                                    $data[($timestamp * 1000)] = $value;
+                                } else {
+                                    $data[$timestamp] = $value;
+                                }
                             }
                         }
                     }

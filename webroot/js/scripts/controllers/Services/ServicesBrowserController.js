@@ -146,7 +146,7 @@ angular.module('openITCOCKPIT')
 
                 $scope.serverTimeDateObject = new Date($scope.timezone.server_time);
 
-                graphStart = (parseInt($scope.serverTimeDateObject.getTime() / 1000, 10) - (3 * 3600));
+                graphStart = (parseInt($scope.serverTimeDateObject.getTime() / 1000, 10) - ($scope.currentSelectedTimerange * 3600));
                 graphEnd = parseInt($scope.serverTimeDateObject.getTime() / 1000, 10);
 
                 $scope.dataSources = [];
@@ -255,6 +255,7 @@ angular.module('openITCOCKPIT')
             $scope.currentSelectedTimerange = timespan;
             var start = (parseInt(new Date($scope.timezone.server_time).getTime() / 1000, 10) - (timespan * 3600));
             var end = parseInt(new Date($scope.timezone.server_time).getTime() / 1000, 10);
+
             //graphTimeSpan = timespan;
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, start, end, true);
         };
@@ -315,10 +316,13 @@ angular.module('openITCOCKPIT')
                         //Did we got date from Server?
                         if(result.data.performance_data.length > 0){
                             //Use the first metrics the server gave us.
-                            $scope.perfdata = result.data.performance_data[0];
-                            //Append new data to current graph
+                            $scope.perfdata = {
+                                datasource: result.data.performance_data[0].datasource,
+                                data: {}
+                            };
+                            //Convert Servertime into user time
                             for(var timestamp in result.data.performance_data[0].data){
-                                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_offset * 1000));
+                                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
                                 $scope.perfdata.data[frontEndTimestamp] = result.data.performance_data[0].data[timestamp];
                             }
                         }else{
@@ -343,7 +347,7 @@ angular.module('openITCOCKPIT')
                         if(result.data.performance_data.length > 0){
                             //Append new data to current graph
                             for(var timestamp in result.data.performance_data[0].data){
-                                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_offset * 1000));
+                                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
                                 $scope.perfdata.data[frontEndTimestamp] = result.data.performance_data[0].data[timestamp];
                             }
                         }
@@ -488,8 +492,7 @@ angular.module('openITCOCKPIT')
 
             var graph_data = [];
             for(var timestamp in performance_data.data){
-                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
-                graph_data.push([frontEndTimestamp, performance_data.data[timestamp]]);
+                graph_data.push([timestamp, performance_data.data[timestamp]]);
             }
 
             var options = GraphDefaultsObj.getDefaultOptions();
@@ -785,9 +788,8 @@ angular.module('openITCOCKPIT')
                         }
                     }
 
-                    lastTimestampInCurrentData = lastTimestampInCurrentData / 1000 + ($scope.timezone.user_offset * 1000);
-
-                    var start = lastTimestampInCurrentData;
+                    // Get back to server time
+                    var start = lastTimestampInCurrentData / 1000 - $scope.timezone.user_time_to_server_offset;
 
                     $scope.serverTimeDateObject = new Date($scope.serverTimeDateObject.getTime() + $scope.graphAutoRefreshInterval);
 
