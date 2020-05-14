@@ -175,7 +175,7 @@
                                     </h4>
                                     &nbsp;
                                     <div class="well txt-color-blueDark" id="verifyOutput">
-                                        {{verificationErrors}}
+                                        <pre>{{verificationErrors}}</pre>
                                     </div>
                                 </div>
                             </div>

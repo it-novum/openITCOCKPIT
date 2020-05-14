@@ -262,6 +262,9 @@ angular.module('openITCOCKPIT')
 
         $scope.changeDataSource = function(gaugeName){
             $scope.currentDataSource = gaugeName;
+
+            //Reset unit - new datasource new unit - maybe
+            $scope.currentGraphUnit = null;
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, lastGraphStart, lastGraphEnd, false);
         };
 
@@ -299,17 +302,23 @@ angular.module('openITCOCKPIT')
 
             if($scope.dataSources.length > 0){
                 $scope.isLoadingGraph = true;
+
+                var params = {
+                    angular: true,
+                    host_uuid: hostUuid,
+                    service_uuid: serviceuuid,
+                    start: start,
+                    end: end,
+                    jsTimestamp: 1,
+                    gauge: $scope.currentDataSource
+                };
+
+                if($scope.currentGraphUnit !== null){
+                    params.forcedUnit = $scope.currentGraphUnit;
+                }
+
                 $http.get('/Graphgenerators/getPerfdataByUuid.json', {
-                    params: {
-                        angular: true,
-                        host_uuid: hostUuid,
-                        service_uuid: serviceuuid,
-                        //hours: graphTimeSpan,
-                        start: start,
-                        end: end,
-                        jsTimestamp: 1,
-                        gauge: $scope.currentDataSource
-                    }
+                    params: params
                 }).then(function(result){
                     $scope.isLoadingGraph = false;
                     if(appendData === false){
@@ -355,6 +364,9 @@ angular.module('openITCOCKPIT')
                     if($scope.graph.graphAutoRefresh === true && $scope.graphAutoRefreshInterval > 1000){
                         enableGraphAutorefresh();
                     }
+
+                    //Save current unit for auto refresh
+                    $scope.currentGraphUnit = $scope.perfdata.datasource.unit;
                     renderGraph($scope.perfdata);
                 });
             }
@@ -531,10 +543,10 @@ angular.module('openITCOCKPIT')
 
             options.yaxis.axisLabel = performance_data.datasource.unit;
 
-            $scope.currentGraphUnit = null;
-            if(performance_data.datasource.unit){
-                $scope.currentGraphUnit = performance_data.datasource.unit;
-            }
+            //$scope.currentGraphUnit = null;
+            //if(performance_data.datasource.unit){
+            //    $scope.currentGraphUnit = performance_data.datasource.unit;
+            //}
 
             plot = $.plot('#graphCanvas', [graph_data], options);
 
