@@ -517,6 +517,7 @@ angular.module('openITCOCKPIT')
             };
             options.series.color = defaultColor;
             options.series.threshold = thresholdAreas;
+            options.grid.markings = thresholdLines;
             options.lines.fillColor.colors = [{opacity: 0.4}, {brightness: 1, opacity: 1}];
 
             options.points = {
