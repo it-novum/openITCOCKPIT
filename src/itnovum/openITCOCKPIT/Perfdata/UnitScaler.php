@@ -135,7 +135,7 @@ class UnitScaler {
      * @param string $unit
      * @return array
      */
-    public function scaleToUnit(string $forcedUnit) {
+    public function scaleToUnit(?string $forcedUnit) {
         if ($this->maxValue === null) {
             return $this->gauge;
         }
@@ -285,7 +285,7 @@ class UnitScaler {
      * @param string $unit
      * @return array|false
      */
-    public function getUnitDetails(string $unit) {
+    public function getUnitDetails(?string $unit) {
         if (empty($unit)) {
             $numbers = [
                 0 => [
