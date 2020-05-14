@@ -469,6 +469,7 @@ angular.module('openITCOCKPIT')
 
                 //Change color of the area chart for warning and critical
                 if(warn > crit){
+                    defaultColor = GraphDefaultsObj.okFillColor;
                     thresholdAreas.push({
                         below: warn,
                         color: GraphDefaultsObj.warningFillColor
