@@ -81,32 +81,6 @@ class TestingCommand extends Command {
          * Lof of space for your experimental code
          * Have fun :)
          */
-
-
-        $gauge = [
-            'datasource' => [
-                'ds'    => 'd',
-                'name'  => 'd',
-                'label' => 'd',
-                'unit'  => 'd',
-                'warn'  => 1000,
-                'crit'  => 5000,
-                'min'   => 0,
-                'max'   => null
-            ],
-            'data'       => [
-                -0.001694444,  // 2,43999936 minuten
-                0.000694444,  // 1 minute
-                0.003694444,  // 5,31999936 minuten,
-                //1.1574e-6
-            ]
-        ];
-
-
-        $UnitScaler = new UnitScaler($gauge);
-        debug($UnitScaler->scale());
-
-
     }
 
 }
