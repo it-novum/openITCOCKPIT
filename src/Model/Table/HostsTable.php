@@ -18,7 +18,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -3608,7 +3607,7 @@ class HostsTable extends Table {
      */
     public function getHostsByContainerIdExact($containerId, $type = 'all', $index = 'id', $MY_RIGHTS = [], $where = []) {
         $_where = [
-            'Hosts.disabled IN' => [0],
+            'Hosts.disabled IN'  => [0],
             'Hosts.container_id' => $containerId
         ];
 
@@ -3654,7 +3653,7 @@ class HostsTable extends Table {
     }
 
     /**
-     * @param int $id
+     * @param $id
      * @return array|Host|null
      */
     public function getHostByIdForCheckmk($id) {
@@ -3672,5 +3671,59 @@ class HostsTable extends Table {
             ])
             ->first();
         return $query;
+    }
+
+    /**
+     * @param $uuid
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getHostByUuidForCheckmkNagiosExportCommand($uuid) {
+        $query = $this->find()
+            ->enableAutoFields()
+            ->contain([
+                'Hosttemplates' => function (Query $query) {
+                    return $query->contain([
+                        'Customvariables'
+                    ]);
+                },
+                'Customvariables',
+            ])
+            ->where([
+                'Hosts.uuid' => $uuid
+            ])
+            ->first();
+        return $query;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHostsForCheckmkNagiosExportCommand() {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.satellite_id',
+
+                'Services.id',
+                'Services.host_id',
+                'Services.uuid',
+                'Services.name',
+            ])
+            ->contain([
+                'Services'
+            ])
+            ->where([
+                'Hosts.satellite_id >' => 0,
+                'Hosts.disabled'       => 0,
+                'Services.disabled'    => 0,
+                'Services.name NOT'     => null,
+            ])
+            ->all();
+
+        if(empty($query)){
+            return [];
+        }
+        return $query->toArray();
     }
 }

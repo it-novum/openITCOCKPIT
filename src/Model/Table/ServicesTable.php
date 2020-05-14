@@ -3243,9 +3243,9 @@ class ServicesTable extends Table {
                 },
             ]);
 
-        if($enableActiveChecksEnabledCondition){
+        if ($enableActiveChecksEnabledCondition) {
             $query->where([
-                'active_checks_enabled' => 0
+                'Services.active_checks_enabled' => 0
             ]);
         }
 
@@ -3261,5 +3261,20 @@ class ServicesTable extends Table {
             return [];
         }
         return $query->toArray();
+    }
+
+    public function hostHasServiceByServicetemplateId($host_id, $servicetemplate_id) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.host_id',
+                'Services.servicetemplate_id'
+            ])
+            ->where([
+                'Services.host_id'            => $host_id,
+                'Services.servicetemplate_id' => $servicetemplate_id,
+            ])->first();
+
+        return !empty($query);
     }
 }
