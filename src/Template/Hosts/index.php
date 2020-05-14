@@ -313,7 +313,7 @@
                                 <?php if (sizeof($satellites) > 1): ?>
                                     <div class="col-xs-12 col-md-3">
                                         <fieldset>
-                                            <legend><?php echo __('Instance'); ?></legend>
+                                            <h5><?php echo __('Instance'); ?></h5>
                                             <div class="form-group smart-form">
                                                 <select
                                                     id="Instance"

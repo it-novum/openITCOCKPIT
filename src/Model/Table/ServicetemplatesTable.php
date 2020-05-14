@@ -206,23 +206,23 @@ class ServicetemplatesTable extends Table {
         $validator
             ->integer('check_interval')
             ->requirePresence('check_interval', 'create')
-            ->greaterThanOrEqual('check_interval', 1, __('This value need to be at least 1'), function ($context) {
-                if (array_key_exists('active_checks_enabled', $context['data']) && $context['data']['active_checks_enabled'] == 0) {
-                    return false;
-                }
-                return true;
-            })
+            //->greaterThanOrEqual('check_interval', 1, __('This value need to be at least 1'), function ($context) {
+            //    if (array_key_exists('active_checks_enabled', $context['data']) && $context['data']['active_checks_enabled'] == 0) {
+            //        return false;
+            //    }
+            //    return true;
+            //})
             ->allowEmptyString('check_interval', null, false);
 
         $validator
             ->integer('retry_interval')
             ->requirePresence('retry_interval', 'create')
-            ->greaterThanOrEqual('retry_interval', 1, __('This value need to be at least 1'), function ($context) {
-                if (array_key_exists('active_checks_enabled', $context['data']) && $context['data']['active_checks_enabled'] == 0) {
-                    return false;
-                }
-                return true;
-            })
+            //->greaterThanOrEqual('retry_interval', 1, __('This value need to be at least 1'), function ($context) {
+            //    if (array_key_exists('active_checks_enabled', $context['data']) && $context['data']['active_checks_enabled'] == 0) {
+            //        return false;
+            //    }
+            //    return true;
+            //})
             ->allowEmptyString('retry_interval', null, false);
 
         $validator
@@ -1451,22 +1451,5 @@ class ServicetemplatesTable extends Table {
         }
 
         return $list;
-    }
-
-    /**
-     * @param $name
-     * @param string[] $contain
-     * @return array
-     */
-    public function getServicetemplatesByWildcardName($name, $contain = ['Containers']) {
-        $query = $this->find()
-            ->where([
-                'Servicetemplates.name LIKE' => $name
-            ])
-            ->contain($contain)
-            ->disableHydration()
-            ->all();
-
-        return $this->emptyArrayIfNull($query->toArray());
     }
 }

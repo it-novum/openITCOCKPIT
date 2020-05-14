@@ -131,8 +131,46 @@ class UnitScaler {
         return $this->gauge;
     }
 
+    /**
+     * @param string $unit
+     * @return array
+     */
+    public function scaleToUnit(?string $forcedUnit) {
+        if ($this->maxValue === null) {
+            return $this->gauge;
+        }
+
+        if ($this->unit === $forcedUnit) {
+            return $this->gauge;
+        }
+
+        $targetUnit = $this->getForcedTargetUnit($forcedUnit);
+        if ($targetUnit === false) {
+            return $this->gauge;
+        }
+
+        if ($targetUnit['factor'] === 1) {
+            //Nothing to scale
+            return $this->gauge;
+        }
+
+        foreach ($this->gauge['data'] as $timestamp => $value) {
+            $this->gauge['data'][$timestamp] = $this->shiftValue($value, $targetUnit);
+        }
+
+        foreach (['min', 'max', 'warn', 'crit'] as $key) {
+            if (!empty($this->gauge['datasource'][$key])) {
+                $this->gauge['datasource'][$key] = $this->shiftValue($this->gauge['datasource'][$key], $targetUnit);
+            }
+        }
+
+
+        $this->gauge['datasource']['unit'] = $targetUnit['unit'];
+        return $this->gauge;
+    }
+
     private function getTargetUnit() {
-        $unitDetails = $this->getUnitDetails();
+        $unitDetails = $this->getUnitDetails($this->unit);
         if ($unitDetails === false) {
             return false;
         }
@@ -144,8 +182,13 @@ class UnitScaler {
             'unit'   => $unitDetails['units'][$unitDetails['index']]['unit'][0]
         ];
 
-        if ($maxValue >= 1 && $maxValue > -1) {
+        if ($maxValue >= 1 || $maxValue <= -1) {
             // Scales 100000ms to 69.444444 days
+
+            if ($this->isNegativeValue($maxValue)) {
+                $maxValue = $maxValue * -1;
+            }
+
             while (isset($unitDetails['units'][$unitDetails['index'] + 1]) && $maxValue >= $unitDetails['units'][$unitDetails['index'] + 1]['factor']) {
                 $currentUnit = $unitDetails['units'][$unitDetails['index']];
 
@@ -181,6 +224,55 @@ class UnitScaler {
         return $targetUnit;
     }
 
+    /**
+     * @param string $forcedUnit
+     * @return array|bool
+     */
+    private function getForcedTargetUnit(string $forcedUnit) {
+        $currentUnitDetails = $this->getUnitDetails($this->unit);
+        $forcedUnitDetails = $this->getUnitDetails($forcedUnit);
+        if ($currentUnitDetails === false || $forcedUnitDetails === false) {
+            return false;
+        }
+
+        $currentUnitIndex = $currentUnitDetails['index'];
+        $forcedUnitIndex = $forcedUnitDetails['index'];
+
+        $targetUnit = [
+            'factor' => 1,
+            'type'   => 'division',
+            'unit'   => $currentUnitDetails['units'][$currentUnitIndex]['unit'][0]
+        ];
+
+        if ($currentUnitIndex < $forcedUnitIndex) {
+            while ($currentUnitIndex < $forcedUnitIndex) {
+                // Scales 100000ms to 69.444444 days (small to large)
+                $currentUnit = $currentUnitDetails['units'][$currentUnitIndex];
+
+                $currentUnitIndex++; //shift to the next greater unit
+                $nextUnit = $currentUnitDetails['units'][$currentUnitIndex];
+
+                $unit = $nextUnit['unit'][0];
+                $targetUnit['factor'] = $targetUnit['factor'] * $currentUnit['factor'];
+                $targetUnit['unit'] = $unit;
+                $targetUnit['type'] = 'division';
+            }
+        } else {
+            while ($currentUnitIndex > $forcedUnitIndex) {
+                // Scales 0.000694444 days to 1 minute (large to small)
+                $currentUnitIndex--; //shift to the next smaller unit
+                $previousUnit = $currentUnitDetails['units'][$currentUnitIndex];
+
+                $unit = $previousUnit['unit'][0];
+                $targetUnit['factor'] = $targetUnit['factor'] * $previousUnit['factor'];
+                $targetUnit['unit'] = $unit;
+                $targetUnit['type'] = 'multiplication';
+            }
+        }
+
+        return $targetUnit;
+    }
+
     private function shiftValue($value, array $targetUnit) {
         if ($targetUnit['type'] === 'multiplication') {
             return $value * $targetUnit['factor'];
@@ -190,10 +282,11 @@ class UnitScaler {
     }
 
     /**
+     * @param string $unit
      * @return array|false
      */
-    public function getUnitDetails() {
-        if (empty($this->unit)) {
+    public function getUnitDetails(?string $unit) {
+        if (empty($unit)) {
             $numbers = [
                 0 => [
                     'unit'   => [''],
@@ -248,7 +341,7 @@ class UnitScaler {
         ];
 
         foreach ($time as $index => $timeUnit) {
-            if (in_array($this->unit, $timeUnit['unit'], true)) {
+            if (in_array($unit, $timeUnit['unit'], true)) {
                 return [
                     'units' => $time,
                     'index' => $index
@@ -290,7 +383,7 @@ class UnitScaler {
             ]
         ];
         foreach ($data as $index => $dataUnit) {
-            if (in_array($this->unit, $dataUnit['unit'], true)) {
+            if (in_array($unit, $dataUnit['unit'], true)) {
                 return [
                     'units' => $data,
                     'index' => $index
@@ -330,7 +423,7 @@ class UnitScaler {
             ]
         ];
         foreach ($data as $index => $dataUnit) {
-            if (in_array($this->unit, $dataUnit['unit'], true)) {
+            if (in_array($unit, $dataUnit['unit'], true)) {
                 return [
                     'units' => $data,
                     'index' => $index
@@ -370,7 +463,7 @@ class UnitScaler {
             ]
         ];
         foreach ($dataRates as $index => $dataRate) {
-            if (in_array($this->unit, $dataRate['unit'], true)) {
+            if (in_array($unit, $dataRate['unit'], true)) {
                 return [
                     'units' => $dataRates,
                     'index' => $index
@@ -406,7 +499,7 @@ class UnitScaler {
             ]
         ];
         foreach ($dataRates as $index => $dataRate) {
-            if (in_array($this->unit, $dataRate['unit'], true)) {
+            if (in_array($unit, $dataRate['unit'], true)) {
                 return [
                     'units' => $dataRates,
                     'index' => $index
@@ -438,7 +531,7 @@ class UnitScaler {
             ]
         ];
         foreach ($herzRates as $index => $herzRate) {
-            if (in_array($this->unit, $herzRate['unit'], true)) {
+            if (in_array($unit, $herzRate['unit'], true)) {
                 return [
                     'units' => $herzRates,
                     'index' => $index
@@ -468,17 +561,17 @@ class UnitScaler {
             'joules',  // Prometheus
         ];
 
-        foreach ($unitsToGenerate as $unit) {
+        foreach ($unitsToGenerate as $siUnit) {
             $siUnits = [];
             foreach (['n', 'µ', 'm', '', 'k', 'M', 'G'] as $index => $si) {
                 $siUnits[$index] = [
-                    'unit'   => [$si . $unit],
+                    'unit'   => [$si . $siUnit],
                     'factor' => 1000
                 ];
             }
 
             foreach ($siUnits as $index => $siUnit) {
-                if (in_array($this->unit, $siUnit['unit'], true)) {
+                if (in_array($unit, $siUnit['unit'], true)) {
                     return [
                         'units' => $siUnits,
                         'index' => $index
@@ -515,7 +608,7 @@ class UnitScaler {
             ]
         ];
         foreach ($massUnits as $index => $massUnit) {
-            if (in_array($this->unit, $massUnit['unit'], true)) {
+            if (in_array($unit, $massUnit['unit'], true)) {
                 return [
                     'units' => $massUnits,
                     'index' => $index
@@ -551,7 +644,7 @@ class UnitScaler {
             ]
         ];
         foreach ($lengthsUnits as $index => $lengthsUnit) {
-            if (in_array($this->unit, $lengthsUnit['unit'], true)) {
+            if (in_array($unit, $lengthsUnit['unit'], true)) {
                 return [
                     'units' => $lengthsUnits,
                     'index' => $index
@@ -563,6 +656,13 @@ class UnitScaler {
         return false;
     }
 
+    /**
+     * @param $value
+     * @return bool
+     */
+    public function isNegativeValue($value) {
+        return $value < 0;
+    }
 
 }
 

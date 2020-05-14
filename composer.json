@@ -60,7 +60,7 @@
         "cakephp/authentication": "^2.0",
         "cakephp/authorization": "^2.0",
         "cakephp/cakephp": "^4.0",
-        "cakephp/migrations": "4.x-dev",
+        "cakephp/migrations": "@stable",
         "cakephp/plugin-installer": "^1.0",
         "cboden/ratchet": "^0.4.1",
         "ddeboer/imap": "^1.9",
@@ -86,7 +86,7 @@
         "cakephp/bake": "^2.0",
         "cakephp/cakephp-codesniffer": "^4.0",
         "cakephp/debug_kit": "^4.0",
-        "cakephp/migrations": "4.x-dev",
+        "cakephp/migrations": "@stable",
         "josegonzalez/dotenv": "3.*",
         "phpunit/phpunit": "^8.0",
         "psy/psysh": "@stable"
@@ -131,6 +131,5 @@
     "prefer-stable": true,
     "config": {
         "sort-packages": true
-    },
-    "minimum-stability": "dev"
+    }
 }
