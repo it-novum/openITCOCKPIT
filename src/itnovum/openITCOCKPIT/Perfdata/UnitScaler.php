@@ -144,8 +144,13 @@ class UnitScaler {
             'unit'   => $unitDetails['units'][$unitDetails['index']]['unit'][0]
         ];
 
-        if ($maxValue >= 1 && $maxValue > -1) {
+        if ($maxValue >= 1 || $maxValue <= -1) {
             // Scales 100000ms to 69.444444 days
+
+            if($this->isNegativeValue($maxValue)){
+                $maxValue = $maxValue * -1;
+            }
+
             while (isset($unitDetails['units'][$unitDetails['index'] + 1]) && $maxValue >= $unitDetails['units'][$unitDetails['index'] + 1]['factor']) {
                 $currentUnit = $unitDetails['units'][$unitDetails['index']];
 
@@ -563,6 +568,13 @@ class UnitScaler {
         return false;
     }
 
+    /**
+     * @param $value
+     * @return bool
+     */
+    public function isNegativeValue($value){
+        return $value < 0;
+    }
 
 }
 
