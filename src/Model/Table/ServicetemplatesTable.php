@@ -591,11 +591,12 @@ class ServicetemplatesTable extends Table {
     }
 
     /**
-     * @param int $id
+     * @param $uuid
      * @param array $contain
-     * @return array
+     * @param bool $formatAsCake2
+     * @return array|\Cake\Datasource\EntityInterface|null
      */
-    public function getServicetemplateByUuid($uuid, $contain = ['Containers']) {
+    public function getServicetemplateByUuid($uuid, $contain = ['Containers'], $formatAsCake2 = true) {
         $query = $this->find()
             ->where([
                 'Servicetemplates.uuid' => $uuid
@@ -604,6 +605,9 @@ class ServicetemplatesTable extends Table {
             ->disableHydration()
             ->first();
 
+        if(!$formatAsCake2){
+            return $query;
+        }
         return $this->formatFirstResultAsCake2($query, true);
     }
 
