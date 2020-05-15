@@ -3263,6 +3263,11 @@ class ServicesTable extends Table {
         return $query->toArray();
     }
 
+    /**
+     * @param $host_id
+     * @param $servicetemplate_id
+     * @return bool
+     */
     public function hostHasServiceByServicetemplateId($host_id, $servicetemplate_id) {
         $query = $this->find()
             ->select([
@@ -3276,5 +3281,25 @@ class ServicesTable extends Table {
             ])->first();
 
         return !empty($query);
+    }
+
+    /**
+     * @param $host_id
+     * @param $servicetemplate_id
+     * @return \Cake\Datasource\ResultSetInterface
+     */
+    public function getServicesOfHostByServicetemplateId($host_id, $servicetemplate_id){
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.host_id',
+                'Services.servicetemplate_id'
+            ])
+            ->where([
+                'Services.host_id'            => $host_id,
+                'Services.servicetemplate_id' => $servicetemplate_id,
+            ])->all();
+
+        return $query;
     }
 }

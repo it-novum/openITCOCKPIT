@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**
@@ -88,6 +89,8 @@ class AgentconfigsTable extends Table {
                 'message' => __('Password can not be blank if basic auth is enabled.')
             ]);
 
+        $validator
+            ->boolean('push_noticed');
 
         return $validator;
     }
@@ -152,13 +155,14 @@ class AgentconfigsTable extends Table {
      */
     public function getConfigByHostId($hostId, $defaultIfNoConfig = true) {
         $default = [
-            'port'       => 3333,
-            'use_https'  => 0,
-            'insecure'   => 1,
-            'basic_auth' => 0,
-            'proxy'      => 1,
-            'username'   => '',
-            'password'   => ''
+            'port'         => 3333,
+            'use_https'    => 0,
+            'insecure'     => 1,
+            'basic_auth'   => 0,
+            'proxy'        => 1,
+            'username'     => '',
+            'password'     => '',
+            'push_noticed' => 0
         ];
 
         $record = $this->find()
@@ -169,15 +173,16 @@ class AgentconfigsTable extends Table {
 
         if ($record !== null) {
             return [
-                'id'         => (int)$record->get('id'),
-                'host_id'    => (int)$record->get('host_id'),
-                'port'       => (int)$record->get('port'),
-                'use_https'  => (int)$record->get('use_https'),
-                'insecure'   => (int)$record->get('insecure'),
-                'basic_auth' => (int)$record->get('basic_auth'),
-                'proxy'      => (int)$record->get('proxy'),
-                'username'   => $record->get('username'),
-                'password'   => $record->get('password')
+                'id'           => (int)$record->get('id'),
+                'host_id'      => (int)$record->get('host_id'),
+                'port'         => (int)$record->get('port'),
+                'use_https'    => (int)$record->get('use_https'),
+                'insecure'     => (int)$record->get('insecure'),
+                'basic_auth'   => (int)$record->get('basic_auth'),
+                'proxy'        => (int)$record->get('proxy'),
+                'username'     => $record->get('username'),
+                'password'     => $record->get('password'),
+                'push_noticed' => (int)$record->get('proxy'),
             ];
         } else {
             if ($defaultIfNoConfig) {
@@ -204,5 +209,45 @@ class AgentconfigsTable extends Table {
         }
 
         return $record;
+    }
+
+    /**
+     * @param $hostId
+     * @return bool
+     */
+    public function pushNoticedForHost($hostId) {
+        $query = $this->find()
+            ->where([
+                'host_id'      => $hostId,
+                'push_noticed' => 1
+            ])
+            ->first();
+        return !empty($query);
+    }
+
+    /**
+     * @param $hostUuid
+     * @param bool $pushNoticed
+     */
+    public function updatePushNoticedForHostIfConfigExists($hostUuid, $pushNoticed = true) {
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        try {
+            $hostId = $HostsTable->getHostIdByUuid($hostUuid);
+
+            $query = $this->find()
+                ->enableAutoFields()
+                ->where([
+                    'host_id' => $hostId,
+                ])
+                ->first();
+
+            if (!empty($query)) {
+                $this->_update($query, ['push_noticed' => $pushNoticed]);
+            }
+        } catch (\Exception $e) {
+            //do nothing
+        }
     }
 }

@@ -2328,7 +2328,7 @@ class HostsTable extends Table {
             })
             ->contain([
                 'Agentconfigs'    => function (Query $query) {
-                    return $query->enableAutoFields();
+                    return $query->enableAutoFields()->select('push_noticed');
                 },
                 'Agenthostscache' => function (Query $query) {
                     return $query->enableAutoFields();
