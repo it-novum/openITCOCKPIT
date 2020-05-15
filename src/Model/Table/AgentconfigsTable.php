@@ -182,7 +182,7 @@ class AgentconfigsTable extends Table {
                 'proxy'        => (int)$record->get('proxy'),
                 'username'     => $record->get('username'),
                 'password'     => $record->get('password'),
-                'push_noticed' => (int)$record->get('proxy'),
+                'push_noticed' => (int)$record->get('push_noticed'),
             ];
         } else {
             if ($defaultIfNoConfig) {
