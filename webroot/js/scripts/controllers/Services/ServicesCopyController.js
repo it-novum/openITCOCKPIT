@@ -83,14 +83,11 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.$watch('hostId',function(){
+        $scope.$watch('hostId', function(){
             if($scope.hostId > 0){
                 $scope.loadServices();
             }
-        },true);
+        }, true);
 
         $scope.loadHosts('');
-
-
-
     });
