@@ -20,7 +20,7 @@ angular.module('openITCOCKPIT')
                     paginatorlength: 25,
                     dashboard_tab_rotation: 0,
                     recursive_browser: 0,
-                    dateformat: '%H:%M:%S - %d.%m.%Y',
+                    dateformat: 'H:i:s - d.m.Y',
                     timezone: 'Europe/Berlin',
                     i18n: 'en_US',
                     password: '',
