@@ -717,7 +717,7 @@ use Cake\Core\Plugin;
                                 </div>
 
                             </div>
-                            <div class="col-sm-6 col-md-5 col-lg-3 no-padding hidden-xs"
+                            <div class="col-sm-6 col-md-5 col-lg-3 no-padding d-none d-sm-block"
                                  ng-class="{'browser-state-green': stateIsOk(), 'browser-state-yellow': stateIsWarning(), 'browser-state-red': stateIsCritical(), 'browser-state-gray': stateIsUnknown(), 'browser-state-blue': stateIsNotInMonitoring()}"
                                  ng-if="servicestatus">
 

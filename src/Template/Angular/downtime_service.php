@@ -27,7 +27,7 @@
 
                             <div ng-repeat="error in errors.Downtime.comment"
                                  class="col-md-offset-2 col-xs-12 col-md-10">
-                                <div class="help-block text-danger-important">{{ error }}</div>
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
@@ -53,11 +53,11 @@
                             </div>
                             <div ng-repeat="error in errors.Downtime.from_date"
                                  class="col-md-offset-2 col-xs-12 col-md-10">
-                                <div class="help-block text-danger-important">{{ error }}</div>
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
                             <div ng-repeat="error in errors.Downtime.from_time"
                                  class="col-md-offset-2 col-xs-12 col-md-10">
-                                <div class="help-block text-danger-important">{{ error }}</div>
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
 
@@ -83,11 +83,11 @@
                             </div>
                             <div ng-repeat="error in errors.Downtime.to_date"
                                  class="col-md-offset-2 col-xs-12 col-md-10">
-                                <div class="help-block text-danger-important">{{ error }}</div>
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
                             <div ng-repeat="error in errors.Downtime.to_time"
                                  class="col-md-offset-2 col-xs-12 col-md-10">
-                                <div class="help-block text-danger-important">{{ error }}</div>
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
 
