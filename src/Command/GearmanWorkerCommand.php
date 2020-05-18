@@ -42,6 +42,9 @@ use Cake\Core\Plugin;
 use Cake\Filesystem\Folder;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
+use CheckmkModule\Command\CheckmkNagiosExportCommand;
+use DistributeModule\Model\Table\SatellitesTable;
+use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigDefaults;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigGenerator;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
@@ -223,11 +226,8 @@ class GearmanWorkerCommand extends Command {
 
 
         switch ($payload['task']) {
-            //@todo implement me
-            /*
             case 'CheckMKSNMP':
-                $_task = new TaskCollection($this);
-                $MkNagiosExportTask = $_task->load('MkModule.MkModuleNagiosExport');
+                $MkNagiosExportTask = new CheckmkNagiosExportCommand();
 
                 //Generate check_mk config file, to run SNMP scan
                 $MkNagiosExportTask->init();
@@ -256,14 +256,11 @@ class GearmanWorkerCommand extends Command {
                     ], false);
                 }
 
-                if ($payload['satellite_id'] !== '0' && is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
-                    $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
-                    $satellite = $this->Satellite->find('first', [
-                        'recursive'  => -1,
-                        'conditions' => [
-                            'Satellite.id' => $payload['satellite_id']
-                        ]
-                    ]);
+                if ($payload['satellite_id'] != 0 && Plugin::isLoaded('DistributeModule')) {
+                    /** @var SatellitesTable $SatellitesTable */
+                    $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+                    $satellite = $SatellitesTable->get($payload['satellite_id']);
                     if (empty($satellite)) {
                         break;
                     }
@@ -282,7 +279,7 @@ class GearmanWorkerCommand extends Command {
                         $Client = new Client($options);
                         $response = $Client->request('GET', sprintf(
                                 'https://%s/nagios/discover/dump-host/%s',
-                                $satellite['Satellite']['address'],
+                                $satellite['address'],
                                 $payload['hostUuid'])
                         );
 
@@ -292,15 +289,17 @@ class GearmanWorkerCommand extends Command {
                         error_log($e->getMessage());
                     }
                 } else {
-                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
+                    $systemsettings = $SystemsettingsTable->findAsArray();
+
+                    exec($systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
                     $output = null;
-                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
+                    exec($systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
                     $this->deleteMkAutochecks();
                     exec(sprintf(
                         'chown %s:%s %s -R',
-                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.USER']),
-                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
-                        escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'])
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
+                        escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
                     ));
                 }
 
@@ -308,14 +307,11 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'CheckMKListChecks':
-                if ($payload['satellite_id'] !== '0' && is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
-                    $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
-                    $satellite = $this->Satellite->find('first', [
-                        'recursive'  => -1,
-                        'conditions' => [
-                            'Satellite.id' => $payload['satellite_id']
-                        ]
-                    ]);
+                if ($payload['satellite_id'] != 0 && Plugin::isLoaded('DistributeModule')) {
+                    /** @var SatellitesTable $SatellitesTable */
+                    $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+                    $satellite = $SatellitesTable->get($payload['satellite_id']);
                     if (empty($satellite)) {
                         break;
                     }
@@ -344,12 +340,14 @@ class GearmanWorkerCommand extends Command {
                     }
 
                 } else {
-                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output);
+                    $systemsettings = $SystemsettingsTable->findAsArray();
+
+                    exec($systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output);
                     exec(sprintf(
                         'chown %s:%s %s -R',
-                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.USER']),
-                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
-                        escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'])
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
+                        escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
                     ));
                 }
                 $return = $output;
@@ -358,22 +356,18 @@ class GearmanWorkerCommand extends Command {
 
             case 'CheckMkDiscovery':
                 //Generate .mk config to run -II and -D
-                $_task = new TaskCollection($this);
-                $MkNagiosExportTask = $_task->load('MkModule.MkModuleNagiosExport');
+                $MkNagiosExportTask = new CheckmkNagiosExportCommand();
                 $MkNagiosExportTask->init();
                 $MkNagiosExportTask->createConfigFiles($payload['hostUuid'], [
                     'for_snmp_scan' => true, //Hacky but works -.-
                     'host_address'  => $payload['hostaddress'],
                 ], false);
 
-                if ($payload['satellite_id'] !== '0' && is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
-                    $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
-                    $satellite = $this->Satellite->find('first', [
-                        'recursive'  => -1,
-                        'conditions' => [
-                            'Satellite.id' => $payload['satellite_id']
-                        ]
-                    ]);
+                if ($payload['satellite_id'] != 0 && Plugin::isLoaded('DistributeModule')) {
+                    /** @var SatellitesTable $SatellitesTable */
+                    $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+                    $satellite = $SatellitesTable->get($payload['satellite_id']);
                     if (empty($satellite)) {
                         break;
                     }
@@ -392,7 +386,7 @@ class GearmanWorkerCommand extends Command {
                         $Client = new Client($options);
                         $response = $Client->request('GET', sprintf(
                                 'https://%s/nagios/discover/dump-host/%s',
-                                $satellite['Satellite']['address'],
+                                $satellite['address'],
                                 $payload['hostUuid'])
                         );
 
@@ -403,15 +397,17 @@ class GearmanWorkerCommand extends Command {
                     }
 
                 } else {
-                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                    $systemsettings = $SystemsettingsTable->findAsArray();
+
+                    exec($systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
                     $output = null;
-                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                    exec($systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
                     $this->deleteMkAutochecks();
                     exec(sprintf(
                         'chown %s:%s %s -R',
-                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.USER']),
-                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
-                        escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'])
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
+                        escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
                     ));
                 }
 
@@ -420,14 +416,11 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'CheckMKProcesses':
-                if ($payload['satellite_id'] !== '0' && is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
-                    $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
-                    $satellite = $this->Satellite->find('first', [
-                        'recursive'  => -1,
-                        'conditions' => [
-                            'Satellite.id' => $payload['satellite_id']
-                        ]
-                    ]);
+                if ($payload['satellite_id'] != 0 && Plugin::isLoaded('DistributeModule')) {
+                    /** @var SatellitesTable $SatellitesTable */
+                    $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+                    $satellite = $SatellitesTable->get($payload['satellite_id']);
                     if (empty($satellite)) {
                         break;
                     }
@@ -446,7 +439,7 @@ class GearmanWorkerCommand extends Command {
                         $Client = new Client($options);
                         $response = $Client->request('GET', sprintf(
                                 'https://%s/nagios/discover/raw-info/%s',
-                                $satellite['Satellite']['address'],
+                                $satellite['address'],
                                 $payload['hostUuid'])
                         );
 
@@ -457,19 +450,21 @@ class GearmanWorkerCommand extends Command {
                     }
 
                 } else {
-                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostUuid']), $output);
+                    $systemsettings = $SystemsettingsTable->findAsArray();
+
+                    exec($systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostUuid']), $output);
                     exec(sprintf(
                         'chown %s:%s %s -R',
-                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.USER']),
-                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
-                        escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'])
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.GROUP']),
+                        escapeshellarg($systemsettings['CHECK_MK']['CHECK_MK.VAR'])
                     ));
                 }
 
                 $return = $output;
                 unset($output);
                 break;
-            */
+
             case 'create_apt_config':
                 $LsbRelease = new LsbRelease();
 

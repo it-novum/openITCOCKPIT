@@ -12,6 +12,7 @@ use App\Model\Entity\Hostdependency;
 use App\Model\Entity\Hostescalation;
 use Cake\Core\Plugin;
 use Cake\Database\Expression\Comparison;
+use Cake\Database\Expression\QueryExpression;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -3704,24 +3705,29 @@ class HostsTable extends Table {
                 'Hosts.id',
                 'Hosts.uuid',
                 'Hosts.satellite_id',
-
-                'Services.id',
-                'Services.host_id',
-                'Services.uuid',
-                'Services.name',
             ])
             ->contain([
-                'Services'
+                'Services' => function (Query $query) {
+                    return $query->select([
+                        'Services.id',
+                        'Services.host_id',
+                        'Services.uuid',
+                        'Services.name',
+                    ])->where([
+                        'Services.disabled'    => 0,
+                        'Services.name IS NOT' => null,
+                    ]);
+                }
             ])
             ->where([
-                'Hosts.satellite_id >' => 0,
-                'Hosts.disabled'       => 0,
-                'Services.disabled'    => 0,
-                'Services.name NOT'     => null,
+                'Hosts.disabled' => 0,
             ])
+            ->where(function (QueryExpression $exp) {
+                return $exp->gt('Hosts.satellite_id', 0);
+            })
             ->all();
 
-        if(empty($query)){
+        if (empty($query)) {
             return [];
         }
         return $query->toArray();
