@@ -37,7 +37,7 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
  * @property |\Cake\ORM\Association\HasMany $Eventcorrelations
  * @property |\Cake\ORM\Association\HasMany $GrafanaUserdashboardMetrics
  * @property |\Cake\ORM\Association\HasMany $InstantreportsToServices
- * @property \MkModule\Model\Table\MkservicedataTable|\Cake\ORM\Association\HasMany $Mkservicedata
+ * @property \CheckmkModule\Model\Table\MkservicedataTable|\Cake\ORM\Association\HasMany $Mkservicedata
  * @property |\Cake\ORM\Association\HasMany $NagiosServiceContactgroups
  * @property |\Cake\ORM\Association\HasMany $NagiosServiceContacts
  * @property |\Cake\ORM\Association\HasMany $NagiosServiceParentservices

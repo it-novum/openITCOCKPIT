@@ -1198,7 +1198,7 @@ class ServicetemplatesTable extends Table {
             $types[SLA_SERVICE] = __('SLA templates');
         }
 
-        if (Plugin::isLoaded('MkModule')) {
+        if (Plugin::isLoaded('CheckmkModule')) {
             $types[MK_SERVICE] = __('Checkmk templates');
         }
 

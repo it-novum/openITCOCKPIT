@@ -948,8 +948,8 @@
                                                 </a>
                                             <?php endif; ?>
 
-                                            <?php if (\Cake\Core\Plugin::isLoaded('MkModule') && $this->Acl->hasPermission('index', 'scans', 'MkModule')): ?>
-                                                <a ui-sref="MkModuleMkdiscovery" href="javascript:void(0);"
+                                            <?php if (\Cake\Core\Plugin::isLoaded('CheckmkModule') && $this->Acl->hasPermission('index', 'scans', 'CheckmkModule')): ?>
+                                                <a ui-sref="CheckmkModuleMkdiscovery" href="javascript:void(0);"
                                                    class="dropdown-item">
                                                     <i class="fa fa fa-share-alt"></i>
                                                     <?php echo __('Save and run Check_MK discovery'); ?>
