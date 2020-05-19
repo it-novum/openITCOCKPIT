@@ -78,7 +78,7 @@
                                                 <span class="input-group-text"><i class="fa fa-filter"></i></span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
-                                                   placeholder="<?php echo __('Filter by output'); ?>"
+                                                   placeholder="<?php echo __('Filter by comment'); ?>"
                                                    ng-model="filter.AcknowledgementHosts.comment"
                                                    ng-model-options="{debounce: 500}">
                                         </div>

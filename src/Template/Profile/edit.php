@@ -36,7 +36,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fa fa-edit"></i> <?php echo __('Overview'); ?>
+        <i class="fa fa-edit"></i> <?php echo __('Edit'); ?>
     </li>
 </ol>
 
@@ -510,7 +510,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group" ng-class="{'has-error': errors.description}">
+                <div class="form-group required" ng-class="{'has-error': errors.description}">
                     <label class="control-label">
                         <?php echo __('Description'); ?>
                     </label>
@@ -568,7 +568,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" ng-click="getNewApiKey()">
+                <button type="button" class="btn btn-primary mr-auto" ng-click="getNewApiKey()">
                     <i class="fa fa-refresh"></i>
                     <?php echo __('Generate new key'); ?>
                 </button>

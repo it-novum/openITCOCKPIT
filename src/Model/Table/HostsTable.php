@@ -12,13 +12,13 @@ use App\Model\Entity\Hostdependency;
 use App\Model\Entity\Hostescalation;
 use Cake\Core\Plugin;
 use Cake\Database\Expression\Comparison;
+use Cake\Database\Expression\QueryExpression;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -2329,7 +2329,7 @@ class HostsTable extends Table {
             })
             ->contain([
                 'Agentconfigs'    => function (Query $query) {
-                    return $query->enableAutoFields();
+                    return $query->enableAutoFields()->select('push_noticed');
                 },
                 'Agenthostscache' => function (Query $query) {
                     return $query->enableAutoFields();
@@ -3608,7 +3608,7 @@ class HostsTable extends Table {
      */
     public function getHostsByContainerIdExact($containerId, $type = 'all', $index = 'id', $MY_RIGHTS = [], $where = []) {
         $_where = [
-            'Hosts.disabled IN' => [0],
+            'Hosts.disabled IN'  => [0],
             'Hosts.container_id' => $containerId
         ];
 
@@ -3653,4 +3653,83 @@ class HostsTable extends Table {
         return $list;
     }
 
+    /**
+     * @param $id
+     * @return array|Host|null
+     */
+    public function getHostByIdForCheckmk($id) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.name',
+                'Hosts.address',
+                'Hosts.satellite_id',
+                'Hosts.container_id',
+            ])
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->first();
+        return $query;
+    }
+
+    /**
+     * @param $uuid
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getHostByUuidForCheckmkNagiosExportCommand($uuid) {
+        $query = $this->find()
+            ->enableAutoFields()
+            ->contain([
+                'Hosttemplates' => function (Query $query) {
+                    return $query->contain([
+                        'Customvariables'
+                    ]);
+                },
+                'Customvariables',
+            ])
+            ->where([
+                'Hosts.uuid' => $uuid
+            ])
+            ->first();
+        return $query;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHostsForCheckmkNagiosExportCommand() {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.satellite_id',
+            ])
+            ->contain([
+                'Services' => function (Query $query) {
+                    return $query->select([
+                        'Services.id',
+                        'Services.host_id',
+                        'Services.uuid',
+                        'Services.name',
+                    ])->where([
+                        'Services.disabled'    => 0,
+                        'Services.name IS NOT' => null,
+                    ]);
+                }
+            ])
+            ->where([
+                'Hosts.disabled' => 0,
+            ])
+            ->where(function (QueryExpression $exp) {
+                return $exp->gt('Hosts.satellite_id', 0);
+            })
+            ->all();
+
+        if (empty($query)) {
+            return [];
+        }
+        return $query->toArray();
+    }
 }

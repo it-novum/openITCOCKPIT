@@ -150,7 +150,7 @@
                                         {{contactgroup.Contactgroup.contact_count}}
                                     </span>
 
-                                    <span class="label-forced label-danger margin-right-5"
+                                    <span class="label-forced badge-danger margin-right-5"
                                           title="<?php echo __('Down'); ?>"
                                           ng-show="contactgroup.Contactgroup.contact_count === 0">
                                         <?php echo __('Empty'); ?>

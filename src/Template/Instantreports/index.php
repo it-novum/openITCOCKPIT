@@ -293,21 +293,21 @@
                                     {{ instantreport.Instantreport.timeperiod.name }}
                                 </td>
                                 <td class="text-center">
-                                    <label class="label label-success"
+                                    <label class="badge badge-success"
                                            ng-show="instantreport.Instantreport.summary === 1">
                                         <?php echo __('Yes'); ?>
                                     </label>
-                                    <label class="label label-danger"
+                                    <label class="badge badge-danger"
                                            ng-show="instantreport.Instantreport.summary === 0">
                                         <?php echo __('No'); ?>
                                     </label>
                                 </td>
                                 <td class="text-center">
-                                    <span class="label label-success"
+                                    <span class="badge badge-success"
                                           ng-show="instantreport.Instantreport.downtimes === 1">
                                         <?php echo __('Yes'); ?>
                                     </span>
-                                    <span class="label label-danger"
+                                    <span class="badge badge-danger"
                                           ng-show="instantreport.Instantreport.downtimes === 0">
                                         <?php echo __('No'); ?>
                                     </span>

@@ -207,10 +207,14 @@ class AgentconnectorController extends AppController {
 
         /** @var AgentconnectorTable $AgentconnectorTable */
         $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
 
         $receivedChecks = 0;
 
         if (!empty($this->request->getData('checkdata')) && !empty($this->request->getData('hostuuid'))) {
+            $AgentconfigsTable->updatePushNoticedForHostIfConfigExists($this->request->getData('hostuuid'), true);
+
             if ($AgentconnectorTable->isTrustedFromUser($this->request->getData('hostuuid'))) {
                 if (!$AgentconnectorTable->certificateNotYetGenerated($this->request->getData('hostuuid')) && !empty($this->request->getData('checksum'))) {  //should have a certificate!
                     if ($AgentconnectorTable->trustIsValid($this->request->getData('checksum'), $this->request->getData('hostuuid'))) {
@@ -302,7 +306,7 @@ class AgentconnectorController extends AppController {
 
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        /** @var $AgentconfigsTable AgentconfigsTable */
+        /** @var AgentconfigsTable $AgentconfigsTable */
         $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
 
         $hostId = $HostsTable->getHostIdByUuid($uuid);
@@ -515,6 +519,7 @@ class AgentconnectorController extends AppController {
 
                 if (isset($response['response']) && !empty($response['response'])) {
                     $agentJsonOutput = $response['response'];
+                    $AgentconfigsTable->updatePushNoticedForHostIfConfigExists($hostuuid, false);
                 }
             } catch (\Exception | GuzzleException $e) {
                 throw new \Exception('Could not connect to agent to fetch current check data! - ' . $e->getMessage());

@@ -75,11 +75,13 @@ class PerfdataLoader {
      * @param string $type
      * @param null $gauge
      * @param bool $scale
+     * @param string|null $forcedUnit
+     * @param bool $debug
      * @return array
      * @throws \App\Lib\Exceptions\MissingDbBackendException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp = false, $type = 'avg', $gauge = null, $scale = true) {
+    public function getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp = false, $type = 'avg', $gauge = null, $scale = true, $forcedUnit = null, $debug = false) {
         if ($gauge === '') {
             $gauge = null;
         }
@@ -95,25 +97,25 @@ class PerfdataLoader {
             if (!empty($servicestatus)) {
 
                 $GraphiteConfig = new GraphiteConfig();
-                $GraphiteLoader = new GraphiteLoader($GraphiteConfig);
+                $GraphiteLoader = new GraphiteLoader($GraphiteConfig, $debug);
 
-                if(!empty($servicestatus['Servicestatus']['perfdata'])) {
+                if (!empty($servicestatus['Servicestatus']['perfdata'])) {
                     //Use parse perfdata string from database
                     $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
                     $perfdataMetadata = $PerfdataParser->parse();
-                }else{
+                } else {
                     //Query graphite backend for available metrics - for example if service state is unknown
                     $metrics = $GraphiteLoader->findMetricsByUuid($hostUuid, $serviceUuid);
 
                     $perfdataMetadata = [];
-                    foreach($metrics as $metric){
+                    foreach ($metrics as $metric) {
                         $perfdataMetadata[$metric] = [
-                            'current' => null,
-                            'unit' => null,
-                            'warning' => null,
+                            'current'  => null,
+                            'unit'     => null,
+                            'warning'  => null,
                             'critical' => null,
-                            'min' => null,
-                            'max' => null
+                            'min'      => null,
+                            'max'      => null
                         ];
                     }
                 }
@@ -200,10 +202,14 @@ class PerfdataLoader {
 
                     foreach ($tmpData as $timestamp => $value) {
                         if ($value !== null) {
-                            if ($jsTimestamp) {
-                                $data[($timestamp * 1000)] = $value;
+                            if ($debug === true) {
+                                $data[date('d.m.Y H:i:s', $timestamp)] = $value;
                             } else {
-                                $data[$timestamp] = $value;
+                                if ($jsTimestamp) {
+                                    $data[($timestamp * 1000)] = $value;
+                                } else {
+                                    $data[$timestamp] = $value;
+                                }
                             }
                         }
                     }
@@ -216,10 +222,15 @@ class PerfdataLoader {
             }
         }
 
-        if($scale === true){
-            foreach($performance_data as $index => $gauge){
+        if ($scale === true) {
+            foreach ($performance_data as $index => $gauge) {
                 $UnitScaler = new UnitScaler($gauge);
-                $performance_data[$index] = $UnitScaler->scale();
+
+                if ($forcedUnit === null) {
+                    $performance_data[$index] = $UnitScaler->scale();
+                } else {
+                    $performance_data[$index] = $UnitScaler->scaleToUnit($forcedUnit);
+                }
             }
         }
 

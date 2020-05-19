@@ -211,11 +211,11 @@
                                 <td>{{user.phone}}</td>
                                 <td>{{user.company}}</td>
                                 <td>
-                                    <span class="label-forced label-danger"
+                                    <span class="label-forced badge-danger"
                                           ng-hide="user.is_active">
                                         <?php echo __('Disabled'); ?>
                                     </span>
-                                    <span class="label-forced label-success"
+                                    <span class="label-forced badge-success"
                                           ng-show="user.is_active">
                                         <?php echo __('Active'); ?>
                                     </span>

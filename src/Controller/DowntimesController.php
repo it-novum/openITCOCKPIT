@@ -157,8 +157,7 @@ class DowntimesController extends AppController {
         //Load containers for hosts, for non root users
         $hostContainers = [];
         $hostIds = [];
-        if (true) {
-            //if (!empty($serviceDowntimes) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'services')) {
+        if (!empty($serviceDowntimes) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'services')) {
             foreach ($serviceDowntimes as $record) {
                 $hostIds[] = $record->get('Hosts')['id'];
             }

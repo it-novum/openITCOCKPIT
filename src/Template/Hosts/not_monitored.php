@@ -116,7 +116,7 @@
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
-                                                   ng-model="filter.Hosts.name"
+                                                   ng-model="filter.Host.name"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
                                     </div>
@@ -134,45 +134,31 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-md-6 margin-bottom-10">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
-                                            </div>
-                                            <input type="text" class="form-control form-control-sm"
-                                                   placeholder="<?php echo __('Filter by output'); ?>"
-                                                   ng-model="filter.Hoststatus.output"
-                                                   ng-model-options="{debounce: 500}">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <?php if (sizeof($satellites) > 1): ?>
-                                        <div class="col-xs-12 col-md-3">
-                                            <fieldset>
-                                                <legend><?php echo __('Instance'); ?></legend>
-                                                <div class="form-group smart-form">
-                                                    <select
-                                                        id="Instance"
-                                                        data-placeholder="<?php echo __('Filter by instance'); ?>"
-                                                        class="form-control"
-                                                        chosen="{}"
-                                                        multiple
-                                                        ng-model="filter.Host.satellite_id"
-                                                        ng-model-options="{debounce: 500}">
-                                                        <?php
-                                                        foreach ($satellites as $satelliteId => $satelliteName):
-                                                            printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
-                                                        endforeach;
-                                                        ?>
-                                                    </select>
-                                                </div>
-                                            </fieldset>
-                                        </div>
-                                    <?php endif; ?>
 
-                                </div>
+                                <?php if (sizeof($satellites) > 1): ?>
+                                    <div class="col-xs-12 col-md-3">
+                                        <fieldset>
+                                            <h5><?php echo __('Instance'); ?></h5>
+                                            <div class="form-group smart-form">
+                                                <select
+                                                    id="Instance"
+                                                    data-placeholder="<?php echo __('Filter by instance'); ?>"
+                                                    class="form-control"
+                                                    chosen="{}"
+                                                    multiple
+                                                    ng-model="filter.Host.satellite_id"
+                                                    ng-model-options="{debounce: 500}">
+                                                    <?php
+                                                    foreach ($satellites as $satelliteId => $satelliteName):
+                                                        printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
+                                                    endforeach;
+                                                    ?>
+                                                </select>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                <?php endif; ?>
+
                             </div>
                             <div class="float-right">
                                 <button type="button" ng-click="resetFilter()"

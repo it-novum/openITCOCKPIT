@@ -13,6 +13,7 @@ use Cake\ORM\Entity;
  * @property bool $insecure
  * @property bool $basic_auth
  * @property string $password
+ * @property bool $push_noticed
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
@@ -29,16 +30,17 @@ class Agentconfig extends Entity {
      * @var array
      */
     protected $_accessible = [
-        'port'       => true,
-        'host_id'    => true,
-        'use_https'  => true,
-        'insecure'   => true,
-        'basic_auth' => true,
-        'username'   => true,
-        'password'   => true,
-        'created'    => true,
-        'modified'   => true,
-        'host'       => true
+        'port'         => true,
+        'host_id'      => true,
+        'use_https'    => true,
+        'insecure'     => true,
+        'basic_auth'   => true,
+        'username'     => true,
+        'password'     => true,
+        'push_noticed' => true,
+        'created'      => true,
+        'modified'     => true,
+        'host'         => true
     ];
 
 }
