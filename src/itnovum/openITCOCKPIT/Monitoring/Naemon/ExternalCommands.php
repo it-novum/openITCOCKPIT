@@ -9,7 +9,6 @@ use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 use Cake\Core\Configure;
-use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
@@ -187,7 +186,7 @@ class ExternalCommands {
                         'host_name'     => $options['uuid'],
                         'output'        => $options['comment'],
                         'long_output'   => $options['long_output'],
-                        'check_type'    => 1, //https://github.com/naemon/naemon-core/blob/cec6e10cbee9478de04b4cf5af29e83d47b5cfd9/src/naemon/common.h#L330-L334
+                        'check_type'    => 1, //https://github.com/naemon/naemon-core/blob/deb9ac31a39966eebc4f464d93f982ffa5a53687/src/naemon/checks.h#L18-L19
                         'return_code'   => $options['state'],
                         'start_time'    => time(),
                         'end_time'      => time(),
@@ -206,7 +205,7 @@ class ExternalCommands {
                     'host_name'     => $options['uuid'],
                     'output'        => $options['comment'],
                     'long_output'   => $options['long_output'],
-                    'check_type'    => 1, //https://github.com/naemon/naemon-core/blob/cec6e10cbee9478de04b4cf5af29e83d47b5cfd9/src/naemon/common.h#L330-L334
+                    'check_type'    => 1, //https://github.com/naemon/naemon-core/blob/deb9ac31a39966eebc4f464d93f982ffa5a53687/src/naemon/checks.h#L18-L19
                     'return_code'   => $options['state'],
                     'start_time'    => time(),
                     'end_time'      => time(),
@@ -270,7 +269,7 @@ class ExternalCommands {
                         'service_description' => $options['serviceUuid'],
                         'output'              => $options['comment'],
                         'long_output'         => $options['long_output'],
-                        'check_type'          => 1, //https://github.com/naemon/naemon-core/blob/cec6e10cbee9478de04b4cf5af29e83d47b5cfd9/src/naemon/common.h#L330-L334
+                        'check_type'          => 0, //https://github.com/naemon/naemon-core/blob/deb9ac31a39966eebc4f464d93f982ffa5a53687/src/naemon/checks.h#L18-L19
                         'return_code'         => $options['state'],
                         'start_time'          => time(),
                         'end_time'            => time(),
@@ -290,7 +289,7 @@ class ExternalCommands {
                     'service_description' => $options['serviceUuid'],
                     'output'              => $options['comment'],
                     'long_output'         => $options['long_output'],
-                    'check_type'          => 1, //https://github.com/naemon/naemon-core/blob/cec6e10cbee9478de04b4cf5af29e83d47b5cfd9/src/naemon/common.h#L330-L334
+                    'check_type'          => 0, //https://github.com/naemon/naemon-core/blob/deb9ac31a39966eebc4f464d93f982ffa5a53687/src/naemon/checks.h#L18-L19
                     'return_code'         => $options['state'],
                     'start_time'          => time(),
                     'end_time'            => time(),
@@ -1598,7 +1597,7 @@ class ExternalCommands {
                         'host_name'     => $command['parameters']['hostUuid'],
                         'output'        => $command['parameters']['plugin_output'],
                         'long_output'   => $command['parameters']['long_output'],
-                        'check_type'    => 1, //https://github.com/naemon/naemon-core/blob/cec6e10cbee9478de04b4cf5af29e83d47b5cfd9/src/naemon/common.h#L330-L334
+                        'check_type'    => 1, //https://github.com/naemon/naemon-core/blob/deb9ac31a39966eebc4f464d93f982ffa5a53687/src/naemon/checks.h#L18-L19
                         'return_code'   => $command['parameters']['status_code'],
                         'start_time'    => time(),
                         'end_time'      => time(),
@@ -1610,6 +1609,7 @@ class ExternalCommands {
 
                 if ($command['command'] === 'PROCESS_SERVICE_CHECK_RESULT') {
                     $payload['Data']['service_description'] = $command['parameters']['serviceUuid'];
+                    $payload['Data']['check_type'] = 0;
                 }
 
                 // Send to Master or Satellite queue
