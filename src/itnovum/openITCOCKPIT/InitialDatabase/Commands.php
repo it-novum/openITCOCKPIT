@@ -678,6 +678,26 @@ of processes.  Search filters can be applied to limit the processes to check.',
                 'uuid'             => 'fcc17401-76cb-403e-b714-33c0b0072e80',
                 'description'      => 'Collect statistical information about the Statusengine Worker performance',
                 'commandarguments' => []
+            ],
+            (int)28 => [
+                'id'               => '30',
+                'name'             => 'host-notify-by-xml-email',
+                'command_line'     => '/opt/openitc/frontend/bin/cake nagios_xml_notification -q --type Host --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$" --hostackauthor "$NOTIFICATIONAUTHOR$" --hostackcomment "$NOTIFICATIONCOMMENT$" --format "both"',
+                'command_type'     => '3',
+                'human_args'       => null,
+                'uuid'             => 'd6062054-60a0-466e-8582-605ec0f78672',
+                'description'      => 'Send a host notification as mail',
+                'commandarguments' => []
+            ],
+            (int)29 => [
+                'id'               => '31',
+                'name'             => 'service-notify-by-xml-email',
+                'command_line'     => '/opt/openitc/frontend/bin/cake nagios_xml_notification -q --type Service --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$" --servicedesc "$SERVICEDESC$" --servicestate "$SERVICESTATE$" --serviceoutput "$SERVICEOUTPUT$" --serviceackauthor "$NOTIFICATIONAUTHOR$" --serviceackcomment "$NOTIFICATIONCOMMENT$" --format "both"',
+                'command_type'     => '3',
+                'human_args'       => null,
+                'uuid'             => 'e63d725a-5117-4d14-b866-63ce517bbe7f',
+                'description'      => 'Send a service notification as xml mail',
+                'commandarguments' => []
             ]
         ];
 
