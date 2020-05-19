@@ -120,6 +120,10 @@ abstract class Statehistory {
             $this->is_hardstate = (bool)$data['state_type'];
         }
 
+        if (isset($data['is_hardstate'])) {
+            $this->is_hardstate = (bool)$data['is_hardstate'];
+        }
+
         $this->UserTime = $UserTime;
     }
 
