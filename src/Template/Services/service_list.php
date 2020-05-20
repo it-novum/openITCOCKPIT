@@ -77,7 +77,7 @@
                     <?php endif; ?>
                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                         <a class="dropdown-item" ui-sref="HostsEdit({id:data.hostId})"
-                           ng-show="host.allowEdit">
+                           ng-show="host.allow_edit">
                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                         </a>
                     <?php endif; ?>
@@ -88,6 +88,10 @@
                             <?php echo __('Allocate Service Template Group'); ?>
                         </a>
                     <?php endif; ?>
+                    <?php
+                    $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                    echo $AdditionalLinks->getLinksAsHtmlList('services', 'serviceList', 'actions');
+                    ?>
                 </div>
             </div>
         </div>
