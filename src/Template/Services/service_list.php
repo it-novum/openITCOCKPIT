@@ -109,22 +109,22 @@
                 </h2>
                 <div class="panel-toolbar">
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
-                        <li class="nav-item">
+                        <li class="nav-item pointer">
                             <a class="nav-link active" data-toggle="tab" ng-click="changeTab('active')" role="tab">
                                 <i class="fa fa-stethoscope">&nbsp;</i> <?php echo __('Active'); ?>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item pointer">
                             <a class="nav-link" data-toggle="tab" ng-click="changeTab('notMonitored')" role="tab">
                                 <i class="fa fa-user-md">&nbsp;</i> <?php echo __('Not monitored'); ?>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item pointer">
                             <a class="nav-link" data-toggle="tab" ng-click="changeTab('disabled')" role="tab">
                                 <i class="fa fa-plug">&nbsp;</i> <?php echo __('Disabled'); ?>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item pointer">
                             <a class="nav-link" data-toggle="tab" ng-click="changeTab('deleted')" role="tab">
                                 <i class="fa fa-trash">&nbsp;</i> <?php echo __('Deleted'); ?>
                             </a>
