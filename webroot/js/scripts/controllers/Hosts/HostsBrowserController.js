@@ -60,7 +60,7 @@ angular.module('openITCOCKPIT')
         $scope.showTimelineTab = false;
         $scope.timelineIsLoading = false;
         $scope.failureDurationInPercent = null;
-        $scope.lastLoadDate = Date.now();
+        $scope.lastLoadDate = Date.now();       //required for status color update in service-browser-menu
 
         $scope.selectedGrafanaTimerange = 'now-3h';
         $scope.selectedGrafanaAutorefresh = '60s';
