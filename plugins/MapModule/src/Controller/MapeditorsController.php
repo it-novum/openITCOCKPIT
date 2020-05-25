@@ -1253,11 +1253,7 @@ class MapeditorsController extends AppController {
         if ($this->request->getData('action') === 'dragstop') {
             $id = $this->request->getData('Mapitem.id');
 
-            $itemEntity = $MapItemsTable->get($id, [
-                'contain' => [
-                    'Containers'
-                ]
-            ]);
+            $itemEntity = $MapItemsTable->get($id);
 
             $item = $itemEntity->toArray();
             $item['x'] = (int)$this->request->getData('Mapitem.x');
