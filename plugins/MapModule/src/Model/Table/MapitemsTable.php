@@ -74,14 +74,6 @@ class MapitemsTable extends Table {
             'className'  => 'MapModule.Maps',
         ]);
 
-        $this->belongsToMany('Containers', [
-            'className'        => 'Containers',
-            'foreignKey'       => 'map_id',
-            'targetForeignKey' => 'container_id',
-            'joinTable'        => 'maps_to_containers',
-            //'saveStrategy'     => 'replace'
-        ]);
-
         $this->hasMany('Hosts');
         $this->hasMany('Hostgroups');
         $this->hasMany('Services');
