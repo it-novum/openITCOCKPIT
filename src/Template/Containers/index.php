@@ -168,7 +168,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                                 </a>
                                             <?php endif; ?>
 
-                                            <?php if ($this->Acl->hasPermission('showDetails', 'containers') && 1 === 2): ?> <!-- show details not not ready for beta -->
+                                            <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?> <!-- show details not not ready for beta -->
                                                 <a class="text-info padding-left-10 font-xs pointer"
                                                    ui-sref="ContainersShowDetails({id:$Container.id, tenant:selectedContainer.id})">
                                                     <i class="fa fa-info"></i>
@@ -246,7 +246,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                                 </a>
                                             <?php endif; ?>
 
-                                            <?php if ($this->Acl->hasPermission('showDetails', 'containers') && 1 === 2): ?> <!-- show details not not ready for beta -->
+                                            <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?> <!-- show details not not ready for beta -->
                                                 <a class="text-info padding-left-10 font-xs pointer"
                                                    ui-sref="ContainersShowDetails({id:$Container.id, tenant:selectedContainer.id})">
                                                     <i class="fa fa-info"></i>
