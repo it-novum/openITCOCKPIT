@@ -95,6 +95,11 @@ class Host {
     private $disabled = false;
 
     /**
+     * @var int
+     */
+    private $priority;
+
+    /**
      * Host constructor.
      * @param array $host
      * @param bool $allowEdit
@@ -180,7 +185,13 @@ class Host {
         if (isset($host['Host']['disabled'])) {
             $this->disabled = (bool)$host['Host']['disabled'];
         }
-
+        if (empty($host['Host']['priority']) && isset($host['Host']['hosttemplate']['priority'])) {
+            $this->priority = $host['Host']['hosttemplate']['priority'];
+        } else {
+            if(!empty($host['Host']['priority'])){
+                $this->priority = $host['Host']['priority'];
+            }
+        }
     }
 
     /**
@@ -275,6 +286,13 @@ class Host {
      */
     public function getHosttemplateId() {
         return $this->hosttemplate_id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPriority() {
+        return $this->priority;
     }
 
     /**

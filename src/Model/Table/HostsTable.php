@@ -818,7 +818,7 @@ class HostsTable extends Table {
             'Hosts.satellite_id',
             'Hosts.container_id',
             'Hosts.tags',
-
+            'Hosts.priority',
             //'keywords'     => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
             //'not_keywords' => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
 
@@ -869,7 +869,9 @@ class HostsTable extends Table {
                     'Hosttemplates.name',
                     'Hosttemplates.description',
                     'Hosttemplates.active_checks_enabled',
-                    'Hosttemplates.tags'
+                    'Hosttemplates.tags',
+                    'Hosttemplates.priority',
+                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)')
                 ]
             ]
         ]);
@@ -905,6 +907,16 @@ class HostsTable extends Table {
             unset($where['Hosts.not_keywords not rlike']);
         }
 
+        if (isset($where['hostpriority IN'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.priority IS NULL), Hosttemplates.priority, Hosts.priority)',
+                $where['hostpriority IN'],
+                'integer[]',
+                'IN'
+            );
+            unset($where['hostpriority IN']);
+        }
+
 
         $query->where($where);
 
@@ -933,7 +945,6 @@ class HostsTable extends Table {
      */
     public function getHostsIndexStatusengine3(HostFilter $HostFilter, HostConditions $HostConditions, $PaginateOMat = null) {
         $MY_RIGHTS = $HostConditions->getContainerIds();
-
         $query = $this->find('all');
         $query->select([
             'Hosts.id',
@@ -945,7 +956,7 @@ class HostsTable extends Table {
             'Hosts.satellite_id',
             'Hosts.container_id',
             'Hosts.tags',
-
+            'Hosts.priority',
             //'keywords'     => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
             //'not_keywords' => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
 
@@ -990,7 +1001,9 @@ class HostsTable extends Table {
                     'Hosttemplates.name',
                     'Hosttemplates.description',
                     'Hosttemplates.active_checks_enabled',
-                    'Hosttemplates.tags'
+                    'Hosttemplates.tags',
+                    'Hosttemplates.priority',
+                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)')
                 ]
             ]
         ]);
@@ -1015,7 +1028,6 @@ class HostsTable extends Table {
             );
             unset($where['Hosts.keywords rlike']);
         }
-
         if (isset($where['Hosts.not_keywords not rlike'])) {
             $where[] = new Comparison(
                 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
@@ -1025,10 +1037,18 @@ class HostsTable extends Table {
             );
             unset($where['Hosts.not_keywords not rlike']);
         }
+        if (isset($where['hostpriority IN'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.priority IS NULL), Hosttemplates.priority, Hosts.priority)',
+                $where['hostpriority IN'],
+                'integer[]',
+                'IN'
+            );
+            unset($where['hostpriority IN']);
+        }
 
 
         $query->where($where);
-
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order($HostFilter->getOrderForPaginator('Hoststatus.current_state', 'desc'));

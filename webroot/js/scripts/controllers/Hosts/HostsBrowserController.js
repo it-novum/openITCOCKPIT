@@ -25,6 +25,14 @@ angular.module('openITCOCKPIT')
 
         $scope.pingResult = [];
 
+        $scope.priorityClasses = {
+            1: 'ok-soft',
+            2: 'ok',
+            3: 'warning',
+            4: 'critical-soft',
+            5: 'critical'
+        };
+
         //There is no service status for not monitored services :)
         $scope.fakeServicestatus = {
             Servicestatus: {

@@ -757,7 +757,7 @@ use Cake\Core\Plugin;
                                                 <td>
                                                     <i class="fa fa-fire ma"
                                                        ng-repeat="priority in priorities"
-                                                       ng-class="{'text-primary': priority, 'text-lightGray': !priority}"
+                                                       ng-class="{'{{priorityClasses[mergedHost.priority]}}': priority,'text-muted': !priority}"
                                                        style="font-size:17px;margin-left:2px;">
                                                     </i>
                                                 </td>
