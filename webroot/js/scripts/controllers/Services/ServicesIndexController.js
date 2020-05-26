@@ -29,7 +29,14 @@ angular.module('openITCOCKPIT')
                     id: QueryStringService.getStateValue($stateParams, 'id', []),
                     name: QueryStringService.getStateValue($stateParams, 'servicename', ''),
                     keywords: '',
-                    not_keywords: ''
+                    not_keywords: '',
+                    priority: {
+                        1: false,
+                        2: false,
+                        3: false,
+                        4: false,
+                        5: false
+                    }
                 },
                 Hosts: {
                     id: QueryStringService.getStateValue($stateParams, 'host_id', []),
@@ -107,6 +114,13 @@ angular.module('openITCOCKPIT')
                 passive = !$scope.filter.Servicestatus.passive;
             }
 
+            var priorityFilter = [];
+            for(var key in $scope.filter.Services.priority){
+                if($scope.filter.Services.priority[key] === true){
+                    priorityFilter.push(key);
+                }
+            }
+
             var params = {
                 'angular': true,
                 'scroll': $scope.useScroll,
@@ -123,7 +137,9 @@ angular.module('openITCOCKPIT')
                 'filter[not_keywords][]': $scope.filter.Services.not_keywords.split(','),
                 'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
-                'filter[Servicestatus.active_checks_enabled]': passive
+                'filter[Servicestatus.active_checks_enabled]': passive,
+                'filter[servicepriority][]': priorityFilter
+
             };
             if(QueryStringService.getStateValue($stateParams, 'BrowserContainerId') !== null){
                 params['BrowserContainerId'] = QueryStringService.getStateValue($stateParams, 'BrowserContainerId');

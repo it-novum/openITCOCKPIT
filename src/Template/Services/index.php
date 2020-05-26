@@ -335,6 +335,88 @@
                                         </div>
                                     </fieldset>
                                 </div>
+                                <div class="col-xs-12 col-lg-3">
+                                    <fieldset>
+                                        <h5><?php echo __('Priority'); ?></h5>
+                                        <div class="form-group smart-form">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="priority1"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Services.priority[1]"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="priority1">
+                                                    <i class="fa fa-fire fa-lg ok-soft"></i>
+                                                </label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="priority2"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Services.priority[2]"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="priority2">
+                                                    <i class="fa fa-fire fa-lg ok"></i>
+                                                    <i class="fa fa-fire fa-lg ok"></i>
+                                                </label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="priority3"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Services.priority[3]"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="priority3">
+                                                    <i class="fa fa-fire fa-lg warning"></i>
+                                                    <i class="fa fa-fire fa-lg warning"></i>
+                                                    <i class="fa fa-fire fa-lg warning"></i>
+                                                </label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="priority4"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Services.priority[4]"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="priority4">
+                                                    <i class="fa fa-fire fa-lg critical-soft"></i>
+                                                    <i class="fa fa-fire fa-lg critical-soft"></i>
+                                                    <i class="fa fa-fire fa-lg critical-soft"></i>
+                                                    <i class="fa fa-fire fa-lg critical-soft"></i>
+                                                </label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="priority5"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Services.priority[5]"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="priority5">
+                                                    <i class="fa fa-fire fa-lg critical"></i>
+                                                    <i class="fa fa-fire fa-lg critical"></i>
+                                                    <i class="fa fa-fire fa-lg critical"></i>
+                                                    <i class="fa fa-fire fa-lg critical"></i>
+                                                    <i class="fa fa-fire fa-lg critical"></i>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
                             </div>
                             <div class="float-right">
                                 <button type="button" ng-click="resetFilter()"
@@ -370,7 +452,15 @@
                                 </th>
 
                                 <th class="no-sort text-center">
-                                    <strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
+                                    <strong title="<?php echo __('Passively transferred service'); ?>">
+                                        P
+                                    </strong>
+                                </th>
+
+                                <th class="no-sort text-center" ng-click="orderBy('servicepriority')">
+                                    <i class="fa" ng-class="getSortClass('servicepriority')"></i>
+                                    <i class="fa fa-fire" title="<?php echo __('Priority'); ?>">
+                                    </i>
                                 </th>
 
                                 <th class="no-sort" ng-click="orderBy('servicename')">
@@ -484,6 +574,14 @@
                                             ng-show="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
                                         P
                                     </strong>
+                                </td>
+
+                                <td class="text-center">
+                                    <i class="fa fa-fire"
+                                       ng-class="{'ok-soft' : service.Service.priority==1,
+                                        'ok' : service.Service.priority==2, 'warning' : service.Service.priority==3,
+                                        'critical-soft' : service.Service.priority==4, 'critical' : service.Service.priority==5}">
+                                    </i>
                                 </td>
 
                                 <td>

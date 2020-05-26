@@ -1753,7 +1753,9 @@ class ServicesTable extends Table {
                 'Services.disabled',
                 'Services.active_checks_enabled',
                 'Services.tags',
+                'Services.priority',
                 'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+                'servicepriority' => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',
@@ -1761,6 +1763,7 @@ class ServicesTable extends Table {
                 'Servicetemplates.description',
                 'Servicetemplates.active_checks_enabled',
                 'Servicetemplates.tags',
+                'Servicetemplates.priority',
 
                 'Objects.object_id',
 
@@ -1821,6 +1824,16 @@ class ServicesTable extends Table {
                 'not rlike'
             ));
             unset($where['not_keywords not rlike']);
+        }
+
+        if (isset($where['servicepriority IN'])) {
+            $where[] = new Comparison(
+                'IF((Services.priority IS NULL), Servicetemplates.priority, Services.priority)',
+                $where['servicepriority IN'],
+                'integer[]',
+                'IN'
+            );
+            unset($where['servicepriority IN']);
         }
 
         if (!empty($where)) {
@@ -1896,7 +1909,9 @@ class ServicesTable extends Table {
                 'Services.disabled',
                 'Services.active_checks_enabled',
                 'Services.tags',
+                'Services.priority',
                 'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+                'servicepriority' => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',
@@ -1904,6 +1919,7 @@ class ServicesTable extends Table {
                 'Servicetemplates.description',
                 'Servicetemplates.active_checks_enabled',
                 'Servicetemplates.tags',
+                'Servicetemplates.priority',
 
                 'Servicestatus.current_state',
                 'Servicestatus.last_check',
@@ -1958,6 +1974,16 @@ class ServicesTable extends Table {
                 'not rlike'
             ));
             unset($where['not_keywords not rlike']);
+        }
+
+        if (isset($where['servicepriority IN'])) {
+            $where[] = new Comparison(
+                'IF((Services.priority IS NULL), Servicetemplates.priority, Services.priority)',
+                $where['servicepriority IN'],
+                'integer[]',
+                'IN'
+            );
+            unset($where['servicepriority IN']);
         }
 
         if (!empty($where)) {
