@@ -15506,19 +15506,19 @@ msgstr "Servicevorlagengruppen"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:354
 msgid "Host Downtimes"
-msgstr "HostWartungszeiten"
+msgstr "Host Wartungszeiten"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:364
 msgid "Service Downtimes"
-msgstr "ServiceWartungszeiten"
+msgstr "Service Wartungszeiten"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:374
 msgid "Recurring Host Downtimes"
-msgstr "Wiederkehrende HostWartungszeiten"
+msgstr "Wiederkehrende Host Wartungszeiten"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:384
 msgid "Recurring Service Downtimes"
-msgstr "Wiederkehrende ServiceWartungszeiten"
+msgstr "Wiederkehrende Service Wartungszeiten"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:394
 msgid "System Failures"
