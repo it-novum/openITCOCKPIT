@@ -54,41 +54,6 @@ angular.module('openITCOCKPIT')
         $scope.showFilter = false;
         $scope.serverResult = [];
 
-        var forTemplate = function(serverResponse){
-            // Create a list of host with all services
-
-            var hostWithServices = [];
-
-            var arrayIndexOfHostId = {};
-
-            for(var i in serverResponse){
-                var hostId = serverResponse[i].Host.id;
-
-                var index = null;
-
-                if(!arrayIndexOfHostId.hasOwnProperty(hostId)){
-                    //We need to use an array [] because an hash map {} has no fixed order.
-                    index = hostWithServices.length; // length is automaticaly the next index :)
-                    arrayIndexOfHostId[hostId] = index;
-
-                    hostWithServices.push({
-                        Host: serverResponse[i].Host,
-                        Hoststatus: serverResponse[i].Hoststatus,
-                        Services: []
-                    });
-                }
-
-                index = arrayIndexOfHostId[hostId];
-
-                hostWithServices[index].Services.push({
-                    Service: serverResponse[i].Service,
-                    Servicestatus: serverResponse[i].Servicestatus
-                });
-            }
-
-            return hostWithServices;
-        };
-
         $scope.loadTimezone = function(){
             $http.get("/angular/user_timezone.json", {
                 params: {
@@ -148,9 +113,7 @@ angular.module('openITCOCKPIT')
             $http.get("/services/index.json", {
                 params: params
             }).then(function(result){
-                $scope.services = [];
-                $scope.serverResult = result.data.all_services;
-                $scope.services = forTemplate(result.data.all_services);
+                $scope.services = result.data.all_services;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
