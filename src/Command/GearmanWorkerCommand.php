@@ -291,9 +291,9 @@ class GearmanWorkerCommand extends Command {
                 } else {
                     $systemsettings = $SystemsettingsTable->findAsArray();
 
-                    exec($systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
+                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
                     $output = null;
-                    exec($systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
+                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
                     $this->deleteMkAutochecks();
                     exec(sprintf(
                         'chown %s:%s %s -R',
@@ -342,7 +342,7 @@ class GearmanWorkerCommand extends Command {
                 } else {
                     $systemsettings = $SystemsettingsTable->findAsArray();
 
-                    exec($systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output);
+                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output);
                     exec(sprintf(
                         'chown %s:%s %s -R',
                         escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
@@ -399,9 +399,9 @@ class GearmanWorkerCommand extends Command {
                 } else {
                     $systemsettings = $SystemsettingsTable->findAsArray();
 
-                    exec($systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
                     $output = null;
-                    exec($systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
                     $this->deleteMkAutochecks();
                     exec(sprintf(
                         'chown %s:%s %s -R',
@@ -452,7 +452,7 @@ class GearmanWorkerCommand extends Command {
                 } else {
                     $systemsettings = $SystemsettingsTable->findAsArray();
 
-                    exec($systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostUuid']), $output);
+                    exec('sudo -u nagios ' . $systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostUuid']), $output);
                     exec(sprintf(
                         'chown %s:%s %s -R',
                         escapeshellarg($systemsettings['MONITORING']['MONITORING.USER']),
