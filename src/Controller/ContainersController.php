@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Container;
 use App\Model\Entity\User;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContainersTable;
@@ -43,6 +44,7 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use DistributeModule\Model\Table\SatellitesTable;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
@@ -159,7 +161,7 @@ class ContainersController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        if(!$this->hasRootPrivileges && intval($id) === ROOT_CONTAINER){
+        if (!$this->hasRootPrivileges && intval($id) === ROOT_CONTAINER) {
             $this->render403();
             return;
         }
@@ -315,7 +317,7 @@ class ContainersController extends AppController {
             $paths[$container['id']] = '/' . $ContainersTable->treePath($container['id'], '/');
         }
         natcasesort($paths);
-        if(!$this->hasRootPrivileges){
+        if (!$this->hasRootPrivileges) {
             unset($paths[ROOT_CONTAINER]);
         }
 
@@ -653,14 +655,48 @@ class ContainersController extends AppController {
 
         $container = $ContainersTable->getContainerById($id, $MY_RIGHTS);
         $subContainers = $ContainersTable->getContainerWithAllChildren($id, $MY_RIGHTS);
-        if($containersAsTree === false){
+        if ($containersAsTree === false) {
             $containersWithChilds = Hash::filter($subContainers);
             $this->set('containersWithChilds', $containersWithChilds);
             $this->viewBuilder()->setOption('serialize', ['containersWithChilds']);
-        }else{
+        } else {
             $containerMap = $ContainersTable->getContainerMap($container, $subContainers);
             $this->set('containerMap', $containerMap);
             $this->viewBuilder()->setOption('serialize', ['containerMap']);
         }
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function loadSatellitesByContainerIds() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containerIds = $this->request->getQuery('containerIds', []);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds, false);
+
+        foreach ($containerIds as $containerId){
+            if (!$ContainersTable->existsById($containerId)) {
+                throw new NotFoundException(__('Invalid container'));
+            }
+        }
+
+        $satellites = [];
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var $SatellitesTable SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+            $satellites = $SatellitesTable->getSatellitesByContainerIds($containerIds, 'list');
+        }
+        $satellites = Api::makeItJavaScriptAble($satellites);
+
+        $this->set('satellites', $satellites);
+        $this->viewBuilder()->setOption('serialize', [
+            'satellites'
+        ]);
     }
 }

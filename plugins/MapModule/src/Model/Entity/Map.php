@@ -30,6 +30,7 @@ namespace MapModule\Model\Entity;
 use App\Model\Entity\Container;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\Entity;
+use DistributeModule\Model\Entity\Satellite;
 
 /**
  * Map Entity
@@ -50,6 +51,8 @@ use Cake\ORM\Entity;
  * @property MapsToRotation[] $maps_to_rotations
  * @property Mapsummaryitem[] $mapsummaryitems
  * @property Maptext[] $maptexts
+ * @property Satellite[] $satellites
+ * @property Container[] $containers
  */
 class Map extends Entity {
     /**
@@ -76,7 +79,8 @@ class Map extends Entity {
         'maps_to_rotations'  => true,
         'mapsummaryitems'    => true,
         'maptexts'           => true,
-        'containers'         => true
+        'containers'         => true,
+        'satellites'         => true
     ];
 
     /**
