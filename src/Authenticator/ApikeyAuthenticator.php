@@ -48,6 +48,13 @@ class ApikeyAuthenticator extends AbstractAuthenticator implements StatelessInte
             $authHeaderKey = $this->getConfig('apikeyPrefix');
             $data['apikey'] = trim(substr($request->getHeaderLine($this->getConfig('header')), strlen($authHeaderKey)));
         }
+
+        $cookies = $request->getCookieParams();
+        if (!empty($cookies['Authorization'])) {
+            $authHeaderKey = $this->getConfig('apikeyPrefix');
+            $data['apikey'] = trim(substr($cookies['Authorization'], strlen($authHeaderKey)));
+        }
+
         if (isset($request->getQueryParams()[$this->getConfig('queryParam')])) {
             $data['apikey'] = trim($request->getQueryParams()[$this->getConfig('queryParam')]);
         }
