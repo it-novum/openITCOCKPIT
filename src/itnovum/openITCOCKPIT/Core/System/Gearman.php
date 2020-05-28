@@ -51,7 +51,6 @@ class Gearman {
 
         $this->client = new \GearmanClient();
         $this->client->addServer($this->config['address'], $this->config['port']);
-        $this->client->setTimeout(5000);
     }
 
     public function send($task, $payload = []) {
@@ -97,7 +96,11 @@ class Gearman {
      * @return bool
      */
     public function ping() {
-        $result = @$this->client->ping(true);
+        $client = new \GearmanClient();
+        $client->addServer($this->config['address'], $this->config['port']);
+        $client->setTimeout(5000);
+
+        $result = @$client->ping(true);
         return $result;
     }
 

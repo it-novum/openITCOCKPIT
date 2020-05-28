@@ -38,7 +38,6 @@ use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\CakePHP\Set;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
@@ -56,7 +55,6 @@ use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use Statusengine2Module\Model\Entity\DowntimeService;
 use Statusengine2Module\Model\Table\StatehistoryHostsTable;
-use Statusengine3Module\Model\Entity\DowntimeHost;
 
 /**
  * Class DowntimereportsController
@@ -102,7 +100,7 @@ class DowntimereportsController extends AppController {
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
             $fromDate = strtotime($this->request->getData('from_date') . ' 00:00:00');
             $toDate = strtotime($this->request->getData('to_date') . ' 23:59:59');
-            if($toDate > time()){
+            if ($toDate > time()) {
                 $toDate = time();
             }
             $evaluationType = $this->request->getData('evaluation_type');
@@ -511,7 +509,7 @@ class DowntimereportsController extends AppController {
         if (!empty($downtimeReport['hostsWithOutages'])) {
             $downtimeReport['hostsWithOutages'] = Hash::sort(
                 $downtimeReport['hostsWithOutages'],
-                '{n}.Host.reportdata.1',
+                '{n}.Host.reportData.1',
                 'desc'
             );
 

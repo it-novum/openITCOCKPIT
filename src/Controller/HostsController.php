@@ -199,7 +199,6 @@ class HostsController extends AppController {
             $hosts = $HostsTable->getHostsIndexStatusengine3($HostFilter, $HostCondition, $PaginateOMat);
         }
 
-
         $all_hosts = [];
         $UserTime = new UserTime($User->getTimezone(), $User->getDateformat());
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);

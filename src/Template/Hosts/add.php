@@ -948,11 +948,11 @@
                                                 </a>
                                             <?php endif; ?>
 
-                                            <?php if (\Cake\Core\Plugin::isLoaded('MkModule') && $this->Acl->hasPermission('index', 'scans', 'MkModule')): ?>
-                                                <a ui-sref="MkModuleMkdiscovery" href="javascript:void(0);"
-                                                   class="dropdown-item">
+                                            <?php if (\Cake\Core\Plugin::isLoaded('CheckmkModule') && $this->Acl->hasPermission('index', 'scans', 'CheckmkModule')): ?>
+                                                <a class="dropdown-item" href="javascript:void(0);"
+                                                   ng-click="submit('ScansIndex')">
                                                     <i class="fa fa fa-share-alt"></i>
-                                                    <?php echo __('Save and run Check_MK discovery'); ?>
+                                                    <?php echo __('Save and run Checkmk discovery'); ?>
                                                 </a>
                                             <?php endif; ?>
                                         </div>

@@ -126,8 +126,7 @@ class MapsTable extends Table {
             'className'        => 'Containers',
             'foreignKey'       => 'map_id',
             'targetForeignKey' => 'container_id',
-            'joinTable'        => 'maps_to_containers',
-            //'saveStrategy'     => 'replace'
+            'joinTable'        => 'maps_to_containers'
         ]);
 
         $this->hasMany('Mapgadgets', [

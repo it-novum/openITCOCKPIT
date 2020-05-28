@@ -1928,12 +1928,12 @@ $table->addColumn("problem_has_been_acknowledged", "boolean", array (
     'notnull' => false,
     'default' => '0',
 ));
-$table->addColumn("acknowledgement_type", "boolean", array (
-    'unsigned' => true,
+$table->addColumn("acknowledgement_type", "smallint", [
+    'unsigned'      => true,
     'autoincrement' => false,
-    'notnull' => false,
-    'default' => '0',
-));
+    'notnull'       => false,
+    'default'       => '0',
+]);
 $table->addColumn("passive_checks_enabled", "boolean", array (
     'unsigned' => true,
     'autoincrement' => false,

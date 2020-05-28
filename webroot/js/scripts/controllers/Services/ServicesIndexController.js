@@ -29,7 +29,14 @@ angular.module('openITCOCKPIT')
                     id: QueryStringService.getStateValue($stateParams, 'id', []),
                     name: QueryStringService.getStateValue($stateParams, 'servicename', ''),
                     keywords: '',
-                    not_keywords: ''
+                    not_keywords: '',
+                    priority: {
+                        1: false,
+                        2: false,
+                        3: false,
+                        4: false,
+                        5: false
+                    }
                 },
                 Hosts: {
                     id: QueryStringService.getStateValue($stateParams, 'host_id', []),
@@ -46,41 +53,6 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.showFilter = false;
         $scope.serverResult = [];
-
-        var forTemplate = function(serverResponse){
-            // Create a list of host with all services
-
-            var hostWithServices = [];
-
-            var arrayIndexOfHostId = {};
-
-            for(var i in serverResponse){
-                var hostId = serverResponse[i].Host.id;
-
-                var index = null;
-
-                if(!arrayIndexOfHostId.hasOwnProperty(hostId)){
-                    //We need to use an array [] because an hash map {} has no fixed order.
-                    index = hostWithServices.length; // length is automaticaly the next index :)
-                    arrayIndexOfHostId[hostId] = index;
-
-                    hostWithServices.push({
-                        Host: serverResponse[i].Host,
-                        Hoststatus: serverResponse[i].Hoststatus,
-                        Services: []
-                    });
-                }
-
-                index = arrayIndexOfHostId[hostId];
-
-                hostWithServices[index].Services.push({
-                    Service: serverResponse[i].Service,
-                    Servicestatus: serverResponse[i].Servicestatus
-                });
-            }
-
-            return hostWithServices;
-        };
 
         $scope.loadTimezone = function(){
             $http.get("/angular/user_timezone.json", {
@@ -107,6 +79,13 @@ angular.module('openITCOCKPIT')
                 passive = !$scope.filter.Servicestatus.passive;
             }
 
+            var priorityFilter = [];
+            for(var key in $scope.filter.Services.priority){
+                if($scope.filter.Services.priority[key] === true){
+                    priorityFilter.push(key);
+                }
+            }
+
             var params = {
                 'angular': true,
                 'scroll': $scope.useScroll,
@@ -123,7 +102,9 @@ angular.module('openITCOCKPIT')
                 'filter[not_keywords][]': $scope.filter.Services.not_keywords.split(','),
                 'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
-                'filter[Servicestatus.active_checks_enabled]': passive
+                'filter[Servicestatus.active_checks_enabled]': passive,
+                'filter[servicepriority][]': priorityFilter
+
             };
             if(QueryStringService.getStateValue($stateParams, 'BrowserContainerId') !== null){
                 params['BrowserContainerId'] = QueryStringService.getStateValue($stateParams, 'BrowserContainerId');
@@ -132,9 +113,7 @@ angular.module('openITCOCKPIT')
             $http.get("/services/index.json", {
                 params: params
             }).then(function(result){
-                $scope.services = [];
-                $scope.serverResult = result.data.all_services;
-                $scope.services = forTemplate(result.data.all_services);
+                $scope.services = result.data.all_services;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;

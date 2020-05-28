@@ -48,6 +48,7 @@ angular.module('openITCOCKPIT')
         $scope.showTimelineTab = false;
         $scope.timelineIsLoading = false;
         $scope.failureDurationInPercent = null;
+        $scope.lastLoadDate = Date.now();       //required for status color update in service-browser-menu
 
         $scope.graph = {
             graphAutoRefresh: true,
@@ -91,6 +92,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
+            $scope.lastLoadDate = Date.now();
             $q.all([
                 $http.get("/services/browser/" + $scope.id + ".json", {
                     params: {

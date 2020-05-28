@@ -204,9 +204,9 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
-        $scope.getObjectForDelete = function(host, service){
+        $scope.getObjectForDelete = function(service){
             var object = {};
-            object[service.Service.id] = host.Host.name + '/' + service.Service.servicename;
+            object[service.Service.id] = service.Host.hostname + '/' + service.Service.servicename;
             return object;
         };
 

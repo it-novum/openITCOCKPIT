@@ -37,7 +37,7 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
  * @property |\Cake\ORM\Association\HasMany $Eventcorrelations
  * @property |\Cake\ORM\Association\HasMany $GrafanaUserdashboardMetrics
  * @property |\Cake\ORM\Association\HasMany $InstantreportsToServices
- * @property \MkModule\Model\Table\MkservicedataTable|\Cake\ORM\Association\HasMany $Mkservicedata
+ * @property \CheckmkModule\Model\Table\MkservicedataTable|\Cake\ORM\Association\HasMany $Mkservicedata
  * @property |\Cake\ORM\Association\HasMany $NagiosServiceContactgroups
  * @property |\Cake\ORM\Association\HasMany $NagiosServiceContacts
  * @property |\Cake\ORM\Association\HasMany $NagiosServiceParentservices
@@ -1753,7 +1753,9 @@ class ServicesTable extends Table {
                 'Services.disabled',
                 'Services.active_checks_enabled',
                 'Services.tags',
-                'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+                'Services.priority',
+                'servicename'     => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+                'servicepriority' => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',
@@ -1761,6 +1763,7 @@ class ServicesTable extends Table {
                 'Servicetemplates.description',
                 'Servicetemplates.active_checks_enabled',
                 'Servicetemplates.tags',
+                'Servicetemplates.priority',
 
                 'Objects.object_id',
 
@@ -1821,6 +1824,16 @@ class ServicesTable extends Table {
                 'not rlike'
             ));
             unset($where['not_keywords not rlike']);
+        }
+
+        if (isset($where['servicepriority IN'])) {
+            $where[] = new Comparison(
+                'IF((Services.priority IS NULL), Servicetemplates.priority, Services.priority)',
+                $where['servicepriority IN'],
+                'integer[]',
+                'IN'
+            );
+            unset($where['servicepriority IN']);
         }
 
         if (!empty($where)) {
@@ -1896,7 +1909,9 @@ class ServicesTable extends Table {
                 'Services.disabled',
                 'Services.active_checks_enabled',
                 'Services.tags',
-                'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+                'Services.priority',
+                'servicename'     => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+                'servicepriority' => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',
@@ -1904,6 +1919,7 @@ class ServicesTable extends Table {
                 'Servicetemplates.description',
                 'Servicetemplates.active_checks_enabled',
                 'Servicetemplates.tags',
+                'Servicetemplates.priority',
 
                 'Servicestatus.current_state',
                 'Servicestatus.last_check',
@@ -1960,6 +1976,16 @@ class ServicesTable extends Table {
             unset($where['not_keywords not rlike']);
         }
 
+        if (isset($where['servicepriority IN'])) {
+            $where[] = new Comparison(
+                'IF((Services.priority IS NULL), Servicetemplates.priority, Services.priority)',
+                $where['servicepriority IN'],
+                'integer[]',
+                'IN'
+            );
+            unset($where['servicepriority IN']);
+        }
+
         if (!empty($where)) {
             $query->andWhere($where);
         }
@@ -1973,8 +1999,6 @@ class ServicesTable extends Table {
         }
 
         $query->order($ServiceConditions->getOrder());
-
-        //FileDebugger::dieQuery($query);
 
 
         if ($PaginateOMat === null) {
@@ -3243,9 +3267,9 @@ class ServicesTable extends Table {
                 },
             ]);
 
-        if($enableActiveChecksEnabledCondition){
+        if ($enableActiveChecksEnabledCondition) {
             $query->where([
-                'active_checks_enabled' => 0
+                'Services.active_checks_enabled' => 0
             ]);
         }
 
@@ -3261,5 +3285,45 @@ class ServicesTable extends Table {
             return [];
         }
         return $query->toArray();
+    }
+
+    /**
+     * @param $host_id
+     * @param $servicetemplate_id
+     * @return bool
+     */
+    public function hostHasServiceByServicetemplateId($host_id, $servicetemplate_id) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.host_id',
+                'Services.servicetemplate_id'
+            ])
+            ->where([
+                'Services.host_id'            => $host_id,
+                'Services.servicetemplate_id' => $servicetemplate_id,
+            ])->first();
+
+        return !empty($query);
+    }
+
+    /**
+     * @param $host_id
+     * @param $servicetemplate_id
+     * @return \Cake\Datasource\ResultSetInterface
+     */
+    public function getServicesOfHostByServicetemplateId($host_id, $servicetemplate_id) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.host_id',
+                'Services.servicetemplate_id'
+            ])
+            ->where([
+                'Services.host_id'            => $host_id,
+                'Services.servicetemplate_id' => $servicetemplate_id,
+            ])->all();
+
+        return $query;
     }
 }

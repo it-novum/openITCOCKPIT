@@ -15,10 +15,10 @@ angular.module('openITCOCKPIT')
             $scope.filter = {
                 Hoststatus: {
                     current_state: QueryStringService.hoststate($stateParams),
-                    acknowledged: QueryStringService.getStateValue($stateParams,'has_been_acknowledged', false) == '1',
-                    not_acknowledged: QueryStringService.getStateValue($stateParams,'has_not_been_acknowledged', false) == '1',
-                    in_downtime: QueryStringService.getStateValue($stateParams,'in_downtime', false) == '1',
-                    not_in_downtime: QueryStringService.getStateValue($stateParams,'not_in_downtime', false) == '1',
+                    acknowledged: QueryStringService.getStateValue($stateParams, 'has_been_acknowledged', false) == '1',
+                    not_acknowledged: QueryStringService.getStateValue($stateParams, 'has_not_been_acknowledged', false) == '1',
+                    in_downtime: QueryStringService.getStateValue($stateParams, 'in_downtime', false) == '1',
+                    not_in_downtime: QueryStringService.getStateValue($stateParams, 'not_in_downtime', false) == '1',
                     output: ''
                 },
                 Host: {
@@ -28,7 +28,14 @@ angular.module('openITCOCKPIT')
                     keywords: '',
                     not_keywords: '',
                     address: QueryStringService.getValue('filter[Hosts.address]', ''),
-                    satellite_id: []
+                    satellite_id: [],
+                    priority: {
+                        1: false,
+                        2: false,
+                        3: false,
+                        4: false,
+                        5: false
+                    }
                 }
             };
         };
@@ -53,6 +60,12 @@ angular.module('openITCOCKPIT')
                 inDowntime = $scope.filter.Hoststatus.in_downtime === true;
             }
 
+            var priorityFilter = [];
+            for(var key in $scope.filter.Host.priority){
+                if($scope.filter.Host.priority[key] === true){
+                    priorityFilter.push(key);
+                }
+            }
 
             var params = {
                 'angular': true,
@@ -70,7 +83,8 @@ angular.module('openITCOCKPIT')
                 'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Hosts.address]': $scope.filter.Host.address,
-                'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id
+                'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id,
+                'filter[hostpriority][]': priorityFilter
             };
             if(QueryStringService.getStateValue($stateParams, 'BrowserContainerId') !== null){
                 params['BrowserContainerId'] = QueryStringService.getStateValue($stateParams, 'BrowserContainerId');

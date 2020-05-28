@@ -61,7 +61,7 @@ use Cake\Utility\Hash;
  *
  * @property \App\Model\Entity\Host $host
  * @property \App\Model\Entity\Servicetemplate $servicetemplate
- * @property \MkModule\Model\Entity\Mkservicedata $mkservicedata
+ * @property \CheckmkModule\Model\Entity\Mkservicedata $mkservicedata
  * @property \NewModule\Model\Entity\Servicecommandargumentvalue[] $servicecommandargumentvalues
  * @property \App\Model\Entity\Servicegroup[] $servicegroups
  * @property \PrometheusModule\Model\Entity\PrometheusAlertRule prometheus_alert_rule

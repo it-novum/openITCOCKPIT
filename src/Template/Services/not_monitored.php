@@ -148,23 +148,24 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat-start="host in services">
+                        <tr ng-repeat-start="service in services"
+                            ng-if="services[$index-1].Host.hostname !== service.Host.hostname">
                             <td colspan="13" class="service_table_host_header">
 
-                                <hoststatusicon host="host"></hoststatusicon>
+                                <hoststatusicon host="service"></hoststatusicon>
 
                                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                     <a class="padding-left-5 txt-color-blueDark"
-                                       ui-sref="HostsBrowser({id:host.Host.id})">
-                                        {{host.Host.hostname}} ({{host.Host.address}})
+                                       ui-sref="HostsBrowser({id:service.Host.id})">
+                                        {{service.Host.hostname}} ({{service.Host.address}})
                                     </a>
                                 <?php else: ?>
-                                    {{host.Host.hostname}} ({{host.Host.address}})
+                                    {{service.Host.hostname}} ({{service.Host.address}})
                                 <?php endif; ?>
 
                                 <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                     <a class="pull-right txt-color-blueDark"
-                                       ui-sref="ServicesServiceList({id: host.Host.id})">
+                                       ui-sref="ServicesServiceList({id: service.Host.id})">
                                         <i class="fa fa-list"
                                            title=" <?php echo __('Go to Service list'); ?>"></i>
                                     </a>
@@ -172,12 +173,11 @@
                             </td>
                         </tr>
 
-                        <tr ng-repeat="service in host.Services" ng-repeat-end="">
-
+                        <tr ng-repeat-end="">
                             <td class="width-5">
                                 <input type="checkbox"
-                                       ng-model="massChange[service.id]"
-                                       ng-show="service.allow_edit">
+                                       ng-model="massChange[service.Service.id]"
+                                       ng-show="service.Service.allow_edit">
                             </td>
 
                             <td class="text-center width-55">
@@ -187,11 +187,11 @@
 
                             <td>
                                 <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                    <a ui-sref="ServicesBrowser({id:service.id})">
-                                        {{ service.servicename }}
+                                    <a ui-sref="ServicesBrowser({id:service.Service.id})">
+                                        {{ service.Service.servicename }}
                                     </a>
                                 <?php else: ?>
-                                    {{ service.servicename }}
+                                    {{ service.Service.servicename }}
                                 <?php endif; ?>
                             </td>
 
@@ -199,8 +199,8 @@
                             <td class="width-50">
                                 <div class="btn-group btn-group-xs" role="group">
                                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                        <a ui-sref="ServicesEdit({id: service.id})"
-                                           ng-if="service.allow_edit"
+                                        <a ui-sref="ServicesEdit({id: service.Service.id})"
+                                           ng-if="service.Service.allow_edit"
                                            class="btn btn-default btn-lower-padding">
                                             <i class="fa fa-cog"></i>
                                         </a>
@@ -216,15 +216,15 @@
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-right">
                                         <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                            <a ui-sref="ServicesEdit({id: service.id})"
-                                               ng-if="service.allow_edit"
+                                            <a ui-sref="ServicesEdit({id: service.Service.id})"
+                                               ng-if="service.Service.allow_edit"
                                                class="dropdown-item">
                                                 <i class="fa fa-cog"></i>
                                                 <?php echo __('Edit'); ?>
                                             </a>
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
-                                            <a ng-if="service.allow_edit"
+                                            <a ng-if="service.Service.allow_edit"
                                                class="dropdown-item"
                                                href="javascript:void(0);"
                                                ng-click="confirmDeactivate(getObjectForDelete(host, service))">
@@ -240,7 +240,7 @@
                                             <div class="dropdown-divider"></div>
                                             <a href="javascript:void(0);"
                                                ng-click="confirmDelete(getObjectForDelete(host, service))"
-                                               ng-if="service.allow_edit"
+                                               ng-if="service.Service.allow_edit"
                                                class="dropdown-item txt-color-red">
                                                 <i class="fa fa-trash"></i>
                                                 <?php echo __('Delete'); ?>

@@ -80,6 +80,11 @@ class Service {
     private $serviceType = GENERIC_SERVICE;
 
     /**
+     * @var int
+     */
+    private $priority;
+
+    /**
      * Service constructor.
      * @param $service
      * @param null $servicename
@@ -98,25 +103,25 @@ class Service {
                 'Service' => $service
             ];
 
-            if(isset($service['Service']['servicetemplate'])){
+            if (isset($service['Service']['servicetemplate'])) {
                 $service['Servicetemplate'] = $service['Service']['servicetemplate'];
             }
-            if(isset($service['Service']['Servicetemplates'])){
+            if (isset($service['Service']['Servicetemplates'])) {
                 $service['Servicetemplate'] = $service['Service']['Servicetemplates'];
             }
 
-            if(isset($service['Service']['_matchingData']['Servicetemplates'])){
+            if (isset($service['Service']['_matchingData']['Servicetemplates'])) {
                 $service['Servicetemplate'] = $service['Service']['_matchingData']['Servicetemplates'];
             }
 
-            if(isset($service['Service']['host'])){
+            if (isset($service['Service']['host'])) {
                 $service['Host'] = $service['Service']['host'];
             }
-            if(isset($service['Service']['Hosts'])){
+            if (isset($service['Service']['Hosts'])) {
                 $service['Host'] = $service['Service']['Hosts'];
             }
 
-            if(isset($service['Service']['_matchingData']['Hosts'])){
+            if (isset($service['Service']['_matchingData']['Hosts'])) {
                 $service['Host'] = $service['Service']['_matchingData']['Hosts'];
             }
         }
@@ -177,6 +182,18 @@ class Service {
 
         if (isset($service['Service']['service_type'])) {
             $this->serviceType = (int)$service['Service']['service_type'];
+        }
+
+
+        if (empty($service['Service']['priority']) && isset($service['Service']['_matchingData']['Servicetemplates']['priority'])) {
+            $this->priority = $service['Service']['_matchingData']['Servicetemplates']['priority'];
+        } else {
+            if (!empty($service['Service']['priority'])) {
+                $this->priority = $service['Service']['priority'];
+            }
+        }
+        if (!empty($service['Service']['servicepriority'])) {
+            $this->priority = $service['Service']['servicepriority'];
         }
     }
 
@@ -255,8 +272,15 @@ class Service {
     /**
      * @return int
      */
-    public function getServiceType(){
+    public function getServiceType() {
         return $this->serviceType;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPriority() {
+        return $this->priority;
     }
 
     /**
