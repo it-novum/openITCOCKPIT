@@ -393,24 +393,30 @@ class MapsTable extends Table {
      * @return array
      */
     public function getMapForEdit($id) {
+        $contain = [
+            'Containers'
+        ];
+        if (Plugin::isLoaded('DistributeModule')) {
+            $contain[] = 'Satellites';
+        }
         $query = $this->find()
             ->where([
                 'Maps.id' => $id
             ])
-            ->contain([
-                'Containers'
-            ])
+            ->contain($contain)
             ->disableHydration()
             ->first();
 
 
-        $contact = $query;
-        $contact['containers'] = [
+        $map = $query;
+        $map['containers'] = [
             '_ids' => Hash::extract($query, 'containers.{n}.id')
         ];
-
+        $map['satellites'] = [
+            '_ids' => Hash::extract($query, 'satellites.{n}.id')
+        ];
         return [
-            'Map' => $contact
+            'Map' => $map
         ];
     }
 
