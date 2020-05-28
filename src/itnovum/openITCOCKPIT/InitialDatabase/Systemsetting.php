@@ -479,7 +479,7 @@ class Systemsetting extends Importer {
             ],
             (int)53 => [
                 'key'      => 'CHECK_MK.BIN',
-                'value'    => '/opt/openitc/nagios/3rd/check_mk/bin/check_mk',
+                'value'    => 'PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk OMD_SITE=1 /opt/openitc/check_mk/bin/check_mk',
                 'info'     => 'Path to check_mk binary',
                 'section'  => 'CHECK_MK',
                 'created'  => '2020-01-29 09:28:17',
@@ -495,7 +495,7 @@ class Systemsetting extends Importer {
             ],
             (int)55 => [
                 'key'      => 'CHECK_MK.ETC',
-                'value'    => '/opt/openitc/nagios/3rd/check_mk/etc/',
+                'value'    => '/opt/openitc/check_mk/etc/check_mk/',
                 'info'     => 'Path to Check_MK config files',
                 'section'  => 'CHECK_MK',
                 'created'  => '2020-01-29 09:28:17',
@@ -503,7 +503,7 @@ class Systemsetting extends Importer {
             ],
             (int)56 => [
                 'key'      => 'CHECK_MK.VAR',
-                'value'    => '/opt/openitc/nagios/3rd/check_mk/var/',
+                'value'    => '/opt/openitc/check_mk/var/check_mk/',
                 'info'     => 'Path to Check_MK variable files',
                 'section'  => 'CHECK_MK',
                 'created'  => '2020-01-29 09:28:17',
