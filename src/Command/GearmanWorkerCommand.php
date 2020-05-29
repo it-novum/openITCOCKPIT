@@ -475,8 +475,26 @@ class GearmanWorkerCommand extends Command {
                 $MkParser = new MkParser();
 
                 switch ($MkSatTask->get('task')) {
-                    case 'dump-host':
+                    case 'health-scan':
+                        /*
+                         * return from nsta:
+                         *
+                            {
+                                "satelliteID": 12,
+                                "scanID": 12323,
+                                "checkTypesResult": '',
+                                "dumpHostResult": ''
+                            }
+                         */
+                        $CheckMKListChecksResult = $result['checkTypesResult'];
+                        $CheckMKSNMPResult = $result['dumpHostResult'];
+                        $mkListRaw = $CheckMKListChecksResult;
+                        $MkCheckList = $MkParser->parseMkListChecks($mkListRaw);
+                        $scanResult = $MkParser->parseMkDumpOutput($CheckMKSNMPResult);
+                        $scanResult = $MkParser->compareDumpWithList($scanResult, $MkCheckList, 'tcp', ['ps', 'service']);
 
+                        $MkSatTask = $MkSatTasksTable->patchEntity($MkSatTask, ['result' => json_encode($scanResult)]);
+                        $MkSatTasksTable->save($MkSatTask);
                         break;
                     case 'snmp-scan':
                         /*
@@ -507,6 +525,8 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'CheckmkToSat':
+                /** @var CheckmkNagiosExportCommand $MkNagiosExportTask */
+                $MkNagiosExportTask = new CheckmkNagiosExportCommand();
                 /** @var SystemsettingsTable $SystemsettingsTable */
                 $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
                 $systemsettings = $SystemsettingsTable->findAsArray();
@@ -534,16 +554,18 @@ class GearmanWorkerCommand extends Command {
 
 
                     switch ($payload['task']) {
-                        case 'dump-host':
+                        case 'health-scan':
                             /*  mkdir -p /opt/openitc/check_mk/var/check_mk/autochecks; rm -rf /opt/openitc/check_mk/var/check_mk/autochecks/*
                              *  PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk OMD_SITE=1 /opt/openitc/check_mk/bin/check_mk -II {hostuuid} >/dev/null
                              *  PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk OMD_SITE=1 /opt/openitc/check_mk/bin/check_mk -D {hostuuid}
                              */
+                            $MkNagiosExportTask->init();
+                            $NSTAOptions['file'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
+                                'for_snmp_scan'  => true,
+                                'host_address'   => $payload['host_address'],
+                            ], false);
                             break;
                         case 'snmp-scan':
-                            /** @var CheckmkNagiosExportCommand $MkNagiosExportTask */
-                            $MkNagiosExportTask = new CheckmkNagiosExportCommand();
-
                             //Generate check_mk config file, to run SNMP scan
                             $MkNagiosExportTask->init();
                             if ($payload['snmp_version'] < 3) {
