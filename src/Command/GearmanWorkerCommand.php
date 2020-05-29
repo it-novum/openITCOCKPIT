@@ -518,7 +518,17 @@ class GearmanWorkerCommand extends Command {
                         $MkSatTasksTable->save($MkSatTask);
                         break;
                     case 'raw-info':
-
+                        /*
+                         * return from nsta:
+                         *
+                            {
+                                "satelliteID": 12,
+                                "scanID": 12323,
+                                "rawInfoResult": ''
+                            }
+                         */
+                        $MkSatTask = $MkSatTasksTable->patchEntity($MkSatTask, ['result' => json_encode($result['rawInfoResult'])]);
+                        $MkSatTasksTable->save($MkSatTask);
                         break;
                 }
 
@@ -561,8 +571,8 @@ class GearmanWorkerCommand extends Command {
                              */
                             $MkNagiosExportTask->init();
                             $NSTAOptions['file'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
-                                'for_snmp_scan'  => true,
-                                'host_address'   => $payload['host_address'],
+                                'for_snmp_scan' => true,
+                                'host_address'  => $payload['host_address'],
                             ], false);
                             break;
                         case 'snmp-scan':
@@ -594,10 +604,15 @@ class GearmanWorkerCommand extends Command {
                             }
 
                             break;
-                        case 'raw-info':
+                        case 'process-scan':
                             /*
                              *  PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk OMD_SITE=1 /opt/openitc/check_mk/bin/check_mk -d {hostuuid}
                              */
+                            $MkNagiosExportTask->init();
+                            $NSTAOptions['file'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
+                                'for_snmp_scan' => true,
+                                'host_address'  => $payload['host_address'],
+                            ], false);
                             break;
                     }
 
