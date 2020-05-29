@@ -686,7 +686,7 @@ class ServicegroupsTable extends Table {
      * @param $satelliteId
      * @return array
      */
-    public function getServiceIdsByServicegroupIdAndSatelliteId($id, $satelliteId) {
+    public function getServicesByServicegroupIdAndSatelliteId($id, $satelliteId) {
         $servicegroup = $this->find()
             ->contain([
                 // Get all services that are in this service group through the service template AND
@@ -733,13 +733,23 @@ class ServicegroupsTable extends Table {
             ->disableHydration()
             ->first();
 
+        $services = [];
 
-        $serviceIds = array_unique(array_merge(
-            Hash::extract($servicegroup, 'services.{n}.id'),
-            Hash::extract($servicegroup, 'servicetemplates.{n}.services.{n}.id')
-        ));
+        if(!empty($servicegroup['services'])) {
+            foreach ($servicegroup['services'] as $service) {
+                $services[$service['id']] = $service;
+            }
+        }
 
-        return $serviceIds;
+        if(!empty($servicegroup['servicetemplates'])) {
+            foreach ($servicegroup['servicetemplates'] as $servicetemplate) {
+                foreach($servicetemplate['services'] as $service){
+                    $services[$service['id']] = $service;
+                }
+            }
+        }
+
+        return $services;
     }
 
     /**

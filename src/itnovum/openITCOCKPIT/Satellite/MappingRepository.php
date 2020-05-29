@@ -42,6 +42,42 @@ class MappingRepository {
     }
 
     /**
+     * @param string $uuid
+     * @param string $name
+     * @param array $members
+     */
+    public function addHostgroup($id, string $uuid, string $name, array $members) {
+        if (!isset($this->mapping['hostgroups'])) {
+            $this->mapping['hostgroups'] = [];
+        }
+
+        $this->mapping['hostgroups'][] = [
+            'id'      => (int)$id,
+            'uuid'    => $uuid,
+            'name'    => $name,
+            'members' => $members
+        ];
+    }
+
+    /**
+     * @param string $uuid
+     * @param string $name
+     * @param array $members
+     */
+    public function addServicegroup($id, string $uuid, string $name, array $members) {
+        if (!isset($this->mapping['servicegroups'])) {
+            $this->mapping['servicegroups'] = [];
+        }
+
+        $this->mapping['servicegroups'][] = [
+            'id'      => (int)$id,
+            'uuid'    => $uuid,
+            'name'    => $name,
+            'members' => $members
+        ];
+    }
+
+    /**
      * @param string $path
      */
     public function toFile($path) {

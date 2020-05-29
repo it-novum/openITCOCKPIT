@@ -830,7 +830,7 @@ class HostgroupsTable extends Table {
      * @param $satelliteId
      * @return array
      */
-    public function getHostIdsByHostgroupIdAndSatelliteId($id, $satelliteId) {
+    public function getHostsByHostgroupIdAndSatelliteId($id, $satelliteId) {
         $hostgroup = $this->find()
             ->contain([
                 // Get all hosts that are in this host group through the host template AND
@@ -877,12 +877,23 @@ class HostgroupsTable extends Table {
             ->disableHydration()
             ->first();
 
-        $hostIds = array_unique(array_merge(
-            Hash::extract($hostgroup, 'hosts.{n}.id'),
-            Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}.id')
-        ));
+        $hosts = [];
 
-        return $hostIds;
+        if(!empty($hostgroup['hosts'])) {
+            foreach ($hostgroup['hosts'] as $host) {
+                $hosts[$host['id']] = $host;
+            }
+        }
+
+        if(!empty($hostgroup['hosttemplates'])) {
+            foreach ($hostgroup['hosttemplates'] as $hosttemplate) {
+                foreach($hosttemplate['hosts'] as $host){
+                    $hosts[$host['id']] = $host;
+                }
+            }
+        }
+
+        return $hosts;
     }
 
     /**
