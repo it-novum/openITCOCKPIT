@@ -682,6 +682,67 @@ class ServicegroupsTable extends Table {
     }
 
     /**
+     * @param $id
+     * @param $satelliteId
+     * @return array
+     */
+    public function getServiceIdsByServicegroupIdAndSatelliteId($id, $satelliteId) {
+        $servicegroup = $this->find()
+            ->contain([
+                // Get all services that are in this service group through the service template AND
+                // which does NOT have any own service groups
+                'servicetemplates' => function (Query $query) use ($satelliteId) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'id',
+                        ])
+                        ->contain([
+                            'services' => function (Query $query) use ($satelliteId) {
+                                $query->disableAutoFields()
+                                    ->select([
+                                        'Services.id',
+                                        'Services.uuid',
+                                        'Services.servicetemplate_id',
+                                        'Servicegroups.id'
+                                    ])
+                                    ->innerJoinWith('Hosts')
+                                    ->where(['Hosts.satellite_id' => $satelliteId])
+                                    ->leftJoinWith('Servicegroups')
+                                    ->whereNull('Servicegroups.id');
+                                return $query;
+                            }
+                        ]);
+                    return $query;
+                },
+
+                // Get all services from this service group
+                'services'         => function (Query $query) use ($satelliteId) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Services.id',
+                            'Services.uuid',
+                        ])
+                        ->innerJoinWith('Hosts')
+                        ->where(['Hosts.satellite_id' => $satelliteId]);
+                    return $query;
+                }
+            ])
+            ->where([
+                'Servicegroups.id' => $id
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        $serviceIds = array_unique(array_merge(
+            Hash::extract($servicegroup, 'services.{n}.id'),
+            Hash::extract($servicegroup, 'servicetemplates.{n}.services.{n}.id')
+        ));
+
+        return $serviceIds;
+    }
+
+    /**
      * @param int $serviceId
      * @param int|array $servicegroupIds
      * @return bool

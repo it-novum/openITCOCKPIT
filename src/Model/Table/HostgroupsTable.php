@@ -826,6 +826,66 @@ class HostgroupsTable extends Table {
     }
 
     /**
+     * @param $id
+     * @param $satelliteId
+     * @return array
+     */
+    public function getHostIdsByHostgroupIdAndSatelliteId($id, $satelliteId) {
+        $hostgroup = $this->find()
+            ->contain([
+                // Get all hosts that are in this host group through the host template AND
+                // which does NOT have any own host groups
+                'hosttemplates' => function (Query $query) use ($satelliteId) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'id',
+                        ])
+                        ->contain([
+                            'hosts' => function (Query $query) use ($satelliteId) {
+                                $query->disableAutoFields()
+                                    ->select([
+                                        'Hosts.id',
+                                        'Hosts.uuid',
+                                        'Hosts.hosttemplate_id',
+                                        'Hosts.satellite_id',
+                                        'Hostgroups.id'
+                                    ])
+                                    ->leftJoinWith('Hostgroups')
+                                    ->whereNull('Hostgroups.id')
+                                    ->where(['Hosts.satellite_id' => $satelliteId]);
+                                return $query;
+                            }
+                        ]);
+                    return $query;
+                },
+
+                // Get all hosts from this host group
+                'hosts'         => function (Query $query) use ($satelliteId) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Hosts.id',
+                            'Hosts.uuid',
+                            'Hosts.satellite_id'
+                        ])
+                        ->where(['Hosts.satellite_id' => $satelliteId]);
+                    return $query;
+                }
+            ])
+            ->where([
+                'Hostgroups.id' => $id
+            ])
+            ->disableHydration()
+            ->first();
+
+        $hostIds = array_unique(array_merge(
+            Hash::extract($hostgroup, 'hosts.{n}.id'),
+            Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}.id')
+        ));
+
+        return $hostIds;
+    }
+
+    /**
      * @param int $id
      * @return bool
      */
