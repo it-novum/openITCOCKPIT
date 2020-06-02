@@ -614,6 +614,10 @@ class GearmanWorkerCommand extends Command {
                                 'host_address'  => $payload['host_address'],
                             ], false);
                             break;
+                        case 'write-file':
+                            $NSTAOptions['file'] = $payload['file'];
+                            $NSTAOptions['filePath'] = $payload['filePath'];
+                            break;
                     }
 
                     $GearmanClient = new \GearmanClient();
