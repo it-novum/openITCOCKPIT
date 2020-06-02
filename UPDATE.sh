@@ -153,6 +153,10 @@ for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do
   fi
 done
 
+if [ -d "${APPDIR}/plugins/CheckmkModule" ]; then
+    oitc checkmkNagiosExport --init
+fi
+
 echo "---------------------------------------------------------------"
 echo "Convert MySQL Tables from utf8_general_ci to utf8mb4_general_ci..."
 

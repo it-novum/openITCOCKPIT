@@ -140,6 +140,10 @@ for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do
     fi
 done
 
+if [ -d "${APPDIR}/plugins/CheckmkModule" ]; then
+    oitc checkmkNagiosExport --init
+fi
+
 echo "---------------------------------------------------------------"
 echo "Create new WebSocket Key"
 WEBSOCKET_KEY=$(php -r "echo bin2hex(openssl_random_pseudo_bytes(80, \$cstrong));")
