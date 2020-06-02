@@ -6,7 +6,9 @@ use AutoreportModule\Model\Table\AutoreportsTable;
 use Cake\Cache\Cache;
 use Cake\Core\Plugin;
 use Cake\Database\Expression\QueryExpression;
+use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Event\EventInterface;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -939,8 +941,8 @@ class ContainersTable extends Table {
                     'size'  => $sizeof
                 ];
                 $edges[] = [
-                    'from' => $containerId,
-                    'to'   => $containerId . '_' . $childObjectName,
+                    'from'   => $containerId,
+                    'to'     => $containerId . '_' . $childObjectName,
                     'color'  => [
                         'inherit' => 'to',
                     ],
@@ -958,8 +960,8 @@ class ContainersTable extends Table {
                     'cid'   => $containerId . '_' . $childObjectName //1_tenant
                 ];
                 $edges[] = [
-                    'from' => $containerId . '_' . $childObjectName,
-                    'to'   => $childObjectName . '_' . $childName . '_' . $id . '_' . $containerId,
+                    'from'   => $containerId . '_' . $childObjectName,
+                    'to'     => $childObjectName . '_' . $childName . '_' . $id . '_' . $containerId,
                     'color'  => [
                         'inherit' => 'to',
                     ],
@@ -986,5 +988,32 @@ class ContainersTable extends Table {
             'edges'   => $edges,
             'cluster' => $cluster
         ];
+    }
+
+    /**
+     * checks if the given container contains subcontainers
+     * return false if it has subcontainers - so it cant be deleted
+     * return true if its empty and can be safely deleted
+     * @param null $id
+     * @param $MY_RIGHTS
+     * @return bool
+     */
+    public function allowDelete($id = null, $MY_RIGHTS) {
+        if (!$this->existsById($id)) {
+            throw new NotFoundException(__('Invalid container'));
+        }
+        $subContainers = $this->getContainerWithAllChildren($id, $MY_RIGHTS);
+        foreach ($subContainers as $key => $container){
+            //remove the base container itself from the array
+            if($container['id'] == $id){
+                unset($subContainers[$key]);
+            }
+            //if $subContainers still not empty then there are child containers which stops the container deletion
+            if(empty($subContainers)){
+                return true;
+            }else{
+                return false;
+            }
+        }
     }
 }

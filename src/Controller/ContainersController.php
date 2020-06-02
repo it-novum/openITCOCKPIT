@@ -159,7 +159,7 @@ class ContainersController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        if(!$this->hasRootPrivileges && intval($id) === ROOT_CONTAINER){
+        if (!$this->hasRootPrivileges && intval($id) === ROOT_CONTAINER) {
             $this->render403();
             return;
         }
@@ -315,7 +315,7 @@ class ContainersController extends AppController {
             $paths[$container['id']] = '/' . $ContainersTable->treePath($container['id'], '/');
         }
         natcasesort($paths);
-        if(!$this->hasRootPrivileges){
+        if (!$this->hasRootPrivileges) {
             unset($paths[ROOT_CONTAINER]);
         }
 
@@ -653,14 +653,16 @@ class ContainersController extends AppController {
 
         $container = $ContainersTable->getContainerById($id, $MY_RIGHTS);
         $subContainers = $ContainersTable->getContainerWithAllChildren($id, $MY_RIGHTS);
-        if($containersAsTree === false){
+        if ($containersAsTree === false) {
             $containersWithChilds = Hash::filter($subContainers);
             $this->set('containersWithChilds', $containersWithChilds);
             $this->viewBuilder()->setOption('serialize', ['containersWithChilds']);
-        }else{
+        } else {
             $containerMap = $ContainersTable->getContainerMap($container, $subContainers);
             $this->set('containerMap', $containerMap);
             $this->viewBuilder()->setOption('serialize', ['containerMap']);
         }
     }
+
+
 }
