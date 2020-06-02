@@ -145,7 +145,8 @@ class AclDependencies {
             ->allow('Containers', 'byTenant')
             ->allow('Containers', 'loadContainersForAngular')
             ->allow('Containers', 'loadContainers')
-            ->allow('Containers', 'loadContainersByContainerId');
+            ->allow('Containers', 'loadContainersByContainerId')
+            ->allow('Containers', 'loadSatellitesByContainerIds');
 
         $this
             ->allow('Downtimes', 'validateDowntimeInputFromAngular')

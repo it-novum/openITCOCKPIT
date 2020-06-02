@@ -497,23 +497,24 @@
                             </thead>
 
                             <tbody>
-                            <tr ng-repeat-start="host in services">
+                            <tr ng-repeat-start="service in services"
+                                ng-if="services[$index-1].Host.hostname !== service.Host.hostname">
                                 <td colspan="13" class="service_table_host_header">
 
-                                    <hoststatusicon host="host"></hoststatusicon>
+                                    <hoststatusicon host="service"></hoststatusicon>
 
                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                         <a class="padding-left-5 txt-color-blueDark"
-                                           ui-sref="HostsBrowser({id: host.Host.id})">
-                                            {{host.Host.hostname}} ({{host.Host.address}})
+                                           ui-sref="HostsBrowser({id: service.Host.id})">
+                                            {{service.Host.hostname}} ({{service.Host.address}})
                                         </a>
                                     <?php else: ?>
-                                        {{host.Host.hostname}} ({{host.Host.address}})
+                                        {{service.Host.hostname}} ({{service.Host.address}})
                                     <?php endif; ?>
 
                                     <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                         <a class="pull-right txt-color-blueDark"
-                                           ui-sref="ServicesServiceList({id: host.Host.id})">
+                                           ui-sref="ServicesServiceList({id: service.Host.id})">
                                             <i class="fa fa-list"
                                                title=" <?php echo __('Go to Service list'); ?>"></i>
                                         </a>
@@ -521,8 +522,7 @@
                                 </td>
                             </tr>
 
-                            <tr ng-repeat="service in host.Services" ng-repeat-end="">
-
+                            <tr ng-repeat-end="">
                                 <td class="width-5">
                                     <input type="checkbox"
                                            ng-model="massChange[service.Service.id]"
@@ -553,14 +553,14 @@
                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                         <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                            class="txt-color-blueDark"
-                                           ng-mouseenter="mouseenter($event, host.Host.uuid, service.Service.uuid)"
+                                           ng-mouseenter="mouseenter($event, service.Host.uuid, service.Service.uuid)"
                                            ng-mouseleave="mouseleave()"
                                            ng-if="service.Service.has_graph">
                                             <i class="fa fa-lg fa-area-chart">
                                             </i>
                                         </a>
                                     <?php else: ?>
-                                        <div ng-mouseenter="mouseenter($event, host.Host.uuid, service.Service.uuid)"
+                                        <div ng-mouseenter="mouseenter($event, service.Host.uuid, service.Service.uuid)"
                                              ng-mouseleave="mouseleave()"
                                              ng-if="service.Service.has_graph">
                                             <i class="fa fa-lg fa-area-chart">
@@ -571,7 +571,7 @@
 
                                 <td class="text-center">
                                     <strong title="<?php echo __('Passively transferred service'); ?>"
-                                            ng-show="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                            ng-show="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
                                         P
                                     </strong>
                                 </td>
@@ -600,7 +600,8 @@
 
                                 <td>
                                     <span
-                                        ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
+                                        ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{
+                                        service.Servicestatus.lastCheck }}</span>
                                     <span ng-if="service.Service.active_checks_enabled === false">
                                         <?php echo __('n/a'); ?>
                                     </span>
@@ -608,9 +609,10 @@
 
                                 <td>
                                     <span
-                                        ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
+                                        ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{
+                                        service.Servicestatus.nextCheck }}</span>
                                     <span
-                                        ng-if="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                        ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
                                         <?php echo __('n/a'); ?>
                                     </span>
                                 </td>
@@ -712,12 +714,12 @@
                             </div>
 
                             <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
-                            <div class="col-xs-12 col-md-2">
-                                <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
-                                    <i class="fas fa-lg fa-files-o"></i>
-                                    <?php echo __('Copy'); ?>
-                                </a>
-                            </div>
+                                <div class="col-xs-12 col-md-2">
+                                    <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
+                                        <i class="fas fa-lg fa-files-o"></i>
+                                        <?php echo __('Copy'); ?>
+                                    </a>
+                                </div>
                             <?php endif; ?>
 
                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>

@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Container;
 use App\Model\Entity\User;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContainersTable;
@@ -43,6 +44,7 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use DistributeModule\Model\Table\SatellitesTable;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
@@ -664,5 +666,37 @@ class ContainersController extends AppController {
         }
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function loadSatellitesByContainerIds() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containerIds = $this->request->getQuery('containerIds', []);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds, false);
+
+        foreach ($containerIds as $containerId) {
+            if (!$ContainersTable->existsById($containerId)) {
+                throw new NotFoundException(__('Invalid container'));
+            }
+        }
+
+        $satellites = [];
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var $SatellitesTable SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+            $satellites = $SatellitesTable->getSatellitesByContainerIds($containerIds, 'list');
+        }
+        $satellites = Api::makeItJavaScriptAble($satellites);
+
+        $this->set('satellites', $satellites);
+        $this->viewBuilder()->setOption('serialize', [
+            'satellites'
+        ]);
+    }
 }

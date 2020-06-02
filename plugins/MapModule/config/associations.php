@@ -26,5 +26,8 @@ return [
         'MapModule.Maplines',
         'MapModule.Mapsummaryitems',
     ],
+    'DistributeModule.Satellites' => [
+        'MapModule.Maps'
+    ]
 ];
 

@@ -13,6 +13,9 @@ angular.module('openITCOCKPIT')
                     refresh_interval: 90,
                     containers: {
                         _ids: []
+                    },
+                    satellites: {
+                        _ids: []
                     }
                 }
             };
@@ -28,6 +31,17 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.containers = result.data.containers;
                 $scope.init = false;
+            });
+        };
+
+        $scope.loadSatellites = function(){
+            $http.get("/containers/loadSatellitesByContainerIds.json", {
+                params: {
+                    'angular': true,
+                    'containerIds[]': $scope.post.Map.containers._ids
+                }
+            }).then(function(result){
+                $scope.satellites = result.data.satellites;
             });
         };
 
@@ -60,6 +74,18 @@ angular.module('openITCOCKPIT')
             });
 
         };
+
+        //Fire on page load
+        $scope.$watch('post.Map.containers._ids', function(){
+            if($scope.init){
+                return;
+            }
+            if($scope.post.Map.containers._ids.length === 0){
+                //Create another
+                return;
+            }
+            $scope.loadSatellites();
+        }, true);
 
         $scope.load();
     });

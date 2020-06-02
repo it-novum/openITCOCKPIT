@@ -1754,7 +1754,7 @@ class ServicesTable extends Table {
                 'Services.active_checks_enabled',
                 'Services.tags',
                 'Services.priority',
-                'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+                'servicename'     => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
                 'servicepriority' => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
 
                 'Servicetemplates.id',
@@ -1910,7 +1910,7 @@ class ServicesTable extends Table {
                 'Services.active_checks_enabled',
                 'Services.tags',
                 'Services.priority',
-                'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+                'servicename'     => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
                 'servicepriority' => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
 
                 'Servicetemplates.id',
@@ -1999,8 +1999,6 @@ class ServicesTable extends Table {
         }
 
         $query->order($ServiceConditions->getOrder());
-
-        //FileDebugger::dieQuery($query);
 
 
         if ($PaginateOMat === null) {
@@ -3314,7 +3312,7 @@ class ServicesTable extends Table {
      * @param $servicetemplate_id
      * @return \Cake\Datasource\ResultSetInterface
      */
-    public function getServicesOfHostByServicetemplateId($host_id, $servicetemplate_id){
+    public function getServicesOfHostByServicetemplateId($host_id, $servicetemplate_id) {
         $query = $this->find()
             ->select([
                 'Services.id',

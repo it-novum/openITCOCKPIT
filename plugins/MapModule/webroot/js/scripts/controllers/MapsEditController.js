@@ -37,6 +37,17 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadSatellites = function(){
+            $http.get("/containers/loadSatellitesByContainerIds.json", {
+                params: {
+                    'angular': true,
+                    'containerIds[]': $scope.post.Map.containers._ids
+                }
+            }).then(function(result){
+                $scope.satellites = result.data.satellites;
+            });
+        };
+
         $scope.submit = function(){
             $http.post("/map_module/maps/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
@@ -58,6 +69,21 @@ angular.module('openITCOCKPIT')
                 }
             });
         };
+
+        //Fire on page load
+        $scope.$watch('post.Map.containers._ids', function(){
+            if($scope.init){
+                return;
+            }
+            if(typeof $scope.post === "undefined"){
+                return;
+            }
+            if($scope.post.Map.containers._ids.length === 0){
+                //Create another
+                return;
+            }
+            $scope.loadSatellites();
+        }, true);
 
         $scope.loadContainers();
         $scope.load();
