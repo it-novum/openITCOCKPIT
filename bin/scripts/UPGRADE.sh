@@ -290,7 +290,7 @@ if [ -d "/usr/share/openitcockpit/app/Plugin/MkModule" ]; then
     echo "Migrate CheckMK"
 
     mysql --defaults-extra-file=${INIFILE} -e "UPDATE mkagents SET command_line = REPLACE(command_line, '/opt/openitc/nagios/3rd/check_mk/agents/special/agent_vsphere', '/opt/openitc/check_mk/share/check_mk/agents/special/agent_vsphere --no-cert-check');"
-    mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = CONCAT('PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk ', command_line) WHERE name = 'check_mk_active';"
+    mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = 'PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk python /opt/openitc/check_mk/var/check_mk/oitc_precompiled/\$HOSTNAME\$.py' WHERE name = 'check_mk_active';"
 fi
 
 # Migrate data from NDO schema to Statusengine 3
