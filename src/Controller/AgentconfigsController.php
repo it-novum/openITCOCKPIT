@@ -275,8 +275,10 @@ class AgentconfigsController extends AppController {
 
         if ($this->request->is('post')) {
             $config = $this->request->getData('Agentconfig');
-            if($config['use_https'] === 'true' || $config['use_https'] === true){
+            if(isset($config['use_https']) && ($config['use_https'] === 'true' || $config['use_https'] === true)){
                 $config['use_https'] = 1;
+            } else {
+                $config['use_https'] = 0;
             }
             $agentconfig = $AgentconfigsTable->patchEntity($agentconfig, $config);
 
