@@ -140,7 +140,7 @@ for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do
     fi
 done
 
-if [ -d "${APPDIR}/plugins/CheckmkModule" ]; then
+if [ -d "${APPDIR}/plugins/CheckmkModule/src" ]; then
     oitc checkmkNagiosExport --init
 fi
 
