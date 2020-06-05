@@ -52,7 +52,6 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.showFilter = false;
-        $scope.serverResult = [];
 
         $scope.loadTimezone = function(){
             $http.get("/angular/user_timezone.json", {
@@ -134,9 +133,9 @@ angular.module('openITCOCKPIT')
 
         $scope.selectAll = function(){
             if($scope.services){
-                for(var key in $scope.serverResult){
-                    if($scope.serverResult[key].Service.allow_edit){
-                        var id = $scope.serverResult[key].Service.id;
+                for(var key in $scope.services){
+                    if($scope.services[key].Service.allow_edit){
+                        var id = $scope.services[key].Service.id;
                         $scope.massChange[id] = true;
                     }
                 }
@@ -158,12 +157,12 @@ angular.module('openITCOCKPIT')
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.serverResult){
+            for(var key in $scope.services){
                 for(var id in selectedObjects){
-                    if(id == $scope.serverResult[key].Service.id){
+                    if(id == $scope.services[key].Service.id){
                         objects[id] =
-                            $scope.serverResult[key].Host.hostname + '/' +
-                            $scope.serverResult[key].Service.servicename;
+                            $scope.services[key].Host.hostname + '/' +
+                            $scope.services[key].Service.servicename;
                     }
 
                 }
@@ -174,12 +173,11 @@ angular.module('openITCOCKPIT')
         $scope.getObjectsForExternalCommand = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.serverResult){
+            for(var key in $scope.services){
                 for(var id in selectedObjects){
-                    if(id == $scope.serverResult[key].Service.id){
-                        objects[id] = $scope.serverResult[key];
+                    if(id == $scope.services[key].Service.id){
+                        objects[id] = $scope.services[key];
                     }
-
                 }
             }
             return objects;
@@ -241,7 +239,6 @@ angular.module('openITCOCKPIT')
                 $scope.load();
             }
         };
-
 
 
         $scope.problemsOnly = function(){

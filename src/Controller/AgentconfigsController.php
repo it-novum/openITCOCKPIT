@@ -32,6 +32,7 @@ use App\Model\Entity\Changelog;
 use App\Model\Entity\Host;
 use App\Model\Table\AgentchecksTable;
 use App\Model\Table\AgentconfigsTable;
+use App\Model\Table\AgenthostscacheTable;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
@@ -275,8 +276,21 @@ class AgentconfigsController extends AppController {
 
         if ($this->request->is('post')) {
             $config = $this->request->getData('Agentconfig');
-            if($config['use_https'] === 'true' || $config['use_https'] === true){
+            if(isset($config['use_https']) && ($config['use_https'] === 'true' || $config['use_https'] === true)){
                 $config['use_https'] = 1;
+            } else {
+                $config['use_https'] = 0;
+            }
+            if(isset($config['push_noticed']) && $agentconfig->get('host_id') != 0 && $config['push_noticed'] == 0){
+                /** @var AgenthostscacheTable $AgenthostscacheTable */
+                $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+                $hostuuid = $HostsTable->getHostUuidById($agentconfig->get('host_id'));
+                if($AgenthostscacheTable->existsByHostuuid($hostuuid)){
+                    $AgenthostscacheTable->delete($AgenthostscacheTable->getByHostUuid($hostuuid));
+                }
             }
             $agentconfig = $AgentconfigsTable->patchEntity($agentconfig, $config);
 
