@@ -2,6 +2,7 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Exceptions\InvalidArgumentException;
 use AutoreportModule\Model\Table\AutoreportsTable;
 use Cake\Cache\Cache;
 use Cake\Core\Plugin;
@@ -10,6 +11,7 @@ use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Event\EventInterface;
 use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -17,6 +19,7 @@ use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\ContainerNestedSet;
 use MapModule\Model\Table\MapsTable;
+use Symfony\Component\Config\Definition\Exception\InvalidTypeException;
 
 /**
  * Containers Model
@@ -1003,9 +1006,14 @@ class ContainersTable extends Table {
             throw new NotFoundException(__('Invalid container'));
         }
         $subContainers = $this->getContainerWithAllChildren($id, $MY_RIGHTS);
-        foreach ($subContainers as $key => $container){
+        debug($subContainers);
+        foreach ($subContainers as $key => $container) {
+            if (!$this->isEmptyContainer($id, $container['containertype_id'])) {
+                // return false;
+            }
+
             //remove the base container itself from the array
-            if($container['id'] == $id){
+            /*if($container['id'] == $id){
                 unset($subContainers[$key]);
             }
             //if $subContainers still not empty then there are child containers which stops the container deletion
@@ -1014,6 +1022,49 @@ class ContainersTable extends Table {
             }else{
                 return false;
             }
+            */
         }
+        die('ENDE');
+    }
+
+    public function isEmptyContainer($containerId = null, $containertype = null): bool {
+        if (!empty($containertype)) {
+            switch ($containertype) {
+                case CT_HOSTGROUP:
+                    /** @var HostgroupsTable $HostgroupsTable */
+                    $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+                    $hostgroup = $HostgroupsTable->getHostgroupByContainerId($containerId);
+                    if (!empty($hostgroup['hosts']) || !empty($hostgroup['hosttemplates'])) {
+                        return false;
+                    }
+                    return true;
+                    break;
+                case CT_CONTACTGROUP:
+                    /** @var ContactgroupsTable $ContactgroupsTable */
+                    $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+                    break;
+                case CT_SERVICEGROUP:
+                    /** @var ServicegroupsTable $ServicegroupsTable */
+                    $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+                    $servicegroup = $ServicegroupsTable->getServicegroupByContainerId($containerId);
+                    if(!empty($servicegroup['services']) && !empty($servicegroup['servicetemplates'])){
+                        return false;
+                    }
+                    return true;
+
+                    break;
+                case CT_SERVICETEMPLATEGROUP:
+                    /** @var ServicetemplategroupsTable $ServicetemplategroupsTable */
+                    $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+                    $servicetemplategroup = $ServicetemplategroupsTable->getServicetemplategroupByContainerId($containerId);
+                    if (!empty($servicetemplategroup['servicetemplates'])) {
+                        return false;
+                    }
+                    return true;
+                    break;
+
+            }
+        }
+        return false;
     }
 }
