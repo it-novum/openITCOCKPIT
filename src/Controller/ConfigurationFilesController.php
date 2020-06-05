@@ -224,7 +224,7 @@ class ConfigurationFilesController extends AppController {
      * @param $ShortClassName
      * @throws \Exception
      */
-    protected function __sharedControllerAction($ConfigurationObjectClassName, $ShortClassName) {
+    private function __sharedControllerAction($ConfigurationObjectClassName, $ShortClassName) {
         $ConfigurationObjectClassName = new $ConfigurationObjectClassName();
         $this->set($ShortClassName, $ConfigurationObjectClassName);
 
