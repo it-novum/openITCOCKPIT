@@ -1001,32 +1001,37 @@ class ContainersTable extends Table {
      * @param $MY_RIGHTS
      * @return bool
      */
-    public function allowDelete($id = null, $MY_RIGHTS) {
+    public function allowDelete($id = null, $MY_RIGHTS): bool {
         if (!$this->existsById($id)) {
             throw new NotFoundException(__('Invalid container'));
         }
         $subContainers = $this->getContainerWithAllChildren($id, $MY_RIGHTS);
-        debug($subContainers);
+        // check content of subcontainers
         foreach ($subContainers as $key => $container) {
             if (!$this->isEmptyContainer($id, $container['containertype_id'])) {
-                // return false;
+                return false;
             }
+        }
 
+        //check if there are subcontainers
+        foreach ($subContainers as $key => $container) {
             //remove the base container itself from the array
-            /*if($container['id'] == $id){
+            if ($container['id'] == $id) {
                 unset($subContainers[$key]);
             }
             //if $subContainers still not empty then there are child containers which stops the container deletion
-            if(empty($subContainers)){
-                return true;
-            }else{
+            if (!empty($subContainers)) {
                 return false;
             }
-            */
         }
-        die('ENDE');
+        return true;
     }
 
+    /**
+     * @param null $containerId
+     * @param null $containertype
+     * @return bool
+     */
     public function isEmptyContainer($containerId = null, $containertype = null): bool {
         if (!empty($containertype)) {
             switch ($containertype) {
@@ -1039,15 +1044,11 @@ class ContainersTable extends Table {
                     }
                     return true;
                     break;
-                case CT_CONTACTGROUP:
-                    /** @var ContactgroupsTable $ContactgroupsTable */
-                    $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
-                    break;
                 case CT_SERVICEGROUP:
                     /** @var ServicegroupsTable $ServicegroupsTable */
                     $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
                     $servicegroup = $ServicegroupsTable->getServicegroupByContainerId($containerId);
-                    if(!empty($servicegroup['services']) && !empty($servicegroup['servicetemplates'])){
+                    if (!empty($servicegroup['services']) && !empty($servicegroup['servicetemplates'])) {
                         return false;
                     }
                     return true;
