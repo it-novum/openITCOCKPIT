@@ -86,6 +86,7 @@ plugins/PagerdutyModule
 plugins/AxiosAssystModule
 plugins/DesignModule
 plugins/PrometheusModule
+plugins/SnmpTrapModule
 plugins/TemplateExportModule
 plugins/TemplateImportModule
 
