@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ConfigurationFilesEditController', function($scope, $http, $state, RedirectService, NotyService, $stateParams){
+    .controller('ConfigurationFilesEditController', function($scope, $http, $state, $rootScope, RedirectService, NotyService, $stateParams){
 
         $scope.isRestoring = false;
 
@@ -32,8 +32,12 @@ angular.module('openITCOCKPIT')
 
         $scope.restoreDefault = function(dbKey){
             $scope.isRestoring = true;
+            $scope.extendPath = '';
 
-            $http.post("/ConfigurationFiles/restorDefault/" + dbKey + ".json?angular=true",
+            if($rootScope.configFileModuleUrlPath !== undefined && $rootScope.configFileModuleUrlPath !== null && $rootScope.configFileModuleUrlPath !== ''){
+                $scope.extendPath = '/' + $rootScope.configFileModuleUrlPath;
+            }
+            $http.post($scope.extendPath + "/ConfigurationFiles/restorDefault/" + dbKey + ".json?angular=true",
                 {}
             ).then(function(result){
                 console.log('Data saved successfully');

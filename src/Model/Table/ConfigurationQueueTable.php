@@ -65,6 +65,11 @@ class ConfigurationQueueTable extends Table {
             ->maxLength('json_data', 2000)
             ->allowEmptyString('json_data');
 
+        $validator
+            ->scalar('module')
+            ->maxLength('module', 255)
+            ->allowEmptyString('module');
+
         return $validator;
     }
 

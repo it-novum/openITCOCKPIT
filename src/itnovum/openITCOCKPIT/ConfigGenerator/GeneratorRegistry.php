@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 use SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmptrapd;
+use SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmptrapdConf;
 
 class GeneratorRegistry {
 
@@ -43,7 +44,8 @@ class GeneratorRegistry {
             new StatusengineCfg(),
             new Statusengine3Cfg(),
             new GraphiteWeb(),
-            new SnmpTrapCfgs_snmptrapd()
+            new SnmpTrapCfgs_snmptrapd(),
+            new SnmpTrapCfgs_snmptrapdConf()
         ];
     }
 
@@ -73,7 +75,8 @@ class GeneratorRegistry {
                 new GraphingDocker()
             ],
             __('SnmpTrapModule')                              => [
-                new SnmpTrapCfgs_snmptrapd()
+                new SnmpTrapCfgs_snmptrapd(),
+                new SnmpTrapCfgs_snmptrapdConf()
             ],
         ];
     }
