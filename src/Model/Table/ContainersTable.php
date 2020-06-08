@@ -1007,11 +1007,20 @@ class ContainersTable extends Table {
         }
         $subContainers = $this->getContainerWithAllChildren($id, $MY_RIGHTS);
         // check content of subcontainers
+        /*
+         This checks if there are content in containers like servicetemplates, services or hosts e.g.
+        this also causes that a Servicetemplategroup for example cant be deleted anymore due to the fact that its
+        content has to be at least one servicetemplate. So you cant save an empty servicetemplategroup which is the
+        only allowed form of a servicetemplategroup to be deleted with the following function.
+        This checking is may too strict
+        */
+        /*
         foreach ($subContainers as $key => $container) {
             if (!$this->isEmptyContainer($id, $container['containertype_id'])) {
                 return false;
             }
         }
+        */
 
         //check if there are subcontainers
         foreach ($subContainers as $key => $container) {
@@ -1048,7 +1057,7 @@ class ContainersTable extends Table {
                     /** @var ServicegroupsTable $ServicegroupsTable */
                     $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
                     $servicegroup = $ServicegroupsTable->getServicegroupByContainerId($containerId);
-                    if (!empty($servicegroup['services']) && !empty($servicegroup['servicetemplates'])) {
+                    if (!empty($servicegroup['services']) || !empty($servicegroup['servicetemplates'])) {
                         return false;
                     }
                     return true;
