@@ -26,6 +26,7 @@ namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 use SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmptrapd;
 use SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmptrapdConf;
+use SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmpttIni;
 
 class GeneratorRegistry {
 
@@ -45,7 +46,8 @@ class GeneratorRegistry {
             new Statusengine3Cfg(),
             new GraphiteWeb(),
             new SnmpTrapCfgs_snmptrapd(),
-            new SnmpTrapCfgs_snmptrapdConf()
+            new SnmpTrapCfgs_snmptrapdConf(),
+            new SnmpTrapCfgs_snmpttIni()
         ];
     }
 
@@ -56,7 +58,7 @@ class GeneratorRegistry {
         return [
             __('openITCOCKPIT Interface configuration files') => [
                 new AfterExport(),
-                new NagiosModuleConfig(),
+                //new NagiosModuleConfig(),
                 new DbBackend(),
                 new PerfdataBackend(),
                 new GraphiteWeb()
@@ -76,7 +78,8 @@ class GeneratorRegistry {
             ],
             __('SnmpTrapModule')                              => [
                 new SnmpTrapCfgs_snmptrapd(),
-                new SnmpTrapCfgs_snmptrapdConf()
+                new SnmpTrapCfgs_snmptrapdConf(),
+                new SnmpTrapCfgs_snmpttIni()
             ],
         ];
     }
