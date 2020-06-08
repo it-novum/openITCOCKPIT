@@ -2,12 +2,16 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Exceptions\InvalidArgumentException;
 use AutoreportModule\Model\Table\AutoreportsTable;
 use Cake\Cache\Cache;
 use Cake\Core\Plugin;
 use Cake\Database\Expression\QueryExpression;
+use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Event\EventInterface;
 use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -15,6 +19,7 @@ use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\ContainerNestedSet;
 use MapModule\Model\Table\MapsTable;
+use Symfony\Component\Config\Definition\Exception\InvalidTypeException;
 
 /**
  * Containers Model
@@ -939,8 +944,8 @@ class ContainersTable extends Table {
                     'size'  => $sizeof
                 ];
                 $edges[] = [
-                    'from' => $containerId,
-                    'to'   => $containerId . '_' . $childObjectName,
+                    'from'   => $containerId,
+                    'to'     => $containerId . '_' . $childObjectName,
                     'color'  => [
                         'inherit' => 'to',
                     ],
@@ -958,8 +963,8 @@ class ContainersTable extends Table {
                     'cid'   => $containerId . '_' . $childObjectName //1_tenant
                 ];
                 $edges[] = [
-                    'from' => $containerId . '_' . $childObjectName,
-                    'to'   => $childObjectName . '_' . $childName . '_' . $id . '_' . $containerId,
+                    'from'   => $containerId . '_' . $childObjectName,
+                    'to'     => $childObjectName . '_' . $childName . '_' . $id . '_' . $containerId,
                     'color'  => [
                         'inherit' => 'to',
                     ],
@@ -986,5 +991,90 @@ class ContainersTable extends Table {
             'edges'   => $edges,
             'cluster' => $cluster
         ];
+    }
+
+    /**
+     * checks if the given container contains subcontainers
+     * return false if it has subcontainers - so it cant be deleted
+     * return true if its empty and can be safely deleted
+     * @param null $id
+     * @param $MY_RIGHTS
+     * @return bool
+     */
+    public function allowDelete($id = null, $MY_RIGHTS): bool {
+        if (!$this->existsById($id)) {
+            throw new NotFoundException(__('Invalid container'));
+        }
+        $subContainers = $this->getContainerWithAllChildren($id, $MY_RIGHTS);
+        // check content of subcontainers
+        /*
+         This checks if there are content in containers like servicetemplates, services or hosts e.g.
+        this also causes that a Servicetemplategroup for example cant be deleted anymore due to the fact that its
+        content has to be at least one servicetemplate. So you cant save an empty servicetemplategroup which is the
+        only allowed form of a servicetemplategroup to be deleted with the following function.
+        This checking is may too strict
+        */
+        /*
+        foreach ($subContainers as $key => $container) {
+            if (!$this->isEmptyContainer($id, $container['containertype_id'])) {
+                return false;
+            }
+        }
+        */
+
+        //check if there are subcontainers
+        foreach ($subContainers as $key => $container) {
+            //remove the base container itself from the array
+            if ($container['id'] == $id) {
+                unset($subContainers[$key]);
+            }
+            //if $subContainers still not empty then there are child containers which stops the container deletion
+            if (!empty($subContainers)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param null $containerId
+     * @param null $containertype
+     * @return bool
+     */
+    public function isEmptyContainer($containerId = null, $containertype = null): bool {
+        if (!empty($containertype)) {
+            switch ($containertype) {
+                case CT_HOSTGROUP:
+                    /** @var HostgroupsTable $HostgroupsTable */
+                    $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+                    $hostgroup = $HostgroupsTable->getHostgroupByContainerId($containerId);
+                    if (!empty($hostgroup['hosts']) || !empty($hostgroup['hosttemplates'])) {
+                        return false;
+                    }
+                    return true;
+                    break;
+                case CT_SERVICEGROUP:
+                    /** @var ServicegroupsTable $ServicegroupsTable */
+                    $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+                    $servicegroup = $ServicegroupsTable->getServicegroupByContainerId($containerId);
+                    if (!empty($servicegroup['services']) || !empty($servicegroup['servicetemplates'])) {
+                        return false;
+                    }
+                    return true;
+
+                    break;
+                case CT_SERVICETEMPLATEGROUP:
+                    /** @var ServicetemplategroupsTable $ServicetemplategroupsTable */
+                    $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+                    $servicetemplategroup = $ServicetemplategroupsTable->getServicetemplategroupByContainerId($containerId);
+                    if (!empty($servicetemplategroup['servicetemplates'])) {
+                        return false;
+                    }
+                    return true;
+                    break;
+
+            }
+        }
+        return false;
     }
 }

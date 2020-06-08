@@ -309,37 +309,46 @@ class ServicegroupsController extends AppController {
             return;
         }
 
-        if ($ContainersTable->delete($container)) {
-            $User = new User($this->getUser());
-            /** @var  ChangelogsTable $ChangelogsTable */
-            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+        if($ContainersTable->allowDelete($container->id, $this->MY_RIGHTS)){
+            if ($ContainersTable->delete($container)) {
+                $User = new User($this->getUser());
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-            $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                'delete',
-                'servicegroups',
-                $id,
-                OBJECT_SERVICEGROUP,
-                $container->get('parent_id'),
-                $User->getId(),
-                $container->get('name'),
-                [
-                    'Servicegroup' => $servicegroup->toArray()
-                ]
-            );
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    'delete',
+                    'servicegroups',
+                    $id,
+                    OBJECT_SERVICEGROUP,
+                    $container->get('parent_id'),
+                    $User->getId(),
+                    $container->get('name'),
+                    [
+                        'Servicegroup' => $servicegroup->toArray()
+                    ]
+                );
                 if ($changelog_data) {
                     /** @var Changelog $changelogEntry */
                     $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
                     $ChangelogsTable->save($changelogEntry);
                 }
 
-            $this->set('success', true);
+                $this->set('success', true);
+                $this->viewBuilder()->setOption('serialize', ['success']);
+                return;
+            }
+
+            $this->response = $this->response->withStatus(500);
+            $this->set('success', false);
             $this->viewBuilder()->setOption('serialize', ['success']);
-            return;
+        }else{
+            $this->response = $this->response->withStatus(500);
+            $this->set('success', false);
+            $this->set('message', __('Container is not empty'));
+            $this->set('containerId', $container->id);
+            $this->viewBuilder()->setOption('serialize', ['success', 'message', 'containerId']);
         }
 
-        $this->response = $this->response->withStatus(500);
-        $this->set('success', false);
-        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function addServicesToServicegroup() {

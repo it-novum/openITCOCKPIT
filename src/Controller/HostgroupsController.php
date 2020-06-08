@@ -310,37 +310,45 @@ class HostgroupsController extends AppController {
             return;
         }
 
-        if ($ContainersTable->delete($container)) {
-            $User = new User($this->getUser());
-            /** @var  ChangelogsTable $ChangelogsTable */
-            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+        if ($ContainersTable->allowDelete($container->id, $this->MY_RIGHTS)) {
+            if ($ContainersTable->delete($container)) {
+                $User = new User($this->getUser());
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-            $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                'delete',
-                'hostgroups',
-                $id,
-                OBJECT_HOSTGROUP,
-                $container->get('parent_id'),
-                $User->getId(),
-                $container->get('name'),
-                [
-                    'Hostgroup' => $hostgroup->toArray()
-                ]
-            );
-            if ($changelog_data) {
-                /** @var Changelog $changelogEntry */
-                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                $ChangelogsTable->save($changelogEntry);
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    'delete',
+                    'hostgroups',
+                    $id,
+                    OBJECT_HOSTGROUP,
+                    $container->get('parent_id'),
+                    $User->getId(),
+                    $container->get('name'),
+                    [
+                        'Hostgroup' => $hostgroup->toArray()
+                    ]
+                );
+                if ($changelog_data) {
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
+
+                $this->set('success', true);
+                $this->viewBuilder()->setOption('serialize', ['success']);
+                return;
             }
-
-            $this->set('success', true);
+            $this->response = $this->response->withStatus(500);
+            $this->set('success', false);
             $this->viewBuilder()->setOption('serialize', ['success']);
-            return;
-        }
 
-        $this->response = $this->response->withStatus(500);
-        $this->set('success', false);
-        $this->viewBuilder()->setOption('serialize', ['success']);
+        } else {
+            $this->response = $this->response->withStatus(500);
+            $this->set('success', false);
+            $this->set('message', __('Container is not empty'));
+            $this->set('containerId', $container->id);
+            $this->viewBuilder()->setOption('serialize', ['success', 'message', 'containerId']);
+        }
     }
 
 
@@ -802,9 +810,9 @@ class HostgroupsController extends AppController {
 
         $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
 
-        if($onlyHostgroupssWithWritePermission){
+        if ($onlyHostgroupssWithWritePermission) {
             $HostgroupCondition->setContainerIds($this->getWriteContainers());
-        }else{
+        } else {
             $HostgroupCondition->setContainerIds($this->MY_RIGHTS);
         }
 
@@ -837,10 +845,10 @@ class HostgroupsController extends AppController {
         if ($containerId == ROOT_CONTAINER) {
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [CT_HOSTGROUP]);
         } else {
-            if($resolveContainerIds){
+            if ($resolveContainerIds) {
                 $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, true, [CT_HOSTGROUP]);
                 $containerIds = array_merge($containerIds, [ROOT_CONTAINER, $containerId]);
-            }else{
+            } else {
                 $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [CT_HOSTGROUP]);
             }
         }
@@ -853,5 +861,6 @@ class HostgroupsController extends AppController {
         $this->set('hostgroups', $hostgroups);
         $this->viewBuilder()->setOption('serialize', ['hostgroups']);
     }
+
 
 }

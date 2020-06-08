@@ -200,6 +200,8 @@ for i in "$@"; do
   --cc)
     echo "Clear out Model Cache /opt/openitc/frontend/tmp/cache/models/"
     rm -rf /opt/openitc/frontend/tmp/cache/models/*
+    echo "Clear out CLI Model Cache /opt/openitc/frontend/tmp/cli/cache/cli/models/"
+    rm -rf /opt/openitc/frontend/tmp/cli/cache/cli/models/*
     ;;
 
   --rights)

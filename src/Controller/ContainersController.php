@@ -680,7 +680,7 @@ class ContainersController extends AppController {
         $containerIds = $this->request->getQuery('containerIds', []);
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds, false);
 
-        foreach ($containerIds as $containerId){
+        foreach ($containerIds as $containerId) {
             if (!$ContainersTable->existsById($containerId)) {
                 throw new NotFoundException(__('Invalid container'));
             }
