@@ -80,6 +80,7 @@ plugins/EventcorrelationModule
 plugins/MkModule
 plugins/CheckmkModule
 plugins/OpenstreetmapModule
+plugins/SAPModule
 plugins/SlackModule
 plugins/ServicenowModule
 plugins/PagerdutyModule
