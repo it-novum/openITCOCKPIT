@@ -207,7 +207,6 @@
                                 <div class="card-body">
                                     <div class="float-right">
                                         <button class="btn btn-primary" type="submit">Save</button>
-                                        <button class="btn btn-default" ng-sref="SystemsettingsIndex">Cancel</button>
                                     </div>
                                 </div>
                             </div>
