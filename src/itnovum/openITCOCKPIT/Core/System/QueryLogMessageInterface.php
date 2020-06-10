@@ -25,9 +25,10 @@
 namespace itnovum\openITCOCKPIT\Core\System;
 
 
+use App\Command\QueryLogCommand;
+use Cake\Command\Command;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
-use Shell;
 use SqlFormatter;
 use Symfony\Component\Process\Process;
 
@@ -49,9 +50,9 @@ class QueryLogMessageInterface implements MessageComponentInterface {
     private $process;
 
     /**
-     * @var Shell
+     * @var Command
      */
-    private $CakeShell;
+    private $CakeCommand;
 
     /**
      * @var bool
@@ -65,12 +66,12 @@ class QueryLogMessageInterface implements MessageComponentInterface {
 
     /**
      * QueryLogMessageInterface constructor.
-     * @param Shell $CakeShell
+     * @param QueryLogCommand $CakeCommand
      * @param string $logfile
      * @param bool $prettyPrint
      */
-    public function __construct(Shell $CakeShell, $logfile = '', $prettyPrint = true, $hidePermissionQueries = false) {
-        $this->CakeShell = $CakeShell;
+    public function __construct(QueryLogCommand $CakeCommand, $logfile = '', $prettyPrint = true, $hidePermissionQueries = false) {
+        $this->CakeCommand = $CakeCommand;
         $this->logfile = $logfile;
         $this->prettyPrint = $prettyPrint;
         $this->hidePermissionQueries = $hidePermissionQueries;
@@ -79,7 +80,7 @@ class QueryLogMessageInterface implements MessageComponentInterface {
 
     public function onOpen(ConnectionInterface $conn) {
         $this->clients->attach($conn);
-        $this->CakeShell->out('<info>New client connected</info>');
+        $this->CakeCommand->io->out('<info>New client connected</info>');
     }
 
     public function onClose(ConnectionInterface $conn) {
@@ -104,16 +105,17 @@ class QueryLogMessageInterface implements MessageComponentInterface {
     public function eventLoop() {
         $output = $this->process->getIncrementalOutput();
         if ($output !== '') {
-            $sourceQueries = json_decode($output, true);
+            $sourceQueries = $this->CakeCommand->parseLogOutputToSourceQueries($output);
+
             SqlFormatter::$cli = false;
             if ($sourceQueries !== null) {
                 $queries = [];
-                foreach ($sourceQueries['queries'] as $query) {
-
+                $time = 0;
+                foreach ($sourceQueries as $query) {
                     if ($this->hidePermissionQueries) {
-                        $acoQuery = 'SELECT `Aco`.`id`, `Aco`.`parent_id`';
-                        $aroQuery = 'SELECT `Aro`.`id`, `Aro`.`parent_id`';
-                        $permissionQuery = 'SELECT `Permission`.`id`, `Permission`.`aro_id`';
+                        $acoQuery = 'SELECT `Acos`.`id`, `Acos`.`parent_id`';
+                        $aroQuery = 'SELECT `Aros`.`id`, `Aros`.`parent_id`';
+                        $permissionQuery = 'SELECT `Permissions`.`id`, `Permissions`.`aro_id`';
 
                         if (strstr($query['query'], $acoQuery) || strstr($query['query'], $aroQuery) || strstr($query['query'], $permissionQuery)) {
                             continue;
@@ -123,13 +125,19 @@ class QueryLogMessageInterface implements MessageComponentInterface {
                     if ($this->prettyPrint) {
                         $query['query'] = SqlFormatter::format($query['query'], true);
                     } else {
-                        $query['query'] = SqlFormatter::highlight($query['query'], true);
+                        $query['query'] = SqlFormatter::highlight($query['query']);
                     }
                     $queries[] = $query;
+                    $time += $query['took'];
                 }
-                $sourceQueries['queries'] = $queries;
+                $processedQueries = [
+                    'queries'    => $queries,
+                    'datasource' => 'openitcockpit',
+                    'count'      => sizeof($queries),
+                    'time'       => $time
+                ];
 
-                $this->send(json_encode($sourceQueries));
+                $this->send(json_encode($processedQueries));
             }
         }
     }
@@ -137,5 +145,9 @@ class QueryLogMessageInterface implements MessageComponentInterface {
     public function startTailf() {
         $this->process = new Process('/usr/bin/tail -f -n 10 ' . $this->logfile);
         $this->process->start();
+    }
+
+    public function stopTailf() {
+        $this->process->stop();
     }
 }
