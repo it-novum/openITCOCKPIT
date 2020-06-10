@@ -491,7 +491,7 @@ loginApp.controller("LoginLayoutController", function($scope, $http){
 
             if(disableLoginAnimation === false){ //disableLoginAnimation gets set in login layout
                 if(particlesConfig){
-                    particlesJS('particles-js',
+                    tsParticles.load('particles-js',
                         particlesConfig
                     );
                 }

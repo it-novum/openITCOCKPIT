@@ -122,7 +122,7 @@ endif;
 <script src="/node_modules/jquery/dist/jquery.min.js"></script>
 <script src="/node_modules/angular/angular.min.js"></script>
 <script src="/node_modules/angular-ui-router/release/angular-ui-router.min.js"></script>
-<script src="/node_modules/particles.js/particles.js"></script>
+<script src="/node_modules/tsparticles/dist/tsparticles.js"></script>
 <script src="/node_modules/noty/lib/noty.min.js"></script>
 
 <script src="/js/login/ng.login-app.js"></script>
