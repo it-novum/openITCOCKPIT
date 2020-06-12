@@ -4,14 +4,17 @@ angular.module('openITCOCKPIT')
         SortService.setSort(QueryStringService.getValue('sort', 'Agentconnector.id'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
 
-        $scope.filter = {
-            hostuuid: QueryStringService.getValue('hostuuid', ''),
-            remote_addr: ''
-        };
+        var defaultFilter = function(){
+            $scope.filter = {
+                hostuuid: QueryStringService.getValue('hostuuid', ''),
+                remote_addr: ''
+            };
+        }
+        defaultFilter();
         $scope.currentPage = 1;
         $scope.useScroll = true;
         $scope.showFilter = false;
-        $scope.agents = {};
+        $scope.unTrustedAgents = {};
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/agentconnector/delete/';
@@ -30,7 +33,7 @@ angular.module('openITCOCKPIT')
             $http.get('/agentconnector/agents.json', {
                 params: params
             }).then(function(result){
-                $scope.agents = result.data.agents;
+                $scope.unTrustedAgents = result.data.unTrustedAgents;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
             }, function errorCallback(result){
@@ -91,10 +94,15 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.resetFilter = function(){
+            defaultFilter();
+            $scope.undoSelection();
+        };
+
         $scope.selectAll = function(){
-            if($scope.agents){
-                for(var key in $scope.agents){
-                    $scope.massChange[$scope.agents[key].Agentconnector.id] = true;
+            if($scope.unTrustedAgents){
+                for(var key in $scope.unTrustedAgents){
+                    $scope.massChange[$scope.unTrustedAgents[key].Agentconnector.id] = true;
                 }
             }
         };
@@ -108,10 +116,10 @@ angular.module('openITCOCKPIT')
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.agents){
+            for(var key in $scope.unTrustedAgents){
                 for(var id in selectedObjects){
-                    if(parseInt(id) === $scope.agents[key].Agentconnector.id){
-                        objects[id] = $scope.agents[key].Agentconnector.hostuuid;
+                    if(parseInt(id) === $scope.unTrustedAgents[key].Agentconnector.id){
+                        objects[id] = $scope.unTrustedAgents[key].Agentconnector.hostuuid;
                     }
                 }
             }

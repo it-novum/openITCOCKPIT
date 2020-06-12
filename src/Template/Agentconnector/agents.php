@@ -99,6 +99,12 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="float-right margin-top-20">
+                                <button type="button" ng-click="resetFilter()"
+                                        class="btn btn-xs btn-danger">
+                                    <?php echo __('Reset Filter'); ?>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -132,7 +138,7 @@
                             </thead>
 
                             <tbody>
-                            <tr ng-repeat="agent in agents">
+                            <tr ng-repeat="agent in unTrustedAgents">
                                 <td class="text-center" class="width-15">
                                     <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
                                         <input type="checkbox"
@@ -144,12 +150,12 @@
                                     <i class="fa fa-lg fa-times-circle"
                                        ng-hide="agent.Agentconnector.trusted"></i>
                                 </td>
-                                <td>{{agent.Agentconnector.hostuuid}}</td>
+                                <td><a ui-sref="HostsBrowser({id: agent.Host.id})">{{agent.Host.name}} ({{agent.Agentconnector.hostuuid}})</a></td>
                                 <td>{{agent.Agentconnector.http_x_forwarded_for ?
                                     agent.Agentconnector.http_x_forwarded_for :
                                     agent.Agentconnector.remote_addr}}
                                 </td>
-                                <td>{{agent.Agentconnector.generation_date}}</td>
+                                <td>{{agent.Agentconnector.generation_date ? agent.Agentconnector.generation_date : '<?php echo __("Certificate not yet generated") ?>'}}</td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
