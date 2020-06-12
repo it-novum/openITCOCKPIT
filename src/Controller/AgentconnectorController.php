@@ -133,16 +133,29 @@ class AgentconnectorController extends AppController {
 
         /** @var AgentconnectorTable $AgentconnectorTable */
         $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         $AgentconnectorAgentsFilter = new AgentconnectorAgentsFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AgentconnectorAgentsFilter->getPage());
 
-        $agents = $AgentconnectorTable->getAgentsIndex($AgentconnectorAgentsFilter, $PaginateOMat);
+        $unTrustedAgents = $AgentconnectorTable->getAgentsIndex($AgentconnectorAgentsFilter, $PaginateOMat);
 
-        $this->set('agents', $agents);
-        $toJson = ['agents', 'paging'];
+        foreach ($unTrustedAgents as $key => $agentconnector) {
+            if (isset($agentconnector['Agentconnector']) && isset($agentconnector['Agentconnector']['hostuuid'])) {
+                $host = $HostsTable->getHostByUuid($agentconnector['Agentconnector']['hostuuid']);
+
+                $unTrustedAgents[$key]['Host'] = [
+                    'id'   => $host->get('id'),
+                    'name' => $host->get('name')
+                ];
+            }
+        }
+
+        $this->set('unTrustedAgents', $unTrustedAgents);
+        $toJson = ['unTrustedAgents', 'paging'];
         if ($this->isScrollRequest()) {
-            $toJson = ['agents', 'scroll'];
+            $toJson = ['unTrustedAgents', 'scroll'];
         }
         $this->viewBuilder()->setOption('serialize', $toJson);
     }
