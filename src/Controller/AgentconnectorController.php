@@ -160,6 +160,10 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
+    public function untrustedAgents() {
+        return;
+    }
+
     /**
      * @throws MissingParameterExceptions
      */

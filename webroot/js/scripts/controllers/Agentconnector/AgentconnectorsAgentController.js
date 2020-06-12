@@ -4,152 +4,12 @@ angular.module('openITCOCKPIT')
         SortService.setSort(QueryStringService.getValue('sort', 'Agentconnector.id'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
 
-        var defaultFilter = function(){
-            $scope.filter = {
-                hostuuid: QueryStringService.getValue('hostuuid', ''),
-                remote_addr: ''
-            };
-        }
-        defaultFilter();
-        $scope.currentPage = 1;
-        $scope.useScroll = true;
         $scope.showFilter = false;
-        $scope.unTrustedAgents = {};
-        $scope.massChange = {};
-        $scope.selectedElements = 0;
-        $scope.deleteUrl = '/agentconnector/delete/';
         $scope.navSelection = 'untrustedAgents';
+        $scope.lastLoadDate = Date.now();
 
-        $scope.load = function(selection = 'untrustedAgents'){
-            if(selection === 'untrustedAgents'){
-                var params = {
-                    'angular': true,
-                    'scroll': $scope.useScroll,
-                    'page': $scope.currentPage,
-                    'sort': SortService.getSort(),
-                    'direction': SortService.getDirection(),
-                    'filter[Agentconnector.hostuuid]': $scope.filter.hostuuid,
-                    'filter[Agentconnector.remote_addr]': $scope.filter.remote_addr,
-                };
-
-                $http.get('/agentconnector/agents.json', {
-                    params: params
-                }).then(function(result){
-                    $scope.unTrustedAgents = result.data.unTrustedAgents;
-                    $scope.paging = result.data.paging;
-                    $scope.scroll = result.data.scroll;
-                }, function errorCallback(result){
-                    if(result.status === 403){
-                        $state.go('403');
-                    }
-
-                    if(result.status === 404){
-                        $state.go('404');
-                    }
-                });
-            }
-        };
-
-        $scope.changetrust = function(id, trust, singletrust){
-            $http.post('/agentconnector/changetrust.json?angular=true', {
-                'id': id,
-                'trust': trust
-            }).then(function(result){
-                if(singletrust){
-                    NotyService.genericSuccess();
-                    $scope.load();
-                }
-            }, function errorCallback(result){
-                if(singletrust){
-                    NotyService.genericError({message: result.error});
-                }
-                if(result.status === 403){
-                    $state.go('403');
-                }
-
-                if(result.status === 404){
-                    $state.go('404');
-                }
-            });
-        };
-
-        $scope.trustSelected = function(){
-            var selectedObjects = MassChangeService.getSelected();
-            if(Object.keys(selectedObjects).length > 0){
-                for(var id in selectedObjects){
-                    $scope.changetrust(id, 1, false);
-                }
-                setTimeout(function(){
-                    $scope.load();
-                }, 500);
-            }
-        };
-
-        $scope.untrustSelected = function(){
-            var selectedObjects = MassChangeService.getSelected();
-            if(Object.keys(selectedObjects).length > 0){
-                for(var id in selectedObjects){
-                    $scope.changetrust(id, 0, false);
-                }
-                setTimeout(function(){
-                    $scope.load();
-                }, 500);
-            }
-        };
-
-        $scope.resetFilter = function(){
-            defaultFilter();
-            $scope.undoSelection();
-        };
-
-        $scope.selectAll = function(){
-            if($scope.unTrustedAgents){
-                for(var key in $scope.unTrustedAgents){
-                    $scope.massChange[$scope.unTrustedAgents[key].Agentconnector.id] = true;
-                }
-            }
-        };
-
-        $scope.undoSelection = function(){
-            MassChangeService.clearSelection();
-            $scope.massChange = MassChangeService.getSelected();
-            $scope.selectedElements = MassChangeService.getCount();
-        };
-
-        $scope.getObjectsForDelete = function(){
-            var objects = {};
-            var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.unTrustedAgents){
-                for(var id in selectedObjects){
-                    if(parseInt(id) === $scope.unTrustedAgents[key].Agentconnector.id){
-                        objects[id] = $scope.unTrustedAgents[key].Agentconnector.hostuuid;
-                    }
-                }
-            }
-            return objects;
-        };
-
-        $scope.getObjectForDelete = function(agent){
-            var object = {};
-            object[agent.Agentconnector.id] = agent.Agentconnector.hostuuid;
-            return object;
-        };
-
-        $scope.undoSelection();
-        //$scope.load();
-        SortService.setCallback($scope.load);
-
-        $scope.changepage = function(page){
-            $scope.undoSelection();
-            if(page !== $scope.currentPage){
-                $scope.currentPage = page;
-                $scope.load();
-            }
-        };
-
-        $scope.changeMode = function(val){
-            $scope.useScroll = val;
-            $scope.load();
+        $scope.load = function(){
+            $scope.lastLoadDate = Date.now();
         };
 
         $scope.triggerFilter = function(){
@@ -158,19 +18,8 @@ angular.module('openITCOCKPIT')
 
         $scope.setNavSelection = function(selection){
             if($scope.navSelection !== selection){
-                $scope.load(selection);
+                $scope.load();
             }
             $scope.navSelection = selection ? selection : 'untrustedAgents';
         }
-
-        $scope.$watch('filter', function(){
-            $scope.currentPage = 1;
-            $scope.undoSelection();
-            $scope.load();
-        }, true);
-
-        $scope.$watch('massChange', function(){
-            MassChangeService.setSelected($scope.massChange);
-            $scope.selectedElements = MassChangeService.getCount();
-        }, true);
     });
