@@ -49,7 +49,25 @@
                     <?php echo __('Agents overview'); ?>
                 </h2>
                 <div class="panel-toolbar">
-                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
+                    <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link cursor-pointer {{navSelection == 'untrustedAgents' ? 'active' : ''}}" ng-click="setNavSelection('untrustedAgents')" role="tab">
+                                <i class="fa fa-times-circle">&nbsp;</i> <?php echo __('Untrusted agents'); ?>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link cursor-pointer {{navSelection == 'pullConfigurations' ? 'active' : ''}}" ng-click="setNavSelection('pullConfigurations')" role="tab">
+                                <i class="fa fa-download">&nbsp;</i> <?php echo __('Pull configurations'); ?>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link cursor-pointer {{navSelection == 'pushCache' ? 'active' : ''}}" ng-click="setNavSelection('pushCache')" role="tab">
+                                <i class="fa fa-upload">&nbsp;</i> <?php echo __('Push Cache'); ?>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load(navSelection)">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
                     <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
@@ -63,7 +81,7 @@
                 </div>
             </div>
             <div class="panel-container show">
-                <div class="panel-content">
+                <div class="panel-content" ng-if="navSelection == 'untrustedAgents'">
 
                     <div class="list-filter card margin-bottom-10" ng-show="showFilter">
                         <div class="card-header">

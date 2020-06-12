@@ -18,33 +18,36 @@ angular.module('openITCOCKPIT')
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/agentconnector/delete/';
+        $scope.navSelection = 'untrustedAgents';
 
-        $scope.load = function(){
-            var params = {
-                'angular': true,
-                'scroll': $scope.useScroll,
-                'page': $scope.currentPage,
-                'sort': SortService.getSort(),
-                'direction': SortService.getDirection(),
-                'filter[Agentconnector.hostuuid]': $scope.filter.hostuuid,
-                'filter[Agentconnector.remote_addr]': $scope.filter.remote_addr,
-            };
+        $scope.load = function(selection = 'untrustedAgents'){
+            if(selection === 'untrustedAgents'){
+                var params = {
+                    'angular': true,
+                    'scroll': $scope.useScroll,
+                    'page': $scope.currentPage,
+                    'sort': SortService.getSort(),
+                    'direction': SortService.getDirection(),
+                    'filter[Agentconnector.hostuuid]': $scope.filter.hostuuid,
+                    'filter[Agentconnector.remote_addr]': $scope.filter.remote_addr,
+                };
 
-            $http.get('/agentconnector/agents.json', {
-                params: params
-            }).then(function(result){
-                $scope.unTrustedAgents = result.data.unTrustedAgents;
-                $scope.paging = result.data.paging;
-                $scope.scroll = result.data.scroll;
-            }, function errorCallback(result){
-                if(result.status === 403){
-                    $state.go('403');
-                }
+                $http.get('/agentconnector/agents.json', {
+                    params: params
+                }).then(function(result){
+                    $scope.unTrustedAgents = result.data.unTrustedAgents;
+                    $scope.paging = result.data.paging;
+                    $scope.scroll = result.data.scroll;
+                }, function errorCallback(result){
+                    if(result.status === 403){
+                        $state.go('403');
+                    }
 
-                if(result.status === 404){
-                    $state.go('404');
-                }
-            });
+                    if(result.status === 404){
+                        $state.go('404');
+                    }
+                });
+            }
         };
 
         $scope.changetrust = function(id, trust, singletrust){
@@ -152,6 +155,13 @@ angular.module('openITCOCKPIT')
         $scope.triggerFilter = function(){
             $scope.showFilter = $scope.showFilter !== true;
         };
+
+        $scope.setNavSelection = function(selection){
+            if($scope.navSelection !== selection){
+                $scope.load(selection);
+            }
+            $scope.navSelection = selection ? selection : 'untrustedAgents';
+        }
 
         $scope.$watch('filter', function(){
             $scope.currentPage = 1;
