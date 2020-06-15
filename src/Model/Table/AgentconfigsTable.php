@@ -2,10 +2,15 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\CustomValidationTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
 
 /**
  * Agentconfigs Model
@@ -24,6 +29,11 @@ use Cake\Validation\Validator;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class AgentconfigsTable extends Table {
+
+    use Cake2ResultTableTrait;
+    use PaginationAndScrollIndexTrait;
+    use CustomValidationTrait;
+
     /**
      * Initialize method
      *
@@ -249,5 +259,36 @@ class AgentconfigsTable extends Table {
         } catch (\Exception $e) {
             //do nothing
         }
+    }
+
+    /**
+     * @param AgentconfigsFilter $AgentconfigsFilter
+     * @param PaginateOMat|null $PaginateOMat
+     * @return array
+     */
+    public function getForList(AgentconfigsFilter $AgentconfigsFilter, PaginateOMat $PaginateOMat = null) {
+        $query = $this->find('all')
+            ->contain([
+                'Hosts'
+            ])
+            ->where($AgentconfigsFilter->indexFilter())
+            ->order($AgentconfigsFilter->getOrderForPaginator('Agentconfigs.id', 'desc'))
+            ->disableHydration();
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            if (empty($query)) {
+                return [];
+            }
+            $result = $query->toArray();
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
+        }
+
+        return $result;
     }
 }

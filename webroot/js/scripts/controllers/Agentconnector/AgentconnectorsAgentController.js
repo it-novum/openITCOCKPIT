@@ -17,9 +17,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.setNavSelection = function(selection){
-            if($scope.navSelection !== selection){
-                $scope.load();
-            }
             $scope.navSelection = selection ? selection : 'untrustedAgents';
         }
     });

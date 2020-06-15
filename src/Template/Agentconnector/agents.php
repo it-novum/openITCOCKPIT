@@ -81,7 +81,15 @@
                 </div>
             </div>
             <div class="panel-container show">
-                <untrusted-agents-directive ng-if="navSelection == 'untrustedAgents'" last-load-date="lastLoadDate" show-filter="showFilter"></untrusted-agents-directive>
+                <?php if ($this->Acl->hasPermission('untrustedAgents', 'agentconnector')): ?>
+                    <untrusted-agents-directive ng-if="navSelection == 'untrustedAgents'" last-load-date="lastLoadDate" show-filter="showFilter"></untrusted-agents-directive>
+                <?php endif; ?>
+                <?php if ($this->Acl->hasPermission('pullConfigurations', 'agentconnector')): ?>
+                    <pull-configurations-directive ng-if="navSelection == 'pullConfigurations'" last-load-date="lastLoadDate" show-filter="showFilter"></pull-configurations-directive>
+                <?php endif; ?>
+                <?php if ($this->Acl->hasPermission('pushCache', 'agentconnector')): ?>
+                    <push-cache-directive ng-if="navSelection == 'pushCache'" last-load-date="lastLoadDate" show-filter="showFilter"></push-cache-directive>
+                <?php endif; ?>
             </div>
         </div>
     </div>

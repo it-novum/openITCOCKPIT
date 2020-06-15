@@ -52,7 +52,9 @@ use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
 use itnovum\openITCOCKPIT\Filter\AgentconnectorAgentsFilter;
+use itnovum\openITCOCKPIT\Filter\AgenthostscacheFilter;
 
 class AgentconnectorController extends AppController {
 
@@ -162,6 +164,66 @@ class AgentconnectorController extends AppController {
 
     public function untrustedAgents() {
         return;
+    }
+
+    public function pullConfigurations() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+        $AgentconfigsFilter = new AgentconfigsFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AgentconfigsFilter->getPage());
+
+        $pullConfigurations = $AgentconfigsTable->getForList($AgentconfigsFilter, $PaginateOMat);
+
+        $this->set('pullConfigurations', $pullConfigurations);
+        $toJson = ['pullConfigurations', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['pullConfigurations', 'scroll'];
+        }
+        $this->viewBuilder()->setOption('serialize', $toJson);
+    }
+
+    public function pushCache() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var AgenthostscacheTable $AgenthostscacheTable */
+        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
+
+        $AgenthostscacheFilter = new AgenthostscacheFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AgenthostscacheFilter->getPage());
+
+        $pushCache = $AgenthostscacheTable->getForList($AgenthostscacheFilter, $PaginateOMat);
+
+        $this->set('pushCache', $pushCache);
+        $toJson = ['pushCache', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['pushCache', 'scroll'];
+        }
+        $this->viewBuilder()->setOption('serialize', $toJson);
+    }
+
+    public function downloadPushedCheckdata($agenthostscacheId) {
+        /** @var AgenthostscacheTable $AgenthostscacheTable */
+        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
+
+        if (!$AgenthostscacheTable->existsById($agenthostscacheId)) {
+            new NotFoundException();
+        }
+
+        $Agenthostscache = $AgenthostscacheTable->get($agenthostscacheId);
+        $checkdata = $Agenthostscache->get('checkdata');
+        header("Content-type: application/json");
+        header("Content-Disposition: attachment; filename=openITCOCKPIT-Agent-Push-Checkdata_" . $agenthostscacheId . ".json");
+        echo $checkdata;
+        die();
     }
 
     /**

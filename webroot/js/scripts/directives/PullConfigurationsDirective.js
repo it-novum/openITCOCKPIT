@@ -1,7 +1,7 @@
-angular.module('openITCOCKPIT').directive('untrustedAgentsDirective', function($http, $filter, $timeout, QueryStringService, $state, $stateParams, NotyService, MassChangeService, SortService){
+angular.module('openITCOCKPIT').directive('pullConfigurationsDirective', function($http, $filter, $timeout, $state, $stateParams, NotyService, MassChangeService, SortService){
     return {
         restrict: 'E',
-        templateUrl: '/agentconnector/untrustedAgents.html',
+        templateUrl: '/agentconnector/pullConfigurations.html',
         scope: {
             lastLoadDate: '=',
             showFilter: '='
@@ -10,14 +10,16 @@ angular.module('openITCOCKPIT').directive('untrustedAgentsDirective', function($
         controller: function($scope){
             var defaultFilter = function(){
                 $scope.filter = {
-                    hostuuid: QueryStringService.getValue('hostuuid', ''),
-                    remote_addr: ''
+                    Host: {
+                        name: '',
+                        address: ''
+                    }
                 };
             }
             defaultFilter();
             $scope.currentPage = 1;
             $scope.useScroll = true;
-            $scope.unTrustedAgents = {};
+            $scope.pullConfigurations = {};
             $scope.massChange = {};
             $scope.selectedElements = 0;
             $scope.deleteUrl = '/agentconnector/delete/';
@@ -28,16 +30,17 @@ angular.module('openITCOCKPIT').directive('untrustedAgentsDirective', function($
                     'angular': true,
                     'scroll': $scope.useScroll,
                     'page': $scope.currentPage,
-                    'sort': SortService.getSort(),
+                    //'sort': SortService.getSort(),
+                    'sort': 'Agentconfigs.id',
                     'direction': SortService.getDirection(),
-                    'filter[Agentconnector.hostuuid]': $scope.filter.hostuuid,
-                    'filter[Agentconnector.remote_addr]': $scope.filter.remote_addr,
+                    'filter[Hosts.name]': $scope.filter.Host.name,
+                    'filter[Hosts.address]': $scope.filter.Host.address,
                 };
 
-                $http.get('/agentconnector/agents.json', {
+                $http.get('/agentconnector/pullConfigurations.json', {
                     params: params
                 }).then(function(result){
-                    $scope.unTrustedAgents = result.data.unTrustedAgents;
+                    $scope.pullConfigurations = result.data.pullConfigurations;
                     $scope.paging = result.data.paging;
                     $scope.scroll = result.data.scroll;
                     $scope.initialized = true;
@@ -52,62 +55,15 @@ angular.module('openITCOCKPIT').directive('untrustedAgentsDirective', function($
                 });
             }
 
-            $scope.changetrust = function(id, trust, singletrust){
-                $http.post('/agentconnector/changetrust.json?angular=true', {
-                    'id': id,
-                    'trust': trust
-                }).then(function(result){
-                    if(singletrust){
-                        NotyService.genericSuccess();
-                        $scope.load();
-                    }
-                }, function errorCallback(result){
-                    if(singletrust){
-                        NotyService.genericError({message: result.error});
-                    }
-                    if(result.status === 403){
-                        $state.go('403');
-                    }
-
-                    if(result.status === 404){
-                        $state.go('404');
-                    }
-                });
-            };
-
-            $scope.trustSelected = function(){
-                var selectedObjects = MassChangeService.getSelected();
-                if(Object.keys(selectedObjects).length > 0){
-                    for(var id in selectedObjects){
-                        $scope.changetrust(id, 1, false);
-                    }
-                    setTimeout(function(){
-                        $scope.load();
-                    }, 500);
-                }
-            };
-
-            $scope.untrustSelected = function(){
-                var selectedObjects = MassChangeService.getSelected();
-                if(Object.keys(selectedObjects).length > 0){
-                    for(var id in selectedObjects){
-                        $scope.changetrust(id, 0, false);
-                    }
-                    setTimeout(function(){
-                        $scope.load();
-                    }, 500);
-                }
-            };
-
             $scope.resetFilter = function(){
                 defaultFilter();
                 $scope.undoSelection();
             };
 
             $scope.selectAll = function(){
-                if($scope.unTrustedAgents){
-                    for(var key in $scope.unTrustedAgents){
-                        $scope.massChange[$scope.unTrustedAgents[key].Agentconnector.id] = true;
+                if($scope.pullConfigurations){
+                    for(var key in $scope.pullConfigurations){
+                        $scope.massChange[$scope.pullConfigurations[key].Agentconfigs.id] = true;
                     }
                 }
             };
@@ -121,10 +77,10 @@ angular.module('openITCOCKPIT').directive('untrustedAgentsDirective', function($
             $scope.getObjectsForDelete = function(){
                 var objects = {};
                 var selectedObjects = MassChangeService.getSelected();
-                for(var key in $scope.unTrustedAgents){
+                for(var key in $scope.pullConfigurations){
                     for(var id in selectedObjects){
-                        if(parseInt(id) === $scope.unTrustedAgents[key].Agentconnector.id){
-                            objects[id] = $scope.unTrustedAgents[key].Agentconnector.hostuuid;
+                        if(parseInt(id) === $scope.pullConfigurations[key].Agentconfig.id){
+                            objects[id] = $scope.pullConfigurations[key].Agentconfig.host.name;
                         }
                     }
                 }
@@ -133,13 +89,12 @@ angular.module('openITCOCKPIT').directive('untrustedAgentsDirective', function($
 
             $scope.getObjectForDelete = function(agent){
                 var object = {};
-                object[agent.Agentconnector.id] = agent.Agentconnector.hostuuid;
+                object[agent.Agentconfig.id] = agent.Agentconnector.hostuuid;
                 return object;
             };
 
             $scope.undoSelection();
             //$scope.load();
-            SortService.setCallback($scope.load);
 
             $scope.changepage = function(page){
                 $scope.undoSelection();
