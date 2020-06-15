@@ -166,14 +166,43 @@ class AgentconnectorController extends AppController {
         return;
     }
 
-    public function pullConfigurations() {
-        if (!$this->isAngularJsRequest()) {
+    public function pullConfigurations($action = null, $id = null) {
+        if (!$this->isApiRequest()) {
             //Only ship HTML Template
             return;
         }
 
         /** @var AgentconfigsTable $AgentconfigsTable */
         $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+        if($this->request->is('post') && $action !== null && $id !== null){
+            if($AgentconfigsTable->existsById($id)){
+                if($action == 'edit'){
+                    $Agentconfig = $AgentconfigsTable->get($id);
+                    $Agentconfig = $AgentconfigsTable->patchEntity($Agentconfig, $this->request->getData('Agentconfig'));
+                    $AgentconfigsTable->save($Agentconfig);
+                    if (!$Agentconfig->hasErrors()) {
+                        $this->set('success', true);
+                        $this->viewBuilder()->setOption('serialize', ['success']);
+                        return;
+                    } else {
+                        $this->set('errors', $Agentconfig->getErrors());
+                        $this->viewBuilder()->setOption('serialize', ['errors']);
+                        return;
+                    }
+                } else if ($action == 'delete'){
+                    $Agentconfig = $AgentconfigsTable->get($id);
+                    if ($AgentconfigsTable->delete($Agentconfig)) {
+                        $this->set('success', true);
+                        $this->viewBuilder()->setOption('serialize', ['success']);
+                        return;
+                    }
+                }
+            }
+            $this->set('success', false);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
 
         $AgentconfigsFilter = new AgentconfigsFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AgentconfigsFilter->getPage());

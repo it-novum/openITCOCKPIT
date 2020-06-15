@@ -150,7 +150,7 @@
                 <td class="width-50">
                     <div class="btn-group btn-group-xs" role="group">
                         <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
-                            <a href="javascript:void(0);"
+                            <a ng-click="openEdit(agent.Agentconfig)" href="javascript:void(0);"
                                class="btn btn-default btn-lower-padding">
                                 <i class="fa fa-cog"></i>
                             </a>
@@ -168,8 +168,7 @@
                         <div class="dropdown-menu dropdown-menu-right"
                              id="menuHack-{{agent.Agentconfig.id}}">
                             <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
-                                <a ng-click="changetrust(agent.Agentconnector.id, 1, true)"
-                                   href="javascript:void(0);" class="dropdown-item">
+                                <a ng-click="openEdit(agent.Agentconfig)" href="javascript:void(0);" class="dropdown-item">
                                     <i class="fa fa-cog"></i>
                                     <?php echo __('Edit'); ?>
                                 </a>
@@ -201,23 +200,23 @@
             <span ng-show="selectedElements > 0">({{selectedElements}})</span>
         </div>
         <div class="col-xs-12 col-md-2">
-                            <span ng-click="selectAll()" class="pointer">
-                                <i class="fa fa-lg fa-check-square"></i>
-                                <?php echo __('Select all'); ?>
-                            </span>
+            <span ng-click="selectAll()" class="pointer">
+                <i class="fa fa-lg fa-check-square"></i>
+                <?php echo __('Select all'); ?>
+            </span>
         </div>
         <div class="col-xs-12 col-md-2">
-                            <span ng-click="undoSelection()" class="pointer">
-                                <i class="fa fa-lg fa-square"></i>
-                                <?php echo __('Undo selection'); ?>
-                            </span>
+            <span ng-click="undoSelection()" class="pointer">
+                <i class="fa fa-lg fa-square"></i>
+                <?php echo __('Undo selection'); ?>
+            </span>
         </div>
         <?php if ($this->Acl->hasPermission('delete', 'agentconnector')): ?>
             <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fa fa-lg fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
+                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                    <i class="fa fa-lg fa-trash"></i>
+                    <?php echo __('Delete all'); ?>
+                </span>
             </div>
         <?php endif; ?>
     </div>
@@ -225,4 +224,97 @@
     <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
     <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
     <?php echo $this->element('paginator_or_scroll'); ?>
+</div>
+
+
+<div id="editAgentPullConfiguration" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-edit"></i>
+                    <?php echo __('Edit agent pull configuration'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="card card-body">
+                        <div class="form-group required">
+                            <label for="port" class="control-label required">
+                                <?php echo __('Port'); ?>
+                            </label>
+                            <input id="port" class="form-control" ng-model="edit.port"
+                                   type="number" min="0" max="65535">
+                            <span class="help-block">
+                                <?php echo __('Port of the agent webserver'); ?>
+                            </span>
+                        </div>
+
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="use_https" class="custom-control-input"
+                                   name="checkbox" ng-model="edit.use_https">
+                            <label class="custom-control-label" for="use_https"><?php echo __('Use HTTPS'); ?></label>
+                        </div>
+
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="insecure" class="custom-control-input"
+                                   name="checkbox" ng-model="edit.insecure">
+                            <label class="custom-control-label" for="insecure"><?php echo __('Allow insecure'); ?></label>
+                            <span class="help-block">
+                                <?php echo __('Allow insecure connections (recommended for an easy auto setup)'); ?>
+                            </span>
+                        </div>
+
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="proxy" class="custom-control-input"
+                                   name="checkbox" ng-model="edit.proxy">
+                            <label class="custom-control-label" for="proxy"><?php echo __('Use proxy'); ?></label>
+                        </div>
+
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="basic_auth" class="custom-control-input"
+                                   name="checkbox" ng-model="edit.basic_auth">
+                            <label class="custom-control-label" for="basic_auth"><?php echo __('Enable basic authentication'); ?></label>
+                        </div>
+
+                        <div class="form-group required" ng-show="edit.basic_auth">
+                            <label for="username" class="control-label required">
+                                <?php echo __('Basic auth username'); ?>
+                            </label>
+                            <input id="username" class="form-control" ng-model="edit.username" type="text">
+                        </div>
+
+                        <div class="form-group required" ng-show="edit.basic_auth">
+                            <label for="password" class="control-label required">
+                                <?php echo __('Basic auth password'); ?>
+                            </label>
+                            <input id="password" class="form-control" ng-model="edit.password" type="text">
+                        </div>
+
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="push_noticed" class="custom-control-input"
+                                   name="checkbox" ng-model="edit.push_noticed">
+                            <label class="custom-control-label" for="push_noticed"><?php echo __('Push noticed'); ?></label>
+                            <span class="help-block">
+                                <?php echo __('The agent of this host pushed its data to openITCOCKPIT'); ?>
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" ng-click="editConfig()">
+                    <?php echo __('Save'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

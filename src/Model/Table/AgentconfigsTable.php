@@ -111,7 +111,7 @@ class AgentconfigsTable extends Table {
             return false;
         }
 
-        if ($context['data']['basic_auth'] === 0) {
+        if ($context['data']['basic_auth'] === 0 || $context['data']['basic_auth'] === false) {
             //Basic auth disabled - ok
             return true;
         }

@@ -39,6 +39,25 @@
     </li>
 </ol>
 
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true"><i class="fas fa-times"></i></span>
+    </button>
+    <div class="d-flex align-items-center">
+        <div class="alert-icon width-3">
+            <div class='icon-stack icon-stack-sm'>
+                <i class="base base-7 icon-stack-3x opacity-100 color-warning-400"></i>
+                <i class="base base-7 icon-stack-2x opacity-100 color-warning-100"></i>
+                <i class="fa fa-exclamation icon-stack-1x opacity-100 color-white"></i>
+            </div>
+        </div>
+        <div class="flex-1">
+            <span class="h5 m-0 fw-700"><?php echo __('Attention!'); ?></span>
+            <?php echo __("Do not change values, where you don't know what you are doing!"); ?>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-xl-12">
         <div id="panel-1" class="panel">

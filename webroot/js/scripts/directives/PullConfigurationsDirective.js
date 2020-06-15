@@ -8,6 +8,20 @@ angular.module('openITCOCKPIT').directive('pullConfigurationsDirective', functio
         },
 
         controller: function($scope){
+            $scope.resetEditFields = function(){
+                $scope.editId = null;
+                $scope.edit = {
+                    port: null,
+                    use_https: null,
+                    insecure: null,
+                    proxy: null,
+                    basic_auth: null,
+                    username: null,
+                    password: null,
+                    push_noticed: null,
+                };
+            };
+            $scope.resetEditFields();
             var defaultFilter = function(){
                 $scope.filter = {
                     Host: {
@@ -22,7 +36,7 @@ angular.module('openITCOCKPIT').directive('pullConfigurationsDirective', functio
             $scope.pullConfigurations = {};
             $scope.massChange = {};
             $scope.selectedElements = 0;
-            $scope.deleteUrl = '/agentconnector/delete/';
+            $scope.deleteUrl = '/agentconnector/pullConfigurations/delete/';
             $scope.initialized = false;
 
             $scope.load = function(){
@@ -63,9 +77,48 @@ angular.module('openITCOCKPIT').directive('pullConfigurationsDirective', functio
             $scope.selectAll = function(){
                 if($scope.pullConfigurations){
                     for(var key in $scope.pullConfigurations){
-                        $scope.massChange[$scope.pullConfigurations[key].Agentconfigs.id] = true;
+                        $scope.massChange[$scope.pullConfigurations[key].Agentconfig.id] = true;
                     }
                 }
+            };
+
+            $scope.openEdit = function(agentconfig){
+                $scope.resetEditFields();
+                $scope.editId = agentconfig.id;
+                $scope.edit.port = agentconfig.port;
+                $scope.edit.use_https = agentconfig.use_https;
+                $scope.edit.insecure = agentconfig.insecure;
+                $scope.edit.proxy = agentconfig.proxy;
+                $scope.edit.basic_auth = agentconfig.basic_auth;
+                $scope.edit.username = agentconfig.username;
+                $scope.edit.password = agentconfig.password;
+                $scope.edit.push_noticed = agentconfig.push_noticed;
+                $('#editAgentPullConfiguration').modal('show');
+            }
+
+            $scope.editConfig = function(){
+                $http.post('/agentconnector/pullConfigurations/edit/' + $scope.editId + '.json', {
+                    Agentconfig: $scope.edit
+                }).then(function(result){
+                    if(result.data.success && result.data.success === true){
+                        NotyService.genericSuccess();
+                        $scope.load();
+                        $('#editAgentPullConfiguration').modal('hide');
+                    } else {
+                        NotyService.genericError();
+                        if(result.data.errors){
+                            $scope.errors = result.data.errors;
+                        }
+                    }
+                }, function errorCallback(result){
+                    if(result.status === 403){
+                        $state.go('403');
+                    }
+
+                    if(result.status === 404){
+                        $state.go('404');
+                    }
+                });
             };
 
             $scope.undoSelection = function(){
@@ -89,7 +142,7 @@ angular.module('openITCOCKPIT').directive('pullConfigurationsDirective', functio
 
             $scope.getObjectForDelete = function(agent){
                 var object = {};
-                object[agent.Agentconfig.id] = agent.Agentconnector.hostuuid;
+                object[agent.Agentconfig.id] = agent.Agentconfig.host.name;
                 return object;
             };
 
