@@ -2,7 +2,7 @@
 
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header bg-color-danger">
+            <div class="modal-header bg-color-danger txt-color-white">
                 <h5 class="modal-title">
                     <?php echo __('Attention!'); ?>
                 </h5>
