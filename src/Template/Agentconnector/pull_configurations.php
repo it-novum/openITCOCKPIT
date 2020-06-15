@@ -23,6 +23,8 @@
 //  confirmation.
 ?>
 
+<massdelete></massdelete>
+
 <div class="panel-content">
 
     <div class="list-filter card margin-bottom-10" ng-show="showFilter">
@@ -187,10 +189,8 @@
             </tr>
             </tbody>
         </table>
-    </div>
-    <div class="row margin-top-10 margin-bottom-10">
-        <div class="row margin-top-10 margin-bottom-10" ng-show="pullConfigurations.length == 0">
-            <div class="col-xs-12 text-center txt-color-red italic">
+        <div class="col-12 margin-top-10 margin-bottom-10" ng-show="pullConfigurations.length == 0">
+            <div class="text-center txt-color-red italic">
                 <?php echo __('No entries match the selection'); ?>
             </div>
         </div>

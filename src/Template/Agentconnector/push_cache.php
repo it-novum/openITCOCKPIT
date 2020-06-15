@@ -23,6 +23,8 @@
 //  confirmation.
 ?>
 
+<massdelete></massdelete>
+
 <div class="panel-content">
 
     <div class="list-filter card margin-bottom-10" ng-show="showFilter">
@@ -83,7 +85,9 @@
                                ng-model="massChange[agent.Agenthostscache.id]">
                     <?php endif; ?>
                 </td>
-                <td><a ui-sref="HostsBrowser({id: agent.Agenthostscache.host.id})">{{agent.Agenthostscache.host.name}}</a></td>
+                <td>
+                    <a ui-sref="HostsBrowser({id: agent.Agenthostscache.host.id})">{{agent.Agenthostscache.host.name}}</a>
+                </td>
                 <td>{{agent.Agenthostscache.modified}}
                 </td>
                 <td class="width-50">
@@ -107,8 +111,8 @@
                         <div class="dropdown-menu dropdown-menu-right"
                              id="menuHack-{{agent.Agenthostscache.id}}">
                             <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
-                                <a ng-click="downloadPushedCheckdata(agent.Agenthostscache.id)"
-                                   href="javascript:void(0);" class="dropdown-item">
+                                <a href="/agentconnector/downloadPushedCheckdata/{{agent.Agenthostscache.id}}.json?angular=true"
+                                   target="_blank" class="dropdown-item">
                                     <i class="fa fa-download"></i>
                                     <?php echo __('Download checkdata'); ?>
                                 </a>
@@ -128,10 +132,8 @@
             </tr>
             </tbody>
         </table>
-    </div>
-    <div class="row margin-top-10 margin-bottom-10">
-        <div class="row margin-top-10 margin-bottom-10" ng-show="pushCache.length == 0">
-            <div class="col-xs-12 text-center txt-color-red italic">
+        <div class="col-12 margin-top-10 margin-bottom-10" ng-show="pushCache.length == 0">
+            <div class="text-center txt-color-red italic">
                 <?php echo __('No entries match the selection'); ?>
             </div>
         </div>

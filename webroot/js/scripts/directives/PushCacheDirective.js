@@ -22,7 +22,7 @@ angular.module('openITCOCKPIT').directive('pushCacheDirective', function($http, 
             $scope.pushCache = {};
             $scope.massChange = {};
             $scope.selectedElements = 0;
-            $scope.deleteUrl = '/agentconnector/delete/';
+            $scope.deleteUrl = '/agentconnector/pushCache/';
             $scope.initialized = false;
 
             $scope.load = function(){
@@ -52,10 +52,6 @@ angular.module('openITCOCKPIT').directive('pushCacheDirective', function($http, 
                         $state.go('404');
                     }
                 });
-            }
-
-            $scope.downloadPushedCheckdata = function(id){
-                window.location.href = '/agentconnector/downloadPushedCheckdata/' + id + '.json?angular=true';
             }
 
             $scope.resetFilter = function(){

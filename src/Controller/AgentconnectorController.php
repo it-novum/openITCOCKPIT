@@ -188,8 +188,11 @@ class AgentconnectorController extends AppController {
         $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
-    public function pushCache() {
-        if (!$this->isAngularJsRequest()) {
+    /**
+     * @param null $id
+     */
+    public function pushCache($id = null) {
+        if (!$this->isApiRequest()) {
             //Only ship HTML Template
             return;
         }
@@ -197,9 +200,22 @@ class AgentconnectorController extends AppController {
         /** @var AgenthostscacheTable $AgenthostscacheTable */
         $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
 
+        if($this->request->is('post') && $id !== null){
+            if($AgenthostscacheTable->existsById($id)){
+                $Agenthostscache = $AgenthostscacheTable->get($id);
+                if ($AgenthostscacheTable->delete($Agenthostscache)) {
+                    $this->set('success', true);
+                    $this->viewBuilder()->setOption('serialize', ['success']);
+                    return;
+                }
+            }
+            $this->set('success', false);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
         $AgenthostscacheFilter = new AgenthostscacheFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AgenthostscacheFilter->getPage());
-
         $pushCache = $AgenthostscacheTable->getForList($AgenthostscacheFilter, $PaginateOMat);
 
         $this->set('pushCache', $pushCache);
