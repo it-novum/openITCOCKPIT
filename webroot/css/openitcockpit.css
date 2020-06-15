@@ -1223,3 +1223,7 @@ label.menu-open-button:hover {
     padding-top: 5px;
     padding-left: 5px;
 }
+
+.modal-header {
+    color: white;
+}
