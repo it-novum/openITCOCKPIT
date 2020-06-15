@@ -113,7 +113,8 @@
                             data-toggle="modal" data-target="#tabRotationModal">
                         <i class="fa fa-spinner"></i>
                     </button>
-                    <button class="btn btn-xs mr-1 shadow-0 btn-primary"
+                    <button class="btn btn-xs mr-1 shadow-0"
+                            ng-class="{ 'btn-danger': dashboardIsLocked, 'btn-primary': !dashboardIsLocked }"
                             title="<?php echo __('Lock for edit'); ?>"
                             ng-click="lockOrUnlockDashboard()">
                         <i class="fa fa-lock"
@@ -121,9 +122,9 @@
                     </button>
 
 
-                    <div class="btn-group btn-group-xs margin-right-5" ng-hide="dashboardIsLocked">
+                    <div class="btn-group btn-group-xs margin-right-5">
                         <button class="btn btn-success dropdown-toggle waves-effect waves-themed" type="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="dashboardIsLocked">
                             <?php echo __('Add Widget'); ?>
                         </button>
                         <div class="dropdown-menu" x-placement="bottom-start"
