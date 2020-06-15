@@ -13787,283 +13787,283 @@ msgstr "Создать шаблон службы"
 
 #: src/Template/Servicetemplates/add_servicetemplates_to_servicetemplategroup.php:32
 msgid "Append service template/s to service template group"
-msgstr "Добавить шаблон (ы) службы в группу шаблонов служб"
+msgstr "Добавить шаблон(ы) службы в группу шаблонов служб"
 
 #: src/Template/Servicetemplates/add_servicetemplates_to_servicetemplategroup.php:41
 msgid "Selected service templates"
-msgstr ""
+msgstr "Выбранные шаблоны служб"
 
 #: src/Template/Servicetemplates/add_servicetemplates_to_servicetemplategroup.php:61
 msgid "Append existing service template group"
-msgstr ""
+msgstr "Добавить существующую группу шаблонов служб"
 
 #: src/Template/Servicetemplates/copy.php:47
 msgid "Copy service template/s"
-msgstr ""
+msgstr "Скопировать шаблон(ы) служб"
 
 #: src/Template/Servicetemplates/copy.php:62
 msgid "Source service template:"
-msgstr ""
+msgstr "Исходный шаблон службы:"
 
 #: src/Template/Servicetemplates/copy.php:77
 msgid "Name of the new service template"
-msgstr ""
+msgstr "Наименование нового шаблона службы"
 
 #: src/Template/Servicetemplates/copy.php:167
 msgid "Copy service templates"
-msgstr ""
+msgstr "Скопируйте шаблоны служб"
 
 #: src/Template/Servicetemplates/edit.php:48
 msgid "Edit service template:"
-msgstr ""
+msgstr "Изменить шаблон службы"
 
 #: src/Template/Servicetemplates/edit.php:844
 msgid "Update service template"
-msgstr ""
+msgstr "Обновить шаблон службы"
 
 #: src/Template/Servicetemplates/index.php:101
 msgid "Filter by service template description"
-msgstr ""
+msgstr "Фильтровать по описанию шаблона службы"
 
 #: src/Template/Servicetemplates/index.php:128
 msgid "Filter by service template types"
-msgstr ""
+msgstr "Фильтр по типам шаблонов служб"
 
 #: src/Template/Servicetemplates/index.php:299
 msgid "Add to service template group"
-msgstr ""
+msgstr "Добавить в группу шаблонов служб"
 
 #: src/Template/Servicetemplates/used_by.php:58
 msgid "services."
-msgstr ""
+msgstr "служб."
 
 #: src/Template/Servicetemplates/used_by.php:75
 msgid " Include disabled services"
-msgstr ""
+msgstr "Включить отключенные службы"
 
 #: src/Template/Servicetemplates/used_by.php:187
 msgid "This service template is not used by any services"
-msgstr ""
+msgstr "Этот шаблон службы не используется никакими службами"
 
 #: src/Template/Statehistories/host.php:38
 #: src/Template/Statehistories/service.php:38
 msgid "state history"
-msgstr ""
+msgstr "история состояния"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:33
 #: src/Template/Statistics/index.php:48
 msgid "We ask for your help"
-msgstr ""
+msgstr "Мы просим вашей помощи"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:42
 msgid "\n                        We are always interested to improve openITCOCKPIT with every new version.\n                        You can help us, by submitting anonymous statistical information to us.\n                        "
-msgstr ""
+msgstr "\n                        Мы всегда заинтересованы в улучшении openITCOCKPIT с каждой новой версией.\n                        Вы можете помочь нам, предоставив нам анонимную статистическую информацию.\n                        "
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:52
 #: src/Template/Statistics/index.php:79
 msgid "What data do we collect?"
-msgstr ""
+msgstr "Какие данные мы собираем?"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:55
 #: src/Template/Statistics/index.php:82
 msgid "We are not interested in who you are, in which company you work or any other personal data."
-msgstr ""
+msgstr "Нас не интересует, кто вы, в какой компании вы работаете или какие-либо другие личные данные."
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:57
 #: src/Template/Statistics/index.php:84
 msgid "We just ask you, to provide us system metrics like:"
-msgstr ""
+msgstr "Мы просто просим вас предоставить нам системные показатели, такие как:"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:60
 #: src/Template/Statistics/index.php:87
 msgid "CPU load, number of CPU cores and CPU model"
-msgstr ""
+msgstr "Загрузка процессора, количество ядер процессора и модель процессора"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:61
 #: src/Template/Statistics/index.php:88
 msgid "Memory and swap usage"
-msgstr ""
+msgstr "Использование памяти и подкачки"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:62
 #: src/Template/Statistics/index.php:89
 msgid "Version of used monitoring engine"
-msgstr ""
+msgstr "Версия используемого двигателя мониторинга"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:63
 #: src/Template/Statistics/index.php:90
 msgid "Version of PHP"
-msgstr ""
+msgstr "Версия PHP"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:64
 #: src/Template/Statistics/index.php:91
 msgid "Version of openITCOCKPIT and installed openITCOCKPIT modules"
-msgstr ""
+msgstr "Версия openITCOCKPIT и установленные модули openITCOCKPIT"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:65
 #: src/Template/Statistics/index.php:92
 msgid "Number of monitored hosts and services"
-msgstr ""
+msgstr "Количество контролируемых узлов и служб"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:66
 #: src/Template/Statistics/index.php:93
 msgid "Used operating system"
-msgstr ""
+msgstr "Используемая операционная система"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:67
 #: src/Template/Statistics/index.php:94
 msgid "MySQL usage statistics like number of select, insert and delete statements"
-msgstr ""
+msgstr "Статистика использования MySQL, такая как количество операторов select, insert и delete"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:71
 msgid "Show me all metrics you like to collect."
-msgstr ""
+msgstr "Покажите мне все метрики, которые вы хотели бы собрать."
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:77
 #: src/Template/Statistics/index.php:99
 msgid "Do you track users on the interface?"
-msgstr ""
+msgstr "Вы отслеживаете пользователей на интерфейсе?"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:81
 #: src/Template/Statistics/index.php:103
 msgid "No. We are not interested in any user or user behavior data."
-msgstr ""
+msgstr "Нет. Нас не интересуют какие-либо данные о поведении пользователя или пользователя."
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:88
 #: src/Template/Statistics/index.php:142
 msgid "Why do you ask for this data?"
-msgstr ""
+msgstr "Почему вы запрашиваете эти данные?"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:93
 #: src/Template/Statistics/index.php:145
 msgid "\n                            This information influences decisions such as which openITCOCKPIT modules should\n                            get new features or which operating system is used by most of the users.\n\n                            In addition the data will help use to optimize the database schema and improve scalability of\n                            openITCOCKPIT.\n                        "
-msgstr ""
+msgstr "\n                            Эта информация влияет на решения, например, какие модули openITCOCKPIT должны\n                            получить новые функции или какая операционная система используется большинством пользователей.\n\n                            Кроме того, данные помогут использовать для оптимизации схемы базы данных и улучшить масштабируемость\n                            openITCOCKPIT.\n                        "
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:105
 msgid "Ask me again"
-msgstr ""
+msgstr "Спроси меня снова"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:108
 msgid "I want more information"
-msgstr ""
+msgstr "Я хочу больше информации"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:111
 msgid "Yes, I want to help"
-msgstr ""
+msgstr "Да я хочу помочь"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:114
 msgid "No, thanks"
-msgstr ""
+msgstr "Нет, спасибо"
 
 #: src/Template/Statistics/ask_anonymous_statistics.php:124
 msgid "Many thanks for your support!"
-msgstr ""
+msgstr "Большое спасибо за поддержку!"
 
 #: src/Template/Statistics/index.php:34
 #: src/Template/Statistics/index.php:47
 #: src/Template/element/sidebar.php:98
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:565
 msgid "Anonymous statistics"
-msgstr ""
+msgstr "Анонимная статистика"
 
 #: src/Template/Statistics/index.php:56
 msgid "Sending of anonymous statistics is currently disabled."
-msgstr ""
+msgstr "Отправка анонимной статистики в настоящее время отключена."
 
 #: src/Template/Statistics/index.php:63
 msgid "Sending of anonymous statistics is currently disabled. Waiting for your approval."
-msgstr ""
+msgstr "Отправка анонимной статистики в настоящее время отключена. Жду вашего одобрения."
 
 #: src/Template/Statistics/index.php:71
 msgid "Sending of anonymous statistics is currently enabled. Many thanks for your support!"
-msgstr ""
+msgstr "Отправка анонимной статистики в настоящее время включена. Большое спасибо за поддержку!"
 
 #: src/Template/Statistics/index.php:108
 msgid "What records would you like to send exactly?"
-msgstr ""
+msgstr "Какие записи вы бы хотели отправить?"
 
 #: src/Template/Statistics/index.php:111
 msgid "To be as transparent as possible, we show you all records that will be send to us. (This data was generated on your system.)"
-msgstr ""
+msgstr "Чтобы быть максимально прозрачным, мы показываем вам все записи, которые будут отправлены нам. (Эти данные были созданы в вашей системе.)"
 
 #: src/Template/Statistics/index.php:121
 msgid "What is the"
-msgstr ""
+msgstr "Что"
 
 #: src/Template/Statistics/index.php:124
 msgid "The system_id is a unique number that was generated on your system.\n                                The system_id is included in every request, to enable our database to locate your record and update it.\n                        "
-msgstr ""
+msgstr "system_id - это уникальный номер, который был сгенерирован в вашей системе.\n                                system_id включен в каждый запрос, чтобы наша база данных могла найти вашу запись и обновить её.\n                        "
 
 #: src/Template/Statistics/index.php:130
 msgid "The system_id will not be linked to any other records."
-msgstr ""
+msgstr "system_id не будет связан ни с какими другими записями."
 
 #: src/Template/Statistics/index.php:134
 msgid "If you want to change your system_id, you can delete the file"
-msgstr ""
+msgstr "Если вы хотите изменить системный идентификатор (system_id), вы можете удалить файл"
 
 #: src/Template/Statistics/index.php:136
 msgid "openITCOCKPIT will generate a new system_id, if required."
-msgstr ""
+msgstr "openITCOCKPIT сгенерирует новый system_id, если потребуется."
 
 #: src/Template/Statusmaps/host_and_services_summary_status.php:85
 msgid "TOTAL:"
-msgstr ""
+msgstr "ВСЕГО:"
 
 #: src/Template/Statusmaps/index.php:34
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:84
 msgid "Status Map"
-msgstr ""
+msgstr "Карта состояния"
 
 #: src/Template/Statusmaps/index.php:70
 msgid "Status map"
-msgstr ""
+msgstr "Карта состояния"
 
 #: src/Template/Statusmaps/index.php:109
 msgid "Consider parent child relations"
-msgstr ""
+msgstr "Рассмотрим родительские отношения узлов"
 
 #: src/Template/Statusmaps/index.php:168
 msgid "Acknowledged and in downtime"
-msgstr ""
+msgstr "Признан и в обслуживании"
 
 #: src/Template/Statusmaps/index.php:189
 msgid "Loading visualization for "
-msgstr ""
+msgstr "Загрузка визуализации для "
 
 #: src/Template/Statusmaps/index.php:192
 msgid " nodes"
-msgstr ""
+msgstr " узлов"
 
 #: src/Template/Supports/issue.php:34
 #: src/Template/Supports/issue.php:48
 #: src/Template/element/sidebar.php:108
 msgid "Support"
-msgstr ""
+msgstr "Служба поддержки"
 
 #: src/Template/Supports/issue.php:38
 msgid "Issue"
-msgstr ""
+msgstr "Проблема"
 
 #: src/Template/Supports/issue.php:49
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:667
 msgid "Report an issue"
-msgstr ""
+msgstr "Сообщить о проблеме"
 
 #: src/Template/Systemdowntimes/add.php:32
 msgid "create"
-msgstr ""
+msgstr "создайте"
 
 #: src/Template/Systemdowntimes/add.php:50
 msgid "Host downtime"
-msgstr ""
+msgstr "Обслуживание узла"
 
 #: src/Template/Systemdowntimes/add.php:54
 msgid "Hostgroup downtime"
-msgstr ""
+msgstr "Обслуживание для группы узлов"
 
 #: src/Template/Systemdowntimes/add.php:58
 msgid "Service downtime"
-msgstr ""
+msgstr "Обслуживание служб"
 
 #: src/Template/Systemdowntimes/add.php:74
 #: src/Template/Systemdowntimes/add.php:148
@@ -14072,17 +14072,17 @@ msgstr ""
 #: src/Template/Systemdowntimes/add_hostgroupdowntime.php:91
 #: src/Template/Systemsettings/index.php:160
 msgid "Individual host"
-msgstr ""
+msgstr "Индивидуальный узел"
 
 #: src/Template/Systemdowntimes/add.php:75
 #: src/Template/Systemdowntimes/add.php:149
 msgid "Host and dependent Hosts (triggered)"
-msgstr ""
+msgstr "Узел и зависимые узлы (запущены)"
 
 #: src/Template/Systemdowntimes/add.php:76
 #: src/Template/Systemdowntimes/add.php:150
 msgid "Host and dependent Hosts (non-triggered)"
-msgstr ""
+msgstr "Узел и зависимые узлы (не запущены)"
 
 #: src/Template/Systemdowntimes/add.php:85
 #: src/Template/Systemdowntimes/add.php:159
@@ -14091,7 +14091,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/add_hostgroupdowntime.php:128
 #: src/Template/Systemdowntimes/add_servicedowntime.php:106
 msgid "Recurring downtime"
-msgstr ""
+msgstr "Периодическое обслуживание"
 
 #: src/Template/Systemdowntimes/add.php:106
 #: src/Template/Systemdowntimes/add.php:180
@@ -14104,7 +14104,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/node.php:229
 #: src/Template/Systemdowntimes/service.php:247
 msgid "Weekdays"
-msgstr ""
+msgstr "Будни"
 
 #: src/Template/Systemdowntimes/add.php:107
 #: src/Template/Systemdowntimes/add.php:181
@@ -14113,7 +14113,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/add_hostgroupdowntime.php:202
 #: src/Template/Systemdowntimes/add_servicedowntime.php:180
 msgid "1,2,3,4,5 or <blank>"
-msgstr ""
+msgstr "1,2,3,4,5 или <пусто>"
 
 #: src/Template/Systemdowntimes/add.php:107
 #: src/Template/Systemdowntimes/add.php:181
@@ -14126,26 +14126,26 @@ msgstr ""
 #: src/Template/Systemdowntimes/node.php:231
 #: src/Template/Systemdowntimes/service.php:249
 msgid "Days of month"
-msgstr ""
+msgstr "Дни месяца"
 
 #: src/Template/Systemdowntimes/add_containerdowntime.php:50
 msgid "Create new container downtime"
-msgstr ""
+msgstr "Создать новое обслуживание контейнера"
 
 #: src/Template/Systemdowntimes/add_containerdowntime.php:92
 msgid "Recursive container lookup"
-msgstr ""
+msgstr "Рекурсивный поиск контейнера"
 
 #: src/Template/Systemdowntimes/add_containerdowntime.php:95
 msgid "Will also create a downtime for all children containers"
-msgstr ""
+msgstr "Также создаст обслуживание для всех детских контейнеров"
 
 #: src/Template/Systemdowntimes/add_containerdowntime.php:115
 #: src/Template/Systemdowntimes/add_hostdowntime.php:98
 #: src/Template/Systemdowntimes/add_hostgroupdowntime.php:98
 #: src/Template/Systemsettings/index.php:162
 msgid "Host including services"
-msgstr ""
+msgstr "Узел с службами"
 
 #: src/Template/Systemdowntimes/add_containerdowntime.php:154
 #: src/Template/Systemdowntimes/add_hostdowntime.php:137
@@ -14157,7 +14157,7 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:253
 #: src/Template/Systemfailures/index.php:124
 msgid "Start time"
-msgstr ""
+msgstr "Время начала"
 
 #: src/Template/Systemdowntimes/add_containerdowntime.php:160
 #: src/Template/Systemdowntimes/add_containerdowntime.php:254
@@ -14172,19 +14172,19 @@ msgstr ""
 #: src/Template/Systemdowntimes/add_servicedowntime.php:215
 #: src/Template/Systemdowntimes/add_servicedowntime.php:248
 msgid "hh:mm"
-msgstr ""
+msgstr "hh:mm"
 
 #: src/Template/Systemdowntimes/add_hostdowntime.php:50
 msgid "Create new host downtime"
-msgstr ""
+msgstr "Создать новое обслуживание узла"
 
 #: src/Template/Systemdowntimes/add_hostgroupdowntime.php:50
 msgid "Create new host group downtime"
-msgstr ""
+msgstr "Создать новое обслуживание для группы узлов"
 
 #: src/Template/Systemdowntimes/add_servicedowntime.php:50
 msgid "Create new service downtime"
-msgstr ""
+msgstr "Создать новое обслуживание для службы"
 
 #: src/Template/Systemdowntimes/host.php:34
 #: src/Template/Systemdowntimes/host.php:62
@@ -14195,46 +14195,46 @@ msgstr ""
 #: src/Template/Systemdowntimes/service.php:34
 #: src/Template/Systemdowntimes/service.php:62
 msgid "Recurring downtimes"
-msgstr ""
+msgstr "Периодическое обслуживание"
 
 #: src/Template/Systemdowntimes/host.php:51
 #: src/Template/Systemdowntimes/hostgroup.php:51
 #: src/Template/Systemdowntimes/node.php:51
 #: src/Template/Systemdowntimes/service.php:51
 msgid "Recurring downtimes with deleted objects will be deleted automatically by the cronjob"
-msgstr ""
+msgstr "Повторяющиеся обслуживания с удаленными объектами будут автоматически удаляться заданием cron"
 
 #: src/Template/Systemdowntimes/host.php:280
 #: src/Template/Systemdowntimes/hostgroup.php:280
 #: src/Template/Systemdowntimes/node.php:274
 #: src/Template/Systemdowntimes/service.php:308
 msgid "Every defined weekday"
-msgstr ""
+msgstr "Каждый определенный день недели"
 
 #: src/Template/Systemdowntimes/node.php:165
 msgid "Filter by container name"
-msgstr ""
+msgstr "Фильтр по имени контейнера"
 
 #: src/Template/Systemfailures/add.php:34
 #: src/Template/Systemfailures/add.php:61
 msgid "System failure"
-msgstr ""
+msgstr "Отказ системы"
 
 #: src/Template/Systemfailures/add.php:46
 msgid "Create new system failure"
-msgstr ""
+msgstr "Создать новый отказ системы"
 
 #: src/Template/Systemfailures/add.php:61
 msgid " created successfully"
-msgstr ""
+msgstr "успешно создан"
 
 #: src/Template/Systemfailures/add.php:66
 msgid "What are \"System Failures\" for?"
-msgstr ""
+msgstr "Для чего нужны \"системные сбои\"?"
 
 #: src/Template/Systemfailures/add.php:67
 msgid "<i>System failures</i> are outages of the openITCOCKPIT server itself. They need to be created manually."
-msgstr ""
+msgstr "<i>Системные сбои </i> - это простои самого сервера openITCOCKPIT. Их нужно создавать вручную."
 
 #: src/Template/Systemfailures/add.php:69
 msgid "Timeframes defined by System failures will be ignored while report generation."
