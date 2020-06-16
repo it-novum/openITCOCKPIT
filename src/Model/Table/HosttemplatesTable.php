@@ -1295,4 +1295,16 @@ class HosttemplatesTable extends Table {
 
         return $this->emptyArrayIfNull($query->toArray());
     }
+
+    public function getAll() {
+        return $this
+            ->find()
+            ->select([
+                'id',
+                'name'
+            ])
+            ->disableHydration()
+            ->all()
+            ;
+    }
 }
