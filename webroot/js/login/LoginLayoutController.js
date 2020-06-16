@@ -111,6 +111,7 @@ loginApp.controller("LoginLayoutController", function($scope, $http){
                 }
             },
             "retina_detect": true,
+            "fpsLimit": 30,
             "config_demo": {
                 "hide_card": false,
                 "background_color": "#b61924",
@@ -230,7 +231,8 @@ loginApp.controller("LoginLayoutController", function($scope, $http){
                     }
                 }
             },
-            "retina_detect": true
+            "retina_detect": true,
+            "fpsLimit": 30
         };
     };
 
@@ -342,7 +344,8 @@ loginApp.controller("LoginLayoutController", function($scope, $http){
                     }
                 }
             },
-            "retina_detect": true
+            "retina_detect": true,
+            "fpsLimit": 30
         };
     };
 
@@ -454,7 +457,8 @@ loginApp.controller("LoginLayoutController", function($scope, $http){
                     }
                 }
             },
-            "retina_detect": true
+            "retina_detect": true,
+            "fpsLimit": 30
         };
     };
 
@@ -491,7 +495,7 @@ loginApp.controller("LoginLayoutController", function($scope, $http){
 
             if(disableLoginAnimation === false){ //disableLoginAnimation gets set in login layout
                 if(particlesConfig){
-                    particlesJS('particles-js',
+                    particlesJS('tsparticles',
                         particlesConfig
                     );
                 }

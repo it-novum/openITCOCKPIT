@@ -28,7 +28,7 @@
  */
 ?>
 
-<div id="particles-js" class="peer peer-greed h-100 pos-r">
+<div id="tsparticles" class="peer peer-greed h-100 pos-r">
     <!-- layout fix -->
 </div>
 

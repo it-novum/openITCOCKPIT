@@ -20,74 +20,86 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.restore = function(){
-            $http.post("/backups/restore.json", {
-                backupfile: $scope.selectedBackup
-            }).then(function(result){
-                if(result.data.error === true){
-                    NotyService.genericError({message: 'Restore was not successful.'});
-                    return;
-                }
+            if($scope.selectedBackup && $scope.selectedBackup !== ''){
+                $http.post("/backups/restore.json", {
+                    backupfile: $scope.selectedBackup
+                }).then(function(result){
+                    if(result.data.error === true){
+                        NotyService.genericError({message: 'Restore was not successful.'});
+                        return;
+                    }
 
-                NotyService.info();
-                $scope.isActionRunning = true;
-                $scope.restoreRunning = true;
-                $scope.startCheckInterval(true, 'restore');
-            }, function errorCallback(result){
-                if(result.status === 403){
-                    $state.go('403');
-                }
+                    NotyService.info();
+                    $scope.isActionRunning = true;
+                    $scope.restoreRunning = true;
+                    $scope.startCheckInterval(true, 'restore');
+                }, function errorCallback(result){
+                    if(result.status === 403){
+                        $state.go('403');
+                    }
 
-                if(result.status === 404){
-                    $state.go('404');
-                }
-            });
+                    if(result.status === 404){
+                        $state.go('404');
+                    }
+                });
+            }else{
+                NotyService.genericError({message: 'Please select a backupfile.'});
+            }
         };
 
         $scope.delete = function(){
-            $http.post("/backups/deleteBackupFile.json", {
-                filename: $scope.selectedBackup
-            }).then(function(result){
-                if(result.data.deleteFinished.result.success !== true){
-                    NotyService.genericError({message: 'Deletion was not successful.'});
-                    return;
-                }
-                NotyService.genericSuccess({message: 'Backup deleted successfully.'});
-                if(result.data.deleteFinished.backup_files){
-                    $scope.backupFiles = result.data.deleteFinished.backup_files;
-                }
-            }, function errorCallback(result){
-                if(result.status === 403){
-                    $state.go('403');
-                }
+            if($scope.selectedBackup && $scope.selectedBackup !== ''){
+                $http.post("/backups/deleteBackupFile.json", {
+                    filename: $scope.selectedBackup
+                }).then(function(result){
+                    if(result.data.deleteFinished.result.success !== true){
+                        NotyService.genericError({message: 'Deletion was not successful.'});
+                        return;
+                    }
+                    NotyService.genericSuccess({message: 'Backup deleted successfully.'});
+                    if(result.data.deleteFinished.backup_files){
+                        $scope.backupFiles = result.data.deleteFinished.backup_files;
+                    }
+                }, function errorCallback(result){
+                    if(result.status === 403){
+                        $state.go('403');
+                    }
 
-                if(result.status === 404){
-                    $state.go('404');
-                }
-            });
+                    if(result.status === 404){
+                        $state.go('404');
+                    }
+                });
+            }else{
+                NotyService.genericError({message: 'Please select a backupfile.'});
+            }
         };
 
         $scope.backup = function(){
-            $http.post("/backups/backup.json", {
-                filename: $scope.filenameForBackup
-            }).then(function(result){
-                if(result.data.error === true){
-                    NotyService.genericError({message: 'Backup was not successful. Your filename could be invalid.'});
-                    return;
-                }
+            if($scope.filenameForBackup && $scope.filenameForBackup !== ''){
+                $http.post("/backups/backup.json", {
+                    filename: $scope.filenameForBackup
+                }).then(function(result){
+                    if(result.data.error === true){
+                        NotyService.genericError({message: 'Backup was not successful. Your filename could be invalid.'});
+                        return;
+                    }
 
-                NotyService.info();
-                $scope.isActionRunning = true;
-                $scope.backupRunning = true;
-                $scope.startCheckInterval(false, 'backup');
-            }, function errorCallback(result){
-                if(result.status === 403){
-                    $state.go('403');
-                }
+                    NotyService.info();
+                    $scope.isActionRunning = true;
+                    $scope.backupRunning = true;
+                    $scope.startCheckInterval(false, 'backup');
+                }, function errorCallback(result){
+                    if(result.status === 403){
+                        $state.go('403');
+                    }
 
-                if(result.status === 404){
-                    $state.go('404');
-                }
-            });
+                    if(result.status === 404){
+                        $state.go('404');
+                    }
+                });
+            }else{
+                NotyService.genericError({message: 'Backup was not successful. Your filename could be invalid.'});
+            }
         };
 
         $scope.startCheckInterval = function(withPageReload = false, caller = 'backup'){
@@ -142,6 +154,8 @@ angular.module('openITCOCKPIT')
                         return;
                     }
                 }
+            }else{
+                NotyService.genericError({message: 'Please select a backupfile.'});
             }
         };
 

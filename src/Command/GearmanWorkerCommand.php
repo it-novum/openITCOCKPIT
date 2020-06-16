@@ -480,6 +480,7 @@ class GearmanWorkerCommand extends Command {
                          * return from nsta:
                          *
                             {
+                                "task": 'health-scan',
                                 "satelliteID": 12,
                                 "scanID": 12323,
                                 "checkTypesResult": '',
@@ -501,6 +502,7 @@ class GearmanWorkerCommand extends Command {
                          * return from nsta:
                          *
                             {
+                                "task": 'snmp-scan',
                                 "satelliteID": 12,
                                 "scanID": 12323,
                                 "checkTypesResult": '',
@@ -517,11 +519,12 @@ class GearmanWorkerCommand extends Command {
                         $MkSatTask = $MkSatTasksTable->patchEntity($MkSatTask, ['result' => json_encode($scanResult)]);
                         $MkSatTasksTable->save($MkSatTask);
                         break;
-                    case 'raw-info':
+                    case 'process-scan':
                         /*
                          * return from nsta:
                          *
                             {
+                                "task": 'process-scan',
                                 "satelliteID": 12,
                                 "scanID": 12323,
                                 "rawInfoResult": ''

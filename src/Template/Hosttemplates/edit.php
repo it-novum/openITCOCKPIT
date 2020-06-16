@@ -50,7 +50,8 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -138,15 +139,11 @@
                                     <label class="control-label">
                                         <?php echo __('Tags'); ?>
                                     </label>
-                                    <div class="input-group">
-                                        <div class="col">
-                                            <input class="form-control tagsinput"
-                                                   data-role="tagsinput"
-                                                   type="text"
-                                                   ng-model="post.Hosttemplate.tags"
-                                                   id="HosttemplateTagsInput">
-                                        </div>
-                                    </div>
+                                    <input class="form-control tagsinput"
+                                           data-role="tagsinput"
+                                           type="text"
+                                           ng-model="post.Hosttemplate.tags"
+                                           id="HosttemplateTagsInput">
                                     <div ng-repeat="error in errors.tags">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
@@ -448,8 +445,9 @@
                                     </legend>
                                     <div class="row">
                                         <?php foreach ($hostOptions as $hostOption): ?>
-                                            <div class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
-                                                 ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
+                                            <div
+                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                                ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
                                                 <input type="checkbox"
                                                        class="custom-control-input"
                                                        ng-true-value="1"
@@ -458,10 +456,10 @@
                                                        ng-model="post.Hosttemplate.<?php echo $hostOption['field']; ?>">
                                                 <label for="<?php echo $hostOption['field']; ?>"
                                                        class="col col-md-9 custom-control-label custom-control-label-<?php echo $hostOption['class']; ?> padding-top-0 margin-right-10 ">
-                                                        <span
-                                                            class="badge badge-<?php echo $hostOption['class']; ?> notify-label-small">
-                                                            <?php echo $hostOption['text']; ?>
-                                                        </span>
+                                                    <span
+                                                        class="badge badge-<?php echo $hostOption['class']; ?> notify-label-small">
+                                                        <?php echo $hostOption['text']; ?>
+                                                    </span>
                                                 </label>
                                             </div>
                                         <?php endforeach; ?>
@@ -572,10 +570,10 @@
                                                        ng-model="post.Hosttemplate.<?php echo $hostFlapOption['field']; ?>">
                                                 <label for="<?php echo $hostFlapOption['field']; ?>"
                                                        class="col col-md-9 custom-control-label custom-control-label-<?php echo $hostFlapOption['class']; ?> padding-top-0 margin-right-10">
-                                                        <span
-                                                            class="badge badge-<?php echo $hostFlapOption['class']; ?> notify-label-small">
-                                                            <?php echo $hostFlapOption['text']; ?>
-                                                        </span>
+                                                    <span
+                                                        class="badge badge-<?php echo $hostFlapOption['class']; ?> notify-label-small">
+                                                        <?php echo $hostFlapOption['text']; ?>
+                                                    </span>
                                                 </label>
                                             </div>
                                         <?php endforeach; ?>
@@ -659,7 +657,8 @@
                                     <button class="btn btn-primary" type="submit">
                                         <?php echo __('Update host template'); ?>
                                     </button>
-                                    <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex'
+                                       class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

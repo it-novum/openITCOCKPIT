@@ -4,15 +4,27 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.connectionError = false;
         $scope.connected = false;
+        $scope.manualReconnect = true;
 
         $scope.queryLog = [];
 
         $scope.onError = function(event){
             $scope.connectionError = true;
+            $scope.manualReconnect = false;
             console.log(event);
         };
 
+        $scope.onClose = function(event){
+            if($scope.connected){
+                $scope.connectionError = true;
+                $scope.connected = false;
+                $scope.manualReconnect = false;
+                console.log(event);
+            }
+        };
+
         $scope.onOpen = function(event){
+            $scope.connectionError = false;
             $scope.connected = true;
         };
 
@@ -29,6 +41,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.connectToQueryLogServer = function(){
+            $scope.manualReconnect = true;
             $http.get("/angular/websocket_configuration.json", {
                 params: {
                     'angular': true
@@ -40,12 +53,16 @@ angular.module('openITCOCKPIT')
                 $scope.connection.onerror = $scope.onError;
                 $scope.connection.onopen = $scope.onOpen;
                 $scope.connection.onmessage = $scope.onMessage;
-
+                $scope.connection.onclose = $scope.onClose;
             });
 
         };
 
+        $scope.$on('$destroy', function(){
+            if($scope.connection && $scope.connected){
+                $scope.connection.close();
+            }
+        });
 
         $scope.connectToQueryLogServer();
-
     });
