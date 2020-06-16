@@ -138,15 +138,12 @@
                                     <label class="control-label">
                                         <?php echo __('Tags'); ?>
                                     </label>
-                                    <div class="input-group">
-                                        <div class="col">
-                                            <input class="form-control tagsinput"
-                                                   data-role="tagsinput"
-                                                   type="text"
-                                                   ng-model="post.Hosttemplate.tags"
-                                                   id="HosttemplateTagsInput">
-                                        </div>
-                                    </div>
+                                    <input class="form-control tagsinput"
+                                           data-role="tagsinput"
+                                           type="text"
+                                           ng-model="post.Hosttemplate.tags"
+                                           id="HosttemplateTagsInput">
+
                                     <div ng-repeat="error in errors.tags">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
@@ -459,10 +456,10 @@
                                                        ng-model="post.Hosttemplate.<?php echo $hostOption['field']; ?>">
                                                 <label for="<?php echo $hostOption['field']; ?>"
                                                        class="col col-md-9 custom-control-label custom-control-label-<?php echo $hostOption['class']; ?> padding-top-0 margin-right-10 ">
-                                                        <span
-                                                            class="badge badge-<?php echo $hostOption['class']; ?> notify-label-small">
-                                                            <?php echo $hostOption['text']; ?>
-                                                        </span>
+                                                    <span
+                                                        class="badge badge-<?php echo $hostOption['class']; ?> notify-label-small">
+                                                        <?php echo $hostOption['text']; ?>
+                                                    </span>
                                                 </label>
                                             </div>
                                         <?php endforeach; ?>
@@ -572,10 +569,10 @@
                                                        ng-model="post.Hosttemplate.<?php echo $hostFlapOption['field']; ?>">
                                                 <label for="<?php echo $hostFlapOption['field']; ?>"
                                                        class="col col-md-9 custom-control-label custom-control-label-<?php echo $hostFlapOption['class']; ?> padding-top-0 margin-right-10">
-                                                        <span
-                                                            class="badge badge-<?php echo $hostFlapOption['class']; ?> notify-label-small">
-                                                            <?php echo $hostFlapOption['text']; ?>
-                                                        </span>
+                                                    <span
+                                                        class="badge badge-<?php echo $hostFlapOption['class']; ?> notify-label-small">
+                                                        <?php echo $hostFlapOption['text']; ?>
+                                                    </span>
                                                 </label>
                                             </div>
                                         <?php endforeach; ?>
