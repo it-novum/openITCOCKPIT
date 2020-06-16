@@ -1282,16 +1282,29 @@ class HosttemplatesTable extends Table {
      * @return array
      */
     public function getHosttemplateTypes() {
-        $types = [
-            GENERIC_HOST => __('Generic templates')
+        $types = $this->getHosttemplateTypesWithStyles();
+        return array_combine(array_keys($types), Hash::extract($types, '{n}.title'));
+    }
+
+    /**
+     * @return array
+     */
+    public function getHosttemplateTypesWithStyles() {
+        $types[GENERIC_HOST] = [
+            'title' => __('Generic templates'),
+            'color' => 'text-generic',
+            'class' => 'border-generic',
+            'icon'  => 'fa fa-cog'
         ];
 
         if (Plugin::isLoaded('EventcorrelationModule')) {
-            $types[EVK_HOST] = __('EVC templates');
+            $types[EVK_HOST] = [
+                'title' => __('EVC templates'),
+                'color' => 'text-evc',
+                'class' => 'border-evc',
+                'icon'  => 'fa fa-sitemap fa-rotate-90'
+            ];
         }
-
         return $types;
-
     }
-
 }

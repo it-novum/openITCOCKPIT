@@ -133,6 +133,10 @@
                                     <i class="fa" ng-class="getSortClass('Hosttemplates.name')"></i>
                                     <?php echo __('Host template name'); ?>
                                 </th>
+                                <th class="no-sort col-2" ng-click="orderBy('Hosttemplates.hosttemplatetype_id')">
+                                    <i class="fa" ng-class="getSortClass('Hosttemplates.hosttemplatetype_id')"></i>
+                                    <?php echo __('Type'); ?>
+                                </th>
                                 <th class="no-sort text-center">
                                     <i class="fa fa-cog"></i>
                                 </th>
@@ -149,6 +153,12 @@
                                     <?php endif; ?>
                                 </td>
                                 <td>{{hosttemplate.Hosttemplate.name}}</td>
+                                <td>
+                                    <span class="badge border {{hosttemplate.Hosttemplate.type.class}} {{hosttemplate.Hosttemplate.type.color}}">
+                                        <i class="{{hosttemplate.Hosttemplate.type.icon}}"></i>
+                                        {{hosttemplate.Hosttemplate.type.title}}
+                                    </span>
+                                </td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>

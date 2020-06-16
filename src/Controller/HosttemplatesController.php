@@ -61,13 +61,13 @@ class HosttemplatesController extends AppController {
     public function index() {
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
-
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
 
             $this->set('types', $HosttemplatesTable->getHosttemplateTypes());
             return;
         }
+
 
         $HosttemplateFilter = new HosttemplateFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HosttemplateFilter->getPage());
@@ -77,9 +77,12 @@ class HosttemplatesController extends AppController {
             $MY_RIGHTS = [];
         }
         $hosttemplates = $HosttemplatesTable->getHosttemplatesIndex($HosttemplateFilter, $PaginateOMat, $MY_RIGHTS);
+        $typesForView = $HosttemplatesTable->getHosttemplateTypesWithStyles();
+
 
         foreach ($hosttemplates as $index => $hosttemplate) {
             $hosttemplates[$index]['Hosttemplate']['allow_edit'] = true;
+            $hosttemplates[$index]['Hosttemplate']['type'] = $typesForView[$hosttemplate['Hosttemplate']['hosttemplatetype_id']];
             if ($this->hasRootPrivileges === false) {
                 $hosttemplates[$index]['Hosttemplate']['allow_edit'] = $this->isWritableContainer($hosttemplate['Hosttemplate']['container_id']);
             }

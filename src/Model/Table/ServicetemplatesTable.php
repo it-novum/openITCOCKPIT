@@ -1186,30 +1186,65 @@ class ServicetemplatesTable extends Table {
      * @return array
      */
     public function getServicetemplateTypes() {
-        $types = [
-            GENERIC_SERVICE => __('Generic templates')
+        $types = $this->getServicetemplateTypesWithStyles();
+        return array_combine(array_keys($types), Hash::extract($types, '{n}.title'));
+    }
+
+    /**
+     * @return array
+     */
+    public function getServicetemplateTypesWithStyles() {
+        $types[GENERIC_SERVICE] = [
+            'title' => __('Generic templates'),
+            'color' => 'text-generic',
+            'class' => 'border-generic',
+            'icon'  => 'fa fa-cog'
         ];
 
         if (Plugin::isLoaded('EventcorrelationModule')) {
-            $types[EVK_SERVICE] = __('EVC templates');
+            $types[EVK_SERVICE] = [
+                'title' => __('EVC templates'),
+                'color' => 'text-evc',
+                'class' => 'border-evc',
+                'icon'  => 'fa fa-sitemap fa-rotate-90'
+            ];
         }
 
         if (Plugin::isLoaded('SLAModule')) {
-            $types[SLA_SERVICE] = __('SLA templates');
+            $types[SLA_SERVICE] = [
+                'title' => __('SLA templates'),
+                'color' => 'text-sla',
+                'class' => 'border-sla',
+                'icon'  => 'fas fa-file-medical-alt'
+            ];
         }
 
         if (Plugin::isLoaded('CheckmkModule')) {
-            $types[MK_SERVICE] = __('Checkmk templates');
+            $types[MK_SERVICE] = [
+                'title' => __('Checkmk templates'),
+                'color' => 'text-mk',
+                'class' => 'border-mk',
+                'icon'  => 'fas fa-search-plus'
+            ];
         }
 
         if (Plugin::isLoaded('PrometheusModule')) {
-            $types[PROMETHEUS_SERVICE] = __('Prometheus templates');
+            $types[PROMETHEUS_SERVICE] = [
+                'title' => __('Prometheus templates'),
+                'color' => 'text-prometheus',
+                'class' => 'border-prometheus',
+                'icon'  => 'fas fa-burn'
+            ];
         }
 
-        $types[OITC_AGENT_SERVICE] = __('Agent templates');
+        $types[OITC_AGENT_SERVICE] = [
+            'title' => __('Agent templates'),
+            'color' => 'text-agent',
+            'class' => 'border-agent',
+            'icon'  => 'fa fa-user-secret'
+        ];
 
         return $types;
-
     }
 
     /**
