@@ -104,6 +104,12 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="float-right margin-top-20">
+                                <button type="button" ng-click="resetFilter()"
+                                        class="btn btn-xs btn-danger">
+                                    <?php echo __('Reset Filter'); ?>
+                                </button>
+                            </div>
                         </div>
                     </div>
 

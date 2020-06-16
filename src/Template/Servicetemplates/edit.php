@@ -188,15 +188,11 @@
                                     <label class="control-label">
                                         <?php echo __('Tags'); ?>
                                     </label>
-                                    <div class="input-group">
-                                        <div class="col-lg padding-left-0">
-                                            <input class="form-control tagsinput"
-                                                   data-role="tagsinput"
-                                                   type="text"
-                                                   ng-model="post.Servicetemplate.tags"
-                                                   id="ServiceTagsInput">
-                                        </div>
-                                    </div>
+                                    <input class="form-control tagsinput"
+                                           data-role="tagsinput"
+                                           type="text"
+                                           ng-model="post.Servicetemplate.tags"
+                                           id="ServiceTagsInput">
                                     <div ng-repeat="error in errors.tags">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
@@ -844,7 +840,8 @@
                                     <button class="btn btn-primary" type="submit">
                                         <?php echo __('Update service template'); ?>
                                     </button>
-                                    <a back-button href="javascript:void(0);" fallback-state='ServicetemplatesIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);" fallback-state='ServicetemplatesIndex'
+                                       class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

@@ -53,11 +53,14 @@
                         <?php echo __('Successfully connected'); ?>
                     </div>
 
-                    <div class="text-info">
+                    <div class="text-info margin-right-5">
                         <?php echo __('Used query log slots'); ?>
                         ({{queryLog.length}}/15)
                     </div>
 
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="connectToQueryLogServer()" ng-if="!connected && connectionError && !manualReconnect">
+                        <i class="fas fa-sync"></i> <?php echo __('Try manual reconnect'); ?>
+                    </button>
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="truncate()">
                         <i class="fas fa-trash"></i> <?php echo __('Truncate log'); ?>
                     </button>

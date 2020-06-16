@@ -469,7 +469,7 @@ class GearmanWorkerCommand extends Command {
             case 'CheckmkSatResult':
                 $MkSatTasksTable = TableRegistry::getTableLocator()->get('CheckmkModule.MkSatTasks');
                 $result = json_decode($payload['result'], true);
-                $MkSatTask = $MkSatTasksTable->get($result['scanId']);
+                $MkSatTask = $MkSatTasksTable->get($result['ScanID']);
 
                 /** @var MkParser $MkParser */
                 $MkParser = new MkParser();
@@ -480,14 +480,15 @@ class GearmanWorkerCommand extends Command {
                          * return from nsta:
                          *
                             {
+                                "task": 'health-scan',
                                 "satelliteID": 12,
                                 "scanID": 12323,
                                 "checkTypesResult": '',
                                 "dumpHostResult": ''
                             }
                          */
-                        $CheckMKListChecksResult = $result['checkTypesResult'];
-                        $CheckMKSNMPResult = $result['dumpHostResult'];
+                        $CheckMKListChecksResult = $result['CheckTypesResult'];
+                        $CheckMKSNMPResult = $result['DumpHostResult'];
                         $mkListRaw = $CheckMKListChecksResult;
                         $MkCheckList = $MkParser->parseMkListChecks($mkListRaw);
                         $scanResult = $MkParser->parseMkDumpOutput($CheckMKSNMPResult);
@@ -501,14 +502,15 @@ class GearmanWorkerCommand extends Command {
                          * return from nsta:
                          *
                             {
+                                "task": 'snmp-scan',
                                 "satelliteID": 12,
                                 "scanID": 12323,
                                 "checkTypesResult": '',
                                 "dumpHostResult": ''
                             }
                          */
-                        $CheckMKListChecksResult = $result['checkTypesResult'];
-                        $CheckMKSNMPResult = $result['dumpHostResult'];
+                        $CheckMKListChecksResult = $result['CheckTypesResult'];
+                        $CheckMKSNMPResult = $result['DumpHostResult'];
                         $mkListRaw = $CheckMKListChecksResult;
                         $MkCheckList = $MkParser->parseMkListChecks($mkListRaw);
                         $scanResult = $MkParser->parseMkDumpOutput($CheckMKSNMPResult);
@@ -517,17 +519,18 @@ class GearmanWorkerCommand extends Command {
                         $MkSatTask = $MkSatTasksTable->patchEntity($MkSatTask, ['result' => json_encode($scanResult)]);
                         $MkSatTasksTable->save($MkSatTask);
                         break;
-                    case 'raw-info':
+                    case 'process-scan':
                         /*
                          * return from nsta:
                          *
                             {
+                                "task": 'process-scan',
                                 "satelliteID": 12,
                                 "scanID": 12323,
                                 "rawInfoResult": ''
                             }
                          */
-                        $MkSatTask = $MkSatTasksTable->patchEntity($MkSatTask, ['result' => json_encode($result['rawInfoResult'])]);
+                        $MkSatTask = $MkSatTasksTable->patchEntity($MkSatTask, ['result' => json_encode($result['RawInfoResult'])]);
                         $MkSatTasksTable->save($MkSatTask);
                         break;
                 }
@@ -553,13 +556,15 @@ class GearmanWorkerCommand extends Command {
                     $configfileContent = '';
 
                     $NSTAOptions = [
-                        'satelliteId' => intval($payload['satellite_id']),
-                        'type'        => 5,
-                        'scanId'      => intval($MkSatTask->get('id')),
-                        'hostuuid'    => $payload['hostuuid'],
-                        'task'        => $payload['task'],
-                        'file'        => $configfileContent,
-                        'filePath'    => $systemsettings['CHECK_MK']['CHECK_MK.ETC'] . 'conf.d/' . $payload['hostuuid'] . '.mk'
+                        'SatelliteID' => intval($payload['satellite_id']),
+                        'Command'     => 'checkmk',
+                        'Data'        => [
+                            'ScanID'   => intval($MkSatTask->get('id')),
+                            'Hostuuid' => $payload['hostuuid'],
+                            'Task'     => $payload['task'],
+                            'File'     => $configfileContent,
+                            'FilePath' => $systemsettings['CHECK_MK']['CHECK_MK.ETC'] . 'conf.d/' . $payload['hostuuid'] . '.mk'
+                        ]
                     ];
 
 
@@ -570,7 +575,7 @@ class GearmanWorkerCommand extends Command {
                              *  PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk OMD_SITE=1 /opt/openitc/check_mk/bin/check_mk -D {hostuuid}
                              */
                             $MkNagiosExportTask->init();
-                            $NSTAOptions['file'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
+                            $NSTAOptions['Data']['File'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
                                 'for_snmp_scan' => true,
                                 'host_address'  => $payload['host_address'],
                             ], false);
@@ -580,7 +585,7 @@ class GearmanWorkerCommand extends Command {
                             $MkNagiosExportTask->init();
                             if ($payload['snmp_version'] < 3) {
                                 //SNMP V1 and V2
-                                $NSTAOptions['file'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
+                                $NSTAOptions['Data']['File'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
                                     'for_snmp_scan'  => true,
                                     'host_address'   => $payload['host_address'],
                                     'snmp_version'   => $payload['snmp_version'],
@@ -588,7 +593,7 @@ class GearmanWorkerCommand extends Command {
                                 ], false);
                             } else {
                                 //SNMP V3
-                                $NSTAOptions['file'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
+                                $NSTAOptions['Data']['File'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
                                     'for_snmp_scan' => true,
                                     'host_address'  => $payload['host_address'],
                                     'snmp_version'  => $payload['snmp_version'],
@@ -609,14 +614,14 @@ class GearmanWorkerCommand extends Command {
                              *  PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk OMD_SITE=1 /opt/openitc/check_mk/bin/check_mk -d {hostuuid}
                              */
                             $MkNagiosExportTask->init();
-                            $NSTAOptions['file'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
+                            $NSTAOptions['Data']['File'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
                                 'for_snmp_scan' => true,
                                 'host_address'  => $payload['host_address'],
                             ], false);
                             break;
                         case 'write-file':
-                            $NSTAOptions['file'] = $payload['file'];
-                            $NSTAOptions['filePath'] = $payload['filePath'];
+                            $NSTAOptions['Data']['File'] = $payload['file'];
+                            $NSTAOptions['Data']['FilePath'] = $payload['filePath'];
                             break;
                     }
 

@@ -589,7 +589,7 @@ class Menu {
                     1
                 ))
                 ->addLink(new MenuLink(
-                    __('Untrusted Agents'),
+                    __('Agent Overview'),
                     'AgentconnectorsAgent',
                     'agentconnector',
                     'agents',

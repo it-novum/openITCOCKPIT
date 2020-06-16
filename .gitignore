@@ -74,12 +74,16 @@ webroot/node_modules
 # Plugins #
 #######################
 plugins/config
+plugins/AlfrescoModule
 plugins/AutoreportModule
 plugins/DistributeModule
 plugins/EventcorrelationModule
+plugins/LinuxBasicMonitoringModule
+plugins/LinuxBasicMonitoringSSHModule
 plugins/MkModule
 plugins/CheckmkModule
 plugins/OpenstreetmapModule
+plugins/SAPModule
 plugins/SlackModule
 plugins/ServicenowModule
 plugins/PagerdutyModule
