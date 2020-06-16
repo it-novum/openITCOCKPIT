@@ -75,7 +75,7 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-lg-12 margin-bottom-10">
+                                <div class="col-lg-6 margin-bottom-10">
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
@@ -85,6 +85,29 @@
                                                    placeholder="<?php echo __('Filter by host template name'); ?>"
                                                    ng-model="filter.Hosttemplates.name"
                                                    ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 margin-bottom-10">
+                                    <div class="form-group required">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-cog"></i></span>
+                                            </div>
+                                            <select
+                                                id="HosttemplateType"
+                                                data-placeholder="<?php echo __('Filter by host template types'); ?>"
+                                                class="form-control"
+                                                chosen="{}"
+                                                multiple
+                                                ng-model="filter.Hosttemplates.hosttemplatetype_id"
+                                                ng-model-options="{debounce: 500}">
+                                                <?php
+                                                foreach ($types as $typeId => $typeName):
+                                                    printf('<option value="%s">%s</option>', h($typeId), h($typeName));
+                                                endforeach;
+                                                ?>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>

@@ -961,6 +961,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('HosttemplatesAdd', {
                 url: '/hosttemplates/add',
+                params: {
+                    hosttemplateTypeId: {
+                        value: null,
+                        squash: true
+                    }
+                },
                 templateUrl: "/hosttemplates/add.html",
                 controller: "HosttemplatesAddController"
             })

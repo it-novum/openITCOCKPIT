@@ -399,7 +399,6 @@ class HosttemplatesTable extends Table {
     public function getHosttemplatesIndex(HosttemplateFilter $HosttemplateFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find('all')->disableHydration();
         $where = $HosttemplateFilter->indexFilter();
-        $where['Hosttemplates.hosttemplatetype_id'] = GENERIC_HOSTTEMPLATE;
         if (!empty($MY_RIGHTS)) {
             $where['Hosttemplates.container_id IN'] = $MY_RIGHTS;
         }
@@ -1278,4 +1277,21 @@ class HosttemplatesTable extends Table {
 
         return $list;
     }
+
+    /**
+     * @return array
+     */
+    public function getHosttemplateTypes() {
+        $types = [
+            GENERIC_HOST => __('Generic templates')
+        ];
+
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            $types[EVK_HOST] = __('EVC templates');
+        }
+
+        return $types;
+
+    }
+
 }

@@ -19,6 +19,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.post.Hosttemplate = result.data.hosttemplate.Hosttemplate;
                 $scope.commands = result.data.commands;
+                $scope.hosttemplatetypes = result.data.types;
 
                 jQuery(function(){
                     $('.tagsinput').tagsinput();

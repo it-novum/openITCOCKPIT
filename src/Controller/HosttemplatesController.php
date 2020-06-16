@@ -35,7 +35,6 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
-use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatecommandargumentvaluesTable;
@@ -60,13 +59,15 @@ class HosttemplatesController extends AppController {
     use PluginManagerTableTrait;
 
     public function index() {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship HTML Template
-            return;
-        }
-
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+
+            $this->set('types', $HosttemplatesTable->getHosttemplateTypes());
+            return;
+        }
 
         $HosttemplateFilter = new HosttemplateFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HosttemplateFilter->getPage());
@@ -86,6 +87,7 @@ class HosttemplatesController extends AppController {
 
 
         $this->set('all_hosttemplates', $hosttemplates);
+
         $toJson = ['all_hosttemplates', 'paging'];
         if ($this->isScrollRequest()) {
             $toJson = ['all_hosttemplates', 'scroll'];
@@ -132,21 +134,22 @@ class HosttemplatesController extends AppController {
             //Only ship HTML template for angular
             return;
         }
+        if ($this->request->is('get')) {
+            /** @var HosttemplatesTable $HosttemplatesTable */
+            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
+            $this->set('types', Api::makeItJavaScriptAble(
+                $HosttemplatesTable->getHosttemplateTypes()
+            ));
+            $this->viewBuilder()->setOption('serialize', ['types']);
+        }
         if ($this->request->is('post')) {
             /** @var $HosttemplatesTable HosttemplatesTable */
             $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
-            $hosttemplateTypeIdToSave = GENERIC_HOSTTEMPLATE;
-            if ($hosttemplatetype_id !== null && is_numeric($hosttemplatetype_id)) {
-                $hosttemplateTypeIdToSave = $hosttemplatetype_id;
-            }
-
             $hosttemplate = $HosttemplatesTable->newEmptyEntity();
             $hosttemplate = $HosttemplatesTable->patchEntity($hosttemplate, $this->request->getData('Hosttemplate'));
             $hosttemplate->set('uuid', UUID::v4());
-            $hosttemplate->set('hosttemplatetype_id', $hosttemplateTypeIdToSave);
-
 
             $HosttemplatesTable->save($hosttemplate);
             if ($hosttemplate->hasErrors()) {
@@ -224,7 +227,10 @@ class HosttemplatesController extends AppController {
             $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
             $this->set('commands', Api::makeItJavaScriptAble($commands));
             $this->set('hosttemplate', $hosttemplate);
-            $this->viewBuilder()->setOption('serialize', ['hosttemplate', 'commands']);
+            $this->set('types', Api::makeItJavaScriptAble(
+                $HosttemplatesTable->getHosttemplateTypes()
+            ));
+            $this->viewBuilder()->setOption('serialize', ['hosttemplate', 'commands', 'types']);
             return;
         }
 
@@ -550,8 +556,8 @@ class HosttemplatesController extends AppController {
         $hostgroups = Api::makeItJavaScriptAble($hostgroups);
 
         $exporters = [];
-        if(Plugin::isLoaded('PrometheusModule')){
-            /** @var \PrometheusModule\Model\Table\PrometheusExportersTable $PrometheusExportersTable  */
+        if (Plugin::isLoaded('PrometheusModule')) {
+            /** @var \PrometheusModule\Model\Table\PrometheusExportersTable $PrometheusExportersTable */
             $PrometheusExportersTable = TableRegistry::getTableLocator()->get('PrometheusModule.PrometheusExporters');
 
             $exporters = $PrometheusExportersTable->getExportersByContainerId($containerIds, 'list', 'id');

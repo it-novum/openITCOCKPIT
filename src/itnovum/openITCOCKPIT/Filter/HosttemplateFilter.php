@@ -36,7 +36,8 @@ class HosttemplateFilter extends Filter {
                 'Hosttemplates.name',
             ],
             'equals' => [
-                'Hosttemplates.id'
+                'Hosttemplates.id',
+                'Hosttemplates.hosttemplatetype_id'
             ]
         ];
 

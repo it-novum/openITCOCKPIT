@@ -13,7 +13,8 @@ angular.module('openITCOCKPIT')
             $scope.filter = {
                 Hosttemplates: {
                     id: QueryStringService.getStateValue($stateParams, 'id', []),
-                    name: ''
+                    name: '',
+                    hosttemplatetype_id: ['1']
                 }
             };
         };
@@ -41,7 +42,8 @@ angular.module('openITCOCKPIT')
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
                 'filter[Hosttemplates.id][]': $scope.filter.Hosttemplates.id,
-                'filter[Hosttemplates.name]': $scope.filter.Hosttemplates.name
+                'filter[Hosttemplates.name]': $scope.filter.Hosttemplates.name,
+                'filter[Hosttemplates.hosttemplatetype_id][]': $scope.filter.Hosttemplates.hosttemplatetype_id
             };
 
             $http.get("/hosttemplates/index.json", {
