@@ -96,3 +96,4 @@ plugins/WindowsBasicMonitoringNSCPModule
 plugins/WMIModule
 plugins/VMWAREModule
 plugins/UCSModule
+plugins/SatelliteSelfMonitoringModule
