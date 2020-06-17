@@ -103,6 +103,27 @@
                                     </div>
                                 </div>
 
+                                <div class="form-group required"
+                                     ng-class="{'has-error': errors.hosttemplatetype_id}">
+                                    <label class="control-label">
+                                        <?php echo __('Template Type'); ?>
+                                    </label>
+                                    <select
+                                        id="HostHosttemplateSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="hosttemplatetypes"
+                                        ng-options="templatetype.key as templatetype.value for templatetype in hosttemplatetypes"
+                                        ng-model="post.Hosttemplate.hosttemplatetype_id">
+                                    </select>
+                                    <div class="help-block">
+                                        <?= __('Defines the type of the template. Use "Generic template" if you are not sure.') ?>
+                                    </div>
+                                    <div ng-repeat="error in errors.hosttemplatetype_id">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+
                                 <div class="form-group" ng-class="{'has-error': errors.description}">
                                     <label class="control-label">
                                         <?php echo __('Description'); ?>

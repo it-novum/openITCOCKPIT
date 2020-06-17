@@ -75,7 +75,7 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-lg-12 margin-bottom-10">
+                                <div class="col-lg-6 margin-bottom-10">
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
@@ -85,6 +85,29 @@
                                                    placeholder="<?php echo __('Filter by host template name'); ?>"
                                                    ng-model="filter.Hosttemplates.name"
                                                    ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 margin-bottom-10">
+                                    <div class="form-group required">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-cog"></i></span>
+                                            </div>
+                                            <select
+                                                id="HosttemplateType"
+                                                data-placeholder="<?php echo __('Filter by host template types'); ?>"
+                                                class="form-control"
+                                                chosen="{}"
+                                                multiple
+                                                ng-model="filter.Hosttemplates.hosttemplatetype_id"
+                                                ng-model-options="{debounce: 500}">
+                                                <?php
+                                                foreach ($types as $typeId => $typeName):
+                                                    printf('<option value="%s">%s</option>', h($typeId), h($typeName));
+                                                endforeach;
+                                                ?>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -110,6 +133,10 @@
                                     <i class="fa" ng-class="getSortClass('Hosttemplates.name')"></i>
                                     <?php echo __('Host template name'); ?>
                                 </th>
+                                <th class="no-sort col-2" ng-click="orderBy('Hosttemplates.hosttemplatetype_id')">
+                                    <i class="fa" ng-class="getSortClass('Hosttemplates.hosttemplatetype_id')"></i>
+                                    <?php echo __('Type'); ?>
+                                </th>
                                 <th class="no-sort text-center">
                                     <i class="fa fa-cog"></i>
                                 </th>
@@ -126,6 +153,12 @@
                                     <?php endif; ?>
                                 </td>
                                 <td>{{hosttemplate.Hosttemplate.name}}</td>
+                                <td>
+                                    <span class="badge border {{hosttemplate.Hosttemplate.type.class}} {{hosttemplate.Hosttemplate.type.color}}">
+                                        <i class="{{hosttemplate.Hosttemplate.type.icon}}"></i>
+                                        {{hosttemplate.Hosttemplate.type.title}}
+                                    </span>
+                                </td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>

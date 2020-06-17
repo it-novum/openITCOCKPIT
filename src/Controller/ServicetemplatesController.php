@@ -83,9 +83,13 @@ class ServicetemplatesController extends AppController {
             $MY_RIGHTS = [];
         }
         $servicetemplates = $ServicetemplatesTable->getServicetemplatesIndex($ServicetemplateFilter, $PaginateOMat, $MY_RIGHTS);
+        $typesForView = $ServicetemplatesTable->getServicetemplateTypesWithStyles();
+
 
         foreach ($servicetemplates as $index => $servicetemplate) {
             $servicetemplates[$index]['Servicetemplate']['allow_edit'] = true;
+            $servicetemplates[$index]['Servicetemplate']['type'] = $typesForView[$servicetemplate['Servicetemplate']['servicetemplatetype_id']];
+
             if ($this->hasRootPrivileges === false) {
                 $servicetemplates[$index]['Servicetemplate']['allow_edit'] = $this->isWritableContainer($servicetemplate['Servicetemplate']['container_id']);
             }
@@ -527,7 +531,7 @@ class ServicetemplatesController extends AppController {
             $MY_RIGHTS = $this->MY_RIGHTS;
         }
         $services = $ServicesTable->getServicesWithHostForServicetemplateUsedBy($id, $MY_RIGHTS, $includeDisabled);
-        
+
         if (empty($services)) {
             //No services found or no permissions
             $this->set('servicetemplate', $servicetemplate);

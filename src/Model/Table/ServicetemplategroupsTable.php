@@ -131,6 +131,15 @@ class ServicetemplategroupsTable extends Table {
     }
 
     /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsByUuid($uuid) {
+        return $this->exists(['Servicetemplategroups.uuid' => $uuid]);
+    }
+
+
+    /**
      * @param ServicetemplategroupsFilter $ServicetemplategroupsFilter
      * @param null|PaginateOMat $PaginateOMat
      * @param array $MY_RIGHTS
