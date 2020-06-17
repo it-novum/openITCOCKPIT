@@ -94,4 +94,9 @@ plugins/DesignModule
 plugins/PrometheusModule
 plugins/TemplateExportModule
 plugins/TemplateImportModule
-
+plugins/WindowsBasicMonitoringNSCPModule
+plugins/WMIModule
+plugins/VMWAREModule
+plugins/UCSModule
+plugins/SatelliteSelfMonitoringModule
+plugins/SAPModule

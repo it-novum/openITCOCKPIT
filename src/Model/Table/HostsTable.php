@@ -3752,4 +3752,66 @@ class HostsTable extends Table {
         }
         return $query->toArray();
     }
+
+    /**
+     * @param int $hostTypeId
+     * @param array $MY_RIGHTS
+     * @param array $where
+     * @return array
+     */
+    public function getHostsByTypeId($hostTypeId = GENERIC_HOST, $MY_RIGHTS = [], $where = []) {
+        $_where = [
+            'Hosts.disabled IN' => [0],
+            'Hosts.host_type'   => $hostTypeId
+        ];
+
+        $where = Hash::merge($_where, $where);
+
+        $query = $this->find();
+        $query->where($where);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+        $query->group(['Hosts.id']);
+        $query->order([
+            'Hosts.name' => 'asc'
+        ]);
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHostTypesWithStyles() {
+        $types[GENERIC_HOST] = [
+            'title' => __('Generic host'),
+            'color' => 'text-generic',
+            'class' => 'border-generic',
+            'icon'  => 'fa fa-cog'
+        ];
+
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            $types[EVK_HOST] = [
+                'title' => __('EVC host'),
+                'color' => 'text-evc',
+                'class' => 'border-evc',
+                'icon'  => 'fa fa-sitemap fa-rotate-90'
+            ];
+        }
+        return $types;
+    }
 }

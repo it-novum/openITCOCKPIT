@@ -49,6 +49,14 @@
                     <span class="fw-300"><i>{{post.Hosttemplate.name}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
+                    <div class="text-muted cursor-default d-none d-sm-none d-md-none d-lg-block margin-right-10">
+                        UUID: {{post.Hosttemplate.uuid}}
+                    </div>
+                    <span ng-if="typeDetails"
+                          class="badge border margin-right-10 {{typeDetails.class}} {{typeDetails.color}}">
+                        <i class="{{typeDetails.icon}}"></i>
+                        {{typeDetails.title}}
+                    </span>
                     <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
@@ -99,6 +107,27 @@
                                         type="text"
                                         ng-model="post.Hosttemplate.name">
                                     <div ng-repeat="error in errors.name">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group required"
+                                     ng-class="{'has-error': errors.hosttemplatetype_id}">
+                                    <label class="control-label">
+                                        <?php echo __('Template Type'); ?>
+                                    </label>
+                                    <select
+                                        id="HostHosttemplateSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="hosttemplatetypes"
+                                        ng-options="templatetype.key as templatetype.value.title for templatetype in hosttemplatetypes"
+                                        ng-model="post.Hosttemplate.hosttemplatetype_id">
+                                    </select>
+                                    <div class="help-block">
+                                        <?= __('Defines the type of the template. Use "Generic template" if you are not sure.') ?>
+                                    </div>
+                                    <div ng-repeat="error in errors.hosttemplatetype_id">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
                                 </div>

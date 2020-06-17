@@ -801,3 +801,52 @@ fieldset[disabled] .btn-unknown.active {
 .elementFontHighlighter{
     color: #c51162 !important;
 }
+
+/* Badges and text colors for object types (like generic, evc, ...) */
+.text-generic {
+    color:#2196f3;
+}
+
+.border-generic {
+    border-color: #2182dc !important;
+}
+
+.text-evc{
+    color:#9c27b0;
+}
+
+.border-evc {
+    border-color: #822796 !important;
+}
+
+.text-prometheus{
+    color:#ff9800;
+}
+
+.border-prometheus {
+    border-color: #E17B00 !important;
+}
+
+.text-agent{
+    color:#009688;
+}
+
+.border-agent {
+    border-color: #006e60 !important;
+}
+
+.text-sla{
+    color:#cddc39;
+}
+
+.border-sla {
+    border-color: #A9B836 !important;
+}
+
+.text-mk{
+    color:#607d8b;
+}
+
+.border-mk {
+    border-color: #4d6876 !important;
+}
