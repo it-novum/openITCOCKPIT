@@ -674,6 +674,9 @@ class ServicesController extends AppController {
             );
             $mergedService = $ServiceMergerForView->getDataForView();
 
+            $typesForView = $ServicesTable->getServiceTypesWithStyles();
+            $serviceType = $typesForView[$mergedService['Service']['service_type']];
+
             $this->set('service', $mergedService);
             $this->set('host', $host);
             $this->set('servicetemplate', $servicetemplate);
@@ -682,6 +685,7 @@ class ServicesController extends AppController {
             $this->set('areContactsInheritedFromHosttemplate', $ServiceMergerForView->areContactsInheritedFromHosttemplate());
             $this->set('areContactsInheritedFromHost', $ServiceMergerForView->areContactsInheritedFromHost());
             $this->set('areContactsInheritedFromServicetemplate', $ServiceMergerForView->areContactsInheritedFromServicetemplate());
+            $this->set('serviceType', $serviceType);
 
 
             $this->viewBuilder()->setOption('serialize', [
@@ -692,7 +696,8 @@ class ServicesController extends AppController {
                 'hosttemplateContactsAndContactgroups',
                 'areContactsInheritedFromHosttemplate',
                 'areContactsInheritedFromHost',
-                'areContactsInheritedFromServicetemplate'
+                'areContactsInheritedFromServicetemplate',
+                'serviceType'
             ]);
             return;
         }

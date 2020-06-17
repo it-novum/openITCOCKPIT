@@ -9,6 +9,7 @@ use App\Model\Entity\Changelog;
 use App\Model\Entity\Service;
 use App\Model\Entity\Servicedependency;
 use App\Model\Entity\Serviceescalation;
+use Cake\Core\Plugin;
 use Cake\Database\Expression\Comparison;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
@@ -3325,5 +3326,62 @@ class ServicesTable extends Table {
             ])->all();
 
         return $query;
+    }
+
+    /**
+     * @return array
+     */
+    public function getServiceTypesWithStyles() {
+        $types[GENERIC_SERVICE] = [
+            'title' => __('Generic service'),
+            'color' => 'text-generic',
+            'class' => 'border-generic',
+            'icon'  => 'fa fa-cog'
+        ];
+
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            $types[EVK_SERVICE] = [
+                'title' => __('EVC service'),
+                'color' => 'text-evc',
+                'class' => 'border-evc',
+                'icon'  => 'fa fa-sitemap fa-rotate-90'
+            ];
+        }
+
+        if (Plugin::isLoaded('SLAModule')) {
+            $types[SLA_SERVICE] = [
+                'title' => __('SLA service'),
+                'color' => 'text-sla',
+                'class' => 'border-sla',
+                'icon'  => 'fas fa-file-medical-alt'
+            ];
+        }
+
+        if (Plugin::isLoaded('CheckmkModule')) {
+            $types[MK_SERVICE] = [
+                'title' => __('Checkmk service'),
+                'color' => 'text-mk',
+                'class' => 'border-mk',
+                'icon'  => 'fas fa-search-plus'
+            ];
+        }
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $types[PROMETHEUS_SERVICE] = [
+                'title' => __('Prometheus service'),
+                'color' => 'text-prometheus',
+                'class' => 'border-prometheus',
+                'icon'  => 'fas fa-burn'
+            ];
+        }
+
+        $types[OITC_AGENT_SERVICE] = [
+            'title' => __('Agent service'),
+            'color' => 'text-agent',
+            'class' => 'border-agent',
+            'icon'  => 'fa fa-user-secret'
+        ];
+
+        return $types;
     }
 }

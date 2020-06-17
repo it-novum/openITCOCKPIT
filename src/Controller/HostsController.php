@@ -604,6 +604,9 @@ class HostsController extends AppController {
                 );
             }
 
+            $typesForView = $HostsTable->getHostTypesWithStyles();
+            $hostType = $typesForView[$mergedHost['Host']['host_type']];
+
             $this->set('commands', Api::makeItJavaScriptAble($commands));
             $this->set('host', $mergedHost);
             $this->set('hosttemplate', $hosttemplate);
@@ -612,6 +615,7 @@ class HostsController extends AppController {
             $this->set('isHostOnlyEditableDueToHostSharing', $isHostOnlyEditableDueToHostSharing);
             $this->set('fakeDisplayContainers', Api::makeItJavaScriptAble($fakeDisplayContainers));
             $this->set('areContactsInheritedFromHosttemplate', $HostMergerForView->areContactsInheritedFromHosttemplate());
+            $this->set('hostType', $hostType);
 
             $this->viewBuilder()->setOption('serialize', [
                 'host',
@@ -621,7 +625,8 @@ class HostsController extends AppController {
                 'allowSharing',
                 'isHostOnlyEditableDueToHostSharing',
                 'fakeDisplayContainers',
-                'areContactsInheritedFromHosttemplate'
+                'areContactsInheritedFromHosttemplate',
+                'hostType'
             ]);
             return;
         }

@@ -137,6 +137,7 @@ angular.module('openITCOCKPIT')
                 $scope.commands = result.data.commands;
                 $scope.post.Host = result.data.host.Host;
                 $scope.hosttemplate = result.data.hosttemplate;
+                $scope.hostType = result.data.hostType;
 
                 $scope.data.isPrimaryContainerChangeable = result.data.isPrimaryContainerChangeable;
                 $scope.data.allowSharing = result.data.allowSharing;

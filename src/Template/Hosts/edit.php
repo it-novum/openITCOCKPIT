@@ -52,6 +52,12 @@
                     <div class="text-muted cursor-default d-none d-sm-none d-md-none d-lg-block margin-right-10">
                         UUID: {{post.Host.uuid}}
                     </div>
+
+                    <span class="badge border margin-right-10 {{hostType.class}} {{hostType.color}}">
+                        <i class="{{hostType.icon}}"></i>
+                        {{hostType.title}}
+                    </span>
+
                     <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='HostsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
