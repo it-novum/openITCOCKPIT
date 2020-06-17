@@ -80,7 +80,9 @@ plugins/DistributeModule
 plugins/EventcorrelationModule
 plugins/LinuxBasicMonitoringModule
 plugins/LinuxBasicMonitoringSSHModule
+plugins/MasterSelfMonitoringModule
 plugins/MkModule
+plugins/NWCModule
 plugins/CheckmkModule
 plugins/OpenstreetmapModule
 plugins/SAPModule
