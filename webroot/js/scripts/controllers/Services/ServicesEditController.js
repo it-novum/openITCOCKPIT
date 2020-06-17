@@ -167,6 +167,7 @@ angular.module('openITCOCKPIT')
                 $scope.post.Service = result.data.service.Service;
                 $scope.servicetemplate = result.data.servicetemplate;
                 $scope.host = result.data.host;
+                $scope.serviceType = result.data.serviceType;
 
                 $scope.hostContactsAndContactgroups = result.data.hostContactsAndContactgroups;
                 $scope.hosttemplateContactsAndContactgroups = result.data.hosttemplateContactsAndContactgroups;
