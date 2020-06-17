@@ -137,6 +137,7 @@ angular.module('openITCOCKPIT')
                 $scope.commands = result.data.commands;
                 $scope.post.Host = result.data.host.Host;
                 $scope.hosttemplate = result.data.hosttemplate;
+                $scope.hostType = result.data.hostType;
 
                 $scope.data.isPrimaryContainerChangeable = result.data.isPrimaryContainerChangeable;
                 $scope.data.allowSharing = result.data.allowSharing;
@@ -199,7 +200,7 @@ angular.module('openITCOCKPIT')
         $scope.loadElements = function(){
             var containerId = $scope.post.Host.container_id;
 
-            $http.post("/hosts/loadElementsByContainerId/" + containerId + ".json?angular=true", {
+            $http.post("/hosts/loadElementsByContainerId/" + containerId + "/" + $scope.id + ".json?angular=true", {
                 empty: true
             }).then(function(result){
                 $scope.hosttemplates = result.data.hosttemplates;
@@ -342,7 +343,7 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                if($state.hasOwnProperty('previous') && $state.previous !== null &&  $state.previous.name !== "" && $state.previous.url !== "^"){
+                if($state.hasOwnProperty('previous') && $state.previous !== null && $state.previous.name !== "" && $state.previous.url !== "^"){
                     $state.go($state.previous.name, $state.previous.params).then(function(){
                         NotyService.scrollTop();
                     });

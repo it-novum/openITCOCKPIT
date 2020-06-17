@@ -52,6 +52,11 @@
                     <div class="text-muted cursor-default d-none d-sm-none d-md-none d-lg-block margin-right-10">
                         UUID: {{post.Servicetemplate.uuid}}
                     </div>
+                    <span ng-if="typeDetails"
+                          class="badge border margin-right-10 {{typeDetails.class}} {{typeDetails.color}}">
+                        <i class="{{typeDetails.icon}}"></i>
+                        {{typeDetails.title}}
+                    </span>
                     <?php if ($this->Acl->hasPermission('index', 'servicetemplates')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='ServicetemplatesIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
@@ -120,7 +125,7 @@
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="servicetemplatetypes"
-                                        ng-options="templatetype.key as templatetype.value for templatetype in servicetemplatetypes"
+                                        ng-options="templatetype.key as templatetype.value.title for templatetype in servicetemplatetypes"
                                         ng-model="post.Servicetemplate.servicetemplatetype_id">
                                     </select>
                                     <div class="help-block">

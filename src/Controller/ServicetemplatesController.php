@@ -147,7 +147,7 @@ class ServicetemplatesController extends AppController {
             $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
             $this->set('types', Api::makeItJavaScriptAble(
-                $ServicetemplatesTable->getServicetemplateTypes()
+                $ServicetemplatesTable->getServicetemplateTypesWithStyles()
             ));
             $this->viewBuilder()->setOption('serialize', ['types']);
         }
@@ -255,7 +255,7 @@ class ServicetemplatesController extends AppController {
             $this->set('eventhandlerCommands', Api::makeItJavaScriptAble($eventhandlerCommands));
             $this->set('servicetemplate', $servicetemplate);
             $this->set('types', Api::makeItJavaScriptAble(
-                $ServicetemplatesTable->getServicetemplateTypes()
+                $ServicetemplatesTable->getServicetemplateTypesWithStyles()
             ));
             $this->viewBuilder()->setOption('serialize', ['servicetemplate', 'commands', 'eventhandlerCommands', 'types']);
             return;

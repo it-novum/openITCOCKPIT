@@ -3792,4 +3792,26 @@ class HostsTable extends Table {
 
         return $result;
     }
+
+    /**
+     * @return array
+     */
+    public function getHostTypesWithStyles() {
+        $types[GENERIC_HOST] = [
+            'title' => __('Generic host'),
+            'color' => 'text-generic',
+            'class' => 'border-generic',
+            'icon'  => 'fa fa-cog'
+        ];
+
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            $types[EVK_HOST] = [
+                'title' => __('EVC host'),
+                'color' => 'text-evc',
+                'class' => 'border-evc',
+                'icon'  => 'fa fa-sitemap fa-rotate-90'
+            ];
+        }
+        return $types;
+    }
 }
