@@ -97,3 +97,4 @@ plugins/WMIModule
 plugins/VMWAREModule
 plugins/UCSModule
 plugins/SatelliteSelfMonitoringModule
+plugins/SAPModule
