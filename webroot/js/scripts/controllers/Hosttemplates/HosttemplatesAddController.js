@@ -12,6 +12,8 @@ angular.module('openITCOCKPIT')
             createAnother: false
         };
 
+        $scope.typeDetails = {};
+
         var clearForm = function(){
             $scope.post = {
                 Hosttemplate: {
@@ -149,6 +151,7 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.hosttemplatetypes = result.data.types;
+                $scope.setDetailsForType($scope.post.Hosttemplate.hosttemplatetype_id);
             });
         };
 
@@ -179,6 +182,15 @@ angular.module('openITCOCKPIT')
             return false;
         };
 
+        $scope.setDetailsForType = function(){
+            for(index in $scope.hosttemplatetypes){
+                if($scope.hosttemplatetypes[index].key === $scope.post.Hosttemplate.hosttemplatetype_id){
+                    $scope.typeDetails = $scope.hosttemplatetypes[index].value;
+                    return;
+                }
+            }
+        };
+
         $scope.submit = function(){
             $http.post("/hosttemplates/add.json?angular=true",
                 $scope.post
@@ -197,7 +209,6 @@ angular.module('openITCOCKPIT')
                     $scope.errors = {};
                     NotyService.scrollTop();
                 }
-
 
 
                 console.log('Data saved successfully');
@@ -244,5 +255,11 @@ angular.module('openITCOCKPIT')
             $scope.loadCommandArguments();
         }, true);
 
+        $scope.$watch('post.Hosttemplate.hosttemplatetype_id', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.setDetailsForType();
+        }, true);
 
     });

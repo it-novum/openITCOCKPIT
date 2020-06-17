@@ -49,6 +49,14 @@
                     <span class="fw-300"><i>{{post.Hosttemplate.name}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
+                    <div class="text-muted cursor-default d-none d-sm-none d-md-none d-lg-block margin-right-10">
+                        UUID: {{post.Hosttemplate.uuid}}
+                    </div>
+                    <span ng-if="typeDetails"
+                          class="badge border margin-right-10 {{typeDetails.class}} {{typeDetails.color}}">
+                        <i class="{{typeDetails.icon}}"></i>
+                        {{typeDetails.title}}
+                    </span>
                     <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
@@ -113,7 +121,7 @@
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="hosttemplatetypes"
-                                        ng-options="templatetype.key as templatetype.value for templatetype in hosttemplatetypes"
+                                        ng-options="templatetype.key as templatetype.value.title for templatetype in hosttemplatetypes"
                                         ng-model="post.Hosttemplate.hosttemplatetype_id">
                                     </select>
                                     <div class="help-block">

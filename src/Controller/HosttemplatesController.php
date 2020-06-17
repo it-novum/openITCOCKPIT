@@ -142,7 +142,7 @@ class HosttemplatesController extends AppController {
             $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
             $this->set('types', Api::makeItJavaScriptAble(
-                $HosttemplatesTable->getHosttemplateTypes()
+                $HosttemplatesTable->getHosttemplateTypesWithStyles()
             ));
             $this->viewBuilder()->setOption('serialize', ['types']);
         }
@@ -231,7 +231,7 @@ class HosttemplatesController extends AppController {
             $this->set('commands', Api::makeItJavaScriptAble($commands));
             $this->set('hosttemplate', $hosttemplate);
             $this->set('types', Api::makeItJavaScriptAble(
-                $HosttemplatesTable->getHosttemplateTypes()
+                $HosttemplatesTable->getHosttemplateTypesWithStyles()
             ));
             $this->viewBuilder()->setOption('serialize', ['hosttemplate', 'commands', 'types']);
             return;
