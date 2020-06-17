@@ -93,3 +93,4 @@ plugins/PrometheusModule
 plugins/TemplateExportModule
 plugins/TemplateImportModule
 plugins/WindowsBasicMonitoringNSCPModule
+plugins/WMIModule
