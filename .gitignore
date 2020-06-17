@@ -95,3 +95,4 @@ plugins/TemplateImportModule
 plugins/WindowsBasicMonitoringNSCPModule
 plugins/WMIModule
 plugins/VMWAREModule
+plugins/UCSModule
