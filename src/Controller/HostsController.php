@@ -2545,7 +2545,7 @@ class HostsController extends AppController {
     /**
      * @param $containerId
      * @param int $hostId
-     * @throws Exception
+     * @throws \Exception
      */
     public function loadElementsByContainerId($containerId, $hostId = 0) {
         if (!$this->isAngularJsRequest()) {
@@ -2608,11 +2608,9 @@ class HostsController extends AppController {
         $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $masterInstanceName = $Systemsettings->getMasterInstanceName();
+        /** @var SystemsettingsTable $SystemsettingsTable  */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
 
         $satellites = [];
         if (Plugin::isLoaded('DistributeModule')) {
