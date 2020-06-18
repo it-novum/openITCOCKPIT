@@ -89,6 +89,7 @@ plugins/SAPModule
 plugins/SlackModule
 plugins/ServicenowModule
 plugins/PagerdutyModule
+plugins/PostgresModule
 plugins/AxiosAssystModule
 plugins/DesignModule
 plugins/PrometheusModule
