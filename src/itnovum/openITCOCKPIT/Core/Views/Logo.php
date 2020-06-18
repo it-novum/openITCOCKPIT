@@ -254,7 +254,7 @@ class Logo {
     /**
      * @return string
      */
-    public function getCustomHeaderLogoPath() {
+    public function getCustomHeaderLogoDiskPath() {
         return sprintf($this->logoBasePath, WWW_ROOT, $this->customHeaderLogoName);
     }
 }
