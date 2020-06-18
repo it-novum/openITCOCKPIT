@@ -26,6 +26,8 @@
 /**
  * @var \App\View\AppView $this
  */
+
+$Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 ?>
 
 <div id="tsparticles" class="peer peer-greed h-100 pos-r">
@@ -37,7 +39,7 @@
     class="col-12 col-md-4 peer pX-40 pY-80 h-100 scrollable pos-r login-side-bg" style='min-width: 320px;'>
 
     <div class="col-12 text-center">
-        <img class="img-fluid" src="/img/logos/openitcockpit-logo-url-light.png" style="max-height: 230px;"/>
+        <img class="img-fluid" src="<?= h($Logo->getLoginLogoHtml()); ?>" style="max-height: 230px;"/>
     </div>
 
     <h4 class="fw-300 c-white mB-40"><?= __('Login') ?></h4>
