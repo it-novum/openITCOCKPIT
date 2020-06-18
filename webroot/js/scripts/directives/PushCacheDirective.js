@@ -15,7 +15,7 @@ angular.module('openITCOCKPIT').directive('pushCacheDirective', function($http, 
                         address: ''
                     }
                 };
-            }
+            };
             defaultFilter();
             $scope.currentPage = 1;
             $scope.useScroll = true;
@@ -52,7 +52,7 @@ angular.module('openITCOCKPIT').directive('pushCacheDirective', function($http, 
                         $state.go('404');
                     }
                 });
-            }
+            };
 
             $scope.resetFilter = function(){
                 defaultFilter();

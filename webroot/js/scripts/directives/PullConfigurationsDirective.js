@@ -29,7 +29,7 @@ angular.module('openITCOCKPIT').directive('pullConfigurationsDirective', functio
                         address: ''
                     }
                 };
-            }
+            };
             defaultFilter();
             $scope.currentPage = 1;
             $scope.useScroll = true;
@@ -67,7 +67,7 @@ angular.module('openITCOCKPIT').directive('pullConfigurationsDirective', functio
                         $state.go('404');
                     }
                 });
-            }
+            };
 
             $scope.resetFilter = function(){
                 defaultFilter();
@@ -94,7 +94,7 @@ angular.module('openITCOCKPIT').directive('pullConfigurationsDirective', functio
                 $scope.edit.password = agentconfig.password;
                 $scope.edit.push_noticed = agentconfig.push_noticed;
                 $('#editAgentPullConfiguration').modal('show');
-            }
+            };
 
             $scope.editConfig = function(){
                 $http.post('/agentconnector/pullConfigurations/edit/' + $scope.editId + '.json', {
