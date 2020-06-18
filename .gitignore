@@ -62,6 +62,10 @@ config/openitcGrafanaTag.php
 config/datasource.php
 config/dbbackend.php
 config/perfdatabackend.php
+webroot/img/logo_custom.png
+webroot/img/logo_small_custom.png
+webroot/img/logos/logo_custom.png
+webroot/img/logos/logo_custom_header.png
 
 # npm modules #
 #######################

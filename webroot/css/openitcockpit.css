@@ -1233,3 +1233,9 @@ label.menu-open-button:hover {
 }
 
 /**** End Filter Style ***/
+
+.img-center {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}

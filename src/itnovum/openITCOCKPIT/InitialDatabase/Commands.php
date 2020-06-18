@@ -39,7 +39,7 @@ class Commands extends Importer {
      * @throws \Exception
      */
     public function import() {
-        if ($this->isTableEmpty() || 1) {
+        if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
                 $entity = $this->Table->newEmptyEntity();

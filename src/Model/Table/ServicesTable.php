@@ -768,8 +768,9 @@ class ServicesTable extends Table {
         foreach ($services as $serviceId => $serviceData) {
             $serviceFormated[$serviceId] = [
                 'Service'         => [
-                    'id'   => $serviceData['id'],
-                    'name' => $serviceData['name']
+                    'id'          => $serviceData['id'],
+                    'name'        => $serviceData['name'],
+                    'servicename' => $serviceData['name'] ?? $serviceData['_matchingData']['Servicetemplates']['name']
                 ],
                 'Host'            => [
                     'id'   => $serviceData['_matchingData']['Hosts']['id'],
