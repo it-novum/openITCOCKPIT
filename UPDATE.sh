@@ -319,3 +319,8 @@ else
   fi
 fi
 
+if [ -d "${APPDIR}/plugins/SnmpTrapModule/src" ]; then
+    echo "Detected SnmpTrapModule: try to restart snmptrapd and snmptt"
+    systemctl enable snmptrapd.service snmptt.service
+    systemctl restart snmptrapd.service snmptt.service
+fi
