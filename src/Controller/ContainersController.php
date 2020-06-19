@@ -355,6 +355,111 @@ class ContainersController extends AppController {
      * @deprecated
      */
     public function delete($id = null) {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        //$container = $ContainersTable->getContainerById($id, $this->MY_RIGHTS);
+
+        $container = $ContainersTable->find()
+            ->where([
+                'Containers.id'    => $id,
+                'Containers.id IN' => $this->MY_RIGHTS
+            ])
+            ->first();
+
+
+        //check if the current container contains subcontainers
+        $deletionAllowed = $ContainersTable->allowDelete($id, $this->MY_RIGHTS);
+        if ($deletionAllowed) {
+            //delete container data by containertype
+
+            $containerId = $container->id;
+            switch ($container->containertype_id) {
+                case CT_TENANT:
+                    /** @var $TenantsTable TenantsTable */
+                    $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
+                    $tenant = $TenantsTable->getTenantByContainerId($containerId);
+                    debug($tenant);
+                    break;
+                case CT_LOCATION:
+                    /** @var $LocationsTable LocationsTable */
+                    $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
+                    $location = $LocationsTable->find()
+                        ->where([
+                            'Locations.container_id' => $containerId,
+                            'Locations.container_id IN' => $this->MY_RIGHTS,
+                        ])
+                        ->first();
+
+                    if (!empty($location)){
+                        //@TODO location is not getting deleted properly
+                        $LocationsTable->deleteOrFail($location);
+                    }
+
+                    break;
+                case CT_NODE:
+
+                    break;
+                case CT_CONTACTGROUP:
+                    /** @var $ContactgroupsTable ContactgroupsTable */
+                    $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+                    $ContactgroupsTable->getContactgroupByContainerId($containerId);
+
+                    break;
+                case CT_HOSTGROUP:
+                    /** @var HostgroupsTable $HostgroupsTable */
+                    $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+                    $hostgroup = $HostgroupsTable->getHostgroupByContainerId($containerId);
+                    if (!empty($hostgroup['hosts']) || !empty($hostgroup['hosttemplates'])) {
+                        return false;
+                    }
+                    return true;
+                    break;
+                case CT_SERVICEGROUP:
+                    /** @var ServicegroupsTable $ServicegroupsTable */
+                    $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+                    $servicegroup = $ServicegroupsTable->getServicegroupByContainerId($containerId);
+                    if (!empty($servicegroup['services']) || !empty($servicegroup['servicetemplates'])) {
+                        return false;
+                    }
+                    return true;
+
+                    break;
+                case CT_SERVICETEMPLATEGROUP:
+                    /** @var ServicetemplategroupsTable $ServicetemplategroupsTable */
+                    $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+                    $servicetemplategroup = $ServicetemplategroupsTable->getServicetemplategroupByContainerId($containerId);
+                    if (!empty($servicetemplategroup['servicetemplates'])) {
+                        return false;
+                    }
+                    return true;
+                    break;
+
+            }
+
+            if ($ContainersTable->delete($container)) {
+                Cache::clear('permissions');
+                $this->set('success', true);
+                $this->viewBuilder()->setOption('serialize', ['success']);
+                return;
+            } else {
+                $this->response = $this->response->withStatus(500);
+                $this->set('success', false);
+                $this->viewBuilder()->setOption('serialize', ['success']);
+                return;
+            }
+        }
+        $this->response = $this->response->withStatus(500);
+        $this->set('success', false);
+        $this->set('message', __('Container is not empty'));
+        $this->set('containerId', $id);
+        $this->viewBuilder()->setOption('serialize', ['success', 'message', 'containerId']);
+        return;
+
+
         throw new \RuntimeException('Not implemented');
 
         $userId = $this->Auth->user('id');

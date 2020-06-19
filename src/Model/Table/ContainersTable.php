@@ -1044,6 +1044,27 @@ class ContainersTable extends Table {
     public function isEmptyContainer($containerId = null, $containertype = null): bool {
         if (!empty($containertype)) {
             switch ($containertype) {
+                case CT_TENANT:
+                    /** @var $TenantsTable TenantsTable */
+                    $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
+                    $tenant = $TenantsTable->getTenantByContainerId($containerId);
+                    debug($tenant);
+                    break;
+                case CT_LOCATION:
+                    /** @var $LocationsTable LocationsTable */
+                    $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
+                    $location = $LocationsTable->getLocationByContainerId($containerId);
+                    debug($location);
+                    break;
+                case CT_NODE:
+
+                    break;
+                case CT_CONTACTGROUP:
+                    /** @var $ContactgroupsTable ContactgroupsTable */
+                    $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+                    $ContactgroupsTable->getContactgroupByContainerId($containerId);
+
+                    break;
                 case CT_HOSTGROUP:
                     /** @var HostgroupsTable $HostgroupsTable */
                     $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
