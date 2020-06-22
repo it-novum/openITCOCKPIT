@@ -794,7 +794,8 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                     <div class="mr-auto">
                         <button type="button" class="btn btn-danger" ng-click="deleteNode()"
                                 ng-class="{'has-error': errors.id}">
-                            <i class="fa fa-refresh fa-spin" ng-show="isDeleting"></i>
+                            <i class="fa fa-refresh fa-spin" ng-show="isDeleting" ng-hide="containerNotEmpty"></i>
+                            <i class="fas fa-exclamation-triangle" ng-show="containerNotEmpty"></i>
                             <?php echo __('Delete'); ?>
                         </button>
                         <button type="button" class="btn btn-primary" ng-show="containerNotEmpty"
