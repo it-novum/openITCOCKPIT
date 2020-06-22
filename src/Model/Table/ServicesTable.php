@@ -3330,6 +3330,64 @@ class ServicesTable extends Table {
     }
 
     /**
+     * @param array $serviceIds
+     * @return array
+     */
+    public function getServiceUuidsByServiceIds($serviceIds = []) {
+        if (!is_array($serviceIds)) {
+            $serviceIds = [$serviceIds];
+        }
+
+        if (empty($serviceIds)) {
+            return [];
+        }
+
+        $query = $this->find('list', [
+            'keyField'   => 'id',
+            'valueField' => 'uuid'
+        ])
+            ->where([
+                'Services.id IN' => $serviceIds
+            ])
+            ->disableHydration();
+
+        return $query->toArray();
+    }
+
+    /**
+     * @param array $serviceIds
+     * @return array
+     */
+    public function getServicesByIds($serviceIds = [], $enableHydration = true) {
+        if (!is_array($serviceIds)) {
+            $serviceIds = [$serviceIds];
+        }
+
+        if (empty($serviceIds)) {
+            return [];
+        }
+
+        $query = $this->find()
+            ->where([
+                'Services.id IN' => $serviceIds
+            ])
+            ->contain([
+                'Hosts' => [
+                    'HostsToContainersSharing'
+                ],
+                'Servicetemplates'
+            ])
+            ->enableHydration($enableHydration)
+            ->all();
+
+        if (empty($query)) {
+            return [];
+        }
+
+        return $query->toArray();
+    }
+
+    /**
      * @return array
      */
     public function getServiceTypesWithStyles() {

@@ -97,6 +97,7 @@ plugins/PostgresModule
 plugins/AxiosAssystModule
 plugins/DesignModule
 plugins/PrometheusModule
+plugins/SnmpTrapModule
 plugins/TemplateExportModule
 plugins/TemplateImportModule
 plugins/WindowsBasicMonitoringNSCPModule
