@@ -67,7 +67,6 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
                                 }
                                 $scope.message = result.data.message;
                                 $scope.containerId = result.data.containerId;
-                                console.log(result.data);
                             }
 
                             issueCount = Object.keys($scope.issueObjects).length;

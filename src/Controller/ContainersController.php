@@ -352,234 +352,26 @@ class ContainersController extends AppController {
 
     /**
      * @param null $id
-     * @deprecated
      */
     public function delete($id = null) {
-        throw new \RuntimeException('Not implemented');
-
-        $userId = $this->Auth->user('id');
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $UsersTable UsersTable */
-        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        $container = $ContainersTable->find()
+            ->where([
+                'Containers.id'    => $id,
+                'Containers.id IN' => $this->MY_RIGHTS
+            ])
+            ->first();
 
-        if (!$ContainersTable->existsById($id)) {
-            throw new NotFoundException(__('Invalid container'));
-        }
-        if (!$this->request->is('post')) {
-            throw new MethodNotAllowedException();
-        }
-        $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
-            return strpos($value, 'Module') !== false;
-        });
-
-        /*
-         * cake4 query
-         *
-            $rootContainer = $ContainersTable->find()
-                ->where([
-                    'Containers.id' => $id,
-                ])
-                ->first();
-
-            $childElements = $ContainersTable->find()
-                ->where([
-                    'AND' => [
-                        ['(Containers.lft BETWEEN :lft1 AND :rght1)'],
-                        ['(Containers.rght BETWEEN :lft1 AND :rght1)'],
-                        'Containers.containertype_id IN' => [
-                            CT_LOCATION,
-                            CT_NODE,
-                            CT_HOSTGROUP,
-                            CT_SERVICEGROUP,
-                            CT_CONTACTGROUP,
-                        ]
-                    ]
-                ])
-                ->bind(':lft1', $rootContainer->get('lft'), 'integer')
-                ->bind(':rght1', $rootContainer->get('rght'), 'integer')
-                ->disableHydration()
-                ->all();
-            debug($childElements->toArray());
-         */
-
-        $rootContainer = $this->Container->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Container.id' => $id,
-            ],
-        ]);
-        $childElements = $this->Container->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'AND' => [
-                    'Container.lft BETWEEN ? AND ?'  => [$rootContainer['Container']['lft'], $rootContainer['Container']['rght']],
-                    'Container.rght BETWEEN ? AND ?' => [$rootContainer['Container']['lft'], $rootContainer['Container']['rght']],
-                    'Container.containertype_id'     => [
-                        CT_LOCATION,
-                        CT_NODE,
-                        CT_HOSTGROUP,
-                        CT_SERVICEGROUP,
-                        CT_CONTACTGROUP,
-                    ],
-                ],
-            ],
-        ]);
-        $allowDeleteRoot = true;
-        $childContainers = Hash::combine($childElements, '{n}.Container.id', '{n}.Container.name', '{n}.Container.containertype_id');
-        if (is_array($childContainers) && !empty($childContainers)) {
-            foreach ($childContainers as $containerTypeId => $containers) {
-                $containerIds = array_keys($containers);
-                switch ($containerTypeId) {
-                    case CT_NODE:
-                        //Check hosts to delete
-                        $Host = ClassRegistry::init('Host');
-                        $hostsToDelete = $Host->find('all', [
-                            'recursive'  => -1,
-                            'conditions' => [
-                                'Host.container_id' => $containerIds
-                            ]
-                        ]);
-                        $hostIds = Hash::extract($hostsToDelete, '{n}.Host.id');
-                        $allowDelete = $this->Container->__allowDelete($hostIds);
-                        $allowDeleteRoot = $allowDelete;
-
-                        //Check users to delete
-                        $usersToDelete = $UsersTable->getUsersToDeleteByContainerIds($containerIds);
-                        if ($allowDelete) {
-                            foreach ($usersToDelete as $user) {
-                                /** @var User $user */
-                                $UsersTable->delete($user);
-                            }
-                        }
-
-                        //Check satellites to delete
-                        if (in_array('DistributeModule', $modulePlugins)) {
-                            $Satellite = ClassRegistry::init('DistributeModule.Satellite');
-                            $satellitesToDelete = $Satellite->find('all', [
-                                'recursive'  => -1,
-                                'joins'      => [
-                                    [
-                                        'table'      => 'containers',
-                                        'alias'      => 'Container',
-                                        'type'       => 'INNER',
-                                        'conditions' => [
-                                            'Container.id = Satellite.container_id',
-                                        ],
-                                    ],
-                                ],
-                                'conditions' => [
-                                    'Satellite.container_id' => $containerIds,
-                                ],
-
-                                'fields' => [
-                                    'Satellite.id',
-                                    'Container.id',
-                                ],
-                            ]);
-                            if ($allowDelete) {
-                                foreach ($satellitesToDelete as $satellite) {
-                                    $Satellite->__delete($satellite, $userId);
-                                }
-                            }
-                        }
-
-                        if ($allowDelete) {
-                            foreach ($hostsToDelete as $host) {
-                                $Host->__delete($host, $userId);
-                            }
-                        }
-                        break;
-                    case CT_LOCATION:
-                        //Check locations to delete
-                        $Location = ClassRegistry::init('Location');
-                        $locationsToDelete = $Location->find('all', [
-                            'recursive'  => -1,
-                            'joins'      => [
-                                [
-                                    'table'      => 'containers',
-                                    'alias'      => 'Container',
-                                    'type'       => 'INNER',
-                                    'conditions' => [
-                                        'Container.id = Location.container_id',
-                                    ],
-                                ],
-                            ],
-                            'conditions' => [
-                                'Location.container_id' => $containerIds,
-                            ],
-                            'fields'     => [
-                                'Location.id',
-                                'Container.id',
-                            ],
-                        ]);
-                        foreach ($locationsToDelete as $location) {
-                            $Location->__delete($location, $userId);
-                        }
-                        break;
-                    case CT_HOSTGROUP:
-                        //Check host groups to delete
-                        $Hostgroup = ClassRegistry::init('Hostgroup');
-                        $hostgroupsToDelete = $Hostgroup->find('all', [
-                            'recursive'  => -1,
-                            'contain'    => [
-                                'Container' => [
-                                    'fields' => [
-                                        'Container.id',
-                                    ],
-                                ],
-                            ],
-                            'conditions' => [
-                                'Hostgroup.container_id' => $containerIds,
-                            ],
-                            'fields'     => [
-                                'Hostgroup.id',
-                            ],
-                        ]);
-                        foreach ($hostgroupsToDelete as $containerId) {
-                            $this->Container->__delete($containerId);
-                        }
-                        break;
-                    case CT_SERVICEGROUP:
-                        //Check service groups to delete
-                        $Servicegroup = ClassRegistry::init('Servicegroup');
-                        $servicegroupsToDelete = $Servicegroup->find('all', [
-                            'recursive'  => -1,
-                            'contain'    => [
-                                'Container' => [
-                                    'fields' => [
-                                        'Container.id',
-                                    ],
-                                ],
-                            ],
-                            'conditions' => [
-                                'Servicegroup.container_id' => $containerIds,
-                            ],
-                            'fields'     => [
-                                'Servicegroup.id',
-                            ],
-                        ]);
-                        foreach ($servicegroupsToDelete as $containerId) {
-                            $this->Container->__delete($containerId);
-                        }
-                        break;
-                    case CT_CONTACTGROUP:
-                        //Check contact groups to delete
-
-                        /** @var $ContactgroupsTable ContactgroupsTable */
-                        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
-                        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerIdsForContainerDelete($containerIds);
-                        foreach ($contactgroups as $contactgroup) {
-                            $this->Container->__delete($contactgroup['container']['id']);
-                        }
-                        break;
-                }
-            }
-        }
-        Cache::clear('permissions');
-        if ($allowDeleteRoot) {
-            if ($this->Container->__delete($id)) {
+        //check if the current container contains subcontainers
+        $deletionAllowed = $ContainersTable->allowDelete($id, $this->MY_RIGHTS);
+        if ($deletionAllowed) {
+            Cache::clear('permissions');
+            if ($ContainersTable->delete($container)) {
                 Cache::clear('permissions');
                 $this->set('success', true);
                 $this->viewBuilder()->setOption('serialize', ['success']);
@@ -593,7 +385,11 @@ class ContainersController extends AppController {
         }
         $this->response = $this->response->withStatus(500);
         $this->set('success', false);
-        $this->viewBuilder()->setOption('serialize', ['success']);
+        $this->set('message', __('Container is not empty'));
+        $this->set('containerId', $id);
+        $this->viewBuilder()->setOption('serialize', ['success', 'message', 'containerId']);
+        return;
+
     }
 
     public function loadContainersForAngular() {

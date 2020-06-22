@@ -3,6 +3,7 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.selectedContainerTypeId = null;
+        $scope.containerNotEmpty = false;
 
         var clearForm = function(){
             $scope.post = {
@@ -184,6 +185,12 @@ angular.module('openITCOCKPIT')
                     NotyService.genericSuccess();
                     //$scope.callback();
                 }, function errorCallback(result){
+                    if(result.data.hasOwnProperty('success') && result.data.hasOwnProperty('containerId')){
+                        $scope.containerNotEmpty = true;
+                        $scope.message = result.data.message;
+                        $scope.containerId = result.data.containerId;
+                    }
+
                     if(result.data.hasOwnProperty('error')){
                         $scope.errors = result.data.error;
                     }

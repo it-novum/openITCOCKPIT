@@ -58,11 +58,11 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="containers"
-                                ng-model="selectedContainer.id"
-                                ng-options="container.key as container.value for container in containers">
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-model="selectedContainer.id"
+                                    ng-options="container.key as container.value for container in containers">
                             </select>
                         </div>
                     </form>
@@ -551,7 +551,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                                 <optgroup label="<?php echo h($continent); ?>">
                                                     <?php foreach ($continentTimezons as $timezoneKey => $timezoneName): ?>
                                                         <option
-                                                            value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
+                                                                value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
                                                     <?php endforeach; ?>
                                                 </optgroup>
                                             <?php endforeach;; ?>
@@ -786,15 +786,23 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                             </div>
                         </div>
                     </div>
+                    <div class="col-12" ng-show="containerNotEmpty">
+                        <span class="text-danger">{{message}}</span>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger mr-auto" ng-click="deleteNode()"
-                            ng-class="{'has-error': errors.id}">
-                        <i class="fa fa-refresh fa-spin" ng-show="isDeleting"></i>
-                        <?php echo __('Delete'); ?>
-                    </button>
-                    <div class="pull-left" ng-repeat="error in errors.id">
-                        <div class="help-block text-danger">{{ error }}</div>
+                    <div class="mr-auto">
+                        <button type="button" class="btn btn-danger" ng-click="deleteNode()"
+                                ng-class="{'has-error': errors.id}">
+                            <i class="fa fa-refresh fa-spin" ng-show="isDeleting" ng-hide="containerNotEmpty"></i>
+                            <i class="fas fa-exclamation-triangle" ng-show="containerNotEmpty"></i>
+                            <?php echo __('Delete'); ?>
+                        </button>
+                        <button type="button" class="btn btn-primary" ng-show="containerNotEmpty"
+                                ui-sref="ContainersShowDetails({id:containerId})"><?= __('Show Details'); ?></button>
+                        <div ng-repeat="error in errors.id">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary" ng-click="updateNode()">
                         <?php echo __('Save'); ?>

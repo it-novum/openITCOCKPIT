@@ -1021,13 +1021,19 @@ class ContainersTable extends Table {
             }
         }
         */
+        foreach ($subContainers as $key => $subcontainer){
+            //check child elements
+            foreach ($subcontainer['childsElements'] as $childsElement){
+                if(!empty($childsElement)){
+                    return false;
+                }
+            }
 
-        //check if there are subcontainers
-        foreach ($subContainers as $key => $container) {
             //remove the base container itself from the array
-            if ($container['id'] == $id) {
+            if ($subcontainer['id'] == $id) {
                 unset($subContainers[$key]);
             }
+
             //if $subContainers still not empty then there are child containers which stops the container deletion
             if (!empty($subContainers)) {
                 return false;
@@ -1044,6 +1050,27 @@ class ContainersTable extends Table {
     public function isEmptyContainer($containerId = null, $containertype = null): bool {
         if (!empty($containertype)) {
             switch ($containertype) {
+                case CT_TENANT:
+                    /** @var $TenantsTable TenantsTable */
+                    $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
+                    $tenant = $TenantsTable->getTenantByContainerId($containerId);
+                    debug($tenant);
+                    break;
+                case CT_LOCATION:
+                    /** @var $LocationsTable LocationsTable */
+                    $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
+                    $location = $LocationsTable->getLocationByContainerId($containerId);
+                    debug($location);
+                    break;
+                case CT_NODE:
+
+                    break;
+                case CT_CONTACTGROUP:
+                    /** @var $ContactgroupsTable ContactgroupsTable */
+                    $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+                    $ContactgroupsTable->getContactgroupByContainerId($containerId);
+
+                    break;
                 case CT_HOSTGROUP:
                     /** @var HostgroupsTable $HostgroupsTable */
                     $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
