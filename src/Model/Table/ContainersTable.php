@@ -1021,13 +1021,19 @@ class ContainersTable extends Table {
             }
         }
         */
+        foreach ($subContainers as $key => $subcontainer){
+            //check child elements
+            foreach ($subcontainer['childsElements'] as $childsElement){
+                if(!empty($childsElement)){
+                    return false;
+                }
+            }
 
-        //check if there are subcontainers
-        foreach ($subContainers as $key => $container) {
             //remove the base container itself from the array
-            if ($container['id'] == $id) {
+            if ($subcontainer['id'] == $id) {
                 unset($subContainers[$key]);
             }
+
             //if $subContainers still not empty then there are child containers which stops the container deletion
             if (!empty($subContainers)) {
                 return false;
