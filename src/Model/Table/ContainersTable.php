@@ -1021,10 +1021,10 @@ class ContainersTable extends Table {
             }
         }
         */
-        foreach ($subContainers as $key => $subcontainer){
+        foreach ($subContainers as $key => $subcontainer) {
             //check child elements
-            foreach ($subcontainer['childsElements'] as $childsElement){
-                if(!empty($childsElement)){
+            foreach ($subcontainer['childsElements'] as $childsElement) {
+                if (!empty($childsElement)) {
                     return false;
                 }
             }
@@ -1054,13 +1054,11 @@ class ContainersTable extends Table {
                     /** @var $TenantsTable TenantsTable */
                     $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
                     $tenant = $TenantsTable->getTenantByContainerId($containerId);
-                    debug($tenant);
                     break;
                 case CT_LOCATION:
                     /** @var $LocationsTable LocationsTable */
                     $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
                     $location = $LocationsTable->getLocationByContainerId($containerId);
-                    debug($location);
                     break;
                 case CT_NODE:
 
