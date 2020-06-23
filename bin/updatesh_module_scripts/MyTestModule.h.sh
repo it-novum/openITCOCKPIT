@@ -2,11 +2,11 @@
 
 # Class importer for UPDATE.sh bash object emulation
 
-path="."
+MyTestModulePath="."
 if [ "$1" != "" ]; then
-    path=$1
+    MyTestModulePath=$1
 fi
 
 MyTestModule(){
-    . <(sed "s/MyTestModule/$1/g" ${path}/MyTestModule.class.sh)
+    . <(sed "s/MyTestModule/$1/g" ${MyTestModulePath}/MyTestModule.class.sh)
 }
