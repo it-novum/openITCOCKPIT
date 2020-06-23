@@ -27,12 +27,12 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
         <a ui-sref="DashboardsIndex">
-            <i class="fa fa-link fa-fw"></i> <?php echo __('System'); ?>
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="ContainersIndex">
-            <i class="fas fa-clipboard-list"></i> <?php echo __('Containers'); ?>
+            <i class="fa fa-link"></i> <?php echo __('Containers'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">

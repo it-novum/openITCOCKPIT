@@ -215,12 +215,14 @@ $objectDetails['maps'] = [
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="ContainersIndex">
-            <i class="fas fa-globe-americas"></i> <?php echo __('Container Map'); ?>
+            <i class="fa fa-link"></i> <?php echo __('Containers'); ?>
         </a>
     </li>
+    <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
     <li class="breadcrumb-item">
-        <i class="fa fa-eye"></i> <?php echo __('Overview'); ?>
+        <i class="fa fa-sitemap"></i> <?php echo __('Show details'); ?>
     </li>
+    <?php endif; ?>
 </ol>
 
 
@@ -247,7 +249,7 @@ $objectDetails['maps'] = [
             <div class="panel-hdr">
                 <h2>
                     <?php echo __('Container '); ?>
-                    <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
+                    <span class="fw-300"><i><?php echo __('details'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
