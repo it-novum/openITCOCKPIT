@@ -1308,15 +1308,24 @@ class HosttemplatesTable extends Table {
         return $types;
     }
 
-    public function getAll() {
-        return $this
+    public function getAll($MY_RIGHTS = []) {
+        $query = $this
             ->find()
             ->select([
                 'id',
                 'name'
-            ])
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query
             ->disableHydration()
-            ->all()
-            ;
+            ->all();
+
+        return $query;
     }
 }
