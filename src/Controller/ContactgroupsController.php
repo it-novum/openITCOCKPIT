@@ -271,16 +271,16 @@ class ContactgroupsController extends AppController {
             return;
         }
 
-        if (!$ContactgroupsTable->allowDelete($id)) {
-            $usedBy = [
-                [
-                    'baseUrl' => '#',
-                    'state'   => 'ContactgroupsUsedBy',
-                    'message' => __('Used by other objects'),
-                    'module'  => 'Core'
-                ]
-            ];
+        $usedBy = [
+            [
+                'baseUrl' => '#',
+                'state'   => 'ContactgroupsUsedBy',
+                'message' => __('Used by other objects'),
+                'module'  => 'Core'
+            ]
+        ];
 
+        if (!$ContactgroupsTable->allowDelete($id)) {
             $this->response = $this->response->withStatus(400);
             $this->set('success', false);
             $this->set('id', $id);
@@ -297,37 +297,46 @@ class ContactgroupsController extends AppController {
                 'Contactgroups'
             ]
         ]);
+        if($ContainersTable->allowDelete($container->id, $this->MY_RIGHTS)){
+            if ($ContainersTable->delete($container)) {
+                $User = new User($this->getUser());
+                Cache::clear('permissions');
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-        if ($ContainersTable->delete($container)) {
-            $User = new User($this->getUser());
-            Cache::clear('permissions');
-            /** @var  ChangelogsTable $ChangelogsTable */
-            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    'delete',
+                    'contactgroup',
+                    $id,
+                    OBJECT_CONTACTGROUP,
+                    $contactgroupEntity->get('container')->get('parent_id'),
+                    $User->getId(),
+                    $contactgroupEntity->get('container')->get('name'),
+                    $contactgroupEntity->toArray()
+                );
+                if ($changelog_data) {
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
 
-            $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                'delete',
-                'contactgroup',
-                $id,
-                OBJECT_CONTACTGROUP,
-                $contactgroupEntity->get('container')->get('parent_id'),
-                $User->getId(),
-                $contactgroupEntity->get('container')->get('name'),
-                $contactgroupEntity->toArray()
-            );
-            if ($changelog_data) {
-                /** @var Changelog $changelogEntry */
-                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                $ChangelogsTable->save($changelogEntry);
+                $this->set('success', true);
+                $this->viewBuilder()->setOption('serialize', ['success']);
+                return;
             }
 
-            $this->set('success', true);
+            $this->response = $this->response->withStatus(500);
+            $this->set('success', false);
             $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
-
-        $this->response = $this->response->withStatus(500);
+        $this->response = $this->response->withStatus(400);
         $this->set('success', false);
-        $this->viewBuilder()->setOption('serialize', ['success']);
+        $this->set('id', $id);
+        $this->set('message', __('Issue while deleting contact'));
+        $this->set('usedBy', $usedBy);
+        $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
+        return;
     }
 
 
