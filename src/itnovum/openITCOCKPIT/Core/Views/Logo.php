@@ -254,7 +254,18 @@ class Logo {
     /**
      * @return string
      */
-    public function getCustomHeaderLogoPath() {
+    public function getCustomHeaderLogoDiskPath() {
         return sprintf($this->logoBasePath, WWW_ROOT, $this->customHeaderLogoName);
+    }
+
+    /**
+     * @return string
+     */
+    public function getLoginLogoHtml() {
+        if ($this->isCustomLogo()) {
+            return $this->getLogoForHtml();
+        }
+
+        return '/img/logos/openitcockpit-logo-url-light.png';
     }
 }

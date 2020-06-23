@@ -37,6 +37,7 @@ use Cake\Console\ConsoleOptionParser;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
 /**
@@ -83,7 +84,12 @@ class ConfigGeneratorCommand extends Command implements CronjobInterface {
 
         foreach ($configFilesToGenerate as $record) {
             $configFile = $record['data'];
-            $className = sprintf('itnovum\openITCOCKPIT\ConfigGenerator\%s', $configFile);
+            $classPath = 'itnovum\openITCOCKPIT\ConfigGenerator\%s';
+            if (isset($record['module']) && $record['module'] !== null && $record['module'] !== '') {
+                $classPath = '\\' . $record['module'] . '\Lib\ConfigGenerator\%s';
+            }
+
+            $className = sprintf($classPath, $configFile);
             if (!class_exists($className)) {
                 throw new NotFoundException('Config file not found');
             }

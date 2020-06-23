@@ -172,6 +172,10 @@
                                     <i class="fa" ng-class="getSortClass('Servicetemplates.description')"></i>
                                     <?php echo __('Description'); ?>
                                 </th>
+                                <th class="no-sort col-2" ng-click="orderBy('Servicetemplates.servicetemplatetype_id')">
+                                    <i class="fa" ng-class="getSortClass('Servicetemplates.servicetemplatetype_id')"></i>
+                                    <?php echo __('Type'); ?>
+                                </th>
                                 <th class="no-sort text-center">
                                     <i class="fa fa-cog"></i>
                                 </th>
@@ -190,6 +194,12 @@
                                 <td>{{servicetemplate.Servicetemplate.template_name}}</td>
                                 <td>{{servicetemplate.Servicetemplate.name}}</td>
                                 <td>{{servicetemplate.Servicetemplate.description}}</td>
+                                <td>
+                                    <span class="badge border {{servicetemplate.Servicetemplate.type.class}} {{servicetemplate.Servicetemplate.type.color}}">
+                                        <i class="{{servicetemplate.Servicetemplate.type.icon}}"></i>
+                                        {{servicetemplate.Servicetemplate.type.title}}
+                                    </span>
+                                </td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>

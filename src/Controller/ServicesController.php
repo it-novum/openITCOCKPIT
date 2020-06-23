@@ -674,6 +674,9 @@ class ServicesController extends AppController {
             );
             $mergedService = $ServiceMergerForView->getDataForView();
 
+            $typesForView = $ServicesTable->getServiceTypesWithStyles();
+            $serviceType = $typesForView[$mergedService['Service']['service_type']];
+
             $this->set('service', $mergedService);
             $this->set('host', $host);
             $this->set('servicetemplate', $servicetemplate);
@@ -682,6 +685,7 @@ class ServicesController extends AppController {
             $this->set('areContactsInheritedFromHosttemplate', $ServiceMergerForView->areContactsInheritedFromHosttemplate());
             $this->set('areContactsInheritedFromHost', $ServiceMergerForView->areContactsInheritedFromHost());
             $this->set('areContactsInheritedFromServicetemplate', $ServiceMergerForView->areContactsInheritedFromServicetemplate());
+            $this->set('serviceType', $serviceType);
 
 
             $this->viewBuilder()->setOption('serialize', [
@@ -692,7 +696,8 @@ class ServicesController extends AppController {
                 'hosttemplateContactsAndContactgroups',
                 'areContactsInheritedFromHosttemplate',
                 'areContactsInheritedFromHost',
-                'areContactsInheritedFromServicetemplate'
+                'areContactsInheritedFromServicetemplate',
+                'serviceType'
             ]);
             return;
         }
@@ -981,10 +986,10 @@ class ServicesController extends AppController {
                                 unset($sourceService['Service']['servicecommandargumentvalues'][$i]['servicetemplate_id']);
                             }
                         }
-
                         if (!empty($serviceData['Service']['servicecommandargumentvalues'])) {
                             $newServiceData['Service']['servicecommandargumentvalues'] = $serviceData['Service']['servicecommandargumentvalues'];
                         }
+
 
                         foreach ($sourceService['Service']['serviceeventcommandargumentvalues'] as $i => $serviceeventcommandargumentvalues) {
                             unset($sourceService['Service']['serviceeventcommandargumentvalues'][$i]['id']);
@@ -1023,14 +1028,15 @@ class ServicesController extends AppController {
                     }
 
                     $sourceService = $Cache->get($sourceServiceId);
-
+                    if (isset($newServiceData['Service']['servicecommandargumentvalues'])) {
+                        $sourceService['Service']['servicecommandargumentvalues'] = $newServiceData['Service']['servicecommandargumentvalues'];
+                    }
                     $newServiceData = $sourceService;
                     $newServiceData['Service']['host_id'] = $hostId;
                     $newServiceData['Service']['name'] = $serviceData['Service']['name'];
                     $newServiceData['Service']['description'] = $serviceData['Service']['description'];
                     $newServiceData['Service']['command_id'] = $serviceData['Service']['command_id'];
                 }
-
                 $action = 'copy';
                 if (isset($serviceData['Service']['id'])) {
                     //Update existing service
@@ -1064,7 +1070,6 @@ class ServicesController extends AppController {
                     $hosttemplateContactsAndContactgroups
                 );
                 $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
-
                 //Add required fields for validation
                 $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
                 $serviceData['servicetemplate_flap_detection_on_ok'] = $servicetemplate['Servicetemplate']['flap_detection_on_ok'];

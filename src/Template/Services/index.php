@@ -335,6 +335,88 @@
                                         </div>
                                     </fieldset>
                                 </div>
+                                <div class="col-xs-12 col-lg-3">
+                                    <fieldset>
+                                        <h5><?php echo __('Priority'); ?></h5>
+                                        <div class="form-group smart-form">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="priority1"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Services.priority[1]"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="priority1">
+                                                    <i class="fa fa-fire fa-lg ok-soft"></i>
+                                                </label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="priority2"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Services.priority[2]"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="priority2">
+                                                    <i class="fa fa-fire fa-lg ok"></i>
+                                                    <i class="fa fa-fire fa-lg ok"></i>
+                                                </label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="priority3"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Services.priority[3]"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="priority3">
+                                                    <i class="fa fa-fire fa-lg warning"></i>
+                                                    <i class="fa fa-fire fa-lg warning"></i>
+                                                    <i class="fa fa-fire fa-lg warning"></i>
+                                                </label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="priority4"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Services.priority[4]"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="priority4">
+                                                    <i class="fa fa-fire fa-lg critical-soft"></i>
+                                                    <i class="fa fa-fire fa-lg critical-soft"></i>
+                                                    <i class="fa fa-fire fa-lg critical-soft"></i>
+                                                    <i class="fa fa-fire fa-lg critical-soft"></i>
+                                                </label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="priority5"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Services.priority[5]"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="priority5">
+                                                    <i class="fa fa-fire fa-lg critical"></i>
+                                                    <i class="fa fa-fire fa-lg critical"></i>
+                                                    <i class="fa fa-fire fa-lg critical"></i>
+                                                    <i class="fa fa-fire fa-lg critical"></i>
+                                                    <i class="fa fa-fire fa-lg critical"></i>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
                             </div>
                             <div class="float-right">
                                 <button type="button" ng-click="resetFilter()"
@@ -370,7 +452,15 @@
                                 </th>
 
                                 <th class="no-sort text-center">
-                                    <strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
+                                    <strong title="<?php echo __('Passively transferred service'); ?>">
+                                        P
+                                    </strong>
+                                </th>
+
+                                <th class="no-sort text-center" ng-click="orderBy('servicepriority')">
+                                    <i class="fa" ng-class="getSortClass('servicepriority')"></i>
+                                    <i class="fa fa-fire" title="<?php echo __('Priority'); ?>">
+                                    </i>
                                 </th>
 
                                 <th class="no-sort" ng-click="orderBy('servicename')">
@@ -407,23 +497,24 @@
                             </thead>
 
                             <tbody>
-                            <tr ng-repeat-start="host in services">
+                            <tr ng-repeat-start="service in services"
+                                ng-if="services[$index-1].Host.hostname !== service.Host.hostname">
                                 <td colspan="13" class="service_table_host_header">
 
-                                    <hoststatusicon host="host"></hoststatusicon>
+                                    <hoststatusicon host="service"></hoststatusicon>
 
                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                         <a class="padding-left-5 txt-color-blueDark"
-                                           ui-sref="HostsBrowser({id: host.Host.id})">
-                                            {{host.Host.hostname}} ({{host.Host.address}})
+                                           ui-sref="HostsBrowser({id: service.Host.id})">
+                                            {{service.Host.hostname}} ({{service.Host.address}})
                                         </a>
                                     <?php else: ?>
-                                        {{host.Host.hostname}} ({{host.Host.address}})
+                                        {{service.Host.hostname}} ({{service.Host.address}})
                                     <?php endif; ?>
 
                                     <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                         <a class="pull-right txt-color-blueDark"
-                                           ui-sref="ServicesServiceList({id: host.Host.id})">
+                                           ui-sref="ServicesServiceList({id: service.Host.id})">
                                             <i class="fa fa-list"
                                                title=" <?php echo __('Go to Service list'); ?>"></i>
                                         </a>
@@ -431,8 +522,7 @@
                                 </td>
                             </tr>
 
-                            <tr ng-repeat="service in host.Services" ng-repeat-end="">
-
+                            <tr ng-repeat-end="">
                                 <td class="width-5">
                                     <input type="checkbox"
                                            ng-model="massChange[service.Service.id]"
@@ -463,14 +553,14 @@
                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                         <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                            class="txt-color-blueDark"
-                                           ng-mouseenter="mouseenter($event, host.Host.uuid, service.Service.uuid)"
+                                           ng-mouseenter="mouseenter($event, service.Host.uuid, service.Service.uuid)"
                                            ng-mouseleave="mouseleave()"
                                            ng-if="service.Service.has_graph">
                                             <i class="fa fa-lg fa-area-chart">
                                             </i>
                                         </a>
                                     <?php else: ?>
-                                        <div ng-mouseenter="mouseenter($event, host.Host.uuid, service.Service.uuid)"
+                                        <div ng-mouseenter="mouseenter($event, service.Host.uuid, service.Service.uuid)"
                                              ng-mouseleave="mouseleave()"
                                              ng-if="service.Service.has_graph">
                                             <i class="fa fa-lg fa-area-chart">
@@ -481,9 +571,17 @@
 
                                 <td class="text-center">
                                     <strong title="<?php echo __('Passively transferred service'); ?>"
-                                            ng-show="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                            ng-show="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
                                         P
                                     </strong>
+                                </td>
+
+                                <td class="text-center">
+                                    <i class="fa fa-fire"
+                                       ng-class="{'ok-soft' : service.Service.priority==1,
+                                        'ok' : service.Service.priority==2, 'warning' : service.Service.priority==3,
+                                        'critical-soft' : service.Service.priority==4, 'critical' : service.Service.priority==5}">
+                                    </i>
                                 </td>
 
                                 <td>
@@ -502,7 +600,8 @@
 
                                 <td>
                                     <span
-                                        ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
+                                        ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{
+                                        service.Servicestatus.lastCheck }}</span>
                                     <span ng-if="service.Service.active_checks_enabled === false">
                                         <?php echo __('n/a'); ?>
                                     </span>
@@ -510,9 +609,10 @@
 
                                 <td>
                                     <span
-                                        ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
+                                        ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{
+                                        service.Servicestatus.nextCheck }}</span>
                                     <span
-                                        ng-if="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                        ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
                                         <?php echo __('n/a'); ?>
                                     </span>
                                 </td>
@@ -567,7 +667,7 @@
                                                 <a ng-if="service.Service.allow_edit"
                                                    class="dropdown-item"
                                                    href="javascript:void(0);"
-                                                   ng-click="confirmDeactivate(getObjectForDelete(host, service))">
+                                                   ng-click="confirmDeactivate(getObjectForDelete(service))">
                                                     <i class="fa fa-plug"></i>
                                                     <?php echo __('Disable'); ?>
                                                 </a>
@@ -578,7 +678,7 @@
                                             ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                 <div class="dropdown-divider"></div>
-                                                <a ng-click="confirmDelete(getObjectForDelete(host, service))"
+                                                <a ng-click="confirmDelete(getObjectForDelete(service))"
                                                    ng-if="service.Service.allow_edit"
                                                    class="dropdown-item txt-color-red">
                                                     <i class="fa fa-trash"></i>
@@ -614,12 +714,12 @@
                             </div>
 
                             <?php if ($this->Acl->hasPermission('copy', 'services')): ?>
-                            <div class="col-xs-12 col-md-2">
-                                <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
-                                    <i class="fas fa-lg fa-files-o"></i>
-                                    <?php echo __('Copy'); ?>
-                                </a>
-                            </div>
+                                <div class="col-xs-12 col-md-2">
+                                    <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
+                                        <i class="fas fa-lg fa-files-o"></i>
+                                        <?php echo __('Copy'); ?>
+                                    </a>
+                                </div>
                             <?php endif; ?>
 
                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>

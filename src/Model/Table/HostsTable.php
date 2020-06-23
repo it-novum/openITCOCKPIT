@@ -12,13 +12,13 @@ use App\Model\Entity\Hostdependency;
 use App\Model\Entity\Hostescalation;
 use Cake\Core\Plugin;
 use Cake\Database\Expression\Comparison;
+use Cake\Database\Expression\QueryExpression;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -818,7 +818,7 @@ class HostsTable extends Table {
             'Hosts.satellite_id',
             'Hosts.container_id',
             'Hosts.tags',
-
+            'Hosts.priority',
             //'keywords'     => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
             //'not_keywords' => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
 
@@ -869,7 +869,9 @@ class HostsTable extends Table {
                     'Hosttemplates.name',
                     'Hosttemplates.description',
                     'Hosttemplates.active_checks_enabled',
-                    'Hosttemplates.tags'
+                    'Hosttemplates.tags',
+                    'Hosttemplates.priority',
+                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)')
                 ]
             ]
         ]);
@@ -905,6 +907,16 @@ class HostsTable extends Table {
             unset($where['Hosts.not_keywords not rlike']);
         }
 
+        if (isset($where['hostpriority IN'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.priority IS NULL), Hosttemplates.priority, Hosts.priority)',
+                $where['hostpriority IN'],
+                'integer[]',
+                'IN'
+            );
+            unset($where['hostpriority IN']);
+        }
+
 
         $query->where($where);
 
@@ -933,7 +945,6 @@ class HostsTable extends Table {
      */
     public function getHostsIndexStatusengine3(HostFilter $HostFilter, HostConditions $HostConditions, $PaginateOMat = null) {
         $MY_RIGHTS = $HostConditions->getContainerIds();
-
         $query = $this->find('all');
         $query->select([
             'Hosts.id',
@@ -945,7 +956,7 @@ class HostsTable extends Table {
             'Hosts.satellite_id',
             'Hosts.container_id',
             'Hosts.tags',
-
+            'Hosts.priority',
             //'keywords'     => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
             //'not_keywords' => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
 
@@ -990,7 +1001,9 @@ class HostsTable extends Table {
                     'Hosttemplates.name',
                     'Hosttemplates.description',
                     'Hosttemplates.active_checks_enabled',
-                    'Hosttemplates.tags'
+                    'Hosttemplates.tags',
+                    'Hosttemplates.priority',
+                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)')
                 ]
             ]
         ]);
@@ -1015,7 +1028,6 @@ class HostsTable extends Table {
             );
             unset($where['Hosts.keywords rlike']);
         }
-
         if (isset($where['Hosts.not_keywords not rlike'])) {
             $where[] = new Comparison(
                 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
@@ -1025,10 +1037,18 @@ class HostsTable extends Table {
             );
             unset($where['Hosts.not_keywords not rlike']);
         }
+        if (isset($where['hostpriority IN'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.priority IS NULL), Hosttemplates.priority, Hosts.priority)',
+                $where['hostpriority IN'],
+                'integer[]',
+                'IN'
+            );
+            unset($where['hostpriority IN']);
+        }
 
 
         $query->where($where);
-
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order($HostFilter->getOrderForPaginator('Hoststatus.current_state', 'desc'));
@@ -2329,7 +2349,7 @@ class HostsTable extends Table {
             })
             ->contain([
                 'Agentconfigs'    => function (Query $query) {
-                    return $query->enableAutoFields();
+                    return $query->enableAutoFields()->select('push_noticed');
                 },
                 'Agenthostscache' => function (Query $query) {
                     return $query->enableAutoFields();
@@ -3608,7 +3628,7 @@ class HostsTable extends Table {
      */
     public function getHostsByContainerIdExact($containerId, $type = 'all', $index = 'id', $MY_RIGHTS = [], $where = []) {
         $_where = [
-            'Hosts.disabled IN' => [0],
+            'Hosts.disabled IN'  => [0],
             'Hosts.container_id' => $containerId
         ];
 
@@ -3653,4 +3673,145 @@ class HostsTable extends Table {
         return $list;
     }
 
+    /**
+     * @param $id
+     * @return array|Host|null
+     */
+    public function getHostByIdForCheckmk($id) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.name',
+                'Hosts.address',
+                'Hosts.satellite_id',
+                'Hosts.container_id',
+            ])
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->first();
+        return $query;
+    }
+
+    /**
+     * @param $uuid
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getHostByUuidForCheckmkNagiosExportCommand($uuid) {
+        $query = $this->find()
+            ->enableAutoFields()
+            ->contain([
+                'Hosttemplates' => function (Query $query) {
+                    return $query->contain([
+                        'Customvariables'
+                    ]);
+                },
+                'Customvariables',
+            ])
+            ->where([
+                'Hosts.uuid' => $uuid
+            ])
+            ->first();
+        return $query;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHostsForCheckmkNagiosExportCommand() {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.satellite_id',
+            ])
+            ->contain([
+                'Services' => function (Query $query) {
+                    return $query->select([
+                        'Services.id',
+                        'Services.host_id',
+                        'Services.uuid',
+                        'Services.name',
+                    ])->where([
+                        'Services.disabled'    => 0,
+                        'Services.name IS NOT' => null,
+                    ]);
+                }
+            ])
+            ->where([
+                'Hosts.disabled' => 0,
+            ])
+            ->where(function (QueryExpression $exp) {
+                return $exp->gt('Hosts.satellite_id', 0);
+            })
+            ->all();
+
+        if (empty($query)) {
+            return [];
+        }
+        return $query->toArray();
+    }
+
+    /**
+     * @param int $hostTypeId
+     * @param array $MY_RIGHTS
+     * @param array $where
+     * @return array
+     */
+    public function getHostsByTypeId($hostTypeId = GENERIC_HOST, $MY_RIGHTS = [], $where = []) {
+        $_where = [
+            'Hosts.disabled IN' => [0],
+            'Hosts.host_type'   => $hostTypeId
+        ];
+
+        $where = Hash::merge($_where, $where);
+
+        $query = $this->find();
+        $query->where($where);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->disableHydration();
+        $query->group(['Hosts.id']);
+        $query->order([
+            'Hosts.name' => 'asc'
+        ]);
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHostTypesWithStyles() {
+        $types[GENERIC_HOST] = [
+            'title' => __('Generic host'),
+            'color' => 'text-generic',
+            'class' => 'border-generic',
+            'icon'  => 'fa fa-cog'
+        ];
+
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            $types[EVK_HOST] = [
+                'title' => __('EVC host'),
+                'color' => 'text-evc',
+                'class' => 'border-evc',
+                'icon'  => 'fa fa-sitemap fa-rotate-90'
+            ];
+        }
+        return $types;
+    }
 }

@@ -48,6 +48,7 @@ angular.module('openITCOCKPIT')
         $scope.showTimelineTab = false;
         $scope.timelineIsLoading = false;
         $scope.failureDurationInPercent = null;
+        $scope.lastLoadDate = Date.now();       //required for status color update in service-browser-menu
 
         $scope.graph = {
             graphAutoRefresh: true,
@@ -91,6 +92,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
+            $scope.lastLoadDate = Date.now();
             $q.all([
                 $http.get("/services/browser/" + $scope.id + ".json", {
                     params: {
@@ -146,7 +148,7 @@ angular.module('openITCOCKPIT')
 
                 $scope.serverTimeDateObject = new Date($scope.timezone.server_time);
 
-                graphStart = (parseInt($scope.serverTimeDateObject.getTime() / 1000, 10) - (3 * 3600));
+                graphStart = (parseInt($scope.serverTimeDateObject.getTime() / 1000, 10) - ($scope.currentSelectedTimerange * 3600));
                 graphEnd = parseInt($scope.serverTimeDateObject.getTime() / 1000, 10);
 
                 $scope.dataSources = [];
@@ -255,12 +257,16 @@ angular.module('openITCOCKPIT')
             $scope.currentSelectedTimerange = timespan;
             var start = (parseInt(new Date($scope.timezone.server_time).getTime() / 1000, 10) - (timespan * 3600));
             var end = parseInt(new Date($scope.timezone.server_time).getTime() / 1000, 10);
+
             //graphTimeSpan = timespan;
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, start, end, true);
         };
 
         $scope.changeDataSource = function(gaugeName){
             $scope.currentDataSource = gaugeName;
+
+            //Reset unit - new datasource new unit - maybe
+            $scope.currentGraphUnit = null;
             loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, lastGraphStart, lastGraphEnd, false);
         };
 
@@ -298,27 +304,36 @@ angular.module('openITCOCKPIT')
 
             if($scope.dataSources.length > 0){
                 $scope.isLoadingGraph = true;
+
+                var params = {
+                    angular: true,
+                    host_uuid: hostUuid,
+                    service_uuid: serviceuuid,
+                    start: start,
+                    end: end,
+                    jsTimestamp: 1,
+                    gauge: $scope.currentDataSource
+                };
+
+                if($scope.currentGraphUnit !== null){
+                    params.forcedUnit = $scope.currentGraphUnit;
+                }
+
                 $http.get('/Graphgenerators/getPerfdataByUuid.json', {
-                    params: {
-                        angular: true,
-                        host_uuid: hostUuid,
-                        service_uuid: serviceuuid,
-                        //hours: graphTimeSpan,
-                        start: start,
-                        end: end,
-                        jsTimestamp: 1,
-                        gauge: $scope.currentDataSource
-                    }
+                    params: params
                 }).then(function(result){
                     $scope.isLoadingGraph = false;
                     if(appendData === false){
                         //Did we got date from Server?
                         if(result.data.performance_data.length > 0){
                             //Use the first metrics the server gave us.
-                            $scope.perfdata = result.data.performance_data[0];
-                            //Append new data to current graph
+                            $scope.perfdata = {
+                                datasource: result.data.performance_data[0].datasource,
+                                data: {}
+                            };
+                            //Convert Servertime into user time
                             for(var timestamp in result.data.performance_data[0].data){
-                                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_offset * 1000));
+                                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
                                 $scope.perfdata.data[frontEndTimestamp] = result.data.performance_data[0].data[timestamp];
                             }
                         }else{
@@ -343,7 +358,7 @@ angular.module('openITCOCKPIT')
                         if(result.data.performance_data.length > 0){
                             //Append new data to current graph
                             for(var timestamp in result.data.performance_data[0].data){
-                                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_offset * 1000));
+                                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
                                 $scope.perfdata.data[frontEndTimestamp] = result.data.performance_data[0].data[timestamp];
                             }
                         }
@@ -351,6 +366,9 @@ angular.module('openITCOCKPIT')
                     if($scope.graph.graphAutoRefresh === true && $scope.graphAutoRefreshInterval > 1000){
                         enableGraphAutorefresh();
                     }
+
+                    //Save current unit for auto refresh
+                    $scope.currentGraphUnit = $scope.perfdata.datasource.unit;
                     renderGraph($scope.perfdata);
                 });
             }
@@ -465,6 +483,7 @@ angular.module('openITCOCKPIT')
 
                 //Change color of the area chart for warning and critical
                 if(warn > crit){
+                    defaultColor = GraphDefaultsObj.okFillColor;
                     thresholdAreas.push({
                         below: warn,
                         color: GraphDefaultsObj.warningFillColor
@@ -488,8 +507,7 @@ angular.module('openITCOCKPIT')
 
             var graph_data = [];
             for(var timestamp in performance_data.data){
-                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
-                graph_data.push([frontEndTimestamp, performance_data.data[timestamp]]);
+                graph_data.push([timestamp, performance_data.data[timestamp]]);
             }
 
             var options = GraphDefaultsObj.getDefaultOptions();
@@ -513,6 +531,7 @@ angular.module('openITCOCKPIT')
             };
             options.series.color = defaultColor;
             options.series.threshold = thresholdAreas;
+            options.grid.markings = thresholdLines;
             options.lines.fillColor.colors = [{opacity: 0.4}, {brightness: 1, opacity: 1}];
 
             options.points = {
@@ -526,10 +545,10 @@ angular.module('openITCOCKPIT')
 
             options.yaxis.axisLabel = performance_data.datasource.unit;
 
-            $scope.currentGraphUnit = null;
-            if(performance_data.datasource.unit){
-                $scope.currentGraphUnit = performance_data.datasource.unit;
-            }
+            //$scope.currentGraphUnit = null;
+            //if(performance_data.datasource.unit){
+            //    $scope.currentGraphUnit = performance_data.datasource.unit;
+            //}
 
             plot = $.plot('#graphCanvas', [graph_data], options);
 
@@ -785,9 +804,8 @@ angular.module('openITCOCKPIT')
                         }
                     }
 
-                    lastTimestampInCurrentData = lastTimestampInCurrentData / 1000 + ($scope.timezone.user_offset * 1000);
-
-                    var start = lastTimestampInCurrentData;
+                    // Get back to server time
+                    var start = lastTimestampInCurrentData / 1000 - $scope.timezone.user_time_to_server_offset;
 
                     $scope.serverTimeDateObject = new Date($scope.serverTimeDateObject.getTime() + $scope.graphAutoRefreshInterval);
 

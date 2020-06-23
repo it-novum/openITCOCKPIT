@@ -188,20 +188,20 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
         </div>
     </div>
 
-    <div class="form-group required" ng-class="{'has-error': errors.Configfile.local_graphite_plaintext_port}">
-        <label class="control-label" for="local_graphite_plaintext_port">
+    <div class="form-group required" ng-class="{'has-error': errors.Configfile.USE_AUTO_NETWORKING}">
+        <label class="control-label" for="USE_AUTO_NETWORKING">
             <?php echo __('Network configuration'); ?>
         </label>
         <select
-            id="local_graphite_plaintext_port"
+            id="USE_AUTO_NETWORKING"
             data-placeholder="<?php echo __('Please choose'); ?>"
             class="form-control"
             chosen="{}"
-            ng-model="post.string.local_graphite_plaintext_port">
+            ng-model="post.string.USE_AUTO_NETWORKING">
             <option value="1"><?php echo __('Automatically'); ?></option>
             <option value="0"><?php echo __('Manually'); ?></option>
         </select>
-        <div ng-repeat="error in errors.Configfile.local_graphite_plaintext_port">
+        <div ng-repeat="error in errors.Configfile.USE_AUTO_NETWORKING">
             <div class="help-block text-danger">{{ error }}</div>
         </div>
         <div class="help-block">
@@ -257,7 +257,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 class="form-control"
                 type="text"
                 ng-model="post.string.docker_compose_subnet">
-            <div g-repeat="error in errors.Configfile.docker_compose_subnet">
+            <div ng-repeat="error in errors.Configfile.docker_compose_subnet">
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
             <div class="help-block">

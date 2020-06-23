@@ -55,6 +55,12 @@
                     <div class="text-muted cursor-default d-none d-sm-none d-md-none d-lg-block margin-right-10">
                         UUID: {{post.Service.uuid}}
                     </div>
+
+                    <span class="badge border margin-right-10 {{serviceType.class}} {{serviceType.color}}">
+                        <i class="{{serviceType.icon}}"></i>
+                        {{serviceType.title}}
+                    </span>
+
                     <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='ServicesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>

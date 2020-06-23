@@ -75,11 +75,17 @@ class GraphiteLoader {
     private $maxDataPoints = 2000;
 
     /**
+     * @var bool
+     */
+    private $debug = false;
+
+    /**
      * GraphiteLoader constructor.
      * @param GraphiteConfig $GraphiteConfig
      */
-    public function __construct(GraphiteConfig $GraphiteConfig) {
+    public function __construct(GraphiteConfig $GraphiteConfig, $debug = false) {
         $this->GraphiteConfig = $GraphiteConfig;
+        $this->debug = $debug;
     }
 
     /**
@@ -323,10 +329,15 @@ class GraphiteLoader {
                         continue;
                     }
                     $timestamp = $datapoint[1];
-                    if ($this->useJsTimestamp) {
-                        $timestamp = $timestamp * 1000;
+                    if($this->debug){
+                        $normalizedData[date('d.m.Y H:i:s', $timestamp)] = $datapoint[0];
+                    }else{
+                        if ($this->useJsTimestamp) {
+                            $timestamp = $timestamp * 1000;
+                        }
+                        $normalizedData[$timestamp] = $datapoint[0];
                     }
-                    $normalizedData[$timestamp] = $datapoint[0];
+
                 }
             }
         }

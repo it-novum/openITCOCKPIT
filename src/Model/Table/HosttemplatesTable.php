@@ -399,7 +399,6 @@ class HosttemplatesTable extends Table {
     public function getHosttemplatesIndex(HosttemplateFilter $HosttemplateFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find('all')->disableHydration();
         $where = $HosttemplateFilter->indexFilter();
-        $where['Hosttemplates.hosttemplatetype_id'] = GENERIC_HOSTTEMPLATE;
         if (!empty($MY_RIGHTS)) {
             $where['Hosttemplates.container_id IN'] = $MY_RIGHTS;
         }
@@ -1280,20 +1279,33 @@ class HosttemplatesTable extends Table {
     }
 
     /**
-     * @param $name
-     * @param string[] $contain
      * @return array
      */
-    public function getHosttemplatesByWildcardName($name, $contain = ['Containers']) {
-        $query = $this->find()
-            ->where([
-                'Hosttemplates.name LIKE' => $name
-            ])
-            ->contain($contain)
-            ->disableHydration()
-            ->all();
+    public function getHosttemplateTypes() {
+        $types = $this->getHosttemplateTypesWithStyles();
+        return array_combine(array_keys($types), Hash::extract($types, '{n}.title'));
+    }
 
-        return $this->emptyArrayIfNull($query->toArray());
+    /**
+     * @return array
+     */
+    public function getHosttemplateTypesWithStyles() {
+        $types[GENERIC_HOST] = [
+            'title' => __('Generic templates'),
+            'color' => 'text-generic',
+            'class' => 'border-generic',
+            'icon'  => 'fa fa-cog'
+        ];
+
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            $types[EVK_HOST] = [
+                'title' => __('EVC templates'),
+                'color' => 'text-evc',
+                'class' => 'border-evc',
+                'icon'  => 'fa fa-sitemap fa-rotate-90'
+            ];
+        }
+        return $types;
     }
 
     public function getAll() {

@@ -62,6 +62,10 @@ config/openitcGrafanaTag.php
 config/datasource.php
 config/dbbackend.php
 config/perfdatabackend.php
+webroot/img/logo_custom.png
+webroot/img/logo_small_custom.png
+webroot/img/logos/logo_custom.png
+webroot/img/logos/logo_custom_header.png
 
 # npm modules #
 #######################
@@ -74,17 +78,33 @@ webroot/node_modules
 # Plugins #
 #######################
 plugins/config
+plugins/AlfrescoModule
 plugins/AutoreportModule
 plugins/DistributeModule
 plugins/EventcorrelationModule
+plugins/LinuxBasicMonitoringModule
+plugins/LinuxBasicMonitoringSSHModule
+plugins/MasterSelfMonitoringModule
 plugins/MkModule
+plugins/NWCModule
+plugins/CheckmkModule
 plugins/OpenstreetmapModule
+plugins/SAPModule
 plugins/SlackModule
 plugins/ServicenowModule
 plugins/PagerdutyModule
+plugins/PostgresModule
 plugins/AxiosAssystModule
 plugins/DesignModule
 plugins/PrometheusModule
+plugins/SnmpTrapModule
 plugins/TemplateExportModule
 plugins/TemplateImportModule
 plugins/ImportModule
+plugins/WindowsBasicMonitoringNSCPModule
+plugins/WMIModule
+plugins/VMWAREModule
+plugins/UCSModule
+plugins/SatelliteSelfMonitoringModule
+plugins/SAPModule
+

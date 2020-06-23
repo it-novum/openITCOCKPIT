@@ -52,6 +52,11 @@
                     <div class="text-muted cursor-default d-none d-sm-none d-md-none d-lg-block margin-right-10">
                         UUID: {{post.Servicetemplate.uuid}}
                     </div>
+                    <span ng-if="typeDetails"
+                          class="badge border margin-right-10 {{typeDetails.class}} {{typeDetails.color}}">
+                        <i class="{{typeDetails.icon}}"></i>
+                        {{typeDetails.title}}
+                    </span>
                     <?php if ($this->Acl->hasPermission('index', 'servicetemplates')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='ServicetemplatesIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
@@ -120,7 +125,7 @@
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="servicetemplatetypes"
-                                        ng-options="templatetype.key as templatetype.value for templatetype in servicetemplatetypes"
+                                        ng-options="templatetype.key as templatetype.value.title for templatetype in servicetemplatetypes"
                                         ng-model="post.Servicetemplate.servicetemplatetype_id">
                                     </select>
                                     <div class="help-block">
@@ -188,15 +193,11 @@
                                     <label class="control-label">
                                         <?php echo __('Tags'); ?>
                                     </label>
-                                    <div class="input-group">
-                                        <div class="col-lg padding-left-0">
-                                            <input class="form-control tagsinput"
-                                                   data-role="tagsinput"
-                                                   type="text"
-                                                   ng-model="post.Servicetemplate.tags"
-                                                   id="ServiceTagsInput">
-                                        </div>
-                                    </div>
+                                    <input class="form-control tagsinput"
+                                           data-role="tagsinput"
+                                           type="text"
+                                           ng-model="post.Servicetemplate.tags"
+                                           id="ServiceTagsInput">
                                     <div ng-repeat="error in errors.tags">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
@@ -844,7 +845,8 @@
                                     <button class="btn btn-primary" type="submit">
                                         <?php echo __('Update service template'); ?>
                                     </button>
-                                    <a back-button href="javascript:void(0);" fallback-state='ServicetemplatesIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);" fallback-state='ServicetemplatesIndex'
+                                       class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

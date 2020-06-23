@@ -3,9 +3,14 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\CustomValidationTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\AgenthostscacheFilter;
 
 /**
  * Agenthostscache Model
@@ -27,6 +32,11 @@ use Cake\Validation\Validator;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class AgenthostscacheTable extends Table {
+
+    use Cake2ResultTableTrait;
+    use PaginationAndScrollIndexTrait;
+    use CustomValidationTrait;
+
     /**
      * Initialize method
      *
@@ -81,6 +91,14 @@ class AgenthostscacheTable extends Table {
     }
 
     /**
+     * @param $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['id' => $id]);
+    }
+
+    /**
      * @param string $uuid
      * @return array|\Cake\Datasource\EntityInterface|null
      */
@@ -109,5 +127,31 @@ class AgenthostscacheTable extends Table {
             ]);
         }
         $this->save($Agenthostscache);
+    }
+
+    public function getForList(AgenthostscacheFilter $AgenthostscacheFilter, PaginateOMat $PaginateOMat = null) {
+        $query = $this->find('all')
+            ->contain([
+                'Hosts'
+            ])
+            ->where($AgenthostscacheFilter->indexFilter())
+            ->order($AgenthostscacheFilter->getOrderForPaginator('Agenthostscache.id', 'desc'))
+            ->disableHydration();
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            if (empty($query)) {
+                return [];
+            }
+            $result = $query->toArray();
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
+        }
+
+        return $result;
     }
 }

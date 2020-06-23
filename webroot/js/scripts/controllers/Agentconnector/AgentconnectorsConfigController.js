@@ -214,7 +214,8 @@ angular.module('openITCOCKPIT')
                             //use_https: $scope.agentconfig['try-autossl'],
                             basic_auth: basicAuth,
                             username: basicAuthUsername,
-                            password: basicAuthPassword
+                            password: basicAuthPassword,
+                            push_noticed: $scope.pushMode ? 1 : 0
                         }
                     }
                 );

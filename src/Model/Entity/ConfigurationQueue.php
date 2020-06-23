@@ -10,6 +10,7 @@ use Cake\ORM\Entity;
  * @property string $task
  * @property string $data
  * @property string|null $json_data
+ * @property string|null $module
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  */
@@ -28,6 +29,7 @@ class ConfigurationQueue extends Entity
         'task' => true,
         'data' => true,
         'json_data' => true,
+        'module' => true,
         'created' => true,
         'modified' => true
     ];

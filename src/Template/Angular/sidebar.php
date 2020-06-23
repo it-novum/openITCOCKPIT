@@ -32,8 +32,8 @@ use itnovum\openITCOCKPIT\Core\Views\Logo;
 $logo = new Logo();
 ?>
 <aside id="pageSidebar" class="page-sidebar">
-    <div class="page-logo" ui-sref="DashboardsIndex">
-        <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="logo" aria-roledescription="logo" style="width: 28px;">
+    <div class="page-logo pointer" ui-sref="DashboardsIndex">
+        <img src="<?= $logo->getHeaderLogoForHtml(); ?>" class="header-logo" alt="logo" aria-roledescription="logo" style="width: 28px;">
         <span class="page-logo-text mr-1">{{systemname}}</span>
         <span class="position-absolute text-white opacity-50 small pos-top pos-right mr-2 mt-n2"></span>
     </div>

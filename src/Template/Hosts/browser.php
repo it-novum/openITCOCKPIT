@@ -599,7 +599,7 @@ use Cake\Core\Plugin;
                                 </div>
 
                             </div>
-                            <div class="col-sm-6 col-md-5 col-lg-3 no-padding hidden-xs"
+                            <div class="col-sm-6 col-md-5 col-lg-3 no-padding d-none d-sm-block"
                                  ng-class="{'browser-state-green': stateIsUp(), 'browser-state-red': stateIsDown(), 'browser-state-gray': stateIsUnreachable(), 'browser-state-blue': stateIsNotInMonitoring()}"
                                  ng-if="hoststatus">
 
@@ -755,9 +755,9 @@ use Cake\Core\Plugin;
                                             <tr>
                                                 <td><?php echo __('Priority'); ?></td>
                                                 <td>
-                                                    <i class="fa fa-fire ma"
+                                                    <i class="fa fa-fire"
                                                        ng-repeat="priority in priorities"
-                                                       ng-class="{'text-primary': priority, 'text-lightGray': !priority}"
+                                                       ng-class="{'{{priorityClasses[mergedHost.priority]}}': priority,'text-muted': !priority}"
                                                        style="font-size:17px;margin-left:2px;">
                                                     </i>
                                                 </td>
@@ -988,17 +988,17 @@ use Cake\Core\Plugin;
                 </h2>
                 <div class="panel-toolbar">
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean flex-column flex-sm-row" role="tablist">
-                        <li class="nav-item">
+                        <li class="nav-item pointer">
                             <a class="nav-link active" data-toggle="tab" ng-click="changeTab('active')" role="tab">
                                 <i class="fa fa-stethoscope">&nbsp;</i> <?php echo __('Active'); ?>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item pointer">
                             <a class="nav-link" data-toggle="tab" ng-click="changeTab('notMonitored')" role="tab">
                                 <i class="fa fa-user-md">&nbsp;</i> <?php echo __('Not monitored'); ?>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item pointer">
                             <a class="nav-link" data-toggle="tab" ng-click="changeTab('disabled')" role="tab">
                                 <i class="fa fa-plug">&nbsp;</i> <?php echo __('Disabled'); ?>
                             </a>

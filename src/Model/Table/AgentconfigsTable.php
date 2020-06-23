@@ -2,9 +2,15 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\CustomValidationTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
 
 /**
  * Agentconfigs Model
@@ -23,6 +29,11 @@ use Cake\Validation\Validator;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class AgentconfigsTable extends Table {
+
+    use Cake2ResultTableTrait;
+    use PaginationAndScrollIndexTrait;
+    use CustomValidationTrait;
+
     /**
      * Initialize method
      *
@@ -88,6 +99,8 @@ class AgentconfigsTable extends Table {
                 'message' => __('Password can not be blank if basic auth is enabled.')
             ]);
 
+        $validator
+            ->boolean('push_noticed');
 
         return $validator;
     }
@@ -98,7 +111,7 @@ class AgentconfigsTable extends Table {
             return false;
         }
 
-        if ($context['data']['basic_auth'] === 0) {
+        if ($context['data']['basic_auth'] === 0 || $context['data']['basic_auth'] === false) {
             //Basic auth disabled - ok
             return true;
         }
@@ -152,13 +165,14 @@ class AgentconfigsTable extends Table {
      */
     public function getConfigByHostId($hostId, $defaultIfNoConfig = true) {
         $default = [
-            'port'       => 3333,
-            'use_https'  => 0,
-            'insecure'   => 1,
-            'basic_auth' => 0,
-            'proxy'      => 1,
-            'username'   => '',
-            'password'   => ''
+            'port'         => 3333,
+            'use_https'    => 0,
+            'insecure'     => 1,
+            'basic_auth'   => 0,
+            'proxy'        => 1,
+            'username'     => '',
+            'password'     => '',
+            'push_noticed' => 0
         ];
 
         $record = $this->find()
@@ -169,15 +183,16 @@ class AgentconfigsTable extends Table {
 
         if ($record !== null) {
             return [
-                'id'         => (int)$record->get('id'),
-                'host_id'    => (int)$record->get('host_id'),
-                'port'       => (int)$record->get('port'),
-                'use_https'  => (int)$record->get('use_https'),
-                'insecure'   => (int)$record->get('insecure'),
-                'basic_auth' => (int)$record->get('basic_auth'),
-                'proxy'      => (int)$record->get('proxy'),
-                'username'   => $record->get('username'),
-                'password'   => $record->get('password')
+                'id'           => (int)$record->get('id'),
+                'host_id'      => (int)$record->get('host_id'),
+                'port'         => (int)$record->get('port'),
+                'use_https'    => (int)$record->get('use_https'),
+                'insecure'     => (int)$record->get('insecure'),
+                'basic_auth'   => (int)$record->get('basic_auth'),
+                'proxy'        => (int)$record->get('proxy'),
+                'username'     => $record->get('username'),
+                'password'     => $record->get('password'),
+                'push_noticed' => (int)$record->get('push_noticed'),
             ];
         } else {
             if ($defaultIfNoConfig) {
@@ -204,5 +219,76 @@ class AgentconfigsTable extends Table {
         }
 
         return $record;
+    }
+
+    /**
+     * @param $hostId
+     * @return bool
+     */
+    public function pushNoticedForHost($hostId) {
+        $query = $this->find()
+            ->where([
+                'host_id'      => $hostId,
+                'push_noticed' => 1
+            ])
+            ->first();
+        return !empty($query);
+    }
+
+    /**
+     * @param $hostUuid
+     * @param bool $pushNoticed
+     */
+    public function updatePushNoticedForHostIfConfigExists($hostUuid, $pushNoticed = true) {
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        try {
+            $hostId = $HostsTable->getHostIdByUuid($hostUuid);
+
+            $query = $this->find()
+                ->enableAutoFields()
+                ->where([
+                    'host_id' => $hostId,
+                ])
+                ->first();
+
+            if (!empty($query)) {
+                $this->_update($query, ['push_noticed' => $pushNoticed]);
+            }
+        } catch (\Exception $e) {
+            //do nothing
+        }
+    }
+
+    /**
+     * @param AgentconfigsFilter $AgentconfigsFilter
+     * @param PaginateOMat|null $PaginateOMat
+     * @return array
+     */
+    public function getForList(AgentconfigsFilter $AgentconfigsFilter, PaginateOMat $PaginateOMat = null) {
+        $query = $this->find('all')
+            ->contain([
+                'Hosts'
+            ])
+            ->where($AgentconfigsFilter->indexFilter())
+            ->order($AgentconfigsFilter->getOrderForPaginator('Agentconfigs.id', 'desc'))
+            ->disableHydration();
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            if (empty($query)) {
+                return [];
+            }
+            $result = $query->toArray();
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
+        }
+
+        return $result;
     }
 }

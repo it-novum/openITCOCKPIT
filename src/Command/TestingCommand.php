@@ -35,6 +35,7 @@ use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Perfdata\UnitScaler;
 
 /**
  * Testing command.
@@ -80,7 +81,6 @@ class TestingCommand extends Command {
          * Lof of space for your experimental code
          * Have fun :)
          */
-
     }
 
 }

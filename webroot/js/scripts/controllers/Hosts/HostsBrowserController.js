@@ -25,6 +25,14 @@ angular.module('openITCOCKPIT')
 
         $scope.pingResult = [];
 
+        $scope.priorityClasses = {
+            1: 'ok-soft',
+            2: 'ok',
+            3: 'warning',
+            4: 'critical-soft',
+            5: 'critical'
+        };
+
         //There is no service status for not monitored services :)
         $scope.fakeServicestatus = {
             Servicestatus: {
@@ -60,7 +68,7 @@ angular.module('openITCOCKPIT')
         $scope.showTimelineTab = false;
         $scope.timelineIsLoading = false;
         $scope.failureDurationInPercent = null;
-        $scope.lastLoadDate = Date.now();
+        $scope.lastLoadDate = Date.now();       //required for status color update in service-browser-menu
 
         $scope.selectedGrafanaTimerange = 'now-3h';
         $scope.selectedGrafanaAutorefresh = '60s';

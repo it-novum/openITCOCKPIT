@@ -1,5 +1,5 @@
 var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'ng-nestable'])
-    .factory("httpInterceptor", function($q, $rootScope, $timeout){
+    .factory("httpInterceptor", function($q, $rootScope, $timeout, LocalStorageService){
         return {
             response: function(result){
                 if(result.data.hasOwnProperty('_csrfToken')){
@@ -78,6 +78,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 }
 
                 if(rejection.status === 401){
+                    LocalStorageService.setItem('lastPage', window.location);
                     window.location = '/users/login';
                     return;
                 }
@@ -961,6 +962,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('HosttemplatesAdd', {
                 url: '/hosttemplates/add',
+                params: {
+                    hosttemplateTypeId: {
+                        value: null,
+                        squash: true
+                    }
+                },
                 templateUrl: "/hosttemplates/add.html",
                 controller: "HosttemplatesAddController"
             })
@@ -1478,14 +1485,14 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
         };
     })
 
-    .filter('underscoreless', function () {
-        return function (input) {
+    .filter('underscoreless', function(){
+        return function(input){
             return input.replace(/_/g, ' ');
         };
     })
 
-    .filter('capitalizeFirstLetter', function () {
-        return function (input) {
+    .filter('capitalizeFirstLetter', function(){
+        return function(input){
             return input.charAt(0).toUpperCase() + input.slice(1);
         };
     })

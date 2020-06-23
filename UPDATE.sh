@@ -153,6 +153,10 @@ for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do
   fi
 done
 
+if [ -d "${APPDIR}/plugins/CheckmkModule/src" ]; then
+    oitc checkmkNagiosExport --init
+fi
+
 echo "---------------------------------------------------------------"
 echo "Convert MySQL Tables from utf8_general_ci to utf8mb4_general_ci..."
 
@@ -196,6 +200,8 @@ for i in "$@"; do
   --cc)
     echo "Clear out Model Cache /opt/openitc/frontend/tmp/cache/models/"
     rm -rf /opt/openitc/frontend/tmp/cache/models/*
+    echo "Clear out CLI Model Cache /opt/openitc/frontend/tmp/cli/cache/cli/models/"
+    rm -rf /opt/openitc/frontend/tmp/cli/cache/cli/models/*
     ;;
 
   --rights)
@@ -313,3 +319,8 @@ else
   fi
 fi
 
+if [ -d "${APPDIR}/plugins/SnmpTrapModule/src" ]; then
+    echo "Detected SnmpTrapModule: try to restart snmptrapd and snmptt"
+    systemctl enable snmptrapd.service snmptt.service
+    systemctl restart snmptrapd.service snmptt.service
+fi

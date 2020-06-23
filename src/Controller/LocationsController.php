@@ -281,37 +281,46 @@ class LocationsController extends AppController {
             return;
         }
 
-        if ($ContainersTable->delete($container)) {
-            $User = new User($this->getUser());
-            /** @var  ChangelogsTable $ChangelogsTable */
-            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+        if($ContainersTable->allowDelete($container->id, $this->MY_RIGHTS)){
+            if ($ContainersTable->delete($container)) {
+                $User = new User($this->getUser());
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-            $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                'delete',
-                'locations',
-                $id,
-                OBJECT_LOCATION,
-                $container->get('parent_id'),
-                $User->getId(),
-                $container->get('name'),
-                [
-                    'location' => $location->toArray()
-                ]
-            );
-            if ($changelog_data) {
-                /** @var Changelog $changelogEntry */
-                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                $ChangelogsTable->save($changelogEntry);
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    'delete',
+                    'locations',
+                    $id,
+                    OBJECT_LOCATION,
+                    $container->get('parent_id'),
+                    $User->getId(),
+                    $container->get('name'),
+                    [
+                        'location' => $location->toArray()
+                    ]
+                );
+                if ($changelog_data) {
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
+
+                $this->set('success', true);
+                $this->viewBuilder()->setOption('serialize', ['success']);
+                return;
             }
-
-            $this->set('success', true);
+            $this->response = $this->response->withStatus(500);
+            $this->set('success', false);
             $this->viewBuilder()->setOption('serialize', ['success']);
-            return;
         }
-
         $this->response = $this->response->withStatus(500);
         $this->set('success', false);
-        $this->viewBuilder()->setOption('serialize', ['success']);
+        $this->set('message', __('Container is not empty'));
+        $this->set('containerId', $container->id);
+        $this->viewBuilder()->setOption('serialize', ['success', 'message', 'containerId']);
+
+
+
     }
 
     /****************************

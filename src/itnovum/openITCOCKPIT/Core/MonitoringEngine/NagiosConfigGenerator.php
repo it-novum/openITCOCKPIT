@@ -33,6 +33,8 @@ use App\Model\Entity\Hostdependency;
 use App\Model\Entity\Hostgroup;
 use App\Model\Entity\Service;
 use App\Model\Entity\Servicegroup;
+use App\Model\Table\AgentconfigsTable;
+use App\Model\Table\AgenthostscacheTable;
 use App\Model\Table\CalendarsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
@@ -2547,7 +2549,7 @@ class NagiosConfigGenerator {
         }
 
         //Delete all SAT Configs
-        if(is_array($this->Satellites) && !empty($this->Satellites)) {
+        if (is_array($this->Satellites) && !empty($this->Satellites)) {
             foreach ($this->Satellites as $satellite) {
                 if (is_dir($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config')) {
                     $result = scandir($this->conf['satellite_path'] . $satellite->get('id') . DS . 'config');
@@ -2661,8 +2663,10 @@ class NagiosConfigGenerator {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var ServicetemplatesTable $ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
-        /** @var HosttemplatesTable $HosttemplatesTable */
-        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        /** @var AgenthostscacheTable $AgenthostscacheTable */
+        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
+        /** @var $AgentconfigsTable AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
         /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
@@ -2673,7 +2677,15 @@ class NagiosConfigGenerator {
 
             foreach ($hosts as $host) {
                 $hostId = $host['id'];
-                if (!$HostsTable->hasHostServiceFromServicetemplateId($hostId, $servicetemplateId)) {
+                /* Erstelle CHECK_AGENT_ACTIVE Service ...
+                 * wenn der Host keinen CHECK_AGENT_ACTIVE Service hat!
+                 * und keinen Push Eintrag in $AgenthostscacheTable oder
+                 *      einen Push Eintrag in $AgentconfigsTable und
+                 *      ein Eintrag in $AgentconfigsTable und zwischenzeitlich KEIN Push bemerkt wurde.
+                 */
+                if (!$HostsTable->hasHostServiceFromServicetemplateId($hostId, $servicetemplateId) &&
+                    (!$AgenthostscacheTable->existsByHostuuid($host['uuid']) ||
+                        ($AgentconfigsTable->existsByHostId($hostId) && !$AgentconfigsTable->pushNoticedForHost($hostId)))) {
                     //Create active oITC Agent check
                     $serviceData = [
                         'uuid'               => UUID::v4(),
@@ -2686,6 +2698,22 @@ class NagiosConfigGenerator {
 
                     $service = $ServicesTable->newEntity($serviceData);
                     $ServicesTable->save($service);
+                }
+
+                /* Lösche CHECK_AGENT_ACTIVE Service ...
+                 * wenn der Host einen CHECK_AGENT_ACTIVE Service hat!
+                 * und einen Push Eintrag in $AgenthostscacheTable und
+                 *      keinen Eintrag in $AgentconfigsTable oder
+                 *          ein Eintrag in $AgentconfigsTable und
+                 *          zwischenzeitlich EIN Push bemerkt wurde.
+                 */
+                if ($HostsTable->hasHostServiceFromServicetemplateId($hostId, $servicetemplateId) &&
+                    $AgenthostscacheTable->existsByHostuuid($host['uuid']) &&
+                    (!$AgentconfigsTable->existsByHostId($hostId) ||
+                        ($AgentconfigsTable->existsByHostId($hostId) && $AgentconfigsTable->pushNoticedForHost($hostId)))) {
+                    //Remove active oITC Agent check
+                    $services = $ServicesTable->getServicesOfHostByServicetemplateId($hostId, $servicetemplateId);
+                    $ServicesTable->deleteMany($services);
                 }
             }
 
@@ -2719,7 +2747,7 @@ class NagiosConfigGenerator {
                 $services = $ServicesTable->getAllOitcAgentServicesByHostIdForExport($hostId);
 
                 if (!empty($services)) {
-                    if (!empty($host['agentconfig'])) {
+                    if (!empty($host['agentconfig']) && $host['agentconfig']['push_noticed'] == 0) {
                         $config[$hostUuid] = [
                             'name'       => $host['name'],
                             'address'    => $host['address'],

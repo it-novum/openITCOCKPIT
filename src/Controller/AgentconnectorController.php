@@ -52,7 +52,9 @@ use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\AgentconfigsFilter;
 use itnovum\openITCOCKPIT\Filter\AgentconnectorAgentsFilter;
+use itnovum\openITCOCKPIT\Filter\AgenthostscacheFilter;
 
 class AgentconnectorController extends AppController {
 
@@ -133,18 +135,140 @@ class AgentconnectorController extends AppController {
 
         /** @var AgentconnectorTable $AgentconnectorTable */
         $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         $AgentconnectorAgentsFilter = new AgentconnectorAgentsFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AgentconnectorAgentsFilter->getPage());
 
-        $agents = $AgentconnectorTable->getAgentsIndex($AgentconnectorAgentsFilter, $PaginateOMat);
+        $unTrustedAgents = $AgentconnectorTable->getAgentsIndex($AgentconnectorAgentsFilter, $PaginateOMat);
 
-        $this->set('agents', $agents);
-        $toJson = ['agents', 'paging'];
+        foreach ($unTrustedAgents as $key => $agentconnector) {
+            if (isset($agentconnector['Agentconnector']) && isset($agentconnector['Agentconnector']['hostuuid'])) {
+                $host = $HostsTable->getHostByUuid($agentconnector['Agentconnector']['hostuuid']);
+
+                $unTrustedAgents[$key]['Host'] = [
+                    'id'   => $host->get('id'),
+                    'name' => $host->get('name')
+                ];
+            }
+        }
+
+        $this->set('unTrustedAgents', $unTrustedAgents);
+        $toJson = ['unTrustedAgents', 'paging'];
         if ($this->isScrollRequest()) {
-            $toJson = ['agents', 'scroll'];
+            $toJson = ['unTrustedAgents', 'scroll'];
         }
         $this->viewBuilder()->setOption('serialize', $toJson);
+    }
+
+    public function untrustedAgents() {
+        return;
+    }
+
+    public function pullConfigurations($action = null, $id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
+
+        if($this->request->is('post') && $action !== null && $id !== null){
+            if($AgentconfigsTable->existsById($id)){
+                if($action == 'edit'){
+                    $Agentconfig = $AgentconfigsTable->get($id);
+                    $Agentconfig = $AgentconfigsTable->patchEntity($Agentconfig, $this->request->getData('Agentconfig'));
+                    $AgentconfigsTable->save($Agentconfig);
+                    if (!$Agentconfig->hasErrors()) {
+                        $this->set('success', true);
+                        $this->viewBuilder()->setOption('serialize', ['success']);
+                        return;
+                    } else {
+                        $this->set('errors', $Agentconfig->getErrors());
+                        $this->viewBuilder()->setOption('serialize', ['errors']);
+                        return;
+                    }
+                } else if ($action == 'delete'){
+                    $Agentconfig = $AgentconfigsTable->get($id);
+                    if ($AgentconfigsTable->delete($Agentconfig)) {
+                        $this->set('success', true);
+                        $this->viewBuilder()->setOption('serialize', ['success']);
+                        return;
+                    }
+                }
+            }
+            $this->set('success', false);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
+        $AgentconfigsFilter = new AgentconfigsFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AgentconfigsFilter->getPage());
+
+        $pullConfigurations = $AgentconfigsTable->getForList($AgentconfigsFilter, $PaginateOMat);
+
+        $this->set('pullConfigurations', $pullConfigurations);
+        $toJson = ['pullConfigurations', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['pullConfigurations', 'scroll'];
+        }
+        $this->viewBuilder()->setOption('serialize', $toJson);
+    }
+
+    /**
+     * @param null $id
+     */
+    public function pushCache($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var AgenthostscacheTable $AgenthostscacheTable */
+        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
+
+        if($this->request->is('post') && $id !== null){
+            if($AgenthostscacheTable->existsById($id)){
+                $Agenthostscache = $AgenthostscacheTable->get($id);
+                if ($AgenthostscacheTable->delete($Agenthostscache)) {
+                    $this->set('success', true);
+                    $this->viewBuilder()->setOption('serialize', ['success']);
+                    return;
+                }
+            }
+            $this->set('success', false);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
+        $AgenthostscacheFilter = new AgenthostscacheFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AgenthostscacheFilter->getPage());
+        $pushCache = $AgenthostscacheTable->getForList($AgenthostscacheFilter, $PaginateOMat);
+
+        $this->set('pushCache', $pushCache);
+        $toJson = ['pushCache', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['pushCache', 'scroll'];
+        }
+        $this->viewBuilder()->setOption('serialize', $toJson);
+    }
+
+    public function downloadPushedCheckdata($agenthostscacheId) {
+        /** @var AgenthostscacheTable $AgenthostscacheTable */
+        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
+
+        if (!$AgenthostscacheTable->existsById($agenthostscacheId)) {
+            new NotFoundException();
+        }
+
+        $Agenthostscache = $AgenthostscacheTable->get($agenthostscacheId);
+        $checkdata = $Agenthostscache->get('checkdata');
+        header("Content-type: application/json");
+        header("Content-Disposition: attachment; filename=openITCOCKPIT-Agent-Push-Checkdata_" . $agenthostscacheId . ".json");
+        echo $checkdata;
+        die();
     }
 
     /**
@@ -207,10 +331,14 @@ class AgentconnectorController extends AppController {
 
         /** @var AgentconnectorTable $AgentconnectorTable */
         $AgentconnectorTable = TableRegistry::getTableLocator()->get('Agentconnector');
+        /** @var AgentconfigsTable $AgentconfigsTable */
+        $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
 
         $receivedChecks = 0;
 
         if (!empty($this->request->getData('checkdata')) && !empty($this->request->getData('hostuuid'))) {
+            $AgentconfigsTable->updatePushNoticedForHostIfConfigExists($this->request->getData('hostuuid'), true);
+
             if ($AgentconnectorTable->isTrustedFromUser($this->request->getData('hostuuid'))) {
                 if (!$AgentconnectorTable->certificateNotYetGenerated($this->request->getData('hostuuid')) && !empty($this->request->getData('checksum'))) {  //should have a certificate!
                     if ($AgentconnectorTable->trustIsValid($this->request->getData('checksum'), $this->request->getData('hostuuid'))) {
@@ -302,7 +430,7 @@ class AgentconnectorController extends AppController {
 
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        /** @var $AgentconfigsTable AgentconfigsTable */
+        /** @var AgentconfigsTable $AgentconfigsTable */
         $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
 
         $hostId = $HostsTable->getHostIdByUuid($uuid);
@@ -515,6 +643,7 @@ class AgentconnectorController extends AppController {
 
                 if (isset($response['response']) && !empty($response['response'])) {
                     $agentJsonOutput = $response['response'];
+                    $AgentconfigsTable->updatePushNoticedForHostIfConfigExists($hostuuid, false);
                 }
             } catch (\Exception | GuzzleException $e) {
                 throw new \Exception('Could not connect to agent to fetch current check data! - ' . $e->getMessage());

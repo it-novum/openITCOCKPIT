@@ -199,7 +199,6 @@ class HostsController extends AppController {
             $hosts = $HostsTable->getHostsIndexStatusengine3($HostFilter, $HostCondition, $PaginateOMat);
         }
 
-
         $all_hosts = [];
         $UserTime = new UserTime($User->getTimezone(), $User->getDateformat());
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
@@ -605,6 +604,9 @@ class HostsController extends AppController {
                 );
             }
 
+            $typesForView = $HostsTable->getHostTypesWithStyles();
+            $hostType = $typesForView[$mergedHost['Host']['host_type']];
+
             $this->set('commands', Api::makeItJavaScriptAble($commands));
             $this->set('host', $mergedHost);
             $this->set('hosttemplate', $hosttemplate);
@@ -613,6 +615,7 @@ class HostsController extends AppController {
             $this->set('isHostOnlyEditableDueToHostSharing', $isHostOnlyEditableDueToHostSharing);
             $this->set('fakeDisplayContainers', Api::makeItJavaScriptAble($fakeDisplayContainers));
             $this->set('areContactsInheritedFromHosttemplate', $HostMergerForView->areContactsInheritedFromHosttemplate());
+            $this->set('hostType', $hostType);
 
             $this->viewBuilder()->setOption('serialize', [
                 'host',
@@ -622,7 +625,8 @@ class HostsController extends AppController {
                 'allowSharing',
                 'isHostOnlyEditableDueToHostSharing',
                 'fakeDisplayContainers',
-                'areContactsInheritedFromHosttemplate'
+                'areContactsInheritedFromHosttemplate',
+                'hostType'
             ]);
             return;
         }
@@ -2541,7 +2545,7 @@ class HostsController extends AppController {
     /**
      * @param $containerId
      * @param int $hostId
-     * @throws Exception
+     * @throws \Exception
      */
     public function loadElementsByContainerId($containerId, $hostId = 0) {
         if (!$this->isAngularJsRequest()) {
@@ -2604,11 +2608,9 @@ class HostsController extends AppController {
         $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $masterInstanceName = $Systemsettings->getMasterInstanceName();
+        /** @var SystemsettingsTable $SystemsettingsTable  */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
 
         $satellites = [];
         if (Plugin::isLoaded('DistributeModule')) {

@@ -22,6 +22,15 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
         });
     };
 
+    $scope.getLocalStorageItemWithDefaultAndRemoveItem = function(key, defaultValue){
+        var val = window.localStorage.getItem(key);
+        if(val === null){
+            return defaultValue;
+        }
+        window.localStorage.removeItem(key);
+        return val;
+    }
+
     $scope.submit = function(){
         $scope.disableLogin = true;
 
@@ -53,7 +62,13 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
                 text: 'Login successful',
                 timeout: 3500
             }).show();
-            window.location = '/';
+
+            var location = window.location.toString();
+            if(location.includes('#!/')){
+                window.location = '/' + location.substring(location.indexOf('#!/'));
+            }else{
+                window.location = $scope.getLocalStorageItemWithDefaultAndRemoveItem('lastPage', '/');
+            }
         }, function(result){
             //Error
 

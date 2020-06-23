@@ -1,9 +1,18 @@
 angular.module('openITCOCKPIT')
-    .controller('HosttemplatesAddController', function($scope, $http, SudoService, $state, NotyService, RedirectService){
+    .controller('HosttemplatesAddController', function($scope, $http, SudoService, $state, $stateParams, NotyService, RedirectService){
+
+        var hosttemplateTypeId = 1; // GENERIC_HOST
+        if(typeof $stateParams.hosttemplateTypeId !== "undefined"){
+            if($stateParams.hosttemplateTypeId !== null){
+                hosttemplateTypeId = parseInt($stateParams.hosttemplateTypeId, 10);
+            }
+        }
 
         $scope.data = {
             createAnother: false
         };
+
+        $scope.typeDetails = {};
 
         var clearForm = function(){
             $scope.post = {
@@ -44,6 +53,7 @@ angular.module('openITCOCKPIT')
                     tags: '',
                     container_id: 0,
                     host_url: '',
+                    hosttemplatetype_id: hosttemplateTypeId,
                     contacts: {
                         _ids: []
                     },
@@ -132,6 +142,19 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadHosttemplateTypes = function(){
+            var params = {
+                'angular': true
+            };
+
+            $http.get("/hosttemplates/add.json", {
+                params: params
+            }).then(function(result){
+                $scope.hosttemplatetypes = result.data.types;
+                $scope.setDetailsForType($scope.post.Hosttemplate.hosttemplatetype_id);
+            });
+        };
+
         $scope.setPriority = function(priority){
             $scope.post.Hosttemplate.priority = parseInt(priority, 10);
         };
@@ -159,6 +182,15 @@ angular.module('openITCOCKPIT')
             return false;
         };
 
+        $scope.setDetailsForType = function(){
+            for(index in $scope.hosttemplatetypes){
+                if($scope.hosttemplatetypes[index].key === $scope.post.Hosttemplate.hosttemplatetype_id){
+                    $scope.typeDetails = $scope.hosttemplatetypes[index].value;
+                    return;
+                }
+            }
+        };
+
         $scope.submit = function(){
             $http.post("/hosttemplates/add.json?angular=true",
                 $scope.post
@@ -177,7 +209,6 @@ angular.module('openITCOCKPIT')
                     $scope.errors = {};
                     NotyService.scrollTop();
                 }
-
 
 
                 console.log('Data saved successfully');
@@ -200,8 +231,11 @@ angular.module('openITCOCKPIT')
 
         };
 
+        //Fire on page load
+
         $scope.loadContainers();
         $scope.loadCommands();
+        $scope.loadHosttemplateTypes();
 
         jQuery(function(){
             $('.tagsinput').tagsinput();
@@ -221,5 +255,11 @@ angular.module('openITCOCKPIT')
             $scope.loadCommandArguments();
         }, true);
 
+        $scope.$watch('post.Hosttemplate.hosttemplatetype_id', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.setDetailsForType();
+        }, true);
 
     });

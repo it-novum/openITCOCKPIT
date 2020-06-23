@@ -8,6 +8,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.init = true;
+        $scope.typeDetails = {};
 
         $scope.loadHosttemplate = function(){
             var params = {
@@ -19,6 +20,8 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.post.Hosttemplate = result.data.hosttemplate.Hosttemplate;
                 $scope.commands = result.data.commands;
+                $scope.hosttemplatetypes = result.data.types;
+                $scope.setDetailsForType($scope.post.Hosttemplate.hosttemplatetype_id);
 
                 jQuery(function(){
                     $('.tagsinput').tagsinput();
@@ -105,6 +108,15 @@ angular.module('openITCOCKPIT')
             return false;
         };
 
+        $scope.setDetailsForType = function(){
+            for(index in $scope.hosttemplatetypes){
+                if($scope.hosttemplatetypes[index].key === $scope.post.Hosttemplate.hosttemplatetype_id){
+                    $scope.typeDetails = $scope.hosttemplatetypes[index].value;
+                    return;
+                }
+            }
+        };
+
         $scope.submit = function(){
             $http.post("/hosttemplates/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
@@ -154,5 +166,11 @@ angular.module('openITCOCKPIT')
             $scope.loadCommandArguments();
         }, true);
 
+        $scope.$watch('post.Hosttemplate.hosttemplatetype_id', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.setDetailsForType();
+        }, true);
 
     });

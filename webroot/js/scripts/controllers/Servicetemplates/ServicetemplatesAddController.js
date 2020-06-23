@@ -12,6 +12,8 @@ angular.module('openITCOCKPIT')
             createAnother: false
         };
 
+        $scope.typeDetails = {};
+
         var clearForm = function(){
             $scope.post = {
                 Servicetemplate: {
@@ -169,6 +171,8 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.servicetemplatetypes = result.data.types;
+                $scope.setDetailsForType($scope.post.Servicetemplate.servicetemplatetype_id);
+
             });
         };
 
@@ -198,6 +202,15 @@ angular.module('openITCOCKPIT')
                 }
             }
             return false;
+        };
+
+        $scope.setDetailsForType = function(){
+            for(index in $scope.servicetemplatetypes){
+                if($scope.servicetemplatetypes[index].key === $scope.post.Servicetemplate.servicetemplatetype_id){
+                    $scope.typeDetails = $scope.servicetemplatetypes[index].value;
+                    return;
+                }
+            }
         };
 
         $scope.submit = function(){
@@ -278,5 +291,11 @@ angular.module('openITCOCKPIT')
             $scope.loadEventHandlerCommandArguments();
         }, true);
 
+        $scope.$watch('post.Servicetemplate.servicetemplatetype_id', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.setDetailsForType();
+        }, true);
 
     });

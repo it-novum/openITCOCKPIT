@@ -77,7 +77,7 @@
                     <?php endif; ?>
                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                         <a class="dropdown-item" ui-sref="HostsEdit({id:data.hostId})"
-                           ng-show="host.allowEdit">
+                           ng-show="host.allow_edit">
                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                         </a>
                     <?php endif; ?>
@@ -88,6 +88,10 @@
                             <?php echo __('Allocate Service Template Group'); ?>
                         </a>
                     <?php endif; ?>
+                    <?php
+                    $AdditionalLinks = new \App\Lib\AdditionalLinks($this);
+                    echo $AdditionalLinks->getLinksAsHtmlList('services', 'serviceList', 'actions');
+                    ?>
                 </div>
             </div>
         </div>
@@ -105,22 +109,22 @@
                 </h2>
                 <div class="panel-toolbar">
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
-                        <li class="nav-item">
+                        <li class="nav-item pointer">
                             <a class="nav-link active" data-toggle="tab" ng-click="changeTab('active')" role="tab">
                                 <i class="fa fa-stethoscope">&nbsp;</i> <?php echo __('Active'); ?>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item pointer">
                             <a class="nav-link" data-toggle="tab" ng-click="changeTab('notMonitored')" role="tab">
                                 <i class="fa fa-user-md">&nbsp;</i> <?php echo __('Not monitored'); ?>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item pointer">
                             <a class="nav-link" data-toggle="tab" ng-click="changeTab('disabled')" role="tab">
                                 <i class="fa fa-plug">&nbsp;</i> <?php echo __('Disabled'); ?>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item pointer">
                             <a class="nav-link" data-toggle="tab" ng-click="changeTab('deleted')" role="tab">
                                 <i class="fa fa-trash">&nbsp;</i> <?php echo __('Deleted'); ?>
                             </a>
@@ -345,7 +349,7 @@
                                                     <a ng-if="service.Service.allow_edit"
                                                        class="dropdown-item"
                                                        href="javascript:void(0);"
-                                                       ng-click="confirmDeactivate(getObjectForDelete(host, service))">
+                                                       ng-click="confirmDeactivate(getObjectForDelete(service))">
                                                         <i class="fa fa-plug"></i>
                                                         <?php echo __('Disable'); ?>
                                                     </a>
@@ -356,9 +360,9 @@
                                                 ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                     <div class="dropdown-divider"></div>
-                                                    <a ng-click="confirmDelete(getObjectForDelete(host, service))"
+                                                    <a ng-click="confirmDelete(getObjectForDelete(service))"
                                                        ng-if="service.Service.allow_edit"
-                                                       class="dropdown-item">
+                                                       class="dropdown-item txt-color-red">
                                                         <i class="fa fa-trash"></i>
                                                         <?php echo __('Delete'); ?>
                                                     </a>
@@ -552,16 +556,16 @@
                                                     <a ng-if="service.Service.allow_edit"
                                                        class="dropdown-item"
                                                        href="javascript:void(0);"
-                                                       ng-click="confirmDeactivate(getObjectForDelete(host, service))">
+                                                       ng-click="confirmDeactivate(getObjectForDelete(service))">
                                                         <i class="fa fa-plug"></i>
                                                         <?php echo __('Disable'); ?>
                                                     </a>
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                     <a href="javascript:void(0);"
-                                                       ng-click="confirmDelete(getObjectForDelete(host, service))"
+                                                       ng-click="confirmDelete(getObjectForDelete(service))"
                                                        ng-if="service.Service.allow_edit"
-                                                       class="dropdown-item">
+                                                       class="dropdown-item txt-color-red">
                                                         <i class="fa fa-trash"></i>
                                                         <?php echo __('Delete'); ?>
                                                     </a>
@@ -698,7 +702,7 @@
                                                 <?php if ($this->Acl->hasPermission('enable', 'services')): ?>
                                                     <a href="javascript:void(0);"
                                                        ng-if="service.Service.allow_edit"
-                                                       ng-click="confirmActivate(getObjectForDelete(host, service))"
+                                                       ng-click="confirmActivate(getObjectForDelete(service))"
                                                        class="dropdown-item">
                                                         <i class="fa fa-plug"></i>
                                                         <?php echo __('Enable'); ?>
@@ -706,9 +710,9 @@
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                     <a href="javascript:void(0);"
-                                                       ng-click="confirmDelete(getObjectForDelete(host, service))"
+                                                       ng-click="confirmDelete(getObjectForDelete(service))"
                                                        ng-if="service.Service.allow_edit"
-                                                       class="dropdown-item">
+                                                       class="dropdown-item txt-color-red">
                                                         <i class="fa fa-trash"></i>
                                                         <?php echo __('Delete'); ?>
                                                     </a>

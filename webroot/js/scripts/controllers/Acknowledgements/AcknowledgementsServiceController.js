@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT')
++angular.module('openITCOCKPIT')
     .controller('AcknowledgementsServiceController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, $stateParams){
 
         SortService.setSort(QueryStringService.getValue('sort', 'AcknowledgementServices.entry_time'));

@@ -24,6 +24,9 @@
 
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
+use SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmptrapd;
+use SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmptrapdConf;
+use SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmpttIni;
 
 class GeneratorRegistry {
 
@@ -31,7 +34,7 @@ class GeneratorRegistry {
      * @return array
      */
     public function getAllConfigFiles() {
-        return [
+        $configFiles = [
             new NagiosCfg(),
             new AfterExport(),
             //new NagiosModuleConfig(),
@@ -43,16 +46,24 @@ class GeneratorRegistry {
             new Statusengine3Cfg(),
             new GraphiteWeb()
         ];
+
+        if (class_exists('SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmptrapd')) {
+            $configFiles[] = new SnmpTrapCfgs_snmptrapd();
+            $configFiles[] = new SnmpTrapCfgs_snmptrapdConf();
+            $configFiles[] = new SnmpTrapCfgs_snmpttIni();
+        }
+
+        return $configFiles;
     }
 
     /**
      * @return array
      */
     public function getAllConfigFilesWithCategory() {
-        return [
+        $configFiles = [
             __('openITCOCKPIT Interface configuration files') => [
                 new AfterExport(),
-                new NagiosModuleConfig(),
+                //new NagiosModuleConfig(),
                 new DbBackend(),
                 new PerfdataBackend(),
                 new GraphiteWeb()
@@ -69,8 +80,18 @@ class GeneratorRegistry {
             ],
             __('Carbon and Whisper (Graphing)')               => [
                 new GraphingDocker()
-            ],
+            ]
         ];
+
+        if (class_exists('SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmptrapd')) {
+            $configFiles[__('SnmpTrapModule')] = [
+                new SnmpTrapCfgs_snmptrapd(),
+                new SnmpTrapCfgs_snmptrapdConf(),
+                new SnmpTrapCfgs_snmpttIni()
+            ];
+        }
+
+        return $configFiles;
     }
 
 }

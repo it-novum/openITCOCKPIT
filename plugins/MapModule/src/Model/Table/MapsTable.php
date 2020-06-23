@@ -32,6 +32,7 @@ use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Host;
 use App\Model\Entity\Service;
 use App\Model\Table\ContainersTable;
@@ -39,7 +40,9 @@ use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
+use Cake\Core\Plugin;
 use Cake\Datasource\EntityInterface;
+use Cake\Datasource\RepositoryInterface;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Query;
@@ -89,6 +92,7 @@ class MapsTable extends Table {
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
     use CustomValidationTrait;
+    use PluginManagerTableTrait;
 
     private $hostIcons = [
         0 => 'up.png',
@@ -126,8 +130,7 @@ class MapsTable extends Table {
             'className'        => 'Containers',
             'foreignKey'       => 'map_id',
             'targetForeignKey' => 'container_id',
-            'joinTable'        => 'maps_to_containers',
-            //'saveStrategy'     => 'replace'
+            'joinTable'        => 'maps_to_containers'
         ]);
 
         $this->hasMany('Mapgadgets', [
@@ -164,6 +167,30 @@ class MapsTable extends Table {
             'foreignKey' => 'map_id',
             'className'  => 'MapModule.Maptexts'
         ])->setDependent(true);
+
+        if (Plugin::isLoaded('DistributeModule')) {
+            $this->belongsToMany('Satellites', [
+                'className'        => 'DistributeModule.Satellites',
+                'foreignKey'       => 'map_id',
+                'targetForeignKey' => 'satellite_id',
+                'joinTable'        => 'maps_to_satellites',
+                'saveStrategy'     => 'replace'
+            ]);
+        }
+    }
+
+    public function bindCoreAssociations(RepositoryInterface $coreTable) {
+        switch ($coreTable->getAlias()) {
+            case 'Satellites':
+                $coreTable->belongsToMany('Maps', [
+                    'className'        => 'MapModules.Maps',
+                    'foreignKey'       => 'satellite_id',
+                    'targetForeignKey' => 'map_id',
+                    'joinTable'        => 'maps_to_satellites',
+                    'saveStrategy'     => 'replace'
+                ]);
+                break;
+        }
     }
 
     /**
@@ -204,6 +231,9 @@ class MapsTable extends Table {
         $validator
             ->integer('refresh_interval')
             ->notEmptyString('refresh_interval');
+
+        $validator
+            ->allowEmptyArray('satellites');
 
         return $validator;
     }
@@ -363,24 +393,30 @@ class MapsTable extends Table {
      * @return array
      */
     public function getMapForEdit($id) {
+        $contain = [
+            'Containers'
+        ];
+        if (Plugin::isLoaded('DistributeModule')) {
+            $contain[] = 'Satellites';
+        }
         $query = $this->find()
             ->where([
                 'Maps.id' => $id
             ])
-            ->contain([
-                'Containers'
-            ])
+            ->contain($contain)
             ->disableHydration()
             ->first();
 
 
-        $contact = $query;
-        $contact['containers'] = [
+        $map = $query;
+        $map['containers'] = [
             '_ids' => Hash::extract($query, 'containers.{n}.id')
         ];
-
+        $map['satellites'] = [
+            '_ids' => Hash::extract($query, 'satellites.{n}.id')
+        ];
         return [
-            'Map' => $contact
+            'Map' => $map
         ];
     }
 

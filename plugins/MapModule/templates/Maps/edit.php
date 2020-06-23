@@ -83,7 +83,25 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-
+                        <?php if (\Cake\Core\Plugin::isLoaded('DistributeModule')): ?>
+                            <div class="form-group">
+                                <label class="control-label" for="SatellitesSelect">
+                                    <?php echo __('Satellite'); ?>
+                                </label>
+                                <select
+                                    id="SatellitesSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="satellites"
+                                    ng-options="satellite.key as satellite.value for satellite in satellites"
+                                    ng-model="post.Map.satellites._ids"
+                                    multiple>
+                                </select>
+                                <div ng-repeat="error in errors.satellites">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                         <div class="form-group required" ng-class="{'has-error':errors.name}">
                             <label class="control-label">
                                 <?php echo __('Map Name'); ?>

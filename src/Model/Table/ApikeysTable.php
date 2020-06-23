@@ -68,8 +68,7 @@ class ApikeysTable extends Table {
         $validator
             ->integer('user_id')
             ->requirePresence('user_id', 'create')
-            ->greaterThan('user_id', 0)
-            ->allowEmptyString('user_id', false);
+            ->greaterThan('user_id', 0);
 
         return $validator;
     }

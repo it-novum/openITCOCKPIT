@@ -48,6 +48,11 @@
                     <?php echo __('Create new host template'); ?>
                 </h2>
                 <div class="panel-toolbar">
+                    <span ng-if="typeDetails"
+                          class="badge border margin-right-10 {{typeDetails.class}} {{typeDetails.color}}">
+                        <i class="{{typeDetails.icon}}"></i>
+                        {{typeDetails.title}}
+                    </span>
                     <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='HosttemplatesIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
@@ -102,6 +107,27 @@
                                     </div>
                                 </div>
 
+                                <div class="form-group required"
+                                     ng-class="{'has-error': errors.hosttemplatetype_id}">
+                                    <label class="control-label">
+                                        <?php echo __('Template Type'); ?>
+                                    </label>
+                                    <select
+                                        id="HostHosttemplateSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="hosttemplatetypes"
+                                        ng-options="templatetype.key as templatetype.value.title for templatetype in hosttemplatetypes"
+                                        ng-model="post.Hosttemplate.hosttemplatetype_id">
+                                    </select>
+                                    <div class="help-block">
+                                        <?= __('Defines the type of the template. Use "Generic template" if you are not sure.') ?>
+                                    </div>
+                                    <div ng-repeat="error in errors.hosttemplatetype_id">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+
                                 <div class="form-group" ng-class="{'has-error': errors.description}">
                                     <label class="control-label">
                                         <?php echo __('Description'); ?>
@@ -138,15 +164,12 @@
                                     <label class="control-label">
                                         <?php echo __('Tags'); ?>
                                     </label>
-                                    <div class="input-group">
-                                        <div class="col">
-                                            <input class="form-control tagsinput"
-                                                   data-role="tagsinput"
-                                                   type="text"
-                                                   ng-model="post.Hosttemplate.tags"
-                                                   id="HosttemplateTagsInput">
-                                        </div>
-                                    </div>
+                                    <input class="form-control tagsinput"
+                                           data-role="tagsinput"
+                                           type="text"
+                                           ng-model="post.Hosttemplate.tags"
+                                           id="HosttemplateTagsInput">
+
                                     <div ng-repeat="error in errors.tags">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
@@ -459,10 +482,10 @@
                                                        ng-model="post.Hosttemplate.<?php echo $hostOption['field']; ?>">
                                                 <label for="<?php echo $hostOption['field']; ?>"
                                                        class="col col-md-9 custom-control-label custom-control-label-<?php echo $hostOption['class']; ?> padding-top-0 margin-right-10 ">
-                                                        <span
-                                                            class="badge badge-<?php echo $hostOption['class']; ?> notify-label-small">
-                                                            <?php echo $hostOption['text']; ?>
-                                                        </span>
+                                                    <span
+                                                        class="badge badge-<?php echo $hostOption['class']; ?> notify-label-small">
+                                                        <?php echo $hostOption['text']; ?>
+                                                    </span>
                                                 </label>
                                             </div>
                                         <?php endforeach; ?>
@@ -572,10 +595,10 @@
                                                        ng-model="post.Hosttemplate.<?php echo $hostFlapOption['field']; ?>">
                                                 <label for="<?php echo $hostFlapOption['field']; ?>"
                                                        class="col col-md-9 custom-control-label custom-control-label-<?php echo $hostFlapOption['class']; ?> padding-top-0 margin-right-10">
-                                                        <span
-                                                            class="badge badge-<?php echo $hostFlapOption['class']; ?> notify-label-small">
-                                                            <?php echo $hostFlapOption['text']; ?>
-                                                        </span>
+                                                    <span
+                                                        class="badge badge-<?php echo $hostFlapOption['class']; ?> notify-label-small">
+                                                        <?php echo $hostFlapOption['text']; ?>
+                                                    </span>
                                                 </label>
                                             </div>
                                         <?php endforeach; ?>

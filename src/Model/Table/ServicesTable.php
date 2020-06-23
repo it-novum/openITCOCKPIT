@@ -9,6 +9,7 @@ use App\Model\Entity\Changelog;
 use App\Model\Entity\Service;
 use App\Model\Entity\Servicedependency;
 use App\Model\Entity\Serviceescalation;
+use Cake\Core\Plugin;
 use Cake\Database\Expression\Comparison;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
@@ -17,7 +18,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
@@ -38,7 +38,7 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
  * @property |\Cake\ORM\Association\HasMany $Eventcorrelations
  * @property |\Cake\ORM\Association\HasMany $GrafanaUserdashboardMetrics
  * @property |\Cake\ORM\Association\HasMany $InstantreportsToServices
- * @property \MkModule\Model\Table\MkservicedataTable|\Cake\ORM\Association\HasMany $Mkservicedata
+ * @property \CheckmkModule\Model\Table\MkservicedataTable|\Cake\ORM\Association\HasMany $Mkservicedata
  * @property |\Cake\ORM\Association\HasMany $NagiosServiceContactgroups
  * @property |\Cake\ORM\Association\HasMany $NagiosServiceContacts
  * @property |\Cake\ORM\Association\HasMany $NagiosServiceParentservices
@@ -560,8 +560,8 @@ class ServicesTable extends Table {
         }
         $selected = array_filter($selected);
 
-        if($returnEmptyArrayIfMyRightsIsEmpty){
-            if(empty($ServiceConditions->getContainerIds())){
+        if ($returnEmptyArrayIfMyRightsIsEmpty) {
+            if (empty($ServiceConditions->getContainerIds())) {
                 return [];
             }
         }
@@ -768,8 +768,9 @@ class ServicesTable extends Table {
         foreach ($services as $serviceId => $serviceData) {
             $serviceFormated[$serviceId] = [
                 'Service'         => [
-                    'id'   => $serviceData['id'],
-                    'name' => $serviceData['name']
+                    'id'          => $serviceData['id'],
+                    'name'        => $serviceData['name'],
+                    'servicename' => $serviceData['name'] ?? $serviceData['_matchingData']['Servicetemplates']['name']
                 ],
                 'Host'            => [
                     'id'   => $serviceData['_matchingData']['Hosts']['id'],
@@ -1754,7 +1755,9 @@ class ServicesTable extends Table {
                 'Services.disabled',
                 'Services.active_checks_enabled',
                 'Services.tags',
-                'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+                'Services.priority',
+                'servicename'     => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+                'servicepriority' => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',
@@ -1762,6 +1765,7 @@ class ServicesTable extends Table {
                 'Servicetemplates.description',
                 'Servicetemplates.active_checks_enabled',
                 'Servicetemplates.tags',
+                'Servicetemplates.priority',
 
                 'Objects.object_id',
 
@@ -1822,6 +1826,16 @@ class ServicesTable extends Table {
                 'not rlike'
             ));
             unset($where['not_keywords not rlike']);
+        }
+
+        if (isset($where['servicepriority IN'])) {
+            $where[] = new Comparison(
+                'IF((Services.priority IS NULL), Servicetemplates.priority, Services.priority)',
+                $where['servicepriority IN'],
+                'integer[]',
+                'IN'
+            );
+            unset($where['servicepriority IN']);
         }
 
         if (!empty($where)) {
@@ -1897,7 +1911,9 @@ class ServicesTable extends Table {
                 'Services.disabled',
                 'Services.active_checks_enabled',
                 'Services.tags',
-                'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+                'Services.priority',
+                'servicename'     => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+                'servicepriority' => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',
@@ -1905,6 +1921,7 @@ class ServicesTable extends Table {
                 'Servicetemplates.description',
                 'Servicetemplates.active_checks_enabled',
                 'Servicetemplates.tags',
+                'Servicetemplates.priority',
 
                 'Servicestatus.current_state',
                 'Servicestatus.last_check',
@@ -1961,6 +1978,16 @@ class ServicesTable extends Table {
             unset($where['not_keywords not rlike']);
         }
 
+        if (isset($where['servicepriority IN'])) {
+            $where[] = new Comparison(
+                'IF((Services.priority IS NULL), Servicetemplates.priority, Services.priority)',
+                $where['servicepriority IN'],
+                'integer[]',
+                'IN'
+            );
+            unset($where['servicepriority IN']);
+        }
+
         if (!empty($where)) {
             $query->andWhere($where);
         }
@@ -1974,8 +2001,6 @@ class ServicesTable extends Table {
         }
 
         $query->order($ServiceConditions->getOrder());
-
-        //FileDebugger::dieQuery($query);
 
 
         if ($PaginateOMat === null) {
@@ -3221,4 +3246,201 @@ class ServicesTable extends Table {
         return true;
     }
 
+    /**
+     * @param $host_id
+     * @param bool $enableActiveChecksEnabledCondition
+     * @return array
+     */
+    public function getServicesForCheckmk($host_id, $enableActiveChecksEnabledCondition = false) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.name',
+                'Services.servicetemplate_id',
+            ])
+            ->contain([
+                'Servicetemplates' => function (Query $q) {
+                    return $q->disableAutoFields()
+                        ->select([
+                            'Servicetemplates.id',
+                            'Servicetemplates.name',
+                            'Servicetemplates.active_checks_enabled'
+                        ]);
+                },
+            ]);
+
+        if ($enableActiveChecksEnabledCondition) {
+            $query->where([
+                'Services.active_checks_enabled' => 0
+            ]);
+        }
+
+        $query
+            ->where([
+                'Services.host_id'      => $host_id,
+                'Services.service_type' => MK_SERVICE
+            ])
+            ->order(['Services.id' => 'asc'])
+            ->disableHydration()
+            ->all();
+        if (empty($query) || $query === null) {
+            return [];
+        }
+        return $query->toArray();
+    }
+
+    /**
+     * @param $host_id
+     * @param $servicetemplate_id
+     * @return bool
+     */
+    public function hostHasServiceByServicetemplateId($host_id, $servicetemplate_id) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.host_id',
+                'Services.servicetemplate_id'
+            ])
+            ->where([
+                'Services.host_id'            => $host_id,
+                'Services.servicetemplate_id' => $servicetemplate_id,
+            ])->first();
+
+        return !empty($query);
+    }
+
+    /**
+     * @param $host_id
+     * @param $servicetemplate_id
+     * @return \Cake\Datasource\ResultSetInterface
+     */
+    public function getServicesOfHostByServicetemplateId($host_id, $servicetemplate_id) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.host_id',
+                'Services.servicetemplate_id'
+            ])
+            ->where([
+                'Services.host_id'            => $host_id,
+                'Services.servicetemplate_id' => $servicetemplate_id,
+            ])->all();
+
+        return $query;
+    }
+
+    /**
+     * @param array $serviceIds
+     * @return array
+     */
+    public function getServiceUuidsByServiceIds($serviceIds = []) {
+        if (!is_array($serviceIds)) {
+            $serviceIds = [$serviceIds];
+        }
+
+        if (empty($serviceIds)) {
+            return [];
+        }
+
+        $query = $this->find('list', [
+            'keyField'   => 'id',
+            'valueField' => 'uuid'
+        ])
+            ->where([
+                'Services.id IN' => $serviceIds
+            ])
+            ->disableHydration();
+
+        return $query->toArray();
+    }
+
+    /**
+     * @param array $serviceIds
+     * @return array
+     */
+    public function getServicesByIds($serviceIds = [], $enableHydration = true) {
+        if (!is_array($serviceIds)) {
+            $serviceIds = [$serviceIds];
+        }
+
+        if (empty($serviceIds)) {
+            return [];
+        }
+
+        $query = $this->find()
+            ->where([
+                'Services.id IN' => $serviceIds
+            ])
+            ->contain([
+                'Hosts' => [
+                    'HostsToContainersSharing'
+                ],
+                'Servicetemplates'
+            ])
+            ->enableHydration($enableHydration)
+            ->all();
+
+        if (empty($query)) {
+            return [];
+        }
+
+        return $query->toArray();
+    }
+
+    /**
+     * @return array
+     */
+    public function getServiceTypesWithStyles() {
+        $types[GENERIC_SERVICE] = [
+            'title' => __('Generic service'),
+            'color' => 'text-generic',
+            'class' => 'border-generic',
+            'icon'  => 'fa fa-cog'
+        ];
+
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            $types[EVK_SERVICE] = [
+                'title' => __('EVC service'),
+                'color' => 'text-evc',
+                'class' => 'border-evc',
+                'icon'  => 'fa fa-sitemap fa-rotate-90'
+            ];
+        }
+
+        if (Plugin::isLoaded('SLAModule')) {
+            $types[SLA_SERVICE] = [
+                'title' => __('SLA service'),
+                'color' => 'text-sla',
+                'class' => 'border-sla',
+                'icon'  => 'fas fa-file-medical-alt'
+            ];
+        }
+
+        if (Plugin::isLoaded('CheckmkModule')) {
+            $types[MK_SERVICE] = [
+                'title' => __('Checkmk service'),
+                'color' => 'text-mk',
+                'class' => 'border-mk',
+                'icon'  => 'fas fa-search-plus'
+            ];
+        }
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $types[PROMETHEUS_SERVICE] = [
+                'title' => __('Prometheus service'),
+                'color' => 'text-prometheus',
+                'class' => 'border-prometheus',
+                'icon'  => 'fas fa-burn'
+            ];
+        }
+
+        $types[OITC_AGENT_SERVICE] = [
+            'title' => __('Agent service'),
+            'color' => 'text-agent',
+            'class' => 'border-agent',
+            'icon'  => 'fa fa-user-secret'
+        ];
+
+        return $types;
+    }
 }

@@ -7,6 +7,7 @@ angular.module('openITCOCKPIT')
         var _key = '';
 
         var _hasError = false;
+        var _tried_reconnect = false;
 
         var _onSuccess = function(event){
             console.info(event)
@@ -14,14 +15,25 @@ angular.module('openITCOCKPIT')
 
         var _onError = function(event){
             _hasError = true;
-            $('#globalSudoServerCouldNotConnect').show();
+            if(_tried_reconnect){
+                $('#globalSudoServerCouldNotConnect').show();
+            } else {
+                _hasError = false;
+                _tried_reconnect = true;
+                _connect();
+            }
             console.error(event);
         };
 
         var _onClose = function(event){
             console.error(event);
             if(_hasError === false){
-                $('#globalSudoServerLostConnection').show();
+                if(_tried_reconnect){
+                    $('#globalSudoServerLostConnection').show();
+                } else {
+                    _tried_reconnect = true;
+                    _connect();
+                }
             }
         };
 

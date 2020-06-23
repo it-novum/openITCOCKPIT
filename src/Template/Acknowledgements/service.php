@@ -78,8 +78,8 @@
                                                 <span class="input-group-text"><i class="fa fa-filter"></i></span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
-                                                   placeholder="<?php echo __('Filter by output'); ?>"
-                                                   ng-model="filter.AcknowledgementServices.output"
+                                                   placeholder="<?php echo __('Filter by comment'); ?>"
+                                                   ng-model="filter.AcknowledgementServices.comment"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
                                     </div>

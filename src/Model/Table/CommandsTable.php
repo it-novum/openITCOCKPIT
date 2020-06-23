@@ -321,6 +321,28 @@ class CommandsTable extends Table {
     }
 
     /**
+     * @param $name
+     * @param bool $contain
+     * @param bool $formatResultAsCake2
+     * @return array
+     */
+    public function getCommandByName($name, $contain = false, $formatResultAsCake2 = true) {
+        $command = $this->find('all')
+            ->where(['Commands.name' => $name])
+            ->disableHydration();
+
+        if ($contain) {
+            $command->contain('Commandarguments');
+        }
+        $command->first();
+
+        if ($formatResultAsCake2) {
+            return $this->formatFirstResultAsCake2($command->toArray());
+        }
+        return $command->toArray();
+    }
+
+    /**
      * @param bool $contain
      * @return array
      */
@@ -362,6 +384,10 @@ class CommandsTable extends Table {
      */
     public function existsByUuid(string $uuid) {
         return $this->exists(['Commands.uuid' => $uuid]);
+    }
+
+    public function existsByName(string $name){
+        return $this->exists(['Commands.name' => $name]);
     }
 
     /**

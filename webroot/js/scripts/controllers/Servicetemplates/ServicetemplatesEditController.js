@@ -8,6 +8,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.init = true;
+        $scope.typeDetails = {};
 
         $scope.loadServicetemplate = function(){
             var params = {
@@ -21,7 +22,8 @@ angular.module('openITCOCKPIT')
                 $scope.commands = result.data.commands;
                 $scope.eventhandlerCommands = result.data.eventhandlerCommands;
                 $scope.servicetemplatetypes = result.data.types;
-
+                $scope.setDetailsForType($scope.post.Servicetemplate.servicetemplatetype_id);
+                
                 jQuery(function(){
                     $('.tagsinput').tagsinput();
                 });
@@ -118,6 +120,15 @@ angular.module('openITCOCKPIT')
             return false;
         };
 
+        $scope.setDetailsForType = function(){
+            for(index in $scope.servicetemplatetypes){
+                if($scope.servicetemplatetypes[index].key === $scope.post.Servicetemplate.servicetemplatetype_id){
+                    $scope.typeDetails = $scope.servicetemplatetypes[index].value;
+                    return;
+                }
+            }
+        };
+
         $scope.submit = function(){
             $http.post("/servicetemplates/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
@@ -179,6 +190,13 @@ angular.module('openITCOCKPIT')
             }
 
             $scope.loadEventHandlerCommandArguments();
+        }, true);
+
+        $scope.$watch('post.Servicetemplate.servicetemplatetype_id', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.setDetailsForType();
         }, true);
 
     });
