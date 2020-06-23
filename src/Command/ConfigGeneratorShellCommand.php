@@ -36,7 +36,6 @@ use Cake\Console\ConsoleOptionParser;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
 use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
-use SebastianBergmann\Environment\Console;
 
 /**
  * ConfigGeneratorShell command.
@@ -194,6 +193,21 @@ class ConfigGeneratorShellCommand extends Command {
             case 'StatusengineCfg':
                 $command = $systemsettings['INIT']['INIT.STATUSENGINE_RESTART'];
                 $this->restartService($command, 'Restart Statusengine service', $io);
+                break;
+
+            case 'SnmpTrapCfgs_snmptrapd':
+            case 'SnmpTrapCfgs_snmptrapdConf':
+                if (isset($systemsettings['INIT']['INIT.SNMPTRAPD_RESTART'])) {
+                    $command = $systemsettings['INIT']['INIT.SNMPTRAPD_RESTART'];
+                    $this->restartService($command, 'Restart snmptrapd service', $io);
+                }
+                break;
+
+            case 'SnmpTrapCfgs_snmpttIni':
+                if (isset($systemsettings['INIT']['INIT.SNMPTT_RESTART'])) {
+                    $command = $systemsettings['INIT']['INIT.SNMPTT_RESTART'];
+                    $this->restartService($command, 'Restart snmptt service', $io);
+                }
                 break;
 
             default:
