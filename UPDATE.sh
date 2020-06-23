@@ -182,7 +182,7 @@ if type "system.property" &> /dev/null; then
     system.property modulesDir = $MODULES_DIR
     system.initialize
 fi
-
+echo ${LOADED_MODULE_SCRIPTS[@]}
 for Module in "${LOADED_MODULE_SCRIPTS[@]}"; do
     if [ "$Module" != "system" ]; then
         if type "${Module}" &> /dev/null; then
@@ -337,7 +337,7 @@ echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
 # Restart services if they are running
 # Nagios/Naemon is aliased, so it works for both
-for srv in openitcockpit-graphing.service statusengine.service nagios.service nginx.service phpnsta.service supervisor.service; do
+for srv in openitcockpit-graphing.service nagios.service nginx.service phpnsta.service supervisor.service; do
   if systemctl is-active --quiet $srv; then
     echo "Restart service: $srv"
     systemctl restart $srv
