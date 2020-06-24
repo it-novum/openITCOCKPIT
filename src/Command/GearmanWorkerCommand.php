@@ -479,8 +479,7 @@ class GearmanWorkerCommand extends Command {
             case 'CheckmkSatResult':
                 /** @var MkSatTasksTable $MkSatTasksTable */
                 $MkSatTasksTable = TableRegistry::getTableLocator()->get('CheckmkModule.MkSatTasks');
-                $result = json_decode($payload['result'], true);
-                $MkSatTask = $MkSatTasksTable->get($result['ScanID']);
+                $MkSatTask = $MkSatTasksTable->get($payload['ScanID']);
 
                 /** @var MkParser $MkParser */
                 $MkParser = new MkParser();
@@ -498,8 +497,8 @@ class GearmanWorkerCommand extends Command {
                                 "dumpHostResult": ''
                             }
                          */
-                        $CheckMKListChecksResult = $result['CheckTypesResult'];
-                        $CheckMKSNMPResult = $result['DumpHostResult'];
+                        $CheckMKListChecksResult = $payload['CheckTypesResult'];
+                        $CheckMKSNMPResult = $payload['DumpHostResult'];
                         $mkListRaw = $CheckMKListChecksResult;
                         $MkCheckList = $MkParser->parseMkListChecks($mkListRaw);
                         $scanResult = $MkParser->parseMkDumpOutput($CheckMKSNMPResult);
@@ -520,8 +519,8 @@ class GearmanWorkerCommand extends Command {
                                 "dumpHostResult": ''
                             }
                          */
-                        $CheckMKListChecksResult = $result['CheckTypesResult'];
-                        $CheckMKSNMPResult = $result['DumpHostResult'];
+                        $CheckMKListChecksResult = $payload['CheckTypesResult'];
+                        $CheckMKSNMPResult = $payload['DumpHostResult'];
                         $mkListRaw = $CheckMKListChecksResult;
                         $MkCheckList = $MkParser->parseMkListChecks($mkListRaw);
                         $scanResult = $MkParser->parseMkDumpOutput($CheckMKSNMPResult);
@@ -541,7 +540,7 @@ class GearmanWorkerCommand extends Command {
                                 "rawInfoResult": ''
                             }
                          */
-                        $MkSatTask = $MkSatTasksTable->patchEntity($MkSatTask, ['result' => json_encode($result['RawInfoResult'])]);
+                        $MkSatTask = $MkSatTasksTable->patchEntity($MkSatTask, ['result' => json_encode($payload['RawInfoResult'])]);
                         $MkSatTasksTable->save($MkSatTask);
                         break;
                 }
