@@ -208,11 +208,20 @@ class GearmanWorkerCommand extends Command {
 
         $payload = $job->workload();
 
+        //JSON decode support for goNSTA responses
+        try {
+            $payloadFromJSON = json_decode($payload, true);
+        } catch (\Exception $e) {
+            $payloadFromJSON = '';
+        }
         $payload = @unserialize($payload);
 
         if (!is_array($payload)) {
-            Log::error('GearmanWorker received corrupted data: ' . (string)$payload);
-            return serialize(['error' => 'Corrupt data']);
+            if (!is_array($payloadFromJSON)) {
+                Log::error('GearmanWorker received corrupted data: ' . (string)$payload);
+                return serialize(['error' => 'Corrupt data']);
+            }
+            $payload = $payloadFromJSON;
         }
 
         $return = [];
