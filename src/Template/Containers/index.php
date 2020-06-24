@@ -170,7 +170,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
 
                                             <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
                                                 <a class="text-info padding-left-10 font-xs pointer"
-                                                   ui-sref="ContainersShowDetails({id:$Container.id, tenant:selectedContainer.id})">
+                                                   ui-sref="ContainersShowDetails({id:$Container.id})">
                                                     <i class="fa fa-info"></i>
                                                     <?php echo __('Show details'); ?>
                                                 </a>
@@ -209,7 +209,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
 
                                             <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
                                                 <a class="text-info padding-left-10 font-xs pointer"
-                                                   ui-sref="ContainersShowDetails({id:$Container.id, tenant:selectedContainer.id})">
+                                                   ui-sref="ContainersShowDetails({id:$Container.id})">
                                                     <i class="fa fa-info"></i>
                                                     <?php echo __('Show details'); ?>
                                                 </a>
@@ -248,7 +248,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
 
                                             <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
                                                 <a class="text-info padding-left-10 font-xs pointer"
-                                                   ui-sref="ContainersShowDetails({id:$Container.id, tenant:selectedContainer.id})">
+                                                   ui-sref="ContainersShowDetails({id:$Container.id})">
                                                     <i class="fa fa-info"></i>
                                                     <?php echo __('Show details'); ?>
                                                 </a>

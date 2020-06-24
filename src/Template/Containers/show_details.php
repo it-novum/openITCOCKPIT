@@ -214,14 +214,14 @@ $objectDetails['maps'] = [
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="ContainersIndex">
+        <a ui-sref="ContainersIndex({id: post.Container.id})">
             <i class="fa fa-link"></i> <?php echo __('Containers'); ?>
         </a>
     </li>
     <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
-    <li class="breadcrumb-item">
-        <i class="fa fa-sitemap"></i> <?php echo __('Show details'); ?>
-    </li>
+        <li class="breadcrumb-item">
+            <i class="fa fa-sitemap"></i> <?php echo __('Show details'); ?>
+        </li>
     <?php endif; ?>
 </ol>
 
@@ -230,12 +230,10 @@ $objectDetails['maps'] = [
     <div class="col-lg-12 margin-bottom-10">
         <select
             id="containers"
-            data-placeholder="<?php echo __('Please select...'); ?>"
             class="form-control"
-            chosen="{containers}"
+            chosen="containers"
             ng-model="post.Container.id"
-            callback="loadContainers"
-            ng-options="container.key as container.value for container in containers | filter: { key: '!'+<?= CT_GLOBAL; ?>}"
+            ng-options="container.key as container.value for container in containers | filter:{value : '!'+'/root'}:true"
             ng-model-options="{debounce: 500}">
         </select>
 
