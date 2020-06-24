@@ -362,7 +362,7 @@ class GearmanWorkerCommand extends Command {
                 $MkNagiosExportTask->init();
                 $MkNagiosExportTask->createConfigFiles($payload['hostUuid'], [
                     'for_snmp_scan' => true, //Hacky but works -.-
-                    'host_address'  => $payload['hostaddress'],
+                    'host_address'  => $payload['host_address'],
                 ], false);
 
                 if ($payload['satellite_id'] != 0 && Plugin::isLoaded('DistributeModule')) {
