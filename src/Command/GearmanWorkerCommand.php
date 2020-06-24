@@ -44,6 +44,7 @@ use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use CheckmkModule\Command\CheckmkNagiosExportCommand;
 use CheckmkModule\Lib\MkParser;
+use CheckmkModule\Model\Table\MkSatTasksTable;
 use DistributeModule\Model\Table\SatellitesTable;
 use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigDefaults;
@@ -467,6 +468,7 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'CheckmkSatResult':
+                /** @var MkSatTasksTable $MkSatTasksTable */
                 $MkSatTasksTable = TableRegistry::getTableLocator()->get('CheckmkModule.MkSatTasks');
                 $result = json_decode($payload['result'], true);
                 $MkSatTask = $MkSatTasksTable->get($result['ScanID']);
@@ -543,11 +545,12 @@ class GearmanWorkerCommand extends Command {
                 /** @var SystemsettingsTable $SystemsettingsTable */
                 $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
                 $systemsettings = $SystemsettingsTable->findAsArray();
+                /** @var MkSatTasksTable $MkSatTasksTable */
                 $MkSatTasksTable = TableRegistry::getTableLocator()->get('CheckmkModule.MkSatTasks');
                 $MkSatTask = $MkSatTasksTable->newEntity([
                     'satelliteId' => intval($payload['satellite_id']),
                     'hostuuid'    => $payload['hostuuid'],
-                    'task'        => $payload['task']
+                    'task'        => $payload['cmk_task']
                 ]);
                 $MkSatTasksTable->save($MkSatTask);
                 if ($MkSatTask->hasErrors()) {
@@ -561,14 +564,13 @@ class GearmanWorkerCommand extends Command {
                         'Data'        => [
                             'ScanID'   => intval($MkSatTask->get('id')),
                             'Hostuuid' => $payload['hostuuid'],
-                            'Task'     => $payload['task'],
+                            'Task'     => $payload['cmk_task'],
                             'File'     => $configfileContent,
                             'FilePath' => $systemsettings['CHECK_MK']['CHECK_MK.ETC'] . 'conf.d/' . $payload['hostuuid'] . '.mk'
                         ]
                     ];
 
-
-                    switch ($payload['task']) {
+                    switch ($payload['cmk_task']) {
                         case 'health-scan':
                             /*  mkdir -p /opt/openitc/check_mk/var/check_mk/autochecks; rm -rf /opt/openitc/check_mk/var/check_mk/autochecks/*
                              *  PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk OMD_SITE=1 /opt/openitc/check_mk/bin/check_mk -II {hostuuid} >/dev/null
@@ -625,10 +627,13 @@ class GearmanWorkerCommand extends Command {
                             break;
                     }
 
+                    Configure::load('gearman');
+                    $gearmanConfig = Configure::read('gearman');
                     $GearmanClient = new \GearmanClient();
-                    $GearmanClient->addTaskBackground('oitc_checkmk_sattx', json_encode($NSTAOptions));
+                    $GearmanClient->addServer($gearmanConfig['address'], $gearmanConfig['port']);
+                    $GearmanClient->doBackground('oitc_checkmk_sattx', json_encode($NSTAOptions));
 
-                    $return = $MkSatTask->get('id');
+                    $return = ['id' => $MkSatTask->get('id')];
                 }
                 break;
 
