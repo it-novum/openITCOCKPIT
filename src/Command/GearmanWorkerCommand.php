@@ -497,10 +497,10 @@ class GearmanWorkerCommand extends Command {
                                 "dumpHostResult": ''
                             }
                          */
-                        $CheckMKListChecksResult = $payload['CheckTypesResult'];
-                        $CheckMKSNMPResult = $payload['DumpHostResult'];
-                        $mkListRaw = $CheckMKListChecksResult;
-                        $MkCheckList = $MkParser->parseMkListChecks($mkListRaw);
+                        $CheckMKListChecksResult = explode('\n', $payload['CheckTypesResult']); //was $mkListRaw
+                        $CheckMKSNMPResult = explode('\n', $payload['DumpHostResult']);
+
+                        $MkCheckList = $MkParser->parseMkListChecks($CheckMKListChecksResult);
                         $scanResult = $MkParser->parseMkDumpOutput($CheckMKSNMPResult);
                         $scanResult = $MkParser->compareDumpWithList($scanResult, $MkCheckList, 'tcp', ['ps', 'service']);
 
@@ -519,10 +519,10 @@ class GearmanWorkerCommand extends Command {
                                 "dumpHostResult": ''
                             }
                          */
-                        $CheckMKListChecksResult = $payload['CheckTypesResult'];
-                        $CheckMKSNMPResult = $payload['DumpHostResult'];
-                        $mkListRaw = $CheckMKListChecksResult;
-                        $MkCheckList = $MkParser->parseMkListChecks($mkListRaw);
+                        $CheckMKListChecksResult = explode('\n', $payload['CheckTypesResult']); //was $mkListRaw
+                        $CheckMKSNMPResult = explode('\n', $payload['DumpHostResult']);
+
+                        $MkCheckList = $MkParser->parseMkListChecks($CheckMKListChecksResult);
                         $scanResult = $MkParser->parseMkDumpOutput($CheckMKSNMPResult);
                         $scanResult = $MkParser->compareDumpWithList($scanResult, $MkCheckList, 'snmp');
 
