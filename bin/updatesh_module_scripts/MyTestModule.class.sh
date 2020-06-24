@@ -65,5 +65,6 @@ MyTestModule.uninstall(){
 MyTestModule.finish(){
     if [ $(system.moduleSrcDirExists $(MyTestModule.property name)) == 1 ]; then
         # insert custom code
+        echo "I run after every openitcockpit-update" >/dev/null
     fi
 }
