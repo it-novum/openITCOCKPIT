@@ -479,6 +479,9 @@ class GearmanWorkerCommand extends Command {
             case 'CheckmkSatResult':
                 /** @var MkSatTasksTable $MkSatTasksTable */
                 $MkSatTasksTable = TableRegistry::getTableLocator()->get('CheckmkModule.MkSatTasks');
+                if(!$MkSatTasksTable->existsById($payload['ScanID'])){
+                    break;
+                }
                 $MkSatTask = $MkSatTasksTable->get($payload['ScanID']);
 
                 /** @var MkParser $MkParser */
@@ -555,13 +558,17 @@ class GearmanWorkerCommand extends Command {
                 $systemsettings = $SystemsettingsTable->findAsArray();
                 /** @var MkSatTasksTable $MkSatTasksTable */
                 $MkSatTasksTable = TableRegistry::getTableLocator()->get('CheckmkModule.MkSatTasks');
-                $MkSatTask = $MkSatTasksTable->newEntity([
-                    'satelliteId' => intval($payload['satellite_id']),
-                    'hostuuid'    => $payload['hostuuid'],
-                    'task'        => $payload['cmk_task']
-                ]);
-                $MkSatTasksTable->save($MkSatTask);
-                if ($MkSatTask->hasErrors()) {
+
+                if ($payload['hostuuid'] && $payload['hostuuid'] !== '') {
+                    $MkSatTask = $MkSatTasksTable->newEntity([
+                        'satelliteId' => intval($payload['satellite_id']),
+                        'hostuuid'    => $payload['hostuuid'],
+                        'task'        => $payload['cmk_task']
+                    ]);
+                    $MkSatTasksTable->save($MkSatTask);
+                }
+
+                if ($payload['hostuuid'] && $payload['hostuuid'] !== '' && isset($MkSatTask) && $MkSatTask !== null && $MkSatTask->hasErrors()) {
                     $return = json_encode($MkSatTask->getErrors());
                 } else {
                     $configfileContent = '';
@@ -570,7 +577,7 @@ class GearmanWorkerCommand extends Command {
                         'SatelliteID' => intval($payload['satellite_id']),
                         'Command'     => 'checkmk',
                         'Data'        => [
-                            'ScanID'   => intval($MkSatTask->get('id')),
+                            'ScanID'   => (isset($MkSatTask) && $MkSatTask !== null) ? intval($MkSatTask->get('id')) : 0,
                             'Hostuuid' => $payload['hostuuid'],
                             'Task'     => $payload['cmk_task'],
                             'File'     => $configfileContent,
@@ -641,7 +648,9 @@ class GearmanWorkerCommand extends Command {
                     $GearmanClient->addServer($gearmanConfig['address'], $gearmanConfig['port']);
                     $GearmanClient->doBackground('oitc_checkmk_sattx', json_encode($NSTAOptions));
 
-                    $return = ['id' => $MkSatTask->get('id')];
+                    if (isset($MkSatTask) && $MkSatTask !== null) {
+                        $return = ['id' => $MkSatTask->get('id')];
+                    }
                 }
                 break;
 
