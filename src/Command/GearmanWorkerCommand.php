@@ -497,8 +497,8 @@ class GearmanWorkerCommand extends Command {
                                 "dumpHostResult": ''
                             }
                          */
-                        $CheckMKListChecksResult = explode('\n', $payload['CheckTypesResult']); //was $mkListRaw
-                        $CheckMKSNMPResult = explode('\n', $payload['DumpHostResult']);
+                        $CheckMKListChecksResult = explode(PHP_EOL, $payload['CheckTypesResult']); //was $mkListRaw
+                        $CheckMKSNMPResult = explode(PHP_EOL, $payload['DumpHostResult']);
 
                         $MkCheckList = $MkParser->parseMkListChecks($CheckMKListChecksResult);
                         $scanResult = $MkParser->parseMkDumpOutput($CheckMKSNMPResult);
@@ -519,8 +519,8 @@ class GearmanWorkerCommand extends Command {
                                 "dumpHostResult": ''
                             }
                          */
-                        $CheckMKListChecksResult = explode('\n', $payload['CheckTypesResult']); //was $mkListRaw
-                        $CheckMKSNMPResult = explode('\n', $payload['DumpHostResult']);
+                        $CheckMKListChecksResult = explode(PHP_EOL, $payload['CheckTypesResult']); //was $mkListRaw
+                        $CheckMKSNMPResult = explode(PHP_EOL, $payload['DumpHostResult']);
 
                         $MkCheckList = $MkParser->parseMkListChecks($CheckMKListChecksResult);
                         $scanResult = $MkParser->parseMkDumpOutput($CheckMKSNMPResult);
@@ -540,7 +540,7 @@ class GearmanWorkerCommand extends Command {
                                 "rawInfoResult": ''
                             }
                          */
-                        $MkSatTask = $MkSatTasksTable->patchEntity($MkSatTask, ['result' => json_encode($payload['RawInfoResult'])]);
+                        $MkSatTask = $MkSatTasksTable->patchEntity($MkSatTask, ['result' => json_encode(['raw' => $payload['RawInfoResult']])]);
                         $MkSatTasksTable->save($MkSatTask);
                         break;
                 }
