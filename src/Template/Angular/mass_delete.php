@@ -51,7 +51,7 @@
                     <div class="col-12" ng-show="isContainerDeletion">
                         <span class="text-danger">{{message}}</span>
                         <br>
-                        <button class="btn btn-sm btn-default" ui-sref="ContainersShowDetails({id:containerId})"><?= __('Show Details'); ?></button>
+                        <button class="btn btn-sm btn-default" ng-click="showDetailedView(containerId)"><?= __('Show Details'); ?></button>
                     </div>
                 </div>
             </div>

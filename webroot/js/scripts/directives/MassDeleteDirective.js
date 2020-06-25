@@ -78,8 +78,16 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
                         });
                 }
             };
+            $scope.showDetailedView = function(containerId){
+                //ui-sref="ContainersShowDetails({id:containerId})"
+                $('#angularMassDelete').modal('hide');
+                $state.go('ContainersShowDetails', {
+                    id: containerId
+                });
+            }
 
             $scope.goToStateMassDelete = function(issue){
+                $('#angularMassDelete').modal('hide');
                 $state.go(issue.state, {id: issue.id});
             }
 
