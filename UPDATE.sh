@@ -293,7 +293,7 @@ fi
 chmod +x /usr/bin/oitc
 
 echo "Create required system folders"
-mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,phpnsta,statusengine} /opt/openitc/etc/statusengine/Config
+mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nsta,nagios,statusengine} /opt/openitc/etc/statusengine/Config
 
 mkdir -p /opt/openitc/logs/frontend/nagios
 chown www-data:www-data /opt/openitc/logs/frontend
@@ -336,7 +336,7 @@ PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
 # Restart services if they are running
-for srv in openitcockpit-graphing.service nginx.service phpnsta.service supervisor.service; do
+for srv in openitcockpit-graphing.service nginx.service nsta.service; do
   if systemctl is-active --quiet $srv; then
     echo "Restart service: $srv"
     systemctl restart $srv
