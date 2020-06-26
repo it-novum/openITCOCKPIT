@@ -576,6 +576,7 @@ class GearmanWorkerCommand extends Command {
 
                 if ($payload['hostuuid'] && $payload['hostuuid'] !== '' && isset($MkSatTask) && $MkSatTask !== null && $MkSatTask->hasErrors()) {
                     $return = json_encode($MkSatTask->getErrors());
+                    break;
                 } else {
                     $configfileContent = '';
 
