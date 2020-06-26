@@ -600,7 +600,7 @@ class GearmanWorkerCommand extends Command {
                              */
                             $MkNagiosExportTask->init();
                             $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
-                                'for_snmp_scan' => true,
+                                'for_snmp_scan' => false,
                                 'host_address'  => $payload['host_address'],
                             ], false));
                             break;
@@ -639,7 +639,7 @@ class GearmanWorkerCommand extends Command {
                              */
                             $MkNagiosExportTask->init();
                             $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
-                                'for_snmp_scan' => true,
+                                'for_snmp_scan' => false,
                                 'host_address'  => $payload['host_address'],
                             ], false));
                             break;
