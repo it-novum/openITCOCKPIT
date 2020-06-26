@@ -799,7 +799,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                             <?php echo __('Delete'); ?>
                         </button>
                         <button type="button" class="btn btn-primary" ng-show="containerNotEmpty"
-                                ui-sref="ContainersShowDetails({id:containerId})"><?= __('Show Details'); ?></button>
+                                ng-click="showDetailedView(containerId)"><?= __('Show Details'); ?></button>
                         <div ng-repeat="error in errors.id">
                             <div class="help-block text-danger">{{ error }}</div>
                         </div>

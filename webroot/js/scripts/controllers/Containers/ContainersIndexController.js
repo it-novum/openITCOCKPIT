@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ContainersIndexController', function($scope, $http, $timeout, $stateParams, NotyService){
+    .controller('ContainersIndexController', function($scope, $http, $timeout, $stateParams, NotyService, $state){
 
         $scope.init = true;
         $scope.selectedContainerTypeId = null;
@@ -198,6 +198,13 @@ angular.module('openITCOCKPIT')
                 }
             );
         };
+
+        $scope.showDetailedView = function(containerId){
+            $('#angularEditNodeModal').modal('hide');
+            $state.go('ContainersShowDetails', {
+                id: containerId
+            });
+        }
 
         $scope.load();
 
