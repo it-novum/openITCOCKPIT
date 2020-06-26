@@ -44,6 +44,7 @@ use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use CheckmkModule\Command\CheckmkNagiosExportCommand;
 use CheckmkModule\Lib\MkParser;
+use CheckmkModule\Model\Table\MkSatTasksTable;
 use DistributeModule\Model\Table\SatellitesTable;
 use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigDefaults;
@@ -207,11 +208,20 @@ class GearmanWorkerCommand extends Command {
 
         $payload = $job->workload();
 
+        //JSON decode support for goNSTA responses
+        try {
+            $payloadFromJSON = json_decode($payload, true);
+        } catch (\Exception $e) {
+            $payloadFromJSON = '';
+        }
         $payload = @unserialize($payload);
 
         if (!is_array($payload)) {
-            Log::error('GearmanWorker received corrupted data: ' . (string)$payload);
-            return serialize(['error' => 'Corrupt data']);
+            if (!is_array($payloadFromJSON)) {
+                Log::error('GearmanWorker received corrupted data: ' . (string)$payload);
+                return serialize(['error' => 'Corrupt data']);
+            }
+            $payload = $payloadFromJSON;
         }
 
         $return = [];
@@ -361,7 +371,7 @@ class GearmanWorkerCommand extends Command {
                 $MkNagiosExportTask->init();
                 $MkNagiosExportTask->createConfigFiles($payload['hostUuid'], [
                     'for_snmp_scan' => true, //Hacky but works -.-
-                    'host_address'  => $payload['hostaddress'],
+                    'host_address'  => $payload['host_address'],
                 ], false);
 
                 if ($payload['satellite_id'] != 0 && Plugin::isLoaded('DistributeModule')) {
@@ -467,9 +477,18 @@ class GearmanWorkerCommand extends Command {
                 break;
 
             case 'CheckmkSatResult':
+                /** @var MkSatTasksTable $MkSatTasksTable */
                 $MkSatTasksTable = TableRegistry::getTableLocator()->get('CheckmkModule.MkSatTasks');
-                $result = json_decode($payload['result'], true);
-                $MkSatTask = $MkSatTasksTable->get($result['ScanID']);
+                if (!$MkSatTasksTable->existsById($payload['ScanID'])) {
+                    break;
+                }
+                $MkSatTask = $MkSatTasksTable->get($payload['ScanID']);
+
+                if (isset($payload['Error']) && trim($payload['Error']) !== "") {
+                    $MkSatTask = $MkSatTasksTable->patchEntity($MkSatTask, ['error' => trim($payload['Error'])]);
+                    $MkSatTasksTable->save($MkSatTask);
+                    break;
+                }
 
                 /** @var MkParser $MkParser */
                 $MkParser = new MkParser();
@@ -487,10 +506,10 @@ class GearmanWorkerCommand extends Command {
                                 "dumpHostResult": ''
                             }
                          */
-                        $CheckMKListChecksResult = $result['CheckTypesResult'];
-                        $CheckMKSNMPResult = $result['DumpHostResult'];
-                        $mkListRaw = $CheckMKListChecksResult;
-                        $MkCheckList = $MkParser->parseMkListChecks($mkListRaw);
+                        $CheckMKListChecksResult = explode(PHP_EOL, $payload['CheckTypesResult']); //was $mkListRaw
+                        $CheckMKSNMPResult = explode(PHP_EOL, $payload['DumpHostResult']);
+
+                        $MkCheckList = $MkParser->parseMkListChecks($CheckMKListChecksResult);
                         $scanResult = $MkParser->parseMkDumpOutput($CheckMKSNMPResult);
                         $scanResult = $MkParser->compareDumpWithList($scanResult, $MkCheckList, 'tcp', ['ps', 'service']);
 
@@ -509,10 +528,10 @@ class GearmanWorkerCommand extends Command {
                                 "dumpHostResult": ''
                             }
                          */
-                        $CheckMKListChecksResult = $result['CheckTypesResult'];
-                        $CheckMKSNMPResult = $result['DumpHostResult'];
-                        $mkListRaw = $CheckMKListChecksResult;
-                        $MkCheckList = $MkParser->parseMkListChecks($mkListRaw);
+                        $CheckMKListChecksResult = explode(PHP_EOL, $payload['CheckTypesResult']); //was $mkListRaw
+                        $CheckMKSNMPResult = explode(PHP_EOL, $payload['DumpHostResult']);
+
+                        $MkCheckList = $MkParser->parseMkListChecks($CheckMKListChecksResult);
                         $scanResult = $MkParser->parseMkDumpOutput($CheckMKSNMPResult);
                         $scanResult = $MkParser->compareDumpWithList($scanResult, $MkCheckList, 'snmp');
 
@@ -530,7 +549,7 @@ class GearmanWorkerCommand extends Command {
                                 "rawInfoResult": ''
                             }
                          */
-                        $MkSatTask = $MkSatTasksTable->patchEntity($MkSatTask, ['result' => json_encode($result['RawInfoResult'])]);
+                        $MkSatTask = $MkSatTasksTable->patchEntity($MkSatTask, ['result' => json_encode(['raw' => $payload['RawInfoResult']])]);
                         $MkSatTasksTable->save($MkSatTask);
                         break;
                 }
@@ -543,15 +562,21 @@ class GearmanWorkerCommand extends Command {
                 /** @var SystemsettingsTable $SystemsettingsTable */
                 $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
                 $systemsettings = $SystemsettingsTable->findAsArray();
+                /** @var MkSatTasksTable $MkSatTasksTable */
                 $MkSatTasksTable = TableRegistry::getTableLocator()->get('CheckmkModule.MkSatTasks');
-                $MkSatTask = $MkSatTasksTable->newEntity([
-                    'satelliteId' => intval($payload['satellite_id']),
-                    'hostuuid'    => $payload['hostuuid'],
-                    'task'        => $payload['task']
-                ]);
-                $MkSatTasksTable->save($MkSatTask);
-                if ($MkSatTask->hasErrors()) {
+
+                if ($payload['hostuuid'] && $payload['hostuuid'] !== '') {
+                    $MkSatTask = $MkSatTasksTable->newEntity([
+                        'satelliteId' => intval($payload['satellite_id']),
+                        'hostuuid'    => $payload['hostuuid'],
+                        'task'        => $payload['cmk_task']
+                    ]);
+                    $MkSatTasksTable->save($MkSatTask);
+                }
+
+                if ($payload['hostuuid'] && $payload['hostuuid'] !== '' && isset($MkSatTask) && $MkSatTask !== null && $MkSatTask->hasErrors()) {
                     $return = json_encode($MkSatTask->getErrors());
+                    break;
                 } else {
                     $configfileContent = '';
 
@@ -559,41 +584,40 @@ class GearmanWorkerCommand extends Command {
                         'SatelliteID' => intval($payload['satellite_id']),
                         'Command'     => 'checkmk',
                         'Data'        => [
-                            'ScanID'   => intval($MkSatTask->get('id')),
+                            'ScanID'   => (isset($MkSatTask) && $MkSatTask !== null) ? intval($MkSatTask->get('id')) : 0,
                             'Hostuuid' => $payload['hostuuid'],
-                            'Task'     => $payload['task'],
+                            'Task'     => $payload['cmk_task'],
                             'File'     => $configfileContent,
                             'FilePath' => $systemsettings['CHECK_MK']['CHECK_MK.ETC'] . 'conf.d/' . $payload['hostuuid'] . '.mk'
                         ]
                     ];
 
-
-                    switch ($payload['task']) {
+                    switch ($payload['cmk_task']) {
                         case 'health-scan':
                             /*  mkdir -p /opt/openitc/check_mk/var/check_mk/autochecks; rm -rf /opt/openitc/check_mk/var/check_mk/autochecks/*
                              *  PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk OMD_SITE=1 /opt/openitc/check_mk/bin/check_mk -II {hostuuid} >/dev/null
                              *  PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk OMD_SITE=1 /opt/openitc/check_mk/bin/check_mk -D {hostuuid}
                              */
                             $MkNagiosExportTask->init();
-                            $NSTAOptions['Data']['File'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
-                                'for_snmp_scan' => true,
+                            $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
+                                'for_snmp_scan' => false,
                                 'host_address'  => $payload['host_address'],
-                            ], false);
+                            ], false));
                             break;
                         case 'snmp-scan':
                             //Generate check_mk config file, to run SNMP scan
                             $MkNagiosExportTask->init();
                             if ($payload['snmp_version'] < 3) {
                                 //SNMP V1 and V2
-                                $NSTAOptions['Data']['File'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
+                                $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
                                     'for_snmp_scan'  => true,
                                     'host_address'   => $payload['host_address'],
                                     'snmp_version'   => $payload['snmp_version'],
                                     'snmp_community' => $payload['snmp_community'],
-                                ], false);
+                                ], false));
                             } else {
                                 //SNMP V3
-                                $NSTAOptions['Data']['File'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
+                                $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
                                     'for_snmp_scan' => true,
                                     'host_address'  => $payload['host_address'],
                                     'snmp_version'  => $payload['snmp_version'],
@@ -605,7 +629,7 @@ class GearmanWorkerCommand extends Command {
                                         'encryption_algorithm' => $payload['v3']['encryption_algorithm'],
                                         'encryption_password'  => $payload['v3']['encryption_password'],
                                     ],
-                                ], false);
+                                ], false));
                             }
 
                             break;
@@ -614,21 +638,26 @@ class GearmanWorkerCommand extends Command {
                              *  PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk OMD_SITE=1 /opt/openitc/check_mk/bin/check_mk -d {hostuuid}
                              */
                             $MkNagiosExportTask->init();
-                            $NSTAOptions['Data']['File'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
-                                'for_snmp_scan' => true,
+                            $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
+                                'for_snmp_scan' => false,
                                 'host_address'  => $payload['host_address'],
-                            ], false);
+                            ], false));
                             break;
                         case 'write-file':
-                            $NSTAOptions['Data']['File'] = $payload['file'];
+                            $NSTAOptions['Data']['File'] = base64_encode($payload['file']);
                             $NSTAOptions['Data']['FilePath'] = $payload['filePath'];
                             break;
                     }
 
+                    Configure::load('gearman');
+                    $gearmanConfig = Configure::read('gearman');
                     $GearmanClient = new \GearmanClient();
-                    $GearmanClient->addTaskBackground('oitc_checkmk_sattx', json_encode($NSTAOptions));
+                    $GearmanClient->addServer($gearmanConfig['address'], $gearmanConfig['port']);
+                    $GearmanClient->doBackground('oitc_checkmk_sattx', json_encode($NSTAOptions));
 
-                    $return = $MkSatTask->get('id');
+                    if (isset($MkSatTask) && $MkSatTask !== null) {
+                        $return = ['id' => $MkSatTask->get('id')];
+                    }
                 }
                 break;
 

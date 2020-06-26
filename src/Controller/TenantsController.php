@@ -279,11 +279,10 @@ class TenantsController extends AppController {
             $this->render403();
             return;
         }
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        if ($TenantsTable->allowDelete($tenant['container']['id'])) {
-
-            /** @var $ContainersTable ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        if ($ContainersTable->allowDelete($tenant['container']['id'], $this->MY_RIGHTS)) {
 
             if ($ContainersTable->delete($ContainersTable->get($tenant['container']['id']))) {
                 Cache::clear('permissions');

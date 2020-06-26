@@ -32,8 +32,8 @@ OCSP = "statusngin_ocsp"
 WorkerCommand = "statusngin_cmd"
 
 # The broker can directly process OCHP/OCSP from another naemon/nagios instance. If you have multiple
-#WorkerOCHP = "statusngin_ochp"
-#WorkerOCSP = "statusngin_ocsp"
+WorkerOCHP = "statusngin_worker_ochp"
+WorkerOCSP = "statusngin_worker_ocsp"
 
 SystemCommandData = "statusngin_systemcommands"
 CommentData = "statusngin_comments"
