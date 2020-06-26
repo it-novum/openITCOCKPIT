@@ -556,10 +556,8 @@ class ServicesController extends AppController {
             $host = $HostsTable->get($hostId);
             $request = $this->request->getData();
             $request['Host'] = [
-                [
-                    'id'   => $host->get('id'),
-                    'name' => $host->get('name')
-                ]
+                'id'   => $host->get('id'),
+                'name' => $host->get('name')
             ];
 
             $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($servicetemplateId);
@@ -598,7 +596,6 @@ class ServicesController extends AppController {
                 //No errors
 
                 $User = new User($this->getUser());
-
                 $extDataForChangelog = $ServicesTable->resolveDataForChangelog($request);
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
