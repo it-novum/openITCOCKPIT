@@ -644,7 +644,7 @@ class GearmanWorkerCommand extends Command {
                             ], false);
                             break;
                         case 'write-file':
-                            $NSTAOptions['Data']['File'] = $payload['file'];
+                            $NSTAOptions['Data']['File'] = base64_encode($payload['file']);
                             $NSTAOptions['Data']['FilePath'] = $payload['filePath'];
                             break;
                     }
