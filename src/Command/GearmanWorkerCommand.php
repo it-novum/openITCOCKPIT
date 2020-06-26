@@ -479,10 +479,16 @@ class GearmanWorkerCommand extends Command {
             case 'CheckmkSatResult':
                 /** @var MkSatTasksTable $MkSatTasksTable */
                 $MkSatTasksTable = TableRegistry::getTableLocator()->get('CheckmkModule.MkSatTasks');
-                if(!$MkSatTasksTable->existsById($payload['ScanID'])){
+                if (!$MkSatTasksTable->existsById($payload['ScanID'])) {
                     break;
                 }
                 $MkSatTask = $MkSatTasksTable->get($payload['ScanID']);
+
+                if (isset($payload['Error']) && trim($payload['Error']) !== "") {
+                    $MkSatTask = $MkSatTasksTable->patchEntity($MkSatTask, ['error' => trim($payload['Error'])]);
+                    $MkSatTasksTable->save($MkSatTask);
+                    break;
+                }
 
                 /** @var MkParser $MkParser */
                 $MkParser = new MkParser();
