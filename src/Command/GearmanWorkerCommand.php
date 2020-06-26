@@ -599,25 +599,25 @@ class GearmanWorkerCommand extends Command {
                              *  PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk OMD_SITE=1 /opt/openitc/check_mk/bin/check_mk -D {hostuuid}
                              */
                             $MkNagiosExportTask->init();
-                            $NSTAOptions['Data']['File'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
+                            $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
                                 'for_snmp_scan' => true,
                                 'host_address'  => $payload['host_address'],
-                            ], false);
+                            ], false));
                             break;
                         case 'snmp-scan':
                             //Generate check_mk config file, to run SNMP scan
                             $MkNagiosExportTask->init();
                             if ($payload['snmp_version'] < 3) {
                                 //SNMP V1 and V2
-                                $NSTAOptions['Data']['File'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
+                                $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
                                     'for_snmp_scan'  => true,
                                     'host_address'   => $payload['host_address'],
                                     'snmp_version'   => $payload['snmp_version'],
                                     'snmp_community' => $payload['snmp_community'],
-                                ], false);
+                                ], false));
                             } else {
                                 //SNMP V3
-                                $NSTAOptions['Data']['File'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
+                                $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
                                     'for_snmp_scan' => true,
                                     'host_address'  => $payload['host_address'],
                                     'snmp_version'  => $payload['snmp_version'],
@@ -629,7 +629,7 @@ class GearmanWorkerCommand extends Command {
                                         'encryption_algorithm' => $payload['v3']['encryption_algorithm'],
                                         'encryption_password'  => $payload['v3']['encryption_password'],
                                     ],
-                                ], false);
+                                ], false));
                             }
 
                             break;
@@ -638,10 +638,10 @@ class GearmanWorkerCommand extends Command {
                              *  PYTHONPATH=/opt/openitc/check_mk/lib/python OMD_ROOT=/opt/openitc/check_mk OMD_SITE=1 /opt/openitc/check_mk/bin/check_mk -d {hostuuid}
                              */
                             $MkNagiosExportTask->init();
-                            $NSTAOptions['Data']['File'] = $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
+                            $NSTAOptions['Data']['File'] = base64_encode($MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
                                 'for_snmp_scan' => true,
                                 'host_address'  => $payload['host_address'],
-                            ], false);
+                            ], false));
                             break;
                         case 'write-file':
                             $NSTAOptions['Data']['File'] = base64_encode($payload['file']);
