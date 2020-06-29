@@ -35,12 +35,14 @@ use Cake\Console\Arguments;
 use Cake\Command\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use Cake\Core\Plugin;
 use Cake\Database\Connection;
 use Cake\Datasource\ConnectionManager;
 use Cake\Mailer\Mailer;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use EventcorrelationModule\Model\Table\EventcorrelationSettingsTable;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigurator;
@@ -139,6 +141,12 @@ class Update3To4Command extends Command {
             'default' => false
         ]);
 
+        $parser->addOption('evc-use-statusengine', [
+            'help'    => __('Set the Statusengine Broker as default submit method for EVC results'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
         return $parser;
     }
 
@@ -206,6 +214,10 @@ class Update3To4Command extends Command {
         if ($args->getOption('migrate-logentries') === true) {
             date_default_timezone_set('UTC');
             $this->migrateLogentries();
+        }
+
+        if ($args->getOption('evc-use-statusengine') === true) {
+            $this->changeEvcSubmitMethod();
         }
     }
 
@@ -1460,5 +1472,19 @@ class Update3To4Command extends Command {
     private function getMicrotime() {
         $microtime = explode(' ', microtime())[0];
         return (int)ltrim($microtime, '0.');
+    }
+
+    private function changeEvcSubmitMethod() {
+        if (Plugin::isLoaded('EventcorrelationModule')) {
+            /** @var EventcorrelationSettingsTable $EventcorrelationSettingsTable */
+            $EventcorrelationSettingsTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.EventcorrelationSettings');
+
+            $settings = $EventcorrelationSettingsTable->find()->first();
+            if ($settings !== null) {
+                $settings->set('monitoring_system', 'statusengine');
+            }
+
+            $EventcorrelationSettingsTable->save($settings);
+        }
     }
 }
