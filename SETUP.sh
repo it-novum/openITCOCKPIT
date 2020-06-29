@@ -303,3 +303,6 @@ fi
 oitc roles --enable-defaults --admin
 
 date > /opt/openitc/etc/.installation_done
+
+/opt/openitc/frontend/UPDATE.sh
+
