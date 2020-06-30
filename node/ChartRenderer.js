@@ -1,5 +1,5 @@
 var express = require('express');
-const ChartjsNode = require('chartjs-node');
+const ChartJs = require('node-chartjs-v12');
 var bodyParser = require('body-parser');
 const util = require('util');
 var moment = require('moment');
@@ -13,7 +13,7 @@ var app = express();
 app.use(bodyParser.json({limit: '500mb'}));
 app.use(bodyParser.urlencoded({limit: '500mb', extended: true}));
 
-app.post('/AreaChart', function(request, response){
+app.post('/AreaChart', async function(request, response){
     //console.log(request.body);      // json data
 
     //If graph appears to be gray in pdf, this is a bug in wkhtmltopdf 12.5-1
@@ -168,27 +168,27 @@ app.post('/AreaChart', function(request, response){
             scales: {
                 yAxes: yAxes,
 
-                xAxes: [{
-                    type: 'time',
-                    ticks: {
-                        fontSize: 10,
-                    },
-                    time: {
-                        min: moment((request.body.settings.graph_start)),
-                        max: moment((request.body.settings.graph_end)),
-                        displayFormats: {
-                            'millisecond': 'SSSS',
-                            'second': 'HH:mm',
-                            'minute': 'HH:mm',
-                            'hour': 'MMM D, HH:mm',
-                            'day': 'MMM DD',
-                            'week': 'MMM DD',
-                            'month': 'MMM DD',
-                            'quarter': 'MMM DD',
-                            'year': 'MMM DD'
-                        }
-                    }
-                }]
+               xAxes: [{
+                   type: 'time',
+                   ticks: {
+                       fontSize: 10,
+                       min: moment((request.body.settings.graph_start)),
+                       max: moment((request.body.settings.graph_end))
+                   },
+                   time: {
+                       displayFormats: {
+                           'millisecond': 'SSSS',
+                           'second': 'HH:mm',
+                           'minute': 'HH:mm',
+                           'hour': 'MMM D, HH:mm',
+                           'day': 'MMM DD',
+                           'week': 'MMM DD',
+                           'month': 'MMM DD',
+                           'quarter': 'MMM DD',
+                           'year': 'MMM DD'
+                       }
+                   }
+               }]
             },
             title: {
                 display: displayTitle,
@@ -203,19 +203,21 @@ app.post('/AreaChart', function(request, response){
 
     //console.log(JSON.stringify(chartJsOptions));
 
-    var chartNode = new ChartjsNode(request.body.settings.width, request.body.settings.height);
-    return chartNode.drawChart(chartJsOptions)
-        .then(function(){
-            //chart is created
-            //get image as png buffer
-            return chartNode.getImageBuffer('image/png');
-        })
-        .then(function(buffer){
-            response.writeHead(200, {'Content-Type': 'image/png'});
-            response.end(buffer, 'binary')
-        })
-        .finally(() => {
-            chartNode.destroy();
-        });
+    var cjs = new ChartJs(request.body.settings.width, request.body.settings.height);
+
+    try{
+        var result = await cjs.makeChart(chartJsOptions);
+        cjs.drawChart();
+
+        var buffer = await cjs.toBuffer();
+        response.writeHead(200, {'Content-Type': 'image/png'});
+        response.end(buffer, 'binary');
+    }catch(e){
+        console.error(e);
+    }
+
+    return response;
+
+
 });
 app.listen(8084, '127.0.0.1');
