@@ -48,6 +48,9 @@ if [[ ! -f "$v3MysqlIni" && $testing == 0 ]]; then
     exit 1;
 fi
 
+MYSQL_USER=$(php -r "echo parse_ini_file('/etc/openitcockpit/mysql.cnf')['user'];")
+MYSQL_DATABASE=$(php -r "echo parse_ini_file('/etc/openitcockpit/mysql.cnf')['database'];")
+
 debug_log(){
     if [ $enableLog == 1 ]; then
         echo "${Blue}${1}" | tr '___' ' '
@@ -168,6 +171,7 @@ check_package_installed_distribute(){
 }
 
 check_mysql_version(){
+    debug_log $(echo "Checking MySQL/MariaDB version ..." | tr ' ' '___')
     mysqlVersion=$(mysql "--defaults-extra-file=$v3MysqlIni" -e "SELECT VERSION();" -B -s 2>/dev/null)
     rc=$?
 
@@ -200,6 +204,30 @@ check_mysql_version(){
           ((okCount++))
         fi
       fi
+    fi
+}
+
+check_mysql_table_sizes(){
+    debug_log $(echo "Checking if any MySQL/MariaDB table is larger than free space is available on /var ..." | tr ' ' '___')
+
+    hasError=0
+    datadir=$(readlink -f $(mysql "--defaults-extra-file=$v3MysqlIni" -e 'show variables like "datadir"' -B | tail -n 1 | awk '{print $2}'))
+    FREEinMb=`df --block-size=1M --output=avail "$datadir" | tail -n1`
+
+
+    while read TABLE_NAME; do
+        tableSizeInMb=$(mysql "--defaults-extra-file=$v3MysqlIni" -e "SELECT round(((data_length + index_length) / 1024 / 1024), 0) AS size FROM \`information_schema\`.\`TABLES\` WHERE \`TABLE_SCHEMA\`='${MYSQL_DATABASE}' AND \`TABLE_NAME\`='${TABLE_NAME}';" -B -s 2>/dev/null)
+
+        if [[ "$FREEinMb" -lt "$tableSizeInMb" ]]; then
+            errors+=($(echo "Table ${TABLE_NAME} is ${tableSizeInMb} MB but $datadir only has ${FREEinMb} MB free disk space." | tr ' ' '___'))
+            ((errorCount++))
+            hasError=1
+        fi
+    done< <(mysql --defaults-extra-file=${v3MysqlIni} --batch --skip-column-names -e "SELECT TABLE_NAME FROM \`information_schema\`.\`TABLES\` WHERE \`TABLE_SCHEMA\`='${MYSQL_DATABASE}';")
+
+    if [[ "$hasError" -eq "0" ]]; then
+        oks+=($(echo "Enough disk space available to convert tables to utf8mb4" | tr ' ' '___'))
+        ((okCount++))
     fi
 
 }
@@ -242,7 +270,11 @@ check_free_disk_space "/"
 check_free_disk_space "/var"
 check_free_disk_space "/opt"
 
+check_mysql_table_sizes
+
 check_aptget_working
+
+check_mysql_version
 
 if [ $isAptWorking == 1 ]; then
     debug_log $(echo "Checking installed openITCOCKPIT modules ..." | tr ' ' '___')
