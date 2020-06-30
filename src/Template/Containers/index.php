@@ -27,12 +27,12 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
         <a ui-sref="DashboardsIndex">
-            <i class="fa fa-link fa-fw"></i> <?php echo __('System'); ?>
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="ContainersIndex">
-            <i class="fas fa-clipboard-list"></i> <?php echo __('Containers'); ?>
+            <i class="fa fa-link"></i> <?php echo __('Containers'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -170,7 +170,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
 
                                             <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
                                                 <a class="text-info padding-left-10 font-xs pointer"
-                                                   ui-sref="ContainersShowDetails({id:$Container.id, tenant:selectedContainer.id})">
+                                                   ui-sref="ContainersShowDetails({id:$Container.id})">
                                                     <i class="fa fa-info"></i>
                                                     <?php echo __('Show details'); ?>
                                                 </a>
@@ -209,7 +209,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
 
                                             <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
                                                 <a class="text-info padding-left-10 font-xs pointer"
-                                                   ui-sref="ContainersShowDetails({id:$Container.id, tenant:selectedContainer.id})">
+                                                   ui-sref="ContainersShowDetails({id:$Container.id})">
                                                     <i class="fa fa-info"></i>
                                                     <?php echo __('Show details'); ?>
                                                 </a>
@@ -248,7 +248,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
 
                                             <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
                                                 <a class="text-info padding-left-10 font-xs pointer"
-                                                   ui-sref="ContainersShowDetails({id:$Container.id, tenant:selectedContainer.id})">
+                                                   ui-sref="ContainersShowDetails({id:$Container.id})">
                                                     <i class="fa fa-info"></i>
                                                     <?php echo __('Show details'); ?>
                                                 </a>
@@ -799,7 +799,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                             <?php echo __('Delete'); ?>
                         </button>
                         <button type="button" class="btn btn-primary" ng-show="containerNotEmpty"
-                                ui-sref="ContainersShowDetails({id:containerId})"><?= __('Show Details'); ?></button>
+                                ng-click="showDetailedView(containerId)"><?= __('Show Details'); ?></button>
                         <div ng-repeat="error in errors.id">
                             <div class="help-block text-danger">{{ error }}</div>
                         </div>

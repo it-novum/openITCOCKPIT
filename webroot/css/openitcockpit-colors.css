@@ -49,11 +49,7 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
     font-size: 11px;
 }
 
-.not-monitored, .text-primary {
-    color: #4285F4 !important;
-}
-
-.bg-not-monitored, .text-primary {
+.text-primary {
     color: #1468f5 !important;
 }
 
@@ -182,6 +178,10 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
 
 .bg-color-black {
     background: #000000;
+}
+
+.bg-not-monitored {
+    background-color: #4285F4 !important;
 }
 
 

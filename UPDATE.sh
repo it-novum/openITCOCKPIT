@@ -153,9 +153,50 @@ for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do
   fi
 done
 
-if [ -d "${APPDIR}/plugins/CheckmkModule/src" ]; then
-    oitc checkmkNagiosExport --init
+echo "---------------------------------------------------------------"
+echo "Import extended openitcockpit-update module scripts ..."
+
+MODULE_SCRIPS_LOCK_DIR="/opt/openitc/var/updatesh_module_locks/"
+MODULES_DIR="${APPDIR}/plugins/"
+DEDICATED_MODULE_SCRIPTS_DIR_NAME="updateScripts"
+LOADED_MODULE_SCRIPTS=()
+
+# include module scripts class header
+echo "Import ${APPDIR}/bin/updatesh_module_scripts/system.h.sh"
+. ${APPDIR}/bin/updatesh_module_scripts/system.h.sh ${APPDIR}/bin/updatesh_module_scripts/
+moduleList=($(ls -A1 $MODULES_DIR*/$DEDICATED_MODULE_SCRIPTS_DIR_NAME/*))
+for entry in "${moduleList[@]}"
+do
+    if [[ $entry =~ \.h.sh$ ]]; then
+        echo "Import $entry"
+        shortName=`basename $entry`
+        realName=${shortName/".h.sh"/""}
+        path=${entry/$shortName/""}
+        LOADED_MODULE_SCRIPTS+=($realName)
+        . $entry $path
+    fi
+done
+
+if type "system.property" &> /dev/null; then
+    system.property lockDir = $MODULE_SCRIPS_LOCK_DIR
+    system.property modulesDir = $MODULES_DIR
+    system.initialize
 fi
+
+for Module in "${LOADED_MODULE_SCRIPTS[@]}"; do
+    if [ "$Module" != "system" ]; then
+        if type "${Module}" &> /dev/null; then
+            # create class object
+            ${Module} module
+
+            # set required variables
+            module.property name = "${Module}"
+            module.property dbIniFile = "${Module}"
+
+            module.initialize
+        fi
+    fi
+done
 
 echo "---------------------------------------------------------------"
 echo "Convert MySQL Tables from utf8_general_ci to utf8mb4_general_ci..."
@@ -252,7 +293,7 @@ fi
 chmod +x /usr/bin/oitc
 
 echo "Create required system folders"
-mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,phpnsta,statusengine} /opt/openitc/etc/statusengine/Config
+mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nsta,nagios,statusengine} /opt/openitc/etc/statusengine/Config
 
 mkdir -p /opt/openitc/logs/frontend/nagios
 chown www-data:www-data /opt/openitc/logs/frontend
@@ -295,8 +336,7 @@ PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
 # Restart services if they are running
-# Nagios/Naemon is aliased, so it works for both
-for srv in openitcockpit-graphing.service statusengine.service nagios.service nginx.service phpnsta.service supervisor.service; do
+for srv in openitcockpit-graphing.service nginx.service nsta.service; do
   if systemctl is-active --quiet $srv; then
     echo "Restart service: $srv"
     systemctl restart $srv
@@ -319,8 +359,17 @@ else
   fi
 fi
 
-if [ -d "${APPDIR}/plugins/SnmpTrapModule/src" ]; then
-    echo "Detected SnmpTrapModule: try to restart snmptrapd and snmptt"
-    systemctl enable snmptrapd.service snmptt.service
-    systemctl restart snmptrapd.service snmptt.service
-fi
+for Module in "${LOADED_MODULE_SCRIPTS[@]}"; do
+    if [ "$Module" != "system" ]; then
+        if type "${Module}" &> /dev/null; then
+            # create class object
+            ${Module} module
+
+            # set required variables
+            module.property name = "${Module}"
+            module.property dbIniFile = "${Module}"
+
+            module.finish
+        fi
+    fi
+done

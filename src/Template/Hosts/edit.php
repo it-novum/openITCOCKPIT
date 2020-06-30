@@ -70,7 +70,7 @@
                 <div class="panel-content">
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
-                            {objectName : '<?php echo __('Host'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+                            {objectName : '<?php echo __('Host'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
 
                         <!-- BASIC CONFIGURATION START -->
 
