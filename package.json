@@ -46,9 +46,9 @@
         "spectrum-colorpicker2": "^2.0.0    ",
         "tsparticles": "^1.15.2",
         "underscore": "^1.9.1",
-        "vis-data": "^6.4.1",
-        "vis-network": "^7.3.5",
-        "vis-timeline": "^7.1.3"
+        "vis-data": "^6.6.1",
+        "vis-network": "^7.8.0",
+        "vis-timeline": "^7.3.7"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",

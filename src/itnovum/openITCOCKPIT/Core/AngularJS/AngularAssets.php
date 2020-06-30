@@ -126,7 +126,7 @@ class AngularAssets implements AngularAssetsInterface {
         '/node_modules/animate.css/animate.min.css',
         '/node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.css',
         '/node_modules/spectrum-colorpicker2/dist/spectrum.min.css',
-        '/node_modules/vis-network/dist/vis-network.min.css',
+        '/node_modules/vis-network/dist/dist/vis-network.min.css',
         '/node_modules/vis-timeline/dist/vis-timeline-graph2d.css',
         '/node_modules/noty/lib/noty.css',
         '/node_modules/angular-flippy/dist/css/angular-flippy.min.css',
