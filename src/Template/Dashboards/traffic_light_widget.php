@@ -74,8 +74,6 @@
                     <div class="custom-control custom-checkbox  margin-bottom-10">
                         <input type="checkbox"
                                class="custom-control-input"
-                               ng-true-value="1"
-                               ng-false-value="0"
                                id="showLabel{{widget.id}}"
                                ng-model="trafficlight.show_label">
                         <label class="custom-control-label" for="showLabel{{widget.id}}">
