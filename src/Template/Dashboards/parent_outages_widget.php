@@ -43,32 +43,28 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-xs-12 padding-0">
-        <table class="table table-striped table-hover table-bordered">
-            <tbody>
-            <tr ng-repeat="host in parentOutages">
-                <td class="text-center">
-                    <hoststatusicon host="host"></hoststatusicon>
-                </td>
-                <td class="padding-5">
-                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                        <a ui-sref="HostsBrowser({id: host.Hosts.id})">
-                            {{host.Hosts.name}}
-                        </a>
-                    <?php else: ?>
-                        {{host.Hosts.name}}
-                    <?php endif; ?>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <div class="col-xs-12 text-center txt-color-red italic"
-             ng-show="parentOutages.length == 0 && filter.Host.name != ''">
-            <?php echo __('No entries match the selection'); ?>
-        </div>
 
-    </div>
+<table class="table table-striped table-hover table-bordered table-sm">
+    <tbody>
+    <tr ng-repeat="host in parentOutages">
+        <td class="text-center">
+            <hoststatusicon host="host"></hoststatusicon>
+        </td>
+        <td class="padding-5">
+            <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                <a ui-sref="HostsBrowser({id: host.Hosts.id})">
+                    {{host.Hosts.name}}
+                </a>
+            <?php else: ?>
+                {{host.Hosts.name}}
+            <?php endif; ?>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div class="col-xs-12 text-center txt-color-red italic"
+     ng-show="parentOutages.length == 0 && filter.Host.name != ''">
+    <?php echo __('No entries match the selection'); ?>
 </div>
 
 

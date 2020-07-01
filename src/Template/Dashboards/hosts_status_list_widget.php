@@ -168,8 +168,8 @@
                 <i class="fa fa-power-off"
                    title="<?php echo __('is in downtime'); ?>"></i>
             </th>
-            <th class="no-sort" ng-click="orderBy('Host.name')">
-                <i class="fa" ng-class="getSortClass('Host.name')"></i>
+            <th class="no-sort" ng-click="orderBy('Hosts.name')">
+                <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                 <?php echo __('Host name'); ?>
             </th>
             <th class="no-sort" ng-click="orderBy('Hoststatus.last_state_change')">
