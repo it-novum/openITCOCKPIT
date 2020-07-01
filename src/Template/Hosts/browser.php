@@ -238,17 +238,22 @@ use Cake\Core\Plugin;
                         <div class="row">
                             <div
                                 class="col-xs-12 col-sm-6 col-md-7 col-lg-9 padding-bottom-10 padding-left-10 padding-right-10">
-
-                                <div class="row" ng-show="mergedHost.disabled">
-                                    <div
-                                        class="col-lg-12 bg-warning browser-border margin-bottom-10 margin-left-10 padding-5">
-                                        <h4>
-                                            <i class="fa fa-plug"></i>
-                                            <?php echo __('This host is currently disabled!'); ?>
-                                        </h4>
+                                <div class="alert alert-danger opacity-80 margin-bottom-5" role="alert" ng-show="mergedHost.disabled">
+                                    <div class="d-flex align-items-center">
+                                        <div class="alert-icon width-3">
+                                            <div class="icon-stack  icon-stack-sm">
+                                                <i class="base base-9 icon-stack-3x opacity-100 text-danger"></i>
+                                                <i class="fa fa-plug icon-stack-1x opacity-100 color-white"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <span class="h5">
+                                                <?= __('Attention!'); ?>
+                                            </span>
+                                            <?= __('This host is currently disabled!'); ?>
+                                        </div>
                                     </div>
                                 </div>
-
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <h3 class="margin-top-5"><?php echo __('Status overview'); ?></h3>
@@ -367,7 +372,7 @@ use Cake\Core\Plugin;
 
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-9">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered table-sm">
                                             <tr>
                                                 <td><?php echo __('Check command'); ?></td>
                                                 <td>
@@ -401,7 +406,7 @@ use Cake\Core\Plugin;
                                     </div>
 
                                     <div class="col-xs-12 col-sm-12 col-md-3">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered table-sm">
                                             <tr>
                                                 <td><?php echo __('Check period'); ?></td>
                                                 <td>
@@ -444,7 +449,7 @@ use Cake\Core\Plugin;
 
 
                                     <div class="col-xs-12 col-sm-12">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered table-sm">
                                             <tr>
                                                 <th class="width-130"><?php echo __('Parent host state'); ?></th>
                                                 <th><?php echo __('Parent host name'); ?></th>
@@ -494,7 +499,7 @@ use Cake\Core\Plugin;
 
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-6">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered table-sm">
                                             <tr ng-show="mergedHost.contacts.length">
                                                 <td><?php echo __('Contacts'); ?></td>
                                                 <td>
@@ -534,7 +539,7 @@ use Cake\Core\Plugin;
                                     </div>
 
                                     <div class="col-xs-12 col-sm-12 col-md-6">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered table-sm">
                                             <tr>
                                                 <td><?php echo __('Notification period'); ?></td>
                                                 <td>{{ notifyPeriod.name }}</td>
@@ -600,7 +605,8 @@ use Cake\Core\Plugin;
 
                             </div>
                             <div class="col-sm-6 col-md-5 col-lg-3 no-padding d-none d-sm-block"
-                                 ng-class="{'browser-state-green': stateIsUp(), 'browser-state-red': stateIsDown(), 'browser-state-gray': stateIsUnreachable(), 'browser-state-blue': stateIsNotInMonitoring()}"
+                                 ng-class="{'browser-state-green': stateIsUp(), 'browser-state-red': stateIsDown(),
+                                 'browser-state-gray': stateIsUnreachable(), 'browser-state-blue browser-not-monitored': stateIsNotInMonitoring()}"
                                  ng-if="hoststatus">
 
                                 <div class="text-center txt-color-white">
@@ -727,7 +733,7 @@ use Cake\Core\Plugin;
                                         <h3 class="margin-top-0"><?php echo __('Host overview'); ?></h3>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-6">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered table-sm">
                                             <tr>
                                                 <td><?php echo __('IP address'); ?></td>
                                                 <td>{{ mergedHost.address }}</td>
@@ -751,7 +757,7 @@ use Cake\Core\Plugin;
                                     </div>
 
                                     <div class="col-xs-12 col-sm-12 col-md-6">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered table-sm">
                                             <tr>
                                                 <td><?php echo __('Priority'); ?></td>
                                                 <td>

@@ -1239,3 +1239,10 @@ label.menu-open-button:hover {
     margin-right: auto;
     display: block;
 }
+
+.browser-not-monitored {
+    justify-content: center;
+    display: flex !important;
+    flex-direction: column;
+    word-spacing: 100vw;
+}

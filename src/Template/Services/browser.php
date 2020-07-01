@@ -108,7 +108,9 @@ use Cake\Core\Plugin;
                     <div ng-show="selectedTab == 'tab1'" class="tab-panel">
                         <!-- status overview for small resolutions -->
                         <div class="d-sm-none"
-                             ng-class="{'browser-state-green': stateIsOk(), 'browser-state-yellow': stateIsWarning(), 'browser-state-red': stateIsCritical(), 'browser-state-gray': stateIsUnknown(), 'browser-state-blue': stateIsNotInMonitoring()}"
+                             ng-class="{'browser-state-green': stateIsOk(), 'browser-state-yellow': stateIsWarning(),
+                             'browser-state-red': stateIsCritical(), 'browser-state-gray': stateIsUnknown(),
+                             'browser-state-blue': stateIsNotInMonitoring()}"
                              ng-if="servicestatus">
                             <div class="row">
                                 <div class="col-6 padding-left-25">
@@ -232,14 +234,20 @@ use Cake\Core\Plugin;
                         <div class="row" style="display: flex;">
                             <div
                                 class="col-xs-12 col-sm-6 col-md-7 col-lg-9 padding-bottom-10 padding-left-10 padding-right-10">
-
-                                <div class="row" ng-show="mergedService.disabled">
-                                    <div
-                                        class="col-lg-12 bg-warning browser-border margin-bottom-10 margin-left-10 padding-5">
-                                        <h4>
-                                            <i class="fa fa-plug"></i>
-                                            <?php echo __('This service is currently disabled!'); ?>
-                                        </h4>
+                                <div class="alert alert-danger opacity-80 margin-bottom-5" role="alert" ng-show="mergedService.disabled">
+                                    <div class="d-flex align-items-center">
+                                        <div class="alert-icon width-3">
+                                            <div class="icon-stack  icon-stack-sm">
+                                                <i class="base base-9 icon-stack-3x opacity-100 text-danger"></i>
+                                                <i class="fa fa-plug icon-stack-1x opacity-100 color-white"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <span class="h5">
+                                                <?= __('Attention!'); ?>
+                                            </span>
+                                            <?= __('This service is currently disabled!'); ?>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -435,7 +443,7 @@ use Cake\Core\Plugin;
                                 <!-- status overview table -->
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-9">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered table-sm">
                                             <tr>
                                                 <td><?php echo __('Check command'); ?></td>
                                                 <td>
@@ -478,7 +486,7 @@ use Cake\Core\Plugin;
                                     </div>
 
                                     <div class="col-xs-12 col-sm-12 col-md-3">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered table-sm">
                                             <tr>
                                                 <td><?php echo __('Check period'); ?></td>
                                                 <td>
@@ -522,7 +530,7 @@ use Cake\Core\Plugin;
 
 
                                     <div class="col-xs-12 col-sm-12">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered table-sm">
                                             <tr>
                                                 <th class="width-130"><?php echo __('Host state'); ?></th>
                                                 <th><?php echo __('Host name'); ?></th>
@@ -606,7 +614,7 @@ use Cake\Core\Plugin;
                                 <!-- Notification overview table -->
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-6">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered table-sm">
                                             <tr ng-show="mergedService.contacts.length">
                                                 <td><?php echo __('Contacts'); ?></td>
                                                 <td>
@@ -646,7 +654,7 @@ use Cake\Core\Plugin;
                                     </div>
 
                                     <div class="col-xs-12 col-sm-12 col-md-6">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered table-sm">
                                             <tr>
                                                 <td><?php echo __('Notification period'); ?></td>
                                                 <td>{{ notifyPeriod.name }}</td>
@@ -718,7 +726,9 @@ use Cake\Core\Plugin;
 
                             </div>
                             <div class="col-sm-6 col-md-5 col-lg-3 no-padding d-none d-sm-block"
-                                 ng-class="{'browser-state-green': stateIsOk(), 'browser-state-yellow': stateIsWarning(), 'browser-state-red': stateIsCritical(), 'browser-state-gray': stateIsUnknown(), 'browser-state-blue': stateIsNotInMonitoring()}"
+                                 ng-class="{'browser-state-green': stateIsOk(), 'browser-state-yellow': stateIsWarning(),
+                                 'browser-state-red': stateIsCritical(), 'browser-state-gray': stateIsUnknown(),
+                                 'browser-state-blue browser-not-monitored': stateIsNotInMonitoring()}"
                                  ng-if="servicestatus">
 
                                 <div class="text-center txt-color-white">
@@ -845,7 +855,7 @@ use Cake\Core\Plugin;
                                         <h3 class="margin-top-0"><?php echo __('Service overview'); ?></h3>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-6">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered table-sm">
                                             <tr>
                                                 <td><?php echo __('Host ip address'); ?></td>
                                                 <td>{{ host.Host.address }}</td>
@@ -869,7 +879,7 @@ use Cake\Core\Plugin;
                                     </div>
 
                                     <div class="col-xs-12 col-sm-12 col-md-6">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered table-sm">
                                             <tr>
                                                 <td><?php echo __('Priority'); ?></td>
                                                 <td>
@@ -917,7 +927,7 @@ use Cake\Core\Plugin;
                                     </div>
 
                                     <div class="col-lg-12">
-                                        <table class="table table-bordered">
+                                        <table class="table table-bordered table-sm">
                                             <tr ng-show="tags.length">
                                                 <td><?php echo __('Tags'); ?></td>
                                                 <td>
