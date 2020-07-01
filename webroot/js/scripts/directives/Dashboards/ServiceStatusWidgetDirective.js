@@ -247,6 +247,15 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                     save: true
                 });
             });
+
+            $scope.$watch('sort', function(){
+                if($scope.init === true){
+                    return true;
+                }
+                $scope.load({
+                    save: true
+                });
+            });
         },
         link: function($scope, element, attr){
 

@@ -241,6 +241,15 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                 });
             });
 
+            $scope.$watch('sort', function(){
+                if($scope.init === true){
+                    return true;
+                }
+                $scope.load({
+                    save: true
+                });
+            });
+
 
         },
 
