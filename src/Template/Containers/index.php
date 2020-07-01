@@ -316,34 +316,34 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                         </span>
                                     </div>
 
-                                    <span class="badge bg-color-blue txt-color-white pull-right"
+                                    <span class="badge border border-primary text-primary pull-right"
                                           ng-if="($Container.containertype_id == <?php echo CT_GLOBAL; ?> ||
                                                   $Container.containertype_id == <?php echo CT_TENANT; ?> ||
                                                   $Container.containertype_id == <?php echo CT_LOCATION; ?> ||
                                                   $Container.containertype_id == <?php echo CT_NODE; ?>)">
-                                        {{ $Container.elements }}
+                                        <?= __('Sub containers:') ?> {{ $Container.elements }}
                                     </span>
 
                                     <span class="pull-right"
                                           ng-if="$Container.containertype_id == <?php echo CT_CONTACTGROUP; ?>">
-                                        <i class="fa fa-user"></i> {{ $Container.contacts }}
+                                        <i class="fa fa-user" title="<?= __('Contacts') ?>"></i> {{ $Container.contacts }}
                                     </span>
 
                                     <span class="pull-right"
                                           ng-if="$Container.containertype_id == <?php echo CT_HOSTGROUP; ?>">
-                                        <i class="fa fa-desktop"></i> {{ $Container.hosts }}
-                                        <i class="fa fa-pencil-square-o"></i> {{ $Container.hosttemplates }}
+                                        <i class="fa fa-desktop" title="<?= __('Hosts') ?>"></i> {{ $Container.hosts }}
+                                        <i class="fa fa-pencil-square-o" title="<?= __('Host templates') ?>"></i> {{ $Container.hosttemplates }}
                                     </span>
 
                                     <span class="pull-right"
                                           ng-if="$Container.containertype_id == <?php echo CT_SERVICEGROUP; ?>">
-                                        <i class="fa fa-cog"></i> {{ $Container.services }}
-                                        <i class="fa fa-pencil-square-o"></i> {{ $Container.servicetemplates }}
+                                        <i class="fa fa-cog" title="<?= __('Services') ?>"></i> {{ $Container.services }}
+                                        <i class="fa fa-pencil-square-o" title="<?= __('Service templates') ?>"></i> {{ $Container.servicetemplates }}
                                     </span>
 
-                                    <span class="pull-right"
+                                    <span class="pull-right" title="<?= __('Service template groups') ?>"
                                           ng-if="$Container.containertype_id == <?php echo CT_SERVICETEMPLATEGROUP; ?>">
-                                        <i class="fa fa-pencil-square-o"></i> {{ $Container.servicetemplates }}
+                                        <i class="fa fa-pencil-square-o" title="<?= __('Service templates') ?>"></i> {{ $Container.servicetemplates }}
                                     </span>
                                 </div>
                             </div>

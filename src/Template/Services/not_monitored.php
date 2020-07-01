@@ -227,7 +227,7 @@
                                             <a ng-if="service.Service.allow_edit"
                                                class="dropdown-item"
                                                href="javascript:void(0);"
-                                               ng-click="confirmDeactivate(getObjectForDelete(host, service))">
+                                               ng-click="confirmDeactivate(getObjectForDelete(service))">
                                                 <i class="fa fa-plug"></i>
                                                 <?php echo __('Disable'); ?>
                                             </a>
@@ -239,7 +239,7 @@
                                         <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                             <div class="dropdown-divider"></div>
                                             <a href="javascript:void(0);"
-                                               ng-click="confirmDelete(getObjectForDelete(host, service))"
+                                               ng-click="confirmDelete(getObjectForDelete(service))"
                                                ng-if="service.Service.allow_edit"
                                                class="dropdown-item txt-color-red">
                                                 <i class="fa fa-trash"></i>
