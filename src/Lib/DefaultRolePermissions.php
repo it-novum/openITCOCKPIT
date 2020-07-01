@@ -51,7 +51,7 @@ class DefaultRolePermissions {
                 'DeletedHosts'          => ['index'],
                 'Documentations'        => ['view', 'wiki'],
                 'Downtimereports'       => ['index', 'host', 'service'],
-                'Exports'               => ['index'],
+                //'Exports'               => ['index'],
                 'Hostchecks'            => ['index'],
                 'Hostdependencies'      => ['index'],
                 'Hostescalations'       => ['index'],
