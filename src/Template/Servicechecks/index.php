@@ -253,7 +253,8 @@
 
                                 </td>
                                 <td>
-                                    {{ Servicecheck.Servicecheck.output }}
+                                    <div
+                                            ng-bind-html="Servicecheck.Servicecheck.outputHtml | trustAsHtml"></div>
                                 </td>
                                 <td>
                                     {{ Servicecheck.Servicecheck.perfdata }}
