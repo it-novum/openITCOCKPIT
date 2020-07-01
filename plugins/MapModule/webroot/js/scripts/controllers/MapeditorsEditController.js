@@ -1367,12 +1367,12 @@ angular.module('openITCOCKPIT')
             $scope.visableLayers['layer_' + key] = false;
 
             var objectsToHide = [
-                'Mapitem',
-                'Mapline',
-                'Mapgadget',
-                'Mapicon',
-                'Maptext',
-                'Mapsummaryitem'
+                'Mapitems',
+                'Maplines',
+                'Mapgadgets',
+                'Mapicons',
+                'Maptexts',
+                'Mapsummaryitems'
             ];
             for(var arrayKey in objectsToHide){
                 var objectName = objectsToHide[arrayKey];
@@ -1392,12 +1392,12 @@ angular.module('openITCOCKPIT')
             $scope.visableLayers['layer_' + key] = true;
 
             var objectsToHide = [
-                'Mapitem',
-                'Mapline',
-                'Mapgadget',
-                'Mapicon',
-                'Maptext',
-                'Mapsummaryitem'
+                'Mapitems',
+                'Maplines',
+                'Mapgadgets',
+                'Mapicons',
+                'Maptexts',
+                'Mapsummaryitems'
             ];
             for(var arrayKey in objectsToHide){
                 var objectName = objectsToHide[arrayKey];

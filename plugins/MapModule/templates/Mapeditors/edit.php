@@ -411,8 +411,6 @@
 
                                 <input type="checkbox"
                                        class="custom-control-input"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
                                        id="addEditElShowLabel"
                                        ng-model="currentItem.show_label">
                                 <label class="custom-control-label" for="addEditElShowLabel">
@@ -693,8 +691,6 @@
 
                             <input type="checkbox"
                                    class="custom-control-input"
-                                   ng-true-value="1"
-                                   ng-false-value="0"
                                    id="addEditElShowLabel"
                                    ng-model="currentItem.show_label">
                             <label class="custom-control-label" for="addEditElShowLabel">
@@ -969,8 +965,6 @@
 
                             <input type="checkbox"
                                    class="custom-control-input"
-                                   ng-true-value="1"
-                                   ng-false-value="0"
                                    id="addEditElShowLabel"
                                    ng-model="currentItem.show_label">
                             <label class="custom-control-label" for="addEditElShowLabel">
@@ -1641,8 +1635,6 @@
                              ng-class="{'has-error': errors.show_label}">
                             <input type="checkbox"
                                    class="custom-control-input"
-                                   ng-true-value="1"
-                                   ng-false-value="0"
                                    id="addEditElShowLabel"
                                    ng-model="currentItem.show_label">
                             <label class="custom-control-label" for="addEditElShowLabel">
