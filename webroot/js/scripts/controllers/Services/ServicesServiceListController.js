@@ -6,7 +6,8 @@ angular.module('openITCOCKPIT')
         $scope.currentPage = 1;
 
         $scope.data = {
-            hostId: parseInt($stateParams.id)
+            hostId: parseInt($stateParams.id),
+            hostname: ''
         };
 
         $scope.massChange = {};
@@ -101,6 +102,10 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.services = [];
                 $scope.services = result.data.all_services;
+
+                if($scope.services.length > 0){
+                    $scope.data.hostname = $scope.services[0].Service.hostname;
+                }
 
                 $scope.paging = result.data.paging;
                 $scope.init = false;

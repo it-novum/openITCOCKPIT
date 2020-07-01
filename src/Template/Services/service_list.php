@@ -104,8 +104,8 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Services'); ?>
-                    <span class="fw-300"><i><?php echo __('of Host'); ?></i></span>
+                    <?php echo __('Services of Host'); ?>
+                    <span class="fw-300"><i>{{data.hostname}}</i></span>
                 </h2>
                 <div class="panel-toolbar">
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
