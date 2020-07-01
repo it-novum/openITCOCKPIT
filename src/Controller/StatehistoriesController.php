@@ -37,6 +37,7 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Request\StatehistoryControllerRequest;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -97,8 +98,14 @@ class StatehistoriesController extends AppController {
         $all_statehistories = [];
         foreach ($StatehistoryHostsTable->getStatehistoryIndex($Conditions, $PaginateOMat) as $statehistory) {
             $StatehistoryHost = new StatehistoryHost($statehistory, $UserTime);
+            $StatehistoryHostArray = $StatehistoryHost->toArray();
+
+            //Parse BBCode in output
+            $BBCodeParser = new BBCodeParser();
+            $StatehistoryHostArray['outputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($StatehistoryHost->getOutput(), true));
+
             $all_statehistories[] = [
-                'StatehistoryHost' => $StatehistoryHost->toArray()
+                'StatehistoryHost' => $StatehistoryHostArray
             ];
         }
 
@@ -162,8 +169,14 @@ class StatehistoriesController extends AppController {
         $all_statehistories = [];
         foreach ($StatehistoryServicesTable->getStatehistoryIndex($Conditions, $PaginateOMat) as $statehistory) {
             $StatehistoryService = new StatehistoryService($statehistory, $UserTime);
+            $StatehistoryServiceArray = $StatehistoryService->toArray();
+
+            //Parse BBCode in output
+            $BBCodeParser = new BBCodeParser();
+            $StatehistoryServiceArray['outputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($StatehistoryService->getOutput(), true));
+
             $all_statehistories[] = [
-                'StatehistoryService' => $StatehistoryService->toArray()
+                'StatehistoryService' => $StatehistoryServiceArray
             ];
         }
 

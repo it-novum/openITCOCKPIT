@@ -25,9 +25,9 @@
 ?>
 
 <host-browser-menu
-    ng-if="hostBrowserMenuConfig"
-    config="hostBrowserMenuConfig"
-    last-load-date="0"></host-browser-menu>
+        ng-if="hostBrowserMenuConfig"
+        config="hostBrowserMenuConfig"
+        last-load-date="0"></host-browser-menu>
 
 <div class="row">
     <div class="col-xl-12">
@@ -61,7 +61,7 @@
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <span
-                                                    class="input-group-text filter-text"><?php echo __('From'); ?></span>
+                                                        class="input-group-text filter-text"><?php echo __('From'); ?></span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    style="padding:0.5rem 0.875rem;"
@@ -89,7 +89,7 @@
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <span
-                                                    class="input-group-text filter-text"><?php echo __('To'); ?></span>
+                                                        class="input-group-text filter-text"><?php echo __('To'); ?></span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    style="padding:0.5rem 0.875rem;"
@@ -237,7 +237,8 @@
 
                                 </td>
                                 <td>
-                                    {{ Hostcheck.Hostcheck.output }}
+                                    <div
+                                            ng-bind-html="Hostcheck.Hostcheck.outputHtml | trustAsHtml"></div>
                                 </td>
                             </tr>
 

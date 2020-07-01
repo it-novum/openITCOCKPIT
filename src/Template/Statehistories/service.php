@@ -251,7 +251,8 @@
 
                                 </td>
                                 <td>
-                                    {{ StatehistoryService.StatehistoryService.output }}
+                                    <div
+                                            ng-bind-html="StatehistoryService.StatehistoryService.outputHtml | trustAsHtml"></div>
                                 </td>
                             </tr>
 

@@ -34,6 +34,7 @@ use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\HostchecksControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostcheckConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
 use itnovum\openITCOCKPIT\Core\Views\Hostcheck;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
@@ -89,8 +90,14 @@ class HostchecksController extends AppController {
             /** @var \Statusengine2Module\Model\Entity\Hostcheck $hostcheck */
             $Hostcheck = new Hostcheck($hostcheck->toArray(), $UserTime);
 
+            $hostcheckArray = $Hostcheck->toArray();
+
+            //Parse BBCode in output
+            $BBCodeParser = new BBCodeParser();
+            $hostcheckArray['outputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($Hostcheck->getOutput(), true));
+
             $all_hostchecks[] = [
-                'Hostcheck' => $Hostcheck->toArray()
+                'Hostcheck' => $hostcheckArray
             ];
         }
 

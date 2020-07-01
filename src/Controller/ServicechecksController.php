@@ -36,6 +36,7 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Request\ServicechecksControllerRequest;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\ServicechecksConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
 use itnovum\openITCOCKPIT\Core\Views\Servicecheck;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
@@ -96,9 +97,14 @@ class ServicechecksController extends AppController {
         foreach ($ServicechecksTable->getServicechecks($Conditions, $PaginateOMat) as $servicecheck) {
             /** @var \Statusengine2Module\Model\Entity\Servicecheck $servicecheck */
             $Servicecheck = new Servicecheck($servicecheck->toArray(), $UserTime);
+            $servicecheckArray = $Servicecheck->toArray();
+
+            //Parse BBCode in output
+            $BBCodeParser = new BBCodeParser();
+            $servicecheckArray['outputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($Servicecheck->getOutput(), true));
 
             $all_servicechecks[] = [
-                'Servicecheck' => $Servicecheck->toArray()
+                'Servicecheck' => $servicecheckArray
             ];
         }
 
