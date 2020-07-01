@@ -7,7 +7,7 @@ User=root
 Group=www-data
 Type=simple
 Restart=on-failure
-ExecStart=/usr/bin/nodejs --max-old-space-size=8192 /opt/openitc/frontend/node/ChartRenderer.js
+ExecStart=/usr/bin/node --max-old-space-size=8192 /opt/openitc/frontend/node/ChartRenderer.js
 LimitNOFILE=10000
 LimitNOFILESoft=10000
 RestartSec=30
