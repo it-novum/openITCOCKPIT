@@ -1292,6 +1292,7 @@ class HostsTable extends Table {
             'Hosts.satellite_id',
             'Hosts.container_id',
             'Hosts.tags',
+            'Hosts.disabled'
         ]);
 
         if (!empty($MY_RIGHTS)) {
