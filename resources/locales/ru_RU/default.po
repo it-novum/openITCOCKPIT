@@ -14238,64 +14238,64 @@ msgstr "<i>Системные сбои </i> - это простои самого
 
 #: src/Template/Systemfailures/add.php:69
 msgid "Timeframes defined by System failures will be ignored while report generation."
-msgstr ""
+msgstr "Сроки, определенные системными сбоями, будут игнорироваться при создании отчета."
 
 #: src/Template/Systemfailures/add.php:168
 msgid "Create system failure"
-msgstr ""
+msgstr "Создать системный сбой"
 
 #: src/Template/Systemfailures/index.php:34
 msgid "System Failure"
-msgstr ""
+msgstr "Системный сбой"
 
 #: src/Template/Systemfailures/index.php:50
 msgid "System failures"
-msgstr ""
+msgstr "Системные сбои"
 
 #: src/Template/Systemfailures/index.php:98
 msgid "Filter by first and last name"
-msgstr ""
+msgstr "Фильтр по имени и фамилии"
 
 #: src/Template/Systemfailures/index.php:128
 msgid "End time"
-msgstr ""
+msgstr "Время окончания"
 
 #: src/Template/Systemsettings/index.php:34
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:621
 msgid "System Settings"
-msgstr ""
+msgstr "Настройки системы"
 
 #: src/Template/Systemsettings/index.php:56
 msgid "Do not change values, where you don't know what you are doing!"
-msgstr ""
+msgstr "Не меняйте значения там, где вы не знаете, что делаете!"
 
 #: src/Template/Systemsettings/index.php:80
 msgid "Info"
-msgstr ""
+msgstr "Информация"
 
 #: src/Template/Systemsettings/index.php:126
 msgid "PHP session"
-msgstr ""
+msgstr "PHP сессия"
 
 #: src/Template/Systemsettings/index.php:127
 msgid "PHP LDAP"
-msgstr ""
+msgstr "PHP LDAP"
 
 #: src/Template/Systemsettings/index.php:128
 msgid "SSO"
-msgstr ""
+msgstr "SSO"
 
 #: src/Template/Systemsettings/index.php:135
 msgid "Active Directory LDAP"
-msgstr ""
+msgstr "Active Directory LDAP"
 
 #: src/Template/Systemsettings/index.php:137
 msgid "OpenLDAP"
-msgstr ""
+msgstr "OpenLDAP"
 
 #: src/Template/Systemsettings/index.php:181
 msgid "Click for more information."
-msgstr ""
+msgstr "Нажмите для получения дополнительной информации."
 
 #: src/Template/Tenants/add.php:35
 #: src/Template/Tenants/edit.php:35
@@ -14303,119 +14303,119 @@ msgstr ""
 #: src/Template/Tenants/index.php:50
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:478
 msgid "Tenants"
-msgstr ""
+msgstr "Клиенты"
 
 #: src/Template/Tenants/add.php:165
 msgid "Create tenant"
-msgstr ""
+msgstr "Создать клиента"
 
 #: src/Template/Tenants/edit.php:49
 msgid "Edit tenant:"
-msgstr ""
+msgstr "Изменить клиента"
 
 #: src/Template/Tenants/edit.php:162
 msgid "Update tenant"
-msgstr ""
+msgstr "Обновить клиента"
 
 #: src/Template/Timeperiods/add.php:59
 msgid "Create new time period"
-msgstr ""
+msgstr "Создать новый период времени"
 
 #: src/Template/Timeperiods/add.php:134
 #: src/Template/Timeperiods/edit.php:138
 msgid "In addition to the interval defined by the given time ranges, you are able to add 24x7 days using a calendar. This will only affect the monitoring engine."
-msgstr ""
+msgstr "В дополнение к интервалу, определенному заданными временными диапазонами, вы можете добавить 24x7 дней, используя календарь. Это повлияет только на мониторинг."
 
 #: src/Template/Timeperiods/add.php:141
 #: src/Template/Timeperiods/edit.php:145
 msgid "Time ranges:"
-msgstr ""
+msgstr "Диапазоны времени"
 
 #: src/Template/Timeperiods/add.php:145
 #: src/Template/Timeperiods/edit.php:149
 msgid "Do not enter overlapping timeframes"
-msgstr ""
+msgstr "Не вводите перекрывающиеся временные рамки"
 
 #: src/Template/Timeperiods/add.php:177
 #: src/Template/Timeperiods/edit.php:181
 msgid "(00:00)"
-msgstr ""
+msgstr "(00:00)"
 
 #: src/Template/Timeperiods/add.php:199
 #: src/Template/Timeperiods/edit.php:203
 msgid "(24:00)"
-msgstr ""
+msgstr "(24:00)"
 
 #: src/Template/Timeperiods/add.php:230
 msgid "Create time period"
-msgstr ""
+msgstr "Создать период времени"
 
 #: src/Template/Timeperiods/copy.php:46
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:240
 msgid "Time Periods"
-msgstr ""
+msgstr "Периоды времени"
 
 #: src/Template/Timeperiods/copy.php:47
 msgid "Copy time period/s"
-msgstr ""
+msgstr "Копировать период/ы времени"
 
 #: src/Template/Timeperiods/copy.php:63
 msgid "Source time period:"
-msgstr ""
+msgstr "Исходный период времени:"
 
 #: src/Template/Timeperiods/copy.php:69
 #: src/Template/Timeperiods/index.php:120
 msgid "Time period name"
-msgstr ""
+msgstr "Название периода времени"
 
 #: src/Template/Timeperiods/copy.php:77
 msgid "Name of the new time period"
-msgstr ""
+msgstr "Название нового периода времени"
 
 #: src/Template/Timeperiods/edit.php:59
 msgid "Edit time period:"
-msgstr ""
+msgstr "Изменить период времени"
 
 #: src/Template/Timeperiods/edit.php:234
 msgid "Update time period"
-msgstr ""
+msgstr "Обновить период времени"
 
 #: src/Template/Timeperiods/index.php:82
 msgid "Filter by time period name"
-msgstr ""
+msgstr "Фильтровать по названию периода времени"
 
 #: src/Template/Timeperiods/index.php:95
 msgid "Filter by time period description"
-msgstr ""
+msgstr "Фильтр по описанию периода времени"
 
 #: src/Template/Timeperiods/used_by.php:246
 msgid "Autoreports"
-msgstr ""
+msgstr "Авто отчеты"
 
 #: src/Template/Timeperiods/used_by.php:264
 msgid "This timeperiod is not used by any object"
-msgstr ""
+msgstr "Этот период времени не используется ни одним объектом"
 
 #: src/Template/Usercontainerroles/add.php:35
 #: src/Template/Usercontainerroles/edit.php:35
 #: src/Template/Usercontainerroles/index.php:34
 #: src/Template/Usercontainerroles/index.php:50
 msgid "User container roles"
-msgstr ""
+msgstr "Контейнерные роли пользователя"
 
 #: src/Template/Usercontainerroles/add.php:49
 msgid "Create new user container role"
-msgstr ""
+msgstr "Создать контейнерные роли пользователя"
 
 #: src/Template/Usercontainerroles/add.php:63
 #: src/Template/Usercontainerroles/edit.php:64
 msgid "User container role"
-msgstr ""
+msgstr "Контейнерная роль пользователя"
 
 #: src/Template/Usercontainerroles/add.php:66
 #: src/Template/Usercontainerroles/edit.php:67
 msgid "Role name"
-msgstr ""
+msgstr "Название роли"
 
 #: src/Template/Usercontainerroles/add.php:108
 #: src/Template/Usercontainerroles/edit.php:109
@@ -14426,7 +14426,7 @@ msgstr ""
 #: src/Template/Users/edit.php:99
 #: src/Template/Users/edit.php:143
 msgid "read"
-msgstr ""
+msgstr "читать"
 
 #: src/Template/Usercontainerroles/add.php:116
 #: src/Template/Usercontainerroles/edit.php:117
@@ -14437,30 +14437,30 @@ msgstr ""
 #: src/Template/Users/edit.php:105
 #: src/Template/Users/edit.php:151
 msgid "read/write"
-msgstr ""
+msgstr "читать/писать"
 
 #: src/Template/Usercontainerroles/add.php:128
 msgid "Create user container role"
-msgstr ""
+msgstr "Создать контейнерную роль пользователя"
 
 #: src/Template/Usercontainerroles/edit.php:49
 msgid "Edit user container role:"
-msgstr ""
+msgstr "Изменить роль контейнера пользователя"
 
 #: src/Template/Usercontainerroles/edit.php:125
 msgid "Update user container role"
-msgstr ""
+msgstr "Обновить роль контейнера пользователя"
 
 #: src/Template/Usergroups/add.php:34
 #: src/Template/Usergroups/edit.php:34
 #: src/Template/Usergroups/index.php:34
 #: src/Template/Usergroups/index.php:50
 msgid "User roles"
-msgstr ""
+msgstr "Роли пользователя"
 
 #: src/Template/Usergroups/add.php:48
 msgid "Create new user role"
-msgstr ""
+msgstr "Создать новую роль пользователя"
 
 #: src/Template/Usergroups/add.php:62
 #: src/Template/Usergroups/edit.php:65
@@ -14469,92 +14469,92 @@ msgstr ""
 #: src/Template/Users/edit.php:157
 #: src/Template/Users/index.php:194
 msgid "User role"
-msgstr ""
+msgstr "Роль пользователя"
 
 #: src/Template/Usergroups/add.php:102
 #: src/Template/Usergroups/edit.php:114
 msgid "Filter by controller"
-msgstr ""
+msgstr "Фильтр по контроллеру"
 
 #: src/Template/Usergroups/add.php:114
 #: src/Template/Usergroups/edit.php:126
 msgid "Bulk actions"
-msgstr ""
+msgstr "Массовое исполнение"
 
 #: src/Template/Usergroups/add.php:120
 #: src/Template/Usergroups/edit.php:132
 msgid "Tick all"
-msgstr ""
+msgstr "Отметьте все"
 
 #: src/Template/Usergroups/add.php:125
 #: src/Template/Usergroups/edit.php:137
 msgid "Untick all"
-msgstr ""
+msgstr "Снять все"
 
 #: src/Template/Usergroups/add.php:131
 #: src/Template/Usergroups/edit.php:143
 msgid "Tick all: index"
-msgstr ""
+msgstr "Отметьте все: index"
 
 #: src/Template/Usergroups/add.php:136
 #: src/Template/Usergroups/edit.php:148
 msgid "Untick all: index"
-msgstr ""
+msgstr "Снять все: index"
 
 #: src/Template/Usergroups/add.php:142
 #: src/Template/Usergroups/edit.php:154
 msgid "Tick all: add"
-msgstr ""
+msgstr "Отметьте все: add"
 
 #: src/Template/Usergroups/add.php:147
 #: src/Template/Usergroups/edit.php:159
 msgid "Untick all: add"
-msgstr ""
+msgstr "Снять все: add"
 
 #: src/Template/Usergroups/add.php:153
 #: src/Template/Usergroups/edit.php:165
 msgid "Tick all: edit"
-msgstr ""
+msgstr "Отметьте все: edit"
 
 #: src/Template/Usergroups/add.php:158
 #: src/Template/Usergroups/edit.php:170
 msgid "Untick all: edit"
-msgstr ""
+msgstr "Снять все: edit"
 
 #: src/Template/Usergroups/add.php:164
 #: src/Template/Usergroups/edit.php:176
 msgid "Tick all: delete"
-msgstr ""
+msgstr "Отметьте все: delete"
 
 #: src/Template/Usergroups/add.php:169
 #: src/Template/Usergroups/edit.php:181
 msgid "Untick all: delete"
-msgstr ""
+msgstr "Снять все: delete"
 
 #: src/Template/Usergroups/add.php:180
 #: src/Template/Usergroups/add.php:271
 msgid "Create user role"
-msgstr ""
+msgstr "Создать роль пользователя"
 
 #: src/Template/Usergroups/edit.php:48
 msgid "Edit user role:"
-msgstr ""
+msgstr "Изменить роль пользователя"
 
 #: src/Template/Usergroups/edit.php:98
 #: src/Template/element/host_mass_changes.php:107
 #: src/Template/element/service_mass_changes.php:86
 #: src/Template/element/servicetemplate_mass_changes.php:70
 msgid "Notice!"
-msgstr ""
+msgstr "Уведомление!"
 
 #: src/Template/Usergroups/edit.php:99
 msgid "Permissions of the user role <strong>Administrator</strong> will be set back to default on every update of {0}!"
-msgstr ""
+msgstr "Полномочия роли пользователя <strong>Администратор</strong> будут возвращаться в стандартное состояние при каждом обновлении {0}!"
 
 #: src/Template/Usergroups/edit.php:188
 #: src/Template/Usergroups/edit.php:275
 msgid "Update user role"
-msgstr ""
+msgstr "Обновить роль пользователя"
 
 #: src/Template/Users/add.php:35
 #: src/Template/Users/add_from_ldap.php:35
