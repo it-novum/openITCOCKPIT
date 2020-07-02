@@ -183,7 +183,7 @@ angular.module('openITCOCKPIT')
                                 break;
 
                             default:
-                                value = 'C:\\Program Files\\openitcockpit-agent\\customchecks.cnf';
+                                value = 'C:\\Program Files\\it-novum\\openitcockpit-agent\\customchecks.cnf';
                                 break;
                         }
 

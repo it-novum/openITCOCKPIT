@@ -1142,7 +1142,7 @@
                                                             <?= __('After the installation process is completed you should replace the default openITCOCKPIT Agent configuration with the recently generated configuration.'); ?>
                                                             <br>
                                                             <?= __('Copy and paste the shown configuration file to'); ?>
-                                                            <code ng-show="selectedOs === 'windows'"><?= __('C:\Program Files\openitcockpit-agent\config.cnf'); ?></code>
+                                                            <code ng-show="selectedOs === 'windows'"><?= __('C:\Program Files\it-novum\openitcockpit-agent\config.cnf'); ?></code>
                                                             <code ng-show="selectedOs === 'linux'"><?= __('/etc/openitcockpit-agent/config.cnf'); ?></code>
                                                             <code ng-show="selectedOs === 'macos'"><?= __('/Library/openitcockpit-agent/config.cnf'); ?></code>
                                                         </div>

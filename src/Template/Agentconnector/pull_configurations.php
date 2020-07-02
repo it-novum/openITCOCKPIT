@@ -91,7 +91,7 @@
                 </th>
                 <th class="no-sort" ng-click="orderBy('Agentconfigs.insecure')">
                     <i class="fa" ng-class="getSortClass('Agentconfigs.insecure')"></i>
-                    <?php echo __('Allow insecure'); ?>
+                    <?php echo __('Allow plaintext connections (http)'); ?>
                 </th>
                 <th class="no-sort" ng-click="orderBy('Agentconfigs.proxy')">
                     <i class="fa" ng-class="getSortClass('Agentconfigs.proxy')"></i>
@@ -103,7 +103,7 @@
                 </th>
                 <th class="no-sort" ng-click="orderBy('Agentconfigs.push_noticed')">
                     <i class="fa" ng-class="getSortClass('Agentconfigs.push_noticed')"></i>
-                    <?php echo __('Push noticed'); ?>
+                    <?php echo __('Received data?'); ?>
                 </th>
                 <th class="no-sort text-center">
                     <i class="fa fa-cog"></i>
@@ -119,33 +119,65 @@
                                ng-model="massChange[agent.Agentconfig.id]">
                     <?php endif; ?>
                 </td>
+
                 <td><a ui-sref="HostsBrowser({id: agent.Agentconfig.host.id})">{{agent.Agentconfig.host.name}}</a></td>
+
                 <td>{{agent.Agentconfig.port}}
                 </td>
+
                 <td class="text-center">
-                    <i class="fa fa-lg fa-check" ng-show="agent.Agentconfig.use_https"></i>
-                    <i class="fa fa-lg fa-times-circle"
-                       ng-hide="agent.Agentconfig.use_https"></i>
+                    <span class="label-forced badge-success margin-right-5" title="<?= __('Yes'); ?>"
+                          ng-show="agent.Agentconfig.use_https">
+                        <?= __('Yes'); ?>
+                    </span>
+                    <span class="label-forced badge-danger margin-right-5" title="<?= __('No'); ?>"
+                          ng-hide="agent.Agentconfig.use_https">
+                        <?= __('No'); ?>
+                    </span>
                 </td>
+
                 <td class="text-center">
-                    <i class="fa fa-lg fa-check" ng-show="agent.Agentconfig.insecure"></i>
-                    <i class="fa fa-lg fa-times-circle"
-                       ng-hide="agent.Agentconfig.insecure"></i>
+                    <span class="label-forced badge-danger margin-right-5" title="<?= __('Yes'); ?>"
+                          ng-show="agent.Agentconfig.insecure">
+                        <?= __('Yes'); ?>
+                    </span>
+                    <span class="label-forced badge-success margin-right-5" title="<?= __('No'); ?>"
+                          ng-hide="agent.Agentconfig.insecure">
+                        <?= __('No'); ?>
+                    </span>
                 </td>
+
                 <td class="text-center">
-                    <i class="fa fa-lg fa-check" ng-show="agent.Agentconfig.proxy"></i>
-                    <i class="fa fa-lg fa-times-circle"
-                       ng-hide="agent.Agentconfig.proxy"></i>
+                    <span class="label-forced badge-secondary margin-right-5" title="<?= __('Yes'); ?>"
+                          ng-show="agent.Agentconfig.proxy">
+                        <?= __('Yes'); ?>
+                    </span>
+                    <span class="label-forced badge-secondary margin-right-5" title="<?= __('No'); ?>"
+                          ng-hide="agent.Agentconfig.proxy">
+                        <?= __('No'); ?>
+                    </span>
                 </td>
+
                 <td class="text-center">
-                    <i class="fa fa-lg fa-check" ng-show="agent.Agentconfig.basic_auth"></i>
-                    <i class="fa fa-lg fa-times-circle"
-                       ng-hide="agent.Agentconfig.basic_auth"></i>
+                    <span class="label-forced badge-secondary margin-right-5" title="<?= __('Yes'); ?>"
+                          ng-show="agent.Agentconfig.basic_auth">
+                        <?= __('Yes'); ?>
+                    </span>
+                    <span class="label-forced badge-secondary margin-right-5" title="<?= __('No'); ?>"
+                          ng-hide="agent.Agentconfig.basic_auth">
+                        <?= __('No'); ?>
+                    </span>
                 </td>
+
                 <td class="text-center">
-                    <i class="fa fa-lg fa-check" ng-show="agent.Agentconfig.push_noticed"></i>
-                    <i class="fa fa-lg fa-times-circle"
-                       ng-hide="agent.Agentconfig.push_noticed"></i>
+                    <span class="label-forced badge-success margin-right-5" title="<?= __('Yes'); ?>"
+                          ng-show="agent.Agentconfig.push_noticed">
+                        <?= __('Yes'); ?>
+                    </span>
+                    <span class="label-forced badge-danger margin-right-5" title="<?= __('No'); ?>"
+                          ng-hide="agent.Agentconfig.push_noticed">
+                        <?= __('No'); ?>
+                    </span>
                 </td>
                 <td class="width-50">
                     <div class="btn-group btn-group-xs" role="group">
@@ -168,7 +200,8 @@
                         <div class="dropdown-menu dropdown-menu-right"
                              id="menuHack-{{agent.Agentconfig.id}}">
                             <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
-                                <a ng-click="openEdit(agent.Agentconfig)" href="javascript:void(0);" class="dropdown-item">
+                                <a ng-click="openEdit(agent.Agentconfig)" href="javascript:void(0);"
+                                   class="dropdown-item">
                                     <i class="fa fa-cog"></i>
                                     <?php echo __('Edit'); ?>
                                 </a>
@@ -262,7 +295,8 @@
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" id="insecure" class="custom-control-input"
                                    name="checkbox" ng-model="edit.insecure">
-                            <label class="custom-control-label" for="insecure"><?php echo __('Allow insecure'); ?></label>
+                            <label class="custom-control-label"
+                                   for="insecure"><?php echo __('Allow insecure'); ?></label>
                             <span class="help-block">
                                 <?php echo __('Allow insecure connections (recommended for an easy auto setup)'); ?>
                             </span>
@@ -277,7 +311,8 @@
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" id="basic_auth" class="custom-control-input"
                                    name="checkbox" ng-model="edit.basic_auth">
-                            <label class="custom-control-label" for="basic_auth"><?php echo __('Enable basic authentication'); ?></label>
+                            <label class="custom-control-label"
+                                   for="basic_auth"><?php echo __('Enable basic authentication'); ?></label>
                         </div>
 
                         <div class="form-group required" ng-show="edit.basic_auth">
@@ -297,7 +332,8 @@
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" id="push_noticed" class="custom-control-input"
                                    name="checkbox" ng-model="edit.push_noticed">
-                            <label class="custom-control-label" for="push_noticed"><?php echo __('Push noticed'); ?></label>
+                            <label class="custom-control-label"
+                                   for="push_noticed"><?php echo __('Push noticed'); ?></label>
                             <span class="help-block">
                                 <?php echo __('The agent of this host pushed its data to openITCOCKPIT'); ?>
                             </span>

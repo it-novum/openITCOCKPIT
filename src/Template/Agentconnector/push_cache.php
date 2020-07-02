@@ -114,7 +114,7 @@
                                 <a href="/agentconnector/downloadPushedCheckdata/{{agent.Agenthostscache.id}}.json?angular=true"
                                    target="_blank" class="dropdown-item">
                                     <i class="fa fa-download"></i>
-                                    <?php echo __('Download checkdata'); ?>
+                                    <?php echo __('Download check data'); ?>
                                 </a>
                             <?php endif; ?>
 

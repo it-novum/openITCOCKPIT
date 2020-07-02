@@ -108,16 +108,19 @@
                     <?php endif; ?>
                 </td>
                 <td class="text-center">
-                    <i class="fa fa-lg fa-check" ng-show="agent.Agentconnector.trusted"></i>
-                    <i class="fa fa-lg fa-times-circle"
+                    <i class="fa fa-lg fa-check text-success" ng-show="agent.Agentconnector.trusted"></i>
+                    <i class="fa fa-lg fa-times-circle text-danger"
                        ng-hide="agent.Agentconnector.trusted"></i>
                 </td>
-                <td><a ui-sref="HostsBrowser({id: agent.Host.id})">{{agent.Host.name}} ({{agent.Agentconnector.hostuuid}})</a></td>
+                <td><a ui-sref="HostsBrowser({id: agent.Host.id})">{{agent.Host.name}}
+                        ({{agent.Agentconnector.hostuuid}})</a></td>
                 <td>{{agent.Agentconnector.http_x_forwarded_for ?
                     agent.Agentconnector.http_x_forwarded_for :
                     agent.Agentconnector.remote_addr}}
                 </td>
-                <td>{{agent.Agentconnector.generation_date ? agent.Agentconnector.generation_date : '<?php echo __("Certificate not yet generated") ?>'}}</td>
+                <td>{{agent.Agentconnector.generation_date ? agent.Agentconnector.generation_date :
+                    '<?php echo __("Certificate not yet generated") ?>'}}
+                </td>
                 <td class="width-50">
                     <div class="btn-group btn-group-xs" role="group">
                         <?php if ($this->Acl->hasPermission('changetrust', 'agentconnector')): ?>
@@ -179,35 +182,35 @@
             <span ng-show="selectedElements > 0">({{selectedElements}})</span>
         </div>
         <div class="col-xs-12 col-md-2">
-                            <span ng-click="selectAll()" class="pointer">
-                                <i class="fa fa-lg fa-check-square"></i>
-                                <?php echo __('Select all'); ?>
-                            </span>
+            <span ng-click="selectAll()" class="pointer">
+                <i class="fa fa-lg fa-check-square"></i>
+                <?php echo __('Select all'); ?>
+            </span>
         </div>
         <div class="col-xs-12 col-md-2">
-                            <span ng-click="undoSelection()" class="pointer">
-                                <i class="fa fa-lg fa-square"></i>
-                                <?php echo __('Undo selection'); ?>
-                            </span>
+            <span ng-click="undoSelection()" class="pointer">
+                <i class="fa fa-lg fa-square"></i>
+                <?php echo __('Undo selection'); ?>
+            </span>
         </div>
-        <div class="col-xs-12 col-md-2">
-                            <span ng-click="trustSelected()" class="pointer">
-                                <i class="fa fa-lg fa-check"></i>
-                                <?php echo __('Trust'); ?>
-                            </span>
+        <div class="col-xs-12 col-md-2 text-success">
+            <span ng-click="trustSelected()" class="pointer">
+                <i class="fa fa-lg fa-check"></i>
+                <?php echo __('Trust'); ?>
+            </span>
         </div>
-        <div class="col-xs-12 col-md-2">
-                            <span ng-click="untrustSelected()" class="pointer">
-                                <i class="fa fa-lg fa-times-circle"></i>
-                                <?php echo __('Untrust'); ?>
-                            </span>
+        <div class="col-xs-12 col-md-2 text-danger">
+            <span ng-click="untrustSelected()" class="pointer">
+                <i class="fa fa-lg fa-times-circle"></i>
+                <?php echo __('Untrust'); ?>
+            </span>
         </div>
         <?php if ($this->Acl->hasPermission('delete', 'agentconnector')): ?>
             <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fa fa-lg fa-trash"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
+                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                    <i class="fa fa-lg fa-trash"></i>
+                    <?php echo __('Delete all'); ?>
+                </span>
             </div>
         <?php endif; ?>
     </div>
