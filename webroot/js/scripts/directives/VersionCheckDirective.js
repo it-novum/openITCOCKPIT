@@ -4,7 +4,8 @@ angular.module('openITCOCKPIT').directive('versionCheck', function($http, $timeo
         templateUrl: '/angular/version_check.html',
 
         controller: function($scope){
-            $scope.newVersionAvailable = false;
+            $scope.newVersionAvailable = true;
+            return;
 
             $scope.load = function(){
                 $http.get("/angular/version_check.json", {
