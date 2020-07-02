@@ -23,7 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<div class="btn-group mr-2" role="group" aria-label="<?= __('Display of storage notifications'); ?>">
+<div class="btn-group mr-2" role="group" aria-label="<?= __('Display of storage notifications'); ?>"
+     ng-show="showstatsinmenu">
     <button class="btn btn-default"
             data-original-title="<?= __('host notifications'); ?>" data-placement="bottom" rel="tooltip"
             data-container="body"
@@ -43,7 +44,8 @@
         {{ hoststatusCount[2] }}
     </button>
 </div>
-<div class="btn-group mr-2" role="group" aria-label="<?= __('Display of service notifications'); ?>">
+<div class="btn-group mr-2" role="group" aria-label="<?= __('Display of service notifications'); ?>"
+     ng-show="showstatsinmenu">
     <button class="btn btn-default" data-original-title="<?= __('service notifications'); ?>" data-placement="bottom"
             rel="tooltip"
             data-container="body"
