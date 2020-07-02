@@ -1246,3 +1246,7 @@ label.menu-open-button:hover {
     flex-direction: column;
     word-spacing: 100vw;
 }
+
+.font-size-90{
+    font-size: 90px;
+}

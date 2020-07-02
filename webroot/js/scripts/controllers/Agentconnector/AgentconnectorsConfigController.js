@@ -1,14 +1,24 @@
 angular.module('openITCOCKPIT')
     .controller('AgentconnectorsConfigController', function($scope, $http, QueryStringService, $state, $stateParams, NotyService, $interval){
 
+        var timeoutId = null;
+
         $scope.pullMode = false;
         $scope.pushMode = false;
         $scope.installed = false;
         $scope.configured = false;
         $scope.servicesConfigured = false;
         $scope.stopServicesToCreateRequestInterval = false;
+        $scope.disableHostSelect = false;
+        $scope.showLoadServicesToCreate = false;
+        $scope.selectedOs = 'windows';
 
         $scope.resetAgentConfiguration = function(){
+            if(timeoutId !== null){
+                clearTimeout(timeoutId);
+                timeoutId = null
+            }
+
             $scope.stopServicesToCreateRequestInterval = true;
             $scope.pullMode = false;
             $scope.pushMode = false;
@@ -95,7 +105,7 @@ angular.module('openITCOCKPIT')
             $scope.host = {
                 id: false
             };
-            document.getElementById('AgentHost').disabled = false;
+            $scope.disableHostSelect = false;
             $scope.updateConfigTemplate();
         };
 
@@ -163,7 +173,20 @@ angular.module('openITCOCKPIT')
                 if(option === 'customchecks'){
                     value = '';
                     if($scope.agentconfig[option] === true){
-                        value = '/etc/openitcockpit-agent/customchecks.cnf';
+                        switch($scope.selectedOs){
+                            case 'linux':
+                                value = '/etc/openitcockpit-agent/customchecks.cnf';
+                                break;
+
+                            case 'macos':
+                                value = '/Library/openitcockpit-agent/customchecks.cnf';
+                                break;
+
+                            default:
+                                value = 'C:\\Program Files\\openitcockpit-agent\\customchecks.cnf';
+                                break;
+                        }
+
                     }
                 }
                 tmpDefaultTemplate += option + ' = ' + value + '\n';
@@ -408,6 +431,7 @@ angular.module('openITCOCKPIT')
         $scope.getServicesToCreateByHostUuid = function(){
             if($scope.host.uuid !== 'undefined' && $scope.host.uuid !== ''){
                 $http.get('/agentconnector/getServicesToCreateByHostUuid/' + $scope.host.uuid + '.json').then(function(result){
+                    $scope.showLoadServicesToCreate = false;
                     if(result.data.servicesToCreate && result.data.servicesToCreate !== ''){
                         $scope.stopServicesToCreateRequestInterval = true;
                         $scope.servicesToCreateError = '';
@@ -443,7 +467,7 @@ angular.module('openITCOCKPIT')
                     }
 
                     if(!$scope.servicesToCreate && !$scope.stopServicesToCreateRequestInterval){
-                        setTimeout(function(){
+                        timeoutId = setTimeout(function(){
                             $scope.getServicesToCreateByHostUuid();
                         }, 10000);
                     }
@@ -465,9 +489,13 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.changeOs = function(os){
+            $scope.selectedOs = os;
+        };
+
         $scope.$watch('host.id', function(){
             if($scope.host.id !== 'undefined' && $scope.host.id > 0){
-                document.getElementById('AgentHost').disabled = true;
+                $scope.disableHostSelect = true;
 
                 const params = {
                     'angular': true
@@ -478,6 +506,7 @@ angular.module('openITCOCKPIT')
                 }).then(function(result){
                     if(result.data.host && result.data.host.uuid){
                         $scope.host = result.data.host;
+                        $scope.showLoadServicesToCreate = true;
                         $scope.getServicesToCreateByHostUuid();
                     }
                 }, function errorCallback(result){
@@ -499,8 +528,16 @@ angular.module('openITCOCKPIT')
             $scope.updateConfigTemplate();
         }, true);
 
+        $scope.$watch('selectedOs', function(){
+            $scope.updateConfigTemplate();
+        }, true);
+
         //Disable interval if object gets removed from DOM.
         $scope.$on('$destroy', function(){
+            if(timeoutId !== null){
+                clearTimeout(timeoutId);
+                timeoutId = null
+            }
             $scope.stopServicesToCreateRequestInterval = true;
         });
 

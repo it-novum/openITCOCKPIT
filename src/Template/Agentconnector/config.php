@@ -43,6 +43,34 @@
 
 
 <div class="row">
+    <div class="col-lg-8 margin-bottom-10">
+        <div class="input-group">
+            <select
+                    id="AgentHost"
+                    data-placeholder="<?php echo __('Please select...'); ?>"
+                    class="form-control"
+                    chosen="hosts"
+                    ng-disabled="disableHostSelect"
+                    ng-options="host.key as host.value for host in hosts"
+                    ng-model="host.id">
+            </select>
+
+
+            <div class="input-group-append">
+                <button class="btn btn-danger btn-sm waves-effect waves-themed"
+                        type="button"
+                        ng-if="(host.id && !servicesConfigured) || finished"
+                        ng-click="resetAgentConfiguration()">
+                    <i class="fas fa-undo"></i>&nbsp;
+                    <?php echo __('Reset'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
     <div class="col-xl-12">
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
@@ -60,220 +88,347 @@
                 </div>
             </div>
             <div class="panel-container show">
-                <div class="panel-content">
+                <div class="panel-content fuelux">
+                    <div class="wizard">
+                        <ul class="nav nav-tabs step-anchor">
+                            <li data-target="#step1" class="nav-item"
+                                ng-class="(!pullMode && !pushMode) ? 'active' : ''">
+                                <span class="badge badge-info">1</span>
+                                <?php echo __('Select host and agent mode'); ?>
+                                <span class="chevron"></span>
+                            </li>
+                            <li data-target="#step2" class="nav-item"
+                                ng-class="((pullMode || pushMode) && !installed && !configured) ? 'active' : ''">
+                                <span class="badge">2</span>
+                                <?php echo __('Basic agent configuration'); ?>
+                                <span class="chevron"></span>
+                            </li>
+                            <li data-target="#step3"
+                                ng-class="((pullMode || pushMode) && !installed && configured) ? 'active' : ''">
+                                <span class="badge">3</span>
+                                <?php echo __('Installation guide'); ?>
+                                <span class="chevron"></span>
+                            </li>
+                            <li data-target="#step4"
+                                ng-class="((pullMode || pushMode) && installed && configured && !servicesConfigured) ? 'active' : ''">
+                                <span class="badge">4</span>
+                                <?php echo __('Create agent services'); ?>
+                                <span class="chevron"></span>
+                            </li>
+                            <li data-target="#step4"
+                                ng-class="((pullMode || pushMode) && installed && configured && servicesConfigured) ? 'active' : ''">
+                                <span class="badge">5</span>
+                                <?php echo __('Save changes'); ?>
+                                <span class="chevron"></span>
+                            </li>
+                        </ul>
 
+                        <div class="pull-right margin-right-5" style="margin-top: -39px;">
+                            <div class="actions" style="position: relative; display: inline;">
 
-                    <form ng-submit="submit();" class="form-horizontal">
-
-                        <div class="row form-group required">
-                            <label class="col-xs-12 col-md-1 control-label" for="AgentHost">
-                                <?php echo __('Host'); ?>
-                            </label>
-                            <div class="col-xs-12 col-md-5">
-                                <select
-                                    id="AgentHost"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="hosts"
-                                    ng-options="host.key as host.value for host in hosts"
-                                    ng-model="host.id">
-                                </select>
-                            </div>
-                            <div class="col-xs-12 col-md-4"
-                                 ng-show="remoteAgentConfig && pullMode && !installed && !configured">
-                                <p>
-                                    <?= __('If you changed some configuration, you should run the remote configuration update before you continue. Otherwise you are maybe not able to connect to the agent again threw the web interface. In that case you have to copy the configuration manually to the agent.'); ?>
-                                </p>
-                            </div>
-                            <div class="col-xs-12 col-md-2"
-                                 ng-show="remoteAgentConfig && pullMode && !installed && !configured">
-                                <button
-                                    type="button" style="min-height: 35px;"
-                                    class="btn btn-labeled btn-primary pull-right"
-                                    ng-click="runRemoteConfigUpdate()">
-
-                                    <?= __('Run remote configuration update'); ?>
+                                <!-- 1st step next button -->
+                                <button type="button" class="btn btn-sm btn-success"
+                                        ng-if="(!pullMode && !pushMode && host.id && servicesToCreate)"
+                                        data-target="#step5"
+                                        ng-click="skipConfigurationGeneration()">
+                                    <?= __('Next'); ?>
+                                    <i class="fa fa-arrow-right"></i>
                                 </button>
-                            </div>
 
-                            <div class="col-xs-12 col-md-6"
-                                 ng-if="!pullMode && !pushMode && host.id && servicesToCreate">
-                                <!--<p class="display-none">
-                                    <?= __('We found agent check results of this host. It seems the agent is already configured.'); ?>
-                                </p>-->
-                                <button
-                                    type="button" style="min-height: 35px;"
-                                    class="btn btn-labeled btn-primary pull-right"
-                                    ng-click="skipConfigurationGeneration()">
-
-                                    <?= __('Skip configuration generation'); ?>
+                                <!-- 2nd step next button -->
+                                <button type="button" class="btn btn-sm btn-success"
+                                        ng-if="((pullMode || pushMode) && !installed && !configured)"
+                                        data-target="#step5"
+                                        ng-click="continueWithAgentInstallation()">
+                                    <?= __('Next'); ?>
+                                    <i class="fa fa-arrow-right"></i>
                                 </button>
+
+                                <!-- 3rd step next button -->
+                                <button type="button" class="btn btn-sm btn-success"
+                                        ng-if="((pullMode || pushMode) && !installed && configured)"
+                                        data-target="#step5"
+                                        ng-click="continueWithServiceConfiguration()">
+                                    <?= __('Next'); ?>
+                                    <i class="fa fa-arrow-right"></i>
+                                </button>
+
+                                <!-- 4th step next button -->
+                                <button type="button" class="btn btn-sm btn-success"
+                                        ng-if="((pullMode || pushMode) && installed && configured && !servicesConfigured)"
+                                        data-target="#step5"
+                                        ng-click="saveAgentServices()">
+                                    <?= __('Next'); ?>
+                                    <i class="fa fa-arrow-right"></i>
+                                </button>
+
                             </div>
                         </div>
 
-                        <div class="row card margin-bottom-10">
-                            <div class="card-header fuelux">
+                    </div>
 
-                                <div class="wizard">
-                                    <ul class="nav nav-tabs step-anchor">
-                                        <li data-target="#step0" class="nav-item reset-btn"
-                                            ng-if="(host.id && !servicesConfigured) || finished"
-                                            ng-click="resetAgentConfiguration()">
-                                            <i class="fas fa-trash"></i>&nbsp;
-                                            <span class="d-none d-lg-inline">
-                                                <?php echo __('Reset'); ?>
-                                            </span>
-                                            <span class="chevron"></span>
-                                        </li>
-                                        <li data-target="#step1" class="nav-item"
-                                            ng-class="(!pullMode && !pushMode) ? 'active' : ''">
-                                            <span class="badge badge-info">1</span>
-                                            <?php echo __('Select host and agent mode'); ?>
-                                            <span class="chevron"></span>
-                                        </li>
-                                        <li data-target="#step2" class="nav-item"
-                                            ng-class="((pullMode || pushMode) && !installed && !configured) ? 'active' : ''">
-                                            <span class="badge">2</span>
-                                            <?php echo __('Basic agent configuration'); ?>
-                                            <span class="chevron"></span>
-                                        </li>
-                                        <li data-target="#step3"
-                                            ng-class="((pullMode || pushMode) && !installed && configured) ? 'active' : ''">
-                                            <span class="badge">3</span>
-                                            <?php echo __('Installation guide'); ?>
-                                            <span class="chevron"></span>
-                                        </li>
-                                        <li data-target="#step4"
-                                            ng-class="((pullMode || pushMode) && installed && configured && !servicesConfigured) ? 'active' : ''">
-                                            <span class="badge">4</span>
-                                            <?php echo __('Create agent services'); ?>
-                                            <span class="chevron"></span>
-                                        </li>
-                                        <li data-target="#step4"
-                                            ng-class="((pullMode || pushMode) && installed && configured && servicesConfigured) ? 'active' : ''">
-                                            <span class="badge">5</span>
-                                            <?php echo __('Save changes'); ?>
-                                            <span class="chevron"></span>
-                                        </li>
-                                        <li data-target="#step5" class="nav-item next-btn"
-                                            ng-if="(!pullMode && !pushMode && host.id && servicesToCreate)"
-                                            ng-click="skipConfigurationGeneration()">
-                                            <i class="fa fa-arrow-right"></i>&nbsp;
-                                            <span class="d-none d-lg-inline">
-                                                <?php echo __('Next'); ?>
-                                            </span>
-                                        </li>
-                                        <li data-target="#step5" class="nav-item next-btn"
-                                            ng-if="((pullMode || pushMode) && !installed && !configured)"
-                                            ng-click="continueWithAgentInstallation()">
-                                            <i class="fa fa-arrow-right"></i>&nbsp;
-                                            <span class="d-none d-lg-inline">
-                                                <?php echo __('Next'); ?>
-                                            </span>
-                                        </li>
-                                        <li data-target="#step5" class="nav-item next-btn"
-                                            ng-if="((pullMode || pushMode) && !installed && configured)"
-                                            ng-click="continueWithServiceConfiguration()">
-                                            <i class="fa fa-arrow-right"></i>&nbsp;
-                                            <span class="d-none d-lg-inline">
-                                                <?php echo __('Next'); ?>
-                                            </span>
-                                        </li>
-                                        <li data-target="#step5" class="nav-item next-btn"
-                                            ng-if="((pullMode || pushMode) && installed && configured && !servicesConfigured)"
-                                            ng-click="saveAgentServices()">
-                                            <i class="fa fa-arrow-right"></i>&nbsp;
-                                            <span class="d-none d-lg-inline">
-                                                <?php echo __('Next'); ?>
-                                            </span>
-                                        </li>
-                                    </ul>
+                    <div class="step-content">
 
+                        <div class="row" ng-show="showLoadServicesToCreate">
+                            <div class="col-12">
+                                <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                    <div class="d-flex align-items-center">
+                                        <div class="alert-icon">
+                                            <span class="icon-stack icon-stack-md">
+                                                <i class="base-7 icon-stack-3x color-info-600"></i>
+                                                <i class="fas fa-search icon-stack-1x text-white"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <span class="h5 color-info-600">
+                                                <?= __('Checking if openITCOCKPIT Monitoring Agent is already configured...'); ?>
+                                            </span>
+                                            <div class="progress mt-1 progress-xs">
+                                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-info-600"
+                                                     role="progressbar" style="width: 100%" aria-valuenow="100"
+                                                     aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" ng-if="!pullMode && !pushMode && host.id && servicesToCreate">
+                            <div class="col-12">
+                                <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                    <div class="d-flex align-items-center">
+                                        <div class="alert-icon">
+                                            <span class="icon-stack icon-stack-md">
+                                                <i class="base-7 icon-stack-3x color-success-600"></i>
+                                                <i class="fas fa-check icon-stack-1x text-white"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <span class="h5 color-success-600">
+                                                <?= __('openITCOCKPIT Monitoring Agent already configured'); ?>
+                                            </span>
+                                            <br>
+                                            <?= __('The openITCOCKPIT Agent has already been configured on this host.'); ?>
+                                        </div>
+                                        <button class="btn btn-outline-success btn-sm btn-w-m waves-effect waves-themed"
+                                                ng-click="skipConfigurationGeneration()">
+                                            <?= __('Create new services'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" ng-show="remoteAgentConfig && pullMode && !installed && !configured">
+                            <div class="col-12">
+                                <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                    <div class="d-flex align-items-center">
+                                        <div class="alert-icon">
+                                            <span class="icon-stack icon-stack-md">
+                                                <i class="base-7 icon-stack-3x color-warning-600"></i>
+                                                <i class="fas fa-exclamation-triangle icon-stack-1x text-white"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <span class="h5 color-warning-600">
+                                                <?= __('Please notice before changing Agent configuration'); ?>
+                                            </span>
+                                            <br>
+                                            <?= __('If you have made some configuration changes below, you should run a remote configuration update now. Otherwise openITCOCKPIT is maybe unable to connect to the agent again through the HTTP API. In this case you have to copy the agent configuration.'); ?>
+                                        </div>
+                                        <button class="btn btn-outline-warning btn-sm btn-w-m waves-effect waves-themed"
+                                                ng-click="runRemoteConfigUpdate()">
+                                            <?= __('Execute remote configuration update'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <form ng-submit="submit();" class="form-horizontal">
+
+                            <!-- 1st Step -->
+                            <div class="row padding-top-20" ng-if="!pullMode && !pushMode && host.id">
+
+                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 offset-lg-2 offset-xl-2">
+                                    <div class="panel panel-default">
+                                        <div class="panel-hrd padding-left-20 padding-right-20 padding-top-20">
+                                            <h4>
+                                                <?= __('Register Agent in pull mode'); ?>
+                                            </h4>
+                                            <hr/>
+                                        </div>
+
+                                        <div class="panel-container padding-left-20 padding-right-20"
+                                             style="min-height: 180px;">
+                                            <h5><?= __('When to use pull mode?'); ?></h5>
+                                            <div class="text">
+                                                <ul>
+                                                    <li><?= __('In pull mode the openITCOCKPIT server will frequently connect to the agent via an HTTP/S connection to get the latest check results.'); ?></li>
+
+                                                    <li><?= __('Use the pull mode when your openITCOCKPIT server can establish a direct connection to the target system.'); ?></li>
+
+                                                    <li><?= __('If your openITCOCKPIT server is located in the same datacenter.'); ?></li>
+
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div class="panel-footer padding-20">
+                                            <div class="col-xs-12 padding-right-0">
+                                                <button
+                                                        type="button"
+                                                        class="btn btn-outline-primary pull-right"
+                                                        ng-click="continueWithPullMode()">
+
+                                                    <?= __('Continue with pull mode'); ?>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
+                                    <div class="panel panel-default">
+
+                                        <div class="panel-hrd padding-left-20 padding-right-20 padding-top-20">
+                                            <h4>
+                                                <?= __('Register Agent in push mode'); ?>
+                                            </h4>
+                                            <hr/>
+                                        </div>
+
+                                        <div class="panel-container padding-left-20 padding-right-20"
+                                             style="min-height: 180px;">
+                                            <h5><?= __('When to use push mode?'); ?></h5>
+                                            <div class="text">
+                                                <ul>
+                                                    <li><?= __('In pull mode the Agent will frequently push the latest check results to the openITCOCKPIT server via an HTTPS connection on port 443.'); ?></li>
+
+                                                    <li><?= __('Use the push mode whenever your openITCOCKPIT server cannot establish a direct connection the the target system.'); ?></li>
+
+                                                    <li><?= __('In a fast changing environment or when your openITCOCKPIT server is running in the cloud.'); ?></li>
+
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div class="panel-footer padding-20">
+                                            <div class="col-xs-12 padding-right-0">
+                                                <button
+                                                        type="button"
+                                                        class="btn btn-outline-primary pull-right"
+                                                        ng-click="continueWithPushMode()">
+
+                                                    <?= __('Continue with push mode'); ?>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                             </div>
-                            <div class="card-body">
+                            <!-- 1st Step End -->
 
-                                <div class="row justify-content-md-center" ng-if="!pullMode && !pushMode && host.id">
 
-                                    <div class="col-xs-12 col-md-6 col-lg-5">
-                                        <div class="panel panel-default">
+                            <!-- 2nd Step -->
+                            <div class="row" ng-if="(pullMode || pushMode) && !installed && !configured">
+                                <div class="col-12">
 
-                                            <div class="panel-hrd padding-20" style="padding-bottom: 0px;">
-                                                <h4>
-                                                    <?= __('Register Agent in pull mode'); ?>
-                                                </h4>
-                                                <hr/>
-                                            </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="alert-icon">
+                                                                <span class="icon-stack icon-stack-md">
+                                                                    <i class="base-7 icon-stack-3x color-info-600"></i>
+                                                                    <i class="fa fa-user-secret icon-stack-1x text-white"></i>
+                                                                </span>
+                                                    </div>
+                                                    <div class="flex-1">
+                                                                <span class="h5 color-info-600">
+                                                                    <?= __('openITCOCKPIT Monitoring Agent not installed yet?'); ?>
+                                                                </span>
+                                                        <br>
+                                                        <?= __('No problem! You will get detailed installation instructions in the next step.'); ?>
 
-                                            <div class="panel-container padding-20" style="min-height: 110px;">
-                                                <div class="text">
-                                                    <?= __('If you configure the Agent in pull mode, it has to be reachable through the network.'); ?>
-                                                    <br>
-                                                    <?= __('openITCOCKPIT will try to connect to the agent using the hosts IP Address.'); ?>
-                                                    <br>
-                                                    <?= __('It will fetch the check results in a minutely check interval.'); ?>
-                                                </div>
-                                            </div>
+                                                        <span ng-show="pullMode">
+                                                                    <br>
+                                                                    <br>
+                                                                    <b><?= __('You selected Pull Mode. If you are new to openITCOCKPIT we recommend to continue with the default settings.'); ?></b>
+                                                                </span>
 
-                                            <div class="panel-footer padding-20">
-                                                <div class="col-xs-12 padding-right-0">
-                                                    <button
-                                                        type="button" style="min-height: 35px;"
-                                                        class="btn btn-labeled btn-primary pull-right"
-                                                        ng-click="continueWithPullMode()">
-
-                                                        <?= __('Continue with pull mode'); ?>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-xs-12 col-md-6 col-lg-5 col-lg-offset-1">
-                                        <div class="panel panel-default">
-
-                                            <div class="panel-hrd padding-20" style="padding-bottom: 0px;">
-                                                <h4>
-                                                    <?= __('Register Agent in push mode'); ?>
-                                                </h4>
-                                                <hr/>
-                                            </div>
-
-                                            <div class="panel-container padding-20" style="min-height: 110px;">
-                                                <div class="text">
-                                                    <?= __('If you configure the agent in push mode, it needs to establish a connection to the openITCOCKPIT server in your network.'); ?>
-                                                    <br>
-                                                    <?= __('The agent will send the check results in a specific interval to the openITCOCKPIT server.'); ?>
-                                                </div>
-                                            </div>
-
-                                            <div class="panel-footer padding-20">
-                                                <div class="col-xs-12 padding-right-0">
-                                                    <button
-                                                        type="button" style="min-height: 35px;"
-                                                        class="btn btn-labeled btn-primary pull-right"
-                                                        ng-click="continueWithPushMode()">
-
-                                                        <?= __('Continue with push mode'); ?>
-                                                    </button>
+                                                        <span ng-show="pushMode">
+                                                                    <br>
+                                                                    <br>
+                                                                    <b><?= __('You selected Push Mode. It is required to set the openITCOCKPIT Server Address and an API Key.'); ?></b>
+                                                                </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="card margin-bottom-10">
+                                                <div class="card-header">
+                                                    <i class="fas fa-server"></i>
+                                                    <?= __('Operating system '); ?>
+                                                </div>
 
+                                                <div class="card-body">
 
-                                <div class="row" ng-if="(pullMode || pushMode) && !installed && !configured">
-                                    <div class="padding-20">
-                                        <div class="row" style="border-bottom: none;">
+                                                    <?= __('Which operating system do you want to monitor?'); ?>
+                                                    <br>
 
-                                            <div class="widget-body col-xs-12 col-md-6">
-                                                <form class="form-horizontal">
-                                                    <div class="row">
+                                                    <div class="btn-group btn-group-lg">
+                                                        <button type="button"
+                                                                class="btn btn-outline-primary waves-effect waves-themed"
+                                                                ng-class="{'btn-primary text-white': selectedOs === 'windows'}"
+                                                                ng-click="changeOs('windows')">
+                                                            <i class="fab fa-windows font-size-90"></i>
+                                                            <br>
+                                                            <?= __('Windows'); ?>
+                                                        </button>
+                                                        <button type="button"
+                                                                class="btn btn-outline-primary waves-effect waves-themed"
+                                                                ng-class="{'btn-primary text-white': selectedOs === 'linux'}"
+                                                                ng-click="changeOs('linux')">
+                                                            <i class="fab fa-linux font-size-90"></i>
+                                                            <br>
+                                                            <?= __('Linux'); ?>
+                                                        </button>
+                                                        <button type="button"
+                                                                class="btn btn-outline-primary waves-effect waves-themed"
+                                                                ng-class="{'btn-primary text-white': selectedOs === 'macos'}"
+                                                                ng-click="changeOs('macos')">
+                                                            <i class="fab fa-apple font-size-90"></i>
+                                                            <br>
+                                                            <?= __('macOS'); ?>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                                        <div class="form-group col-12 padding-left-0" ng-if="pushMode">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+
+                                            <form class="form-horizontal">
+
+                                                <div class="card margin-bottom-10">
+                                                    <div class="card-header">
+                                                        <i class="fa fa-magic"></i>
+                                                        <?= __('Basic configuration '); ?>
+                                                    </div>
+
+                                                    <div class="card-body">
+                                                        <div class="form-group col-12 padding-left-0 required"
+                                                             ng-if="pushMode">
                                                             <label class="col-xs-12 col-md-3 control-label"
                                                                    for="agentconfig['oitc-url']">
                                                                 <?php echo __('openITCOCKPIT Server Address'); ?>
@@ -282,15 +437,19 @@
                                                             <div class="col-xs-12 col-md-9"
                                                                  ng-init="agentconfig['oitc-url']='https://<?= h($_SERVER['SERVER_ADDR']) ?>'">
                                                                 <input
-                                                                    id="agentconfig['oitc-url']"
-                                                                    class="form-control"
-                                                                    type="text"
-                                                                    placeholder="<?php echo __('External address or FQDN (example: https://{0})', $_SERVER['SERVER_ADDR']); ?>"
-                                                                    ng-model="agentconfig['oitc-url']">
+                                                                        id="agentconfig['oitc-url']"
+                                                                        class="form-control"
+                                                                        type="text"
+                                                                        placeholder="<?php echo __('External address or FQDN (example: https://{0})', $_SERVER['SERVER_ADDR']); ?>"
+                                                                        ng-model="agentconfig['oitc-url']">
+                                                                <div class="help-block">
+                                                                    <?= __('External address of your openITCOCKPIT Server.'); ?>
+                                                                </div>
                                                             </div>
                                                         </div>
 
-                                                        <div class="form-group col-12 padding-left-0" ng-if="pushMode">
+                                                        <div class="form-group col-12 padding-left-0 required"
+                                                             ng-if="pushMode">
                                                             <label class="col-xs-12 col-md-3 control-label"
                                                                    for="agentconfig['oitc-apikey']">
                                                                 <?php echo __('openITCOCKPIT Api-Key'); ?>
@@ -298,14 +457,15 @@
 
                                                             <div class="col-xs-12 col-md-9">
                                                                 <input
-                                                                    id="agentconfig['oitc-apikey']"
-                                                                    class="form-control"
-                                                                    type="text"
-                                                                    placeholder="<?php echo __('Api-Key'); ?>"
-                                                                    ng-model="agentconfig['oitc-apikey']">
+                                                                        id="agentconfig['oitc-apikey']"
+                                                                        class="form-control"
+                                                                        type="text"
+                                                                        placeholder="b803b7fb76524e1514bed81cf3a936845cc160511a1c0d51672c..."
+                                                                        ng-model="agentconfig['oitc-apikey']">
                                                                 <div class="help-block">
                                                                     <?php echo __('You need to create an openITCOCKPIT user defined API key first.'); ?>
-                                                                    <a href="javascript:void(0);" data-toggle="modal"
+                                                                    <a href="javascript:void(0);"
+                                                                       data-toggle="modal"
                                                                        data-target="#ApiKeyOverviewModal">
                                                                         <?= __('Click here for help') ?>
                                                                     </a>
@@ -313,41 +473,51 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="form-group col-12 padding-left-0">
+                                                        <div class="form-group col-12 padding-left-0 required">
                                                             <label class="col-xs-12 col-md-3 control-label"
                                                                    for="agentconfig.address">
-                                                                <?php echo __('Agent address'); ?>
+                                                                <?php echo __('Agent bind address'); ?>
                                                             </label>
 
                                                             <div class="col-xs-12 col-md-9">
                                                                 <input
-                                                                    id="agentconfig.address"
-                                                                    class="form-control"
-                                                                    type="text"
-                                                                    placeholder="<?php echo __('Address or FQDN'); ?>"
-                                                                    ng-model="agentconfig.address">
+                                                                        id="agentconfig.address"
+                                                                        class="form-control"
+                                                                        type="text"
+                                                                        placeholder="<?php echo __('Address or FQDN'); ?>"
+                                                                        ng-model="agentconfig.address">
+
+                                                                <div class="help-block">
+                                                                    <?= __('IP address that openITCOCKPIT Agent should bind to.'); ?>
+                                                                    <?= __('Set 0.0.0.0 to bind to all interfaces.'); ?>
+                                                                </div>
                                                             </div>
                                                         </div>
 
-                                                        <div class="form-group col-12 padding-left-0">
+                                                        <div class="form-group col-12 padding-left-0 required">
                                                             <label class="col-xs-12 col-md-3 control-label"
                                                                    for="agentconfig.port">
-                                                                <?php echo __('Agent port'); ?>
+                                                                <?php echo __('Agent bind port'); ?>
                                                             </label>
 
                                                             <div class="col-xs-12 col-md-9">
                                                                 <input
-                                                                    id="agentconfig.port"
-                                                                    class="form-control"
-                                                                    type="number"
-                                                                    min="1"
-                                                                    max="65565"
-                                                                    placeholder="<?php echo __('Port'); ?>"
-                                                                    ng-model="agentconfig.port">
+                                                                        id="agentconfig.port"
+                                                                        class="form-control"
+                                                                        type="number"
+                                                                        min="1"
+                                                                        max="65565"
+                                                                        placeholder="<?php echo __('Port'); ?>"
+                                                                        ng-model="agentconfig.port">
+
+                                                                <div class="help-block">
+                                                                    <?= __('Port number that openITCOCKPIT Agent should bind to.'); ?>
+                                                                    <?= __('Default: 3333'); ?>
+                                                                </div>
                                                             </div>
                                                         </div>
 
-                                                        <div class="form-group col-12 padding-left-0">
+                                                        <div class="form-group col-12 padding-left-0 required">
                                                             <label class="col-xs-12 col-md-3 control-label"
                                                                    for="agentconfig.interval">
                                                                 <?php echo __('Default check interval'); ?>
@@ -355,56 +525,74 @@
 
                                                             <div class="col-xs-12 col-md-9">
                                                                 <input
-                                                                    id="agentconfig.interval"
-                                                                    class="form-control"
-                                                                    type="number"
-                                                                    min="5"
-                                                                    placeholder="<?php echo __('Interval in seconds'); ?>"
-                                                                    ng-model="agentconfig.interval">
+                                                                        id="agentconfig.interval"
+                                                                        class="form-control"
+                                                                        type="number"
+                                                                        min="5"
+                                                                        placeholder="<?php echo __('Interval in seconds'); ?>"
+                                                                        ng-model="agentconfig.interval">
+
+                                                                <div class="help-block">
+                                                                    <?= __('Determines in seconds how often the openITCOCKPIT Agent will execute all checks.'); ?>
+                                                                    <?= __('Default: 30'); ?>
+                                                                </div>
                                                             </div>
                                                         </div>
+                                                    </div>
 
+                                                </div>
+
+                                                <div class="card margin-bottom-10">
+                                                    <div class="card-header">
+                                                        <i class="fas fa-shield-alt"></i>
+                                                        <?= __('Security configuration '); ?>
+                                                    </div>
+
+                                                    <div class="card-body">
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.try-autossl"
                                                                        ng-model="agentconfig['try-autossl']">
                                                                 <label class="custom-control-label"
                                                                        for="agentconfig.try-autossl">
-                                                                    <?php echo __('Try autossl mode'); ?>
+                                                                    <?php echo __('Enable Auto-TLS'); ?>
                                                                 </label>
                                                                 <div class="help-block">
-                                                                    <?php echo __('If enabled, the agent tries to auto generate a ssl certificate for all incoming connection.'); ?>
+                                                                    <?php echo __('If enabled, the Agent tries to automatically generate a TLS certificate for all incoming connections.'); ?>
                                                                     <br>
-                                                                    <?php echo __('Pull mode: The certificate (including updates) will be transferred from openITCOCKPIT to the agent.'); ?>
+                                                                    <?php echo __('Pull mode: The certificate (including updates) will be transferred from openITCOCKPIT Server to the Agent.'); ?>
                                                                     <br>
-                                                                    <?php echo __('Push mode: The certificate (including updates) will be requested from the agent. It has to be trusted manually to get the certificate.'); ?>
+                                                                    <?php echo __('Push mode: The certificate (including updates) will be requested from the Agent. It has to be trusted manually to get the certificate.'); ?>
+                                                                </div>
+                                                                <div class="help-block text-danger">
+                                                                    <?= __('For security response we highly recommend to enable Auto-TLS! Otherwise the communication will be plaintext.'); ?>
                                                                 </div>
                                                             </div>
                                                         </div>
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.verbose"
                                                                        ng-model="agentconfig.verbose">
                                                                 <label class="custom-control-label"
                                                                        for="agentconfig.verbose">
-                                                                    <?php echo __('Print verbose output'); ?>
+                                                                    <?php echo __('Enable debug output'); ?>
                                                                 </label>
                                                                 <div class="help-block">
-                                                                    <?php echo __('Print administrator information on cli'); ?>
+                                                                    <?php echo __('Print debug information on CLI'); ?>
                                                                 </div>
                                                             </div>
                                                         </div>
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.stacktrace"
@@ -414,14 +602,17 @@
                                                                     <?php echo __('Print stacktrace output'); ?>
                                                                 </label>
                                                                 <div class="help-block">
-                                                                    <?php echo __('Print extended administrator information (stacktraces) on cli'); ?>
+                                                                    <?php echo __('Print extended debug information including stacktraces on CLI.'); ?>
+                                                                </div>
+                                                                <div class="help-block text-danger">
+                                                                    <?= __('Warning: This setting is most likely only interesting for developers and could leak sensitive information.'); ?>
                                                                 </div>
                                                             </div>
                                                         </div>
 
                                                         <div class="form-group col-12" ng-show="pullMode">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.config-update-mode"
@@ -450,17 +641,28 @@
 
                                                             <div class="col-xs-12 col-md-9">
                                                                 <input
-                                                                    id="agentconfig.auth"
-                                                                    class="form-control"
-                                                                    type="text"
-                                                                    placeholder="<?php echo __('username:password'); ?>"
-                                                                    ng-model="agentconfig.auth">
+                                                                        id="agentconfig.auth"
+                                                                        class="form-control"
+                                                                        type="text"
+                                                                        placeholder="<?php echo __('username:password'); ?>"
+                                                                        ng-model="agentconfig.auth">
                                                             </div>
                                                         </div>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="card margin-bottom-10">
+                                                    <div class="card-header">
+                                                        <i class="fa fa-terminal"></i>
+                                                        <?= __('Check configuration '); ?>
+                                                    </div>
+
+                                                    <div class="card-body">
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.customchecks"
@@ -484,11 +686,11 @@
 
                                                             <div class="col-xs-12 col-md-9">
                                                                 <input
-                                                                    id="agentconfigCustomchecks.max_worker_threads"
-                                                                    class="form-control"
-                                                                    type="number"
-                                                                    min="2"
-                                                                    ng-model="agentconfigCustomchecks['max_worker_threads']">
+                                                                        id="agentconfigCustomchecks.max_worker_threads"
+                                                                        class="form-control"
+                                                                        type="number"
+                                                                        min="2"
+                                                                        ng-model="agentconfigCustomchecks['max_worker_threads']">
                                                                 <div class="help-block">
                                                                     <?php echo __('Set maximum amount of threads used for customchecks.'); ?>
                                                                     <br>
@@ -499,7 +701,7 @@
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.temperature-fahrenheit"
@@ -516,7 +718,7 @@
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.dockerstats"
@@ -530,7 +732,7 @@
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.qemustats"
@@ -544,7 +746,7 @@
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.cpustats"
@@ -558,7 +760,7 @@
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.sensorstats"
@@ -572,7 +774,7 @@
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.processstats"
@@ -586,7 +788,7 @@
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.processstats-including-child-ids"
@@ -603,7 +805,7 @@
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.netstats"
@@ -617,7 +819,7 @@
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.diskstats"
@@ -631,7 +833,7 @@
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.netio"
@@ -645,7 +847,7 @@
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.diskio"
@@ -659,7 +861,7 @@
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.winservices"
@@ -673,7 +875,7 @@
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.systemdservices"
@@ -687,7 +889,7 @@
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.wineventlog"
@@ -701,7 +903,7 @@
 
                                                         <div class="form-group col-12">
                                                             <div
-                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                    class="custom-control custom-checkbox margin-bottom-10">
                                                                 <input type="checkbox"
                                                                        class="custom-control-input"
                                                                        id="agentconfig.alfrescostats"
@@ -716,7 +918,8 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="form-group col-12" style="padding-left: 1.75rem;"
+                                                        <div class="form-group col-12"
+                                                             style="padding-left: 1.75rem;"
                                                              ng-show="agentconfig.alfrescostats">
                                                             <div class="form-group col-12 padding-left-0">
                                                                 <label class="col-12 control-label"
@@ -726,11 +929,11 @@
 
                                                                 <div class="col-xs-12 col-md-9">
                                                                     <input
-                                                                        id="agentconfig['alfresco-jmxuser']"
-                                                                        class="form-control"
-                                                                        type="text"
-                                                                        placeholder="<?php echo 'monitorRole'; ?>"
-                                                                        ng-model="agentconfig['alfresco-jmxuser']">
+                                                                            id="agentconfig['alfresco-jmxuser']"
+                                                                            class="form-control"
+                                                                            type="text"
+                                                                            placeholder="<?php echo 'monitorRole'; ?>"
+                                                                            ng-model="agentconfig['alfresco-jmxuser']">
                                                                 </div>
                                                             </div>
 
@@ -742,11 +945,11 @@
 
                                                                 <div class="col-xs-12 col-md-9">
                                                                     <input
-                                                                        id="agentconfig['alfresco-jmxpassword']"
-                                                                        class="form-control"
-                                                                        type="text"
-                                                                        placeholder="<?php echo 'change_asap'; ?>"
-                                                                        ng-model="agentconfig['alfresco-jmxpassword']">
+                                                                            id="agentconfig['alfresco-jmxpassword']"
+                                                                            class="form-control"
+                                                                            type="text"
+                                                                            placeholder="<?php echo 'change_asap'; ?>"
+                                                                            ng-model="agentconfig['alfresco-jmxpassword']">
                                                                 </div>
                                                             </div>
 
@@ -758,11 +961,11 @@
 
                                                                 <div class="col-xs-12 col-md-9">
                                                                     <input
-                                                                        id="agentconfig['alfresco-jmxaddress']"
-                                                                        class="form-control"
-                                                                        type="text"
-                                                                        placeholder="<?php echo '0.0.0.0'; ?>"
-                                                                        ng-model="agentconfig['alfresco-jmxaddress']">
+                                                                            id="agentconfig['alfresco-jmxaddress']"
+                                                                            class="form-control"
+                                                                            type="text"
+                                                                            placeholder="<?php echo '0.0.0.0'; ?>"
+                                                                            ng-model="agentconfig['alfresco-jmxaddress']">
                                                                 </div>
                                                             </div>
 
@@ -774,11 +977,11 @@
 
                                                                 <div class="col-xs-12 col-md-9">
                                                                     <input
-                                                                        id="agentconfig['alfresco-jmxport']"
-                                                                        class="form-control"
-                                                                        type="number"
-                                                                        min="1"
-                                                                        ng-model="agentconfig['alfresco-jmxport']">
+                                                                            id="agentconfig['alfresco-jmxport']"
+                                                                            class="form-control"
+                                                                            type="number"
+                                                                            min="1"
+                                                                            ng-model="agentconfig['alfresco-jmxport']">
                                                                 </div>
                                                             </div>
 
@@ -790,11 +993,11 @@
 
                                                                 <div class="col-xs-12 col-md-9">
                                                                     <input
-                                                                        id="agentconfig['alfresco-jmxpath']"
-                                                                        class="form-control"
-                                                                        type="text"
-                                                                        placeholder="<?php echo '/alfresco/jmxrmi'; ?>"
-                                                                        ng-model="agentconfig['alfresco-jmxpath']">
+                                                                            id="agentconfig['alfresco-jmxpath']"
+                                                                            class="form-control"
+                                                                            type="text"
+                                                                            placeholder="<?php echo '/alfresco/jmxrmi'; ?>"
+                                                                            ng-model="agentconfig['alfresco-jmxpath']">
                                                                     <div class="help-block">
                                                                         <?php echo __('The path behind the JMX address (service:jmx:rmi:///jndi/rmi://0.0.0.0:50500), e.g. "/alfresco/jmxrmi"'); ?>
                                                                     </div>
@@ -809,10 +1012,10 @@
 
                                                                 <div class="col-xs-12 col-md-9">
                                                                     <input
-                                                                        id="agentconfig['alfresco-jmxquery']"
-                                                                        class="form-control"
-                                                                        type="text"
-                                                                        ng-model="agentconfig['alfresco-jmxquery']">
+                                                                            id="agentconfig['alfresco-jmxquery']"
+                                                                            class="form-control"
+                                                                            type="text"
+                                                                            ng-model="agentconfig['alfresco-jmxquery']">
                                                                     <div class="help-block">
                                                                         <?php echo __('Set you custom Alfresco JMX query. Leave empty to use the default.'); ?>
                                                                     </div>
@@ -827,11 +1030,11 @@
 
                                                                 <div class="col-xs-12 col-md-9">
                                                                     <input
-                                                                        id="agentconfig['alfresco-javapath']"
-                                                                        class="form-control"
-                                                                        type="text"
-                                                                        placeholder="<?php echo '/usr/bin/java'; ?>"
-                                                                        ng-model="agentconfig['alfresco-javapath']">
+                                                                            id="agentconfig['alfresco-javapath']"
+                                                                            class="form-control"
+                                                                            type="text"
+                                                                            placeholder="<?php echo '/usr/bin/java'; ?>"
+                                                                            ng-model="agentconfig['alfresco-javapath']">
                                                                     <div class="help-block">
                                                                         <?php echo __('Java need to be installed on agent host system if you want to use alfrescostats.'); ?>
                                                                     </div>
@@ -841,670 +1044,690 @@
                                                         </div>
 
                                                     </div>
-                                                </form>
+                                                </div>
 
-                                            </div>
-
-                                            <div class="widget-body col-xs-12 col-md-3">
-                                                <p><b><?= __('agent.cnf:'); ?></b></p>
-                                                <textarea class="form-control" readonly ng-model="configTemplate"
-                                                          style="min-height: 580px; width: 100%;"></textarea>
-                                            </div>
-                                            <div class="widget-body col-xs-12 col-md-3" style="padding-right: 35px;"
-                                                 ng-if="agentconfig.customchecks">
-                                                <p><b><?= __('customchecks.cnf:'); ?></b></p>
-                                                <textarea class="form-control" readonly
-                                                          ng-model="configTemplateCustomchecks"
-                                                          style="min-height: 580px; width: 100%;"></textarea>
-                                            </div>
+                                            </form>
 
                                         </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
 
-                                    </div>
-                                </div>
-
-
-                                <div class="row" ng-if="(pullMode || pushMode) && !installed && configured">
-                                    <div class="padding-20">
-                                        <div class="row" style="border-bottom: none;">
-                                            <div class="row col-12 padding-left-25">
-                                                <p>
-                                                    <?= __('Download the agent installer for your system from our official openITCOCKPIT Website:'); ?>
-                                                    <a href="https://openitcockpit.io/agent"
-                                                       target="_blank"><?= __('Download here'); ?></a>
-                                                    <br><br>
-                                                    <?= __('After the installation you have to update the default configuration files with the recently generated configuration'); ?>
-                                                    <br>
-                                                </p>
-                                            </div>
-
-                                            <br>
-                                            <div class="row col-12">
-                                                <div class="col-xs-12 col-md-6">
-                                                    <div class="panel panel-default">
-                                                        <div class="panel-hrd padding-20" style="padding-bottom: 0px;">
-                                                            <h4>
-                                                                <?= __('Config file default paths:'); ?>
-                                                            </h4>
-                                                            <hr/>
-                                                        </div>
-                                                        <div class="panel-container padding-20">
-                                                            <div class="text">
-                                                                <ul>
-                                                                    <li>
-                                                                        <?= __('Windows:'); ?>
-                                                                        <code>
-                                                                            <?= __('C:\Program Files\openitcockpit-agent\config.cnf'); ?>
-                                                                        </code>
-                                                                    </li>
-                                                                    <li>
-                                                                        <?= __('Linux:'); ?>
-                                                                        <code>
-                                                                            <?= __('/etc/openitcockpit-agent/config.cnf'); ?>
-                                                                        </code>
-                                                                    </li>
-                                                                    <li>
-                                                                        <?= __('macOS:'); ?>
-                                                                        <code>
-                                                                            <?= __('/Library/openitcockpit-agent/config.cnf'); ?>
-                                                                        </code>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                            <div class="card margin-bottom-10">
+                                                <div class="card-header">
+                                                    <i class="far fa-file-code"></i>
+                                                    <?= __('config.cnf'); ?>
                                                 </div>
-                                            </div>
 
-                                            <div class="row col-12 padding-left-25">
-                                                <p>
-                                                    <br>
-                                                    <?= __('Depending on your system, go to the configuration directory and replace the contents of the .cnf files with the following content:'); ?>
-                                                    <br>
-                                                    (<?= __('If the custom check configuration file is set, be sure, the file path matches the path for your specific system.'); ?>
-                                                    )
-                                                </p>
-                                            </div>
-
-                                            <div class="row col-12">
-                                                <div class="widget-body col-xs-12 col-md-3">
-                                                    <p><b><?= __('agent.cnf:'); ?></b></p>
-                                                    <textarea class="form-control" readonly ng-model="configTemplate"
+                                                <div class="card-body">
+                                                    <textarea class="form-control"
+                                                              readonly
+                                                              ng-model="configTemplate"
                                                               style="min-height: 580px; width: 100%;"></textarea>
                                                 </div>
-                                                <div class="widget-body col-xs-12 col-md-3"
-                                                     ng-if="agentconfig.customchecks">
-                                                    <p><b><?= __('customchecks.cnf:'); ?></b></p>
-                                                    <textarea class="form-control" readonly
+                                            </div>
+
+                                            <div class="card margin-bottom-10" ng-if="agentconfig.customchecks">
+                                                <div class="card-header">
+                                                    <i class="far fa-file-code"></i>
+                                                    <?= __('customchecks.cnf'); ?>
+                                                </div>
+
+                                                <div class="card-body">
+                                                    <textarea class="form-control"
+                                                              readonly
                                                               ng-model="configTemplateCustomchecks"
                                                               style="min-height: 580px; width: 100%;"></textarea>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            <div class="row col-12 padding-left-25">
-                                                <p>
-                                                    <br>
-                                                    <?= __('Restart the agent to apply the new configuration:'); ?>
-                                                </p>
-                                            </div>
+                                    </div> <!-- row end -->
 
-                                            <div class="row col-12">
 
-                                                <div class="col-xs-12 col-md-6">
-                                                    <div class="panel panel-default">
-                                                        <div class="panel-hrd padding-20" style="padding-bottom: 0px;">
-                                                            <h4>
-                                                                <?= __('Run as administrator:'); ?>
-                                                            </h4>
-                                                            <hr/>
-                                                        </div>
+                                </div> <!-- col-12 end -->
+                            </div>
+                            <!-- 2nd Step End -->
 
-                                                        <div class="panel-container padding-20">
-                                                            <div class="text">
-                                                                <ul>
-                                                                    <li>
-                                                                        <?= __('Windows CMD:'); ?>
-                                                                        <code><?= __('sc stop oitcAgentSvc && sc
-                                                                            start oitcAgentSvc'); ?>
-                                                                        </code>
-                                                                    </li>
-                                                                    <li>
-                                                                        <?= __('Linux:'); ?>
-                                                                        <code><?= __('systemctl restart
-                                                                            openitcockpit-agent'); ?>
-                                                                        </code>
-                                                                    </li>
-                                                                    <li>
-                                                                        <?= __('macOS:'); ?>
-                                                                        <code><?= __('/bin/launchctl restart
-                                                                            com.it-novum.openitcockpit.agent'); ?>
-                                                                        </code>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                            <!-- 3rd Step -->
+                            <div class="row padding-top-20" ng-if="(pullMode || pushMode) && !installed && configured">
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="card margin-bottom-10">
+                                                <div class="card-header">
+                                                    <i class="fas fa-download"></i>
+                                                    <?= __('Download and install openITCOCKPIT Monitoring Agent'); ?>
                                                 </div>
 
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                                <div class="card-body">
 
+                                                    <div class="row">
 
-                                <div class=" row"
-                                     ng-if="(pullMode || pushMode) && installed && configured && !servicesConfigured">
-                                    <div class="col-12 padding-20">
-                                        <div class="margin-bottom-25">
-                                            <span class="widget-icon">
-                                                <i class="fa fa-magic"></i>
-                                            </span>
-                                            <h4 ng-hide="servicesToCreate" class="margin-bottom-10"
-                                                style="display: inline;"><?php echo __('Wait get check results from the configured agent ...'); ?></h4>
-                                            <h4 ng-show="servicesToCreate" class="margin-bottom-10"
-                                                style="display: inline;"><?php echo __('Please choose the options you want to monitor'); ?></h4>
-                                        </div>
-
-
-                                        <div class="row" style="border-bottom: none;">
-                                            <div class="col-12">
-                                                <p ng-hide="servicesToCreate">
-                                                    <?= __('Be patient, a background job is asking the openITCOCKPIT Server (every 10 seconds) for agent check results.'); ?>
-                                                    <br>
-                                                    <?= __('Please make sure the agent is running and right configured.'); ?>
-                                                </p>
-                                                <p ng-hide="servicesToCreate || !servicesToCreateError || servicesToCreateError == ''"
-                                                   class="txt-color-red">
-                                                    <?= __('During agent check the following error occurred:'); ?><br>
-                                                    {{servicesToCreateError}}
-                                                    <br><br>
-                                                    <?= __('The request will be tried again ...'); ?>
-                                                </p>
-
-                                                <div class="row" ng-show="servicesToCreate">
-                                                    <div class="col-12">
-                                                        <div class="widget-body">
-
-                                                            <div class="row margin-bottom-5"
-                                                                 ng-show="servicesToCreate.CpuTotalPercentage">
-                                                                <div class="form-group col-12">
-                                                                    <div
-                                                                        class="custom-control custom-checkbox margin-bottom-10">
-                                                                        <input type="checkbox"
-                                                                               class="custom-control-input"
-                                                                               id="choosenServicesToMonitor.CpuTotalPercentage"
-                                                                               ng-model="choosenServicesToMonitor.CpuTotalPercentage">
-                                                                        <label class="custom-control-label"
-                                                                               for="choosenServicesToMonitor.CpuTotalPercentage">
-                                                                            <?php echo __('CPU percentage'); ?>
-                                                                        </label>
+                                                        <div class="col-12">
+                                                            <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                                                <div class="d-flex align-items-center">
+                                                                    <div class="alert-icon">
+                                                                        <span class="icon-stack icon-stack-md">
+                                                                            <i class="base-7 icon-stack-3x color-info-600"></i>
+                                                                            <i class="fas fa-download icon-stack-1x text-white"></i>
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="flex-1">
+                                                                        <span class="h5 color-info-600">
+                                                                            <?= __('Download and install the openITCOCKPIT Monitoring Agent.'); ?>
+                                                                        </span>
+                                                                        <br>
+                                                                        <?= __('If not already done, please {0} the openITCOCKPIT Agent now.', '<a href="https://openitcockpit.io/download_agent" target="_blank">' . __('download and install') . '</a>'); ?>
                                                                     </div>
                                                                 </div>
                                                             </div>
-
-                                                            <div class="row margin-bottom-5"
-                                                                 ng-show="servicesToCreate.SystemLoad">
-                                                                <div class="form-group col-12">
-                                                                    <div
-                                                                        class="custom-control custom-checkbox margin-bottom-10">
-                                                                        <input type="checkbox"
-                                                                               class="custom-control-input"
-                                                                               id="choosenServicesToMonitor.SystemLoad"
-                                                                               ng-model="choosenServicesToMonitor.SystemLoad">
-                                                                        <label class="custom-control-label"
-                                                                               for="choosenServicesToMonitor.SystemLoad">
-                                                                            <?php echo __('System load'); ?>
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="row margin-bottom-5"
-                                                                 ng-show="servicesToCreate.MemoryUsage">
-                                                                <div class="form-group col-12">
-                                                                    <div
-                                                                        class="custom-control custom-checkbox margin-bottom-10">
-                                                                        <input type="checkbox"
-                                                                               class="custom-control-input"
-                                                                               id="choosenServicesToMonitor.MemoryUsage"
-                                                                               ng-model="choosenServicesToMonitor.MemoryUsage">
-                                                                        <label class="custom-control-label"
-                                                                               for="choosenServicesToMonitor.MemoryUsage">
-                                                                            <?php echo __('Memory usage'); ?>
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="row margin-bottom-5"
-                                                                 ng-show="servicesToCreate.SwapUsage">
-                                                                <div class="form-group col-12">
-                                                                    <div
-                                                                        class="custom-control custom-checkbox margin-bottom-10">
-                                                                        <input type="checkbox"
-                                                                               class="custom-control-input"
-                                                                               id="choosenServicesToMonitor.SwapUsage"
-                                                                               ng-model="choosenServicesToMonitor.SwapUsage">
-                                                                        <label class="custom-control-label"
-                                                                               for="choosenServicesToMonitor.SwapUsage">
-                                                                            <?php echo __('Swap usage'); ?>
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.DiskIO"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.DiskIO">
-                                                                    <?php echo __('Disk IO'); ?>
-                                                                    ({{countObj(servicesToCreate.DiskIO)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.DiskIO"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.DiskIO"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.DiskIO"
-                                                                        ng-model="choosenServicesToMonitor.DiskIO">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.DiskUsage"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.DiskUsage">
-                                                                    <?php echo __('Disk usage'); ?>
-                                                                    ({{countObj(servicesToCreate.DiskUsage)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.DiskUsage"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.DiskUsage"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.DiskUsage"
-                                                                        ng-model="choosenServicesToMonitor.DiskUsage">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.Fan"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.Fan">
-                                                                    <?php echo __('Fans'); ?>
-                                                                    ({{countObj(servicesToCreate.Fan)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.Fan"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.Fan"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.Fan"
-                                                                        ng-model="choosenServicesToMonitor.Fan">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.Temperature"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.Temperature">
-                                                                    <?php echo __('Temperatures'); ?>
-                                                                    ({{countObj(servicesToCreate.Temperature)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.Temperature"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.Temperature"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.Temperature"
-                                                                        ng-model="choosenServicesToMonitor.Temperature">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="row margin-bottom-5"
-                                                                 ng-show="servicesToCreate.Battery">
-                                                                <div class="form-group col-12">
-                                                                    <div
-                                                                        class="custom-control custom-checkbox margin-bottom-10">
-                                                                        <input type="checkbox"
-                                                                               class="custom-control-input"
-                                                                               id="choosenServicesToMonitor.Battery"
-                                                                               ng-model="choosenServicesToMonitor.Battery">
-                                                                        <label class="custom-control-label"
-                                                                               for="choosenServicesToMonitor.Battery">
-                                                                            <?php echo __('Battery'); ?>
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.NetIO"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.NetIO">
-                                                                    <?php echo __('Network device IO'); ?>
-                                                                    ({{countObj(servicesToCreate.NetIO)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.NetIO"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.NetIO"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.NetIO"
-                                                                        ng-model="choosenServicesToMonitor.NetIO">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.NetStats"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.NetStats">
-                                                                    <?php echo __('Network device stats'); ?>
-                                                                    ({{countObj(servicesToCreate.NetStats)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.NetStats"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.NetStats"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.NetStats"
-                                                                        ng-model="choosenServicesToMonitor.NetStats">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.Process"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.Process">
-                                                                    <?php echo __('Processes'); ?>
-                                                                    ({{countObj(servicesToCreate.Process)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.Process"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.Process"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.Process"
-                                                                        ng-model="choosenServicesToMonitor.Process">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.WindowsService"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.WindowsService">
-                                                                    <?php echo __('Windows services'); ?>
-                                                                    ({{countObj(servicesToCreate.WindowsService)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.WindowsService"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.WindowsService"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.WindowsService"
-                                                                        ng-model="choosenServicesToMonitor.WindowsService">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.SystemdService"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.SystemdService">
-                                                                    <?php echo __('Systemd services'); ?>
-                                                                    ({{countObj(servicesToCreate.SystemdService)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.SystemdService"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.SystemdService"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.SystemdService"
-                                                                        ng-model="choosenServicesToMonitor.SystemdService">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.WindowsEventlog"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.WindowsEventlog">
-                                                                    <?php echo __('Windows event log'); ?>
-                                                                    ({{countObj(servicesToCreate.WindowsEventlog)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.WindowsEventlog"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.WindowsEventlog"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.WindowsEventlog"
-                                                                        ng-model="choosenServicesToMonitor.WindowsEventlog">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.Alfresco"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.Alfresco">
-                                                                    <?php echo __('Alfresco checks'); ?>
-                                                                    ({{countObj(servicesToCreate.Alfresco)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.Alfresco"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.Alfresco"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.Alfresco"
-                                                                        ng-model="choosenServicesToMonitor.Alfresco">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.DockerContainerRunning"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.DockerContainerRunning">
-                                                                    <?php echo __('Docker container running'); ?>
-                                                                    ({{countObj(servicesToCreate.DockerContainerRunning)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.DockerContainerRunning"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.DockerContainerRunning"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.DockerContainerRunning"
-                                                                        ng-model="choosenServicesToMonitor.DockerContainerRunning">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.DockerContainerCPU"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.DockerContainerCPU">
-                                                                    <?php echo __('Docker container cpu usage'); ?>
-                                                                    ({{countObj(servicesToCreate.DockerContainerCPU)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.DockerContainerCPU"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.DockerContainerCPU"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.DockerContainerCPU"
-                                                                        ng-model="choosenServicesToMonitor.DockerContainerCPU">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.DockerContainerMemory"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.DockerContainerMemory">
-                                                                    <?php echo __('Docker container memory usage'); ?>
-                                                                    ({{countObj(servicesToCreate.DockerContainerMemory)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.DockerContainerMemory"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.DockerContainerMemory"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.DockerContainerMemory"
-                                                                        ng-model="choosenServicesToMonitor.DockerContainerMemory">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.QemuVMRunning"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.QemuVMRunning">
-                                                                    <?php echo __('QEMU vm running'); ?>
-                                                                    ({{countObj(servicesToCreate.QemuVMRunning)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.QemuVMRunning"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.QemuVMRunning"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.QemuVMRunning"
-                                                                        ng-model="choosenServicesToMonitor.QemuVMRunning">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                            <div ng-show="servicesToCreate.Customcheck"
-                                                                 class="form-group col-12 padding-left-0 margin-bottom-5">
-                                                                <label class="control-label"
-                                                                       for="choosenServicesToMonitor.Customcheck">
-                                                                    <?php echo __('Customchecks'); ?>
-                                                                    ({{countObj(servicesToCreate.Customcheck)}})
-                                                                </label>
-                                                                <div class="col-xs-12 col-lg-6 padding-left-0">
-                                                                    <select
-                                                                        id="choosenServicesToMonitor.Customcheck"
-                                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                                        class="form-control"
-                                                                        chosen="servicesToCreate.Customcheck"
-                                                                        multiple
-                                                                        ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.Customcheck"
-                                                                        ng-model="choosenServicesToMonitor.Customcheck">
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
                                                         </div>
+
                                                     </div>
                                                 </div>
-
                                             </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div class="row"
-                                     ng-if="(pullMode || pushMode) && installed && configured && servicesConfigured">
-                                    <div class="col-12 padding-20">
-                                        <div class="margin-bottom-25">
-                                            <span class="widget-icon">
-                                                <i class="fa fa-magic"></i>
-                                            </span>
-                                            <h4 ng-show="!finished" class="margin-bottom-10"
-                                                style="display: inline;"><?php echo __('Save changes'); ?></h4>
-                                            <h4 ng-show="finished" class="margin-bottom-10"
-                                                style="display: inline;"><?php echo __('Setup finished'); ?></h4>
                                         </div>
 
                                         <div class="col-12">
+                                            <div class="card margin-bottom-10">
+                                                <div class="card-header">
+                                                    <i class="fas fa-file-code"></i>
+                                                    <?= __('Copy configuration file'); ?>
+                                                </div>
 
-                                            <div class="row" style="border-bottom: none;" ng-show="!finished">
-                                                <p>
-                                                    <?= __('Please wait during service creation ...'); ?>
-                                                </p>
-                                            </div>
+                                                <div class="card-body">
 
-                                            <div class="row" style="border-bottom: none;"
-                                                 ng-show="finished && serviceQueue.length > 0">
-                                                <p class="col-12 padding-left-0">
-                                                    <?= __('Agent services successfully created.'); ?>
-                                                </p>
-                                                <p class="col-12 padding-left-0">
-                                                    <b><?= __('Next steps: Run an export and keep your agent running :)'); ?></b>
-                                                </p>
-                                            </div>
-                                            <div class="row" style="border-bottom: none;"
-                                                 ng-show="finished && serviceQueue.length <= 0">
-                                                <p>
-                                                    <?= __('No services were created.'); ?>
-                                                </p>
-                                            </div>
-                                            <div class="row" style="border-bottom: none;"
-                                                 ng-show="finished && pushMode && agentconfig['try-autossl']">
-                                                <p class="col-12 padding-left-0">
-                                                    <b><?= __('To activate automatic ssl certificate generation for this agent, click here to trust it: '); ?></b>
-                                                    <button
-                                                        type="button" style="min-height: 35px;"
-                                                        class="btn btn-labeled btn-primary margin-left-10"
-                                                        ui-sref="AgentconnectorsAgent({hostuuid: host.uuid})">
+                                                    <div class="row">
 
-                                                        <?= __('Show untrusted agent'); ?>
-                                                    </button>
-                                                </p>
-                                            </div>
+                                                        <div class="col-12 padding-bottom-10">
+                                                            <?= __('After the installation process is completed you should replace the default openITCOCKPIT Agent configuration with the recently generated configuration.'); ?>
+                                                            <br>
+                                                            <?= __('Copy and paste the shown configuration file to'); ?>
+                                                            <code ng-show="selectedOs === 'windows'"><?= __('C:\Program Files\openitcockpit-agent\config.cnf'); ?></code>
+                                                            <code ng-show="selectedOs === 'linux'"><?= __('/etc/openitcockpit-agent/config.cnf'); ?></code>
+                                                            <code ng-show="selectedOs === 'macos'"><?= __('/Library/openitcockpit-agent/config.cnf'); ?></code>
+                                                        </div>
+                                                    </div>
 
+                                                    <div class="row">
+                                                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 padding-bottom-10">
+                                                            <b><?= __('config.cnf:'); ?></b>
+                                                            <br>
+                                                            <textarea class="form-control"
+                                                                      readonly
+                                                                      ng-model="configTemplate"
+                                                                      style="min-height: 580px; width: 100%;"></textarea>
+                                                        </div>
+
+                                                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 padding-bottom-10"
+                                                             ng-if="agentconfig.customchecks">
+                                                            <b><?= __('customchecks.cnf:'); ?></b>
+                                                            <br>
+                                                            <textarea class="form-control"
+                                                                      readonly
+                                                                      ng-model="configTemplateCustomchecks"
+                                                                      style="min-height: 580px; width: 100%;"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
+
+                                        <div class="col-12">
+                                            <div class="card margin-bottom-10">
+                                                <div class="card-header">
+                                                    <i class="fas fa-undo"></i>
+                                                    <?= __('Restart openITCOCKPIT Agent'); ?>
+                                                </div>
+                                                <div class="card-body">
+
+                                                    <div class="row padding-bottom-10">
+                                                        <div class="col-12 padding-bottom-10">
+                                                            <?= __('To enable the new configuration a restart of the openITCOCKPIT Agent is required.'); ?>
+                                                        </div>
+
+                                                        <div class="col-12" ng-show="selectedOs === 'windows'">
+                                                            <?= __('Run as administrator (via cmd.exe)'); ?>
+                                                            <code><?= __('sc stop oitcAgentSvc && sc start oitcAgentSvc'); ?></code>
+                                                        </div>
+
+                                                        <div class="col-12" ng-show="selectedOs === 'linux'">
+                                                            <code><?= __('sudo systemctl restart openitcockpit-agent.service'); ?></code>
+                                                        </div>
+
+                                                        <div class="col-12" ng-show="selectedOs === 'macos'">
+                                                            <code><?= __('sudo /bin/launchctl restart com.it-novum.openitcockpit.agent'); ?></code>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
+                            </div>
+                            <!-- 3rd Step End -->
 
+                            <div class="row">
+                                <div>
+
+
+                                    <div class=" row"
+                                         ng-if="(pullMode || pushMode) && installed && configured && !servicesConfigured">
+                                        <div class="col-12 padding-20">
+                                            <div class="margin-bottom-25">
+                                            <span class="widget-icon">
+                                                <i class="fa fa-magic"></i>
+                                            </span>
+                                                <h4 ng-hide="servicesToCreate" class="margin-bottom-10"
+                                                    style="display: inline;"><?php echo __('Wait get check results from the configured agent ...'); ?></h4>
+                                                <h4 ng-show="servicesToCreate" class="margin-bottom-10"
+                                                    style="display: inline;"><?php echo __('Please choose the options you want to monitor'); ?></h4>
+                                            </div>
+
+
+                                            <div class="row" style="border-bottom: none;">
+                                                <div class="col-12">
+                                                    <p ng-hide="servicesToCreate">
+                                                        <?= __('Be patient, a background job is asking the openITCOCKPIT Server (every 10 seconds) for agent check results.'); ?>
+                                                        <br>
+                                                        <?= __('Please make sure the agent is running and right configured.'); ?>
+                                                    </p>
+                                                    <p ng-hide="servicesToCreate || !servicesToCreateError || servicesToCreateError == ''"
+                                                       class="txt-color-red">
+                                                        <?= __('During agent check the following error occurred:'); ?>
+                                                        <br>
+                                                        {{servicesToCreateError}}
+                                                        <br><br>
+                                                        <?= __('The request will be tried again ...'); ?>
+                                                    </p>
+
+                                                    <div class="row" ng-show="servicesToCreate">
+                                                        <div class="col-12">
+                                                            <div class="widget-body">
+
+                                                                <div class="row margin-bottom-5"
+                                                                     ng-show="servicesToCreate.CpuTotalPercentage">
+                                                                    <div class="form-group col-12">
+                                                                        <div
+                                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                            <input type="checkbox"
+                                                                                   class="custom-control-input"
+                                                                                   id="choosenServicesToMonitor.CpuTotalPercentage"
+                                                                                   ng-model="choosenServicesToMonitor.CpuTotalPercentage">
+                                                                            <label class="custom-control-label"
+                                                                                   for="choosenServicesToMonitor.CpuTotalPercentage">
+                                                                                <?php echo __('CPU percentage'); ?>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row margin-bottom-5"
+                                                                     ng-show="servicesToCreate.SystemLoad">
+                                                                    <div class="form-group col-12">
+                                                                        <div
+                                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                            <input type="checkbox"
+                                                                                   class="custom-control-input"
+                                                                                   id="choosenServicesToMonitor.SystemLoad"
+                                                                                   ng-model="choosenServicesToMonitor.SystemLoad">
+                                                                            <label class="custom-control-label"
+                                                                                   for="choosenServicesToMonitor.SystemLoad">
+                                                                                <?php echo __('System load'); ?>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row margin-bottom-5"
+                                                                     ng-show="servicesToCreate.MemoryUsage">
+                                                                    <div class="form-group col-12">
+                                                                        <div
+                                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                            <input type="checkbox"
+                                                                                   class="custom-control-input"
+                                                                                   id="choosenServicesToMonitor.MemoryUsage"
+                                                                                   ng-model="choosenServicesToMonitor.MemoryUsage">
+                                                                            <label class="custom-control-label"
+                                                                                   for="choosenServicesToMonitor.MemoryUsage">
+                                                                                <?php echo __('Memory usage'); ?>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row margin-bottom-5"
+                                                                     ng-show="servicesToCreate.SwapUsage">
+                                                                    <div class="form-group col-12">
+                                                                        <div
+                                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                            <input type="checkbox"
+                                                                                   class="custom-control-input"
+                                                                                   id="choosenServicesToMonitor.SwapUsage"
+                                                                                   ng-model="choosenServicesToMonitor.SwapUsage">
+                                                                            <label class="custom-control-label"
+                                                                                   for="choosenServicesToMonitor.SwapUsage">
+                                                                                <?php echo __('Swap usage'); ?>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.DiskIO"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.DiskIO">
+                                                                        <?php echo __('Disk IO'); ?>
+                                                                        ({{countObj(servicesToCreate.DiskIO)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.DiskIO"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.DiskIO"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.DiskIO"
+                                                                                ng-model="choosenServicesToMonitor.DiskIO">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.DiskUsage"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.DiskUsage">
+                                                                        <?php echo __('Disk usage'); ?>
+                                                                        ({{countObj(servicesToCreate.DiskUsage)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.DiskUsage"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.DiskUsage"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.DiskUsage"
+                                                                                ng-model="choosenServicesToMonitor.DiskUsage">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.Fan"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.Fan">
+                                                                        <?php echo __('Fans'); ?>
+                                                                        ({{countObj(servicesToCreate.Fan)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.Fan"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.Fan"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.Fan"
+                                                                                ng-model="choosenServicesToMonitor.Fan">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.Temperature"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.Temperature">
+                                                                        <?php echo __('Temperatures'); ?>
+                                                                        ({{countObj(servicesToCreate.Temperature)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.Temperature"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.Temperature"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.Temperature"
+                                                                                ng-model="choosenServicesToMonitor.Temperature">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row margin-bottom-5"
+                                                                     ng-show="servicesToCreate.Battery">
+                                                                    <div class="form-group col-12">
+                                                                        <div
+                                                                                class="custom-control custom-checkbox margin-bottom-10">
+                                                                            <input type="checkbox"
+                                                                                   class="custom-control-input"
+                                                                                   id="choosenServicesToMonitor.Battery"
+                                                                                   ng-model="choosenServicesToMonitor.Battery">
+                                                                            <label class="custom-control-label"
+                                                                                   for="choosenServicesToMonitor.Battery">
+                                                                                <?php echo __('Battery'); ?>
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.NetIO"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.NetIO">
+                                                                        <?php echo __('Network device IO'); ?>
+                                                                        ({{countObj(servicesToCreate.NetIO)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.NetIO"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.NetIO"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.NetIO"
+                                                                                ng-model="choosenServicesToMonitor.NetIO">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.NetStats"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.NetStats">
+                                                                        <?php echo __('Network device stats'); ?>
+                                                                        ({{countObj(servicesToCreate.NetStats)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.NetStats"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.NetStats"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.NetStats"
+                                                                                ng-model="choosenServicesToMonitor.NetStats">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.Process"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.Process">
+                                                                        <?php echo __('Processes'); ?>
+                                                                        ({{countObj(servicesToCreate.Process)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.Process"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.Process"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.Process"
+                                                                                ng-model="choosenServicesToMonitor.Process">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.WindowsService"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.WindowsService">
+                                                                        <?php echo __('Windows services'); ?>
+                                                                        ({{countObj(servicesToCreate.WindowsService)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.WindowsService"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.WindowsService"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.WindowsService"
+                                                                                ng-model="choosenServicesToMonitor.WindowsService">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.SystemdService"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.SystemdService">
+                                                                        <?php echo __('Systemd services'); ?>
+                                                                        ({{countObj(servicesToCreate.SystemdService)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.SystemdService"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.SystemdService"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.SystemdService"
+                                                                                ng-model="choosenServicesToMonitor.SystemdService">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.WindowsEventlog"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.WindowsEventlog">
+                                                                        <?php echo __('Windows event log'); ?>
+                                                                        ({{countObj(servicesToCreate.WindowsEventlog)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.WindowsEventlog"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.WindowsEventlog"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.WindowsEventlog"
+                                                                                ng-model="choosenServicesToMonitor.WindowsEventlog">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.Alfresco"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.Alfresco">
+                                                                        <?php echo __('Alfresco checks'); ?>
+                                                                        ({{countObj(servicesToCreate.Alfresco)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.Alfresco"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.Alfresco"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.Alfresco"
+                                                                                ng-model="choosenServicesToMonitor.Alfresco">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.DockerContainerRunning"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.DockerContainerRunning">
+                                                                        <?php echo __('Docker container running'); ?>
+                                                                        ({{countObj(servicesToCreate.DockerContainerRunning)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.DockerContainerRunning"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.DockerContainerRunning"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.DockerContainerRunning"
+                                                                                ng-model="choosenServicesToMonitor.DockerContainerRunning">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.DockerContainerCPU"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.DockerContainerCPU">
+                                                                        <?php echo __('Docker container cpu usage'); ?>
+                                                                        ({{countObj(servicesToCreate.DockerContainerCPU)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.DockerContainerCPU"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.DockerContainerCPU"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.DockerContainerCPU"
+                                                                                ng-model="choosenServicesToMonitor.DockerContainerCPU">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.DockerContainerMemory"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.DockerContainerMemory">
+                                                                        <?php echo __('Docker container memory usage'); ?>
+                                                                        ({{countObj(servicesToCreate.DockerContainerMemory)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.DockerContainerMemory"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.DockerContainerMemory"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.DockerContainerMemory"
+                                                                                ng-model="choosenServicesToMonitor.DockerContainerMemory">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.QemuVMRunning"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.QemuVMRunning">
+                                                                        <?php echo __('QEMU vm running'); ?>
+                                                                        ({{countObj(servicesToCreate.QemuVMRunning)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.QemuVMRunning"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.QemuVMRunning"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.QemuVMRunning"
+                                                                                ng-model="choosenServicesToMonitor.QemuVMRunning">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div ng-show="servicesToCreate.Customcheck"
+                                                                     class="form-group col-12 padding-left-0 margin-bottom-5">
+                                                                    <label class="control-label"
+                                                                           for="choosenServicesToMonitor.Customcheck">
+                                                                        <?php echo __('Customchecks'); ?>
+                                                                        ({{countObj(servicesToCreate.Customcheck)}})
+                                                                    </label>
+                                                                    <div class="col-xs-12 col-lg-6 padding-left-0">
+                                                                        <select
+                                                                                id="choosenServicesToMonitor.Customcheck"
+                                                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                                                class="form-control"
+                                                                                chosen="servicesToCreate.Customcheck"
+                                                                                multiple
+                                                                                ng-options="key as value.agent_wizard_option_description for (key, value) in servicesToCreate.Customcheck"
+                                                                                ng-model="choosenServicesToMonitor.Customcheck">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row"
+                                         ng-if="(pullMode || pushMode) && installed && configured && servicesConfigured">
+                                        <div class="col-12 padding-20">
+                                            <div class="margin-bottom-25">
+                                            <span class="widget-icon">
+                                                <i class="fa fa-magic"></i>
+                                            </span>
+                                                <h4 ng-show="!finished" class="margin-bottom-10"
+                                                    style="display: inline;"><?php echo __('Save changes'); ?></h4>
+                                                <h4 ng-show="finished" class="margin-bottom-10"
+                                                    style="display: inline;"><?php echo __('Setup finished'); ?></h4>
+                                            </div>
+
+                                            <div class="col-12">
+
+                                                <div class="row" style="border-bottom: none;" ng-show="!finished">
+                                                    <p>
+                                                        <?= __('Please wait during service creation ...'); ?>
+                                                    </p>
+                                                </div>
+
+                                                <div class="row" style="border-bottom: none;"
+                                                     ng-show="finished && serviceQueue.length > 0">
+                                                    <p class="col-12 padding-left-0">
+                                                        <?= __('Agent services successfully created.'); ?>
+                                                    </p>
+                                                    <p class="col-12 padding-left-0">
+                                                        <b><?= __('Next steps: Run an export and keep your agent running :)'); ?></b>
+                                                    </p>
+                                                </div>
+                                                <div class="row" style="border-bottom: none;"
+                                                     ng-show="finished && serviceQueue.length <= 0">
+                                                    <p>
+                                                        <?= __('No services were created.'); ?>
+                                                    </p>
+                                                </div>
+                                                <div class="row" style="border-bottom: none;"
+                                                     ng-show="finished && pushMode && agentconfig['try-autossl']">
+                                                    <p class="col-12 padding-left-0">
+                                                        <b><?= __('To activate automatic ssl certificate generation for this agent, click here to trust it: '); ?></b>
+                                                        <button
+                                                                type="button" style="min-height: 35px;"
+                                                                class="btn btn-labeled btn-primary margin-left-10"
+                                                                ui-sref="AgentconnectorsAgent({hostuuid: host.uuid})">
+
+                                                            <?= __('Show untrusted agent'); ?>
+                                                        </button>
+                                                    </p>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
 
                             </div>
+                        </form>
+                    </div>
 
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 
 
