@@ -38,6 +38,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -47,12 +48,13 @@ use itnovum\openITCOCKPIT\Agent\HttpLoader;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\AgentchecksFilter;
 
 /**
- * Class AgentchecksController
- * @property AppPaginatorComponent $Paginator
+ * Class AgentconfigsController
+ * @package App\Controller
  */
 class AgentconfigsController extends AppController {
 
@@ -115,6 +117,7 @@ class AgentconfigsController extends AppController {
 
     /**
      * @param int|null $hostId
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function scan($hostId = null) {
         if (!$this->isAngularJsRequest()) {
