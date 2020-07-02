@@ -29,6 +29,7 @@ angular.module('openITCOCKPIT').directive('systemHealth', function($http, $inter
 
                     $scope.class = $scope.getHealthClass();
                     $scope.bgClass = $scope.getHealthBgClass();
+                    $scope.btnClass = $scope.getHealthBtnClass();
                 });
             };
 
@@ -61,6 +62,22 @@ angular.module('openITCOCKPIT').directive('systemHealth', function($http, $inter
 
                     default:
                         return 'bg-not-monitored';
+                }
+            };
+
+            $scope.getHealthBtnClass = function(){
+                switch($scope.systemHealth.state){
+                    case 'ok':
+                        return 'btn-success';
+
+                    case 'warning':
+                        return 'btn-warning';
+
+                    case 'critical':
+                        return 'btn-danger';
+
+                    default:
+                        return 'btn-primary';
                 }
             };
 

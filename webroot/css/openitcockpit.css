@@ -1250,3 +1250,7 @@ label.menu-open-button:hover {
 .font-size-90{
     font-size: 90px;
 }
+
+.system-health-item {
+    white-space:normal;
+}
