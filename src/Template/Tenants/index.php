@@ -178,8 +178,8 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('showDetails', 'tenants')): ?>
-                                                <a class="dropdown-item"
+                                            <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
+                                                <a class="dropdown-item text-info"
                                                    ui-sref="ContainersShowDetails({id: tenant.Tenant.container_id, tenant: 'TenantsIndex'})">
                                                     <i class="fa fa-info-circle"></i> <?php echo __('Show details'); ?>
                                                 </a>
