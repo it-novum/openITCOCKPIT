@@ -8,6 +8,14 @@ angular.module('openITCOCKPIT')
 
         $scope.useScroll = true;
 
+        var defaultServicetemplatetypeIds = ['1'];
+        if($stateParams.servicetemplateTypes !== null){
+            defaultServicetemplatetypeIds = [];
+            for(var i in $stateParams.servicetemplateTypes){
+                defaultServicetemplatetypeIds.push(String($stateParams.servicetemplateTypes[i]));
+            }
+        }
+
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {

@@ -168,7 +168,7 @@ angular.module('openITCOCKPIT')
                         clearInterval($scope.scrollInterval);
                     }
 
-                }, 15);
+                }, 10);
 
                 $scope.fullscreen = true;
             }

@@ -1175,6 +1175,10 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     id: {
                         value: null,
                         array: true
+                    },
+                    servicetemplateTypes: {
+                        value: null,
+                        array: true
                     }
                 },
                 templateUrl: "/servicetemplates/index.html",
