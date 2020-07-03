@@ -248,6 +248,7 @@ $objectDetails['maps'] = [
                 <h2>
                     <?php echo __('Container '); ?>
                     <span class="fw-300"><i><?php echo __('details'); ?></i></span>
+
                 </h2>
                 <div class="panel-toolbar">
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
@@ -264,54 +265,17 @@ $objectDetails['maps'] = [
                             </li>
                         <?php endif; ?>
                     </ul>
-                    <?php /*
-                    <div class="form-group no-margin padding-right-10">
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
-                            </div>
-                            <input type="text" class="form-control form-control-sm"
-                                   placeholder="<?php echo __('Filter by container name'); ?>"
-                                   ng-model="filter.Hosts.address"
-                                   ng-model-options="{debounce: 500}">
-                        </div>
-                    </div>
-                    <div class="form-group no-margin padding-right-10">
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fa fa-desktop"></i></span>
-                            </div>
-                            <input type="text" class="form-control form-control-sm"
-                                   placeholder="<?php echo __('Filter by host name'); ?>"
-                                   ng-model="filter.Hosts.name"
-                                   ng-model-options="{debounce: 500}">
-                        </div>
-                    </div>
-
-                    <div class="custom-control custom-checkbox padding-right-10">
-                        <input type="checkbox"
-                               id="showAll"
-                               class="custom-control-input"
-                               name="checkbox"
-                               checked="checked"
-                               ng-model="filter.expandAll"
-                               ng-model-options="{debounce: 500}"
-                               ng-true-value="false"
-                               ng-false-value="true">
-                        <label
-                            class="custom-control-label no-margin"
-                            for="showAll"> <?php echo __('Expand all'); ?></label>
-                    </div>
-
-                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="clearFilter();">
-                        <i class="fas fa-undo"></i> <?php echo __('Reset'); ?>
-                    </button>
- */ ?>
-
                     <button class="btn btn-xs btn-success shadow-0" ng-click="toggleFullscreenMode()"
+                            ng-show="tabName ==='ContainersMap'"
                             title="<?php echo __('Fullscreen mode'); ?>">
                         <i class="fa fa-expand-arrows-alt"></i>
                     </button>
+                    <?php if ($this->Acl->hasPermission('index', 'tenants')): ?>
+                        <a back-button href="javascript:void(0);" fallback-state='TenantsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0 margin-left-5">
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="panel-container show">
@@ -321,8 +285,24 @@ $objectDetails['maps'] = [
                             <div class="margin-top-10" ng-hide="isEmpty">
                                 <table class="table m-0 table-bordered table-hover table-sm">
                                     <tr ng-repeat-start="container in containersWithChilds">
-                                        <th colspan="3" class="table-dark">
-                                            <h4 class="margin-0">{{container.name}}</h4>
+                                        <th colspan="3" class="table-dark opacity-50">
+                                            <h5 class="margin-0">{{container.name}}
+                                                <span class="badge border"
+                                                      ng-show="container.containertype_id == <?= CT_TENANT; ?>">
+                                                    <i class="fa fa-home"></i>
+                                                    <?= __('Tenant'); ?>
+                                                </span>
+                                                <span class="badge border"
+                                                      ng-show="container.containertype_id == <?= CT_LOCATION; ?>">
+                                                    <i class="fa fa-location-arrow"></i>
+                                                    <?= __('Location'); ?>
+                                                </span>
+                                                <span class="badge border"
+                                                      ng-show="container.containertype_id == <?= CT_NODE; ?>">
+                                                    <i class="fa fa-link"></i>
+                                                    <?= __('Node'); ?>
+                                                </span>
+                                            </h5>
                                         </th>
                                     </tr>
                                     <?php foreach ($objectDetails as $objectType => $object): ?>

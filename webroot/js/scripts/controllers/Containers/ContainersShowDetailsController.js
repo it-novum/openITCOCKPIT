@@ -5,8 +5,7 @@ angular.module('openITCOCKPIT')
 
         $scope.post = {
             Container: {
-                id: null,
-                tenant: null
+                id: null
             },
             backState: null
         };
@@ -17,13 +16,6 @@ angular.module('openITCOCKPIT')
         $scope.edges = new vis.DataSet();
 
         $scope.post.Container.id = parseInt($stateParams.id, 10);
-        if($stateParams.tenant){
-            if(isNaN($stateParams.tenant)){
-                $scope.post.backState = $stateParams.tenant;
-            }else{
-                $scope.post.Container.tenant = $stateParams.tenant;
-            }
-        }
 
         document.addEventListener("fullscreenchange", function(){
             if(document.fullscreenElement === null){
@@ -138,10 +130,7 @@ angular.module('openITCOCKPIT')
                 edges: edgesData
             };
 
-            var colorUp = '#00C851';
-            var colorDown = '#CC0000';
-            var colorUnreachable = '#727b84';
-            var colorNotMonitored = '#4285F4';
+            var colorGroup = '#4285F4';
 
             var options = {
                 groups: {
@@ -150,7 +139,7 @@ angular.module('openITCOCKPIT')
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf0ac',
-                            color: colorNotMonitored, //color for icon,
+                            color: colorGroup, //color for icon,
 
                         },
                         margin: {
@@ -201,11 +190,11 @@ angular.module('openITCOCKPIT')
                     },
                     devicegroup: {
                         shape: 'icon',
-                        color: colorNotMonitored, // color for edges
+                        color: colorGroup, // color for edges
                         icon: {
                             face: 'FontAwesome',
                             code: '\uf0c1',
-                            color: colorNotMonitored //color for icon
+                            color: colorGroup //color for icon
                         }
                     },
 

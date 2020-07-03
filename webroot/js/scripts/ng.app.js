@@ -244,13 +244,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('ContainersShowDetails', {
-                url: '/containers/showDetails/:id/:tenant',
-                params: {
-                    tenant: {
-                        value: null,
-                        squash: true
-                    }
-                },
+                url: '/containers/showDetails/:id',
                 templateUrl: "/containers/showDetails.html",
                 controller: "ContainersShowDetailsController"
             })
