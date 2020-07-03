@@ -563,7 +563,7 @@ class AclDependencies {
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'NagiosCfg')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'AfterExport')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'NagiosModuleConfig')
-            ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'phpNSTAMaster')
+            //->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'phpNSTAMaster')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'DbBackend')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'PerfdataBackend')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'GraphingDocker')
@@ -571,7 +571,8 @@ class AclDependencies {
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'Statusengine3Cfg')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'GraphiteWeb')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'restorDefault')
-            ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'dynamicDirective');
+            ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'dynamicDirective')
+            ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'NSTAMaster');
 
 
         //Load Plugin ALC Dependencies

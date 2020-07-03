@@ -210,6 +210,11 @@ class ConfigGeneratorShellCommand extends Command {
                 }
                 break;
 
+            case 'NSTAMaster':
+                $command = $systemsettings['INIT']['INIT.NSTA_RESTART'];
+                $this->restartService($command, 'Restart NSTA service', $io);
+                break;
+
             default:
                 break;
         }

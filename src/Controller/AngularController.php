@@ -682,7 +682,7 @@ class AngularController extends AppController {
             $this->setHealthState('critical');
         }
 
-        if ($cache['isDistributeModuleInstalled'] && !$cache['isPhpNstaRunning']) {
+        if ($cache['isDistributeModuleInstalled'] && !$cache['isNstaRunning']) {
             $this->setHealthState('warning');
         }
 

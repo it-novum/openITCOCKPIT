@@ -41,7 +41,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\NagiosModuleConfig;
                 type="number"
                 min="0"
                 ng-model="post.int.<?php echo $key; ?>">
-            <div g-repeat="error in errors.Configfile.<?php echo $key; ?>">
+            <div ng-repeat="error in errors.Configfile.<?php echo $key; ?>">
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
             <div class="help-block">

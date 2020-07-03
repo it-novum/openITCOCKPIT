@@ -258,14 +258,14 @@
                         </span>
                     </li>
 
-                    <li ng-if="systemHealth.isDistributeModuleInstalled && !systemHealth.isPhpNstaRunning">
+                    <li ng-if="systemHealth.isDistributeModuleInstalled && !systemHealth.isNstaRunning">
                         <span>
                             <div class="padding-5">
                                 <h6>
                                     <i class="fa fa-warning warning"></i>
                                     <?php echo __('Warning'); ?>
                                 </h6>
-                                <i><?php echo __('Service phpnsta is not running!'); ?></i>
+                                <i><?php echo __('Service NSTA is not running!'); ?></i>
                             </div>
                         </span>
                     </li>

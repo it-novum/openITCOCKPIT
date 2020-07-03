@@ -988,7 +988,7 @@ class GearmanWorkerCommand extends Command {
                     'isNpcdRunning'             => false,
                     'isOitcCmdRunning'          => false,
                     'isSudoServerRunning'       => false,
-                    'isPhpNstaRunning'          => false,
+                    'isNstaRunning'             => false,
                     'isGearmanWorkerRunning'    => true,
                     'isPushNotificationRunning' => false,
                     'isNodeJsServerRunning'     => false
@@ -1024,9 +1024,9 @@ class GearmanWorkerCommand extends Command {
                     $state['isSudoServerRunning'] = true;
                 }
 
-                exec($systemsetting['INIT']['INIT.PHPNSTA_STATUS'] . $errorRedirect, $output, $returncode);
+                exec($systemsetting['INIT']['INIT.NSTA_STATUS'] . $errorRedirect, $output, $returncode);
                 if ($returncode == 0) {
-                    $state['isPhpNstaRunning'] = true;
+                    $state['isNstaRunning'] = true;
                 }
 
                 exec($systemsetting['INIT']['INIT.PUSH_NOTIFICATION'] . $errorRedirect, $output, $returncode);

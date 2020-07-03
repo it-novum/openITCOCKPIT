@@ -40,7 +40,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\AfterExport;
                 type="number"
                 min="0"
                 ng-model="post.int.<?php echo $key; ?>">
-            <div g-repeat="error in errors.Configfile.<?php echo $key; ?>">
+            <div ng-repeat="error in errors.Configfile.<?php echo $key; ?>">
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
             <div class="help-block">
@@ -59,7 +59,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\AfterExport;
                 class="form-control"
                 type="text"
                 ng-model="post.string.<?php echo $key; ?>">
-            <div g-repeat="error in errors.Configfile.<?php echo $key; ?>">
+            <div ng-repeat="error in errors.Configfile.<?php echo $key; ?>">
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
             <div class="help-block">

@@ -178,7 +178,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 class="form-control"
                                 type="number"
                                 ng-model="post.User.paginatorlength">
-                            <div g-repeat="error in  errors.paginatorlength">
+                            <div ng-repeat="error in  errors.paginatorlength">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                             <div class="help-block text-muted">

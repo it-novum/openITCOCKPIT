@@ -85,7 +85,7 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             'isNpcdRunning'                   => false,
             'isOitcCmdRunning'                => false,
             'isSudoServerRunning'             => false,
-            'isPhpNstaRunning'                => false,
+            'isNstaRunning'                   => false,
             'isGearmanWorkerRunning'          => false,
             'isNdoInstalled'                  => false,
             'isStatusengineInstalled'         => true, //NDOUtils are not supported anymore
@@ -142,9 +142,9 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             $data['isSudoServerRunning'] = true;
         }
 
-        exec($systemsetting['INIT']['INIT.PHPNSTA_STATUS'] . $errorRedirect, $output, $returncode);
+        exec($systemsetting['INIT']['INIT.NSTA_STATUS'] . $errorRedirect, $output, $returncode);
         if ($returncode == 0) {
-            $data['isPhpNstaRunning'] = true;
+            $data['isNstaRunning'] = true;
         }
 
         exec($systemsetting['INIT']['INIT.PUSH_NOTIFICATION'] . $errorRedirect, $output, $returncode);

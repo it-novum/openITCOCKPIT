@@ -41,7 +41,7 @@ echo "# This file will NOT be overwritten during an update" >> /etc/nginx/openit
 chmod +x /usr/bin/oitc
 
 echo "Create required system folders"
-mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,phpnsta,statusengine} /opt/openitc/etc/statusengine/Config
+mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,nsta,statusengine} /opt/openitc/etc/statusengine/Config
 
 mkdir -p /opt/openitc/logs/frontend/nagios
 chown www-data:www-data /opt/openitc/logs/frontend

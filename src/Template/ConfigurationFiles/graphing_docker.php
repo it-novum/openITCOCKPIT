@@ -40,7 +40,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
             class="form-control"
             type="text"
             ng-model="post.string.carbon_path">
-        <div g-repeat="error in errors.Configfile.carbon_path">
+        <div ng-repeat="error in errors.Configfile.carbon_path">
             <div class="help-block text-danger">{{ error }}</div>
         </div>
         <div class="help-block">
@@ -77,7 +77,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
             type="number"
             min="1"
             ng-model="post.int.number_of_carbon_cache_instances">
-        <div g-repeat="error in errors.Configfile.number_of_carbon_cache_instances">
+        <div ng-repeat="error in errors.Configfile.number_of_carbon_cache_instances">
             <div class="help-block text-danger">{{ error }}</div>
         </div>
         <div class="help-block">
@@ -94,7 +94,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
             type="number"
             min="1"
             ng-model="post.int.number_of_carbon_c_relay_workers">
-        <div g-repeat="error in errors.Configfile.number_of_carbon_c_relay_workers">
+        <div ng-repeat="error in errors.Configfile.number_of_carbon_c_relay_workers">
             <div class="help-block text-danger">{{ error }}</div>
         </div>
         <div class="help-block">
@@ -110,7 +110,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
             class="form-control"
             type="text"
             ng-model="post.string.carbon_storage_schema">
-        <div g-repeat="error in errors.Configfile.carbon_storage_schema">
+        <div ng-repeat="error in errors.Configfile.carbon_storage_schema">
             <div class="help-block text-danger">{{ error }}</div>
         </div>
         <div class="help-block">
@@ -127,7 +127,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
             type="number"
             min="1"
             ng-model="post.int.local_graphite_http_port">
-        <div g-repeat="error in errors.Configfile.local_graphite_http_port">
+        <div ng-repeat="error in errors.Configfile.local_graphite_http_port">
             <div class="help-block text-danger">{{ error }}</div>
         </div>
         <div class="help-block">
@@ -180,7 +180,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
             type="number"
             min="1"
             ng-model="post.int.local_graphite_plaintext_port">
-        <div g-repeat="error in errors.Configfile.local_graphite_plaintext_port">
+        <div ng-repeat="error in errors.Configfile.local_graphite_plaintext_port">
             <div class="help-block text-danger">{{ error }}</div>
         </div>
         <div class="help-block">

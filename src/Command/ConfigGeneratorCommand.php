@@ -142,6 +142,11 @@ class ConfigGeneratorCommand extends Command implements CronjobInterface {
                 $this->restartService($command, 'Restart Statusengine service', $io);
                 break;
 
+            case 'NSTAMaster':
+                $command = $systemsettings['INIT']['INIT.NSTA_RESTART'];
+                $this->restartService($command, 'Restart NSTA service', $io);
+                break;
+
             default:
                 break;
         }
