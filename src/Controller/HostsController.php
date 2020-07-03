@@ -1500,7 +1500,8 @@ class HostsController extends AppController {
                             'notes',
                             'priority',
                             'tags',
-                            'active_checks_enabled'
+                            'active_checks_enabled',
+                            'satellite_id',
                         ]
                     );
                     /** @var \App\Model\Entity\Hosttemplate $hosttemplate */
