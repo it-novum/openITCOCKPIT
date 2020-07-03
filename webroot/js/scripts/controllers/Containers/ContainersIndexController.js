@@ -189,6 +189,7 @@ angular.module('openITCOCKPIT')
                         $scope.containerNotEmpty = true;
                         $scope.message = result.data.message;
                         $scope.containerId = result.data.containerId;
+                        $scope.isDeleting = false;
                     }
 
                     if(result.data.hasOwnProperty('error')){

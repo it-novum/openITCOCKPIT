@@ -43,7 +43,7 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
     color: #CFCFCF !important;
 }
 
-.bootstrap-tagsinput input::placeholder{
+.bootstrap-tagsinput input::placeholder {
     color: #868e96;
     opacity: 1;
     font-size: 11px;
@@ -784,67 +784,67 @@ fieldset[disabled] .btn-unknown.active {
 }
 
 
-.elementHighlighter{
+.elementHighlighter {
     color: #c51162 !important;
     background-color: #a51eff !important;
     background-image: linear-gradient(to top, #a51eff, #a51eff) !important;
 }
 
-.elementBackgroundHighlighter{
+.elementBackgroundHighlighter {
     background-color: #a51eff !important;
 }
 
-.elementBackgroundImageHighlighter{
+.elementBackgroundImageHighlighter {
     background-image: linear-gradient(to top, #a51eff, #a51eff) !important;
 }
 
-.elementFontHighlighter{
+.elementFontHighlighter {
     color: #c51162 !important;
 }
 
 /* Badges and text colors for object types (like generic, evc, ...) */
 .text-generic {
-    color:#2196f3;
+    color: #2196f3;
 }
 
 .border-generic {
     border-color: #2182dc !important;
 }
 
-.text-evc{
-    color:#9c27b0;
+.text-evc {
+    color: #9c27b0;
 }
 
 .border-evc {
     border-color: #822796 !important;
 }
 
-.text-prometheus{
-    color:#ff9800;
+.text-prometheus {
+    color: #ff9800;
 }
 
 .border-prometheus {
     border-color: #E17B00 !important;
 }
 
-.text-agent{
-    color:#009688;
+.text-agent {
+    color: #009688;
 }
 
 .border-agent {
     border-color: #006e60 !important;
 }
 
-.text-sla{
-    color:#cddc39;
+.text-sla {
+    color: #cddc39;
 }
 
 .border-sla {
     border-color: #A9B836 !important;
 }
 
-.text-mk{
-    color:#607d8b;
+.text-mk {
+    color: #607d8b;
 }
 
 .border-mk {
