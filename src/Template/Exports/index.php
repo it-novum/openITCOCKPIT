@@ -85,15 +85,13 @@
 
                     <!-- Satellite select -->
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
-                            <div class="card padding-top-15" ng-show="useSingleInstanceSync">
+                        <div class="col-12 margin-bottom-10">
+                            <div class="card padding-top-15 padding-bottom-15" ng-show="useSingleInstanceSync">
                                 <div class="card-header">
-                                    <h4>
-                                        <i class="fas fa-satellite">&nbsp;</i>
-                                        <?= __('Select instances which the new configuration should get pushed.'); ?>
-                                    </h4>
+                                    <i class="fas fa-satellite">&nbsp;</i>
+                                    <?= __('Select instances which the new configuration should get pushed.'); ?>
                                 </div>
-                                <div class="card-body">
+                                <div class="card-body no-padding">
                                     <table class="table table-striped m-0 table-bordered table-hover table-sm">
                                         <thead>
                                         <tr>
@@ -141,7 +139,7 @@
                                             </span>
                                         </div>
                                         <div class="col-xs-12 col-md-2">
-                                            <button class="btn btn-xs btn-default"
+                                            <button class="btn btn-xs btn-outline-success waves-effect waves-themed"
                                                     ng-click="saveInstanceConfigSyncSelection();">
                                                 <?= __('Save selection'); ?>
                                             </button>
@@ -153,9 +151,38 @@
                     </div>
                     <!-- Satellite select end -->
 
+                    <div class="row" ng-show="(exportRunning || showLog) && satellites.length > 0">
+                        <div class="col-12">
+                            <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                <div class="d-flex align-items-center">
+                                    <div class="alert-icon">
+                                            <span class="icon-stack icon-stack-md">
+                                                <i class="base-7 icon-stack-3x color-info-600"></i>
+                                                <i class="fas fa-satellite icon-stack-1x text-white"></i>
+                                            </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="h5 color-info-600">
+                                            <?= __('Satellite Status has been moved.'); ?>
+                                        </span>
+                                        <br>
+                                        <?= __('Satellite export status has been moved to a separate view.'); ?>
+                                    </div>
+                                    <?php if ($this->Acl->hasPermission('status', 'satellites', 'DistributeModule')): ?>
+                                        <a class="btn btn-outline-success btn-sm btn-w-m waves-effect waves-themed"
+                                           ui-sref="SatellitesStatus">
+                                            <?= __('Go to "Satellite Status"'); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card">
                         <div class="card-header" ng-show="exportRunning || showLog">
-                            <h4><i class="fas fa-tasks"></i> <?= __('Tasks'); ?></h4>
+                            <i class="fas fa-tasks"></i>
+                            <?= __('Tasks'); ?>
                         </div>
                         <div class="card-body">
 
@@ -171,7 +198,7 @@
                                  ng-show="verificationErrors.length > 0">
                                 <div class="alert alert-danger alert-block">
                                     <h4 class="alert-heading"><i
-                                            class="fa fa-times"></i> <?= __('New configuration is invalid'); ?>
+                                                class="fa fa-times"></i> <?= __('New configuration is invalid'); ?>
                                     </h4>
                                     &nbsp;
                                     <div class="well txt-color-blueDark" id="verifyOutput">
@@ -197,7 +224,7 @@
                             </div>
 
 
-                            <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12">
                                 <div class="formactions">
                                     <div class="float-right">
 
@@ -206,7 +233,7 @@
                                             <?= __('Refresh in progress '); ?>
                                         </label>
 
-                                        <button class="btn btn-success" type="button"
+                                        <button class="btn btn-success waves-effect waves-themed" type="button"
                                                 ng-disabled="exportRunning" ng-click="launchExport();">
                                             <i class="fa fa-rocket" ng-if="!exportRunning"></i>
                                             <i class="fa fa-spin fa-spinner" ng-if="exportRunning"></i>

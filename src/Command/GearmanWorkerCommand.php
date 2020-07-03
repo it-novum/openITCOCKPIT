@@ -1444,6 +1444,12 @@ class GearmanWorkerCommand extends Command {
         /** @var ExportsTable $ExportsTable */
         $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
 
+        // Reset satellites.nsta_sync_instance field for go NSTA
+        $SatellitesTable->query()
+            ->update()
+            ->set(['nsta_sync_instance' => 0])
+            ->execute();
+
         $syncType = $SystemsettingsTable->getSystemsettingByKey('MONITORING.SINGLE_INSTANCE_SYNC');
         if ($syncType->get('value') === '1') {
             // Only synchronize new config to marked satellites
@@ -1471,10 +1477,11 @@ class GearmanWorkerCommand extends Command {
         foreach ($satellites as $satellite) {
             /** @var Satellite $satellite */
             $satellite->set('nsta_sync_instance', 1);
+            $SatellitesTable->save($satellite);
 
             $entity = $ExportsTable->newEntity([
                 'task'         => 'export_sync_sat_config_by_nsta_' . $satellite->get('id'),
-                'text'         => __('Mark Satellite for configuration synchronization through NSTA [' . $satellite->get('id') . '] ' . $satellite->get('name')),
+                'text'         => __('Mark Satellite for configuration synchronization through NSTA daemon [' . $satellite->get('id') . '] ' . $satellite->get('name')),
                 'finished'     => 1,
                 'successfully' => 1
             ]);
