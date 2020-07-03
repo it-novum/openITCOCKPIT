@@ -701,6 +701,22 @@ class Systemsetting extends Importer {
                 'created'  => '2020-04-17 08:43:17',
                 'modified' => '2020-04-17 08:43:17'
             ],
+            (int)81 => [
+                'key'      => 'INIT.NSTA_RESTART',
+                'value'    => 'systemctl restart nsta',
+                'info'     => 'Command to restart the Go version of NSTA service',
+                'section'  => 'INIT',
+                'created'  => '2020-01-29 09:28:17',
+                'modified' => '2020-01-29 09:28:17'
+            ],
+            (int)82 => [
+                'key'      => 'INIT.NSTA_RELOAD',
+                'value'    => 'systemctl reload nsta',
+                'info'     => 'Command to reload the Go version of NSTA service',
+                'section'  => 'INIT',
+                'created'  => '2020-01-29 09:28:17',
+                'modified' => '2020-01-29 09:28:17'
+            ],
         ];
 
         return $data;
