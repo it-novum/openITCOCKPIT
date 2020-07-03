@@ -35,6 +35,7 @@ use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
+use DistributeModule\Model\Entity\Satellite;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -53,6 +54,9 @@ class ExportsController extends AppController {
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
         $useSingleInstanceSync = false;
         $satellites = [];
         if (Plugin::isLoaded('DistributeModule')) {
@@ -61,7 +65,13 @@ class ExportsController extends AppController {
 
             /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
-            $satellites = $SatellitesTable->getSatellitesForExportIndex($this->MY_RIGHTS);
+            $satellitesEntities = $SatellitesTable->getSatellitesForExportIndex($this->MY_RIGHTS);
+
+            foreach($satellitesEntities as $satellitesEntity){
+                /** @var Satellite $satellitesEntity */
+                $satellites[] = $satellitesEntity->toAngularArray($UserTime);
+            }
+
         }
 
         $GearmanClient = new Gearman();

@@ -33,12 +33,29 @@ class SatelliteFilter extends Filter {
      */
     public function indexFilter() {
         $filters = [
-            'like' => [
+            'like'   => [
                 'Satellites.name',
                 'Satellites.address'
             ],
-            'equals'   => [
+            'equals' => [
                 'Satellites.sync_method'
+            ],
+        ];
+        return $this->getConditionsByFilters($filters);
+    }
+
+    /**
+     * @return array
+     */
+    public function statusFilter() {
+        $filters = [
+            'like'   => [
+                'Satellites.name',
+                'Satellites.address',
+            ],
+            'equals' => [
+                'Satellites.sync_method',
+                'status'
             ],
         ];
         return $this->getConditionsByFilters($filters);

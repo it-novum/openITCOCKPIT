@@ -45,6 +45,7 @@ use Cake\ORM\TableRegistry;
 use CheckmkModule\Command\CheckmkNagiosExportCommand;
 use CheckmkModule\Lib\MkParser;
 use CheckmkModule\Model\Table\MkSatTasksTable;
+use DistributeModule\Model\Entity\Satellite;
 use DistributeModule\Model\Table\SatellitesTable;
 use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Core\MonitoringEngine\NagiosConfigDefaults;
@@ -890,28 +891,32 @@ class GearmanWorkerCommand extends Command {
                 ];
                 break;
 
-            case 'export_sync_sat_config':
-                $NagiosConfigGenerator = new NagiosConfigGenerator();
-
-                /** @var ExportsTable $ExportsTable */
-                $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
-                $entity = $ExportsTable->find()
-                    ->where([
-                        'task' => 'export_sync_sat_config_' . $payload['Satellite']['id']
-                    ])
-                    ->first();
-                if (!empty($entity)) {
-                    $entity->set('finished', 1);
-
-                    $SatelliteCopy = new SatelliteCopy($payload['Satellite']);
-                    $copyResult = $SatelliteCopy->copy();
-                    $entity->set('successfully', (int)$copyResult);
-
-                    $ExportsTable->save($entity);
-                }
-                unset($entity);
-                $return = ['task' => $payload['task']];
-                break;
+            //case 'export_sync_sat_config':
+            //
+            //    // OLD Style Satellite Configuration sync via SSH and rsync.
+            //    // This is deprecated. Configuration sync is now done by the NSTA
+            //
+            //    $NagiosConfigGenerator = new NagiosConfigGenerator();
+            //
+            //    /** @var ExportsTable $ExportsTable */
+            //    $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
+            //    $entity = $ExportsTable->find()
+            //        ->where([
+            //            'task' => 'export_sync_sat_config_' . $payload['Satellite']['id']
+            //        ])
+            //        ->first();
+            //    if (!empty($entity)) {
+            //        $entity->set('finished', 1);
+            //
+            //        $SatelliteCopy = new SatelliteCopy($payload['Satellite']);
+            //        $copyResult = $SatelliteCopy->copy();
+            //        $entity->set('successfully', (int)$copyResult);
+            //
+            //        $ExportsTable->save($entity);
+            //    }
+            //    unset($entity);
+            //    $return = ['task' => $payload['task']];
+            //    break;
 
             case 'idoit_sync':
                 //@todo implement me
@@ -1426,62 +1431,114 @@ class GearmanWorkerCommand extends Command {
     }
 
     public function distributedMonitoringAfterExportCommand() {
-        if (Plugin::isLoaded('DistributeModule')) {
-            //DistributeModule is installed and loaded
-            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
-            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
-            /** @var SystemsettingsTable $SystemsettingsTable */
-            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        if (!Plugin::isLoaded('DistributeModule')) {
+            // DistributeModule not loaded
+            return;
+        }
 
-            $syncType = $SystemsettingsTable->getSystemsettingByKey('MONITORING.SINGLE_INSTANCE_SYNC');
-            if ($syncType->get('value') === '1') {
-                // Only synchronize new config to marked satellites
-                $query = $SatellitesTable->find()
-                    ->where([
-                        'Satellites.sync_instance' => 1
-                    ])
-                    ->all();
-            } else {
-                // Synchronize new config to ALL satellites
-                $query = $SatellitesTable->find()
-                    ->all();
+        //DistributeModule is installed and loaded
+        /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+        $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        /** @var ExportsTable $ExportsTable */
+        $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
+
+        // Reset satellites.nsta_sync_instance field for go NSTA
+        $SatellitesTable->query()
+            ->update()
+            ->set(['nsta_sync_instance' => 0])
+            ->execute();
+
+        $syncType = $SystemsettingsTable->getSystemsettingByKey('MONITORING.SINGLE_INSTANCE_SYNC');
+        if ($syncType->get('value') === '1') {
+            // Only synchronize new config to marked satellites
+            $query = $SatellitesTable->find()
+                ->where([
+                    'Satellites.sync_instance' => 1
+                ])
+                ->all();
+        } else {
+            // Synchronize new config to ALL satellites
+            $query = $SatellitesTable->find()
+                ->all();
+        }
+
+        if (empty($query)) {
+            return;
+        }
+
+        $satellites = $query->toArray();
+
+        // The configuration gets synced by the Go NSTA.
+        // No ssh rsync anymore by the gearman_worker
+
+        // To Go NSTA will sync the new config of all Satellites, where satellites.nsta_sync_instance = 1
+        foreach ($satellites as $satellite) {
+            /** @var Satellite $satellite */
+            $satellite->set('nsta_sync_instance', 1);
+            $SatellitesTable->save($satellite);
+
+            $entity = $ExportsTable->newEntity([
+                'task'         => 'export_sync_sat_config_by_nsta_' . $satellite->get('id'),
+                'text'         => __('Mark Satellite for configuration synchronization through NSTA daemon [' . $satellite->get('id') . '] ' . $satellite->get('name')),
+                'finished'     => 1,
+                'successfully' => 1
+            ]);
+            $ExportsTable->save($entity);
+        }
+
+        $nstaReloadCommand = $SystemsettingsTable->getSystemsettingByKey('INIT.NSTA_RELOAD');
+        $nstaRestartCommand = $SystemsettingsTable->getSystemsettingByKey('INIT.NSTA_RESTART');
+        $nstaStatusCommand = $SystemsettingsTable->getSystemsettingByKey('INIT.NSTA_STATUS');
+
+
+        //Check if go NSTA is running.
+        //If NSTA is running, we reload the config, if not we need to restart
+        $entity = $ExportsTable->newEntity([
+            'task' => 'is_nsta_running',
+            'text' => __('Check if NSTA daemon is running')
+        ]);
+        $ExportsTable->save($entity);
+        exec($nstaStatusCommand->get('value'), $statusOutput, $statusRc);
+        $entity->set('finished', 1);
+        $entity->set('successfully', 1);
+        $ExportsTable->save($entity);
+        unset($entity);
+
+        $isNstaRunning = false;
+        if ($statusRc === 0) {
+            //NSTA is running (reload)
+            $entity = $ExportsTable->newEntity([
+                'task' => 'export_reload_nsta',
+                'text' => __('Reloading NSTA daemon')
+            ]);
+            $ExportsTable->save($entity);
+            exec($nstaReloadCommand->get('value'), $reloadOutput, $reloadRc);
+            $entity->set('finished', 1);
+            $entity->set('successfully', 0);
+            if ($reloadRc === 0) {
+                $entity->set('successfully', 1);
+                $isNstaRunning = true;
             }
-
-            $satellites = $query->toArray();
-
-            $gearmanConfig = Configure::read('gearman');
-
-            $gearmanClient = new \GearmanClient();
-            $gearmanClient->addServer($gearmanConfig['address'], $gearmanConfig['port']);
-            // This callback gets called, for any finished export task (like hosts, hosttemplates, services etc...)
-            // to save success status to the database.
-            $gearmanClient->setCompleteCallback([$this, 'exportCallback']);
-
-            if (!empty($satellites)) {
-                /** @var ExportsTable $ExportsTable */
-                $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
-
-                foreach ($satellites as $satellite) {
-                    /** @var \DistributeModule\Model\Entity\Satellite $satellite */
-
-                    $entity = $ExportsTable->newEntity([
-                        'task' => 'export_sync_sat_config_' . $satellite->get('id'),
-                        'text' => __('Copy new monitoring configuration for Satellite [' . $satellite->get('id') . '] ' . $satellite->get('name'))
-                    ]);
-                    $ExportsTable->save($entity);
-
-                    $gearmanClient->addTask("oitc_gearman", serialize([
-                        'task'      => 'export_sync_sat_config',
-                        'Satellite' => $satellite->toArray()
-                    ]));
-                }
-                $gearmanClient->runTasks();
+            $ExportsTable->save($entity);
+            unset($entity);
+        } else {
+            //NSTA is stopped (restart)
+            $entity = $ExportsTable->newEntity([
+                'task' => 'export_restart_nsta',
+                'text' => __('Restarting NSTA daemon')
+            ]);
+            $ExportsTable->save($entity);
+            exec($nstaRestartCommand->get('value'), $restartOutput, $restartRc);
+            $entity->set('finished', 1);
+            $entity->set('successfully', 0);
+            if ($restartRc === 0) {
+                $entity->set('successfully', 1);
+                $isNstaRunning = true;
             }
-            // Avoid "MySQL server has gone away"
-            $connection = $SystemsettingsTable->getConnection();
-            $connection->disconnect();
-            $connection->connect();
-
+            $ExportsTable->save($entity);
+            unset($entity);
         }
     }
 
