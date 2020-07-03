@@ -319,14 +319,14 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                                     </tr>
 
                                     <tr>
-                                        <td><?= __('phpNSTA'); ?></td>
+                                        <td><?= __('NSTA'); ?></td>
                                         <td>
                                             <span class="badge border border-success text-success"
-                                                  ng-show="processInformation.backgroundProcesses.isPhpNstaRunning">
+                                                  ng-show="processInformation.backgroundProcesses.isNstaRunning">
                                                 <?= __('Running') ?>
                                             </span>
                                             <span class="badge border border-danger text-danger"
-                                                  ng-hide="processInformation.backgroundProcesses.isPhpNstaRunning">
+                                                  ng-hide="processInformation.backgroundProcesses.isNstaRunning">
                                                 <?= __('Stopped') ?>
                                             </span>
                                         </td>

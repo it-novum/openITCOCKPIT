@@ -274,7 +274,7 @@
                 </span>
         </a>
     </div>
-    <div class="dropdown-item" ng-if="systemHealth.isDistributeModuleInstalled && !systemHealth.isPhpNstaRunning">
+    <div class="dropdown-item" ng-if="systemHealth.isDistributeModuleInstalled && !systemHealth.isNstaRunning">
         <a ui-sref="AdministratorsDebug" class="d-flex align-items-center" href="javascript:void();">
                 <span class="">
                     <i class="d-inline-block fas fa-warning fa-3x warning"></i>
@@ -284,7 +284,7 @@
                         <?= __('Warning') ?>
                     </span>
                     <span class="notification-message fs-sm">
-                        <?= __('Service phpnsta is not running!') ?>
+                        <?= __('Service NSTA is not running!') ?>
                     </span>
                 </span>
         </a>

@@ -65,7 +65,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster;
                 type="number"
                 min="0"
                 ng-model="post.int.max_checks">
-            <div g-repeat="error in errors.Configfile.max_checks">
+            <div ng-repeat="error in errors.Configfile.max_checks">
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
             <div class="help-block">
@@ -82,7 +82,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster;
                 type="number"
                 min="0"
                 ng-model="post.int.max_threads">
-            <div g-repeat="error in errors.Configfile.max_threads">
+            <div ng-repeat="error in errors.Configfile.max_threads">
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
             <div class="help-block">
@@ -123,7 +123,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster;
                 class="form-control"
                 type="text"
                 ng-model="post.string.ssh_username">
-            <div g-repeat="error in errors.Configfile.ssh_username">
+            <div ng-repeat="error in errors.Configfile.ssh_username">
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
             <div class="help-block">
@@ -159,7 +159,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster;
                 class="form-control"
                 type="text"
                 ng-model="post.string.private_path">
-            <div g-repeat="error in errors.Configfile.private_path">
+            <div ng-repeat="error in errors.Configfile.private_path">
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
             <div class="help-block">
@@ -175,7 +175,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster;
                 class="form-control"
                 type="text"
                 ng-model="post.string.public_path">
-            <div g-repeat="error in errors.Configfile.public_path">
+            <div ng-repeat="error in errors.Configfile.public_path">
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
             <div class="help-block">
@@ -191,7 +191,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster;
                 class="form-control"
                 type="text"
                 ng-model="post.string.port_range">
-            <div g-repeat="error in errors.Configfile.port_range">
+            <div ng-repeat="error in errors.Configfile.port_range">
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
             <div class="help-block">
@@ -244,7 +244,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster;
                 class="form-control"
                 type="text"
                 ng-model="post.string.logrotate_date_format">
-            <div g-repeat="error in errors.Configfile.logrotate_date_format">
+            <div ng-repeat="error in errors.Configfile.logrotate_date_format">
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
             <div class="help-block">
@@ -260,7 +260,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster;
                 class="form-control"
                 type="text"
                 ng-model="post.string.date_format">
-            <div g-repeat="error in errors.Configfile.date_format">
+            <div ng-repeat="error in errors.Configfile.date_format">
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
             <div class="help-block">
@@ -278,7 +278,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster;
                 type="number"
                 min="0"
                 ng-model="post.int.cleanup_fileage">
-            <div g-repeat="error in errors.Configfile.cleanup_fileage">
+            <div ng-repeat="error in errors.Configfile.cleanup_fileage">
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
             <div class="help-block">
@@ -297,7 +297,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster;
                 class="form-control"
                 type="text"
                 ng-model="post.string.supervisor_username">
-            <div g-repeat="error in errors.Configfile.supervisor_username">
+            <div ng-repeat="error in errors.Configfile.supervisor_username">
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
             <div class="help-block">
@@ -313,7 +313,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster;
                 class="form-control"
                 type="text"
                 ng-model="post.string.supervisor_password">
-            <div g-repeat="error in errors.Configfile.supervisor_password">
+            <div ng-repeat="error in errors.Configfile.supervisor_password">
                 <div class="help-block text-danger">{{ error }}</div>
             </div>
             <div class="help-block">

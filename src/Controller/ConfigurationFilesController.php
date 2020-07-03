@@ -165,6 +165,13 @@ class ConfigurationFilesController extends AppController {
     }
 
     /**
+     * @throws \Exception
+     */
+    public function NSTAMaster() {
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\NSTAMaster', 'NSTAMaster');
+    }
+
+    /**
      * @param $configFile
      * @throws \Exception
      */

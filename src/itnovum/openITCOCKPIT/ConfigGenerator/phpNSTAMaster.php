@@ -27,6 +27,11 @@ namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 use itnovum\openITCOCKPIT\Core\System\Health\MonitoringEngine;
 
+/**
+ * Class phpNSTAMaster
+ * @package itnovum\openITCOCKPIT\ConfigGenerator
+ * @deprecated phpNSTA got replaced with the go NSTA version !
+ */
 class phpNSTAMaster extends ConfigGenerator implements ConfigInterface {
 
     protected $templateDir = 'phpNSTA';
