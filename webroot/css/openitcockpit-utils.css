@@ -623,3 +623,33 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     top: 0px !important;
     text-align: left;
 }
+
+/* Weather icons */
+
+/* <i class="fas fa-sun sun"></i> */
+.sun {
+    background: rgb(255, 252, 10);
+    font-size: 38px;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* <i class="fas fa-cloud-sun sun-cloud-gradient"></i> */
+.sun-cloud-gradient {
+    background: rgb(255, 252, 10);
+    background: linear-gradient(132deg, rgba(255, 252, 10, 1) 0%, rgba(255, 252, 10, 1) 46%, transparent 46%,
+    transparent 39%, rgb(226, 217, 217) 40%, rgb(213, 204, 204) 100%);
+    font-size: 45px;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* <i class="fas fa-cloud-sun-rain sun-cloud-gradient-rain"></i> */
+.sun-cloud-gradient-rain {
+    background: rgb(255, 252, 10);
+    background: linear-gradient(132deg, rgba(255, 252, 10, 1) 0%, rgba(255, 252, 10, 1) 38%, transparent 38%,
+    transparent 39%, rgb(134, 125, 125) 40%, rgb(71, 89, 113) 100%);
+    font-size: 50px;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

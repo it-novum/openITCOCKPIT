@@ -248,7 +248,6 @@ $objectDetails['maps'] = [
                 <h2>
                     <?php echo __('Container '); ?>
                     <span class="fw-300"><i><?php echo __('details'); ?></i></span>
-
                 </h2>
                 <div class="panel-toolbar">
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
