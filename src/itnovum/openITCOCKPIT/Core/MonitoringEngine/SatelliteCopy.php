@@ -9,6 +9,13 @@ use Cake\Core\Configure;
 use Cake\Filesystem\Folder;
 use Cake\Log\Log;
 
+/**
+ * Class SatelliteCopy
+ * @package App\itnovum\openITCOCKPIT\Core\MonitoringEngine
+ *
+ * @deprecated
+ * Configuration Sync is now done by the NSTA wirtten in Go!
+ */
 class SatelliteCopy {
 
     /**

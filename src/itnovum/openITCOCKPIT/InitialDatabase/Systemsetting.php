@@ -717,6 +717,14 @@ class Systemsetting extends Importer {
                 'created'  => '2020-01-29 09:28:17',
                 'modified' => '2020-01-29 09:28:17'
             ],
+            (int)83 => [
+                'key'      => 'INIT.NSTA_STATUS',
+                'value'    => 'systemctl status nsta',
+                'info'     => 'Command to get the current status of the Go version of NSTA service',
+                'section'  => 'INIT',
+                'created'  => '2020-01-29 09:28:17',
+                'modified' => '2020-01-29 09:28:17'
+            ],
         ];
 
         return $data;
