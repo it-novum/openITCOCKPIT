@@ -284,19 +284,19 @@ $objectDetails['maps'] = [
                             <div class="margin-top-10" ng-hide="isEmpty">
                                 <table class="table m-0 table-bordered table-hover table-sm">
                                     <tr ng-repeat-start="container in containersWithChilds">
-                                        <th colspan="3" class="table-dark opacity-50">
+                                        <th colspan="3" class="table-dark opacity-70">
                                             <h5 class="margin-0">{{container.name}}
-                                                <span class="badge border"
+                                                <span class="badge border border-light text-light"
                                                       ng-show="container.containertype_id == <?= CT_TENANT; ?>">
                                                     <i class="fa fa-home"></i>
                                                     <?= __('Tenant'); ?>
                                                 </span>
-                                                <span class="badge border"
+                                                <span class="badge border border-light text-light"
                                                       ng-show="container.containertype_id == <?= CT_LOCATION; ?>">
                                                     <i class="fa fa-location-arrow"></i>
                                                     <?= __('Location'); ?>
                                                 </span>
-                                                <span class="badge border"
+                                                <span class="badge border border-light text-light"
                                                       ng-show="container.containertype_id == <?= CT_NODE; ?>">
                                                     <i class="fa fa-link"></i>
                                                     <?= __('Node'); ?>
