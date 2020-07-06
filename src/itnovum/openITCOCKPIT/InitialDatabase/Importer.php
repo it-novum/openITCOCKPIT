@@ -66,7 +66,8 @@ class Importer implements ImporterInterface {
     public function patchEntityAndKeepAllIds(EntityInterface $entity, array $record){
         $associatedAccessibleFields = [];
         foreach($this->Table->associations() as $association){
-            $associationKey = ucfirst(Inflector::underscore(strtolower($association->getName())));
+            $associationKey = $association->getName(); //cakephp >= 4.1
+            //$associationKey = strtolower(Inflector::underscore($association->getName())); // cakephp <= 4.1
             $associatedAccessibleFields[$associationKey] = ['accessibleFields' => ['*' => true]];
         }
 
