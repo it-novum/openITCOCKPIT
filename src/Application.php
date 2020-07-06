@@ -104,7 +104,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
     public function routes($routes): void {
         // Register scoped middleware for use in routes.php
         $routes->registerMiddleware('csrf', new CsrfProtectionMiddleware([
-            'httpOnly' => true
+            'httponly' => true
         ]));
 
         parent::routes($routes);
