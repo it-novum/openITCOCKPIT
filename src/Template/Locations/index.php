@@ -136,7 +136,7 @@
                             <tr ng-repeat="location in locations">
                                 <td class="text-center" class="width-15">
                                     <input type="checkbox"
-                                           ng-model="massChange[location.Location.id]"
+                                           ng-model="massChange[location.Location.container_id]"
                                            ng-show="location.Location.allowEdit">
                                 </td>
                                 <td>

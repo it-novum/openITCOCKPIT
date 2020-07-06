@@ -55,7 +55,7 @@ angular.module('openITCOCKPIT')
             if($scope.locations){
                 for(var key in $scope.locations){
                     if($scope.locations[key].Location.allowEdit){
-                        var id = $scope.locations[key].Location.id;
+                        var id = $scope.locations[key].Location.container_id;
                         $scope.massChange[id] = true;
                     }
                 }
@@ -70,7 +70,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(location){
             var object = {};
-            object[location.Location.id] = location.Location.container.name;
+            object[location.Location.container_id] = location.Location.container.name;
             return object;
         };
 
@@ -79,7 +79,7 @@ angular.module('openITCOCKPIT')
             var selectedObjects = MassChangeService.getSelected();
             for(var key in $scope.locations){
                 for(var id in selectedObjects){
-                    if(id == $scope.locations[key].Location.id){
+                    if(id == $scope.locations[key].Location.container_id){
                         objects[id] = $scope.locations[key].Location.container.name;
                     }
                 }

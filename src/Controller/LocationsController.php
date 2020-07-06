@@ -32,6 +32,7 @@ use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\LocationsTable;
 use Cake\Cache\Cache;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -59,7 +60,7 @@ class LocationsController extends AppController {
         $LocationFilter = new LocationFilter($this->request);
 
         $MY_RIGHTS = $this->MY_RIGHTS;
-        if($this->hasRootPrivileges){
+        if ($this->hasRootPrivileges) {
             $MY_RIGHTS = [];
         }
 
@@ -260,7 +261,7 @@ class LocationsController extends AppController {
      * @param null $id
      * @todo allowDelete -> for eventcorrelation module
      */
-    public function delete($id = null) {
+    public function delete($containerId = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -269,19 +270,24 @@ class LocationsController extends AppController {
         /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        if (!$LocationsTable->existsById($id)) {
+        if (!$ContainersTable->existsById($containerId)) {
+            throw new NotFoundException(__('Invalid container'));
+        }
+
+        $container = $ContainersTable->get($containerId);
+
+        try {
+            $location = $LocationsTable->getLocationByContainerId($containerId);
+        }catch (RecordNotFoundException $e){
             throw new NotFoundException(__('Invalid location'));
         }
 
-        $location = $LocationsTable->getLocationById($id);
-        $container = $ContainersTable->get($location->get('container')->get('id'));
-
-        if (!$this->allowedByContainerId($location->get('container')->get('parent_id'))) {
+        if (!$this->allowedByContainerId($container->get('id'))) {
             $this->render403();
             return;
         }
 
-        if($ContainersTable->allowDelete($container->id, $this->MY_RIGHTS)){
+        if ($ContainersTable->allowDelete($container->get('id'))) {
             if ($ContainersTable->delete($container)) {
                 $User = new User($this->getUser());
                 /** @var  ChangelogsTable $ChangelogsTable */
@@ -290,9 +296,9 @@ class LocationsController extends AppController {
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'delete',
                     'locations',
-                    $id,
+                    $location->get('id'),
                     OBJECT_LOCATION,
-                    $container->get('parent_id'),
+                    [$location->get('container')->get('parent_id')],
                     $User->getId(),
                     $container->get('name'),
                     [
@@ -313,14 +319,23 @@ class LocationsController extends AppController {
             $this->set('success', false);
             $this->viewBuilder()->setOption('serialize', ['success']);
         }
-        $this->response = $this->response->withStatus(500);
+
+        $usedBy = [];
+        $usedBy[] = [
+            'baseUrl' => '#',
+            'state'   => 'ContainersShowDetails',
+            'message' => __('Location is used by other object.'),
+            'module'  => '',
+            'id'      => $containerId
+        ];
+
+        $this->response = $this->response->withStatus(400);
         $this->set('success', false);
-        $this->set('message', __('Container is not empty'));
-        $this->set('containerId', $container->id);
-        $this->viewBuilder()->setOption('serialize', ['success', 'message', 'containerId']);
-
-
-
+        $this->set('id', $containerId);
+        $this->set('message', __('Issue while deleting location'));
+        $this->set('usedBy', $usedBy);
+        $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
+        return;
     }
 
     /****************************

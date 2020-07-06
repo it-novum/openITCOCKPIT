@@ -9,7 +9,6 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
             $scope.objects = {};
             $scope.percentage = 0;
             $scope.isDeleting = false;
-            $scope.isContainerDeletion = false;
 
             $scope.setObjectsForMassDelete = function(objects){
                 $scope.objects = objects;
@@ -60,15 +59,6 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
                                 }
                             }
 
-                            if(result.data.hasOwnProperty('success') && result.data.hasOwnProperty('containerId')){
-                                $scope.isContainerDeletion = true;
-                                var issue = {
-                                    message: result.data.message
-                                };
-                                $scope.message = result.data.message;
-                                $scope.containerId = result.data.containerId;
-                            }
-
                             issueCount = Object.keys($scope.issueObjects).length;
                             if(i === count && issueCount > 0){
                                 $scope.isDeleting = false;
@@ -78,13 +68,6 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
                         });
                 }
             };
-            $scope.showDetailedView = function(containerId){
-                //ui-sref="ContainersShowDetails({id:containerId})"
-                $('#angularMassDelete').modal('hide');
-                $state.go('ContainersShowDetails', {
-                    id: containerId
-                });
-            }
 
             $scope.goToStateMassDelete = function(issue){
                 $('#angularMassDelete').modal('hide');
