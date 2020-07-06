@@ -179,7 +179,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
-                                                <a class="dropdown-item text-info"
+                                                <a class="dropdown-item"
                                                    ui-sref="ContainersShowDetails({id: location.Location.container_id})">
                                                     <i class="fa fa-info-circle"></i>
                                                     <?php echo __('Show details'); ?>
