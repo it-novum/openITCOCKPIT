@@ -14563,320 +14563,320 @@ msgstr "Обновить роль пользователя"
 #: src/Template/Users/index.php:34
 #: src/Template/Users/index.php:50
 msgid "Users"
-msgstr ""
+msgstr "Пользователи"
 
 #: src/Template/Users/add.php:39
 msgid "Add local"
-msgstr ""
+msgstr "Добавить местный"
 
 #: src/Template/Users/add.php:49
 msgid "Create new local user"
-msgstr ""
+msgstr "Создать нового локального пользователя"
 
 #: src/Template/Users/add.php:66
 #: src/Template/Users/add_from_ldap.php:67
 #: src/Template/Users/edit.php:70
 msgid "Container Roles"
-msgstr ""
+msgstr "Контейнерные роли"
 
 #: src/Template/Users/add.php:81
 #: src/Template/Users/add_from_ldap.php:82
 #: src/Template/Users/edit.php:85
 msgid "Container Roles are handy to grant the same permissions to multiple users."
-msgstr ""
+msgstr "Контейнерные роли удобны для предоставления одинаковых разрешений нескольким пользователям."
 
 #: src/Template/Users/add.php:124
 #: src/Template/Users/add_from_ldap.php:125
 #: src/Template/Users/edit.php:127
 msgid "Container assignments defined in the user will overwrite permissions inherited from Container Roles!"
-msgstr ""
+msgstr "Контейнерные назначения, определенные пользователем, будут перезаписывать разрешения, унаследованные от ролей контейнера!"
 
 #: src/Template/Users/add.php:181
 #: src/Template/Users/add_from_ldap.php:182
 #: src/Template/Users/edit.php:183
 #: src/Template/Users/index.php:190
 msgid "Is active"
-msgstr ""
+msgstr "Активен"
 
 #: src/Template/Users/add.php:240
 #: src/Template/Users/add_from_ldap.php:307
 #: src/Template/Users/edit.php:242
 msgid "Company position"
-msgstr ""
+msgstr "Должность компании"
 
 #: src/Template/Users/add.php:376
 msgid "Frontend language"
-msgstr ""
+msgstr "Язык интерфейса"
 
 #: src/Template/Users/add.php:390
 #: src/Template/Users/edit.php:393
 msgid "Manual logout and login again required for changes to take effect for the current user."
-msgstr ""
+msgstr "Чтобы изменения вступили в силу для текущего пользователя, необходимо вручную выйти и снова войти в систему."
 
 #: src/Template/Users/add.php:436
 msgid "Create user"
-msgstr ""
+msgstr "Создать пользователя"
 
 #: src/Template/Users/add_from_ldap.php:39
 msgid "Add from LDAP"
-msgstr ""
+msgstr "Добавить из LDAP"
 
 #: src/Template/Users/add_from_ldap.php:50
 msgid "Import new user from LDAP"
-msgstr ""
+msgstr "Импортировать нового пользователя из LDAP"
 
 #: src/Template/Users/add_from_ldap.php:207
 msgid "DN"
-msgstr ""
+msgstr "DN"
 
 #: src/Template/Users/add_from_ldap.php:482
 msgid "Create user from LDAP"
-msgstr ""
+msgstr "Создать пользователя из LDAP"
 
 #: src/Template/Users/edit.php:49
 msgid "Edit local user:"
-msgstr ""
+msgstr "Изменить локального пользователя:"
 
 #: src/Template/Users/edit.php:430
 msgid "Please leave the password fields blank if you don't want to change the password."
-msgstr ""
+msgstr "Пожалуйста, оставьте поля пароля пустыми, если вы не хотите менять пароль."
 
 #: src/Template/Users/edit.php:442
 msgid "Update user"
-msgstr ""
+msgstr "Обновить пользователя"
 
 #: src/Template/Users/index.php:59
 msgid "New local user"
-msgstr ""
+msgstr "Новый локальный пользователь"
 
 #: src/Template/Users/index.php:91
 msgid "Filter by full name"
-msgstr ""
+msgstr "Фильтровать по полному имени"
 
 #: src/Template/Users/index.php:104
 msgid "Filter by email"
-msgstr ""
+msgstr "Фильтровать по электронной почте"
 
 #: src/Template/Users/index.php:117
 msgid "Filter by phone"
-msgstr ""
+msgstr "Фильтр по телефону"
 
 #: src/Template/Users/index.php:130
 msgid "Filter by company"
-msgstr ""
+msgstr "Фильтр по компании"
 
 #: src/Template/Users/index.php:144
 msgid "Filter by user role"
-msgstr ""
+msgstr "Фильтровать по роли пользователя"
 
 #: src/Template/Users/index.php:174
 msgid "Full name"
-msgstr ""
+msgstr "Полное имя"
 
 #: src/Template/Users/index.php:263
 msgid "Reset password"
-msgstr ""
+msgstr "Сброс пароля"
 
 #: src/Template/Users/index.php:327
 msgid "Reset user password"
-msgstr ""
+msgstr "Сбросить пароль пользователя"
 
 #: src/Template/Users/index.php:336
 msgid "Do you really want to reset the password for the selected user?"
-msgstr ""
+msgstr "Вы действительно хотите сбросить пароль для выбранного пользователя?"
 
 #: src/Template/Users/index.php:347
 msgid "The system will send the user an email with a new random generated password."
-msgstr ""
+msgstr "Система отправит пользователю электронное письмо с новым случайно сгенерированным паролем."
 
 #: src/Template/Users/index.php:353
 msgid "Yes - reset password"
-msgstr ""
+msgstr "Да - сбросить пароль"
 
 #: src/Template/Users/login.php:43
 #: src/Template/Users/login.php:90
 msgid "Login"
-msgstr ""
+msgstr "Логин"
 
 #: src/Template/Users/login.php:78
 msgid "Remember Me"
-msgstr ""
+msgstr "Запомни меня"
 
 #: src/Template/Users/login.php:101
 msgid "Authorization through SSL certificate successfully."
-msgstr ""
+msgstr "Авторизация через SSL сертификат успешно."
 
 #: src/Template/element/apikey_help.php:7
 #: src/Template/element/apikey_help.php:88
 msgid "API Keys Overview"
-msgstr ""
+msgstr "Обзор API ключей"
 
 #: src/Template/element/apikey_help.php:16
 #: src/Template/element/apikey_help.php:95
 msgid "Click on \"Edit profile\" in the top left corner."
-msgstr ""
+msgstr "Нажмите \"Редактировать профиль\" в верхнем левом углу."
 
 #: src/Template/element/apikey_help.php:23
 #: src/Template/element/apikey_help.php:102
 msgid "At the bottom of the page, you can find the \"API Keys\" section. Click on \"Create new API key\""
-msgstr ""
+msgstr "Внизу страницы вы можете найти раздел  \"Ключи API \". Нажмите \"Создать новый ключ API\""
 
 #: src/Template/element/calendar_mass_changes.php:43
 msgid "Do you really want delete the selected calendars?"
-msgstr ""
+msgstr "Вы действительно хотите удалить выбранные календари?"
 
 #: src/Template/element/command_mass_changes.php:50
 msgid "Do you really want delete the selected commands?"
-msgstr ""
+msgstr "Вы действительно хотите удалить выбранные команды?"
 
 #: src/Template/element/contactgroup_mass_changes.php:52
 msgid "Do you really want delete the selected contactgroups?"
-msgstr ""
+msgstr "Вы действительно хотите удалить выбранные группы контактов?"
 
 #: src/Template/element/contacts_mass_changes.php:54
 msgid "Do you really want delete the selected contacts?"
-msgstr ""
+msgstr "Вы действительно хотите удалить выбранные контакты?"
 
 #: src/Template/element/dialog_success.php:28
 msgid "success"
-msgstr ""
+msgstr "успешно"
 
 #: src/Template/element/dialog_success.php:32
 msgid "Success"
-msgstr ""
+msgstr "Успешно"
 
 #: src/Template/element/downtimes_mass_delete.php:44
 msgid "You are about to delete downtime for host:"
-msgstr ""
+msgstr "Вы собираетесь удалить обслуживание для узла:"
 
 #: src/Template/element/downtimes_mass_delete.php:46
 msgid "Do you want to delete service downtimes for this host too?"
-msgstr ""
+msgstr "Вы также хотите удалить обслуживание служб для этого узла?"
 
 #: src/Template/element/header.php:100
 msgid "Sign out"
-msgstr ""
+msgstr "Выход"
 
 #: src/Template/element/host_mass_changes.php:48
 #: src/Template/element/service_mass_changes.php:41
 #: src/Template/element/servicetemplate_mass_changes.php:49
 msgid "More"
-msgstr ""
+msgstr "Больше"
 
 #: src/Template/element/host_mass_changes.php:106
 msgid "Do you really want delete the selected hosts?"
-msgstr ""
+msgstr "Вы действительно хотите удалить выбранные узлы?"
 
 #: src/Template/element/host_mass_changes.php:109
 msgid "Do you really want disable the selected hosts?"
-msgstr ""
+msgstr "Вы действительно хотите отключить выбранные узлы?"
 
 #: src/Template/element/hostgroup_mass_changes.php:47
 msgid "Do you really want delete the selected hostgroups?"
-msgstr ""
+msgstr "Вы действительно хотите удалить выбранные группы узлов?"
 
 #: src/Template/element/load_current_state_report_data.php:205
 msgid "Checks (Not monitored)"
-msgstr ""
+msgstr "Проверки (не в мониторинге)"
 
 #: src/Template/element/load_downtime_report_data.php:317
 #: src/Template/element/load_downtime_report_data.php:450
 msgid "Servicetemplate:"
-msgstr ""
+msgstr "Шаблон служб"
 
 #: src/Template/element/load_downtime_report_data.php:390
 msgid "Hosts without state history records for selected time range:"
-msgstr ""
+msgstr "Узлы без записей истории состояний для выбранного временного диапазона:"
 
 #: src/Template/element/load_instant_report_data.php:156
 msgid "There are no services defined."
-msgstr ""
+msgstr "Службы не определены."
 
 #: src/Template/element/load_instant_report_data.php:335
 msgid "No hosts/services found"
-msgstr ""
+msgstr "Узлы / службы не найдены"
 
 #: src/Template/element/map_mass_changes.php:43
 msgid "Do you really want delete the selected maps?"
-msgstr ""
+msgstr "Вы действительно хотите удалить выбранные карты?"
 
 #: src/Template/element/paginator_or_scroll.php:29
 msgid "Switch to Paginator Mode"
-msgstr ""
+msgstr "Переключение в режим пагинации"
 
 #: src/Template/element/paginator_or_scroll.php:33
 msgid "Switch to Scroll Mode"
-msgstr ""
+msgstr "Переключиться в режим прокрутки"
 
 #: src/Template/element/repository_checker.php:20
 msgid "APT Repository - Manually action required!"
-msgstr ""
+msgstr "APT Repository - требуется действие вручную!"
 
 #: src/Template/element/repository_checker.php:23
 msgid "Please contact your system administrator."
-msgstr ""
+msgstr "Пожалуйста, обратитесь к системному администратору."
 
 #: src/Template/element/repository_checker.php:31
 #: src/Template/element/repository_checker.php:42
 #: src/Template/element/repository_checker.php:66
 msgid "Error code"
-msgstr ""
+msgstr "Код ошибки"
 
 #: src/Template/element/repository_checker.php:53
 msgid "Your system is using the old openITCOCKPIT APT repository, which will be shut down soon."
-msgstr ""
+msgstr "Ваша система использует старый репозиторий openITCOCKPIT APT, который скоро будет закрыт."
 
 #: src/Template/element/repository_checker.php:55
 msgid "Please update your sources.list to use our new repository"
-msgstr ""
+msgstr "Пожалуйста, обновите ваш sources.list, чтобы использовать наш новый репозиторий"
 
 #: src/Template/element/service_mass_changes.php:35
 msgid "Copy to host"
-msgstr ""
+msgstr "Копировать в узел"
 
 #: src/Template/element/service_mass_changes.php:51
 msgid "Add to servicegroup"
-msgstr ""
+msgstr "Добавить в группу служб"
 
 #: src/Template/element/service_mass_changes.php:85
 msgid "Do you really want delete the selected services?"
-msgstr ""
+msgstr "Вы действительно хотите удалить выбранные службы?"
 
 #: src/Template/element/service_mass_changes.php:88
 msgid "Do you really want disable the selected services?"
-msgstr ""
+msgstr "Вы действительно хотите отключить выбранные службы?"
 
 #: src/Template/element/servicegroup_mass_changes.php:47
 msgid "Do you really want delete the selected servicegroups?"
-msgstr ""
+msgstr "Вы действительно хотите удалить выбранные группы служб?"
 
 #: src/Template/element/servicetemplate_mass_changes.php:57
 msgid "Allocate to service template group"
-msgstr ""
+msgstr "Выделить в группу шаблонов служб"
 
 #: src/Template/element/servicetemplate_mass_changes.php:69
 msgid "Do you really want to delete the selected service templates and all attached services?"
-msgstr ""
+msgstr "Вы действительно хотите удалить выбранные шаблоны служб и все подключенные службы?"
 
 #: src/Template/element/servicetemplate_mass_changes.php:72
 msgid "Do you really want to disable the selected service templates?"
-msgstr ""
+msgstr "Вы действительно хотите отключить выбранные шаблоны служб?"
 
 #: src/Template/element/shortcuts.php:34
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Горячие клавиши"
 
 #: src/Template/element/shortcuts.php:39
 msgid "Global Shortcuts"
-msgstr ""
+msgstr "Глобальные клавиши"
 
 #: src/Template/element/shortcuts.php:40
 msgid "Open shortcut help"
-msgstr ""
+msgstr "Открыть справку"
 
 #: src/Template/element/shortcuts.php:55
 msgid "Open lockscreen"
-msgstr ""
+msgstr "Открыть экран блокировки"
 
 #: src/Template/element/shortcuts.php:70
 msgid "Logout"
