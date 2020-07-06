@@ -32,6 +32,7 @@ use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\TenantsTable;
 use Cake\Cache\Cache;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -59,7 +60,7 @@ class TenantsController extends AppController {
 
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $TenantFilter->getPage());
         $MY_RIGHTS = $this->MY_RIGHTS;
-        if($this->hasRootPrivileges){
+        if ($this->hasRootPrivileges) {
             $MY_RIGHTS = [];
         }
         $all_tenants = $TenantsTable->getTenantsIndex($TenantFilter, $PaginateOMat, $MY_RIGHTS);
@@ -260,29 +261,36 @@ class TenantsController extends AppController {
     /**
      * @param null $id
      */
-    public function delete($id = null) {
+    public function delete($containerId = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $TenantsTable TenantsTable */
+        /** @var TenantsTable $TenantsTable */
         $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
+        /** @var ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        if (!$TenantsTable->existsById($id)) {
-            throw new NotFoundException(__('Invalid tenant'));
+
+        if (!$ContainersTable->existsById($containerId)) {
+            throw new NotFoundException(__('Invalid container'));
         }
 
-        $tenant = $TenantsTable->getTenantById($id);
+
+        try {
+            $tenant = $TenantsTable->getTenantByContainerId($containerId);
+        }catch (RecordNotFoundException $e){
+            throw new NotFoundException(__('Invalid tenant'));
+        }
         $tenantForChangelog = $tenant;
 
         if (!$this->allowedByContainerId($tenant['container']['id'])) {
             $this->render403();
             return;
         }
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        if ($ContainersTable->allowDelete($tenant['container']['id'], $this->MY_RIGHTS)) {
+
+        if ($ContainersTable->allowDelete($tenant['container']['id'])) {
 
             if ($ContainersTable->delete($ContainersTable->get($tenant['container']['id']))) {
                 Cache::clear('permissions');
@@ -294,7 +302,7 @@ class TenantsController extends AppController {
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'delete',
                     'tenants',
-                    $id,
+                    $containerId,
                     OBJECT_TENANT,
                     [ROOT_CONTAINER],
                     $User->getId(),
@@ -328,7 +336,7 @@ class TenantsController extends AppController {
         ];
         $this->response = $this->response->withStatus(400);
         $this->set('success', false);
-        $this->set('id', $id);
+        $this->set('id', $containerId);
         $this->set('message', __('Issue while deleting tenant'));
         $this->set('usedBy', $usedBy);
         $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);

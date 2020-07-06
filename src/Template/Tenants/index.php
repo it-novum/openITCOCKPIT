@@ -136,7 +136,7 @@
                             <tr ng-repeat="tenant in tenants">
                                 <td class="text-center" class="width-15">
                                     <input type="checkbox"
-                                           ng-model="massChange[tenant.Tenant.id]"
+                                           ng-model="massChange[tenant.Tenant.container_id]"
                                            ng-show="tenant.Tenant.allowEdit">
                                 </td>
                                 <td>

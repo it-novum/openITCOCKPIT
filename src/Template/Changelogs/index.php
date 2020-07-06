@@ -133,7 +133,8 @@
                                             'Servicegroup'    => __('Service groups'),
                                             'Servicetemplate' => __('Service templates'),
                                             'Timeperiod'      => __('Time periods'),
-                                            'Location'        => __('Locations')
+                                            'Location'        => __('Locations'),
+                                            'Tenant'        => __('Tenants')
                                         ];
                                         ?>
 

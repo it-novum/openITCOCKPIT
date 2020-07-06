@@ -140,6 +140,24 @@ class TenantsTable extends Table {
     }
 
     /**
+     * @param $id
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getTenantByContainerId($id) {
+        $query = $this->find()
+            ->where([
+                'Tenants.container_id' => $id
+            ])
+            ->contain([
+                'Containers'
+            ])
+            ->disableHydration()
+            ->firstOrFail();
+
+        return $query;
+    }
+
+    /**
      * @param int $id
      * @return bool
      */

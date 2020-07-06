@@ -324,7 +324,7 @@ class LocationsController extends AppController {
             'baseUrl' => '#',
             'state'   => 'ContainersShowDetails',
             'message' => __('Location is used by other object.'),
-            'module'  => '',
+            'module'  => 'Core',
             'id'      => $containerId
         ];
 
