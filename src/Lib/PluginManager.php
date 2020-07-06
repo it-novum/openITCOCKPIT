@@ -27,6 +27,7 @@ namespace App\Lib;
 
 use App\Application;
 use Cake\Core\Plugin;
+use Cake\Datasource\FactoryLocator;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Composer\Autoload\ClassLoader;
@@ -62,7 +63,8 @@ class PluginManager {
         $this->application = $application;
         $this->bootstrapPlugins = $bootstrapPlugins;
 
-        TableRegistry::setTableLocator(new PluginManagerTableLocator());
+        FactoryLocator::add('Table', new PluginManagerTableLocator()); // CakePHP >= 4.1
+        //TableRegistry::setTableLocator(new PluginManagerTableLocator()); // CakePHP <= 4.1
 
         $this->_getAvailablePlugins();
         $this->addAllPlugins();
