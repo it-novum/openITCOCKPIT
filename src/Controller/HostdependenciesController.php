@@ -160,11 +160,11 @@ class HostdependenciesController extends AppController {
         }
         $hostdependency = $HostdependenciesTable->get($id, [
             'contain' => [
-                'hosts'      => function (Query $q) {
+                'Hosts'      => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id', 'name']);
                 },
-                'hostgroups' => function (Query $q) {
+                'Hostgroups' => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id']);
                 },

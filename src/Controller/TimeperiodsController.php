@@ -193,7 +193,7 @@ class TimeperiodsController extends AppController {
             throw new NotFoundException('Time period not found');
         }
         $timeperiod = $TimeperiodsTable->get($id, [
-            'contain' => 'timeperiodtimeranges'
+            'contain' => 'TimeperiodTimeranges'
         ]);
         $timeperiodForChangeLog['Timeperiod'] = $timeperiod->toArray();
 

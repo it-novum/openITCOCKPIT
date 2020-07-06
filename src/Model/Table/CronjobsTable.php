@@ -99,7 +99,7 @@ class CronjobsTable extends Table {
     public function getCronjob($id = null) {
         $query = $this->get($id, [
             'contain' => [
-                'cronschedules'
+                'Cronschedules'
             ]
         ]);
         if (!is_null($query)) {

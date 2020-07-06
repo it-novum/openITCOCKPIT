@@ -155,19 +155,19 @@ class ServiceescalationsController extends AppController {
         }
         $serviceescalation = $ServiceescalationsTable->get($id, [
             'contain' => [
-                'services'      => function (Query $q) {
+                'Services'      => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id', 'name']);
                 },
-                'servicegroups' => function (Query $q) {
+                'Servicegroups' => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id']);
                 },
-                'contacts'      => function (Query $q) {
+                'Contacts'      => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id']);
                 },
-                'contactgroups' => function (Query $q) {
+                'Contactgroups' => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id']);
                 },

@@ -162,19 +162,19 @@ class HostescalationsController extends AppController {
 
         $hostescalation = $HostescalationsTable->get($id, [
             'contain' => [
-                'hosts'         => function (Query $q) {
+                'Hosts'         => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id', 'name']);
                 },
-                'hostgroups'    => function (Query $q) {
+                'Hostgroups'    => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id']);
                 },
-                'contacts'      => function (Query $q) {
+                'Contacts'      => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id']);
                 },
-                'contactgroups' => function (Query $q) {
+                'Contactgroups' => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id']);
                 },

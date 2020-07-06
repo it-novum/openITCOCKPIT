@@ -171,7 +171,7 @@ class ProfileController extends AppController {
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
         $user = $UsersTable->get($User->getId(), [
             'contain' => [
-                'containers'
+                'Containers'
             ]
         ]);
 
@@ -409,7 +409,7 @@ class ProfileController extends AppController {
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
         $user = $UsersTable->get($User->getId(), [
             'contain' => [
-                'containers'
+                'Containers'
             ]
         ]);
 

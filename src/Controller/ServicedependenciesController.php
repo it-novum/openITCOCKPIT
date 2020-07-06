@@ -155,11 +155,11 @@ class ServicedependenciesController extends AppController {
         }
         $servicedependency = $ServicedependenciesTable->get($id, [
             'contain' => [
-                'services'      => function (Query $q) {
+                'Services'      => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id', 'name']);
                 },
-                'servicegroups' => function (Query $q) {
+                'Servicegroups' => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id']);
                 },

@@ -162,7 +162,7 @@ class CommandsController extends AppController {
             throw new NotFoundException('Command not found');
         }
         $command = $CommandsTable->get($id, [
-            'contain' => 'commandarguments'
+            'contain' => 'Commandarguments'
         ]);
         $commandForChangeLog = $command;
 
