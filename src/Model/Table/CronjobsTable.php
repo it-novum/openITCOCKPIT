@@ -84,7 +84,7 @@ class CronjobsTable extends Table {
      */
     public function getCronjobs() {
         $query = $this->find()->contain([
-            'cronschedules'
+            'Cronschedules'
         ]);
         if (!is_null($query)) {
             return $this->formatResultAsCake2($query->disableHydration()->toArray());
@@ -114,7 +114,7 @@ class CronjobsTable extends Table {
     public function getEnabledCronjobs() {
         $query = $this->find()
             ->where(['enabled' => 1])
-            ->contain('cronschedules')
+            ->contain('Cronschedules')
             ->disableHydration();
 
         return $this->formatResultAsCake2($query->toArray());

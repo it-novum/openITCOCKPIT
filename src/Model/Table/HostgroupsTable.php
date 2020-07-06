@@ -269,7 +269,7 @@ class HostgroupsTable extends Table {
     public function getHostgroupsIndex(HostgroupFilter $HostgroupFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find()
             ->contain([
-                'containers'
+                'Containers'
             ]);
 
         $where = $HostgroupFilter->indexFilter();
@@ -443,7 +443,7 @@ class HostgroupsTable extends Table {
 
         $query = $this->find()
             ->contain([
-                'containers'
+                'Containers'
             ])
             ->select([
                 'Containers.name',
@@ -469,7 +469,7 @@ class HostgroupsTable extends Table {
         if (!empty($selected)) {
             $query = $this->find()
                 ->contain([
-                    'containers'
+                    'Containers'
                 ])
                 ->select([
                     'Containers.name',
@@ -508,7 +508,7 @@ class HostgroupsTable extends Table {
 
         $query = $this->find()
             ->contain([
-                'containers'
+                'Containers'
             ])
             ->select([
                 'Containers.name',
@@ -541,7 +541,7 @@ class HostgroupsTable extends Table {
 
         $query = $this->find()
             ->contain([
-                'hosts',
+                'Hosts',
                 'Containers'
             ]);
 
@@ -604,7 +604,7 @@ class HostgroupsTable extends Table {
                 'Hostgroups.uuid' => $uuid,
             ])
             ->contain([
-                'hosts' =>
+                'Hosts' =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->select([
@@ -617,7 +617,7 @@ class HostgroupsTable extends Table {
                                 'Hosts.disabled' => 0
                             ])
                             ->contain([
-                                'hosttemplates' =>
+                                'Hosttemplates' =>
                                     function (Query $q) {
                                         return $q->enableAutoFields(false)
                                             ->select([
@@ -648,7 +648,7 @@ class HostgroupsTable extends Table {
                 'Hostgroups.uuid' => $uuid,
             ])
             ->contain([
-                'hosts'         =>
+                'Hosts'         =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->select([
@@ -661,7 +661,7 @@ class HostgroupsTable extends Table {
                                 'Hosts.disabled' => 0
                             ])
                             ->contain([
-                                'hosttemplates' =>
+                                'Hosttemplates' =>
                                     function (Query $q) {
                                         return $q->enableAutoFields(false)
                                             ->select([
@@ -671,7 +671,7 @@ class HostgroupsTable extends Table {
                                     }
                             ]);
                     },
-                'hosttemplates' =>
+                'Hosttemplates' =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->select([
@@ -702,7 +702,7 @@ class HostgroupsTable extends Table {
                         'Hosts.disabled'        => 0
                     ])
                     ->contain([
-                        'hosttemplates' =>
+                        'Hosttemplates' =>
                             function (Query $q) {
                                 return $q->enableAutoFields(false)
                                     ->select([
@@ -749,8 +749,8 @@ class HostgroupsTable extends Table {
                 'Containers.name'
             ])
             ->contain([
-                'containers',
-                'hosts' => function (Query $q) {
+                'Containers',
+                'Hosts' => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Hosts.id',
@@ -778,13 +778,13 @@ class HostgroupsTable extends Table {
             ->contain([
                 // Get all hosts that are in this host group through the host template AND
                 // which does NOT have any own host groups
-                'hosttemplates' => function (Query $query) {
+                'Hosttemplates' => function (Query $query) {
                     $query->disableAutoFields()
                         ->select([
                             'id',
                         ])
                         ->contain([
-                            'hosts' => function (Query $query) {
+                            'Hosts' => function (Query $query) {
                                 $query->disableAutoFields()
                                     ->select([
                                         'Hosts.id',
@@ -801,7 +801,7 @@ class HostgroupsTable extends Table {
                 },
 
                 // Get all hosts from this host group
-                'hosts'         => function (Query $query) {
+                'Hosts'         => function (Query $query) {
                     $query->disableAutoFields()
                         ->select([
                             'Hosts.id',
@@ -835,13 +835,13 @@ class HostgroupsTable extends Table {
             ->contain([
                 // Get all hosts that are in this host group through the host template AND
                 // which does NOT have any own host groups
-                'hosttemplates' => function (Query $query) use ($satelliteId) {
+                'Hosttemplates' => function (Query $query) use ($satelliteId) {
                     $query->disableAutoFields()
                         ->select([
                             'id',
                         ])
                         ->contain([
-                            'hosts' => function (Query $query) use ($satelliteId) {
+                            'Hosts' => function (Query $query) use ($satelliteId) {
                                 $query->disableAutoFields()
                                     ->select([
                                         'Hosts.id',
@@ -860,7 +860,7 @@ class HostgroupsTable extends Table {
                 },
 
                 // Get all hosts from this host group
-                'hosts'         => function (Query $query) use ($satelliteId) {
+                'Hosts'         => function (Query $query) use ($satelliteId) {
                     $query->disableAutoFields()
                         ->select([
                             'Hosts.id',

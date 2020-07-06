@@ -320,7 +320,7 @@ class ServicegroupsTable extends Table {
 
         $query = $this->find()
             ->contain([
-                'services',
+                'Services',
                 'Containers'
             ]);
 
@@ -634,13 +634,13 @@ class ServicegroupsTable extends Table {
             ->contain([
                 // Get all services that are in this service group through the service template AND
                 // which does NOT have any own service groups
-                'servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (Query $query) {
                     $query->disableAutoFields()
                         ->select([
                             'id',
                         ])
                         ->contain([
-                            'services' => function (Query $query) {
+                            'Services' => function (Query $query) {
                                 $query->disableAutoFields()
                                     ->select([
                                         'Services.id',
@@ -657,7 +657,7 @@ class ServicegroupsTable extends Table {
                 },
 
                 // Get all services from this service group
-                'services'         => function (Query $query) {
+                'Services'         => function (Query $query) {
                     $query->disableAutoFields()
                         ->select([
                             'Services.id',
@@ -691,13 +691,13 @@ class ServicegroupsTable extends Table {
             ->contain([
                 // Get all services that are in this service group through the service template AND
                 // which does NOT have any own service groups
-                'servicetemplates' => function (Query $query) use ($satelliteId) {
+                'Servicetemplates' => function (Query $query) use ($satelliteId) {
                     $query->disableAutoFields()
                         ->select([
                             'id',
                         ])
                         ->contain([
-                            'services' => function (Query $query) use ($satelliteId) {
+                            'Services' => function (Query $query) use ($satelliteId) {
                                 $query->disableAutoFields()
                                     ->select([
                                         'Services.id',
@@ -716,7 +716,7 @@ class ServicegroupsTable extends Table {
                 },
 
                 // Get all services from this service group
-                'services'         => function (Query $query) use ($satelliteId) {
+                'Services'         => function (Query $query) use ($satelliteId) {
                     $query->disableAutoFields()
                         ->select([
                             'Services.id',

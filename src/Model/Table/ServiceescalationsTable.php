@@ -509,7 +509,7 @@ class ServiceescalationsTable extends Table {
         }
         $query = $this->find()
             ->contain([
-                'services' =>
+                'Services' =>
                     function (Query $q) use ($serviceId) {
                         if ($serviceId !== null) {
                             $q->where([

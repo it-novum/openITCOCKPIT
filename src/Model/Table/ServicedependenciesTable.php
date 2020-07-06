@@ -369,7 +369,7 @@ class ServicedependenciesTable extends Table {
     public function getServicedependenciesForExport($uuid = null) {
         $query = $this->find()
             ->contain([
-                'services'      =>
+                'Services'      =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->contain([
@@ -386,7 +386,7 @@ class ServicedependenciesTable extends Table {
                                 'uuid'
                             ]);
                     },
-                'servicegroups' =>
+                'Servicegroups' =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->select([
@@ -438,7 +438,7 @@ class ServicedependenciesTable extends Table {
         }
         $query = $this->find()
             ->contain([
-                'services' =>
+                'Services' =>
                     function (Query $q) use ($serviceId) {
                         if ($serviceId !== null) {
                             $q->where([

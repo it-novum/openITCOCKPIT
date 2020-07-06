@@ -255,7 +255,7 @@ class TenantsTable extends Table {
                 'container_id IN' => $containerIds
             ])
             ->contain([
-                'containers'
+                'Containers'
             ])
             ->disableHydration()
             ->all();
@@ -291,7 +291,7 @@ class TenantsTable extends Table {
 
         $query
             ->contain([
-                'containers'
+                'Containers'
             ])
             ->disableHydration()
             ->all();

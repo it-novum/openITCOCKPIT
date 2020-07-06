@@ -495,7 +495,7 @@ class HostescalationsTable extends Table {
         }
         $query = $this->find()
             ->contain([
-                'hosts' =>
+                'Hosts' =>
                     function (Query $q) use ($hostId) {
                         if ($hostId !== null) {
                             $q->where([

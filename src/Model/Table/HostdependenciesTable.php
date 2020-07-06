@@ -349,7 +349,7 @@ class HostdependenciesTable extends Table {
     public function getHostdependenciesForExport($uuid = null) {
         $query = $this->find()
             ->contain([
-                'hosts'       =>
+                'Hosts'       =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->where([
@@ -360,7 +360,7 @@ class HostdependenciesTable extends Table {
                                 'uuid'
                             ]);
                     },
-                'hostgroups'  =>
+                'Hostgroups'  =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->select([
@@ -411,7 +411,7 @@ class HostdependenciesTable extends Table {
         }
         $query = $this->find()
             ->contain([
-                'hosts' =>
+                'Hosts' =>
                     function (Query $q) use ($hostId) {
                         if ($hostId !== null) {
                             $q->where([

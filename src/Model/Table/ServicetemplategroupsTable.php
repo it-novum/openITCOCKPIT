@@ -273,7 +273,7 @@ class ServicetemplategroupsTable extends Table {
 
         $query = $this->find()
             ->contain([
-                'containers'
+                'Containers'
             ])
             ->select([
                 'Containers.name',
@@ -299,7 +299,7 @@ class ServicetemplategroupsTable extends Table {
         if (!empty($selected)) {
             $query = $this->find()
                 ->contain([
-                    'containers'
+                    'Containers'
                 ])
                 ->select([
                     'Containers.name',
@@ -434,7 +434,7 @@ class ServicetemplategroupsTable extends Table {
             ->contain([
                 // Get all services that are in this service group through the service template AND
                 // which does NOT have any own service groups
-                'servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (Query $query) {
                     $query->disableAutoFields()
                         ->select([
                             'id',
