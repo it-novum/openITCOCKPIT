@@ -259,7 +259,6 @@ class LocationsController extends AppController {
 
     /**
      * @param null $id
-     * @todo allowDelete -> for eventcorrelation module
      */
     public function delete($containerId = null) {
         if (!$this->request->is('post')) {
