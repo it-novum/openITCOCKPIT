@@ -1254,3 +1254,7 @@ label.menu-open-button:hover {
 .system-health-item {
     white-space:normal;
 }
+.container-table {
+    border-spacing: 1px;
+    border-collapse: separate;
+}

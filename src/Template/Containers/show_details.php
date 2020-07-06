@@ -282,7 +282,7 @@ $objectDetails['maps'] = [
                     <div class="frame-wrap">
                         <div ng-show="tabName == 'Containers'">
                             <div class="margin-top-10" ng-hide="isEmpty">
-                                <table class="table m-0 table-bordered table-hover table-sm">
+                                <table class="table m-0 table-bordered table-hover table-sm container-table">
                                     <tr ng-repeat-start="container in containersWithChilds">
                                         <th colspan="3" class="table-dark opacity-70">
                                             <h5 class="margin-0">{{container.name}}
