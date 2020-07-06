@@ -13,9 +13,9 @@ testing=0
 ############## initialization
 
 declare -a oks
-declare -a warnings=()
-declare -a errors=()
-declare -a hints=()
+declare -a warnings
+declare -a errors
+declare -a hints
 
 okCount=0
 hintCount=0
@@ -48,7 +48,6 @@ if [[ ! -f "$v3MysqlIni" && $testing == 0 ]]; then
     exit 1;
 fi
 
-MYSQL_USER=$(php -r "echo parse_ini_file('/etc/openitcockpit/mysql.cnf')['user'];")
 MYSQL_DATABASE=$(php -r "echo parse_ini_file('/etc/openitcockpit/mysql.cnf')['database'];")
 
 debug_log(){
@@ -149,7 +148,7 @@ check_package_installed_mk(){
 check_package_installed_distribute(){
     if dpkg -s "openitcockpit-module-distribute" >/dev/null 2>&1; then
         get_configured_satellites
-        if [ $satellitesCount > 0 ]; then
+        if [ $satellitesCount -gt 0 ]; then
             warnings+=($(echo "Please keep in mind to upgrade all Satellite systems to openITCOCKPIT Version 4." | tr ' ' '___'))
             ((warningCount++))
             if [ "$satellitesEntries" != "" ]; then
