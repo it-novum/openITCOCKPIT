@@ -43,11 +43,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.triggerFilter = function(){
-            if($scope.showFilter === true){
-                $scope.showFilter = false;
-            }else{
-                $scope.showFilter = true;
-            }
+            $scope.showFilter = !$scope.showFilter === true;
         };
 
         $scope.resetFilter = function(){
