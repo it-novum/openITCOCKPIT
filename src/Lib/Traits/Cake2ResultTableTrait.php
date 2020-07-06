@@ -58,9 +58,10 @@ trait Cake2ResultTableTrait {
         foreach ($records as $row) {
             $record = [];
             foreach ($row as $key => $value) {
-                if (isset($associations[strtolower($key)]) && is_array($value)) {
+                $associationKey = ucfirst(Inflector::camelize($key)); // cakephp < 4.1
+                if (isset($associations[$associationKey]) && is_array($value)) {
                     //associated model
-                    $assoc = $AssociationCollection->get($key);
+                    $assoc = $AssociationCollection->get($associationKey);
                     $assocRecords = [];
                     if ($assoc instanceof HasMany) {
                         foreach ($value as $assocRow) {
@@ -76,7 +77,7 @@ trait Cake2ResultTableTrait {
                             $assocRecords[$assocKey] = $this->asString($assocValue);
                         }
                     }
-                    $assocModelName = ucfirst(Inflector::singularize($key));
+                    $assocModelName = ucfirst(Inflector::singularize($associationKey));
                     $record[$assocModelName] = $assocRecords;
                 } else {
                     //Model itself
@@ -116,9 +117,10 @@ trait Cake2ResultTableTrait {
 
         $record = [];
         foreach ($row as $key => $value) {
-            if (isset($associations[strtolower($key)]) && is_array($value)) {
+            $associationKey = ucfirst(Inflector::camelize($key)); // cakephp < 4.1
+            if (isset($associations[$associationKey]) && is_array($value)) {
                 //associated model
-                $assoc = $AssociationCollection->get($key);
+                $assoc = $AssociationCollection->get($associationKey);
                 $assocRecords = [];
                 if ($assoc instanceof HasMany || $assoc instanceof BelongsToMany) {
                     foreach ($value as $assocRow) {
@@ -134,7 +136,7 @@ trait Cake2ResultTableTrait {
                         $assocRecords[$assocKey] = $this->asString($assocValue);
                     }
                 }
-                $assocModelName = ucfirst(Inflector::singularize($key));
+                $assocModelName = ucfirst(Inflector::singularize($associationKey));
                 $record[$assocModelName] = $assocRecords;
             } else {
                 //Model itself
