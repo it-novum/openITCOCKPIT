@@ -997,15 +997,15 @@ class ContainersTable extends Table {
      * checks if the given container contains subcontainers
      * return false if it has subcontainers - so it cant be deleted
      * return true if its empty and can be safely deleted
-     * @param null $id
-     * @param $MY_RIGHTS
+     * @param int $id
      * @return bool
      */
-    public function allowDelete($id = null, $MY_RIGHTS): bool {
+    public function allowDelete($id): bool {
         if (!$this->existsById($id)) {
             throw new NotFoundException(__('Invalid container'));
         }
-        $subContainers = $this->getContainerWithAllChildren($id, $MY_RIGHTS);
+
+        $subContainers = $this->getContainerWithAllChildren($id);
         // check content of subcontainers
         /*
          This checks if there are content in containers like servicetemplates, services or hosts e.g.
@@ -1046,17 +1046,18 @@ class ContainersTable extends Table {
      * @param null $containerId
      * @param null $containertype
      * @return bool
+     * @deprecated
      */
     public function isEmptyContainer($containerId = null, $containertype = null): bool {
         if (!empty($containertype)) {
             switch ($containertype) {
                 case CT_TENANT:
-                    /** @var $TenantsTable TenantsTable */
+                    /** @var TenantsTable $TenantsTable  */
                     $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
                     $tenant = $TenantsTable->getTenantByContainerId($containerId);
                     break;
                 case CT_LOCATION:
-                    /** @var $LocationsTable LocationsTable */
+                    /** @var LocationsTable $LocationsTable */
                     $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
                     $location = $LocationsTable->getLocationByContainerId($containerId);
                     break;

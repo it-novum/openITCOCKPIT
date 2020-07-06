@@ -172,6 +172,7 @@ angular.module('openITCOCKPIT')
 
         $scope.openEditNodeModal = function(container){
             clearForm();
+            $scope.containerNotEmpty = false;
             $scope.post.Container = container;
             $('#angularEditNodeModal').modal('show');
         };
@@ -205,7 +206,7 @@ angular.module('openITCOCKPIT')
             $state.go('ContainersShowDetails', {
                 id: containerId
             });
-        }
+        };
 
         $scope.load();
 

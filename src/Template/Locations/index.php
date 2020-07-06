@@ -136,7 +136,7 @@
                             <tr ng-repeat="location in locations">
                                 <td class="text-center" class="width-15">
                                     <input type="checkbox"
-                                           ng-model="massChange[location.Location.id]"
+                                           ng-model="massChange[location.Location.container_id]"
                                            ng-show="location.Location.allowEdit">
                                 </td>
                                 <td>
@@ -179,7 +179,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
-                                                <a class="dropdown-item text-info"
+                                                <a class="dropdown-item"
                                                    ui-sref="ContainersShowDetails({id: location.Location.container_id})">
                                                     <i class="fa fa-info-circle"></i>
                                                     <?php echo __('Show details'); ?>

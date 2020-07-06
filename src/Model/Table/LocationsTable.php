@@ -179,6 +179,29 @@ class LocationsTable extends Table {
     }
 
     /**
+     * @param $id
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getLocationByContainerId($containerId) {
+        $query = $this->find()
+            ->where([
+                'Locations.container_id' => $containerId
+            ])
+            ->contain([
+                'Containers' => function (Query $q) {
+                    return $q->disableAutoFields()
+                        ->select([
+                            'Containers.id',
+                            'Containers.parent_id',
+                            'Containers.name'
+                        ]);
+                }
+            ])
+            ->firstOrFail();
+        return $query;
+    }
+
+    /**
      * @param int $id
      * @return bool
      */

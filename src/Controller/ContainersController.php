@@ -367,8 +367,12 @@ class ContainersController extends AppController {
             ])
             ->first();
 
+        if(empty($container)){
+            return $this->render403();
+        }
+
         //check if the current container contains subcontainers
-        $deletionAllowed = $ContainersTable->allowDelete($id, $this->MY_RIGHTS);
+        $deletionAllowed = $ContainersTable->allowDelete($id);
         if ($deletionAllowed) {
             Cache::clear('permissions');
             if ($ContainersTable->delete($container)) {

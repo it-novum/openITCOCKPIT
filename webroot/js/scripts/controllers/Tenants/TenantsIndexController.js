@@ -44,11 +44,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.triggerFilter = function(){
-            if($scope.showFilter === true){
-                $scope.showFilter = false;
-            }else{
-                $scope.showFilter = true;
-            }
+            $scope.showFilter = !$scope.showFilter === true;
         };
 
         $scope.resetFilter = function(){
@@ -60,7 +56,7 @@ angular.module('openITCOCKPIT')
             if($scope.tenants){
                 for(var key in $scope.tenants){
                     if($scope.tenants[key].Tenant.allowEdit){
-                        var id = $scope.tenants[key].Tenant.id;
+                        var id = $scope.tenants[key].Tenant.container_id;
                         $scope.massChange[id] = true;
                     }
                 }
@@ -75,7 +71,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(tenant){
             var object = {};
-            object[tenant.Tenant.id] = tenant.Tenant.container.name;
+            object[tenant.Tenant.container_id] = tenant.Tenant.container.name;
             return object;
         };
 
@@ -84,7 +80,7 @@ angular.module('openITCOCKPIT')
             var selectedObjects = MassChangeService.getSelected();
             for(var key in $scope.tenants){
                 for(var id in selectedObjects){
-                    if(id == $scope.tenants[key].Tenant.id){
+                    if(id == $scope.tenants[key].Tenant.container_id){
                         objects[id] = $scope.tenants[key].Tenant.container.name;
                     }
                 }
