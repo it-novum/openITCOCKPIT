@@ -6,7 +6,7 @@ use App\Lib\PluginManager;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use CakePlugin;
+use Cake\Core\Plugin;
 
 /**
  * Cronjobs Model
