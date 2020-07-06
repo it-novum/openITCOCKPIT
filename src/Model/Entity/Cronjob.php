@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -14,8 +15,7 @@ use Cake\ORM\Entity;
  *
  * @property \App\Model\Entity\Cronschedule[] $cronschedules
  */
-class Cronjob extends Entity
-{
+class Cronjob extends Entity {
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -27,10 +27,10 @@ class Cronjob extends Entity
      * @var array
      */
     protected $_accessible = [
-        'task' => true,
-        'plugin' => true,
-        'interval' => true,
-        'enabled' => true,
+        'task'         => true,
+        'plugin'       => true,
+        'interval'     => true,
+        'enabled'      => true,
         'cronschedule' => true
     ];
 }

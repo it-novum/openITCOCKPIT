@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -14,8 +15,7 @@ use Cake\ORM\Entity;
  *
  * @property \App\Model\Entity\Cronjob $cronjob
  */
-class Cronschedule extends Entity
-{
+class Cronschedule extends Entity {
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -30,7 +30,7 @@ class Cronschedule extends Entity
         'cronjob_id' => true,
         'is_running' => true,
         'start_time' => true,
-        'end_time' => true,
-        'cronjob' => true
+        'end_time'   => true,
+        'cronjob'    => true
     ];
 }
