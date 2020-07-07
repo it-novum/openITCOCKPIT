@@ -98,11 +98,7 @@ class HostgroupsController extends AppController {
         }
 
         $this->set('all_hostgroups', $all_hostgroups);
-        $toJson = ['all_hostgroups', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['all_hostgroups', 'scroll'];
-        }
-        $this->viewBuilder()->setOption('serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', ['all_hostgroups']);
     }
 
     /**

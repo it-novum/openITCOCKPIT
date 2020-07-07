@@ -264,7 +264,7 @@ class TenantsTable extends Table {
             case 'list':
                 $list = [];
                 foreach ($this->emptyArrayIfNull($query->toArray()) as $tenant) {
-                    $list[$tenant[$index]] = $tenant['Containers']['name'];
+                    $list[$tenant[$index]] = $tenant['container']['name'];
                 }
                 return $list;
                 break;
@@ -300,7 +300,7 @@ class TenantsTable extends Table {
             case 'list':
                 $list = [];
                 foreach ($this->emptyArrayIfNull($query->toArray()) as $tenant) {
-                    $list[$tenant[$index]] = $tenant['Containers']['name'];
+                    $list[$tenant[$index]] = $tenant['container']['name'];
                 }
                 return $list;
                 break;

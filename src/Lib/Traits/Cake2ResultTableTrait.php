@@ -230,11 +230,6 @@ trait Cake2ResultTableTrait {
                 continue;
             }
 
-            if ($assoc instanceof BelongsToMany) {
-                //Ignore BelongsToMany associations like hosts_to_containers_sharing or timeperiod_timeranges...
-                continue;
-            }
-
             $associationMapping[$propertyName] = [
                 'modelName' => $this->getCakephp2ModelName($propertyName),
                 'isHasMany' => $assoc instanceof HasMany || $assoc instanceof BelongsToMany

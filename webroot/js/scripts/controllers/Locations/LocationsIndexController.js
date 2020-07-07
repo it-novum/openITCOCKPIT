@@ -70,7 +70,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(location){
             var object = {};
-            object[location.Location.container_id] = location.Location.container.name;
+            object[location.Location.container_id] = location.Container.name;
             return object;
         };
 
@@ -80,7 +80,7 @@ angular.module('openITCOCKPIT')
             for(var key in $scope.locations){
                 for(var id in selectedObjects){
                     if(id == $scope.locations[key].Location.container_id){
-                        objects[id] = $scope.locations[key].Location.container.name;
+                        objects[id] = $scope.locations[key].Container.name;
                     }
                 }
             }

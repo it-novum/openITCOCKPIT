@@ -2372,7 +2372,7 @@ class NagiosConfigGenerator {
         $macros = $Macro->getAllMacros();
 
         foreach ($macros as $macro) {
-            $content .= $this->addContent($macro['Macro']['name'] . '=' . $macro['Macro']['value'], 0);
+            $content .= $this->addContent($macro['name'] . '=' . $macro['value'], 0);
         }
 
         $file->write($content);

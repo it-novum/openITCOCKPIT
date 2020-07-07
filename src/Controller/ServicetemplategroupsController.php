@@ -86,11 +86,7 @@ class ServicetemplategroupsController extends AppController {
 
 
         $this->set('all_servicetemplategroups', $servicetemplategroups);
-        $toJson = ['all_servicetemplategroups', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['all_servicetemplategroups', 'scroll'];
-        }
-        $this->viewBuilder()->setOption('serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', ['all_servicetemplategroups']);
     }
 
     /**

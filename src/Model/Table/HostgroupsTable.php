@@ -462,7 +462,7 @@ class HostgroupsTable extends Table {
         $hostgroupsWithLimit = [];
         $result = $this->emptyArrayIfNull($query->toArray());
         foreach ($result as $row) {
-            $hostgroupsWithLimit[$row['id']] = $row['Containers']['name'];
+            $hostgroupsWithLimit[$row['id']] = $row['container']['name'];
         }
 
         $selectedHostgroups = [];
@@ -488,7 +488,7 @@ class HostgroupsTable extends Table {
             $selectedHostgroups = [];
             $result = $this->emptyArrayIfNull($query->toArray());
             foreach ($result as $row) {
-                $selectedHostgroups[$row['id']] = $row['Containers']['name'];
+                $selectedHostgroups[$row['id']] = $row['container']['name'];
             }
         }
 
@@ -526,7 +526,7 @@ class HostgroupsTable extends Table {
         $hostgroups = [];
         $result = $this->emptyArrayIfNull($query->toArray());
         foreach ($result as $row) {
-            $hostgroups[$row['id']] = $row['Containers']['name'];
+            $hostgroups[$row['id']] = $row['container']['name'];
         }
 
         return $hostgroups;

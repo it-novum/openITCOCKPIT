@@ -140,7 +140,7 @@
                                            ng-show="location.Location.allowEdit">
                                 </td>
                                 <td>
-                                    {{ location.Location.container.name }}
+                                    {{ location.Container.name }}
                                 </td>
                                 <td>
                                     {{ location.Location.description }}

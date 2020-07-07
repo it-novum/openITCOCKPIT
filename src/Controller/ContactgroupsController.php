@@ -75,17 +75,13 @@ class ContactgroupsController extends AppController {
         }
         $contactgroups = $ContactgroupsTable->getContactgroupsIndex($ContactgroupsFilter, $PaginateOMat, $MY_RIGHTS);
         foreach ($contactgroups as $index => $contactgroup) {
-            $contactgroups[$index]['Contactgroup']['allow_edit'] = $this->isWritableContainer($contactgroup['Contactgroup']['container']['parent_id']);
+            $contactgroups[$index]['Contactgroup']['allow_edit'] = $this->isWritableContainer($contactgroup['Container']['parent_id']);
             $contactgroups[$index]['Contactgroup']['contact_count'] = $ContactsToContactgroupsTable->getContactsCountByContactgroupId($contactgroup['Contactgroup']['id']);
         }
 
 
         $this->set('all_contactgroups', $contactgroups);
-        $toJson = ['all_contactgroups', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['all_contactgroups', 'scroll'];
-        }
-        $this->viewBuilder()->setOption('serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', ['all_contactgroups']);
     }
 
     public function view($id = null) {

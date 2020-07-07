@@ -76,11 +76,7 @@ class TenantsController extends AppController {
         }
 
         $this->set('all_tenants', $all_tenants);
-        $toJson = ['all_tenants', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['all_tenants', 'scroll'];
-        }
-        $this->viewBuilder()->setOption('serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', ['all_tenants']);
     }
 
     /**

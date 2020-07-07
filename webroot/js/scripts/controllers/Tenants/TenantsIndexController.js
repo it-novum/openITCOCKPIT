@@ -71,7 +71,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(tenant){
             var object = {};
-            object[tenant.Tenant.container_id] = tenant.Tenant.container.name;
+            object[tenant.Tenant.container_id] = tenant.Container.name;
             return object;
         };
 
@@ -81,7 +81,7 @@ angular.module('openITCOCKPIT')
             for(var key in $scope.tenants){
                 for(var id in selectedObjects){
                     if(id == $scope.tenants[key].Tenant.container_id){
-                        objects[id] = $scope.tenants[key].Tenant.container.name;
+                        objects[id] = $scope.tenants[key].Container.name;
                     }
                 }
             }

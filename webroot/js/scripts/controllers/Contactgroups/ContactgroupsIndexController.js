@@ -87,7 +87,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(contactgroup){
             var object = {};
-            object[contactgroup.Contactgroup.id] = contactgroup.Contactgroup.container.name;
+            object[contactgroup.Contactgroup.id] = contactgroup.Container.name;
             return object;
         };
 
@@ -98,7 +98,7 @@ angular.module('openITCOCKPIT')
                 for(var id in selectedObjects){
                     if(id == $scope.contactgroups[key].Contactgroup.id){
                         if($scope.contactgroups[key].Contactgroup.allow_edit === true){
-                            objects[id] = $scope.contactgroups[key].Contactgroup.container.name;
+                            objects[id] = $scope.contactgroups[key].Container.name;
                         }
                     }
                 }

@@ -143,7 +143,7 @@
                                            ng-show="contactgroup.Contactgroup.allow_edit">
                                 </td>
 
-                                <td>{{contactgroup.Contactgroup.container.name}}</td>
+                                <td>{{contactgroup.Container.name}}</td>
                                 <td>{{contactgroup.Contactgroup.description}}</td>
                                 <td>
                                     <span ng-show="contactgroup.Contactgroup.contact_count">
