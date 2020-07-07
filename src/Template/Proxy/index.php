@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="ProxyIndex">
-            <i class="fa fa-bolt"></i> <?php echo __('HTTP-Proxy'); ?>
+            <i class="fas fa-globe"></i> <?php echo __('HTTP-Proxy'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -57,62 +57,60 @@
                           ng-init="successMessage=
             {objectName : '<?php echo __('Proxy configuration'); ?>' , message: '<?php echo __('updated successfully'); ?>'}">
 
-                        <div class="form-group required">
+                        <div class="form-group required" ng-class="{'has-error':errors.ipaddress}">
                             <label class="control-label">
-                                <?php echo __('Proxy address and Port'); ?>
+                                <?php echo __('IP address'); ?>
                             </label>
-                            <div class="input-group">
-                                <input
-                                    class="form-control"
-                                    placeholder="proxy.local.lan"
-                                    type="text"
-                                    post.Proxy.ipaddress>
-                                <div ng-repeat="error in errors.ipaddress">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                                <div class="input-group-append input-group-prepend">
-                                    <span class="input-group-text"><i class="fas fa-ethernet fs-xl"></i></span>
-                                </div>
-                                <input
-                                    class="form-control"
-                                    type="number"
-                                    placeholder="3128"
-                                    min="0"
-                                    max="65535"
-                                    ng-model="post.Proxy.port">
-                                <div ng-repeat="error in errors.port">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
+                            <input
+                                ng-model="post.Proxy.ipaddress"
+                                class="form-control"
+                                maxlength="255"
+                                type="text"
+                                id="SatelliteAddress">
+                            <div ng-repeat="error in errors.ipaddress">
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.enabled}">
-                            <div class="custom-control custom-checkbox  margin-bottom-10"
-                                 ng-class="{'has-error': errors.enabled}">
+                        <div class="form-group required" ng-class="{'has-error':errors.port}">
+                            <label class="control-label">
+                                <?php echo __('Port'); ?>
+                            </label>
+                            <input
+                                ng-model="post.Proxy.port"
+                                class="form-control"
+                                maxlength="255"
+                                type="text"
+                                id="SatelliteAddress">
+                            <div ng-repeat="error in errors.port">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
 
+                        <div class="form-group padding-top-10">
+                            <div class="custom-control custom-checkbox  margin-bottom-10">
                                 <input type="checkbox"
                                        class="custom-control-input"
                                        ng-true-value="1"
                                        ng-false-value="0"
-                                       id="enabledProxy"
+                                       id="proxyEnabled"
                                        ng-model="post.Proxy.enabled">
-                                <label class="custom-control-label" for="enabledProxy">
+                                <label class="custom-control-label" for="proxyEnabled">
                                     <?php echo __('Enable proxy'); ?>
                                 </label>
                             </div>
-
-                            <div class="col col-xs-12 col-md-offset-2 help-block">
+                            <div class="help-block">
                                 <?php echo __('If disabled the proxy server will not be used.'); ?>
                             </div>
                         </div>
-
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">
                                     <button class="btn btn-primary" type="submit">
-                                        <?php echo __('Update Configuration'); ?>
+                                        <?php echo __('Save configuration'); ?>
                                     </button>
-                                    <a back-button href="javascript:void(0);" fallback-state='DashboardsIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);" fallback-state='DashboardsIndex'
+                                       class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

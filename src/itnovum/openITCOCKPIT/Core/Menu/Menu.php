@@ -649,7 +649,7 @@ class Menu {
                     'proxy',
                     'index',
                     '',
-                    'fa fa-bolt',
+                    'fas fa-globe',
                     [],
                     2
                 ))

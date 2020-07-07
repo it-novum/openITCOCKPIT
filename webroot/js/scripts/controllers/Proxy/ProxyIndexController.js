@@ -22,6 +22,7 @@ angular.module('openITCOCKPIT')
                 if($scope.post.Proxy.port === 0){
                     $scope.post.Proxy.port = null;
                 }
+                $scope.post.Proxy.enabled = ($scope.post.Proxy.enabled === true)?1:0;
             });
         };
 
