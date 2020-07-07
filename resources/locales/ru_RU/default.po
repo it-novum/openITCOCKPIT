@@ -16566,8 +16566,8 @@ msgid "Unix timestamp (integer) of the last host UP state."
 msgstr "Unix timestamp (целое число) последнего состояния ВКЛЮЧЁН узла."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:158
-msgid "Unix timestamp (целое число) последнего состояния ОТКЛЮЧЁН узла."
-msgstr ""
+msgid "Unix timestamp (integer) of the last host DOWN state."
+msgstr "Unix timestamp (целое число) последнего состояния ОТКЛЮЧЁН узла."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:162
 msgid "Unix timestamp (integer) of the last host UNREACHABLE state."
@@ -16798,127 +16798,127 @@ msgstr "Список через запятую от всех контактов,
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:465
 msgid "SUMMARY Macros (Notice: CPU intensive to calculate - use with care)"
-msgstr ""
+msgstr "КРАТКОЕ ОПИСАНИЕ Макросы (обратите внимание: интенсивность ЦП для расчета - используйте с осторожностью)"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:470
 msgid "Number of hosts in state UP."
-msgstr ""
+msgstr "Количество узлов в состоянии ВКЛЮЧЁН."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:474
 msgid "Number of hosts in state DOWN."
-msgstr ""
+msgstr "Количество узлов в состоянии ОТКЛЮЧЁН."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:478
 msgid "Number of hosts in state UNREACHABLE."
-msgstr ""
+msgstr "Количество узлов в состоянии НЕДОСТУПЕН."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:482
 msgid "Number of unhandled hosts. Unhandled hosts are in a DOWN state and not acknowledged or in a scheduled downtime."
-msgstr ""
+msgstr "Количество необработанных узлов. Необработанные узлы находятся в состоянии ОТКЛЮЧЁН и не подтверждены или находятся в запланированном обслуживании."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:486
 msgid "Number of unhandled hosts. Unhandled hosts are in a UNREACHABLE state and not acknowledged or in a scheduled downtime."
-msgstr ""
+msgstr "Количество необработанных узлов. Необработанные узлы находятся в состоянии НЕДОСТУПЕН и не подтверждены или находятся в запланированном обслуживании."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:490
 msgid "Number of hosts in a non UP state."
-msgstr ""
+msgstr "Количество узлов в состоянии не ВКЛЮЧЁН."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:494
 msgid "Number of unhandled hosts. Unhandled hosts are in a non UP state and not acknowledged or in a scheduled downtime."
-msgstr ""
+msgstr "Количество необработанных узлов. Необработанные узлы в состоянии не ВКЛЮЧЁН и не подтверждены или находятся в запланированном обслуживании."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:498
 msgid "Number of services in state OK."
-msgstr ""
+msgstr "Количество служб в состоянии ОК."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:502
 msgid "Number of services in state WARNING."
-msgstr ""
+msgstr "Количество служб в состоянии ПРЕДУПРЕЖДЕНИЕ."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:506
 msgid "Number of services in state CRITICAL."
-msgstr ""
+msgstr "Количество служб в состоянии КРИТИЧНО."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:510
 msgid "Number of services in state UNKNOWN."
-msgstr ""
+msgstr "Количество служб в состоянии НЕИЗВЕСТНО."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:514
 msgid "Number of unhandled services. Unhandled services are in a WARNING state and not acknowledged or in a scheduled downtime."
-msgstr ""
+msgstr "Количество необработанных услуг. Необработанные службы находятся в состоянии ПРЕДУПРЕЖДЕНИЕ и не подтверждены или находятся в запланированном обслуживании."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:518
 msgid "Number of unhandled services. Unhandled services are in a CRITICAL state and not acknowledged or in a scheduled downtime."
-msgstr ""
+msgstr "Количество необработанных услуг. Необработанные службы находятся в состоянии КРИТИЧНО и не подтверждены или находятся в запланированном обслуживании."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:522
 msgid "Number of unhandled services. Unhandled services are in a UNKNOWN state and not acknowledged or in a scheduled downtime."
-msgstr ""
+msgstr "Количество необработанных услуг. Необработанные службы находятся в состоянии НЕИЗВЕСТНО и не подтверждены или находятся в запланированном обслуживании."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:526
 msgid "Number of services in a non OK state."
-msgstr ""
+msgstr "Количество служб в состоянии не OK"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:530
 msgid "Number of unhandled services. Unhandled services are in a non OK state and not acknowledged or in a scheduled downtime."
-msgstr ""
+msgstr "Количество необработанных услуг. Необработанные службы находятся в состоянии не OK  и не подтверждены или находятся в запланированном обслуживании."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:536
 msgid "Notification Macros"
-msgstr ""
+msgstr "Макросы уведомлений"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:541
 msgid "Notification type as string (\"PROBLEM\", \"RECOVERY\", \"ACKNOWLEDGEMENT\", \"FLAPPINGSTART\", \"FLAPPINGSTOP\", \"FLAPPINGDISABLED\", \"DOWNTIMESTART\", \"DOWNTIMEEND\", or \"DOWNTIMECANCELLED\")."
-msgstr ""
+msgstr "Тип уведомления в виде строки (\"PROBLEM\", \"RECOVERY\", \"ACKNOWLEDGEMENT\", \"FLAPPINGSTART\", \"FLAPPINGSTOP\", \"FLAPPINGDISABLED\", \"DOWNTIMESTART\", \"DOWNTIMEEND\", или \"DOWNTIMECANCELLED\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:545
 msgid "A comma separated of all the contacts for this notification. (\"12403d1a-70c0-468b-ad8d-446fb8412205,20a1bad7-60c1-433d-8e28-716cde8b8f04\")"
-msgstr "Список через запятую"
+msgstr "Список через запятую от всех контактов для этого уведомления. (\"12403d1a-70c0-468b-ad8d-446fb8412205,20a1bad7-60c1-433d-8e28-716cde8b8f04\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:550
 msgid "Is this an escalated notification (0=NO, 1=YES)"
-msgstr ""
+msgstr "Это эскалированное уведомление (0=НЕТ, 1=ДА)"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:554
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:558
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:562
 msgid "openITCOCKPIT user name as string."
-msgstr ""
+msgstr "openITCOCKPIT имя пользователя в виде строки."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:566
 msgid "Comment data of the notification."
-msgstr ""
+msgstr "Данные комментария к уведомлению."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:570
 msgid "Number of send notifications for a host. If the host state goes to RECOVERY, the counter will be reset to 0."
-msgstr ""
+msgstr "Количество отправленных уведомлений для узла. Если состояние узла переходит в RECOVERY, счетчик будет сброшен в 0."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:574
 msgid "Unique event number of the host notification."
-msgstr ""
+msgstr "Уникальный номер события уведомления узла."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:578
 msgid "Number of send notifications for a service. If the service state goes to OK, the counter will be reset to 0."
-msgstr ""
+msgstr "Количество отправленных уведомлений для службы. Если состояние службы переходит в OK, счетчик будет сброшен в 0."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:582
 msgid "Unique event number of the service notification."
-msgstr ""
+msgstr "Уникальный номер события уведомления службы."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:588
 msgid "Date and Time Macros"
-msgstr ""
+msgstr "Макросы дата и время"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:593
 msgid "Current date as string (DD-MM-YYYY)."
-msgstr ""
+msgstr "Текущая дата в виде строки (DD-MM-YYYY)."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:597
 msgid "Current time as string (HH:MM:SS)."
-msgstr ""
+msgstr "Текущее время в виде строки (HH:MM:SS)."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:601
 msgid "Current time as UNIX timestamp."
-msgstr ""
+msgstr "Текущее время в формате UNIX."
 
