@@ -49,16 +49,20 @@
                     <a class="btn btn-default waves-effect waves-themed"
                        ui-sref="ExportsIndex"
                        sudo-server-connect=""
-                       data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
-                       data-placement="left" rel="tooltip" data-container="body">
+                       data-original-title="<?= __('Refresh monitoring configuration'); ?>"
+                       data-placement="bottom"
+                       rel="tooltip"
+                       data-container="body">
                         <i class="fa fa-retweet"></i>
                     </a>
                 <?php else: ?>
                     <a class="btn btn-default waves-effect waves-themed"
                        ui-sref="ExportsIndex"
                        export-status=""
-                       data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
-                       data-placement="left" rel="tooltip" data-container="body">
+                       data-original-title="<?= __('Refresh monitoring configuration'); ?>"
+                       data-placement="bottom"
+                       rel="tooltip"
+                       data-container="body">
                         <i class="fa fa-retweet" ng-hide="exportRunning"></i>
                         <i class="fa fa-refresh fa-spin txt-color-red" ng-show="exportRunning"></i>
                     </a>
@@ -73,8 +77,12 @@
         </div>
         <div class="header-icon">
             <div class="btn-group mr-2" role="group" aria-label="">
-                <a class="btn btn-default waves-effect waves-themed" data-original-title="<?= __('Sign out'); ?>"
-                   data-placement="bottom" rel="tooltip" data-container="body" href="/users/logout">
+                <a class="btn btn-default waves-effect waves-themed"
+                   href="/users/logout"
+                   data-original-title="<?= __('Sign out'); ?>"
+                   data-placement="bottom"
+                   rel="tooltip"
+                   data-container="body">
                     <i class="fa fa-sign-out-alt"></i>
                 </a>
             </div>
@@ -82,3 +90,9 @@
         <push-notifications></push-notifications>
     </div>
 </header>
+
+<script>
+    $(document).ready(function(){
+        jQuery(document).find("[rel=tooltip]").tooltip();
+    });
+</script>

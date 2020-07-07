@@ -134,8 +134,8 @@ class AclDependencies {
             ->allow('Angular', 'serviceBrowserMenu')
             ->allow('Angular', 'durationInput')
             ->allow('Angular', 'calendar')
-            ->allow('Angular', 'reload_required');
-            ->allow('Angular', 'colorpicker');
+            ->allow('Angular', 'reload_required')
+            ->allow('Angular', 'colorpicker')
             ->allow('Angular', 'popover_graph');
 
         $this
