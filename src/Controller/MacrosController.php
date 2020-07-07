@@ -44,7 +44,7 @@ class MacrosController extends AppController {
 
         if ($this->isJsonRequest() && !$this->isAngularJsRequest()) {
             //Legacy API
-            $this->set('all_macros', $Macros->getAllMacrosInCake2Format());
+            $this->set('all_macros', $Macros->getAllMacros());
             $this->viewBuilder()->setOption('serialize', ['all_macros']);
             return;
         }

@@ -2,7 +2,6 @@
 
 namespace App\Model\Table;
 
-use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -25,7 +24,6 @@ use Cake\Validation\Validator;
  */
 class MacrosTable extends Table {
 
-    use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
 
     /**
@@ -95,13 +93,12 @@ class MacrosTable extends Table {
     /**
      * @return array
      */
-    public function getAllMacrosInCake2Format() {
+    public function getAllMacros() {
         $query = $this->find('all')->disableHydration();
         if (is_null($query)) {
             return [];
         }
-
-        return $this->formatResultAsCake2($query->toArray());
+        return $query->toArray();
     }
 
     /**
