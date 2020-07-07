@@ -62,7 +62,7 @@ class UserDefinedMacroReplacer {
     private function buildMapping() {
         $this->mapping = [];
         foreach ($this->macros as $macro) {
-            $this->mapping[$macro['Macro']['name']] = $macro['Macro']['value'];
+            $this->mapping[$macro['name']] = $macro['value'];
         }
     }
 }

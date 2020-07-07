@@ -1458,7 +1458,7 @@ class ServicesController extends AppController {
             if ($systemsettingsEntity->get('value') === '1') {
                 /** @var MacrosTable $MacrosTable */
                 $MacrosTable = TableRegistry::getTableLocator()->get('Macros');
-                $macros = $MacrosTable->getAllMacrosInCake2Format();
+                $macros = $MacrosTable->getAllMacros();
 
                 $UserMacroReplacer = new UserDefinedMacroReplacer($macros);
                 $serviceCommandLine = $UserMacroReplacer->replaceMacros($serviceCommandLine);

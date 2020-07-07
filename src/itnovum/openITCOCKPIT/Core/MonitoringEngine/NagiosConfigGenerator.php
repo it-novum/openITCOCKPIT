@@ -2369,7 +2369,7 @@ class NagiosConfigGenerator {
 
         /** @var $Macro MacrosTable */
         $Macro = TableRegistry::getTableLocator()->get('Macros');
-        $macros = $Macro->getAllMacrosInCake2Format();
+        $macros = $Macro->getAllMacros();
 
         foreach ($macros as $macro) {
             $content .= $this->addContent($macro['Macro']['name'] . '=' . $macro['Macro']['value'], 0);
