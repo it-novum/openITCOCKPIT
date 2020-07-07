@@ -9891,7 +9891,7 @@ msgstr "... неверная группа служб"
 #: src/Template/Servicedependencies/index.php:50
 #: src/Template/Timeperiods/used_by.php:178
 msgid "Service dependencies"
-msgstr "Службшне зависимости"
+msgstr "Службшные зависимости"
 
 #: src/Template/Containers/show_details.php:489
 #: src/Template/Containers/show_details.php:492
@@ -14880,51 +14880,51 @@ msgstr "Открыть экран блокировки"
 
 #: src/Template/element/shortcuts.php:70
 msgid "Logout"
-msgstr ""
+msgstr "Выйти"
 
 #: src/Template/element/shortcuts.php:85
 msgid "Close overlays"
-msgstr ""
+msgstr "Закрыть наложения"
 
 #: src/Template/element/shortcuts.php:92
 msgid "Collapse menu"
-msgstr ""
+msgstr "Свернуть меню"
 
 #: src/Template/element/shortcuts.php:107
 msgid "Submit"
-msgstr ""
+msgstr "Отправить"
 
 #: src/Template/element/shortcuts.php:115
 msgid "List Shortcuts"
-msgstr ""
+msgstr "Список коротких сокращений"
 
 #: src/Template/element/shortcuts.php:116
 msgid "Open Search"
-msgstr ""
+msgstr "Открыть поиск"
 
 #: src/Template/element/shortcuts.php:133
 msgid "Close (ESC)"
-msgstr ""
+msgstr "Закрыть (ESC)"
 
 #: src/Template/element/sidebar.php:67
 msgid "Administrator privileges"
-msgstr ""
+msgstr "Права администратора"
 
 #: src/Template/element/sidebar.php:103
 msgid "Report a Bug"
-msgstr ""
+msgstr "Сообщить об ошибке"
 
 #: src/Template/element/tenant_mass_changes.php:46
 msgid "Do you really want delete the selected tenants? All nodes, contacts, contactgroups, locations, calendars, timeperiods, hosttemplates, hostgroups, hosts, servicetemplates, servicetemplategroups, servicegroups and services from the selected tenant(s) will be deleted too."
-msgstr ""
+msgstr "Вы действительно хотите удалить выбранных клиентов? Все контейнеры, контакты, группы контактов, местоположения, календари, периоды времени, шаблоны узлов, группы узлов, узлы, шаблоны служб, группы шаблонов служб, группы служб и службы из выбранных клиентов также будут удалены."
 
 #: src/Template/element/timeperiod_mass_changes.php:53
 msgid "Do you really want delete the selected timeperiods?"
-msgstr ""
+msgstr "Вы действительно хотите удалить выбранные периоды времени?"
 
 #: src/Template/email/html/instantreport_mail.php:74
 msgid "Attached you find the automatically generated report: "
-msgstr ""
+msgstr "В приложении вы найдете автоматически сгенерированный отчет: "
 
 #: src/Template/email/html/instantreport_mail.php:97
 #: src/Template/email/html/notification_host.php:195
@@ -14932,568 +14932,568 @@ msgstr ""
 #: src/Template/email/html/reset_password.php:101
 #: src/Template/email/html/test_mail.php:98
 msgid "openITCOCKPIT"
-msgstr ""
+msgstr "openITCOCKPIT"
 
 #: src/Template/email/html/notification_host.php:61
 #: src/Template/email/html/notification_service.php:65
 msgid "{0} notification"
-msgstr ""
+msgstr "{0} уведомление(й)"
 
 #: src/Template/email/html/notification_host.php:99
 #: src/Template/email/html/notification_service.php:109
 msgid " is {0}"
-msgstr ""
+msgstr "это {0}"
 
 #: src/Template/email/html/notification_host.php:111
 #: src/Template/email/html/notification_service.php:120
 msgid "The current status was acknowledged by {0} with the comment: "
-msgstr ""
+msgstr "Текущий статус был подтвержден {0} с комментарием: "
 
 #: src/Template/email/html/notification_host.php:128
 #: src/Template/email/html/notification_service.php:135
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:77
 msgid "Time"
-msgstr ""
+msgstr "Время"
 
 #: src/Template/email/html/notification_host.php:136
 #: src/Template/email/html/notification_service.php:151
 msgid "Host description"
-msgstr ""
+msgstr "Описание узла"
 
 #: src/Template/email/html/notification_host.php:155
 msgid "Host long output"
-msgstr ""
+msgstr "Длинный выход узла"
 
 #: src/Template/email/html/notification_host.php:196
 #: src/Template/email/html/notification_service.php:240
 msgid "it-novum"
-msgstr ""
+msgstr "it-novum"
 
 #: src/Template/email/html/notification_service.php:143
 msgid "Service description"
-msgstr ""
+msgstr "Описание службы"
 
 #: src/Template/email/html/reset_password.php:50
 #: src/Template/email/html/test_mail.php:50
 msgid "Test mail"
-msgstr ""
+msgstr "Тестовая почта"
 
 #: src/Template/email/html/reset_password.php:73
 msgid "Your password got reset!"
-msgstr ""
+msgstr "Ваш пароль был сброшен!"
 
 #: src/Template/email/html/reset_password.php:77
 #: src/Template/email/text/reset_password.php:9
 msgid "New password: {0}"
-msgstr ""
+msgstr "Новый пароль: {0}"
 
 #: src/Template/email/html/reset_password.php:80
 #: src/Template/email/text/reset_password.php:12
 msgid "Please change the password after the first login."
-msgstr ""
+msgstr "Пожалуйста, измените пароль после первого входа."
 
 #: src/Template/email/html/test_mail.php:73
 #: src/Template/email/text/test_mail.php:3
 msgid "System test mail"
-msgstr ""
+msgstr "Тестовая почта из системы"
 
 #: src/Template/email/html/test_mail.php:77
 #: src/Template/email/text/test_mail.php:9
 msgid "This is a test email of your monitoring system - "
-msgstr ""
+msgstr "Это тестовое письмо вашей системы мониторинга - "
 
 #: src/Template/email/text/instantreport_mail.php:9
 msgid "Attached you find the automatically generated report:"
-msgstr ""
+msgstr "В приложении вы найдете автоматически сгенерированный отчет:"
 
 #: src/Template/email/text/reset_password.php:3
 msgid "Your {0} password got reset!"
-msgstr ""
+msgstr "Ваш {0} пароль был сброшен!"
 
 #: src/Template/layout/login.php:49
 msgid "Sign In"
-msgstr ""
+msgstr "Войти в систему"
 
 #: src/Template/pdf/create_pdf_report.php:235
 msgid "There are no time frames defined.Time evaluation report data is not available for the selected period."
-msgstr ""
+msgstr "Временные рамки не определены. Данные отчета об оценке времени недоступны для выбранного периода."
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServicetemplateMapper.php:68
 msgid "Memory usage percentage"
-msgstr ""
+msgstr "Процент использования памяти"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServicetemplateMapper.php:84
 msgid "Swap usage percentage"
-msgstr ""
+msgstr "Процент использования свопа"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServicetemplateMapper.php:100
 msgid "CPU usage percentage"
-msgstr ""
+msgstr "Процент использования процессора"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServicetemplateMapper.php:123
 msgid "Disk usage of:"
-msgstr ""
+msgstr "Использование диска:"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServicetemplateMapper.php:153
 msgid "Disk stats of:"
-msgstr ""
+msgstr "Дисковая статистика:"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServicetemplateMapper.php:207
 msgid "Network state of:"
-msgstr ""
+msgstr "Состояние сети:"
 
 #: src/itnovum/openITCOCKPIT/Agent/AgentResponseToServicetemplateMapper.php:236
 msgid "Network stats of:"
-msgstr ""
+msgstr "Сетевая статистика:"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/AfterExport.php:80
 msgid "SSH user used to establish SSH connection with satellite systems."
-msgstr ""
+msgstr "Пользователь SSH использовал для установления SSH соединения со спутниковыми системами."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/AfterExport.php:81
 msgid "Private key file used to establish SSH connection."
-msgstr ""
+msgstr "Файл закрытого ключа, используемый для установления SSH соединения."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/AfterExport.php:82
 msgid "Public key file used to establish SSH connection."
-msgstr ""
+msgstr "Файл открытого ключа, используемый для установления соединения SSH."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/AfterExport.php:83
 msgid "Remote command to restart monitoring engine and run remote after export tasks."
-msgstr ""
+msgstr "Удаленная команда для перезапуска механизма мониторинга и запуска удаленного после задач экспорта."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/AfterExport.php:84
 msgid "Port number of remote SSH server."
-msgstr ""
+msgstr "Номер порта удаленного SSH-сервера."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/ConfigGenerator.php:206
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:105
 msgid "This field needs to be a float."
-msgstr ""
+msgstr "Это поле должно быть числом с плавающей точкой."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/ConfigGenerator.php:212
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:117
 msgid "This field needs to be an integer."
-msgstr ""
+msgstr "Это поле должно быть целым числом."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/ConfigGenerator.php:218
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:123
 msgid "This field needs to be a boolean."
-msgstr ""
+msgstr "Это поле должно быть логическим."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/ConfigGenerator.php:224
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:135
 msgid "This field can not left be blank."
-msgstr ""
+msgstr "Это поле не может быть пустым."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/DbBackend.php:71
 msgid "Value out of range (Nagios, Crate, Statusengine3)"
-msgstr ""
+msgstr "Значение вне диапазона (Nagios, Crate, Statusengine3)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/DbBackend.php:97
 msgid "Database Backend used by openITCOCKPIT. Be careful with this option!"
-msgstr ""
+msgstr "База данных, используемая openITCOCKPIT. Будьте осторожны с этой опцией!"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:53
 msgid "openITCOCKPIT Interface configuration files"
-msgstr ""
+msgstr "Конфигурационные файлы интерфейса openITCOCKPIT"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:70
 msgid "Carbon and Whisper (Graphing)"
-msgstr ""
+msgstr "Carbon и Whisper (Graphing)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:172
 msgid "Value is not in CIDR notation"
-msgstr ""
+msgstr "Значение не в нотации CIDR"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:178
 msgid "Value is not a valid IPv4 address in CIDR notation"
-msgstr ""
+msgstr "Значение не является действительным адресом IPv4 в нотации CIDR"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:182
 msgid "Subnet needs to be numeric."
-msgstr ""
+msgstr "Подсеть должна быть числовой."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:186
 msgid "Value is not a valid IPv4 address in CIDR notation. Subnet is out of range."
-msgstr ""
+msgstr "Значение не является действительным адресом IPv4 в нотации CIDR. Подсеть вне диапазона."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:195
 msgid "Can not be the same subnet as used for Fixed CIDR"
-msgstr ""
+msgstr "Не может быть той же подсети, что и для Fixed CIDR"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:253
 msgid "Path where Carbon will store whisper files."
-msgstr ""
+msgstr "Путь, в котором Carbon будет хранить whisper файлы."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:255
 msgid "Number of carbon cache instances for multi core CPU scaling"
-msgstr ""
+msgstr "Количество экземпляров carbon кэша для масштабирования многоядерных процессоров"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:256
 msgid "Number of Carbon-C-Relay worker threads. (Carbon-Cache load balancer)"
-msgstr ""
+msgstr "Количество Carbon-C-Relay рабочих потоков. (Балансировщик нагрузки Carbon-Cache)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:257
 msgid "Local HTTP port used by Graphite-Web"
-msgstr ""
+msgstr "Локальный порт HTTP, используемый Graphite-Web"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:258
 msgid "Local plaintext port to send metrics to Carbon-C-Relay."
-msgstr ""
+msgstr "Локальный открытый текстовый порт для отправки метрик в Carbon-C-Relay."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:259
 msgid " Only beneficial on linux filesystems that support the fallocate system call. It maintains the benefits of contiguous reads/writes, but with a potentially much faster creation speed, by allowing the kernel to handle the block allocation and zero-ing. Enabling this option may allow a large increase of MAX_CREATES_PER_MINUTE. If enabled on an OS or filesystem that is unsupported this option will gracefully fallback to standard POSIX file access methods."
-msgstr ""
+msgstr "Полезно только для файловых систем linux, которые поддерживают системный вызов fallocate. Он поддерживает преимущества непрерывного чтения / записи, но с потенциально гораздо более высокой скоростью создания, позволяя ядру обрабатывать распределение блоков и обнуление. Включение этой опции может позволить значительно увеличить MAX_CREATES_PER_MINUTE. Если эта опция включена в ОС или файловой системе, которая не поддерживается, эта опция будет постепенно отступать от стандартных методов доступа к файлам POSIX."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:260
 msgid "Set your local timezone for Graphite-Web. (Django's default is America/Chicago) If your graphs appear to be offset by a couple hours then this probably needs to be explicitly set to your local timezone. Set this value to the same timezone, as your servers timezone is!"
-msgstr ""
+msgstr "Установите местный часовой пояс для Graphite-Web. (Django Стандарт America/Chicago) Если ваши графики смещены на пару часов, то, вероятно, необходимо явно указать местный часовой пояс. Установите это значение в тот же часовой пояс, что и часовой пояс вашего сервера!"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:261
 msgid "Determine if docker daemon will automatically configure network interface docker0"
-msgstr ""
+msgstr "Определите, будет ли docker демон автоматически настраивать сетевой интерфейс docker0"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:264
 msgid "Subnet used by Docker Compose in CIDR notation. For Example  192.168.1.0/24. Needs to be a different subnet than used for Fixed CIDR!"
-msgstr ""
+msgstr "Подсеть, используемая Docker Compose в нотации CIDR. Для примера 192.168.1.0/24. Нужно быть другой подсетью, чем используется для Fixed CIDR!"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphiteWeb.php:87
 msgid "IP-Address of the Graphite-Web server openITCOCKPIT should use to query data."
-msgstr ""
+msgstr "IP-адрес графического веб-сервера openITCOCKPIT должен использовать для запроса данных."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphiteWeb.php:88
 msgid "Port of the Graphite-Web server."
-msgstr ""
+msgstr "Порт Graphite-Web сервера."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphiteWeb.php:89
 msgid "Prefix added to every metric stored in carbon"
-msgstr ""
+msgstr "Добавлен префикс к каждой метрике, хранящейся в carbon"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphiteWeb.php:90
 msgid "Use HTTPS to connect to Graphite-Web server."
-msgstr ""
+msgstr "Используйте HTTPS для подключения к Graphite-Web серверу."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphiteWeb.php:91
 msgid "Use configured proxy server to connect to Graphite-Web server."
-msgstr ""
+msgstr "Используйте настроенный прокси сервер для подключения к Graphite-Web серверу."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NagiosCfg.php:124
 msgid "Value out of range (c, u, w, o)"
-msgstr ""
+msgstr "Значение вне диапазона (c, u, w, o)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NagiosModuleConfig.php:81
 msgid "Minimum value of monitoring related interval settings for sliders in seconds."
-msgstr ""
+msgstr "Минимальное значение настроек интервала мониторинга для слайдеров в секундах."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NagiosModuleConfig.php:82
 msgid "Maximum value of monitoring related interval settings for sliders in seconds."
-msgstr ""
+msgstr "Максимальное значение настроек интервала мониторинга для слайдеров в секундах."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NagiosModuleConfig.php:83
 msgid "Step size of sliders in seconds"
-msgstr ""
+msgstr "Размер шага слайдеров в секундах"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/PerfdataBackend.php:72
 msgid "Value out of range (Whisper, Crate, Rrdtool)"
-msgstr ""
+msgstr "Значение вне диапазона (Whisper, Crate, Rrdtool)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/PerfdataBackend.php:98
 msgid "Time-series backend used by openITCOCKPIT to store performance data. Be careful with this option!"
-msgstr ""
+msgstr "Time-series бэкэнд, используемый openITCOCKPIT для хранения данных о производительности. Будьте осторожны с этой опцией!"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:86
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:92
 msgid "Value out of range (1-3)"
-msgstr ""
+msgstr "Значение вне диапазона (1-3)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:119
 msgid "Date format for filename of rotaed logfiles. Germany: d_m_Y_H_i, USA: m_d_Y_H_i"
-msgstr ""
+msgstr "Формат даты для имени файла повернутых файлов журнала. Германия: d_m_Y_H_i, США: m_d_Y_H_i"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:120
 msgid "Date format of the timestamp in the logfile. Germany: d.m.Y H:i:s, USA: m.d.Y H:i:s"
-msgstr ""
+msgstr "Формат даты метки времени в файле журнала. Германия: d.m.Y H:i:s, США: m.d.Y H:i:s"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:121
 msgid "Determines in days, how long old log files should be keeped."
-msgstr ""
+msgstr "Определяет в днях, как долго должны храниться старые файлы журналов."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:122
 msgid "Determines how to submit check result data to Naemon/Nagios."
-msgstr ""
+msgstr "Определяет, как отправить данные результатов проверки в Naemon/Nagios."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:123
 msgid "Bulk size of submitted passive check results."
-msgstr ""
+msgstr "Размер отправленных результатов пассивной проверки."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:124
 msgid "Maximum number of worker processes. Recommendation: One process per satellite."
-msgstr ""
+msgstr "Максимальное количество рабочих процессов. Рекомендация: один процесс на спутник."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:125
 msgid "Use an SSH tunnel for each satellite for secure connection."
-msgstr ""
+msgstr "Используйте SSH туннель для каждого спутника для безопасного соединения."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:126
 msgid "Username used to established SSH connection."
-msgstr ""
+msgstr "Имя пользователя используется для установки SSH соединения."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:127
 msgid "Private key file used to established SSH connection."
-msgstr ""
+msgstr "Файл закрытого ключа, используемый для установления SSH соединения."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:128
 msgid "Public key file used to established SSH connection."
-msgstr ""
+msgstr "Файл открытого ключа, используемый для установления SSH соединения."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:129
 msgid "SSH Port of remote hosts"
-msgstr ""
+msgstr "SSH порт удаленных узлов"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:130
 msgid "The local ports where each satellite system gets bind to"
-msgstr ""
+msgstr "Местные порты, к которым привязана каждая спутниковая система"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:131
 msgid "Username used for supervisor XML-RPC API."
-msgstr ""
+msgstr "Имя пользователя, используемое для супервизора XML-RPC API."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:132
 msgid "Password of supervisor XML-RPC API"
-msgstr ""
+msgstr "Пароль супервизора XML-RPC API"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:133
 msgid "Synchronize the system clock to each connected satellite system"
-msgstr ""
+msgstr "Синхронизировать системные часы с каждой подключенной спутниковой системой"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/phpNSTAMaster.php:134
 msgid "System time synchronization interval"
-msgstr ""
+msgstr "Интервал синхронизации системного времени"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:86
 msgid "Australia"
-msgstr ""
+msgstr "Австралия"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:87
 msgid "Austria"
-msgstr ""
+msgstr "Австрия"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:88
 msgid "Belgium"
-msgstr ""
+msgstr "Бельгия"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:89
 msgid "Bosnia and Herzegovina"
-msgstr ""
+msgstr "Босния и Герцеговина"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:90
 msgid "Czech Republic"
-msgstr ""
+msgstr "Республика Чехия"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:91
 msgid "Denmark"
-msgstr ""
+msgstr "Дания"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:92
 msgid "Estonia"
-msgstr ""
+msgstr "Эстония"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:93
 msgid "Finland"
-msgstr ""
+msgstr "Финляндия"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:94
 msgid "France"
-msgstr ""
+msgstr "Франция"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:95
 msgid "Germany"
-msgstr ""
+msgstr "Германия"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:96
 msgid "Greece"
-msgstr ""
+msgstr "Греция"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:97
 msgid "Hungary"
-msgstr ""
+msgstr "Венгрия"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:98
 msgid "Ireland"
-msgstr ""
+msgstr "Ирландия"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:99
 msgid "Italy"
-msgstr ""
+msgstr "Италия"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:100
 msgid "Japan"
-msgstr ""
+msgstr "Япония"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:101
 msgid "Latvia"
-msgstr ""
+msgstr "Латвия"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:102
 msgid "Lithuania"
-msgstr ""
+msgstr "Литва"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:103
 msgid "Netherlands"
-msgstr ""
+msgstr "Нидерланды"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:104
 msgid "New Zealand"
-msgstr ""
+msgstr "Новая Зеландия"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:105
 msgid "Norway"
-msgstr ""
+msgstr "Норвегия"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:106
 msgid "Poland"
-msgstr ""
+msgstr "Польша"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:107
 msgid "Portugal"
-msgstr ""
+msgstr "Португалия"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:108
 msgid "Romania"
-msgstr ""
+msgstr "Румыния"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:109
 msgid "Russian Federation"
-msgstr ""
+msgstr "Российская Федерация"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:110
 msgid "Slovakia"
-msgstr ""
+msgstr "Словакия"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:111
 msgid "South Africa"
-msgstr ""
+msgstr "Южная Африка"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:112
 msgid "Spain"
-msgstr ""
+msgstr "Испания"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:113
 msgid "Sweden"
-msgstr ""
+msgstr "Швеция"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:114
 msgid "Switzerland"
-msgstr ""
+msgstr "Швейцария"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:115
 msgid "Ukraine"
-msgstr ""
+msgstr "Украина"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:116
 msgid "United Kingdom"
-msgstr ""
+msgstr "Соединенное Королевство"
 
 #: src/itnovum/openITCOCKPIT/Core/Holidays.php:117
 msgid "United States"
-msgstr ""
+msgstr "Соединенные Штаты"
 
 #: src/itnovum/openITCOCKPIT/Core/Http.php:61
 msgid "PHP Extension php5-curl loaded successfully"
-msgstr ""
+msgstr "PHP расширение php5-curl успешно загружено"
 
 #: src/itnovum/openITCOCKPIT/Core/Http.php:64
 msgid "PHP Extension php5-curl not loaded or installed!"
-msgstr ""
+msgstr "Расширение PHP php5-curl не загружено или не установлено!"
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:113
 msgid "Happy Easter"
-msgstr ""
+msgstr "Счастливой Пасхи"
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:128
 msgid "Valentine's Day"
-msgstr ""
+msgstr "День святого Валентина"
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:143
 msgid "German Unity Day"
-msgstr ""
+msgstr "День единства Германии"
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:158
 msgid "System Administrator Appreciation Day"
-msgstr ""
+msgstr "День благодарности системного администратора"
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:173
 msgid "International Beer Day"
-msgstr ""
+msgstr "Международный день пива"
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:188
 msgid "Happy Halloween"
-msgstr ""
+msgstr "Счастливого Хэллоуина"
 
 #: src/itnovum/openITCOCKPIT/Core/LoginBackgrounds.php:203
 msgid "Merry Christmas"
-msgstr ""
+msgstr "С Рождеством"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:57
 msgid "Dashboards"
-msgstr ""
+msgstr "Сводки"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:107
 msgid "Reports"
-msgstr ""
+msgstr "Отчеты"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:122
 msgid "Downtime reports"
-msgstr ""
+msgstr "Отчеты о техническом обслуживании"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:132
 msgid "Current State reports"
-msgstr ""
+msgstr "Отчеты о текущем состоянии"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:145
 msgid "Logs"
-msgstr ""
+msgstr "Журналы"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:170
 msgid "Change Log"
-msgstr ""
+msgstr "Журнал изменений"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:205
 msgid "Objects"
-msgstr ""
+msgstr "Объекты"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:230
 msgid "User Defined Macros"
-msgstr ""
+msgstr "Пользовательские макросы"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:280
 msgid "Host Dependencies"
-msgstr ""
+msgstr "Узловые зависимости"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:290
 msgid "Service Dependencies"
-msgstr ""
+msgstr "Службшные зависимости"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:302
 msgid "Groups"
-msgstr ""
+msgstr "Группы"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:307
 msgid "Host Groups"
-msgstr ""
+msgstr "Группы узлов"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:317
 msgid "Service Groups"
-msgstr ""
+msgstr "Группы служб"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:327
 msgid "Contact Groups"
-msgstr ""
+msgstr "Контактные группы"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:337
 msgid "Service Template Grps."
-msgstr ""
+msgstr "Группы шаблонов служб"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:354
 msgid "Host Downtimes"
@@ -15505,228 +15505,228 @@ msgstr "Обслуживание служб"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:374
 msgid "Recurring Host Downtimes"
-msgstr ""
+msgstr "Периодическое обслуживание узла"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:384
 msgid "Recurring Service Downtimes"
-msgstr ""
+msgstr "Периодическое обслуживание службы"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:394
 msgid "System Failures"
-msgstr ""
+msgstr "Системные сбои"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:406
 msgid "Templates"
-msgstr ""
+msgstr "Шаблоны"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:411
 msgid "Host Templates"
-msgstr ""
+msgstr "Шаблоны узлов"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:421
 msgid "Service Templates"
-msgstr ""
+msgstr "Шаблоны служб"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:432
 msgid "Administration"
-msgstr ""
+msgstr "Администрация"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:436
 msgid "User management"
-msgstr ""
+msgstr "Управление пользователями"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:441
 msgid "Manage Users"
-msgstr ""
+msgstr "Управление пользователями"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:451
 msgid "Manage User Roles"
-msgstr ""
+msgstr "Управление ролями пользователя"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:461
 msgid "User Container Roles"
-msgstr ""
+msgstr "Контейнерные роли пользователя"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:473
 msgid "Container management"
-msgstr ""
+msgstr "Управление контейнерами"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:510
 msgid "System tools"
-msgstr ""
+msgstr "Системные инструменты"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:515
 msgid "Cron Jobs"
-msgstr ""
+msgstr "Cron Jobs"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:525
 msgid "Package Manager"
-msgstr ""
+msgstr "Управление пакетов"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:535
 msgid "Debugging"
-msgstr ""
+msgstr "Отладка"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:582
 msgid "Agent Configuration"
-msgstr ""
+msgstr "Конфигурация агента"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:592
 msgid "Untrusted Agents"
-msgstr ""
+msgstr "Ненадежные агенты"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:602
 msgid "Agent Checks"
-msgstr ""
+msgstr "Проверки агента"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:612
 msgid "System Configuration"
-msgstr ""
+msgstr "Конфигурация системы"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:632
 msgid "System"
-msgstr ""
+msgstr "Система"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:637
 msgid "Config file editor"
-msgstr ""
+msgstr "Редактор файла конфигурации"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:647
 msgid "Proxy Settings"
-msgstr ""
+msgstr "Настройки прокси"
 
 #: src/itnovum/openITCOCKPIT/Core/Reports/DowntimeReportBarChartWidgetDataPreparer.php:48
 msgid "Availability in %"
-msgstr ""
+msgstr "Доступность в %"
 
 #: src/itnovum/openITCOCKPIT/Core/Timeline/DowntimeSerializer.php:86
 msgid " Cancelled"
-msgstr ""
+msgstr " Отменен"
 
 #: src/itnovum/openITCOCKPIT/Core/Timeline/Groups.php:39
 msgid "Acknowlegements"
-msgstr ""
+msgstr "Подтверждения"
 
 #: src/itnovum/openITCOCKPIT/Core/Timeline/Groups.php:54
 msgid "State history service"
-msgstr ""
+msgstr "История статуса службы"
 
 #: src/itnovum/openITCOCKPIT/Core/Timeline/Groups.php:59
 msgid "State history host"
-msgstr ""
+msgstr "История статуса узла"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:35
 msgid "Runtime error"
-msgstr ""
+msgstr "Ошибка выполнения"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:36
 msgid "Runtime warning"
-msgstr ""
+msgstr "Предупреждение во время выполнения"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:38
 msgid "Verification error"
-msgstr ""
+msgstr "Ошибка подтверждения"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:39
 msgid "Verification warning"
-msgstr ""
+msgstr "Предупреждение о проверке"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:41
 msgid "Config error"
-msgstr ""
+msgstr "Ошибка конфигурации"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:42
 msgid "Config warning"
-msgstr ""
+msgstr "Предупреждение о конфигурации"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:44
 msgid "Process info"
-msgstr ""
+msgstr "Информация о процессе"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:45
 msgid "Event handler"
-msgstr ""
+msgstr "Обработчик событий"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:46
 msgid "External command"
-msgstr ""
+msgstr "Внешняя команда"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:49
 msgid "Host up"
-msgstr ""
+msgstr "Узел включён"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:50
 msgid "Host down"
-msgstr ""
+msgstr "Узел отключен"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:51
 msgid "Host unreachable"
-msgstr ""
+msgstr "Узел недоступен"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:53
 msgid "Service ok"
-msgstr ""
+msgstr "Служба в статусе ok"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:54
 msgid "Service unknown"
-msgstr ""
+msgstr "Служба в статусе неизвестно"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:55
 msgid "Service warning"
-msgstr ""
+msgstr "Служба в статусе внимание"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:56
 msgid "Service critical"
-msgstr ""
+msgstr "Служба в статусе критично"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:58
 msgid "Passive check"
-msgstr ""
+msgstr "Пассивная проверка"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:60
 msgid "Message"
-msgstr ""
+msgstr "Сообщение"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/HoststatusIcon.php:143
 #: src/itnovum/openITCOCKPIT/Core/Views/ServicestatusIcon.php:159
 msgid "Not found in monitoring"
-msgstr ""
+msgstr "Не найден в мониторинге"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/ListSettingsRenderer.php:108
 msgid "Apply"
-msgstr ""
+msgstr "Применять"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/ListSettingsRenderer.php:120
 msgid "From:"
-msgstr ""
+msgstr "С:"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/ListSettingsRenderer.php:135
 msgid "To:"
-msgstr ""
+msgstr "До:"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/Logentry.php:124
 msgid "External command failed"
-msgstr ""
+msgstr "Ошибка внешней команды"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/Logentry.php:125
 msgid "Timeperiod transition"
-msgstr ""
+msgstr "Переходный период"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:124
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:124
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:127
 msgid "M"
-msgstr ""
+msgstr "M"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:124
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:127
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:130
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:133
 msgid "h"
-msgstr ""
+msgstr "h"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:124
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:127
@@ -15734,7 +15734,7 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:133
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:136
 msgid "m"
-msgstr ""
+msgstr "m"
 
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:124
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:127
@@ -15743,157 +15743,157 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:136
 #: src/itnovum/openITCOCKPIT/Core/Views/UserTime.php:139
 msgid "s"
-msgstr ""
+msgstr "s"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:65
 msgid "Short"
-msgstr ""
+msgstr "Коротко"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:66
 msgid "Percent (0-100)"
-msgstr ""
+msgstr "Процент (0-100)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:67
 msgid "Percent (0.0-1.0)"
-msgstr ""
+msgstr "Процент (0.0-1.0)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:68
 msgid "Humidity (%H)"
-msgstr ""
+msgstr "Влажность (%H)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:69
 msgid "Decibel (dB)"
-msgstr ""
+msgstr "Децибел (dB)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:70
 msgid "Hexadecimal (0x)"
-msgstr ""
+msgstr "Шестнадцатеричный (0x)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:71
 msgid "Hexadecimal"
-msgstr ""
+msgstr "Шестнадцатеричный"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:72
 msgid "Scientific notation"
-msgstr ""
+msgstr "Научная нотация"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:73
 msgid "Locale format"
-msgstr ""
+msgstr "Формат локали"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:78
 msgid "Herz"
-msgstr ""
+msgstr "Herz"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:79
 msgid "Nanoseconds (ns)"
-msgstr ""
+msgstr "Наносекунды (ns)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:80
 msgid "Microseconds (µs)"
-msgstr ""
+msgstr "Микросекунды (µs)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:81
 msgid "Milliseconds (ms)"
-msgstr ""
+msgstr "Миллисекунды (ms)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:82
 msgid "Seconds (s)"
-msgstr ""
+msgstr "Секунды (s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:83
 msgid "Minutes"
-msgstr ""
+msgstr "Минуты"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:84
 msgid "Hours"
-msgstr ""
+msgstr "Часы"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:85
 msgid "Days"
-msgstr ""
+msgstr "В дни"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:89
 msgid "Data (IEC)"
-msgstr ""
+msgstr "Данные (IEC)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:90
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:99
 msgid "Bits"
-msgstr ""
+msgstr "Биты"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:91
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:100
 msgid "Bytes"
-msgstr ""
+msgstr "Байты"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:92
 msgid "Kibibytes (KiB)"
-msgstr ""
+msgstr "Кибибайты (KiB)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:93
 msgid "Mebibytes (MiB)"
-msgstr ""
+msgstr "Мебибиты (MiB)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:94
 msgid "Gibibytes (GiB)"
-msgstr ""
+msgstr "Гибибиты (GiB)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:98
 msgid "Data (Metric)"
-msgstr ""
+msgstr "Данные (Metric)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:101
 msgid "Kilobytes (KB)"
-msgstr ""
+msgstr "Килобайт (KB)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:102
 msgid "Megabytes (MB)"
-msgstr ""
+msgstr "Мегабайт (MB)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:103
 msgid "Gigabytes (GB)"
-msgstr ""
+msgstr "Гигабайт (GB)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:107
 msgid "Data rates"
-msgstr ""
+msgstr "Скорость передачи данных"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:108
 msgid "Packets/sec"
-msgstr ""
+msgstr "Пакеты/сек"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:109
 msgid "Bits/sec"
-msgstr ""
+msgstr "Биты/сек"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:110
 msgid "Bytes/sec"
-msgstr ""
+msgstr "Байт/сек"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:111
 msgid "Kilobits/sec (kbit/s)"
-msgstr ""
+msgstr "Килобит/сек (kbit/s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:112
 msgid "Kilobytes/ses (KB/s)"
-msgstr ""
+msgstr "Килобайт/сес (KB/s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:113
 msgid "Megabits/sec (mbit/s)"
-msgstr ""
+msgstr "Мегабит/сек (mbit/s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:114
 msgid "Megabytes/sec (MB/s)"
-msgstr ""
+msgstr "Мегабайт/сек (MB/s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:115
 msgid "Gigabits/sec (gbit/s)"
-msgstr ""
+msgstr "Гигабит/с (gbit/s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:116
 msgid "Gigabytes/sec (GB/s)"
-msgstr ""
+msgstr "Гигабайт/с (GB/s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:120
 msgid "Data throughput"
