@@ -26,13 +26,17 @@ namespace App\Lib\Traits;
 
 
 use Cake\I18n\FrozenTime;
+use Cake\ORM\Association;
+use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Association\HasMany;
+use Cake\ORM\Association\HasOne;
 use Cake\Utility\Inflector;
 
 /**
  * Trait Cake2ResultTrait
  * @package App\Lib\Traits
+ * @deprecated Remove this ASAP !!!
  */
 trait Cake2ResultTableTrait {
 
@@ -54,16 +58,18 @@ trait Cake2ResultTableTrait {
         $associations = array_flip($AssociationCollection->keys());
         $cake2Result = [];
 
+        //Map Cake4 property name to CakePHP2 Model Name
+        $associationMapping = $this->getCakePHP4ToCakePHP2Mapping($AssociationCollection);
 
         foreach ($records as $row) {
             $record = [];
             foreach ($row as $key => $value) {
-                $associationKey = ucfirst(Inflector::camelize($key)); // cakephp < 4.1
-                if (isset($associations[$associationKey]) && is_array($value)) {
-                    //associated model
-                    $assoc = $AssociationCollection->get($associationKey);
+                if (isset($associationMapping[$key]) && is_array($value)) {
+                    //Field is from an associated model
+                    $assocInformation = $associationMapping[$key];
+
                     $assocRecords = [];
-                    if ($assoc instanceof HasMany) {
+                    if ($assocInformation['isHasMany']) {
                         foreach ($value as $assocRow) {
                             $assocRecord = [];
                             foreach ($assocRow as $assocKey => $assocValue) {
@@ -77,25 +83,25 @@ trait Cake2ResultTableTrait {
                             $assocRecords[$assocKey] = $this->asString($assocValue);
                         }
                     }
-                    $assocModelName = ucfirst(Inflector::singularize($associationKey));
+                    $assocModelName = $assocInformation['modelName']; //CakePHP 2 like model name
                     $record[$assocModelName] = $assocRecords;
                 } else {
-                    //Model itself
+                    //Field is from the model itself
                     $record[$modelName][$key] = $this->asString($value);
                 }
 
                 //Add missing associations
                 if ($contain === true) {
-                    foreach ($associations as $association => $index) {
-                        $assocName = ucfirst(Inflector::singularize($association));
-                        if (!isset($record[$assocName])) {
-                            $record[$assocName] = [];
+                    foreach ($associationMapping as $propertyName => $assocInformation) {
+                        if (!isset($record[$assocInformation['modelName']])) {
+                            $record[$assocInformation['modelName']] = [];
                         }
                     }
                 }
             }
             $cake2Result[] = $record;
         }
+
         return $cake2Result;
     }
 
@@ -115,14 +121,17 @@ trait Cake2ResultTableTrait {
         $AssociationCollection = $this->associations();
         $associations = array_flip($AssociationCollection->keys());
 
+        //Map Cake4 property name to CakePHP2 Model Name
+        $associationMapping = $this->getCakePHP4ToCakePHP2Mapping($AssociationCollection);
+
         $record = [];
         foreach ($row as $key => $value) {
-            $associationKey = ucfirst(Inflector::camelize($key)); // cakephp < 4.1
-            if (isset($associations[$associationKey]) && is_array($value)) {
-                //associated model
-                $assoc = $AssociationCollection->get($associationKey);
+            if (isset($associationMapping[$key]) && is_array($value)) {
+                //Field is from an associated model
+                $assocInformation = $associationMapping[$key];
+
                 $assocRecords = [];
-                if ($assoc instanceof HasMany || $assoc instanceof BelongsToMany) {
+                if ($assocInformation['isHasMany']) {
                     foreach ($value as $assocRow) {
                         $assocRecord = [];
                         foreach ($assocRow as $assocKey => $assocValue) {
@@ -136,19 +145,18 @@ trait Cake2ResultTableTrait {
                         $assocRecords[$assocKey] = $this->asString($assocValue);
                     }
                 }
-                $assocModelName = ucfirst(Inflector::singularize($associationKey));
+                $assocModelName = $assocInformation['modelName']; //CakePHP 2 like model name
                 $record[$assocModelName] = $assocRecords;
             } else {
-                //Model itself
+                //Field is from the model itself
                 $record[$modelName][$key] = $this->asString($value);
             }
 
             //Add missing associations
             if ($contain === true) {
-                foreach ($associations as $association => $index) {
-                    $assocName = ucfirst(Inflector::singularize($association));
-                    if (!isset($record[$assocName])) {
-                        $record[$assocName] = [];
+                foreach ($associationMapping as $propertyName => $assocInformation) {
+                    if (!isset($record[$assocInformation['modelName']])) {
+                        $record[$assocInformation['modelName']] = [];
                     }
                 }
             }
@@ -190,5 +198,49 @@ trait Cake2ResultTableTrait {
 
         /** @var string|mixed $value */
         return $value;
+    }
+
+    private function getPropertyName(Association $assoc) {
+        [, $name] = pluginSplit($assoc->getName());
+        if ($assoc instanceof HasMany || $assoc instanceof BelongsToMany) {
+            return Inflector::underscore($name);
+        } else {
+            // hasOne and belongsTo is singular
+            return Inflector::underscore(Inflector::singularize($name));
+        }
+    }
+
+    private function getCakephp2ModelName(string $propertyName) {
+        return ucfirst(Inflector::camelize(Inflector::singularize($propertyName)));
+    }
+
+    private function getCakePHP4ToCakePHP2Mapping(\Cake\ORM\AssociationCollection $AssociationCollection) {
+        //Map Cake4 property name to CakePHP2 Model Name
+        $associations = array_flip($AssociationCollection->keys());
+
+        $associationMapping = [];
+
+        foreach ($associations as $associationAlias => $int) {
+            $assoc = $AssociationCollection->get($associationAlias);
+            $propertyName = $this->getPropertyName($assoc);
+
+            if (strpos($propertyName, '_') > 0) {
+                //PropertyNames with an underscore where buggy in the original Cake2 Result Trait before it was refactored for CakePHP 4.1
+                //Ignore these like timeperiod_timeranges or hosts_to_containers_sharing
+                continue;
+            }
+
+            if ($assoc instanceof BelongsToMany) {
+                //Ignore BelongsToMany associations like hosts_to_containers_sharing or timeperiod_timeranges...
+                continue;
+            }
+
+            $associationMapping[$propertyName] = [
+                'modelName' => $this->getCakephp2ModelName($propertyName),
+                'isHasMany' => $assoc instanceof HasMany || $assoc instanceof BelongsToMany
+            ];
+        }
+
+        return $associationMapping;
     }
 }

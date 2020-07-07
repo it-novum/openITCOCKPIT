@@ -840,18 +840,18 @@ class InstantreportsTable extends Table {
                     if (!isset($instantReportObjects['Hosts'])) {
                         $instantReportObjects['Hosts'] = [];
                     }
-                    if (!array_key_exists($service['Hosts']['id'], $instantReportObjects['Hosts'])) {
-                        $instantReportObjects['Hosts'][$service['Hosts']['id']] = [
-                            'id'   => $service['Hosts']['id'],
-                            'uuid' => $service['Hosts']['uuid'],
-                            'name' => $service['Hosts']['name']
+                    if (!array_key_exists($service['host']['id'], $instantReportObjects['Hosts'])) {
+                        $instantReportObjects['Hosts'][$service['host']['id']] = [
+                            'id'   => $service['host']['id'],
+                            'uuid' => $service['host']['uuid'],
+                            'name' => $service['host']['name']
                         ];
                     }
                     if ($instantReport->get('evaluation') > 1) {
-                        $instantReportObjects['Hosts'][$service['Hosts']['id']]['Services'][$service['id']] = [
+                        $instantReportObjects['Hosts'][$service['host']['id']]['Services'][$service['id']] = [
                             'id'   => $service['id'],
                             'uuid' => $service['uuid'],
-                            'name' => ($service['name']) ? $service['name'] : $service['Servicetemplates']['name']
+                            'name' => ($service['name']) ? $service['name'] : $service['servicetemplate']['name']
                         ];
                     }
                 }
