@@ -71,6 +71,9 @@ class AclDependencies {
     public function __construct() {
         // Add actions that should always be allowed.
         $this
+            ->allow('Agentchecks', 'getAgentchecksForMapping');
+
+        $this
             ->allow('Angular', 'index')
             ->allow('Angular', 'paginator')
             ->allow('Angular', 'scroll')
@@ -132,6 +135,8 @@ class AclDependencies {
             ->allow('Angular', 'durationInput')
             ->allow('Angular', 'calendar')
             ->allow('Angular', 'reload_required');
+            ->allow('Angular', 'colorpicker');
+            ->allow('Angular', 'popover_graph');
 
         $this
             ->allow('Automaps', 'icon')
@@ -563,7 +568,7 @@ class AclDependencies {
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'NagiosCfg')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'AfterExport')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'NagiosModuleConfig')
-            //->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'phpNSTAMaster')
+            ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'phpNSTAMaster')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'DbBackend')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'PerfdataBackend')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'GraphingDocker')
@@ -573,7 +578,6 @@ class AclDependencies {
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'restorDefault')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'dynamicDirective')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'NSTAMaster');
-
 
         //Load Plugin ALC Dependencies
         foreach (PluginManager::getAvailablePlugins() as $pluginName) {
