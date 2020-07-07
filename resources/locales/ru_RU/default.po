@@ -4142,7 +4142,7 @@ msgstr "неизвестно"
 
 #: src/Controller/HostgroupsController.php:458
 msgid "up"
-msgstr "включен"
+msgstr "включён"
 
 #: src/Controller/HostgroupsController.php:459
 msgid "down"
@@ -4187,7 +4187,7 @@ msgstr "Проблема при отключении узла"
 
 #: src/Controller/HostsController.php:1343
 msgid "Host successfully enabled"
-msgstr "Узел успешно включен"
+msgstr "Узел успешно включён"
 
 #: src/Controller/HostsController.php:1351
 msgid "Issue while enabling host"
@@ -6429,7 +6429,7 @@ msgstr "Попробуйте режим autossl"
 
 #: src/Template/Agentconnector/config.php:369
 msgid "If enabled, the agent tries to auto generate a ssl certificate for all incoming connection."
-msgstr "Если этот параметр включен, агент пытается автоматически сгенерировать SSL-сертификат для всех входящих соединений."
+msgstr "Если этот параметр включён, агент пытается автоматически сгенерировать SSL-сертификат для всех входящих соединений."
 
 #: src/Template/Agentconnector/config.php:371
 msgid "Pull mode: The certificate (including updates) will be transferred from openITCOCKPIT to the agent."
@@ -13991,7 +13991,7 @@ msgstr "Что"
 
 #: src/Template/Statistics/index.php:124
 msgid "The system_id is a unique number that was generated on your system.\n                                The system_id is included in every request, to enable our database to locate your record and update it.\n                        "
-msgstr "system_id - это уникальный номер, который был сгенерирован в вашей системе.\n                                system_id включен в каждый запрос, чтобы наша база данных могла найти вашу запись и обновить её.\n                        "
+msgstr "system_id - это уникальный номер, который был сгенерирован в вашей системе.\n                                system_id включён в каждый запрос, чтобы наша база данных могла найти вашу запись и обновить её.\n                        "
 
 #: src/Template/Statistics/index.php:130
 msgid "The system_id will not be linked to any other records."
@@ -15897,698 +15897,698 @@ msgstr "Гигабайт/с (GB/s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:120
 msgid "Data throughput"
-msgstr ""
+msgstr "Пропускная способность"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:121
 msgid "ops/sec (ops)"
-msgstr ""
+msgstr "опс/сек (ops)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:122
 msgid "requests/sec (rps)"
-msgstr ""
+msgstr "запросов/сек (rps)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:123
 msgid "reads/sec (rps)"
-msgstr ""
+msgstr "читать/сек (rps)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:124
 msgid "writes/sec (wps)"
-msgstr ""
+msgstr "писать/сек (wps)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:125
 msgid "I/O ops/sec (iops)"
-msgstr ""
+msgstr "Операции ввода/вывода в секунду (iops)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:126
 msgid "ops/min (opm)"
-msgstr ""
+msgstr "операций/мин (opm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:127
 msgid "reads/min (rpm)"
-msgstr ""
+msgstr "читать/мин (rpm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:128
 msgid "writes/min (wpm)"
-msgstr ""
+msgstr "писать/wpm"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:132
 msgid "Temperature"
-msgstr ""
+msgstr "Температура"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:133
 msgid "Celsius (°C)"
-msgstr ""
+msgstr "Цельсия (°C)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:134
 msgid "Farenheit (°F)"
-msgstr ""
+msgstr "Фаренгейт (°F)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:135
 msgid "Kelvin (K)"
-msgstr ""
+msgstr "Абсолютная температура (K)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:139
 msgid "Currencies"
-msgstr ""
+msgstr "Валюты"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:140
 msgid "Dollars ($)"
-msgstr ""
+msgstr "Доллары ($)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:141
 msgid "Euro (€)"
-msgstr ""
+msgstr "Евро (€)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:142
 msgid "Pounds (£)"
-msgstr ""
+msgstr "Фунты (£)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:143
 msgid "Yen (¥)"
-msgstr ""
+msgstr "Япония иена (¥)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:144
 msgid "Rubles (₽)"
-msgstr ""
+msgstr "Рубли (₽)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:145
 msgid "Hryvnias (₴)"
-msgstr ""
+msgstr "Гривны (₴)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:146
 msgid "Real (R$)"
-msgstr ""
+msgstr "Бразильский реал (R$)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:147
 msgid "Danish Krone (kr)"
-msgstr ""
+msgstr "Датская крона (кр)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:148
 msgid "Icelandic Króna (kr)"
-msgstr ""
+msgstr "Исландская крона (кр)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:149
 msgid "Norwegian Krone (kr)"
-msgstr ""
+msgstr "Норвежская крона (кр)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:150
 msgid "Swedish Krona (kr)"
-msgstr ""
+msgstr "Шведская крона (кр)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:151
 msgid "Czech koruna (czk)"
-msgstr ""
+msgstr "Чешская крона (czk)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:152
 msgid "Swiss franc (CHF)"
-msgstr ""
+msgstr "Швейцарский франк (CHF)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:153
 msgid "Polish Złoty (PLN)"
-msgstr ""
+msgstr "Польские злотые (PLN)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:154
 msgid "Bitcoin (฿)"
-msgstr ""
+msgstr "Биткойн (฿)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:158
 msgid "Length"
-msgstr ""
+msgstr "Длина"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:159
 msgid "Millimetre (mm)"
-msgstr ""
+msgstr "Миллиметр (mm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:160
 msgid "Meter (m)"
-msgstr ""
+msgstr "Метр (m)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:161
 msgid "Kilometer (km)"
-msgstr ""
+msgstr "Километр (km)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:162
 msgid "Feet (ft)"
-msgstr ""
+msgstr "Футы (ft)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:163
 msgid "Mile (mi)"
-msgstr ""
+msgstr "Миля (mi)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:168
 msgid "Area"
-msgstr ""
+msgstr "Площадь"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:169
 msgid "Square Meters (m²)"
-msgstr ""
+msgstr "Квадратные метры (m²)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:170
 msgid "Square Feet (ft²)"
-msgstr ""
+msgstr "Квадратный фут (ft²)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:171
 msgid "Square Miles (mi²)"
-msgstr ""
+msgstr "Квадратные Мили (mi²)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:175
 msgid "Mass"
-msgstr ""
+msgstr "Масса"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:176
 msgid "Milligram (mg)"
-msgstr ""
+msgstr "Миллиграмм (mg)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:177
 msgid "Gram (g)"
-msgstr ""
+msgstr "Грамм (g)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:178
 msgid "Kilogram (kg)"
-msgstr ""
+msgstr "Килограмм (kg)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:179
 msgid "Ton (t)"
-msgstr ""
+msgstr "Тонна (t)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:183
 msgid "Velocity"
-msgstr ""
+msgstr "Скорость"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:184
 msgid "Metres/second (m/s)"
-msgstr ""
+msgstr "Метров в секунду (m/s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:185
 msgid "Kilometers/hour (km/h)"
-msgstr ""
+msgstr "Километров/час (km/h)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:186
 msgid "Miles/hour (mph)"
-msgstr ""
+msgstr "Миль/час (mph)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:187
 msgid "Knot (kn)"
-msgstr ""
+msgstr "Узел (kn)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:192
 msgid "Volume"
-msgstr ""
+msgstr "Объем"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:193
 msgid "Millilitre (ml)"
-msgstr ""
+msgstr "Миллилитр (ml)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:194
 msgid "Litre (l)"
-msgstr ""
+msgstr "Литр (l)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:195
 msgid "Cubic metre (m3)"
-msgstr ""
+msgstr "Кубический метр (m³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:196
 msgid "Cubic decimetre (dm3)"
-msgstr ""
+msgstr "Кубический дециметр (dm³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:197
 msgid "Gallons"
-msgstr ""
+msgstr "Галлоны"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:201
 msgid "Energy"
-msgstr ""
+msgstr "Энергия"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:202
 msgid "Watt (W)"
-msgstr ""
+msgstr "Ватт (W)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:203
 msgid "Kilowatt (kW)"
-msgstr ""
+msgstr "Киловатт (kW)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:204
 msgid "Milliwatt (mW)"
-msgstr ""
+msgstr "Милливатт (mW)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:205
 msgid "Watt per square metre (W/m²)"
-msgstr ""
+msgstr "Ватт на квадратный метр (W/м²)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:206
 msgid "Volt-ampere (VA)"
-msgstr ""
+msgstr "Вольт-ампер (VA)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:207
 msgid "Kilovolt-ampere (kVA)"
-msgstr ""
+msgstr "Киловольт-ампер (kVA)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:208
 msgid "Volt-ampere reactive (var)"
-msgstr ""
+msgstr "Вольт-ампер реактивный (var)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:209
 msgid "Kilovolt-ampere reactive (kvar)"
-msgstr ""
+msgstr "Киловольт-ампер реактивный (kvar)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:210
 msgid "Watt-hour (Wh)"
-msgstr ""
+msgstr "Ватт-час (Wh)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:211
 msgid "Kilowatt-hour (kWh)"
-msgstr ""
+msgstr "Киловатт-час (kWh)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:212
 msgid "Kilowatt-min (kWm)"
-msgstr ""
+msgstr "Киловатт-мин (kWm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:213
 msgid "Joule (J)"
-msgstr ""
+msgstr "Джоуль (J)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:214
 msgid "Electron volt (eV)"
-msgstr ""
+msgstr "Электрон вольт (eV)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:215
 msgid "Ampere (A)"
-msgstr ""
+msgstr "Ампер (A)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:216
 msgid "Kiloampere (kA)"
-msgstr ""
+msgstr "Килоампера (kA)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:217
 msgid "Milliampere (mA)"
-msgstr ""
+msgstr "Миллиампер (mA)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:218
 msgid "Volt (V)"
-msgstr ""
+msgstr "Вольт (V)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:219
 msgid "Kilovolt (kV)"
-msgstr ""
+msgstr "Киловольт (kV)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:220
 msgid "Millivolt (mV)"
-msgstr ""
+msgstr "Милливольт (mV)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:221
 msgid "Decibel-milliwatt (dBm)"
-msgstr ""
+msgstr "Децибел-милливатт (dBm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:222
 msgid "Ohm (Ω)"
-msgstr ""
+msgstr "Ом (Ω)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:223
 msgid "Lumens (Lm)"
-msgstr ""
+msgstr "Люмен (Lm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:227
 msgid "Pressure"
-msgstr ""
+msgstr "Давление"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:228
 msgid "Millibars"
-msgstr ""
+msgstr "Миллибары"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:229
 msgid "Bars"
-msgstr ""
+msgstr "Бары"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:230
 msgid "Kilobars"
-msgstr ""
+msgstr "Килобары"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:231
 msgid "Hectopascals"
-msgstr ""
+msgstr "Гектопаскали"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:232
 msgid "Kilopascals"
-msgstr ""
+msgstr "Килопаскали"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:233
 msgid "Inches of mercury"
-msgstr ""
+msgstr "Дюймы ртути"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:234
 msgid "PSI"
-msgstr ""
+msgstr "PSI"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:239
 msgid "Newton-meters (Nm)"
-msgstr ""
+msgstr "Ньютон-метры (Nm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:240
 msgid "Kilonewton-meters (kNm)"
-msgstr ""
+msgstr "Килоньютон-метры (kNm)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:241
 msgid "Newtons (N)"
-msgstr ""
+msgstr "Ньютоны (N)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:242
 msgid "Kilonewtons (kN)"
-msgstr ""
+msgstr "Килоньютоны (kN)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:246
 msgid "Flow"
-msgstr ""
+msgstr "Поток"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:247
 msgid "Litre/hour (l/h)"
-msgstr ""
+msgstr "Литр/час (л/час)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:248
 msgid "Litre/min (l/min)"
-msgstr ""
+msgstr "Литр/мин (л/мин)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:249
 msgid "Millilitre/min (ml/min)"
-msgstr ""
+msgstr "Миллилитр/мин (мл/мин)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:250
 msgid "Cubic meters/sec (cms)"
-msgstr ""
+msgstr "Кубических метров в секунду (кмс)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:251
 msgid "Gallons/min (gpm)"
-msgstr ""
+msgstr "Галлонов/мин (галлонов/мин)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:252
 msgid "Cubic feet/sec (cfs)"
-msgstr ""
+msgstr "Кубический фут/ ек (ср)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:253
 msgid "Cubic feet/min (cfm)"
-msgstr ""
+msgstr "Кубический фут/сек (ср)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:257
 msgid "Angle"
-msgstr ""
+msgstr "Угол"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:258
 msgid "Degrees (°)"
-msgstr ""
+msgstr "Степени (°)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:259
 msgid "Radians"
-msgstr ""
+msgstr "Радианы"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:260
 msgid "Gradian"
-msgstr ""
+msgstr "Градиан"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:264
 msgid "Date and time"
-msgstr ""
+msgstr "Дата и время"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:265
 msgid "YYYY-MM-DD HH:mm:ss"
-msgstr ""
+msgstr "YYYY-MM-DD HH:mm:ss"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:266
 msgid "DD/MM/YYYY h:mm:ss a"
-msgstr ""
+msgstr "DD/MM/YYYY h:mm:ss a"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:267
 msgid "From Now"
-msgstr ""
+msgstr "Отныне"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:271
 msgid "Hash rates"
-msgstr ""
+msgstr "Хэш-ставки"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:272
 msgid "Hashes/sec"
-msgstr ""
+msgstr "Хэш/сек"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:273
 msgid "Kilohashes/sec"
-msgstr ""
+msgstr "Килохэш/сек"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:274
 msgid "Megahashes/sec"
-msgstr ""
+msgstr "Мегахэш/сек"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:275
 msgid "Gigahashes/sec"
-msgstr ""
+msgstr "Гигхэш/сек"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:276
 msgid "Terahashes/sec"
-msgstr ""
+msgstr "Терахэш/сек"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:277
 msgid "Petahashes/sec"
-msgstr ""
+msgstr "Петахэш/сек"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:278
 msgid "Exahashes/sec"
-msgstr ""
+msgstr "Exaхэш/сек"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:282
 msgid "Acceleration"
-msgstr ""
+msgstr "Ускорение"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:283
 msgid "Meters/sec²"
-msgstr ""
+msgstr "Метров/сек²"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:284
 msgid "Feet/sec²"
-msgstr ""
+msgstr "Футов/сек²"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:285
 msgid "G unit"
-msgstr ""
+msgstr "Силы G"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:289
 msgid "Radiation"
-msgstr ""
+msgstr "Радиация"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:290
 msgid "Becquerel (Bq)"
-msgstr ""
+msgstr "Беккерель (Бк)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:291
 msgid "curie (Ci)"
-msgstr ""
+msgstr "Кюри (Ci)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:292
 msgid "Gray (Gy)"
-msgstr ""
+msgstr "Gray (Gy)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:293
 msgid "rad"
-msgstr ""
+msgstr "rad"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:294
 msgid "Sievert (Sv)"
-msgstr ""
+msgstr "Зиверт (Зв)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:295
 msgid "rem"
-msgstr ""
+msgstr "рем"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:296
 msgid "Exposure (C/kg)"
-msgstr ""
+msgstr "Выдержка (С/кг)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:297
 msgid "roentgen (R)"
-msgstr ""
+msgstr "рентген (R)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:298
 msgid "Sievert/hour (Sv/h)"
-msgstr ""
+msgstr "Зиверт/час (Зв/ч)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:302
 msgid "Concentration"
-msgstr ""
+msgstr "Концентрация"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:303
 msgid "parts-per-million (ppm)"
-msgstr ""
+msgstr "частей на миллион (частей на миллион)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:304
 msgid "parts-per-billion (ppb)"
-msgstr ""
+msgstr "частей на миллиард (ppb)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:305
 msgid "nanogram per cubic metre (ng/m³)"
-msgstr ""
+msgstr "нанограмм на кубический метр (нг/м³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:306
 msgid "nanogram per normal cubic metre (ng/Nm³)"
-msgstr ""
+msgstr "нанограмм на нормальный кубический метр (нг/Нм³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:307
 msgid "microgram per cubic metre (μg/m³)"
-msgstr ""
+msgstr "микрограмм на кубический метр (мкг/м³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:308
 msgid "microgram per normal cubic metre (μg/Nm³)"
-msgstr ""
+msgstr "микрограмм на нормальный кубический метр (мкг/нм³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:309
 msgid "milligram per cubic metre (mg/m³)"
-msgstr ""
+msgstr "миллиграммы на кубический метр (мг/м³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:310
 msgid "milligram per normal cubic metre (mg/Nm³)"
-msgstr ""
+msgstr "миллиграммов на нормальный кубический метр (мг/Нм³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:311
 msgid "gram per cubic metre (g/m³)"
-msgstr ""
+msgstr "грамм на кубический метр (г/м³)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:312
 msgid "gram per normal cubic metre (g/Nm³)"
-msgstr ""
+msgstr "грамм на нормальный кубический метр (г/Нм³)"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:49
 msgid "Host Macros"
-msgstr ""
+msgstr "Макросы узла"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:54
 msgid "The UUID of the host (\"1284b927-2bd2-4737-a3da-c39854376ca2\")"
-msgstr ""
+msgstr "UUID узла (\"1284b927-2bd2-4737-a3da-c39854376ca2\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:58
 msgid "The human name of the host (\"srvstorage01\")"
-msgstr ""
+msgstr "Человеческое имя узла (\"srvstorage01\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:62
 msgid "The human name of the host (\"srvstorage01\"), same as $HOSTDISPLAYNAME$"
-msgstr ""
+msgstr "Человеческое имя узла (\"srvstorage01\"), такое же, как $HOSTDISPLAYNAME$"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:66
 msgid "Address or FQDN of the host. (\"10.10.12.12\")"
-msgstr ""
+msgstr "Адрес или полное доменное имя узла. (\"10.10.12.12\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:70
 msgid "Current host state as string (\"UP\", \"DOWN\", or \"UNREACHABLE\")."
-msgstr ""
+msgstr "Текущее состояние узла в виде строки (\"ВКЛЮЧЁН\", \"ОТКЛЮЧЁН\" или \"НЕДОСТУПЕН\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:74
 msgid "Current host state as integer (0=UP, 1=DOWN, 2=UNREACHABLE)."
-msgstr ""
+msgstr "Текущее состояние узла в виде целого числа (0 = ВКЛЮЧЁН, 1 = ОТКЛЮЧЁН, 2 = НЕДОСТУПЕН)."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:78
 msgid "Last host state as string (\"UP\", \"DOWN\", or \"UNREACHABLE\")."
-msgstr ""
+msgstr "Последнее состояние хоста в виде строки (\"ВКЛЮЧЁН\", \"ОТКЛЮЧЁН\" или \"НЕДОСТУПЕН\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:82
 msgid "Last host state as integer (0=UP, 1=DOWN, 2=UNREACHABLE)."
-msgstr ""
+msgstr "Последнее состояние узла в виде целого числа (0 = ВКЛЮЧЁН, 1 = ОТКЛЮЧЁН, 2 = НЕДОСТУПЕН)."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:86
 msgid "Current host state type as string (\"SOFT\" or \"HARD\")."
-msgstr ""
+msgstr "Текущий тип состояния узла в виде строки (\"МЯГКИЙ\" или \"ТВЕРДЫЙ\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:90
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:278
 msgid "Current check attempt as integer"
-msgstr ""
+msgstr "Текущая попытка проверки как целое число"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:94
 msgid "Max number of host check attempts."
-msgstr ""
+msgstr "Максимальное количество попыток проверки узла."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:98
 msgid "Number of state change events as unique number per host."
-msgstr ""
+msgstr "Количество событий изменения статуса как уникальный номер для узла."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:102
 msgid "Last unique host event number."
-msgstr ""
+msgstr "Последний уникальный номер события узла."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:106
 msgid "Unique number of the current host problem state."
-msgstr ""
+msgstr "Уникальный номер текущего состояния проблемы узла."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:110
 msgid "Unique number of the last host problem state."
-msgstr ""
+msgstr "Уникальный номер последнего проблемного состояния узла."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:114
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:306
 msgid "Delay between scheduled check time and actual check time as floating point. (\"2.05\")"
-msgstr ""
+msgstr "Задержка между запланированным временем проверки и фактическим временем проверки как плавающей запятой. (\"2,05\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:118
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:310
 msgid "Plugin execution time as floating point. (\"4.21\")."
-msgstr ""
+msgstr "Время выполнения плагина в виде плавающей запятой. (\"4,21\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:122
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:314
 msgid "Time since last state change occured as string (HH MM SS)"
-msgstr ""
+msgstr "Время с момента последнего изменения состояния в виде строки (HH MM SS)"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:126
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:318
 msgid "Time since last state change occured as integer in seconds."
-msgstr ""
+msgstr "Время с момента последнего изменения состояния произошло как целое число в секундах."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:130
 msgid "If the host in a scheduled downtime, this value will be >= 1."
-msgstr ""
+msgstr "Если узел в запланированном обслуживании, это значение будет> = 1."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:134
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:326
 msgid "State change percentage as floating point. (This is used by the flap detection algorithm)."
-msgstr ""
+msgstr "Процент изменения состояния в виде числа с плавающей запятой. (Используется алгоритмом обнаружения колебаний)."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:138
 msgid "Contain the first host group of an host as string (\"12403d1a-70c0-468b-ad8d-446fb8412205\")"
-msgstr ""
+msgstr "Содержит первую группу узлов в виде строки (\"12403d1a-70c0-468b-ad8d-446fb8412205\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:142
 msgid "A comma separated of all the host groups the host belongs to. (\"12403d1a-70c0-468b-ad8d-446fb8412205,20a1bad7-60c1-433d-8e28-716cde8b8f04\")"
-msgstr ""
+msgstr "Список через запятую от всех групп узлов, к которым принадлежит узел. (\"12403d1a-70c0-468b-ad8d-446fb8412205,20a1bad7-60c1-433d-8e28-716cde8b8f04\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:146
 msgid "Unix timestamp (integer) of the last host check."
-msgstr ""
+msgstr "Unix timestamp (целое число) последней проверки узла."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:150
 msgid "Unix timestamp (integer) of last host state change."
-msgstr ""
+msgstr "Unix timestamp (целое число) последнего изменения состояния узла."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:154
 msgid "Unix timestamp (integer) of the last host UP state."
-msgstr ""
+msgstr "Unix timestamp (целое число) последнего состояния ВКЛЮЧЁН узла."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:158
-msgid "Unix timestamp (integer) of the last host DOWN state."
+msgid "Unix timestamp (целое число) последнего состояния ОТКЛЮЧЁН узла."
 msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:162
 msgid "Unix timestamp (integer) of the last host UNREACHABLE state."
-msgstr ""
+msgstr "Unix timestamp (целое число) последнего состояния НЕДОСТУПЕН узла."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:166
 msgid "Output of host check plugin (\"OK - 127.5.6.7: rta 0,054ms, lost 0% \")."
-msgstr ""
+msgstr "Вывод плагина проверки узла (\"OK - 127.5.6.7: rta 0,054ms, lost 0%\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:170
 msgid "The long plugin output of current host check."
-msgstr ""
+msgstr "Длинный плагин выводит текущую проверку узла."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:174
 msgid "Performance date output of current host check. (\"rta=0.054000ms;100.000000;500.000000;0.000000 pl=0%;20;60;0\")"
-msgstr ""
+msgstr "Вывод даты выполнения текущей проверки узла. (\"rta=0.054000ms;100.000000;500.000000;0.000000 pl=0%;20;60;0\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:178
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:374
 msgid "Contains the command UUID including used command arguments (\"5a538ebc-03de-4ce6-8e32-665b841abde3!3000.0,80%!4000.0,90%;\")"
-msgstr ""
+msgstr "Содержит UUID команды, включая используемые аргументы команды (\"5a538ebc-03de-4ce6-8e32-665b841abde3!3000.0,80%!4000.0,90%;\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:182
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:186
@@ -16601,200 +16601,200 @@ msgstr ""
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:409
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:413
 msgid "Not implemented by openITCOCKPIT."
-msgstr ""
+msgstr "Не реализовано openITCOCKPIT."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:190
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:386
 msgid "Uer defined notes for the host."
-msgstr ""
+msgstr "Пользовательские заметки для узла."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:194
 msgid "Total number of services associated with the host."
-msgstr ""
+msgstr "Общее количество служб, связанных с этим."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:198
 msgid "Total number of services associated with the host in state OK."
-msgstr ""
+msgstr "Общее количество служб, связанных с узлом в состоянии ОК."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:202
 msgid "Total number of services associated with the host in state WARNING."
-msgstr ""
+msgstr "Общее количество служб, связанных с узлом в состоянии ПРЕДУПРЕЖДЕНИЕ."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:207
 msgid "Total number of services associated with the host in state CRITICAL."
-msgstr ""
+msgstr "Общее количество служб, связанных с узлом в состоянии КРИТИЧНО."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:211
 msgid "Total number of services associated with the host in state UNKNOWN."
-msgstr ""
+msgstr "Общее количество служб, связанных с узлом в состоянии НЕИЗВЕСТНО."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:217
 msgid "Host Group Macros"
-msgstr ""
+msgstr "Макросы группы узлов"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:222
 msgid "The UUID of the host group (\"fc11e1b9-9c0f-49d7-90b5-f283fe39a21d\")"
-msgstr ""
+msgstr "UUID группы узлов (\"fc11e1b9-9c0f-49d7-90b5-f283fe39a21d\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:226
 msgid "A comma separated list of the host group mebers as UUIDs (\"c7176869-ffb7-4149-b960-bdbf9ae85968,f5e943f3-c46f-4f6d-8fc1-468774a72332\")."
-msgstr ""
+msgstr "Разделенный запятыми список членов группы узлов как UUID (\"c7176869-ffb7-4149-b960-bdbf9ae85968, f5e943f3-c46f-4f6d-8fc1-468774a72332\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:244
 msgid "Service Macros"
-msgstr ""
+msgstr "Макросы службы"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:249
 msgid "The UUID of the service (\"bd19ce04-3209-4664-a146-bd1220e740bc\")"
-msgstr ""
+msgstr "UUID службы (\"bd19ce04-3209-4664-a146-bd1220e740bc\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:253
 msgid "The human name of the service (\"PING\")"
-msgstr ""
+msgstr "Человеческое имя службы (\"PING\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:257
 msgid "Current service state as string  (\"OK\", \"WARNING\", \"UNKNOWN\", or \"CRITICAL\")."
-msgstr ""
+msgstr "Текущее состояние службы в виде строки (\"OK\", \"ПРЕДУПРЕЖДЕНИЕ\", \"НЕИЗВЕСТНО\" или \"КРИТИЧНО\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:261
 msgid "Current service state as integer (0=OK, 1=WARNING, 2=CRITICAL, 3=UNKNOWN)."
-msgstr ""
+msgstr "Текущее состояние службы в виде целого числа (0 = ОК, 1 = ПРЕДУПРЕЖДЕНИЕ, 2 = КРИТИЧНО, 3 = НЕИЗВЕСТНО)."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:265
 msgid "Last service state as string (\"OK\", \"WARNING\", \"UNKNOWN\", or \"CRITICAL\")."
-msgstr ""
+msgstr "Последнее состояние службы в виде строки (\"ОК\", \"ПРЕДУПРЕЖДЕНИЕ\", \"НЕИЗВЕСТНО \" или \"КРИТИЧНО\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:270
 msgid "Last service state as integer (0=OK, 1=WARNING, 2=CRITICAL, 3=UNKNOWN)."
-msgstr ""
+msgstr "Последнее состояние службы в виде целого числа (0 = ОК, 1 = ПРЕДУПРЕЖДЕНИЕ, 2 = КРИТИЧНО, 3 = НЕИЗВЕСТНО)."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:274
 msgid "Current service state type as string (\"SOFT\" or \"HARD\")."
-msgstr ""
+msgstr "Текущий тип состояния службы в виде строки (\"МЯГКИЙ\" или \"ТВЕРДЫЙ\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:282
 msgid "Max number of service check attempts."
-msgstr ""
+msgstr "Максимальное количество попыток проверки службы."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:286
 msgid "Is volatile as integer (0=NO, 1=YES)"
-msgstr ""
+msgstr "Является летучим как целое число (0 = НЕТ, 1 = ДА)"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:290
 msgid "Number of state change events as unique number per service."
-msgstr ""
+msgstr "Количество событий изменения состояния в виде уникального номера для каждой службы."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:294
 msgid "Last unique service event number."
-msgstr ""
+msgstr "Последний уникальный номер события службы."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:298
 msgid "Unique number of the current service problem state."
-msgstr ""
+msgstr "Уникальный номер текущего состояния проблемы службы."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:302
 msgid "Unique number of the last service problem state."
-msgstr ""
+msgstr "Уникальный номер последнего состояния проблемы службы."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:322
 msgid "If the service in a scheduled downtime, this value will be >= 1."
-msgstr ""
+msgstr "Если служба в плановом обслуживании, это значение будет> = 1."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:330
 msgid "Contain the first service group of an service as string (\"6123eb90-a3eb-4895-b348-c464d9494d14\")"
-msgstr ""
+msgstr "Содержит первую группу служб службы в виде строки (\"6123eb90-a3eb-4895-b348-c464d9494d14\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:334
 msgid "A comma separated of all the service groups the service belongs to. (\"6123eb90-a3eb-4895-b348-c464d9494d14,666b1caf-4c0f-45e8-9380-78f9e915b82d\")"
-msgstr ""
+msgstr "Список через запятую от всех группу служб, к которым принадлежит служба. (\"6123eb90-a3eb-4895-b348-c464d9494d14,666b1caf-4c0f-45e8-9380-78f9e915b82d\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:338
 msgid "Unix timestamp (integer) of the last service check."
-msgstr ""
+msgstr "Unix timestamp (целое число) последней проверки службы."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:342
 msgid "Unix timestamp (integer) of last service state change."
-msgstr ""
+msgstr "Unix timestamp (целое число) последнего изменения состояния службы."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:346
 msgid "Unix timestamp (integer) of the last service OK state."
-msgstr ""
+msgstr "Unix timestamp (целое число) последнего состояния OK службы."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:350
 msgid "Unix timestamp (integer) of the last service WARNING state."
-msgstr ""
+msgstr "Unix timestamp (целое число) последнего состояния ПРЕДУПРЕЖДЕНИЕ службы."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:354
 msgid "Unix timestamp (integer) of the last service CRITICAL state."
-msgstr ""
+msgstr "Unix timestamp (целое число) последнего состояния КРИТИЧНО службы."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:358
 msgid "Unix timestamp (integer) of the last service UNKNOWN state."
-msgstr ""
+msgstr "Unix timestamp (целое число) последнего состояния НЕИЗВЕСТНО службы."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:362
 msgid "Output of service check plugin (\"OK - 127.5.6.7: rta 0,054ms, lost 0% \")."
-msgstr ""
+msgstr "Вывод плагина проверки службы (\"ОК - 127.5.6.7: рта 0,054мс, потеря 0%\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:366
 msgid "The long plugin output of current service check."
-msgstr ""
+msgstr "Длинный плагин выводит текущую проверку службы."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:370
 msgid "Performance date output of current service check. (\"rta=0.054000ms;100.000000;500.000000;0.000000 pl=0%;20;60;0\")"
-msgstr ""
+msgstr "Вывод даты выполнения текущей проверки службы. (\"rta=0.054000ms;100.000000;500.000000;0.000000 pl=0%;20;60;0\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:392
 msgid "Service Group Macros"
-msgstr ""
+msgstr "Макросы группы служб"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:397
 msgid "The UUID of the host group (\"65c7692e-b322-4788-8232-97258b457f22\")"
-msgstr ""
+msgstr "UUID группы узлов (\"65c7692e-b322-4788-8232-97258b457f22\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:401
 msgid "A comma separated list of the service group mebers as UUIDs (\"0a9feda1-569e-40fe-a5a3-b2f389818301,ade06bfb-f9bd-4112-9537-2b3d286a6572\")."
-msgstr ""
+msgstr "Разделенный запятыми список членов группы служб как UUID (\"0a9feda1-569e-40fe-a5a3-b2f389818301,ade06bfb-f9bd-4112-9537-2b3d286a6572\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:419
 msgid "Contact Macros"
-msgstr ""
+msgstr "Макросы контакта"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:424
 msgid "The UUID of the contact (\"9595f7d6-2b79-4a7b-b7b8-414eec84c0b0\")"
-msgstr ""
+msgstr "UUID контакта (\"9595f7d6-2b79-4a7b-b7b8-414eec84c0b0\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:428
 msgid "The human name of the contact (\"info\")."
-msgstr ""
+msgstr "Человеческое имя контакта (\"info\")."
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:432
 msgid "The human name of the contact (\"info\"), same as $CONTACTGROUPNAME$"
-msgstr ""
+msgstr "Человеческое имя контакта (\"info\"), такое же, как $CONTACTGROUPNAME$"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:436
 msgid "Email address of the contact. (\"community@openitcockpit.io\")"
-msgstr ""
+msgstr "Адрес электронной почты контакта. (\"community@openitcockpit.io\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:440
 msgid "Pager number of the contact. (\"004913456789\")"
-msgstr ""
+msgstr "Пейджер номер контакта. (\"004913456789\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:444
 msgid "A comma separated of all the contact groups the contact belongs to. (\"06e352a8-643d-4fa8-a7bd-9ff74ad0e112,4992c7ad-1bb4-465a-8fe4-a721461b69a2\")"
-msgstr ""
+msgstr "Список через запятую от всех групп контактов, которым принадлежит контакт. (\"06e352a8-643d-4fa8-a7bd-9ff74ad0e112,4992c7ad-1bb4-465a-8fe4-a721461b69a2\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:450
 msgid "Contact Group Macros"
-msgstr ""
+msgstr "Макросы контактной группы"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:455
 msgid "The UUID of the contact group (\"06e352a8-643d-4fa8-a7bd-9ff74ad0e112\")"
-msgstr ""
+msgstr "UUID контактной группы (\"06e352a8-643d-4fa8-a7bd-9ff74ad0e112\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:459
 msgid "A comma separated of all the contacts belongs to the contact group. (\"9595f7d6-2b79-4a7b-b7b8-414eec84c0b0,6de7d0f9-413e-41cc-b1e4-3289072b72c4\")"
-msgstr ""
+msgstr "Список через запятую от всех контактов, принадлежит группе контактов. (\"9595f7d6-2b79-4a7b-b7b8-414eec84c0b0,6de7d0f9-413e-41cc-b1e4-3289072b72c4\")"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:465
 msgid "SUMMARY Macros (Notice: CPU intensive to calculate - use with care)"
@@ -16874,7 +16874,7 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:545
 msgid "A comma separated of all the contacts for this notification. (\"12403d1a-70c0-468b-ad8d-446fb8412205,20a1bad7-60c1-433d-8e28-716cde8b8f04\")"
-msgstr ""
+msgstr "Список через запятую"
 
 #: src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:550
 msgid "Is this an escalated notification (0=NO, 1=YES)"
