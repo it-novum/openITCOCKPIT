@@ -142,7 +142,7 @@
                                                ng-show="servicetemplategroup.Servicetemplategroup.allow_edit">
                                     <?php endif; ?>
                                 </td>
-                                <td>{{servicetemplategroup.Servicetemplategroup.container.name}}</td>
+                                <td>{{servicetemplategroup.Container.name}}</td>
                                 <td>{{servicetemplategroup.Servicetemplategroup.description}}</td>
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">

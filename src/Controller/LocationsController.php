@@ -78,11 +78,7 @@ class LocationsController extends AppController {
         }
 
         $this->set('all_locations', $all_locations);
-        $toJson = ['all_locations', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['all_locations', 'scroll'];
-        }
-        $this->viewBuilder()->setOption('serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', ['all_locations']);
     }
 
     /**

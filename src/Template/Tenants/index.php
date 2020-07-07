@@ -140,7 +140,7 @@
                                            ng-show="tenant.Tenant.allowEdit">
                                 </td>
                                 <td>
-                                    {{ tenant.Tenant.container.name }}
+                                    {{ tenant.Container.name }}
                                 </td>
                                 <td>
                                     {{ tenant.Tenant.description }}

@@ -140,7 +140,7 @@
                                            ng-show="hostgroup.allowEdit">
                                 </td>
                                 <td>
-                                    {{ hostgroup.Containers.name }}
+                                    {{ hostgroup.container.name }}
                                 </td>
                                 <td>
                                     {{ hostgroup.description }}

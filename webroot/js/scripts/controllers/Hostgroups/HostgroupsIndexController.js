@@ -73,7 +73,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(hostgroup){
             var object = {};
-            object[hostgroup.id] = hostgroup.Containers.name;
+            object[hostgroup.id] = hostgroup.container.name;
             return object;
         };
 
@@ -83,7 +83,7 @@ angular.module('openITCOCKPIT')
             for(var key in $scope.hostgroups){
                 for(var id in selectedObjects){
                     if(id == $scope.hostgroups[key].id){
-                        objects[id] = $scope.hostgroups[key].Containers.name;
+                        objects[id] = $scope.hostgroups[key].container.name;
                     }
 
                 }

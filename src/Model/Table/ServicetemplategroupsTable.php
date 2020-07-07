@@ -180,8 +180,8 @@ class ServicetemplategroupsTable extends Table {
     public function getServicetemplategroupForView($id) {
         $query = $this->find()
             ->contain([
-                'containers',
-                'servicetemplates' => function (Query $query) {
+                'Containers',
+                'Servicetemplates' => function (Query $query) {
                     return $query->enableAutoFields(false)
                         ->select([
                             'Servicetemplates.id',
@@ -292,7 +292,7 @@ class ServicetemplategroupsTable extends Table {
         $groupsWithLimit = [];
         $result = $this->emptyArrayIfNull($query->toArray());
         foreach ($result as $row) {
-            $groupsWithLimit[$row['id']] = $row['Containers']['name'];
+            $groupsWithLimit[$row['id']] = $row['container']['name'];
         }
 
         $selectedGroups = [];
@@ -318,7 +318,7 @@ class ServicetemplategroupsTable extends Table {
             $selectedGroups = [];
             $result = $this->emptyArrayIfNull($query->toArray());
             foreach ($result as $row) {
-                $selectedGroups[$row['id']] = $row['Containers']['name'];
+                $selectedGroups[$row['id']] = $row['container']['name'];
             }
         }
 

@@ -84,7 +84,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(servicetemplategroup){
             var object = {};
-            object[servicetemplategroup.Servicetemplategroup.id] = servicetemplategroup.Servicetemplategroup.container.name;
+            object[servicetemplategroup.Servicetemplategroup.id] = servicetemplategroup.Container.name;
             return object;
         };
 
@@ -95,7 +95,7 @@ angular.module('openITCOCKPIT')
                 for(var id in selectedObjects){
                     if(id == $scope.servicetemplategroups[key].Servicetemplategroup.id){
                         if($scope.servicetemplategroups[key].Servicetemplategroup.allow_edit === true){
-                            objects[id] = $scope.servicetemplategroups[key].Servicetemplategroup.container.name;
+                            objects[id] = $scope.servicetemplategroups[key].Container.name;
                         }
                     }
                 }
