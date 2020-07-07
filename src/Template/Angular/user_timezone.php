@@ -32,7 +32,7 @@
     <button class="btn btn-default " data-original-title="<?= __('display time information'); ?>"
             data-placement="bottom"
             rel="tooltip" data-container="body"><i class="fas fa-clock"></i></button>
-    <button class="btn btn-primary ng-binding" data-original-title="local time of server" data-placement="bottom"
+    <button class="btn btn-primary ng-binding" data-original-title="<?= __('local time of server'); ?>" data-placement="bottom"
             rel="tooltip" data-container="body">
         {{ currentServerTime }}
     </button>
