@@ -868,9 +868,9 @@ fieldset[disabled] .btn-unknown.active {
     background-color: #4285F4BF;
 }
 
-.table-color-0 a:link,
-.table-color-1 a:link,
-.table-color-2 a:link,
-.table-color-disabled a:link {
+.table-color-0 a,
+.table-color-1 a,
+.table-color-2 a,
+.table-color-disabled a {
     color: #ffffff;
 }

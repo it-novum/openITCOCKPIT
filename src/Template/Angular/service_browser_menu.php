@@ -145,7 +145,7 @@
                      style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
                     <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                         <a class="dropdown-item"
-                           ui-sref="ServicesServiceList({id: config.serviceId})">
+                           ui-sref="ServicesServiceList({id: config.hostId})">
                             <i class="fa fa-list"></i>
                             <?php echo __('Service list'); ?>
                         </a>
