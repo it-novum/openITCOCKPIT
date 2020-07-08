@@ -23,7 +23,7 @@
 //  confirmation.
 ?>
 
-<div class="well padding-5" ng-if="allowView" style="width: {{width}}px;">
+<div class="card card-body bg-light" ng-if="allowView" style="width: {{width}}px;">
 
     <div id="mapgraph-{{item.id}}" style="height: {{height}}px; padding:0;position:relative;">
 
