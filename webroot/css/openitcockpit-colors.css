@@ -851,3 +851,19 @@ fieldset[disabled] .btn-unknown.active {
 .border-mk {
     border-color: #4d6876 !important;
 }
+
+.table-color-0 {
+    background-color: #00C8513F;
+}
+
+.table-color-1 {
+    background-color: #CC00003F;
+}
+
+.table-color-2 {
+    background-color: #727b843F;
+}
+
+.table-color-disabled {
+    background-color: #4285F43F;
+}
