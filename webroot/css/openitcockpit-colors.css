@@ -509,7 +509,8 @@ https://www.color-hex.com/color/727b84
 }
 
 .selectedMapItem {
-    background: #0088cc;
+    /** important is required due to DesignModule **/
+    background: #0088cc!important;
 }
 
 

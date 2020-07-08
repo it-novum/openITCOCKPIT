@@ -24,6 +24,10 @@
 //	confirmation.
 ?>
 <ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <!-- get a leading / -->
+    </li>
+
     <li ng-class="{active: container.key == containerId}" ng-repeat="container in breadcrumbs" class="breadcrumb-item">
         <a ng-show="container.key == containerId">
             {{container.value}}
