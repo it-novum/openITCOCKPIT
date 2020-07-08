@@ -412,7 +412,11 @@ class CmdCommand extends Command {
                     return $this->_buildNagCommand($commandAsArray);
                 } else {
                     //could not find service uuid
-                    Log::error('CmdCommand: Could not find service for given service description and host uuid');
+                    Log::error(sprintf(
+                        'CmdCommand: Could not find service for given service description [%s] and host uuid [%s]',
+                        $commandAsArray['params'][2],
+                        $commandAsArray['params'][1]
+                    ));
                     return false;
                 }
 
