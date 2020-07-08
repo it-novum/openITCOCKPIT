@@ -133,7 +133,7 @@ angular.module('openITCOCKPIT').directive('pullConfigurationsDirective', functio
                 for(var key in $scope.pullConfigurations){
                     for(var id in selectedObjects){
                         if(parseInt(id) === $scope.pullConfigurations[key].Agentconfig.id){
-                            objects[id] = $scope.pullConfigurations[key].Agentconfig.host.name;
+                            objects[id] = $scope.pullConfigurations[key].Host.name;
                         }
                     }
                 }
@@ -142,7 +142,7 @@ angular.module('openITCOCKPIT').directive('pullConfigurationsDirective', functio
 
             $scope.getObjectForDelete = function(agent){
                 var object = {};
-                object[agent.Agentconfig.id] = agent.Agentconfig.host.name;
+                object[agent.Agentconfig.id] = agent.Host.name;
                 return object;
             };
 
