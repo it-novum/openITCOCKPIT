@@ -510,7 +510,7 @@ https://www.color-hex.com/color/727b84
 
 .selectedMapItem {
     /** important is required due to DesignModule **/
-    background: #0088cc!important;
+    background: #0088cc !important;
 }
 
 
@@ -850,4 +850,27 @@ fieldset[disabled] .btn-unknown.active {
 
 .border-mk {
     border-color: #4d6876 !important;
+}
+
+.table-color-0 {
+    background-color: #00C851BF;
+}
+
+.table-color-1 {
+    background-color: #CC0000BF;
+}
+
+.table-color-2 {
+    background-color: #727b84BF;
+}
+
+.table-color-disabled {
+    background-color: #4285F4BF;
+}
+
+.table-color-0 a,
+.table-color-1 a,
+.table-color-2 a,
+.table-color-disabled a {
+    color: #ffffff;
 }

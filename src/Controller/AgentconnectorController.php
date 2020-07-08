@@ -175,9 +175,9 @@ class AgentconnectorController extends AppController {
         /** @var AgentconfigsTable $AgentconfigsTable */
         $AgentconfigsTable = TableRegistry::getTableLocator()->get('Agentconfigs');
 
-        if($this->request->is('post') && $action !== null && $id !== null){
-            if($AgentconfigsTable->existsById($id)){
-                if($action == 'edit'){
+        if ($this->request->is('post') && $action !== null && $id !== null) {
+            if ($AgentconfigsTable->existsById($id)) {
+                if ($action == 'edit') {
                     $Agentconfig = $AgentconfigsTable->get($id);
                     $Agentconfig = $AgentconfigsTable->patchEntity($Agentconfig, $this->request->getData('Agentconfig'));
                     $AgentconfigsTable->save($Agentconfig);
@@ -190,7 +190,7 @@ class AgentconnectorController extends AppController {
                         $this->viewBuilder()->setOption('serialize', ['errors']);
                         return;
                     }
-                } else if ($action == 'delete'){
+                } else if ($action == 'delete') {
                     $Agentconfig = $AgentconfigsTable->get($id);
                     if ($AgentconfigsTable->delete($Agentconfig)) {
                         $this->set('success', true);
@@ -229,8 +229,8 @@ class AgentconnectorController extends AppController {
         /** @var AgenthostscacheTable $AgenthostscacheTable */
         $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
 
-        if($this->request->is('post') && $id !== null){
-            if($AgenthostscacheTable->existsById($id)){
+        if ($this->request->is('post') && $id !== null) {
+            if ($AgenthostscacheTable->existsById($id)) {
                 $Agenthostscache = $AgenthostscacheTable->get($id);
                 if ($AgenthostscacheTable->delete($Agenthostscache)) {
                     $this->set('success', true);
@@ -472,44 +472,6 @@ class AgentconnectorController extends AppController {
         if (!$this->isAngularJsRequest()) {
             return;
         }
-    }
-
-    /**
-     * @param null $uuid
-     * @throws MissingParameterExceptions
-     */
-    public function getLatestCheckDataByHostUuid($uuid = null) {
-        if (!$this->isJsonRequest()) {
-            //Only ship HTML Template
-            return;
-        }
-
-        if ($uuid === null) {
-            throw new MissingParameterExceptions('Host uuid is missing!');
-        }
-
-        /** @var AgenthostscacheTable $AgenthostscacheTable */
-        $AgenthostscacheTable = TableRegistry::getTableLocator()->get('Agenthostscache');
-
-        $this->set('checkdata', '');
-
-        if ($AgenthostscacheTable->existsByHostuuid($uuid)) {
-            $Agenthostscache = $AgenthostscacheTable->getByHostUuid($uuid);
-
-            if ($Agenthostscache->checkdata !== null && $Agenthostscache->checkdata !== '') {
-                $contentArray = json_decode($Agenthostscache->checkdata, true);
-                if ($contentArray['processes']) {
-                    foreach ($contentArray['processes'] as $key => $val) {
-                        if (!empty($contentArray['processes'][$key]['cmdline'])) {
-                            $contentArray['processes'][$key]['cmdline'] = implode(' ', $contentArray['processes'][$key]['cmdline']);
-                        }
-                    }
-                }
-
-                $this->set('checkdata', $contentArray);
-            }
-        }
-        $this->viewBuilder()->setOption('serialize', ['checkdata']);
     }
 
     /**

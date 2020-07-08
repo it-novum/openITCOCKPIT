@@ -120,7 +120,7 @@
                     <?php endif; ?>
                 </td>
 
-                <td><a ui-sref="HostsBrowser({id: agent.Agentconfig.host.id})">{{agent.Agentconfig.host.name}}</a></td>
+                <td><a ui-sref="HostsBrowser({id: agent.Host.id})">{{agent.Host.name}}</a></td>
 
                 <td>{{agent.Agentconfig.port}}
                 </td>

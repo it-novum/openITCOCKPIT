@@ -320,6 +320,7 @@ mysql --defaults-extra-file=${INIFILE} -e "TRUNCATE TABLE changelogs;"
 mysql --defaults-extra-file=${INIFILE} -e "TRUNCATE TABLE changelogs_to_containers;"
 
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = REPLACE(command_line, '/usr/share/openitcockpit/app/Console/cake', '/opt/openitc/frontend/bin/cake');"
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = REPLACE(command_line, 'EventcorrelationModule.evc_plugin \"\$HOSTNAME\$\"', 'EventcorrelationModule.evc_plugin --uuid \"\$HOSTNAME\$\"');"
 
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-', 'fas fa-');"
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-exchange', 'fa-exchange-alt');"
