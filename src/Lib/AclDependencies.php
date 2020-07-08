@@ -139,6 +139,10 @@ class AclDependencies {
             ->allow('Angular', 'popover_graph');
 
         $this
+            ->allow('Agentconnector', 'certificate')
+            ->allow('Agentconnector', 'updateCheckdata');
+
+        $this
             ->allow('Automaps', 'icon')
             ->allow('Automaps', 'loadContainers');
 
@@ -250,8 +254,14 @@ class AclDependencies {
 
 
         $this
-            ->dependency('Agentconfigs', 'scan', 'Agentconfigs', 'config')
-            ->dependency('Agentconfigs', 'scan', 'Agentconfigs', 'createService');
+            ->dependency('Agentconnector', 'config', 'Agentconnector', 'createServices')
+            ->dependency('Agentconnector', 'config', 'Agentconnector', 'getServicesToCreateByHostUuid')
+            ->dependency('Agentconnector', 'config', 'Agentconfigs', 'config')
+            ->dependency('Agentconnector', 'config', 'Agentconfigs', 'add')
+            ->dependency('Agentconnector', 'config', 'Agentconfigs', 'edit')
+            ->dependency('Agentconnector', 'untrustedAgents', 'Agentconnector', 'changetrust')
+            ->dependency('Agentconnector', 'untrustedAgents', 'Agentconnector', 'delete')
+            ->dependency('Agentconnector', 'pushCache', 'Agentconnector', 'downloadPushedCheckdata');
 
 
         $this

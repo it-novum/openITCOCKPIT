@@ -86,7 +86,7 @@
                     <?php endif; ?>
                 </td>
                 <td>
-                    <a ui-sref="HostsBrowser({id: agent.Agenthostscache.host.id})">{{agent.Agenthostscache.host.name}}</a>
+                    <a ui-sref="HostsBrowser({id: agent.Host.id})">{{agent.Host.name}}</a>
                 </td>
                 <td>{{agent.Agenthostscache.modified}}
                 </td>

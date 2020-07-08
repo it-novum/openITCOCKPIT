@@ -79,7 +79,7 @@ angular.module('openITCOCKPIT').directive('pushCacheDirective', function($http, 
                 for(var key in $scope.pushCache){
                     for(var id in selectedObjects){
                         if(parseInt(id) === $scope.pushCache[key].Agenthostscache.id){
-                            objects[id] = $scope.pushCache[key].Agenthostscache.host.name;
+                            objects[id] = $scope.pushCache[key].Host.name;
                         }
                     }
                 }
@@ -88,7 +88,7 @@ angular.module('openITCOCKPIT').directive('pushCacheDirective', function($http, 
 
             $scope.getObjectForDelete = function(agent){
                 var object = {};
-                object[agent.Agenthostscache.id] = agent.Agenthostscache.host.name;
+                object[agent.Agenthostscache.id] = agent.Host.name;
                 return object;
             };
 
