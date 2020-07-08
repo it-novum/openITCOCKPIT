@@ -32,11 +32,11 @@
     <section>
         <div class="bg-color-white padding-top-10 padding-left-10 padding-bottom-10">
             <header>
-                <h4 class="bold txt-color-blueDark">
-                    <i class="fa fa-location-arrow txt-color-blueDark"></i>
+                <h5 class="text-primary">
+                    <i class="fa fa-desktop text-primary"></i>
                     <a ng-show="hasBrowserRight" ui-sref="HostsBrowser({id: host.hostId})">{{host.title}}</a>
                     <div class="display-inline" ng-hide="hasBrowserRight">{{host.title}}</div>
-                </h4>
+                </h5>
                 <div class="col-md-12 no-padding">
                     <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
                 </div>
