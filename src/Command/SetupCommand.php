@@ -315,7 +315,9 @@ class SetupCommand extends Command {
     public function askHostname() {
         //Try to auto-detect with fqdn
         $hostname = gethostbyaddr(gethostbyname(gethostname()));
-        if (strlen($hostname) === 0) {
+        if ($hostname === false) {
+            $hostname = 'localhost';
+        } else if (strlen($hostname) === 0) {
             $hostname = php_uname('n');
         }
 
