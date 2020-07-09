@@ -69,14 +69,7 @@ NagiosModule.uninstall() {
 
 NagiosModule.finish() {
     if [ $(system.moduleSrcDirExists $(NagiosModule.property name)) == 1 ]; then
-        # Nagios/Naemon is aliased, so it works for both
-        systemctl daemon-reload
-        systemctl enable nagios.service
-        if [ -f "/opt/openitc/etc/nagios/nagios.cfg" ]; then
-            if systemctl is-active --quiet nagios.service; then
-                echo "Restart service: nagios.service"
-                systemctl restart nagios.service
-            fi
-        fi
+        # insert custom code
+        echo "I run after every openitcockpit-update" >/dev/null
     fi
 }
