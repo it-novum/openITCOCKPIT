@@ -57,7 +57,7 @@
         <div class="dropdown-item ng-scope no-padding"
              ng-if="systemHealth.state == 'warning' || systemHealth.state == 'critical'">
             <a ui-sref="AdministratorsDebug" class="d-flex align-items-center" href="#!/Administrators/debug">
-                <ul class="padding-5 list-unstyled system-health-item notification-message fs-sm">
+                <ul class="padding-5 list-unstyled system-health-item notification-message fs-sm" style="width: 100%;">
                     <li ng-if="!systemHealth.isNagiosRunning">
                         <span>
                             <div class="padding-5">
@@ -275,7 +275,7 @@
         <!-- end ngIf: systemHealth.state == 'warning' || systemHealth.state == 'critical' -->
         <!-- ngIf: systemHealth.state === 'unknown' -->
         <div class="dropdown-item ng-scope no-padding" ng-if="systemHealth.state === 'unknown'">
-            <ul class="padding-5 list-unstyled system-health-item notification-message fs-sm">
+            <ul class="padding-5 list-unstyled system-health-item notification-message fs-sm" style="width: 100%;">
                 <li ng-if="!systemHealth.isNagiosRunning">
                     <span>
                         <div class="padding-5">
