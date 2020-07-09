@@ -253,7 +253,7 @@
                                                class="custom-control-input"
                                                ng-true-value="1"
                                                ng-false-value="0"
-                                               id="active_checks_enabled"
+                                               id="activeChecksEnabled"
                                                ng-model="post.Servicetemplate.active_checks_enabled">
                                         <label class="custom-control-label" for="activeChecksEnabled">
                                             <?php echo __('Enable active checks'); ?>
