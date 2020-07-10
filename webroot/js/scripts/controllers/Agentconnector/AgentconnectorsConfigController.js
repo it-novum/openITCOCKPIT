@@ -28,6 +28,7 @@ angular.module('openITCOCKPIT')
             $scope.finished = false;
             $scope.agentconfigId = null;
             $scope.remoteAgentConfig = null;
+            $scope.customchecksConfigPath = '';
 
             $scope.agentconfig = {
                 address: '0.0.0.0',
@@ -100,6 +101,7 @@ angular.module('openITCOCKPIT')
             $scope.serviceQueue = [];
             $scope.servicesToCreate = false;
             $scope.servicesToCreateError = '';
+            $scope.couldBePullModeWithError = false;
             $scope.configTemplate = '';
             $scope.configTemplateCustomchecks = '';
             $scope.host = {
@@ -186,8 +188,8 @@ angular.module('openITCOCKPIT')
                                 value = 'C:\\Program Files\\it-novum\\openitcockpit-agent\\customchecks.cnf';
                                 break;
                         }
-
                     }
+                    $scope.customchecksConfigPath = value;
                 }
                 tmpDefaultTemplate += option + ' = ' + value + '\n';
             }
@@ -407,9 +409,11 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.runRemoteConfigUpdate = function(){
+            var config = JSON.parse(JSON.stringify($scope.agentconfig));
+            config.customchecks = $scope.customchecksConfigPath;
             $http.post('/agentconnector/sendNewAgentConfig/' + $scope.host.uuid + '.json?angular=true',
                 {
-                    config: $scope.agentconfig
+                    config: config
                 }
             ).then(function(result){
                 if(result.data.success && (result.data.success === true || result.data.success === 'true')){
@@ -432,6 +436,9 @@ angular.module('openITCOCKPIT')
             if($scope.host.uuid !== 'undefined' && $scope.host.uuid !== ''){
                 $http.get('/agentconnector/getServicesToCreateByHostUuid/' + $scope.host.uuid + '.json').then(function(result){
                     $scope.showLoadServicesToCreate = false;
+                    if(result.data.system && result.data.system !== ''){
+                        $scope.changeOs(result.data.system);
+                    }
                     if(result.data.servicesToCreate && result.data.servicesToCreate !== ''){
                         $scope.stopServicesToCreateRequestInterval = true;
                         $scope.servicesToCreateError = '';
@@ -454,6 +461,13 @@ angular.module('openITCOCKPIT')
                                 var tmpVal = $scope.remoteAgentConfig.config[option];
                                 if(option.includes('interval') || option === 'port' || option === 'alfresco-jmxport'){
                                     tmpVal = Number.parseInt(tmpVal);
+                                }else if(option.includes('customchecks')){
+                                    if($scope.agentconfig[option] !== ""){
+                                        tmpVal = true;
+                                        $scope.customchecksConfigPath = $scope.agentconfig[option];
+                                    }else{
+                                        tmpVal = false;
+                                    }
                                 }else if(tmpVal === 'true'){
                                     tmpVal = true;
                                 }else if(tmpVal === 'false'){
@@ -463,6 +477,9 @@ angular.module('openITCOCKPIT')
                             }
                         }
                     }else if(result.data.error && result.data.error !== ''){
+                        if(result.data.mode && result.data.mode === "could-be-pull"){
+                            $scope.couldBePullModeWithError = true;
+                        }
                         $scope.servicesToCreateError = result.data.error;
                     }
 
