@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2020-03-09 10:19+0100\n"
+"POT-Creation-Date: 2020-07-10 14:02+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -16,11 +16,13 @@ msgstr ""
 
 #: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:137
 #: src/Command/NagiosNotificationCommand.php:150
+#: src/Command/NagiosXmlNotificationCommand.php:150
 #: src/Command/PushoverNotificationCommand.php:98
 #: src/Command/SendPushNotificationCommand.php:66
 #: src/Command/SmsNotificationCommand.php:69
 #: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:137
 #: src/Command/NagiosNotificationCommand.php:150
+#: src/Command/NagiosXmlNotificationCommand.php:150
 #: src/Command/PushoverNotificationCommand.php:98
 #: src/Command/SendPushNotificationCommand.php:66
 #: src/Command/SmsNotificationCommand.php:69
@@ -71,6 +73,7 @@ msgstr "commentaire d'accusé de réception hôte => $NOTIFICATIONCOMMENT$"
 
 #: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:145
 #: src/Command/NagiosNotificationCommand.php:170
+#: src/Command/NagiosXmlNotificationCommand.php:169
 msgid "Disable emojis in subject"
 msgstr ""
 
@@ -98,75 +101,172 @@ msgstr ""
 msgid "All cronjobs will be forced to execute!"
 msgstr "Tous les cronjobs seront exécuté !"
 
+#: src/Command/DebugCommand.php:67
+msgid "Tail and parse monitoring logfile"
+msgstr ""
+
+#: src/Command/DebugCommand.php:68
+msgid "Tailf and parse monitoring logfile"
+msgstr ""
+
+#: src/Command/DebugCommand.php:69
+msgid "Read and translate from stdin. Example: cat file.cfg | oitc debug -s"
+msgstr ""
+
+#: src/Command/DebugCommand.php:113
+msgid "[T]ail and parse monitoring log file"
+msgstr ""
+
+#: src/Command/DebugCommand.php:114
+msgid "[TF] Tail -f and parse monitoring log file"
+msgstr ""
+
+#: src/Command/DebugCommand.php:115
+msgid "[H] Debug host configuratgion files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:116
+msgid "[HT] Debug host template configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:117
+msgid "[S] Debug service configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:118
+msgid "[ST] Debug service template configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:119
+msgid "[TP] Debug timeperiod configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:120
+msgid "[CM] Debug command configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:121
+msgid "[C] Debug contact configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:122
+msgid "[CG] Debug contact group configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:123
+msgid "[HE] Debug host escalation configuration files"
+msgstr ""
+
+#: src/Command/DebugCommand.php:124
+msgid "[UUID] Search object by UUID"
+msgstr ""
+
+#: src/Command/DebugCommand.php:125
+msgid "[Q]uit"
+msgstr ""
+
+#: src/Command/DebugCommand.php:127
+msgid "What would you like to do?"
+msgstr ""
+
+#: src/Command/DebugCommand.php:169
+msgid "You have made an invalid selection. Please choose by entering T or B."
+msgstr ""
+
+#: src/Command/DebugCommand.php:177
+msgid "Hopefully i was helpful"
+msgstr ""
+
+#: src/Command/DebugCommand.php:178
+msgid "Thanks for using me, bye"
+msgstr ""
+
 #: src/Command/NagiosNotificationCommand.php:151
+#: src/Command/NagiosXmlNotificationCommand.php:151
 #: src/Command/SmsNotificationCommand.php:70
 msgid "Notification type of monitoring engine"
 msgstr "Type de notification du moteur de surveillance"
 
 #: src/Command/NagiosNotificationCommand.php:152
+#: src/Command/NagiosXmlNotificationCommand.php:152
 #: src/Command/SmsNotificationCommand.php:72
 msgid "Host uuid you want to send a notification"
 msgstr "Uuid de l'hôte auquel vous souhaitez envoyer une notification"
 
 #: src/Command/NagiosNotificationCommand.php:153
+#: src/Command/NagiosXmlNotificationCommand.php:153
 msgid "Host description you want to send a notification"
 msgstr "Description de l'hôte auquel vous souhaitez envoyer une notification"
 
 #: src/Command/NagiosNotificationCommand.php:154
+#: src/Command/NagiosXmlNotificationCommand.php:154
 msgid "current host state"
 msgstr "état de l'hôte actuel"
 
 #: src/Command/NagiosNotificationCommand.php:155
+#: src/Command/NagiosXmlNotificationCommand.php:155
 msgid "host address"
 msgstr "adresse de l'hôte"
 
 #: src/Command/NagiosNotificationCommand.php:156
+#: src/Command/NagiosXmlNotificationCommand.php:156
 msgid "host output"
 msgstr "sortie de l'hôte"
 
 #: src/Command/NagiosNotificationCommand.php:157
+#: src/Command/NagiosXmlNotificationCommand.php:157
 msgid "host long output"
 msgstr "sortie longue hôte"
 
 #: src/Command/NagiosNotificationCommand.php:158
+#: src/Command/NagiosXmlNotificationCommand.php:158
 msgid "host acknowledgement author"
 msgstr "auteur accusé de réception"
 
 #: src/Command/NagiosNotificationCommand.php:159
+#: src/Command/NagiosXmlNotificationCommand.php:159
 msgid "host acknowledgement comment"
 msgstr "commentaire d'accusé de réception"
 
 #: src/Command/NagiosNotificationCommand.php:160
+#: src/Command/NagiosXmlNotificationCommand.php:160
 #: src/Command/SmsNotificationCommand.php:73
 msgid "recivers mail address"
 msgstr "adresse mail du receveur"
 
 #: src/Command/NagiosNotificationCommand.php:161
+#: src/Command/NagiosXmlNotificationCommand.php:161
 msgid "human name of the contact"
 msgstr "nom humain du contact"
 
 #: src/Command/NagiosNotificationCommand.php:162
+#: src/Command/NagiosXmlNotificationCommand.php:162
 #: src/Command/SmsNotificationCommand.php:74
 msgid "Service uuid you want to notify"
 msgstr "Uuid du service que vous souhaitez notifier"
 
 #: src/Command/NagiosNotificationCommand.php:163
+#: src/Command/NagiosXmlNotificationCommand.php:163
 msgid "service state"
 msgstr "état du service"
 
 #: src/Command/NagiosNotificationCommand.php:164
+#: src/Command/NagiosXmlNotificationCommand.php:164
 msgid "service output"
 msgstr "sortie de service"
 
 #: src/Command/NagiosNotificationCommand.php:165
+#: src/Command/NagiosXmlNotificationCommand.php:165
 msgid "service long output"
 msgstr "sortie longue du service"
 
 #: src/Command/NagiosNotificationCommand.php:166
+#: src/Command/NagiosXmlNotificationCommand.php:166
 msgid "service acknowledgement author"
 msgstr "auteur de l'accusé de réception de service"
 
 #: src/Command/NagiosNotificationCommand.php:167
+#: src/Command/NagiosXmlNotificationCommand.php:167
 msgid "service acknowledgement comment"
 msgstr "commentaire d'accusé de réception de service"
 
@@ -175,10 +275,12 @@ msgid "Email type for notifications [text, html, both]"
 msgstr "Type de courrier électronique pour les notifications [texte, html, les deux]"
 
 #: src/Command/NagiosNotificationCommand.php:169
+#: src/Command/NagiosXmlNotificationCommand.php:168
 msgid "disable email attachments"
 msgstr ""
 
 #: src/Command/NagiosNotificationCommand.php:171
+#: src/Command/NagiosXmlNotificationCommand.php:170
 msgid "E-Mail layout/template that should be used"
 msgstr ""
 
@@ -192,6 +294,18 @@ msgstr "Votre clé d'utilisateur Pushover => $_CONTACTPUSHOVERUSER$"
 
 #: src/Command/PushoverNotificationCommand.php:108
 msgid "If set, connection will be established using the proxy server defined in openITCOCKPIT interface."
+msgstr ""
+
+#: src/Command/QueryLogCommand.php:81
+msgid "Pretty print sql queries"
+msgstr ""
+
+#: src/Command/QueryLogCommand.php:82
+msgid "Hide (ARO/ACO) permission queries"
+msgstr ""
+
+#: src/Command/QueryLogCommand.php:83
+msgid "Start a WebSocket server to make the query log accessible from openITCOCKPIT web interface"
 msgstr ""
 
 #: src/Command/SendPushNotificationCommand.php:74
@@ -238,27 +352,27 @@ msgstr "Veuillez saisir un mot de passe pour vous connecter."
 msgid "Please confirm your password"
 msgstr "Veuillez confirmer votre mot de passe"
 
-#: src/Command/SetupCommand.php:324
+#: src/Command/SetupCommand.php:326
 msgid "System Address or FQDN?"
 msgstr ""
 
-#: src/Command/SetupCommand.php:358
+#: src/Command/SetupCommand.php:360
 msgid "Please enter a sender email address"
 msgstr ""
 
-#: src/Command/SetupCommand.php:372
+#: src/Command/SetupCommand.php:374
 msgid "Please enter the address of your mail server (e.g. mail.example.org)"
 msgstr "Veuillez saisir l'adresse de votre serveur de messagerie (par exemple, mail.example.org)"
 
-#: src/Command/SetupCommand.php:384
+#: src/Command/SetupCommand.php:386
 msgid "Please enter the port of your mail server"
 msgstr "Veuillez entrer le port de votre serveur de messagerie"
 
-#: src/Command/SetupCommand.php:398
+#: src/Command/SetupCommand.php:400
 msgid "If required, set a username, or leave it blank if you don't need a user"
 msgstr ""
 
-#: src/Command/SetupCommand.php:408
+#: src/Command/SetupCommand.php:410
 msgid "Please enter your password, or leave it blank if you don't need a password"
 msgstr "Veuillez entrer votre mot de passe ou laissez le champ vide si vous n'avez pas besoin de mot de passe."
 
@@ -269,4 +383,50 @@ msgstr "Adresse IP de la passerelle SMS"
 #: src/Command/SmsNotificationCommand.php:71
 msgid "Transport method for example NRPE"
 msgstr "Méthode de transport par exemple NRPE"
+
+#: src/Lib/DebugConfigNagiosTask.php:273
+#: src/Lib/DebugConfigNagiosTask.php:278
+msgid "Please enter the name of the "
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:284
+msgid "No name field for "
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:294
+msgid "I found "
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:296
+msgid "Please select one "
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:307
+msgid "Your choice please"
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:315
+msgid " not found"
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:333
+msgid "Please enter your UUID"
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:340
+msgid "No result for given UUID"
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:441
+#: src/Lib/DebugConfigNagiosTask.php:523
+msgid "Notice: This is not the real nagios configuration file. This is a human readable version of the config."
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:446
+msgid "<error>File not found! ("
+msgstr ""
+
+#: src/Lib/DebugConfigNagiosTask.php:534
+msgid "<error>Folder %s is empty!</error>"
+msgstr ""
 
