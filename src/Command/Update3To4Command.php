@@ -1482,9 +1482,8 @@ class Update3To4Command extends Command {
             $settings = $EventcorrelationSettingsTable->find()->first();
             if ($settings !== null) {
                 $settings->set('monitoring_system', 'statusengine');
+                $EventcorrelationSettingsTable->save($settings);
             }
-
-            $EventcorrelationSettingsTable->save($settings);
         }
     }
 }
