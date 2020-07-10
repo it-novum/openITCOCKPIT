@@ -284,5 +284,35 @@ if [ $isAptWorking == 1 ]; then
 fi
 
 print_results
+
+if [ "$VERSION_CODENAME" == "stretch" ]; then
+
+    openitcockpit_upd=$(apt-mark showmanual | grep openitcockpit | grep -v -e openitcockpit-message -e openitcockpit-statusengine-naemon -e openitcockpit-module-nrpe -e openitcockpit-module-mk | xargs echo)
+    openitcockpit_rem=$(while read pkg; do echo "$pkg-"; done< <(dpkg -l | awk '$2 ~ /openitcockpit-/ {print $2} $2 ~ /phpnsta/' | grep -e 'openitcockpit-wkhtmltopdf' -e 'phpnsta') | xargs echo)
+    php_upd=$(while read pkg; do echo "$pkg-"; if [ "$pkg" != "php7.0-mcrypt" ]; then echo "$pkg"|sed 's/php7.0/php7.3/'; fi; done< <(dpkg -l | awk '$2 ~ /php7.0/ {print $2}') | xargs echo)
+    always="wkhtmltox"
+
+    if [ ! -z "$(dpkg -l | awk '$2 ~ /openitcockpit-module-distribute/')" ]; then
+        always="$always openitcockpit-nsta"
+    fi
+
+    echo "${Yellow}"
+    echo "###############################################################################"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "We recommend a combined distribution and openITCOCKPIT upgrade"
+    echo "You can run the upgrade with the following commands:"
+    echo ""
+    echo "# Update sources.list to Debian 10"
+    echo "sed -i 's/stretch/buster/g' /etc/apt/sources.list"
+    echo "# Add openITCOCKPIT 4 sources"
+    echo "echo 'deb https://packages.openitcockpit.io/openitcockpit/buster/stable buster main' > /etc/apt/sources.list.d/openitcockpit.list"
+    echo "curl https://packages.openitcockpit.io/repokey.txt | apt-key add -"
+    echo "# Upgrade the distribution and openITCOCKPIT"
+    echo "apt-get update"
+    echo "apt-get dist-upgrade $php_upd $openitcockpit_upd $openitcockpit_rem $always"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "###############################################################################"
+fi
+
 tput sgr0
 
