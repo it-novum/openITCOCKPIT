@@ -91,7 +91,7 @@
                 </th>
                 <th class="no-sort" ng-click="orderBy('Agentconfigs.insecure')">
                     <i class="fa" ng-class="getSortClass('Agentconfigs.insecure')"></i>
-                    <?php echo __('Allow plaintext connections (http)'); ?>
+                    <?php echo __('Allow insecure (https) connections'); ?>
                 </th>
                 <th class="no-sort" ng-click="orderBy('Agentconfigs.proxy')">
                     <i class="fa" ng-class="getSortClass('Agentconfigs.proxy')"></i>
