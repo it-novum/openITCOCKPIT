@@ -5,7 +5,8 @@ angular.module('openITCOCKPIT')
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
 
         $scope.showFilter = false;
-        $scope.navSelection = 'untrustedAgents';
+        $scope.navSelection = QueryStringService.getStateValue($stateParams, 'selection', 'untrustedAgents');
+        console.log($scope.navSelection);
         $scope.lastLoadDate = Date.now();
 
         $scope.load = function(){

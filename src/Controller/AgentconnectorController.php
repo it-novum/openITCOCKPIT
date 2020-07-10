@@ -510,6 +510,7 @@ class AgentconnectorController extends AppController {
 
         $this->set('servicesToCreate', '');
         $this->set('config', '');
+        $this->set('system', 'windows');
         $this->set('mode', '');
         $this->set('error', '');
 
@@ -541,16 +542,20 @@ class AgentconnectorController extends AppController {
                 if (strpos($errorMessage, 'SSL routines:ssl3_get_record:wrong version number') !== false) {
                     $HttpLoader->updateAgentProtocol(!boolval($agentconfig['use_https']));
                 }
+                $this->set('mode', 'could-be-pull');
                 $this->set('error', $errorMessage);
             }
         }
 
         if (isset($agentJsonOutput) && !empty($agentJsonOutput)) {
+            if (isset($agentJsonOutput['agent']) && isset($agentJsonOutput['agent']['system']) && trim($agentJsonOutput['agent']['system']) != '') {
+                $this->set('system', strtolower(trim($agentJsonOutput['agent']['system'])));
+            }
             $AgentServicesToCreate = new AgentServicesToCreate($agentJsonOutput, $AgentchecksTable->getAgentchecksForMapping(), $hostId, $services);
 
             $this->set('servicesToCreate', $AgentServicesToCreate->getServicesForFrontend());
         }
-        $this->viewBuilder()->setOption('serialize', ['servicesToCreate', 'mode', 'config', 'error']);
+        $this->viewBuilder()->setOption('serialize', ['servicesToCreate', 'mode', 'config', 'system', 'error']);
     }
 
     /**

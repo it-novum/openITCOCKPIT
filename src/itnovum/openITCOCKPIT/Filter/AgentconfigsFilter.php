@@ -35,6 +35,7 @@ class AgentconfigsFilter extends Filter {
             'like' => [
                 'Hosts.name',
                 'Hosts.address',
+                'Hosts.uuid',
             ]
         ];
 

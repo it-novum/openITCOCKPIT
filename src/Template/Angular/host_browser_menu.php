@@ -144,7 +144,7 @@
                             <?php echo __('Allocate service template group'); ?>
                         </a>
                     <?php endif; ?>
-                    <?php if ($this->Acl->hasPermission('config', 'agentconnector', '')): ?>
+                    <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
                         <a ui-sref="AgentconnectorsConfig({hostId: config.hostId})"
                            class="dropdown-item">
                             <i class="fa fa-user-secret"></i>

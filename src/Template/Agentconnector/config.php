@@ -194,7 +194,7 @@
                             </div>
                         </div>
 
-                        <div class="row" ng-if="!pullMode && !pushMode && host.id && servicesToCreate">
+                        <div class="row" ng-if="!pullMode && !pushMode && host.id && servicesToCreate && !showLoadServicesToCreate">
                             <div class="col-12">
                                 <div class="alert border-faded bg-transparent text-secondary margin-top-20">
                                     <div class="d-flex align-items-center">
@@ -214,6 +214,34 @@
                                         <button class="btn btn-outline-success btn-sm btn-w-m waves-effect waves-themed"
                                                 ng-click="skipConfigurationGeneration()">
                                             <?= __('Create new services'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" ng-if="!pullMode && !pushMode && host.id && !servicesToCreate && !showLoadServicesToCreate && servicesToCreateError != ''">
+                            <div class="col-12">
+                                <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                    <div class="d-flex align-items-center">
+                                        <div class="alert-icon">
+                                            <span class="icon-stack icon-stack-md">
+                                                <i class="base-7 icon-stack-3x color-warning-600"></i>
+                                                <i class="fas fa-warning icon-stack-1x text-white"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <span class="h5 color-warning-600">
+                                                <?= __('openITCOCKPIT Monitoring Agent already configured'); ?>
+                                            </span>
+                                            <br>
+                                            <?= __('It seems the openITCOCKPIT Agent has been configured, but it´s not possible to get current data from it.'); ?>
+                                            <br>
+                                            <?= __('A misconfiguration may have occurred. Please check this manually or reconfigure it.'); ?>
+                                        </div>
+                                        <button class="btn btn-outline-primary btn-sm btn-w-m waves-effect waves-themed"
+                                                ui-sref="AgentconnectorsAgent({hostuuid: host.uuid, selection: couldBePullModeWithError ? 'pullConfigurations' : null})">
+                                            <?= __('Open agent overview'); ?>
                                         </button>
                                     </div>
                                 </div>
@@ -337,34 +365,34 @@
                             <div class="row" ng-if="(pullMode || pushMode) && !installed && !configured">
                                 <div class="col-12">
 
-                                    <div class="row">
+                                    <div class="row" ng-if="!servicesToCreate">
                                         <div class="col-12">
                                             <div class="alert border-faded bg-transparent text-secondary margin-top-20">
                                                 <div class="d-flex align-items-center">
                                                     <div class="alert-icon">
-                                                                <span class="icon-stack icon-stack-md">
-                                                                    <i class="base-7 icon-stack-3x color-info-600"></i>
-                                                                    <i class="fa fa-user-secret icon-stack-1x text-white"></i>
-                                                                </span>
+                                                        <span class="icon-stack icon-stack-md">
+                                                            <i class="base-7 icon-stack-3x color-info-600"></i>
+                                                            <i class="fa fa-user-secret icon-stack-1x text-white"></i>
+                                                        </span>
                                                     </div>
                                                     <div class="flex-1">
-                                                                <span class="h5 color-info-600">
-                                                                    <?= __('openITCOCKPIT Monitoring Agent not installed yet?'); ?>
-                                                                </span>
+                                                        <span class="h5 color-info-600">
+                                                            <?= __('openITCOCKPIT Monitoring Agent not installed yet?'); ?>
+                                                        </span>
                                                         <br>
                                                         <?= __('No problem! You will get detailed installation instructions in the next step.'); ?>
 
                                                         <span ng-show="pullMode">
-                                                                    <br>
-                                                                    <br>
-                                                                    <b><?= __('You selected Pull Mode. If you are new to openITCOCKPIT we recommend to continue with the default settings.'); ?></b>
-                                                                </span>
+                                                            <br>
+                                                            <br>
+                                                            <b><?= __('You selected Pull Mode. If you are new to openITCOCKPIT we recommend to continue with the default settings.'); ?></b>
+                                                        </span>
 
                                                         <span ng-show="pushMode">
-                                                                    <br>
-                                                                    <br>
-                                                                    <b><?= __('You selected Push Mode. It is required to set the openITCOCKPIT Server Address and an API Key.'); ?></b>
-                                                                </span>
+                                                            <br>
+                                                            <br>
+                                                            <b><?= __('You selected Push Mode. It is required to set the openITCOCKPIT Server Address and an API Key.'); ?></b>
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>

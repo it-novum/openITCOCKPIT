@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('pushCacheDirective', function($http, $filter, $timeout, $state, $stateParams, NotyService, MassChangeService, SortService){
+angular.module('openITCOCKPIT').directive('pushCacheDirective', function($http, $filter, $timeout, $state, $stateParams, NotyService, MassChangeService, SortService, QueryStringService){
     return {
         restrict: 'E',
         templateUrl: '/agentconnector/pushCache.html',
@@ -12,7 +12,7 @@ angular.module('openITCOCKPIT').directive('pushCacheDirective', function($http, 
                 $scope.filter = {
                     Host: {
                         name: '',
-                        address: ''
+                        uuid: QueryStringService.getStateValue($stateParams, 'hostuuid', ''),
                     }
                 };
             };
@@ -33,7 +33,8 @@ angular.module('openITCOCKPIT').directive('pushCacheDirective', function($http, 
                     //'sort': SortService.getSort(),
                     'sort': 'Agenthostscache.id',
                     'direction': SortService.getDirection(),
-                    'filter[Hosts.name]': $scope.filter.Host.name
+                    'filter[Hosts.name]': $scope.filter.Host.name,
+                    'filter[Hosts.uuid]': $scope.filter.Host.uuid,
                 };
 
                 $http.get('/agentconnector/pushCache.json', {

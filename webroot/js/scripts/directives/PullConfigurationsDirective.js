@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('pullConfigurationsDirective', function($http, $filter, $timeout, $state, $stateParams, NotyService, MassChangeService, SortService){
+angular.module('openITCOCKPIT').directive('pullConfigurationsDirective', function($http, $filter, $timeout, $state, $stateParams, NotyService, MassChangeService, SortService, QueryStringService){
     return {
         restrict: 'E',
         templateUrl: '/agentconnector/pullConfigurations.html',
@@ -26,7 +26,8 @@ angular.module('openITCOCKPIT').directive('pullConfigurationsDirective', functio
                 $scope.filter = {
                     Host: {
                         name: '',
-                        address: ''
+                        address: '',
+                        uuid: QueryStringService.getStateValue($stateParams, 'hostuuid', ''),
                     }
                 };
             };
@@ -49,6 +50,7 @@ angular.module('openITCOCKPIT').directive('pullConfigurationsDirective', functio
                     'direction': SortService.getDirection(),
                     'filter[Hosts.name]': $scope.filter.Host.name,
                     'filter[Hosts.address]': $scope.filter.Host.address,
+                    'filter[Hosts.uuid]': $scope.filter.Host.uuid,
                 };
 
                 $http.get('/agentconnector/pullConfigurations.json', {
@@ -104,7 +106,7 @@ angular.module('openITCOCKPIT').directive('pullConfigurationsDirective', functio
                         NotyService.genericSuccess();
                         $scope.load();
                         $('#editAgentPullConfiguration').modal('hide');
-                    } else {
+                    }else{
                         NotyService.genericError();
                         if(result.data.errors){
                             $scope.errors = result.data.errors;

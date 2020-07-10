@@ -915,12 +915,14 @@
                                         <?php echo __('Create another'); ?>
                                     </label>
 
-                                    <div class="btn-group" ng-if="!data.createAnother">
-                                        <a onclick="return false;" ng-click="submit('AgentconnectorsConfig')"
-                                           class="btn btn-primary waves-effect waves-themed text-white">
-                                            <?php echo __('Create host and setup agent'); ?>
-                                        </a>
-                                    </div>
+                                    <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
+                                        <div class="btn-group" ng-if="!data.createAnother">
+                                            <a onclick="return false;" ng-click="submit('AgentconnectorsConfig')"
+                                               class="btn btn-primary waves-effect waves-themed text-white">
+                                                <?php echo __('Create host and setup agent'); ?>
+                                            </a>
+                                        </div>
+                                    <?php endif; ?>
 
                                     <div class="btn-group">
                                         <button type="submit" class="btn btn-primary waves-effect waves-themed">
@@ -939,7 +941,7 @@
                                                     <?php echo __('Save and create service'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('add', 'agentconnector')): ?>
+                                            <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
                                                 <a class="dropdown-item" href="javascript:void(0);"
                                                    ng-click="submit('AgentconnectorsConfig')"
                                                    ng-if="!data.createAnother">

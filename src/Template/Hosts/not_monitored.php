@@ -297,7 +297,7 @@
                                                     <?php echo __('Append to host group'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('config', 'agentconnector', '')): ?>
+                                            <?php if ($this->Acl->hasPermission('config', 'agentconnector')): ?>
                                                 <a ui-sref="AgentconnectorsConfig({hostId: host.Host.id})"
                                                    class="dropdown-item">
                                                     <i class="fa fa-user-secret"></i>

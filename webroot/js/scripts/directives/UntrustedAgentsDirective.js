@@ -10,7 +10,7 @@ angular.module('openITCOCKPIT').directive('untrustedAgentsDirective', function($
         controller: function($scope){
             var defaultFilter = function(){
                 $scope.filter = {
-                    hostuuid: QueryStringService.getValue('hostuuid', ''),
+                    hostuuid: QueryStringService.getStateValue($stateParams, 'hostuuid', ''),
                     remote_addr: ''
                 };
             }
