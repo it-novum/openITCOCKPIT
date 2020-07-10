@@ -36,6 +36,8 @@ isAptWorking=0
 satellitesCount=0
 satellitesEntries=""
 
+. /etc/os-release
+
 ############# helping methods
 
 if [[ "$(id -u)" != "0" && $testing == 0 ]]; then
