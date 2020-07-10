@@ -6732,52 +6732,52 @@ msgstr "Nächster"
 
 #: src/Template/Agentconnector/config.php:152
 msgid "I have installed the Agent"
-msgstr ""
+msgstr "Ich habe den Agenten installiert"
 
 #: src/Template/Agentconnector/config.php:161
 msgid "Create Services"
-msgstr ""
+msgstr "Services erstellen"
 
 #: src/Template/Agentconnector/config.php:184
 msgid "Checking if openITCOCKPIT Monitoring Agent is already configured..."
-msgstr ""
+msgstr "Überprüfen, ob der openITCOCKPIT Monitoring Agent bereits konfiguriert ist..."
 
 #: src/Template/Agentconnector/config.php:209
 #: src/Template/Agentconnector/config.php:235
 msgid "openITCOCKPIT Monitoring Agent already configured"
-msgstr ""
+msgstr "Der openITCOCKPIT Monitoring Agent ist bereits konfiguriert"
 
 #: src/Template/Agentconnector/config.php:212
 msgid "The openITCOCKPIT Agent has already been configured on this host."
-msgstr ""
+msgstr "Der openITCOCKPIT Agent wurde bereits für diesen Host konfiguriert."
 
 #: src/Template/Agentconnector/config.php:216
 msgid "Create new services"
-msgstr ""
+msgstr "Erstelle neue Services"
 
 #: src/Template/Agentconnector/config.php:238
 msgid "It seems the openITCOCKPIT Agent has been configured, but it´s not possible to get current data from it."
-msgstr ""
+msgstr "Es scheint, dass der openITCOCKPIT Agent bereits konfiguriert wurde. Es ist jedoch nicht möglich aktuelle Daten abzurufen."
 
 #: src/Template/Agentconnector/config.php:240
 msgid "A misconfiguration may have occurred. Please check this manually or reconfigure it."
-msgstr ""
+msgstr "Möglicherweise ist eine Fehlkonfiguration aufgetreten. Bitte überprüfen Sie dies manuell oder konfigurieren Sie den Agent neu."
 
 #: src/Template/Agentconnector/config.php:244
 msgid "Open agent overview"
-msgstr ""
+msgstr "Öffne die Agentenübersicht"
 
 #: src/Template/Agentconnector/config.php:263
 msgid "Please notice before changing Agent configuration"
-msgstr ""
+msgstr "Bitte beachten, bevor die Agentenkonfiguration geändert wird"
 
 #: src/Template/Agentconnector/config.php:266
 msgid "If you have made some configuration changes below, you should run a remote configuration update now. Otherwise openITCOCKPIT is maybe unable to connect to the agent again through the HTTP API. In this case you have to copy the agent configuration."
-msgstr ""
+msgstr "Wenn Sie unten einige Konfigurationsänderungen vorgenommen haben, sollten Sie jetzt ein Remote-Konfigurationsupdate ausführen. Andernfalls kann openITCOCKPIT möglicherweise keine erneute Verbindung zum Agenten über die HTTP-API herstellen. In diesem Fall müssen Sie die Agentenkonfiguration manuell kopieren."
 
 #: src/Template/Agentconnector/config.php:270
 msgid "Execute remote configuration update"
-msgstr ""
+msgstr "Führe Remote-Konfigurationsupdate aus"
 
 #: src/Template/Agentconnector/config.php:287
 msgid "Register Agent in pull mode"
@@ -6785,19 +6785,19 @@ msgstr "Registriere den Agenten im Pull-Modus"
 
 #: src/Template/Agentconnector/config.php:294
 msgid "When to use pull mode?"
-msgstr ""
+msgstr "Wann soll der Pull-Modus verwendet werden?"
 
 #: src/Template/Agentconnector/config.php:297
 msgid "In pull mode the openITCOCKPIT server will frequently connect to the agent via an HTTP/S connection to get the latest check results."
-msgstr ""
+msgstr "Im Pull-Modus stellt der openITCOCKPIT Server über eine HTTP/S-Verbindung regelmäßig eine Verbindung zum Agenten her, um die aktuellen Prüfergebnisse zu erhalten."
 
 #: src/Template/Agentconnector/config.php:299
 msgid "Use the pull mode when your openITCOCKPIT server can establish a direct connection to the target system."
-msgstr ""
+msgstr "Verwende den Pull-Modus, wenn der openITCOCKPIT Server eine direkte Verbindung zum Zielsystem herstellen kann."
 
 #: src/Template/Agentconnector/config.php:301
 msgid "If your openITCOCKPIT server is located in the same datacenter."
-msgstr ""
+msgstr "Wenn sich der openITCOCKPIT Server im selben Rechenzentrum befindet."
 
 #: src/Template/Agentconnector/config.php:314
 msgid "Continue with pull mode"
@@ -6809,19 +6809,19 @@ msgstr "Registriere den Agenten im Push-Modus"
 
 #: src/Template/Agentconnector/config.php:333
 msgid "When to use push mode?"
-msgstr ""
+msgstr "Wann soll der Push-Modus verwendet werden?"
 
 #: src/Template/Agentconnector/config.php:336
-msgid "In pull mode the Agent will frequently push the latest check results to the openITCOCKPIT server via an HTTPS connection on port 443."
-msgstr ""
+msgid "In push mode the Agent will frequently push the latest check results to the openITCOCKPIT server via an HTTPS connection on port 443."
+msgstr "Im Push-Modus überträgt der Agent regelmäßig die aktuellen Prüfergebnisse über eine HTTPS-Verbindung an Port 443 des openITCOCKPIT Servers."
 
 #: src/Template/Agentconnector/config.php:338
 msgid "Use the push mode whenever your openITCOCKPIT server cannot establish a direct connection the the target system."
-msgstr ""
+msgstr "Verwende den Push-Modus, wenn der openITCOCKPIT Server keine direkte Verbindung zum Zielsystem herstellen kann."
 
 #: src/Template/Agentconnector/config.php:340
 msgid "In a fast changing environment or when your openITCOCKPIT server is running in the cloud."
-msgstr ""
+msgstr "In einer sich schnell verändernden Umgebung oder wenn der openITCOCKPIT Server in der Cloud ausgeführt wird."
 
 #: src/Template/Agentconnector/config.php:353
 msgid "Continue with push mode"
@@ -6829,27 +6829,27 @@ msgstr "Fortfahren im Push-Modus"
 
 #: src/Template/Agentconnector/config.php:380
 msgid "openITCOCKPIT Monitoring Agent not installed yet?"
-msgstr ""
+msgstr "openITCOCKPIT Monitoring Agent noch nicht installiert?"
 
 #: src/Template/Agentconnector/config.php:383
 msgid "No problem! You will get detailed installation instructions in the next step."
-msgstr ""
+msgstr "Kein Problem! Im nächsten Schritt erhalten Sie detaillierte Installationsanweisungen."
 
 #: src/Template/Agentconnector/config.php:388
 msgid "You selected Pull Mode. If you are new to openITCOCKPIT we recommend to continue with the default settings."
-msgstr ""
+msgstr "Sie haben den Pull-Modus ausgewählt. Wenn Sie openITCOCKPIT noch nicht kennen, empfehlen wir, mit den Standardeinstellungen fortzufahren."
 
 #: src/Template/Agentconnector/config.php:394
 msgid "You selected Push Mode. It is required to set the openITCOCKPIT Server Address and an API Key."
-msgstr ""
+msgstr "Sie haben den Push-Modus ausgewählt. Es ist erforderlich, die openITCOCKPIT Serveradresse und einen API-Key festzulegen."
 
 #: src/Template/Agentconnector/config.php:407
 msgid "Operating system "
-msgstr ""
+msgstr "Betriebssystem "
 
 #: src/Template/Agentconnector/config.php:412
 msgid "Which operating system do you want to monitor?"
-msgstr ""
+msgstr "Welches Betriebssystem möchten Sie überwachen?"
 
 #: src/Template/Agentconnector/config.php:422
 msgid "Windows"
@@ -6865,7 +6865,7 @@ msgstr ""
 
 #: src/Template/Agentconnector/config.php:454
 msgid "Basic configuration "
-msgstr ""
+msgstr "Grundlegende Einstellung "
 
 #: src/Template/Agentconnector/config.php:462
 msgid "openITCOCKPIT Server Address"
@@ -6873,11 +6873,11 @@ msgstr "openITCOCKPIT Server Adresse"
 
 #: src/Template/Agentconnector/config.php:471
 msgid "External address or FQDN (example: https://{0})"
-msgstr ""
+msgstr "Externe Adresse oder FQDN (z.B.: https://{0})"
 
 #: src/Template/Agentconnector/config.php:474
 msgid "External address of your openITCOCKPIT Server."
-msgstr ""
+msgstr "Externe Adresse des openITCOCKPIT Servers."
 
 #: src/Template/Agentconnector/config.php:483
 msgid "openITCOCKPIT Api-Key"
@@ -6885,7 +6885,7 @@ msgstr ""
 
 #: src/Template/Agentconnector/config.php:507
 msgid "Agent bind address"
-msgstr ""
+msgstr "Agent Verbindungsadresse"
 
 #: src/Template/Agentconnector/config.php:515
 msgid "Address or FQDN"
@@ -6893,15 +6893,15 @@ msgstr "Adresse oder FQDN"
 
 #: src/Template/Agentconnector/config.php:519
 msgid "IP address that openITCOCKPIT Agent should bind to."
-msgstr ""
+msgstr "IP-Adresse, auf welcher der openITCOCKPIT-Agent Webserver starten soll."
 
 #: src/Template/Agentconnector/config.php:520
 msgid "Set 0.0.0.0 to bind to all interfaces."
-msgstr ""
+msgstr "Stellen Sie 0.0.0.0 ein, um den Webserver an alle Schnittstellen zu binden."
 
 #: src/Template/Agentconnector/config.php:528
 msgid "Agent bind port"
-msgstr ""
+msgstr "Agent Verbindungsport"
 
 #: src/Template/Agentconnector/config.php:538
 #: src/Template/Agentconnector/pull_configurations.php:86
@@ -6912,11 +6912,11 @@ msgstr ""
 
 #: src/Template/Agentconnector/config.php:542
 msgid "Port number that openITCOCKPIT Agent should bind to."
-msgstr ""
+msgstr "Port Nummer, auf welcher der openITCOCKPIT-Agent Webserver starten soll."
 
 #: src/Template/Agentconnector/config.php:543
 msgid "Default: 3333"
-msgstr ""
+msgstr "Standard: 3333"
 
 #: src/Template/Agentconnector/config.php:551
 msgid "Default check interval"
@@ -6930,43 +6930,43 @@ msgstr "Intervall in Sekunden"
 
 #: src/Template/Agentconnector/config.php:564
 msgid "Determines in seconds how often the openITCOCKPIT Agent will execute all checks."
-msgstr ""
+msgstr "Legt in Sekunden fest, wie oft der openITCOCKPIT Agent alle Überprüfungen ausführt."
 
 #: src/Template/Agentconnector/config.php:565
 msgid "Default: 30"
-msgstr ""
+msgstr "Standard: 30"
 
 #: src/Template/Agentconnector/config.php:576
 msgid "Security configuration "
-msgstr ""
+msgstr "Sicherheitskonfiguration "
 
 #: src/Template/Agentconnector/config.php:589
 msgid "Enable Auto-TLS"
-msgstr ""
+msgstr "Aktiviere Auto-TLS"
 
 #: src/Template/Agentconnector/config.php:592
 msgid "If enabled, the Agent tries to automatically generate a TLS certificate for all incoming connections."
-msgstr ""
+msgstr "Wenn aktiviert, versucht der Agent automatisch ein TLS-Zertifikat für alle eingehenden Verbindungen zu generieren."
 
 #: src/Template/Agentconnector/config.php:594
 msgid "Pull mode: The certificate (including updates) will be transferred from openITCOCKPIT Server to the Agent."
-msgstr ""
+msgstr "Pull-Modus: Das Zertifikat (einschließlich Updates) wird vom openITCOCKPIT Server an den Agenten übertragen."
 
 #: src/Template/Agentconnector/config.php:596
 msgid "Push mode: The certificate (including updates) will be requested from the Agent. It has to be trusted manually to get the certificate."
-msgstr ""
+msgstr "Push-Modus: Das Zertifikat (einschließlich Updates) wird vom Agenten angefordert. Diesem muss manuell vertraut werden, um das Zertifikat zu erhalten."
 
 #: src/Template/Agentconnector/config.php:599
 msgid "For security response we highly recommend to enable Auto-TLS! Otherwise the communication will be plaintext."
-msgstr ""
+msgstr "Aus Sicherheitsgründen empfehlen wir dringend, Auto-TLS zu aktivieren! Andernfalls erfolgt die Kommunikation im Klartext."
 
 #: src/Template/Agentconnector/config.php:613
 msgid "Enable debug output"
-msgstr ""
+msgstr "Aktiviere die Debug-Ausgabe"
 
 #: src/Template/Agentconnector/config.php:616
 msgid "Print debug information on CLI"
-msgstr ""
+msgstr "Gebe Debug-Informationen in der CLI aus"
 
 #: src/Template/Agentconnector/config.php:630
 msgid "Print stacktrace output"
@@ -6974,11 +6974,11 @@ msgstr "Stacktrace Ausgaben ausgeben"
 
 #: src/Template/Agentconnector/config.php:633
 msgid "Print extended debug information including stacktraces on CLI."
-msgstr ""
+msgstr "Gebe erweiterte Debug-Informationen einschließlich Stacktraces in der CLI aus."
 
 #: src/Template/Agentconnector/config.php:636
 msgid "Warning: This setting is most likely only interesting for developers and could leak sensitive information."
-msgstr ""
+msgstr "Warnung: Diese Einstellung ist höchstwahrscheinlich nur für Entwickler interessant und kann vertrauliche Informationen veröffentlichen."
 
 #: src/Template/Agentconnector/config.php:650
 msgid "Enable remote configuration update mode"
@@ -7006,7 +7006,7 @@ msgstr "benutzername:passwort"
 
 #: src/Template/Agentconnector/config.php:686
 msgid "Check configuration "
-msgstr ""
+msgstr "Prüfe Konfiguration "
 
 #: src/Template/Agentconnector/config.php:700
 msgid "Enable custom checks"
@@ -7086,59 +7086,59 @@ msgstr "Aktiviere Windows-Services Statusprüfungen"
 
 #: src/Template/Agentconnector/config.php:913
 msgid "Enable systemd services status check"
-msgstr ""
+msgstr "Aktiviere Systemd Service Statusprüfungen"
 
 #: src/Template/Agentconnector/config.php:927
 msgid "Enable windows event log check"
-msgstr ""
+msgstr "Aktiviere Windows-Eventlog Statusprüfungen"
 
 #: src/Template/Agentconnector/config.php:941
 msgid "Enable Alfresco status checks"
-msgstr ""
+msgstr "Aktiviere Alfresco Statusprüfungen"
 
 #: src/Template/Agentconnector/config.php:944
 msgid "If you have an Alfresco enterprise instance, JMX is configured and java installed on the agent host system, you can enable alfrescostats"
-msgstr ""
+msgstr "Wenn Sie eine Alfresco Enterprise-Instanz haben, JMX konfiguriert und Java auf dem Agent-Hostsystem installiert ist, können Sie alfrescostats aktivieren"
 
 #: src/Template/Agentconnector/config.php:955
 msgid "Alfresco JMX username"
-msgstr ""
+msgstr "Alfresco JMX Benutzername"
 
 #: src/Template/Agentconnector/config.php:971
 msgid "Alfresco JMX password"
-msgstr ""
+msgstr "Alfresco JMX Passwort"
 
 #: src/Template/Agentconnector/config.php:987
 msgid "Alfresco host address"
-msgstr ""
+msgstr "Alfresco Host Adresse"
 
 #: src/Template/Agentconnector/config.php:1003
 msgid "Alfresco JMX port"
-msgstr ""
+msgstr "Alfresco JMX Port"
 
 #: src/Template/Agentconnector/config.php:1019
 msgid "Alfresco JMX path"
-msgstr ""
+msgstr "Alfresco JMX Pfad"
 
 #: src/Template/Agentconnector/config.php:1030
 msgid "The path behind the JMX address (service:jmx:rmi:///jndi/rmi://0.0.0.0:50500), e.g. \"/alfresco/jmxrmi\""
-msgstr ""
+msgstr "Der Pfad hinter der JMX-Adresse (service:jmx:rmi:///jndi/rmi://0.0.0.0:50500), z.B. \"/alfresco/jmxrmi\""
 
 #: src/Template/Agentconnector/config.php:1038
 msgid "Alfresco JMX query"
-msgstr ""
+msgstr "Alfresco JMX Abfrage"
 
 #: src/Template/Agentconnector/config.php:1048
 msgid "Set you custom Alfresco JMX query. Leave empty to use the default."
-msgstr ""
+msgstr "Legen Sie Ihre benutzerdefinierte Alfresco JMX Abfrage fest. Lassen Sie das Feld leer, um die Standardeinstellung zu verwenden."
 
 #: src/Template/Agentconnector/config.php:1056
 msgid "Path to the java binary"
-msgstr ""
+msgstr "Pfad zur Java-Binärdatei"
 
 #: src/Template/Agentconnector/config.php:1067
 msgid "Java need to be installed on agent host system if you want to use alfrescostats."
-msgstr ""
+msgstr "Java muss auf dem Agent-Hostsystem installiert sein, wenn Sie alfrescostats verwenden möchten."
 
 #: src/Template/Agentconnector/config.php:1085
 msgid "config.cnf"
@@ -7150,31 +7150,31 @@ msgstr ""
 
 #: src/Template/Agentconnector/config.php:1126
 msgid "Download and install openITCOCKPIT Monitoring Agent"
-msgstr ""
+msgstr "openITCOCKPIT Monitoring Agent herunterladen und installieren"
 
 #: src/Template/Agentconnector/config.php:1144
 msgid "Download and install the openITCOCKPIT Monitoring Agent."
-msgstr ""
+msgstr "Den openITCOCKPIT Monitoring Agent herunterladen und installieren"
 
 #: src/Template/Agentconnector/config.php:1147
 msgid "If not already done, please {0} the openITCOCKPIT Agent now."
-msgstr ""
+msgstr "Falls noch nicht geschehen, {0} jetzt bitte den openITCOCKPIT Agent."
 
 #: src/Template/Agentconnector/config.php:1147
 msgid "download and install"
-msgstr ""
+msgstr "herunterladen und installieren"
 
 #: src/Template/Agentconnector/config.php:1162
 msgid "Copy configuration file"
-msgstr ""
+msgstr "Kopiere die Konfigurationsdatei"
 
 #: src/Template/Agentconnector/config.php:1170
 msgid "After the installation process is completed you should replace the default openITCOCKPIT Agent configuration with the recently generated configuration."
-msgstr ""
+msgstr "Nach Abschluss des Installationsvorgangs sollten Sie die Standardkonfiguration des openITCOCKPIT Agent durch die zuvor generierte Konfiguration ersetzen."
 
 #: src/Template/Agentconnector/config.php:1172
 msgid "Copy and paste the shown configuration file to"
-msgstr ""
+msgstr "Kopieren Sie die angezeigte Konfigurationsdatei und fügen Sie sie ein in"
 
 #: src/Template/Agentconnector/config.php:1173
 msgid "C:\\Program Files\\it-novum\\openitcockpit-agent\\config.cnf"
@@ -7198,15 +7198,15 @@ msgstr ""
 
 #: src/Template/Agentconnector/config.php:1207
 msgid "Restart openITCOCKPIT Agent"
-msgstr ""
+msgstr "openITCOCKPIT Agent neu starten"
 
 #: src/Template/Agentconnector/config.php:1213
 msgid "To enable the new configuration a restart of the openITCOCKPIT Agent is required."
-msgstr ""
+msgstr "Um die neue Konfiguration zu aktivieren, ist ein Neustart des openITCOCKPIT Agent erforderlich."
 
 #: src/Template/Agentconnector/config.php:1217
 msgid "Run as administrator (via cmd.exe)"
-msgstr ""
+msgstr "Als Administrator ausführen (über cmd.exe)"
 
 #: src/Template/Agentconnector/config.php:1218
 msgid "sc stop oitcAgentSvc && sc start oitcAgentSvc"
@@ -7222,19 +7222,19 @@ msgstr ""
 
 #: src/Template/Agentconnector/config.php:1257
 msgid "Waiting for results..."
-msgstr ""
+msgstr "Warte auf Ergebnisse..."
 
 #: src/Template/Agentconnector/config.php:1260
 msgid "If you see this message for more than 2 minutes please make sure the openITCOCKPIT Agent is running and configured."
-msgstr ""
+msgstr "Wenn diese Meldung länger als 2 Minuten angezeigt wird, stellen Sie sicher, dass der openITCOCKPIT Agent ausgeführt wird und konfiguriert ist."
 
 #: src/Template/Agentconnector/config.php:1287
 msgid "An error occurred"
-msgstr ""
+msgstr "Ein Fehler ist aufgetreten"
 
 #: src/Template/Agentconnector/config.php:1304
 msgid "Select the services you like to monitor"
-msgstr ""
+msgstr "Wähle die Services aus, welche überwacht werden sollen"
 
 #: src/Template/Agentconnector/config.php:1322
 msgid "CPU percentage"
@@ -7282,7 +7282,7 @@ msgstr ""
 
 #: src/Template/Agentconnector/config.php:1580
 msgid "Windows event log"
-msgstr ""
+msgstr "Windows Eventlog"
 
 #: src/Template/Agentconnector/config.php:1600
 msgid "Alfresco checks"
@@ -7310,43 +7310,43 @@ msgstr "Benutzerdefinierte Prüfungen"
 
 #: src/Template/Agentconnector/config.php:1736
 msgid "Agent setup done"
-msgstr ""
+msgstr "Agent setup beendet"
 
 #: src/Template/Agentconnector/config.php:1753
 msgid "Creating new services..."
-msgstr ""
+msgstr "Erstelle neue Services..."
 
 #: src/Template/Agentconnector/config.php:1781
 msgid "No services where created."
-msgstr ""
+msgstr "Es wurden keine Services erstellt."
 
 #: src/Template/Agentconnector/config.php:1784
 msgid "Did you choose any services?"
-msgstr ""
+msgstr "Wurden irgendwelche Services gewählt?"
 
 #: src/Template/Agentconnector/config.php:1803
 msgid "Services created successfully!"
-msgstr ""
+msgstr "Services wurden erfolgreich erstellt!"
 
 #: src/Template/Agentconnector/config.php:1806
 msgid "To apply the changes, please refresh your monitoring configuration."
-msgstr ""
+msgstr "Aktualisiere die Überwachungskonfiguration, um die Änderungen zu übernehmen."
 
 #: src/Template/Agentconnector/config.php:1812
 msgid "Go to \"Refresh monitoring configuration\""
-msgstr ""
+msgstr "Gehe zu \"Aktualisiere Überwachungskonfiguration\""
 
 #: src/Template/Agentconnector/config.php:1833
 msgid "Enable automatic TLS certificate generation."
-msgstr ""
+msgstr "Aktiviere die automatische Generierung von TLS-Zertifikaten."
 
 #: src/Template/Agentconnector/config.php:1836
 msgid "To enable an encrypted connection you need to mark the Agent as trusted."
-msgstr ""
+msgstr "Um eine verschlüsselte Verbindung zu aktivieren, müssen Sie den Agenten als vertrauenswürdig markieren."
 
 #: src/Template/Agentconnector/config.php:1840
 msgid "Show untrusted Agents"
-msgstr ""
+msgstr "Nicht vertrauenswürdige Agenten anzeigen"
 
 #: src/Template/Agentconnector/pull_configurations.php:43
 #: src/Template/Agentconnector/push_cache.php:43
@@ -7380,7 +7380,7 @@ msgstr "Filter nach Hostname"
 
 #: src/Template/Agentconnector/pull_configurations.php:57
 msgid "Filter by host ip"
-msgstr ""
+msgstr "Filter nach Host-IP"
 
 #: src/Template/Agentconnector/pull_configurations.php:90
 #: src/Template/Agentconnector/pull_configurations.php:292
@@ -7389,12 +7389,12 @@ msgstr "Nutze HTTPS"
 
 #: src/Template/Agentconnector/pull_configurations.php:94
 msgid "Allow insecure (https) connections"
-msgstr ""
+msgstr "Erlaube unsichere (https) Verbindungen"
 
 #: src/Template/Agentconnector/pull_configurations.php:98
 #: src/Template/Agentconnector/pull_configurations.php:308
 msgid "Use proxy"
-msgstr ""
+msgstr "Verwende Proxy"
 
 #: src/Template/Agentconnector/pull_configurations.php:102
 msgid "Enable basic auth"
@@ -7402,7 +7402,7 @@ msgstr "Aktiviere die Basisauthentifizierung"
 
 #: src/Template/Agentconnector/pull_configurations.php:106
 msgid "Received data?"
-msgstr ""
+msgstr "Daten empfangen?"
 
 #: src/Template/Agentconnector/pull_configurations.php:129
 #: src/Template/Agentconnector/pull_configurations.php:131
@@ -7489,23 +7489,23 @@ msgstr "Nein"
 
 #: src/Template/Agentconnector/pull_configurations.php:269
 msgid "Edit agent pull configuration"
-msgstr ""
+msgstr "Bearbeite die Agent Pull-Konfiguration"
 
 #: src/Template/Agentconnector/pull_configurations.php:285
 msgid "Port of the agent webserver"
-msgstr ""
+msgstr "Port des Agent Webservers"
 
 #: src/Template/Agentconnector/pull_configurations.php:299
 msgid "Allow insecure"
-msgstr ""
+msgstr "Erlaube unsichere Verbindung"
 
 #: src/Template/Agentconnector/pull_configurations.php:301
 msgid "Allow insecure connections (recommended for an easy auto setup)"
-msgstr ""
+msgstr "Unsichere Verbindungen zulassen (empfohlen für eine einfache automatische Einrichtung)"
 
 #: src/Template/Agentconnector/pull_configurations.php:315
 msgid "Enable basic authentication"
-msgstr ""
+msgstr "Aktiviere Basisauthentifizierung"
 
 #: src/Template/Agentconnector/pull_configurations.php:320
 msgid "Basic auth username"
@@ -7517,19 +7517,19 @@ msgstr ""
 
 #: src/Template/Agentconnector/pull_configurations.php:336
 msgid "Push noticed"
-msgstr ""
+msgstr "Push bemerkt"
 
 #: src/Template/Agentconnector/pull_configurations.php:338
 msgid "The agent of this host pushed its data to openITCOCKPIT"
-msgstr ""
+msgstr "Der Agent dieses Hosts hat seine Daten an openITCOCKPIT gesendet"
 
 #: src/Template/Agentconnector/push_cache.php:72
 msgid "Last modified"
-msgstr ""
+msgstr "Zuletzt verändert"
 
 #: src/Template/Agentconnector/push_cache.php:117
 msgid "Download check data"
-msgstr ""
+msgstr "Checkdaten herunterladen"
 
 #: src/Template/Agentconnector/untrusted_agents.php:43
 msgid "Filter by host uuid"
@@ -7553,7 +7553,7 @@ msgstr "Datum der Zertifikaterstellung"
 
 #: src/Template/Agentconnector/untrusted_agents.php:122
 msgid "Certificate not yet generated"
-msgstr ""
+msgstr "Zertifikat wurde noch nicht generiert"
 
 #: src/Template/Agentconnector/untrusted_agents.php:149
 msgid "Trust Agent"
@@ -8385,7 +8385,7 @@ msgstr ""
 
 #: src/Template/Angular/system_health.php:26
 msgid "Display of system health notifications"
-msgstr ""
+msgstr "Anzeige von Systemzustandsbenachrichtigungen"
 
 #: src/Template/Angular/system_health.php:28
 msgid "System health"

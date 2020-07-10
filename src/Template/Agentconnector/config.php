@@ -333,7 +333,7 @@
                                             <h5><?= __('When to use push mode?'); ?></h5>
                                             <div class="text">
                                                 <ul>
-                                                    <li><?= __('In pull mode the Agent will frequently push the latest check results to the openITCOCKPIT server via an HTTPS connection on port 443.'); ?></li>
+                                                    <li><?= __('In push mode the Agent will frequently push the latest check results to the openITCOCKPIT server via an HTTPS connection on port 443.'); ?></li>
 
                                                     <li><?= __('Use the push mode whenever your openITCOCKPIT server cannot establish a direct connection the the target system.'); ?></li>
 
@@ -457,7 +457,7 @@
                                                     <div class="card-body">
                                                         <div class="form-group col-12 padding-left-0 required"
                                                              ng-if="pushMode">
-                                                            <label class="col-xs-12 col-md-3 control-label"
+                                                            <label class="col-xs-12 col-md-9 control-label"
                                                                    for="agentconfig['oitc-url']">
                                                                 <?php echo __('openITCOCKPIT Server Address'); ?>
                                                             </label>
@@ -478,7 +478,7 @@
 
                                                         <div class="form-group col-12 padding-left-0 required"
                                                              ng-if="pushMode">
-                                                            <label class="col-xs-12 col-md-3 control-label"
+                                                            <label class="col-xs-12 col-md-9 control-label"
                                                                    for="agentconfig['oitc-apikey']">
                                                                 <?php echo __('openITCOCKPIT Api-Key'); ?>
                                                             </label>
@@ -502,7 +502,7 @@
                                                         </div>
 
                                                         <div class="form-group col-12 padding-left-0 required">
-                                                            <label class="col-xs-12 col-md-3 control-label"
+                                                            <label class="col-xs-12 col-md-9 control-label"
                                                                    for="agentconfig.address">
                                                                 <?php echo __('Agent bind address'); ?>
                                                             </label>
@@ -523,7 +523,7 @@
                                                         </div>
 
                                                         <div class="form-group col-12 padding-left-0 required">
-                                                            <label class="col-xs-12 col-md-3 control-label"
+                                                            <label class="col-xs-12 col-md-9 control-label"
                                                                    for="agentconfig.port">
                                                                 <?php echo __('Agent bind port'); ?>
                                                             </label>
@@ -546,7 +546,7 @@
                                                         </div>
 
                                                         <div class="form-group col-12 padding-left-0 required">
-                                                            <label class="col-xs-12 col-md-3 control-label"
+                                                            <label class="col-xs-12 col-md-9 control-label"
                                                                    for="agentconfig.interval">
                                                                 <?php echo __('Default check interval'); ?>
                                                             </label>
@@ -654,7 +654,7 @@
                                                                     <br>
                                                                     <?php echo __('Should only be configured after an successful ssl configuration.'); ?>
                                                                     <br>
-                                                                    <p style="color: red;">
+                                                                    <p class="text-danger">
                                                                         <?php echo __('Warning: Remote code execution is possible if the certificate was stolen or no ssl was configured.'); ?>
                                                                     </p>
                                                                 </div>
@@ -662,7 +662,7 @@
                                                         </div>
 
                                                         <div class="form-group col-12 padding-left-0">
-                                                            <label class="col-xs-12 col-md-3 control-label"
+                                                            <label class="col-xs-12 col-md-9 control-label"
                                                                    for="agentconfig.auth">
                                                                 <?php echo __('Enable HTTP Basic Auth'); ?>
                                                             </label>
@@ -707,7 +707,7 @@
 
                                                         <div class="form-group col-12 padding-left-0"
                                                              ng-show="agentconfig.customchecks">
-                                                            <label class="col-xs-12 col-md-3 control-label"
+                                                            <label class="col-xs-12 col-md-9 control-label"
                                                                    for="agentconfigCustomchecks.max_worker_threads">
                                                                 <?php echo __('Set max custom check threads'); ?>
                                                             </label>
