@@ -128,7 +128,7 @@ class LdapIdentifier extends AbstractIdentifier implements IdentifierInterface {
         if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
             $filter = Filters::and(
                 Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
-                Filters::equal('dn', $identity->get('samaccountname'))
+                Filters::equal('dn', $identity->get('ldap_dn'))
             );
         }
 

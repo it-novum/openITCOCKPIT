@@ -11,6 +11,7 @@ use Cake\Event\Event;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
@@ -199,7 +200,16 @@ class UsersTable extends Table {
             ->allowEmptyString('ldap_dn', __('DN could not left be blank.'), function ($context) {
                 if (isset($context['data']['is_ldap']) && $context['data']['is_ldap'] === true) {
                     //User create an LDAP user - samaccountname is required
-                    return false;
+
+                    //Only required for openLDAP servers (for version 3.x legacy)
+                    /** @var SystemsettingsTable $SystemsettingsTable */
+                    $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+                    if ($SystemsettingsTable->isOpenLdapServer()) {
+                        return false;
+                    }
+
+                    //MS AD LDAP Server
+                    return true;
                 }
 
                 //User create a non LDAP user
@@ -300,7 +310,7 @@ class UsersTable extends Table {
     /**
      * @return DefaultPasswordHasher
      */
-    public function getDefaultPasswordHasher(){
+    public function getDefaultPasswordHasher() {
         return new DefaultPasswordHasher();
     }
 
@@ -900,7 +910,7 @@ class UsersTable extends Table {
             ->enableAutoFields()
             ->where([
                 'Users.is_active' => 1,
-                'Apikeys.apikey' => $apikey
+                'Apikeys.apikey'  => $apikey
             ]);
         return $query->first();
     }

@@ -224,6 +224,19 @@ class SystemsettingsTable extends Table {
     }
 
     /**
+     * @return bool
+     */
+    public function isOpenLdapServer() {
+        try {
+            $result = $this->getSystemsettingByKey('FRONTEND.LDAP.TYPE');
+
+            return $result->get('value') === 'openldap';
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
      * @param string $key
      * @return bool
      */
