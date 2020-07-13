@@ -229,8 +229,7 @@ class HostsController extends AppController {
                 ],
                 $serviceStateSummary['state']
             );
-
-            $Host = new Host($host['Host']);
+            $Host = new Host($host);
             $Hoststatus = new Hoststatus($host['Host']['Hoststatus'], $UserTime);
 
             $hostSharingPermissions = new HostSharingPermissions(

@@ -188,8 +188,10 @@ class Host {
 
         if (empty($host['Host']['priority']) && isset($host['Host']['hosttemplate']['priority'])) {
             $this->priority = $host['Host']['hosttemplate']['priority'];
+        } else if (empty($host['Host']['priority']) && isset($host['Hosttemplate']['priority'])) {
+            $this->priority = $host['Hosttemplate']['priority'];
         } else {
-            if(!empty($host['Host']['priority'])){
+            if (!empty($host['Host']['priority'])) {
                 $this->priority = $host['Host']['priority'];
             }
         }
