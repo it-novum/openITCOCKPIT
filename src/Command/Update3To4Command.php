@@ -1459,7 +1459,7 @@ class Update3To4Command extends Command {
                 //debug($ndoPartition['PARTITION_NAME'] . ' => ' . date('d.m.o H:i:s', $lessThan) . ' => ' . intdiv($lessThan, 86400));
                 $currentMysqlPartitionStartDate = intdiv($lessThan, 86400);
 
-                $this->io->info(__('Create partition {0} in tablke {1}', $ndoPartition['PARTITION_NAME'], $targetTable), 0);
+                $this->io->info(__('Create partition {0} in table {1}', $ndoPartition['PARTITION_NAME'], $targetTable), 0);
                 $Connection->execute("ALTER TABLE " . $Connection->config()['database'] . "." . $targetTable . " REORGANIZE PARTITION p_max INTO (PARTITION " . $ndoPartition['PARTITION_NAME'] . " VALUES LESS THAN (" . $currentMysqlPartitionStartDate . "), PARTITION p_max values LESS THAN (MAXVALUE));");
                 $this->io->success('   Ok');
             }
