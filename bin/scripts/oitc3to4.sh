@@ -298,6 +298,10 @@ if [ "$VERSION_CODENAME" == "stretch" ]; then
         always="$always openitcockpit-nsta"
     fi
 
+    if [ ! -z "$(dpkg -l | awk '$1 ~ /ii/ && $2 ~ /mariadb-server-10.1/')" ]; then
+        always="$always mariadb-server-10.3 mariadb-client-10.3 mariadb-client-core-10.3 mariadb-server-core-10.3"
+    fi
+
     echo "${Yellow}"
     echo "###############################################################################"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
