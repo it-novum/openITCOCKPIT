@@ -41,7 +41,7 @@ msgstr "Синхронизация успешно завершена"
 
 #: plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:795
 msgid "An error has been occured while synchronizing"
-msgstr ""
+msgstr "Произошла ошибка при синхронизации"
 
 #: plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:907
 msgid "Last 2 days"
@@ -3785,19 +3785,19 @@ msgstr "Обновление конфигурации завершено"
 
 #: src/Command/GearmanWorkerCommand.php:1484
 msgid "Mark Satellite for configuration synchronization through NSTA daemon ["
-msgstr ""
+msgstr "Отметьте Спутника для синхронизации конфигурации через демон NSTA ["
 
 #: src/Command/GearmanWorkerCommand.php:1500
 msgid "Check if NSTA daemon is running"
-msgstr ""
+msgstr "Проверьте, запущен ли демон NSTA"
 
 #: src/Command/GearmanWorkerCommand.php:1514
 msgid "Reloading NSTA daemon"
-msgstr ""
+msgstr "Перезагрузка демона NSTA"
 
 #: src/Command/GearmanWorkerCommand.php:1530
 msgid "Restarting NSTA daemon"
-msgstr ""
+msgstr "Перезапуск демона NSTA"
 
 #: src/Command/InstantReportCommand.php:103
 msgid "Never"
@@ -3829,7 +3829,7 @@ msgstr "Проверка файлов конфигурации монитори�
 
 #: src/Command/ResetPasswordCommand.php:39
 msgid "If set the new password will get print to the CLI"
-msgstr ""
+msgstr "Если установлен новый пароль, он будет распечатан в CLI"
 
 #: src/Command/ResetPasswordCommand.php:120
 #: src/Command/Update3To4Command.php:297
@@ -3845,12 +3845,12 @@ msgstr "получил сброс"
 
 #: src/Command/ResetPasswordCommand.php:139
 msgid "New password is: {0}"
-msgstr ""
+msgstr "Новый пароль: {0}"
 
 #: src/Command/ResetPasswordCommand.php:143
 #: src/Command/Update3To4Command.php:320
 msgid "New password was send to {0}"
-msgstr ""
+msgstr "Новый пароль был отправлен на {0}"
 
 #: src/Command/RolesCommand.php:105
 msgid "Checking permissions for user group \"{0}\"..."
@@ -3915,51 +3915,51 @@ msgstr "Настройка электронной почты \"{0}\" успеш�
 
 #: src/Command/Update3To4Command.php:85
 msgid "Migrate openITCOCKPIT V3 E-Mail configuration"
-msgstr ""
+msgstr "Миграция конфигурации openITCOCKPIT V3 E-Mail"
 
 #: src/Command/Update3To4Command.php:91
 msgid "Enable users from the file /root/.openitcockpit_active_user_migration.json"
-msgstr ""
+msgstr "Включить пользователей из файла /root/.openitcockpit_active_user_migration.json"
 
 #: src/Command/Update3To4Command.php:97
 msgid "Send a new random password to all local users per mail."
-msgstr ""
+msgstr "Отправить новый случайный пароль всем локальным пользователям по почте."
 
 #: src/Command/Update3To4Command.php:103
 msgid "Migrate notification history records from nagios_ to statusengine_ tables."
-msgstr ""
+msgstr "Перенос записей истории уведомлений из таблиц nagios_ в statusengine_."
 
 #: src/Command/Update3To4Command.php:109
 msgid "Migrate statehistory records from nagios_ to statusengine_ tables."
-msgstr ""
+msgstr "Перенос записей истории состояний из таблиц nagios_ в statusengine_."
 
 #: src/Command/Update3To4Command.php:115
 msgid "Migrate acknowledgements history records from nagios_ to statusengine_ tables."
-msgstr ""
+msgstr "Перенос записей истории подтверждений из таблиц nagios_ в statusengine_."
 
 #: src/Command/Update3To4Command.php:121
 msgid "Migrate downtimes history records from nagios_ to statusengine_ tables."
-msgstr ""
+msgstr "Перенос записей истории простоев из таблиц nagios_ в statusengine_."
 
 #: src/Command/Update3To4Command.php:127
 msgid "Migrate hostchecks records from nagios_ to statusengine_ tables."
-msgstr ""
+msgstr "Перенос записей результатов узлов из таблиц nagios_ в statusengine_."
 
 #: src/Command/Update3To4Command.php:133
 msgid "Migrate servicechecks records from nagios_ to statusengine_ tables."
-msgstr ""
+msgstr "Перенос записей результатов служб из таблиц nagios_ в statusengine_."
 
 #: src/Command/Update3To4Command.php:139
 msgid "Migrate logentries records from nagios_ to statusengine_ tables."
-msgstr ""
+msgstr "Перенос записи журнала из таблиц nagios_ в statusengine_."
 
 #: src/Command/Update3To4Command.php:145
 msgid "Set the Statusengine Broker as default submit method for EVC results"
-msgstr ""
+msgstr "Установите Statusengine Broker по умолчанию как метод отправки для результатов EVC"
 
 #: src/Command/Update3To4Command.php:1462
 msgid "Create partition {0} in tablke {1}"
-msgstr ""
+msgstr "Создать раздел {0} в таблице {1}"
 
 #: src/Controller/AcknowledgementsController.php:69
 #: src/Controller/AgentconfigsController.php:74
@@ -4153,7 +4153,7 @@ msgstr "Контейнер не найден"
 #: src/Controller/ServicegroupsController.php:347
 #: src/Controller/ServicetemplategroupsController.php:468
 msgid "Container is not empty"
-msgstr ""
+msgstr "Контейнер не пустой"
 
 #: src/Controller/CronjobsController.php:117
 msgid "Invalid cronjob"
@@ -4182,7 +4182,7 @@ msgstr "Производительность MySQL"
 
 #: src/Controller/DocumentationsController.php:234
 msgid "A few tips to optimize your MySQL performance."
-msgstr ""
+msgstr "Несколько советов по оптимизации производительности MySQL."
 
 #: src/Controller/DocumentationsController.php:239
 msgid "Browser Push Notifications"
@@ -4190,7 +4190,7 @@ msgstr "Push-уведомления браузера"
 
 #: src/Controller/DocumentationsController.php:240
 msgid "How to setup openITCOCKPIT browser push notifications."
-msgstr ""
+msgstr "Как настроить openITCOCKPIT push уведомления для браузера."
 
 #: src/Controller/DowntimereportsController.php:134
 msgid "No downtimes within specified time found ({0} - {1}) !"
@@ -4231,7 +4231,7 @@ msgstr "Дата недействительна"
 
 #: src/Controller/DowntimesController.php:310
 msgid "Could not find downtime"
-msgstr ""
+msgstr "Не удалось найти обслуживание"
 
 #: src/Controller/DowntimesController.php:393
 msgid "Successfully"
@@ -4383,11 +4383,11 @@ msgstr "Неверное местонахождение"
 
 #: src/Controller/LocationsController.php:322
 msgid "Location is used by other object."
-msgstr ""
+msgstr "Местоположение используется другим объектом."
 
 #: src/Controller/LocationsController.php:330
 msgid "Issue while deleting location"
-msgstr ""
+msgstr "Проблема при удалении местоположения"
 
 #: src/Controller/ProfileController.php:61
 #: src/Controller/UsersController.php:262
@@ -4660,7 +4660,7 @@ msgstr "Неверный сертификат клиента"
 
 #: src/Lib/DebugConfigNagiosTask.php:522
 msgid "<warning>File: {0}</warning>"
-msgstr ""
+msgstr "<warning> Файл: {0} </warning>"
 
 #: src/Model/Entity/Host.php:405
 #: src/Model/Entity/Service.php:349
@@ -4900,7 +4900,7 @@ msgstr "Местоположение"
 
 #: src/Model/Table/ContainersTable.php:907
 msgid "Device group"
-msgstr ""
+msgstr "Группа устройств"
 
 #: src/Model/Table/ContainersTable.php:908
 #: src/Template/Containers/index.php:87
@@ -5216,7 +5216,7 @@ msgstr "Вы должны выбрать хотя бы один зависимо
 
 #: src/Model/Table/HostdependenciesTable.php:542
 msgid "Host dependency #{0}"
-msgstr ""
+msgstr "Зависимость узла # {0}"
 
 #: src/Model/Table/HostescalationsTable.php:123
 #: src/Model/Table/HostescalationsTable.php:129
@@ -5236,7 +5236,7 @@ msgstr "Первое уведомление должно быть до посл�
 
 #: src/Model/Table/HostescalationsTable.php:673
 msgid "Host escalation #{0}"
-msgstr ""
+msgstr "Эскалация узла # {0}"
 
 #: src/Model/Table/HostgroupsTable.php:104
 #: src/Model/Table/ServicegroupsTable.php:102
@@ -5343,11 +5343,11 @@ msgstr "Вы должны указать хотя бы одну опцию об�
 
 #: src/Model/Table/HostsTable.php:3802
 msgid "Generic host"
-msgstr ""
+msgstr "Общий узел"
 
 #: src/Model/Table/HostsTable.php:3810
 msgid "EVC host"
-msgstr ""
+msgstr "Узел EVC"
 
 #: src/Model/Table/HosttemplatesTable.php:1294
 #: src/Model/Table/ServicetemplatesTable.php:1198
@@ -5419,11 +5419,11 @@ msgstr "Вы должны выбрать хотя бы одну зависиму
 
 #: src/Model/Table/ServicedependenciesTable.php:569
 msgid "Service dependency #{0}"
-msgstr ""
+msgstr "Зависимость службы #{0}"
 
 #: src/Model/Table/ServiceescalationsTable.php:686
 msgid "Service escalation #{0}"
-msgstr ""
+msgstr "Эскалация службы #{0}"
 
 #: src/Model/Table/ServicesTable.php:205
 msgid "Please enter a service name."
@@ -5435,27 +5435,27 @@ msgstr "Это поле не может быть 0"
 
 #: src/Model/Table/ServicesTable.php:3395
 msgid "Generic service"
-msgstr ""
+msgstr "Общая служба"
 
 #: src/Model/Table/ServicesTable.php:3403
 msgid "EVC service"
-msgstr ""
+msgstr "EVC служба"
 
 #: src/Model/Table/ServicesTable.php:3412
 msgid "SLA service"
-msgstr ""
+msgstr "SLA служба"
 
 #: src/Model/Table/ServicesTable.php:3421
 msgid "Checkmk service"
-msgstr ""
+msgstr "Checkmk служба"
 
 #: src/Model/Table/ServicesTable.php:3430
 msgid "Prometheus service"
-msgstr ""
+msgstr "Prometheus служба"
 
 #: src/Model/Table/ServicesTable.php:3438
 msgid "Agent service"
-msgstr ""
+msgstr "Служба агента"
 
 #: src/Model/Table/ServicetemplategroupsTable.php:94
 msgid "You must select at least one service template."
@@ -5475,7 +5475,7 @@ msgstr "Checkmk шаблоны"
 
 #: src/Model/Table/ServicetemplatesTable.php:1233
 msgid "Prometheus templates"
-msgstr ""
+msgstr "Prometheus шаблоны"
 
 #: src/Model/Table/ServicetemplatesTable.php:1241
 msgid "Agent templates"
@@ -6201,7 +6201,7 @@ msgstr "Пожалуйста, запустите gearman_worker первым"
 
 #: src/Template/Administrators/debug.php:194
 msgid "Process"
-msgstr ""
+msgstr "Процесс"
 
 #: src/Template/Administrators/debug.php:201
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:35
@@ -6234,7 +6234,7 @@ msgstr "Работает"
 #: src/Template/Administrators/debug.php:351
 #: src/Template/Administrators/debug.php:372
 msgid "Stopped"
-msgstr ""
+msgstr "Остановился"
 
 #: src/Template/Administrators/debug.php:222
 msgid "Database connector"
@@ -6266,7 +6266,7 @@ msgstr "OITC Cmd"
 #: src/Template/Administrators/debug.php:322
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:82
 msgid "NSTA"
-msgstr ""
+msgstr "NSTA"
 
 #: src/Template/Administrators/debug.php:343
 msgid "Push notification service"
@@ -6490,7 +6490,7 @@ msgstr "Используемые слоты журнала запросов"
 
 #: src/Template/Administrators/querylog.php:62
 msgid "Try manual reconnect"
-msgstr ""
+msgstr "Попробуйте ручное переподключение"
 
 #: src/Template/Administrators/querylog.php:65
 msgid "Truncate log"
@@ -6685,15 +6685,15 @@ msgstr "Обзор агентов"
 
 #: src/Template/Agentconnector/agents.php:72
 msgid "Untrusted agents"
-msgstr ""
+msgstr "Ненадежные агенты"
 
 #: src/Template/Agentconnector/agents.php:77
 msgid "Pull configurations"
-msgstr ""
+msgstr "Pull конфигурация"
 
 #: src/Template/Agentconnector/agents.php:82
 msgid "Push Cache"
-msgstr ""
+msgstr "Push Cache"
 
 #: src/Template/Agentconnector/config.php:50
 #: src/Template/Services/service_list.php:57
@@ -6732,52 +6732,52 @@ msgstr "Следующий"
 
 #: src/Template/Agentconnector/config.php:152
 msgid "I have installed the Agent"
-msgstr ""
+msgstr "Я установил агента"
 
 #: src/Template/Agentconnector/config.php:161
 msgid "Create Services"
-msgstr ""
+msgstr "Создать службы"
 
 #: src/Template/Agentconnector/config.php:184
 msgid "Checking if openITCOCKPIT Monitoring Agent is already configured..."
-msgstr ""
+msgstr "Проверка, если агент мониторинга openITCOCKPIT уже настроен ..."
 
 #: src/Template/Agentconnector/config.php:209
 #: src/Template/Agentconnector/config.php:235
 msgid "openITCOCKPIT Monitoring Agent already configured"
-msgstr ""
+msgstr "Агент мониторинга openITCOCKPIT уже настроен"
 
 #: src/Template/Agentconnector/config.php:212
 msgid "The openITCOCKPIT Agent has already been configured on this host."
-msgstr ""
+msgstr "Агент openITCOCKPIT уже настроен на этом узле."
 
 #: src/Template/Agentconnector/config.php:216
 msgid "Create new services"
-msgstr ""
+msgstr "Создать новые службы"
 
 #: src/Template/Agentconnector/config.php:238
 msgid "It seems the openITCOCKPIT Agent has been configured, but it´s not possible to get current data from it."
-msgstr ""
+msgstr "Кажется, агент openITCOCKPIT настроен, но получить текущие данные из него невозможно."
 
 #: src/Template/Agentconnector/config.php:240
 msgid "A misconfiguration may have occurred. Please check this manually or reconfigure it."
-msgstr ""
+msgstr "Возможно, произошла неправильная конфигурация. Пожалуйста, проверьте это вручную или перенастройте."
 
 #: src/Template/Agentconnector/config.php:244
 msgid "Open agent overview"
-msgstr ""
+msgstr "Открыть обзор агента"
 
 #: src/Template/Agentconnector/config.php:263
 msgid "Please notice before changing Agent configuration"
-msgstr ""
+msgstr "Пожалуйста, обратите внимание, прежде чем изменять конфигурацию агента"
 
 #: src/Template/Agentconnector/config.php:266
 msgid "If you have made some configuration changes below, you should run a remote configuration update now. Otherwise openITCOCKPIT is maybe unable to connect to the agent again through the HTTP API. In this case you have to copy the agent configuration."
-msgstr ""
+msgstr "Если вы внесли некоторые изменения в конфигурацию ниже, вам следует запустить удаленное обновление конфигурации сейчас. В противном случае openITCOCKPIT, возможно, не сможет снова подключиться к агенту через HTTP API. В этом случае вам необходимо скопировать конфигурацию агента."
 
 #: src/Template/Agentconnector/config.php:270
 msgid "Execute remote configuration update"
-msgstr ""
+msgstr "Выполнить удаленное обновление конфигурации"
 
 #: src/Template/Agentconnector/config.php:287
 msgid "Register Agent in pull mode"
@@ -6785,19 +6785,19 @@ msgstr "Зарегистрировать агента в режиме pull"
 
 #: src/Template/Agentconnector/config.php:294
 msgid "When to use pull mode?"
-msgstr ""
+msgstr "Когда использовать режим pull?"
 
 #: src/Template/Agentconnector/config.php:297
 msgid "In pull mode the openITCOCKPIT server will frequently connect to the agent via an HTTP/S connection to get the latest check results."
-msgstr ""
+msgstr "В pull режиме сервер openITCOCKPIT часто подключается к агенту через соединение HTTP/S для получения последних результатов проверки."
 
 #: src/Template/Agentconnector/config.php:299
 msgid "Use the pull mode when your openITCOCKPIT server can establish a direct connection to the target system."
-msgstr ""
+msgstr "Используйте pull режим, когда ваш сервер openITCOCKPIT может установить прямое соединение с целевой системой."
 
 #: src/Template/Agentconnector/config.php:301
 msgid "If your openITCOCKPIT server is located in the same datacenter."
-msgstr ""
+msgstr "Если ваш сервер openITCOCKPIT находится в том же центре данных."
 
 #: src/Template/Agentconnector/config.php:314
 msgid "Continue with pull mode"
@@ -6809,19 +6809,19 @@ msgstr "Зарегистрировать агента в режиме push"
 
 #: src/Template/Agentconnector/config.php:333
 msgid "When to use push mode?"
-msgstr ""
+msgstr "Когда использовать режим push?"
 
 #: src/Template/Agentconnector/config.php:336
 msgid "In pull mode the Agent will frequently push the latest check results to the openITCOCKPIT server via an HTTPS connection on port 443."
-msgstr ""
+msgstr "В pull режиме агент часто передает последние результаты проверки на сервер openITCOCKPIT через соединение HTTPS через порт 443."
 
 #: src/Template/Agentconnector/config.php:338
 msgid "Use the push mode whenever your openITCOCKPIT server cannot establish a direct connection the the target system."
-msgstr ""
+msgstr "Используйте режим push, когда ваш сервер openITCOCKPIT не может установить прямое соединение с целевой системой"
 
 #: src/Template/Agentconnector/config.php:340
 msgid "In a fast changing environment or when your openITCOCKPIT server is running in the cloud."
-msgstr ""
+msgstr "В быстро меняющейся среде или когда ваш сервер openITCOCKPIT работает в облаке."
 
 #: src/Template/Agentconnector/config.php:353
 msgid "Continue with push mode"
@@ -6829,43 +6829,43 @@ msgstr "Продолжить в режиме push"
 
 #: src/Template/Agentconnector/config.php:380
 msgid "openITCOCKPIT Monitoring Agent not installed yet?"
-msgstr ""
+msgstr "Агент мониторинга openITCOCKPIT еще не установлен?"
 
 #: src/Template/Agentconnector/config.php:383
 msgid "No problem! You will get detailed installation instructions in the next step."
-msgstr ""
+msgstr "Нет проблем! Вы получите подробные инструкции по установке на следующем шаге."
 
 #: src/Template/Agentconnector/config.php:388
 msgid "You selected Pull Mode. If you are new to openITCOCKPIT we recommend to continue with the default settings."
-msgstr ""
+msgstr "Вы выбрали Pull Mode. Если вы новичок в openITCOCKPIT, мы рекомендуем продолжить со стандартными настройками."
 
 #: src/Template/Agentconnector/config.php:394
 msgid "You selected Push Mode. It is required to set the openITCOCKPIT Server Address and an API Key."
-msgstr ""
+msgstr "Вы выбрали Push Mode. Требуется установить адрес сервера openITCOCKPIT и ключ API."
 
 #: src/Template/Agentconnector/config.php:407
 msgid "Operating system "
-msgstr ""
+msgstr "Операционная система "
 
 #: src/Template/Agentconnector/config.php:412
 msgid "Which operating system do you want to monitor?"
-msgstr ""
+msgstr "Какую операционную систему вы хотите отслеживать?"
 
 #: src/Template/Agentconnector/config.php:422
 msgid "Windows"
-msgstr ""
+msgstr "Windows"
 
 #: src/Template/Agentconnector/config.php:430
 msgid "Linux"
-msgstr ""
+msgstr "Linux"
 
 #: src/Template/Agentconnector/config.php:438
 msgid "macOS"
-msgstr ""
+msgstr "macOS"
 
 #: src/Template/Agentconnector/config.php:454
 msgid "Basic configuration "
-msgstr ""
+msgstr "Базовая конфигурация "
 
 #: src/Template/Agentconnector/config.php:462
 msgid "openITCOCKPIT Server Address"
@@ -6873,11 +6873,11 @@ msgstr "openITCOCKPIT Адрес сервера"
 
 #: src/Template/Agentconnector/config.php:471
 msgid "External address or FQDN (example: https://{0})"
-msgstr ""
+msgstr "Внешний адрес или полное доменное имя (пример: https://{0})"
 
 #: src/Template/Agentconnector/config.php:474
 msgid "External address of your openITCOCKPIT Server."
-msgstr ""
+msgstr "Внешний адрес вашего сервера openITCOCKPIT."
 
 #: src/Template/Agentconnector/config.php:483
 msgid "openITCOCKPIT Api-Key"
@@ -6885,7 +6885,7 @@ msgstr "openICOCKPIT API-ключ"
 
 #: src/Template/Agentconnector/config.php:507
 msgid "Agent bind address"
-msgstr ""
+msgstr "Адрес привязки агента"
 
 #: src/Template/Agentconnector/config.php:515
 msgid "Address or FQDN"
@@ -6893,15 +6893,15 @@ msgstr "Адрес или полное доменное имя"
 
 #: src/Template/Agentconnector/config.php:519
 msgid "IP address that openITCOCKPIT Agent should bind to."
-msgstr ""
+msgstr "IP-адрес, с которым должен связываться openITCOCKPIT агент."
 
 #: src/Template/Agentconnector/config.php:520
 msgid "Set 0.0.0.0 to bind to all interfaces."
-msgstr ""
+msgstr "Установите 0.0.0.0 для привязки ко всем интерфейсам."
 
 #: src/Template/Agentconnector/config.php:528
 msgid "Agent bind port"
-msgstr ""
+msgstr "Порт привязки агента"
 
 #: src/Template/Agentconnector/config.php:538
 #: src/Template/Agentconnector/pull_configurations.php:86
@@ -6912,11 +6912,11 @@ msgstr "Порт"
 
 #: src/Template/Agentconnector/config.php:542
 msgid "Port number that openITCOCKPIT Agent should bind to."
-msgstr ""
+msgstr "Номер порта, с которым должен связываться агент openITCOCKPIT."
 
 #: src/Template/Agentconnector/config.php:543
 msgid "Default: 3333"
-msgstr ""
+msgstr "Стандарт: 3333"
 
 #: src/Template/Agentconnector/config.php:551
 msgid "Default check interval"
@@ -6930,43 +6930,43 @@ msgstr "Интервал в секундах"
 
 #: src/Template/Agentconnector/config.php:564
 msgid "Determines in seconds how often the openITCOCKPIT Agent will execute all checks."
-msgstr ""
+msgstr "Определяет в секундах, как часто openITCOCKPIT агент будет выполнять все проверки."
 
 #: src/Template/Agentconnector/config.php:565
 msgid "Default: 30"
-msgstr ""
+msgstr "Стандарт: 30"
 
 #: src/Template/Agentconnector/config.php:576
 msgid "Security configuration "
-msgstr ""
+msgstr "Конфигурация безопасности "
 
 #: src/Template/Agentconnector/config.php:589
 msgid "Enable Auto-TLS"
-msgstr ""
+msgstr "Включить Auto-TLS"
 
 #: src/Template/Agentconnector/config.php:592
 msgid "If enabled, the Agent tries to automatically generate a TLS certificate for all incoming connections."
-msgstr ""
+msgstr "Если этот параметр включен, агент пытается автоматически создать сертификат TLS для всех входящих подключений."
 
 #: src/Template/Agentconnector/config.php:594
 msgid "Pull mode: The certificate (including updates) will be transferred from openITCOCKPIT Server to the Agent."
-msgstr ""
+msgstr "Pull Режим: сертификат (включая обновления) будет перенесен с сервера openITCOCKPIT на Агента."
 
 #: src/Template/Agentconnector/config.php:596
 msgid "Push mode: The certificate (including updates) will be requested from the Agent. It has to be trusted manually to get the certificate."
-msgstr ""
+msgstr "Push Режим: Сертификат (включая обновления) будет запрошен у Агента. Надо доверять вручную, чтобы получить сертификат."
 
 #: src/Template/Agentconnector/config.php:599
 msgid "For security response we highly recommend to enable Auto-TLS! Otherwise the communication will be plaintext."
-msgstr ""
+msgstr "Для обеспечения безопасности мы настоятельно рекомендуем включить Auto-TLS! В противном случае сообщение будет открытым."
 
 #: src/Template/Agentconnector/config.php:613
 msgid "Enable debug output"
-msgstr ""
+msgstr "Включить отладочный вывод"
 
 #: src/Template/Agentconnector/config.php:616
 msgid "Print debug information on CLI"
-msgstr ""
+msgstr "Печать отладочной информации на CLI"
 
 #: src/Template/Agentconnector/config.php:630
 msgid "Print stacktrace output"
@@ -6974,11 +6974,11 @@ msgstr "Распечатать вывод трассировки стека"
 
 #: src/Template/Agentconnector/config.php:633
 msgid "Print extended debug information including stacktraces on CLI."
-msgstr ""
+msgstr "Вывести расширенную отладочную информацию, включая трассировки стека, на CLI."
 
 #: src/Template/Agentconnector/config.php:636
 msgid "Warning: This setting is most likely only interesting for developers and could leak sensitive information."
-msgstr ""
+msgstr "Предупреждение. Этот параметр, скорее всего, интересен только разработчикам и может привести к утечке конфиденциальной информации."
 
 #: src/Template/Agentconnector/config.php:650
 msgid "Enable remote configuration update mode"
@@ -7006,7 +7006,7 @@ msgstr "имя пользователя:пароль"
 
 #: src/Template/Agentconnector/config.php:686
 msgid "Check configuration "
-msgstr ""
+msgstr "Конфигурация чека"
 
 #: src/Template/Agentconnector/config.php:700
 msgid "Enable custom checks"
@@ -7086,99 +7086,99 @@ msgstr "Включить проверки состояния служб Windows"
 
 #: src/Template/Agentconnector/config.php:913
 msgid "Enable systemd services status check"
-msgstr ""
+msgstr "Включить проверку состояния системных служб"
 
 #: src/Template/Agentconnector/config.php:927
 msgid "Enable windows event log check"
-msgstr ""
+msgstr "Включить проверку журнала событий Windows"
 
 #: src/Template/Agentconnector/config.php:941
 msgid "Enable Alfresco status checks"
-msgstr ""
+msgstr "Включить проверки статуса Alfresco"
 
 #: src/Template/Agentconnector/config.php:944
 msgid "If you have an Alfresco enterprise instance, JMX is configured and java installed on the agent host system, you can enable alfrescostats"
-msgstr ""
+msgstr "Если у вас есть корпоративный экземпляр Alfresco, JMX настроен и java установлен в системе узлов агента, вы можете включить alfrescostats"
 
 #: src/Template/Agentconnector/config.php:955
 msgid "Alfresco JMX username"
-msgstr ""
+msgstr "Alfresco JMX имя пользователя"
 
 #: src/Template/Agentconnector/config.php:971
 msgid "Alfresco JMX password"
-msgstr ""
+msgstr "Alfresco JMX пароль"
 
 #: src/Template/Agentconnector/config.php:987
 msgid "Alfresco host address"
-msgstr ""
+msgstr "Alfresco адрес узла"
 
 #: src/Template/Agentconnector/config.php:1003
 msgid "Alfresco JMX port"
-msgstr ""
+msgstr "Alfresco JMX порт"
 
 #: src/Template/Agentconnector/config.php:1019
 msgid "Alfresco JMX path"
-msgstr ""
+msgstr "Alfresco JMX путь"
 
 #: src/Template/Agentconnector/config.php:1030
 msgid "The path behind the JMX address (service:jmx:rmi:///jndi/rmi://0.0.0.0:50500), e.g. \"/alfresco/jmxrmi\""
-msgstr ""
+msgstr "Путь за адресом JMX (сервис: jmx: rmi:///jndi/rmi://0.0.0.0: 50500), например, \"/alfresco/jmxrmi\""
 
 #: src/Template/Agentconnector/config.php:1038
 msgid "Alfresco JMX query"
-msgstr ""
+msgstr "Alfresco JMX запрос"
 
 #: src/Template/Agentconnector/config.php:1048
 msgid "Set you custom Alfresco JMX query. Leave empty to use the default."
-msgstr ""
+msgstr "Установите пользовательский запрос Alfresco JMX. Оставьте пустым, чтобы использовать значение по умолчанию."
 
 #: src/Template/Agentconnector/config.php:1056
 msgid "Path to the java binary"
-msgstr ""
+msgstr "Путь к двоичному файлу Java"
 
 #: src/Template/Agentconnector/config.php:1067
 msgid "Java need to be installed on agent host system if you want to use alfrescostats."
-msgstr ""
+msgstr "Java должна быть установлена ​​в системе узлов агента, если вы хотите использовать статистику alfrescostats"
 
 #: src/Template/Agentconnector/config.php:1085
 msgid "config.cnf"
-msgstr ""
+msgstr "config.cnf"
 
 #: src/Template/Agentconnector/config.php:1099
 msgid "customchecks.cnf"
-msgstr ""
+msgstr "customchecks.cnf"
 
 #: src/Template/Agentconnector/config.php:1126
 msgid "Download and install openITCOCKPIT Monitoring Agent"
-msgstr ""
+msgstr "Скачайте и установите openITCOCKPIT Агент мониторинга"
 
 #: src/Template/Agentconnector/config.php:1144
 msgid "Download and install the openITCOCKPIT Monitoring Agent."
-msgstr ""
+msgstr "Скачайте и установите openITCOCKPIT Агент мониторинга"
 
 #: src/Template/Agentconnector/config.php:1147
 msgid "If not already done, please {0} the openITCOCKPIT Agent now."
-msgstr ""
+msgstr "Если это еще не сделано, пожалуйста, {0} агент openITCOCKPIT сейчас."
 
 #: src/Template/Agentconnector/config.php:1147
 msgid "download and install"
-msgstr ""
+msgstr "скачать и установить"
 
 #: src/Template/Agentconnector/config.php:1162
 msgid "Copy configuration file"
-msgstr ""
+msgstr "Скопировать файл конфигурации"
 
 #: src/Template/Agentconnector/config.php:1170
 msgid "After the installation process is completed you should replace the default openITCOCKPIT Agent configuration with the recently generated configuration."
-msgstr ""
+msgstr "После завершения процесса установки вы должны заменить стандартную конфигурацию агента openITCOCKPIT на недавно созданную конфигурацию."
 
 #: src/Template/Agentconnector/config.php:1172
 msgid "Copy and paste the shown configuration file to"
-msgstr ""
+msgstr "Скопируйте и вставьте указанный файл конфигурации в"
 
 #: src/Template/Agentconnector/config.php:1173
 msgid "C:\\Program Files\\it-novum\\openitcockpit-agent\\config.cnf"
-msgstr ""
+msgstr "C:\\Program Files\\it-novum\\openitcockpit-agent\\config.cnf"
 
 #: src/Template/Agentconnector/config.php:1174
 msgid "/etc/openitcockpit-agent/config.cnf"
@@ -7190,7 +7190,7 @@ msgstr "/Library/openitcockpit-agent/config.cnf"
 
 #: src/Template/Agentconnector/config.php:1181
 msgid "config.cnf:"
-msgstr ""
+msgstr "config.cnf:"
 
 #: src/Template/Agentconnector/config.php:1191
 msgid "customchecks.cnf:"
@@ -7198,43 +7198,43 @@ msgstr "customchecks.cnf:"
 
 #: src/Template/Agentconnector/config.php:1207
 msgid "Restart openITCOCKPIT Agent"
-msgstr ""
+msgstr "Перезапустите openITCOCKPIT Агента"
 
 #: src/Template/Agentconnector/config.php:1213
 msgid "To enable the new configuration a restart of the openITCOCKPIT Agent is required."
-msgstr ""
+msgstr "Для включения новой конфигурации требуется перезапуск агента openITCOCKPIT."
 
 #: src/Template/Agentconnector/config.php:1217
 msgid "Run as administrator (via cmd.exe)"
-msgstr ""
+msgstr "Запуск от имени администратора (через cmd.exe)"
 
 #: src/Template/Agentconnector/config.php:1218
 msgid "sc stop oitcAgentSvc && sc start oitcAgentSvc"
-msgstr ""
+msgstr "sc stop oitcAgentSvc && sc start oitcAgentSvc"
 
 #: src/Template/Agentconnector/config.php:1222
 msgid "sudo systemctl restart openitcockpit-agent.service"
-msgstr ""
+msgstr "sudo systemctl restart openitcockpit-agent.service"
 
 #: src/Template/Agentconnector/config.php:1226
 msgid "sudo /bin/launchctl restart com.it-novum.openitcockpit.agent"
-msgstr ""
+msgstr "sudo /bin/launchctl restart com.it-novum.openitcockpit.agent"
 
 #: src/Template/Agentconnector/config.php:1257
 msgid "Waiting for results..."
-msgstr ""
+msgstr "Жду результатов ..."
 
 #: src/Template/Agentconnector/config.php:1260
 msgid "If you see this message for more than 2 minutes please make sure the openITCOCKPIT Agent is running and configured."
-msgstr ""
+msgstr "Если вы видите это сообщение более 2 минут, убедитесь, что агент openITCOCKPIT запущен и настроен."
 
 #: src/Template/Agentconnector/config.php:1287
 msgid "An error occurred"
-msgstr ""
+msgstr "Произошла ошибка"
 
 #: src/Template/Agentconnector/config.php:1304
 msgid "Select the services you like to monitor"
-msgstr ""
+msgstr "Выберите службы, которые вы хотите отслеживать"
 
 #: src/Template/Agentconnector/config.php:1322
 msgid "CPU percentage"
@@ -7278,15 +7278,15 @@ msgstr "Службы Windows"
 
 #: src/Template/Agentconnector/config.php:1560
 msgid "Systemd services"
-msgstr ""
+msgstr "Systemd службы"
 
 #: src/Template/Agentconnector/config.php:1580
 msgid "Windows event log"
-msgstr ""
+msgstr "Журнал событий Windows"
 
 #: src/Template/Agentconnector/config.php:1600
 msgid "Alfresco checks"
-msgstr ""
+msgstr "Alfresco службы"
 
 #: src/Template/Agentconnector/config.php:1620
 msgid "Docker container running"
@@ -7310,43 +7310,43 @@ msgstr "Индивидуальные проверки"
 
 #: src/Template/Agentconnector/config.php:1736
 msgid "Agent setup done"
-msgstr ""
+msgstr "Настройка агента выполнена"
 
 #: src/Template/Agentconnector/config.php:1753
 msgid "Creating new services..."
-msgstr ""
+msgstr "Создание новых служб ..."
 
 #: src/Template/Agentconnector/config.php:1781
 msgid "No services where created."
-msgstr ""
+msgstr "Службы не были созданы."
 
 #: src/Template/Agentconnector/config.php:1784
 msgid "Did you choose any services?"
-msgstr ""
+msgstr "Вы выбрали какие-либо службы?"
 
 #: src/Template/Agentconnector/config.php:1803
 msgid "Services created successfully!"
-msgstr ""
+msgstr "Службы созданы успешно!"
 
 #: src/Template/Agentconnector/config.php:1806
 msgid "To apply the changes, please refresh your monitoring configuration."
-msgstr ""
+msgstr "Чтобы применить изменения, обновите конфигурацию мониторинга."
 
 #: src/Template/Agentconnector/config.php:1812
 msgid "Go to \"Refresh monitoring configuration\""
-msgstr ""
+msgstr "Перейти к \"Обновить конфигурацию мониторинга\""
 
 #: src/Template/Agentconnector/config.php:1833
 msgid "Enable automatic TLS certificate generation."
-msgstr ""
+msgstr "Включить автоматическую генерацию сертификата TLS."
 
 #: src/Template/Agentconnector/config.php:1836
 msgid "To enable an encrypted connection you need to mark the Agent as trusted."
-msgstr ""
+msgstr "Чтобы включить зашифрованное соединение, необходимо пометить Агента как доверенного."
 
 #: src/Template/Agentconnector/config.php:1840
 msgid "Show untrusted Agents"
-msgstr ""
+msgstr "Показать ненадежных агентов"
 
 #: src/Template/Agentconnector/pull_configurations.php:43
 #: src/Template/Agentconnector/push_cache.php:43
@@ -7380,7 +7380,7 @@ msgstr "Фильтровать по имени узла"
 
 #: src/Template/Agentconnector/pull_configurations.php:57
 msgid "Filter by host ip"
-msgstr ""
+msgstr "Фильтр по ip узла"
 
 #: src/Template/Agentconnector/pull_configurations.php:90
 #: src/Template/Agentconnector/pull_configurations.php:292
@@ -7389,12 +7389,12 @@ msgstr "Использовать HTTPS"
 
 #: src/Template/Agentconnector/pull_configurations.php:94
 msgid "Allow insecure (https) connections"
-msgstr ""
+msgstr "Разрешить небезопасные (https) соединения"
 
 #: src/Template/Agentconnector/pull_configurations.php:98
 #: src/Template/Agentconnector/pull_configurations.php:308
 msgid "Use proxy"
-msgstr ""
+msgstr "Используй прокси"
 
 #: src/Template/Agentconnector/pull_configurations.php:102
 msgid "Enable basic auth"
@@ -7402,7 +7402,7 @@ msgstr "Включить базовую аутентификацию"
 
 #: src/Template/Agentconnector/pull_configurations.php:106
 msgid "Received data?"
-msgstr ""
+msgstr "Полученные данные?"
 
 #: src/Template/Agentconnector/pull_configurations.php:129
 #: src/Template/Agentconnector/pull_configurations.php:131
@@ -7489,47 +7489,47 @@ msgstr "Нет"
 
 #: src/Template/Agentconnector/pull_configurations.php:269
 msgid "Edit agent pull configuration"
-msgstr ""
+msgstr "Изменить pull конфигурацию агента"
 
 #: src/Template/Agentconnector/pull_configurations.php:285
 msgid "Port of the agent webserver"
-msgstr ""
+msgstr "Порт агента веб-сервера"
 
 #: src/Template/Agentconnector/pull_configurations.php:299
 msgid "Allow insecure"
-msgstr ""
+msgstr "Разрешить небезопасно"
 
 #: src/Template/Agentconnector/pull_configurations.php:301
 msgid "Allow insecure connections (recommended for an easy auto setup)"
-msgstr ""
+msgstr "Разрешить небезопасные соединения (рекомендуется для простой автоматической настройки)"
 
 #: src/Template/Agentconnector/pull_configurations.php:315
 msgid "Enable basic authentication"
-msgstr ""
+msgstr "Включить базовую аутентификацию"
 
 #: src/Template/Agentconnector/pull_configurations.php:320
 msgid "Basic auth username"
-msgstr ""
+msgstr "Основное имя пользователя авторизации"
 
 #: src/Template/Agentconnector/pull_configurations.php:327
 msgid "Basic auth password"
-msgstr ""
+msgstr "Основной пароль авторизации"
 
 #: src/Template/Agentconnector/pull_configurations.php:336
 msgid "Push noticed"
-msgstr ""
+msgstr "Push заметил"
 
 #: src/Template/Agentconnector/pull_configurations.php:338
 msgid "The agent of this host pushed its data to openITCOCKPIT"
-msgstr ""
+msgstr "Агент этого узла отправил свои данные в openITCOCKPIT"
 
 #: src/Template/Agentconnector/push_cache.php:72
 msgid "Last modified"
-msgstr ""
+msgstr "Последнее изменение"
 
 #: src/Template/Agentconnector/push_cache.php:117
 msgid "Download check data"
-msgstr ""
+msgstr "Скачать данные чека"
 
 #: src/Template/Agentconnector/untrusted_agents.php:43
 msgid "Filter by host uuid"
@@ -7553,7 +7553,7 @@ msgstr "Дата создания сертификата"
 
 #: src/Template/Agentconnector/untrusted_agents.php:122
 msgid "Certificate not yet generated"
-msgstr ""
+msgstr "Сертификат еще не создан"
 
 #: src/Template/Agentconnector/untrusted_agents.php:149
 msgid "Trust Agent"
@@ -8145,39 +8145,39 @@ msgstr "Вы действительно хотите отменить выбра
 
 #: src/Template/Angular/menustats.php:26
 msgid "Display of storage notifications"
-msgstr ""
+msgstr "Отображение уведомлений о хранении"
 
 #: src/Template/Angular/menustats.php:29
 msgid "host notifications"
-msgstr ""
+msgstr "уведомления узла"
 
 #: src/Template/Angular/menustats.php:34
 msgid "critical messages"
-msgstr ""
+msgstr "критические сообщения"
 
 #: src/Template/Angular/menustats.php:40
 msgid "warning messages"
-msgstr ""
+msgstr "предупреждающие сообщения"
 
 #: src/Template/Angular/menustats.php:47
 msgid "Display of service notifications"
-msgstr ""
+msgstr "Отображение уведомлений служб"
 
 #: src/Template/Angular/menustats.php:49
 msgid "service notifications"
-msgstr ""
+msgstr "уведомления служб"
 
 #: src/Template/Angular/menustats.php:55
 msgid "messages with filter set to criticals only"
-msgstr ""
+msgstr "сообщения с установленным фильтром только для критических"
 
 #: src/Template/Angular/menustats.php:61
 msgid "messages with filter set to warnings only"
-msgstr ""
+msgstr "сообщения с фильтром, установленным только на предупреждения"
 
 #: src/Template/Angular/menustats.php:67
 msgid "messages with filter set to unknowns only"
-msgstr ""
+msgstr "сообщения с установленным фильтром только неизвестные"
 
 #: src/Template/Angular/not_found.php:56
 msgid "Looks like the object you are looking for has vanished"
@@ -8385,7 +8385,7 @@ msgstr "Ok"
 
 #: src/Template/Angular/system_health.php:26
 msgid "Display of system health notifications"
-msgstr ""
+msgstr "Отображение уведомлений о работоспособности системы"
 
 #: src/Template/Angular/system_health.php:28
 msgid "System health"
@@ -8484,7 +8484,7 @@ msgstr "Недостаточно места на диске для точки м
 #: src/Template/Angular/system_health.php:268
 #: src/Template/Angular/system_health_menu.php:287
 msgid "Service NSTA is not running!"
-msgstr ""
+msgstr "Служба NSTA не работает!"
 
 #: src/Template/Angular/system_health.php:286
 #: src/Template/Angular/system_health_menu.php:318
@@ -8568,19 +8568,19 @@ msgstr "UUID"
 
 #: src/Template/Angular/user_timezone.php:26
 msgid "Display of server and client times"
-msgstr ""
+msgstr "Отображение времени сервера и клиента"
 
 #: src/Template/Angular/user_timezone.php:28
 msgid "local time of client"
-msgstr ""
+msgstr "местное время клиента"
 
 #: src/Template/Angular/user_timezone.php:32
 msgid "display time information"
-msgstr ""
+msgstr "отображать информацию о времени"
 
 #: src/Template/Angular/user_timezone.php:35
 msgid "local time of server"
-msgstr ""
+msgstr "локальное время сервера"
 
 #: src/Template/Angular/version_check.php:27
 #: src/Template/Packetmanager/index.php:156
@@ -9664,23 +9664,23 @@ msgstr "Имя файла"
 
 #: src/Template/ConfigurationFiles/n_s_t_a_master.php:43
 msgid "Use nginx as reverse proxy"
-msgstr ""
+msgstr "Используйте nginx в качестве обратного прокси"
 
 #: src/Template/ConfigurationFiles/n_s_t_a_master.php:54
 msgid "HTTP bind address"
-msgstr ""
+msgstr "HTTP адрес привязки"
 
 #: src/Template/ConfigurationFiles/n_s_t_a_master.php:71
 msgid "HTTPS bind address"
-msgstr ""
+msgstr "HTTPS адрес привязки"
 
 #: src/Template/ConfigurationFiles/n_s_t_a_master.php:88
 msgid "TLS key file"
-msgstr ""
+msgstr "TLS файл ключа"
 
 #: src/Template/ConfigurationFiles/n_s_t_a_master.php:105
 msgid "TLS certificate file"
-msgstr ""
+msgstr "Файл сертификата TLS"
 
 #: src/Template/ConfigurationFiles/nagios_cfg.php:108
 msgid "Critical (default)"
@@ -10309,7 +10309,7 @@ msgstr "Показать детали"
 
 #: src/Template/Containers/index.php:324
 msgid "Sub containers:"
-msgstr ""
+msgstr "Подконтейнеры:"
 
 #: src/Template/Containers/index.php:363
 msgid "Add new container"
@@ -10454,27 +10454,27 @@ msgstr "Изменить имя контейнера"
 
 #: src/Template/Containers/index.php:802
 msgid "Show Details"
-msgstr ""
+msgstr "Показать детали"
 
 #: src/Template/Containers/show_details.php:121
 msgid "Hostdependencies"
-msgstr ""
+msgstr "Узловые зависимости"
 
 #: src/Template/Containers/show_details.php:174
 msgid "Auto reports"
-msgstr ""
+msgstr "Авто отчеты"
 
 #: src/Template/Containers/show_details.php:249
 msgid "Container "
-msgstr ""
+msgstr "Контейнер "
 
 #: src/Template/Containers/show_details.php:250
 msgid "details"
-msgstr ""
+msgstr "подробности"
 
 #: src/Template/Containers/show_details.php:262
 msgid "Containers map"
-msgstr ""
+msgstr "Карта контейнеров"
 
 #: src/Template/Containers/show_details.php:269
 #: src/Template/Dashboards/index.php:162
@@ -10576,7 +10576,7 @@ msgstr "PDF"
 #: src/Template/Downtimereports/index.php:132
 #: src/Template/Instantreports/generate.php:104
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
 
 #: src/Template/Currentstatereports/index.php:214
 #: src/Template/Services/index.php:312
@@ -11456,15 +11456,15 @@ msgstr "Сохранить выбор"
 
 #: src/Template/Exports/index.php:166
 msgid "Satellite Status has been moved."
-msgstr ""
+msgstr "Статус спутника был перемещен."
 
 #: src/Template/Exports/index.php:169
 msgid "Satellite export status has been moved to a separate view."
-msgstr ""
+msgstr "Статус экспорта спутников был перенесен в отдельный вид."
 
 #: src/Template/Exports/index.php:174
 msgid "Go to \"Satellite Status\""
-msgstr ""
+msgstr "Перейти к \"Статус спутника\""
 
 #: src/Template/Exports/index.php:185
 msgid "Tasks"
@@ -12258,7 +12258,7 @@ msgstr "Конфигурация уведомлений"
 #: src/Template/Hosts/add.php:537
 #: src/Template/Hosts/edit.php:552
 msgid "Notification Period"
-msgstr ""
+msgstr "Период уведомления"
 
 #: src/Template/Hosts/add.php:699
 #: src/Template/Hosts/edit.php:712
@@ -12351,21 +12351,21 @@ msgstr "Макросы зеленого цвета наследуются от �
 #: src/Template/Hosttemplates/add.php:650
 #: src/Template/Hosttemplates/edit.php:654
 msgid "Prometheus Exporters"
-msgstr ""
+msgstr "Prometheus Экспортеры"
 
 #: src/Template/Hosts/add.php:880
 #: src/Template/Hosts/edit.php:891
 #: src/Template/Hosttemplates/add.php:655
 #: src/Template/Hosttemplates/edit.php:659
 msgid "Exporters"
-msgstr ""
+msgstr "Экспортеры"
 
 #: src/Template/Hosts/add.php:898
 #: src/Template/Hosts/edit.php:909
 #: src/Template/Hosttemplates/add.php:667
 #: src/Template/Hosttemplates/edit.php:671
 msgid "To monitor this host using Prometheus please select the exporters that are installed on the host."
-msgstr ""
+msgstr "Для мониторинга этого узла с помощью Prometheus, пожалуйста, выберите экспортеров, которые установлены на этом узле."
 
 #: src/Template/Hosts/add.php:922
 msgid "Create host and setup agent"
@@ -12385,7 +12385,7 @@ msgstr "Сохранение и настройка агента"
 
 #: src/Template/Hosts/add.php:957
 msgid "Save and run Checkmk discovery"
-msgstr ""
+msgstr "Сохраните и запустите Checkmk discovery"
 
 #: src/Template/Hosts/browser.php:38
 #: src/Template/Services/browser.php:37
@@ -12725,11 +12725,11 @@ msgstr "Объекты в /root не могут быть перемещены в
 
 #: src/Template/Hosts/edit.php:129
 msgid "Not available for EVC hosts."
-msgstr ""
+msgstr "Недоступно для узлов EVC."
 
 #: src/Template/Hosts/edit.php:164
 msgid "/ Name of correlation"
-msgstr ""
+msgstr "/ Название корреляции"
 
 #: src/Template/Hosts/edit.php:925
 msgid "Update host"
@@ -12883,7 +12883,7 @@ msgstr "Фильтровать по имени шаблона узла"
 
 #: src/Template/Hosttemplates/index.php:99
 msgid "Filter by host template types"
-msgstr ""
+msgstr "Фильтр по типам шаблонов узлов"
 
 #: src/Template/Hosttemplates/index.php:138
 #: src/Template/Instantreports/add.php:97
@@ -13138,7 +13138,7 @@ msgstr "Добавить пользовательский макрос"
 
 #: src/Template/Macros/index.php:164
 msgid "Macro name"
-msgstr ""
+msgstr "Имя макроса"
 
 #: src/Template/Macros/index.php:232
 #: src/Template/Macros/index.php:338
@@ -13344,7 +13344,7 @@ msgstr "Установка"
 #: src/Template/Packetmanager/index.php:286
 #: src/Template/Supports/issue.php:110
 msgid "Request a quote"
-msgstr ""
+msgstr "Запрос цитаты"
 
 #: src/Template/Packetmanager/index.php:319
 msgid "Latest version"
@@ -14167,7 +14167,7 @@ msgstr "в узел"
 
 #: src/Template/Servicetemplategroups/allocate_to_host.php:62
 msgid "successfully deployed"
-msgstr ""
+msgstr "успешно развернут"
 
 #: src/Template/Servicetemplategroups/allocate_to_host.php:78
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:77
@@ -14531,59 +14531,59 @@ msgstr "Сообщить о проблеме"
 
 #: src/Template/Supports/issue.php:67
 msgid "Commercial support"
-msgstr ""
+msgstr "Коммерческая поддержка"
 
 #: src/Template/Supports/issue.php:78
 msgid "General questions about openITCOCKPIT"
-msgstr ""
+msgstr "Общие вопросы по openITCOCKPIT"
 
 #: src/Template/Supports/issue.php:80
 #: src/Template/Supports/issue.php:136
 msgid "System issues"
-msgstr ""
+msgstr "Системные проблемы"
 
 #: src/Template/Supports/issue.php:81
 #: src/Template/Supports/issue.php:137
 msgid "System crashes"
-msgstr ""
+msgstr "Сбои системы"
 
 #: src/Template/Supports/issue.php:83
 #: src/Template/Supports/issue.php:139
 msgid "Unwanted behavior or bugs"
-msgstr ""
+msgstr "Нежелательное поведение или ошибки"
 
 #: src/Template/Supports/issue.php:85
 #: src/Template/Supports/issue.php:141
 msgid "Errors with packages for your\n                                        distribution"
-msgstr ""
+msgstr "Ошибки с пакетами для вашего\n                                        дистрибутива"
 
 #: src/Template/Supports/issue.php:102
 msgid "Create a Ticket"
-msgstr ""
+msgstr "Создать билет"
 
 #: src/Template/Supports/issue.php:126
 msgid "GitHub"
-msgstr ""
+msgstr "GitHub"
 
 #: src/Template/Supports/issue.php:158
 msgid "Create an issue"
-msgstr ""
+msgstr "Создать проблему"
 
 #: src/Template/Supports/issue.php:172
 msgid "Want to chat?"
-msgstr ""
+msgstr "Хочешь пообщаться?"
 
 #: src/Template/Supports/issue.php:185
 msgid "Feel free to start a discussion on our reddit channel"
-msgstr ""
+msgstr "Не стесняйтесь, чтобы начать обсуждение на нашем канале Reddit"
 
 #: src/Template/Supports/issue.php:192
 msgid "or just join our IRC channel"
-msgstr ""
+msgstr "или просто присоединитесь к нашему IRC каналу"
 
 #: src/Template/Supports/issue.php:209
 msgid "Join #openITCOCKPIT on freenode."
-msgstr ""
+msgstr "Присоединяйтесь к #openITCOCKPIT на freenode."
 
 #: src/Template/Systemdowntimes/add.php:32
 msgid "create"
@@ -15159,7 +15159,7 @@ msgstr "Изменить локального пользователя:"
 
 #: src/Template/Users/edit.php:50
 msgid "Edit LDAP user:"
-msgstr ""
+msgstr "Изменить пользователя LDAP:"
 
 #: src/Template/Users/edit.php:460
 msgid "Please leave the password fields blank if you don't want to change the password."
@@ -15236,7 +15236,7 @@ msgstr "Обзор API ключей"
 
 #: src/Template/element/apikey_help.php:41
 msgid "Click on your name in the top left corner to edit your profile."
-msgstr ""
+msgstr "Нажмите на свое имя в верхнем левом углу, чтобы изменить свой профиль."
 
 #: src/Template/element/apikey_help.php:48
 msgid "At the bottom of the page, you can find the \"API Keys\" section. Click on \"Create new API key\""
@@ -15276,7 +15276,7 @@ msgstr "Вы также хотите удалить обслуживание с�
 
 #: src/Template/element/header.php:40
 msgid "Loading..."
-msgstr ""
+msgstr "Загрузка ..."
 
 #: src/Template/element/header.php:82
 msgid "Sign out"
@@ -15368,7 +15368,7 @@ msgstr "Вы действительно хотите отключить выбр
 
 #: src/Template/element/shortcut_links.php:64
 msgid "Add More"
-msgstr ""
+msgstr "Добавить больше"
 
 #: src/Template/element/shortcuts.php:34
 msgid "Keyboard Shortcuts"
@@ -15511,11 +15511,11 @@ msgstr "Ваш {0} пароль был сброшен!"
 
 #: src/Template/layout/app_frame.php:191
 msgid "Could not connect to SudoServer. External commands may not work. Please try to reload this page."
-msgstr ""
+msgstr "Не удалось подключиться к SudoServer. Внешние команды могут не работать. Пожалуйста, попробуйте перезагрузить эту страницу."
 
 #: src/Template/layout/app_frame.php:206
 msgid "Lost connection to SudoServer. External commands may not work. Please try to reload this page."
-msgstr ""
+msgstr "Потеряна связь с SudoServer. Внешние команды могут не работать. Пожалуйста, попробуйте перезагрузить эту страницу."
 
 #: src/Template/layout/login.php:48
 msgid "Sign In"
@@ -15611,7 +15611,7 @@ msgstr "Carbon и Whisper (Graphing)"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GeneratorRegistry.php:91
 msgid "SnmpTrapModule"
-msgstr ""
+msgstr "SnmpTrapModule"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/GraphingDocker.php:172
 msgid "Value is not in CIDR notation"
@@ -15691,23 +15691,23 @@ msgstr "Используйте настроенный прокси сервер 
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NSTAMaster.php:85
 msgid "Bind address of the HTTP interface. Default: 127.0.0.1:7473"
-msgstr ""
+msgstr "Привязать адрес HTTP-интерфейса. По умолчанию: 127.0.0.1:7473"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NSTAMaster.php:86
 msgid "Bind address of the HTTP interface. Default: 127.0.0.1:7474"
-msgstr ""
+msgstr "Привязать адрес HTTP-интерфейса. По умолчанию: 127.0.0.1:7474"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NSTAMaster.php:87
 msgid "TLS certificate key file to be used. Default: /etc/ssl/private/ssl-cert-snakeoil.key"
-msgstr ""
+msgstr "Файл ключа сертификата TLS, который будет использоваться. По умолчанию: /etc/ssl/private/ssl-cert-snakeoil.key"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NSTAMaster.php:88
 msgid "TLS certificate file to be used. Default: /etc/ssl/certs/ssl-cert-snakeoil.pem"
-msgstr ""
+msgstr "Файл сертификата TLS, который будет использоваться. По умолчанию: /etc/ssl/certs/ssl-cert-snakeoil.pem"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NSTAMaster.php:89
 msgid "Use openITCOCKPIT's preconfigured webserver as revers proxy for NSTA."
-msgstr ""
+msgstr "Используйте предварительно сконфигурированный веб-сервер openITCOCKPIT в качестве обратного прокси для NSTA."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NagiosCfg.php:126
 msgid "Value out of range (c, u, w, o)"
@@ -16108,7 +16108,7 @@ msgstr "Конфигурация агента"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:592
 msgid "Agent Overview"
-msgstr ""
+msgstr "Обзор агента"
 
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:602
 msgid "Agent Checks"
@@ -16282,27 +16282,27 @@ msgstr "s"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaColors.php:17
 msgid "Green"
-msgstr ""
+msgstr "Зеленый"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaColors.php:28
 msgid "Yellow"
-msgstr ""
+msgstr "Желтый"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaColors.php:39
 msgid "Red"
-msgstr ""
+msgstr "Красный"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaColors.php:50
 msgid "Blue"
-msgstr ""
+msgstr "Синий"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaColors.php:61
 msgid "Orange"
-msgstr ""
+msgstr "Оранжевый"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaColors.php:72
 msgid "Purple"
-msgstr ""
+msgstr "Фиолетовый"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:65
 msgid "Short"
