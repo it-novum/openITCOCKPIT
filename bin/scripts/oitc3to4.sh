@@ -189,7 +189,7 @@ check_mysql_version(){
           errors+=($(echo "openITCOCKPIT Version 4 requires at least MariaDB version 10.3" | tr ' ' '___'))
           ((errorCount++))
         else
-          oks+=($(echo "'MariaDB Version >= 10.3" | tr ' ' '___'))
+          oks+=($(echo "MariaDB Version >= 10.3" | tr ' ' '___'))
           ((okCount++))
         fi
 
@@ -201,7 +201,7 @@ check_mysql_version(){
           errors+=($(echo "openITCOCKPIT Version 4 requires at least MySQL version 5.7" | tr ' ' '___'))
           ((errorCount++))
         else
-          oks+=($(echo "'MySQL Version >= 5.7" | tr ' ' '___'))
+          oks+=($(echo "MySQL Version >= 5.7" | tr ' ' '___'))
           ((okCount++))
         fi
       fi
