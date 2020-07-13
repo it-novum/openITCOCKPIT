@@ -40,6 +40,11 @@ class ResetPasswordCommand extends Command {
             'boolean' => true,
             'default' => false
         ]);
+        $parser->addOption('no-mail', [
+            'help'    => __('Do not send the new password per mail'),
+            'boolean' => true,
+            'default' => false
+        ]);
 
         return $parser;
     }
@@ -60,6 +65,7 @@ class ResetPasswordCommand extends Command {
         }
 
         $print = $args->getOption('print') === true;
+        $doNotSendMail = $args->getOption('no-mail') === true;
 
         $users = $this->getAllUsersWithPassword();
 
@@ -80,7 +86,7 @@ class ResetPasswordCommand extends Command {
 
         $selection = $io->askChoice('Please select a user ID', $userIds, (string)$userIds[0]);
 
-        $this->resetPassword($selection, $print);
+        $this->resetPassword($selection, $print, $doNotSendMail);
     }
 
     private function getAllUsersWithPassword() {
@@ -95,7 +101,7 @@ class ResetPasswordCommand extends Command {
         return $users;
     }
 
-    private function resetPassword($userId, $print = false) {
+    private function resetPassword($userId, $print = false, $doNotSendMail = false) {
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
         /** @var SystemsettingsTable $SystemsettingsTable */
@@ -111,35 +117,38 @@ class ResetPasswordCommand extends Command {
         $newPassword = $UsersTable->generatePassword();
 
         $user->set('password', $newPassword);
-
-        $Logo = new Logo();
-
-        $Mailer = new Mailer();
-        $Mailer->setFrom($systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'], $systemsettings['MONITORING']['MONITORING.FROM_NAME']);
-        $Mailer->addTo($user->get('email'));
-        $Mailer->setSubject(__('Your ') . $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'] . __(' got reset!'));
-        $Mailer->setEmailFormat('text');
-        $Mailer->setAttachments([
-            'logo.png' => [
-                'file'      => $Logo->getSmallLogoDiskPath(),
-                'mimetype'  => 'image/png',
-                'contentId' => '100'
-            ]
-        ]);
-        $Mailer->viewBuilder()
-            ->setTemplate('reset_password')
-            ->setVar('systemname', $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])
-            ->setVar('newPassword', $newPassword);
-
-        $user->set('password', $newPassword);
-
         $UsersTable->save($user);
 
         if ($print) {
             $this->io->success(__('New password is: {0}', $newPassword));
         }
 
-        $Mailer->deliver();
-        $this->io->success(__('New password was send to {0}', $user->email));
+        if (!$doNotSendMail) {
+            $Logo = new Logo();
+
+            $Mailer = new Mailer();
+            $Mailer->setFrom($systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'], $systemsettings['MONITORING']['MONITORING.FROM_NAME']);
+            $Mailer->addTo($user->get('email'));
+            $Mailer->setSubject(__('Your ') . $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'] . __(' got reset!'));
+            $Mailer->setEmailFormat('text');
+            $Mailer->setAttachments([
+                'logo.png' => [
+                    'file'      => $Logo->getSmallLogoDiskPath(),
+                    'mimetype'  => 'image/png',
+                    'contentId' => '100'
+                ]
+            ]);
+            $Mailer->viewBuilder()
+                ->setTemplate('reset_password')
+                ->setVar('systemname', $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])
+                ->setVar('newPassword', $newPassword);
+
+            try {
+                $Mailer->deliver();
+                $this->io->success(__('New password was send to {0}', $user->email));
+            } catch (\Exception $exception) {
+                $this->io->error($exception->getMessage());
+            }
+        }
     }
 }
