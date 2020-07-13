@@ -2009,11 +2009,11 @@ class Agent extends Importer {
                 'servicetemplatecommandargumentvalues'      => [
                     [
                         'commandargument_id' => '$ARG1$',
-                        'value'              => 'id',
+                        'value'              => 'name',
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => '44e1d03c....',
+                        'value'              => 'fancy_name....',
                     ]
                 ],
                 'customvariables'                           => [],
@@ -2073,11 +2073,11 @@ class Agent extends Importer {
                 'servicetemplatecommandargumentvalues'      => [
                     [
                         'commandargument_id' => '$ARG1$',
-                        'value'              => 'id',
+                        'value'              => 'name',
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => '44e1d03c....',
+                        'value'              => 'fancy_name....',
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
@@ -2145,11 +2145,11 @@ class Agent extends Importer {
                 'servicetemplatecommandargumentvalues'      => [
                     [
                         'commandargument_id' => '$ARG1$',
-                        'value'              => 'id',
+                        'value'              => 'name',
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => '44e1d03c....',
+                        'value'              => 'fancy_name....',
                     ],
                     [
                         'commandargument_id' => '$ARG3$',

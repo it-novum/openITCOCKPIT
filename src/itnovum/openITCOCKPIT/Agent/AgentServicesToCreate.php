@@ -147,13 +147,17 @@ class AgentServicesToCreate {
                         foreach ($objects['result'] as $dockercontainer) {
                             foreach ($receiverPluginNames as $receiverPluginName) {
                                 //if is running check or container is really running for any other check
-                                if ($receiverPluginName === 'DockerContainerRunning' || (isset($dockercontainer['pids']) || isset($dockercontainer['cpu_percent']))) {
+                                $dockerDefaultIdentifier = 'name';  //'id' / 'name' (see servicetemplate or command for description)
+                                if (isset($dockercontainer[$dockerDefaultIdentifier]) && ($receiverPluginName === 'DockerContainerRunning' || (isset($dockercontainer['pids']) || isset($dockercontainer['cpu_percent'])))) {
                                     $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
-                                    $service['servicecommandargumentvalues'][0]['value'] = 'id';
-                                    $service['servicecommandargumentvalues'][1]['value'] = $dockercontainer['id'];
+                                    $service['servicecommandargumentvalues'][0]['value'] = $dockerDefaultIdentifier;
+                                    $service['servicecommandargumentvalues'][1]['value'] = $dockercontainer[$dockerDefaultIdentifier];
                                     $service['agent_wizard_option_description'] = $dockercontainer['id'] . (isset($dockercontainer['name']) ? ' (' . $dockercontainer['name'] . ')' : '');
+                                    if ($dockerDefaultIdentifier == 'name' && isset($dockercontainer['name'])) {
+                                        $service['agent_wizard_option_description'] = $dockercontainer['name'] . ' (' . $dockercontainer['id'] . ')';
+                                    }
 
-                                    $this->addServiceToCreate($service, $receiverPluginName, $services, $dockercontainer['id'], 1);
+                                    $this->addServiceToCreate($service, $receiverPluginName, $services, $dockercontainer[$dockerDefaultIdentifier], 1);
                                 }
                             }
                         }
