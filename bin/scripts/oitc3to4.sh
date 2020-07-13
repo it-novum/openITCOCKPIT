@@ -233,6 +233,28 @@ check_mysql_table_sizes(){
 
 }
 
+check_openitcockpit_version(){
+    debug_log $(echo "Checking openITCOCKPIT version ..." | tr ' ' '___')
+
+
+    if [[ -f "/usr/share/openitcockpit/app/Config/version.php" ]]; then
+        $(php -r "require_once '/usr/share/openitcockpit/app/Config/version.php'; if(isset(\$config['version']) === false){ exit(1); }if(version_compare(\$config['version'], '3.7.3') >= 0){exit(0);}exit(1);")
+        rc=$?
+
+        if [[ $rc -ne 0 ]]; then
+            errors+=($(echo "You version of openITCOCKPIT is < 3.7.3!" | tr ' ' '___'))
+            ((errorCount++))
+        else
+            oks+=($(echo "Installed version of openITCOCKPIT >= 3.7.3" | tr ' ' '___'))
+            ((okCount++))
+        fi
+
+    else
+        errors+=($(echo "openITCOCKPIT 3.x version.php not found. Is openITCOCKPIT 3.x installed on this system?" | tr ' ' '___'))
+        ((errorCount++))
+    fi
+}
+
 print_logo(){
 echo -e "\033[38;5;068m
                                         ///
@@ -266,6 +288,8 @@ echo -e "\033[38;5;068m
 ################## run checks
 
 print_logo
+
+check_openitcockpit_version
 
 check_free_disk_space "/"
 check_free_disk_space "/var"
