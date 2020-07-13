@@ -312,6 +312,12 @@ if [[ -d /opt/openitc/frontend/plugins/MapModule/webroot/img/ ]]; then
     chown -R www-data:www-data /opt/openitc/frontend/plugins/MapModule/webroot/img/
 fi
 
+if getent group ssl-cert &>/dev/null; then
+    if [ -z "$(groups nagios | grep ssl-cert)" ]; then
+        usermod -aG ssl-cert nagios
+    fi
+fi
+
 oitc config_generator_shell --generate
 
 echo "Enable new systemd services"
