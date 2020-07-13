@@ -321,10 +321,6 @@ if [ "$VERSION_CODENAME" == "stretch" ]; then
     if [ ! -z "$(dpkg -l | awk '$2 ~ /openitcockpit-module-distribute/')" ]; then
         always="$always openitcockpit-nsta"
     fi
-    
-    if [ ! -z "$(dpkg -l | awk '$2 ~ /openitcockpit-module-mk/')" ]; then
-        always="$always openitcockpit-module-mk- openitcockpit-module-checkmk"
-    fi
 
     if [ ! -z "$(dpkg -l | awk '$1 ~ /ii/ && $2 ~ /mariadb-server-10.1/')" ]; then
         always="$always mariadb-server-10.3 mariadb-client-10.3 mariadb-client-core-10.3 mariadb-server-core-10.3"
@@ -359,10 +355,6 @@ if [ "$VERSION_CODENAME" == "xenial" ]; then
         always="$always openitcockpit-nsta"
     fi
 
-    if [ ! -z "$(dpkg -l | awk '$2 ~ /openitcockpit-module-mk/')" ]; then
-        always="$always openitcockpit-module-mk- openitcockpit-module-checkmk"
-    fi
-
     echo "${Yellow}"
     echo "###############################################################################"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
@@ -389,10 +381,6 @@ if [ "$VERSION_CODENAME" == "bionic" ]; then
 
     if [ ! -z "$(dpkg -l | awk '$2 ~ /openitcockpit-module-distribute/')" ]; then
         always="$always openitcockpit-nsta"
-    fi
-
-    if [ ! -z "$(dpkg -l | awk '$2 ~ /openitcockpit-module-mk/')" ]; then
-        always="$always openitcockpit-module-mk- openitcockpit-module-checkmk"
     fi
 
     echo "${Yellow}"
