@@ -1,0 +1,16 @@
+[Unit]
+Description=Send openITCOCKPIT push notifications to connected web browsers
+After=syslog.target network.target mysql.service gearman-job-server.service
+
+[Service]
+User=root
+Group=www-data
+Type=simple
+Restart=on-failure
+ExecStart=/opt/openitc/frontend/bin/cake push_notifications
+LimitNOFILE=10000
+LimitNOFILESoft=10000
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

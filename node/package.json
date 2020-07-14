@@ -1,0 +1,16 @@
+{
+    "name": "oitc_render_service",
+    "description": "Chart render service for openITCOCKPIT",
+    "version": "1.0.0",
+    "main": "ChartRenderer.js",
+    "keywords": [],
+    "author": "it-novum GmbH",
+    "license": "MIT",
+    "homepage": "https://openitcockpit.io",
+    "dependencies": {
+        "chart.js": "^2.9.3",
+        "express": "^4.17.1",
+        "moment": "^2.27.0",
+        "node-chartjs-v12": "https://github.com/it-novum/node-chartjs.git"
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "name": "open-itcockpit/Statusengine2Module",
+    "description": "Statusengine2Module plugin for openITCOCKPIT",
+    "type": "cakephp-plugin",
+    "license": "Dual licensed",
+    "require": {
+        "cakephp/cakephp": "^3.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7.14|^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Statusengine2Module\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Statusengine2Module\\Test\\": "tests/",
+            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
+        }
+    }
+}

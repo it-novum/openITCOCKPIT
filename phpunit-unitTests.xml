@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    backupGlobals="false"
+    backupStaticAttributes="false"
+    bootstrap="config/bootstrap.php"
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    processIsolation="false"
+    stopOnFailure="false"
+    >
+    <php>
+        <ini name="memory_limit" value="-1"/>
+        <ini name="apc.enable_cli" value="1"/>
+    </php>
+
+    <testsuites>
+        <testsuite name="unit tests">
+            <directory>tests/UnitTests/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">src/View/Helper</directory>
+<!--            <directory suffix=".php">plugins/*/src/</directory>-->
+            <exclude>
+                <file>src/Console/Installer.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>

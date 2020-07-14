@@ -1,0 +1,431 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2020-07-10 14:02+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:137
+#: src/Command/NagiosNotificationCommand.php:150
+#: src/Command/NagiosXmlNotificationCommand.php:150
+#: src/Command/PushoverNotificationCommand.php:98
+#: src/Command/SendPushNotificationCommand.php:66
+#: src/Command/SmsNotificationCommand.php:69
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:137
+#: src/Command/NagiosNotificationCommand.php:150
+#: src/Command/NagiosXmlNotificationCommand.php:150
+#: src/Command/PushoverNotificationCommand.php:98
+#: src/Command/SendPushNotificationCommand.php:66
+#: src/Command/SmsNotificationCommand.php:69
+msgid "Type of the notification host or service"
+msgstr "Тип уведомления узла или службы"
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:138
+#: src/Command/PushoverNotificationCommand.php:99
+#: src/Command/SendPushNotificationCommand.php:67
+msgid "Notification type of monitoring engine => $NOTIFICATIONTYPE$ "
+msgstr "Тип уведомления мониторинга => $NOTIFICATIONTYPE$"
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:139
+#: src/Command/PushoverNotificationCommand.php:100
+#: src/Command/SendPushNotificationCommand.php:68
+msgid "Host uuid you want to send a notification => $HOSTNAME$"
+msgstr "uuid узла uuid которому вы хотите отправить уведомление => $HOSTNAME$"
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:140
+#: src/Command/PushoverNotificationCommand.php:101
+#: src/Command/SendPushNotificationCommand.php:69
+msgid "Service uuid you want to send a notification => $SERVICEDESC$"
+msgstr "uuid службы которой вы хотите отправить уведомление => $SERVICEDESC$"
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:141
+#: src/Command/PushoverNotificationCommand.php:102
+#: src/Command/SendPushNotificationCommand.php:70
+msgid "current host state => $HOSTSTATEID$/$SERVICESTATEID$"
+msgstr "текущее состояние узла => $HOSTSTATEID$/$SERVICESTATEID$"
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:142
+#: src/Command/PushoverNotificationCommand.php:103
+#: src/Command/SendPushNotificationCommand.php:71
+msgid "host output => $HOSTOUTPUT$/$SERVICEOUTPUT$"
+msgstr "выход узла => $HOSTOUTPUT$/$SERVICEOUTPUT$"
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:143
+#: src/Command/PushoverNotificationCommand.php:104
+#: src/Command/SendPushNotificationCommand.php:72
+msgid "host acknowledgement author => $NOTIFICATIONAUTHOR$"
+msgstr "автор подтверждения узла => $NOTIFICATIONAUTHOR$"
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:144
+#: src/Command/PushoverNotificationCommand.php:105
+#: src/Command/SendPushNotificationCommand.php:73
+msgid "host acknowledgement comment => $NOTIFICATIONCOMMENT$"
+msgstr "комментарий подтверждения узла => $NOTIFICATIONCOMMENT$"
+
+#: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:145
+#: src/Command/NagiosNotificationCommand.php:170
+#: src/Command/NagiosXmlNotificationCommand.php:169
+msgid "Disable emojis in subject"
+msgstr "Отключить смайлики в теме"
+
+#: src/Command/ConnectToAgentCommand.php:59
+msgid "IP of Host with the Agent to connect to"
+msgstr "IP узла с агентом для подключения"
+
+#: src/Command/ConnectToAgentCommand.php:60
+msgid "Port of Host with the Agent to connect to"
+msgstr "Порт узла с агентом для подключения"
+
+#: src/Command/ConnectToAgentCommand.php:61
+msgid "Basic-Auth username from Agent"
+msgstr "Basic-Auth имя пользователя от агента"
+
+#: src/Command/ConnectToAgentCommand.php:62
+msgid "Basic-Auth password from Agent"
+msgstr "Пароль Basic-Auth от Агента"
+
+#: src/Command/ConnectToAgentCommand.php:63
+msgid "Disable proxy"
+msgstr "Отключить прокси"
+
+#: src/Command/CronjobsCommand.php:67
+msgid "All cronjobs will be forced to execute!"
+msgstr "Все cronjobs будут вынуждены выполнить!"
+
+#: src/Command/DebugCommand.php:67
+msgid "Tail and parse monitoring logfile"
+msgstr "Показать и проанализировать файл журнала мониторинга"
+
+#: src/Command/DebugCommand.php:68
+msgid "Tailf and parse monitoring logfile"
+msgstr "Показать и проанализировать файл журнала мониторинга"
+
+#: src/Command/DebugCommand.php:69
+msgid "Read and translate from stdin. Example: cat file.cfg | oitc debug -s"
+msgstr "Читайте и переводите со stdin. Пример: cat file.cfg | oitc debug -s"
+
+#: src/Command/DebugCommand.php:113
+msgid "[T]ail and parse monitoring log file"
+msgstr "[T]Показать и проанализировать файл журнала мониторинга"
+
+#: src/Command/DebugCommand.php:114
+msgid "[TF] Tail -f and parse monitoring log file"
+msgstr "[TF]Показать и проанализировать файл журнала мониторинга"
+
+#: src/Command/DebugCommand.php:115
+msgid "[H] Debug host configuratgion files"
+msgstr "[H] Показать Файлы конфигурации узла"
+
+#: src/Command/DebugCommand.php:116
+msgid "[HT] Debug host template configuration files"
+msgstr "[HT] Показать Файлы конфигурации шаблонов узлов"
+
+#: src/Command/DebugCommand.php:117
+msgid "[S] Debug service configuration files"
+msgstr "[S] Показать Файлы конфигурации шаблонов служб"
+
+#: src/Command/DebugCommand.php:118
+msgid "[ST] Debug service template configuration files"
+msgstr "[ST] Показать Файлы конфигурации служб"
+
+#: src/Command/DebugCommand.php:119
+msgid "[TP] Debug timeperiod configuration files"
+msgstr "[TP] Показать Файлы конфигурации периодов времени"
+
+#: src/Command/DebugCommand.php:120
+msgid "[CM] Debug command configuration files"
+msgstr "[CM] Показать Файлы конфигурации командов"
+
+#: src/Command/DebugCommand.php:121
+msgid "[C] Debug contact configuration files"
+msgstr "[C] Показать Файлы конфигурации контактов"
+
+#: src/Command/DebugCommand.php:122
+msgid "[CG] Debug contact group configuration files"
+msgstr "[CG] Показать Файлы конфигурации контактных групп"
+
+#: src/Command/DebugCommand.php:123
+msgid "[HE] Debug host escalation configuration files"
+msgstr "[HE] Показать Файлы конфигурации эскалации узлов"
+
+#: src/Command/DebugCommand.php:124
+msgid "[UUID] Search object by UUID"
+msgstr "[UUID] Поиск объекта по UUID"
+
+#: src/Command/DebugCommand.php:125
+msgid "[Q]uit"
+msgstr "[Q]Выход"
+
+#: src/Command/DebugCommand.php:127
+msgid "What would you like to do?"
+msgstr "Чем бы Вы хотели заняться?"
+
+#: src/Command/DebugCommand.php:169
+msgid "You have made an invalid selection. Please choose by entering T or B."
+msgstr "Вы сделали неверный выбор. Пожалуйста, выберите, введя T или B."
+
+#: src/Command/DebugCommand.php:177
+msgid "Hopefully i was helpful"
+msgstr "Надеюсь, я был полезным"
+
+#: src/Command/DebugCommand.php:178
+msgid "Thanks for using me, bye"
+msgstr "Спасибо за использование меня, пока"
+
+#: src/Command/NagiosNotificationCommand.php:151
+#: src/Command/NagiosXmlNotificationCommand.php:151
+#: src/Command/SmsNotificationCommand.php:70
+msgid "Notification type of monitoring engine"
+msgstr "Тип уведомления в мониторинге"
+
+#: src/Command/NagiosNotificationCommand.php:152
+#: src/Command/NagiosXmlNotificationCommand.php:152
+#: src/Command/SmsNotificationCommand.php:72
+msgid "Host uuid you want to send a notification"
+msgstr "Узел uuid на который вы хотите отправить уведомление"
+
+#: src/Command/NagiosNotificationCommand.php:153
+#: src/Command/NagiosXmlNotificationCommand.php:153
+msgid "Host description you want to send a notification"
+msgstr "Описание узла, на который вы хотите отправить уведомление"
+
+#: src/Command/NagiosNotificationCommand.php:154
+#: src/Command/NagiosXmlNotificationCommand.php:154
+msgid "current host state"
+msgstr "текущее состояние узла"
+
+#: src/Command/NagiosNotificationCommand.php:155
+#: src/Command/NagiosXmlNotificationCommand.php:155
+msgid "host address"
+msgstr "адрес узла"
+
+#: src/Command/NagiosNotificationCommand.php:156
+#: src/Command/NagiosXmlNotificationCommand.php:156
+msgid "host output"
+msgstr "выход узла"
+
+#: src/Command/NagiosNotificationCommand.php:157
+#: src/Command/NagiosXmlNotificationCommand.php:157
+msgid "host long output"
+msgstr "длинный выход узла"
+
+#: src/Command/NagiosNotificationCommand.php:158
+#: src/Command/NagiosXmlNotificationCommand.php:158
+msgid "host acknowledgement author"
+msgstr "автор подтверждения узла"
+
+#: src/Command/NagiosNotificationCommand.php:159
+#: src/Command/NagiosXmlNotificationCommand.php:159
+msgid "host acknowledgement comment"
+msgstr "комментарий подтверждения узла"
+
+#: src/Command/NagiosNotificationCommand.php:160
+#: src/Command/NagiosXmlNotificationCommand.php:160
+#: src/Command/SmsNotificationCommand.php:73
+msgid "recivers mail address"
+msgstr "адрес получателя"
+
+#: src/Command/NagiosNotificationCommand.php:161
+#: src/Command/NagiosXmlNotificationCommand.php:161
+msgid "human name of the contact"
+msgstr "человеческое имя контакта"
+
+#: src/Command/NagiosNotificationCommand.php:162
+#: src/Command/NagiosXmlNotificationCommand.php:162
+#: src/Command/SmsNotificationCommand.php:74
+msgid "Service uuid you want to notify"
+msgstr "UUID службы, о которой вы хотите уведомить"
+
+#: src/Command/NagiosNotificationCommand.php:163
+#: src/Command/NagiosXmlNotificationCommand.php:163
+msgid "service state"
+msgstr "состояние службы"
+
+#: src/Command/NagiosNotificationCommand.php:164
+#: src/Command/NagiosXmlNotificationCommand.php:164
+msgid "service output"
+msgstr "выход службы"
+
+#: src/Command/NagiosNotificationCommand.php:165
+#: src/Command/NagiosXmlNotificationCommand.php:165
+msgid "service long output"
+msgstr "длинный выход службы"
+
+#: src/Command/NagiosNotificationCommand.php:166
+#: src/Command/NagiosXmlNotificationCommand.php:166
+msgid "service acknowledgement author"
+msgstr "автор подтверждения службы"
+
+#: src/Command/NagiosNotificationCommand.php:167
+#: src/Command/NagiosXmlNotificationCommand.php:167
+msgid "service acknowledgement comment"
+msgstr "комментарий подтверждения службы"
+
+#: src/Command/NagiosNotificationCommand.php:168
+msgid "Email type for notifications [text, html, both]"
+msgstr "Тип электронной почты для уведомлений [text, html, both]"
+
+#: src/Command/NagiosNotificationCommand.php:169
+#: src/Command/NagiosXmlNotificationCommand.php:168
+msgid "disable email attachments"
+msgstr "отключить вложения электронной почты"
+
+#: src/Command/NagiosNotificationCommand.php:171
+#: src/Command/NagiosXmlNotificationCommand.php:170
+msgid "E-Mail layout/template that should be used"
+msgstr "Макет/шаблон электронной почты, который следует использовать"
+
+#: src/Command/PushoverNotificationCommand.php:106
+msgid "API Token of your Pushover Application => $_CONTACTPUSHOVERAPP$"
+msgstr "API токен вашего Pushover приложения => $_CONTACTPUSHOVERAPP$"
+
+#: src/Command/PushoverNotificationCommand.php:107
+msgid "Your Pushover User Key => $_CONTACTPUSHOVERUSER$"
+msgstr "Ваш пользовательский Pushover ключ  => $_CONTACTPUSHOVERUSER$"
+
+#: src/Command/PushoverNotificationCommand.php:108
+msgid "If set, connection will be established using the proxy server defined in openITCOCKPIT interface."
+msgstr "Если установлено, соединение будет установлено с использованием прокси-сервера, определенного в интерфейсе openITCOCKPIT."
+
+#: src/Command/QueryLogCommand.php:81
+msgid "Pretty print sql queries"
+msgstr "Довольно форматированный выход SQL запросов"
+
+#: src/Command/QueryLogCommand.php:82
+msgid "Hide (ARO/ACO) permission queries"
+msgstr "Скрыть (ARO/ACO) запросы разрешений"
+
+#: src/Command/QueryLogCommand.php:83
+msgid "Start a WebSocket server to make the query log accessible from openITCOCKPIT web interface"
+msgstr "Запустите WebSocketсервер, чтобы сделать журнал запросов доступным из веб-интерфейса openITCOCKPIT."
+
+#: src/Command/SendPushNotificationCommand.php:74
+msgid "openITCOCKPIT User Id"
+msgstr "openITCOCKPIT User Id"
+
+#: src/Command/SetupCommand.php:133
+msgid "[Y]es I want to continue the setup of openITCOCKPIT"
+msgstr "[Y] Если я хочу продолжить настройку openITCOCKPIT"
+
+#: src/Command/SetupCommand.php:134
+msgid "[N]o and exit shell"
+msgstr "[N] Нет и выход"
+
+#: src/Command/SetupCommand.php:136
+msgid "Are you sure you want to continue?"
+msgstr "Вы уверены что хотите продолжить?"
+
+#: src/Command/SetupCommand.php:142
+msgid "Setup aborted!"
+msgstr "Установка прервана!"
+
+#: src/Command/SetupCommand.php:145
+msgid "You have made an invalid selection. Please choose by entering Y or N."
+msgstr "Вы сделали неверный выбор. Пожалуйста, выберите, введя Y или N."
+
+#: src/Command/SetupCommand.php:260
+msgid "Please enter your first name"
+msgstr "Пожалуйста, введите ваше имя"
+
+#: src/Command/SetupCommand.php:272
+msgid "Please enter your last name"
+msgstr "Пожалуйста, введите свою фамилию"
+
+#: src/Command/SetupCommand.php:284
+msgid "Please enter your email address. This will be the username for the login."
+msgstr "Пожалуйста, введите Ваш адрес электронной почты. Это будет имя пользователя для входа."
+
+#: src/Command/SetupCommand.php:299
+msgid "Please enter a password for the login."
+msgstr "Пожалуйста, введите пароль для входа."
+
+#: src/Command/SetupCommand.php:302
+msgid "Please confirm your password"
+msgstr "Пожалуйста, подтвердите ваш пароль"
+
+#: src/Command/SetupCommand.php:326
+msgid "System Address or FQDN?"
+msgstr "Системный адрес или полное доменное имя?"
+
+#: src/Command/SetupCommand.php:360
+msgid "Please enter a sender email address"
+msgstr "Пожалуйста, введите адрес электронной почты отправителя"
+
+#: src/Command/SetupCommand.php:374
+msgid "Please enter the address of your mail server (e.g. mail.example.org)"
+msgstr "Пожалуйста, введите адрес вашего почтового сервера (например, mail.example.org)"
+
+#: src/Command/SetupCommand.php:386
+msgid "Please enter the port of your mail server"
+msgstr "Пожалуйста, введите порт вашего почтового сервера"
+
+#: src/Command/SetupCommand.php:400
+msgid "If required, set a username, or leave it blank if you don't need a user"
+msgstr "Если необходимо, задайте имя пользователя или оставьте поле пустым, если вам не нужен пользователь"
+
+#: src/Command/SetupCommand.php:410
+msgid "Please enter your password, or leave it blank if you don't need a password"
+msgstr "Пожалуйста, введите свой пароль или оставьте его пустым, если вам не нужен пароль"
+
+#: src/Command/SmsNotificationCommand.php:68
+msgid "IP address of the SMS gateway"
+msgstr "IP адрес SMS шлюза"
+
+#: src/Command/SmsNotificationCommand.php:71
+msgid "Transport method for example NRPE"
+msgstr "Транспортный метод например NRPE"
+
+#: src/Lib/DebugConfigNagiosTask.php:273
+#: src/Lib/DebugConfigNagiosTask.php:278
+msgid "Please enter the name of the "
+msgstr "Пожалуйста, введите название "
+
+#: src/Lib/DebugConfigNagiosTask.php:284
+msgid "No name field for "
+msgstr "Нет имени поля для "
+
+#: src/Lib/DebugConfigNagiosTask.php:294
+msgid "I found "
+msgstr "Я нашел "
+
+#: src/Lib/DebugConfigNagiosTask.php:296
+msgid "Please select one "
+msgstr "Пожалуйста, выберите один "
+
+#: src/Lib/DebugConfigNagiosTask.php:307
+msgid "Your choice please"
+msgstr "Ваш выбор, пожалуйста"
+
+#: src/Lib/DebugConfigNagiosTask.php:315
+msgid " not found"
+msgstr " не найден"
+
+#: src/Lib/DebugConfigNagiosTask.php:333
+msgid "Please enter your UUID"
+msgstr "Пожалуйста, введите ваш UUID"
+
+#: src/Lib/DebugConfigNagiosTask.php:340
+msgid "No result for given UUID"
+msgstr "Нет результата для данной UUID"
+
+#: src/Lib/DebugConfigNagiosTask.php:441
+#: src/Lib/DebugConfigNagiosTask.php:523
+msgid "Notice: This is not the real nagios configuration file. This is a human readable version of the config."
+msgstr "Примечание: это не настоящий файл конфигурации nagios. Это удобочитаемая версия конфигурации."
+
+#: src/Lib/DebugConfigNagiosTask.php:446
+msgid "<error>File not found! ("
+msgstr "<error>Файл не найден! ("
+
+#: src/Lib/DebugConfigNagiosTask.php:534
+msgid "<error>Folder %s is empty!</error>"
+msgstr "<error> Папка %s пуста! </error>"

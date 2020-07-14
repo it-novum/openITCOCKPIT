@@ -1,0 +1,10 @@
+#!/bin/bash
+
+preserveEnvSupportsList=$(sudo --help |grep "preserve-env" | wc -l)
+if [[ $preserveEnvSupportsList -gt 1 ]]; then
+    sudo -g www-data --preserve-env=OITC_DEBUG /opt/openitc/frontend/bin/cake "$@"
+else
+    # Old sudo version that does not support list of environment variables to preserve
+    # Added with 9bb78048656f 2017-08-03
+    sudo -g www-data --preserve-env /opt/openitc/frontend/bin/cake "$@"
+fi
