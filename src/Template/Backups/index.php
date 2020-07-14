@@ -71,54 +71,65 @@
                         <div class="margin-top-20">
                             <div class="card-body">
                                 <div class="float-right">
-                                    <a ng-click="delete()"
-                                       class="btn btn-danger waves-effect waves-themed txt-color-white" ng-disabled="isActionRunning">
-                                        <?php echo __('Delete file'); ?>
-                                    </a>
-                                    <a ng-click="download()"
-                                       class="btn btn-primary waves-effect waves-themed txt-color-white" ng-disabled="isActionRunning">
-                                        <?php echo __('Download file'); ?>
-                                    </a>
-                                    <button type="submit" class="btn btn-primary waves-effect waves-themed" ng-disabled="isActionRunning">
-                                        <i class="fa fa-spin fa-spinner" ng-show="restoreRunning"></i>
-                                        <?php echo __('Start Restore'); ?>
-                                    </button>
+                                    <?php if ($this->Acl->hasPermission('deleteBackupFile', 'backups')): ?>
+                                        <a ng-click="delete()"
+                                           class="btn btn-danger waves-effect waves-themed txt-color-white"
+                                           ng-disabled="isActionRunning">
+                                            <?php echo __('Delete file'); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('downloadBackupFile', 'backups')): ?>
+                                        <a ng-click="download()"
+                                           class="btn btn-primary waves-effect waves-themed txt-color-white"
+                                           ng-disabled="isActionRunning">
+                                            <?php echo __('Download file'); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('restore', 'backups')): ?>
+                                        <button type="submit" class="btn btn-primary waves-effect waves-themed"
+                                                ng-disabled="isActionRunning">
+                                            <i class="fa fa-spin fa-spinner" ng-show="restoreRunning"></i>
+                                            <?php echo __('Start Restore'); ?>
+                                        </button>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
 
                     </form>
 
+                    <?php if ($this->Acl->hasPermission('backup', 'backups')): ?>
+                        <form ng-submit="backup()" class="form-horizontal margin-top-50 col-xl-9">
 
-                    <form ng-submit="backup()" class="form-horizontal margin-top-50 col-xl-9">
+                            <div class="form-group">
+                                <label class="col-xs-12 control-label"
+                                       for="filenameForBackup">
+                                    <?php echo __('Filename for Backup'); ?>
+                                </label>
 
-                        <div class="form-group">
-                            <label class="col-xs-12 control-label"
-                                   for="filenameForBackup">
-                                <?php echo __('Filename for Backup'); ?>
-                            </label>
-
-                            <div class="col-xs-12">
-                                <input
-                                    id="filenameForBackup"
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="filenameForBackup">
-                            </div>
-                        </div>
-
-                        <div class="margin-top-20">
-                            <div class="card-body">
-                                <div class="float-right">
-                                    <button type="submit" class="btn btn-primary waves-effect waves-themed" ng-disabled="isActionRunning">
-                                        <i class="fa fa-spin fa-spinner" ng-show="backupRunning"></i>
-                                        <?php echo __('Start Backup'); ?>
-                                    </button>
+                                <div class="col-xs-12">
+                                    <input
+                                        id="filenameForBackup"
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="filenameForBackup">
                                 </div>
                             </div>
-                        </div>
 
-                    </form>
+                            <div class="margin-top-20">
+                                <div class="card-body">
+                                    <div class="float-right">
+                                        <button type="submit" class="btn btn-primary waves-effect waves-themed"
+                                                ng-disabled="isActionRunning">
+                                            <i class="fa fa-spin fa-spinner" ng-show="backupRunning"></i>
+                                            <?php echo __('Start Backup'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                    <?php endif; ?>
 
                 </div>
             </div>
