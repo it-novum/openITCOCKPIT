@@ -116,7 +116,7 @@
             </a>
 
             <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                <a ui-sref="HostsEdit({id:config.hostId})"
+                <a ui-sref="HostsEdit({id:config.hostId})" ng-if="config.allowEdit"
                    title="<?php echo __('Edit host'); ?>"
                    class="btn btn-default btn-sm">
                     <i class="fa fa-cog fa-lg"></i>

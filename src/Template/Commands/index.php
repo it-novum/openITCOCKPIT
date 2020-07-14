@@ -53,9 +53,11 @@
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
-                    <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="CommandsAdd">
-                        <i class="fas fa-plus"></i> <?php echo __('New'); ?>
-                    </button>
+                    <?php if ($this->Acl->hasPermission('add', 'commands')): ?>
+                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="CommandsAdd">
+                            <i class="fas fa-plus"></i> <?php echo __('New'); ?>
+                        </button>
+                    <?php endif; ?>
                     <button class="btn btn-xs btn-primary shadow-0" ng-click="triggerFilter()">
                         <i class="fas fa-filter"></i> <?php echo __('Filter'); ?>
                     </button>

@@ -100,7 +100,7 @@
                                                 <i class="fa fa-cog"></i>
                                             </button>
                                         <?php else: ?>
-                                            <a href="javascript:void(0);" class="btn btn-default btn-xs disabled">
+                                            <a href="javascript:void(0);" class="btn btn-default btn-xs disabled btn-lower-padding">
                                                 &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                         <?php endif; ?>
                                 </td>

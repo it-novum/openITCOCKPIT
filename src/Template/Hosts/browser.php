@@ -1014,7 +1014,7 @@ use Cake\Core\Plugin;
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
                     <?php if ($this->Acl->hasPermission('add', 'services')): ?>
-                        <button ui-sref="ServicesAdd({hostId: mergedHost.id})"
+                        <button ui-sref="ServicesAdd({hostId: mergedHost.id})" ng-if="mergedHost.allowEdit"
                                 class="btn btn-xs btn-success">
                             <i class="fa fa-plus"></i>
                             <?php echo __('Add'); ?>
