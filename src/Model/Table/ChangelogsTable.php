@@ -141,13 +141,19 @@ class ChangelogsTable extends Table {
 
         $query = $this->find()
             ->select($select)
-            ->innerJoinWith('Containers')
+            ->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+                }
+                return $q;
+            })
             ->contain($contain)
             ->enableHydration($enableHydration);
 
         $where = $ChangelogsFilter->indexFilter();
         if (!empty($MY_RIGHTS)) {
             $where['Containers.id IN'] = $MY_RIGHTS;
+            $select[] = 'Containers.id';
         }
 
         $where['Changelogs.created >='] = date('Y-m-d H:i:s', $ChangelogsFilter->getFrom());

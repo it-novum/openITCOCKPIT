@@ -30,6 +30,7 @@ namespace App\Controller;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -72,6 +73,15 @@ class ChangelogsController extends AppController {
                     $controllerName
                 );
             }
+            if ($this->hasRootPrivileges === false) {
+                if ($controllerName === 'Tenants') {
+                    $containerToCheck = Hash::extract($change['containers'], '{n}[id>'.CT_GLOBAL.'].id');
+                    if(empty(array_intersect($MY_RIGHTS, $containerToCheck))){
+                        unset($all_changes[$index]);
+                        continue;
+                    }
+                }
+            }
 
             $changeTimestamp = $change['created']->getTimestamp();
             $all_changes[$index]['time'] = $UserTime->format($changeTimestamp);
@@ -105,7 +115,6 @@ class ChangelogsController extends AppController {
             $all_changes[$index]['icon'] = $ChangelogsTable->getIconByAction($change['action']);
             $all_changes[$index]['includeUser'] = $includeUser;
         }
-
         $this->set('all_changes', $all_changes);
         $this->viewBuilder()->setOption('serialize', ['all_changes']);
     }
