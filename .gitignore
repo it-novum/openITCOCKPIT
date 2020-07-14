@@ -106,3 +106,4 @@ plugins/VMWAREModule
 plugins/UCSModule
 plugins/SatelliteSelfMonitoringModule
 plugins/SAPModule
+plugins/MassenversandDeModule
