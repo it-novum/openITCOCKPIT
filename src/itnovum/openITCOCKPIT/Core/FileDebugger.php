@@ -39,7 +39,7 @@ class FileDebugger {
         $trace = Debugger::trace();
         $file = fopen($filename, 'a+');
         fwrite($file, '************* ' . date('H:i:s - d.m.Y') . ' ************* ' . PHP_EOL);
-        fwrite($file, Debugger::exportVar($data, 25));
+        fwrite($file, var_export($data, true));
         fwrite($file, PHP_EOL . 'Stack trace' . PHP_EOL);
         fwrite($file, $trace);
         fwrite($file, PHP_EOL . PHP_EOL . PHP_EOL);
