@@ -10,7 +10,14 @@ This is the **BETA VERSION** of openITCOCKPIT 4. [Click here](https://github.com
 [![Chat on Matrix](https://img.shields.io/badge/style-matrix-blue.svg?style=flat&label=chat)](https://riot.im/app/#/room/#openitcockpit:matrix.org)
 [![IRC: #openitcockpit on chat.freenode.net](https://img.shields.io/badge/%23openitcockpit-freenode-blue.svg)](https://kiwiirc.com/client/chat.freenode.net/#openitcockpit)
 
+openITCOCKPIT 4.x 
+| Distribution | Stable                                                                                                      | Nightly                                                                                                      |
+|--------------|-------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| Focal       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-focal-stable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-focal&style=flat-square)  |
+| Bionic       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-bionic-stable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-bionic&style=flat-square)  |
+| Buster      | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-buster-stable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-buster&style=flat-square) |
 
+openITCOCKPIT 3.x 
 | Distribution | Stable                                                                                                      | Nightly                                                                                                      |
 |--------------|-------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
 | Bionic       | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=bionic-openitcockpit-stable&style=flat-square)  | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=bionic-openitcockpit-nightly&style=flat-square)  |
