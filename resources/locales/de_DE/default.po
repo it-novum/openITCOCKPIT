@@ -4190,19 +4190,19 @@ msgstr "Aktualisierung der Konfiguration beendet"
 
 #: src/Command/GearmanWorkerCommand.php:1484
 msgid "Mark Satellite for configuration synchronization through NSTA daemon ["
-msgstr ""
+msgstr "Markiere Satelliten für die Konfigurationssynchronisierung über den NSTA-Daemon ["
 
 #: src/Command/GearmanWorkerCommand.php:1500
 msgid "Check if NSTA daemon is running"
-msgstr ""
+msgstr "Prüfe, ob der NSTA-Daemon läuft"
 
 #: src/Command/GearmanWorkerCommand.php:1514
 msgid "Reloading NSTA daemon"
-msgstr ""
+msgstr "Lade NSTA-Daemon neu"
 
 #: src/Command/GearmanWorkerCommand.php:1530
 msgid "Restarting NSTA daemon"
-msgstr ""
+msgstr "Starte NSTA-Daemon neu"
 
 #: src/Command/InstantReportCommand.php:103
 msgid "Never"
@@ -4234,15 +4234,15 @@ msgstr "Überprüfung der Überwachungskonfigurationsdateien, bitte warten ..."
 
 #: src/Command/ResetPasswordCommand.php:39
 msgid "If set the new password will get print to the CLI"
-msgstr ""
+msgstr "Wenn gesetzt, wird das neue Passwort auf der CLI ausgegeben"
 
 #: src/Command/ResetPasswordCommand.php:44
 msgid "Do not send the new password per mail"
-msgstr ""
+msgstr "Sende das neue Passwort nicht per E-Mail"
 
 #: src/Command/ResetPasswordCommand.php:123
 msgid "New password is: {0}"
-msgstr ""
+msgstr "Neues Passwort ist: {0}"
 
 #: src/Command/ResetPasswordCommand.php:132
 #: src/Command/Update3To4Command.php:297
@@ -4259,7 +4259,7 @@ msgstr " wurde zurückgesetzt!"
 #: src/Command/ResetPasswordCommand.php:148
 #: src/Command/Update3To4Command.php:320
 msgid "New password was send to {0}"
-msgstr ""
+msgstr "Neues Passwort wurde gesendet an {0}"
 
 #: src/Command/RolesCommand.php:105
 msgid "Checking permissions for user group \"{0}\"..."
@@ -4324,7 +4324,7 @@ msgstr "E-Mail-Konfiguration \"{0}\" erfolgreich gespeichert."
 
 #: src/Command/Update3To4Command.php:85
 msgid "Migrate openITCOCKPIT V3 E-Mail configuration"
-msgstr ""
+msgstr "Migriere die E-Mail-Konfiguration von openITCOCKPIT V3"
 
 #: src/Command/Update3To4Command.php:91
 msgid "Enable users from the file /root/.openitcockpit_active_user_migration.json"
@@ -4574,7 +4574,7 @@ msgstr "Container nicht gefunden"
 #: src/Controller/ServicegroupsController.php:347
 #: src/Controller/ServicetemplategroupsController.php:468
 msgid "Container is not empty"
-msgstr ""
+msgstr "Der Container ist nicht leer"
 
 #: src/Controller/CronjobsController.php:117
 msgid "Invalid cronjob"
@@ -4652,7 +4652,7 @@ msgstr "Datum ist nicht gültig"
 
 #: src/Controller/DowntimesController.php:310
 msgid "Could not find downtime"
-msgstr ""
+msgstr "Wartungszeitraum nicht gefunden"
 
 #: src/Controller/DowntimesController.php:393
 msgid "Successfully"
@@ -4816,11 +4816,11 @@ msgstr "Ungültiger Ort"
 
 #: src/Controller/LocationsController.php:322
 msgid "Location is used by other object."
-msgstr ""
+msgstr "Der Standort wird von einem anderen Objekt verwendet."
 
 #: src/Controller/LocationsController.php:330
 msgid "Issue while deleting location"
-msgstr ""
+msgstr "Problem beim Löschen des Standort"
 
 #: src/Controller/ProfileController.php:61
 #: src/Controller/UsersController.php:262
@@ -5096,7 +5096,7 @@ msgstr "Ungültiges Client-Zertifikat"
 
 #: src/Lib/DebugConfigNagiosTask.php:522
 msgid "<warning>File: {0}</warning>"
-msgstr ""
+msgstr "<warning>Datei: {0}</warning>"
 
 #: src/Model/Entity/Host.php:405
 #: src/Model/Entity/Service.php:349
@@ -5351,7 +5351,7 @@ msgstr "Standort"
 
 #: src/Model/Table/ContainersTable.php:907
 msgid "Device group"
-msgstr ""
+msgstr "Gerätegruppe"
 
 #: src/Model/Table/ContainersTable.php:908
 #: src/Template/Containers/index.php:87
@@ -5683,7 +5683,7 @@ msgstr "Sie müssen mindestens einen abhängigen Host auswählen."
 
 #: src/Model/Table/HostdependenciesTable.php:542
 msgid "Host dependency #{0}"
-msgstr ""
+msgstr "Hostabhängigkeit #{0}"
 
 #: src/Model/Table/HostescalationsTable.php:123
 #: src/Model/Table/HostescalationsTable.php:129
@@ -5703,7 +5703,7 @@ msgstr "Die erste Benachrichtigung muss vor der letzten Benachrichtigung erfolge
 
 #: src/Model/Table/HostescalationsTable.php:673
 msgid "Host escalation #{0}"
-msgstr ""
+msgstr "Hosteskalation #{0}"
 
 #: src/Model/Table/HostgroupsTable.php:104
 #: src/Model/Table/ServicegroupsTable.php:102
@@ -5810,11 +5810,11 @@ msgstr "Sie müssen mindestens eine Flattererkennungsoption angeben."
 
 #: src/Model/Table/HostsTable.php:3802
 msgid "Generic host"
-msgstr ""
+msgstr "Generischer Host"
 
 #: src/Model/Table/HostsTable.php:3810
 msgid "EVC host"
-msgstr ""
+msgstr "EVK Host"
 
 #: src/Model/Table/HosttemplatesTable.php:1294
 #: src/Model/Table/ServicetemplatesTable.php:1198
@@ -5886,11 +5886,11 @@ msgstr "Sie müssen mindestens einen abhängigen Service auswählen."
 
 #: src/Model/Table/ServicedependenciesTable.php:569
 msgid "Service dependency #{0}"
-msgstr ""
+msgstr "Serviceabhängigkeit #{0}"
 
 #: src/Model/Table/ServiceescalationsTable.php:686
 msgid "Service escalation #{0}"
-msgstr ""
+msgstr "Serviceeskalation #{0}"
 
 #: src/Model/Table/ServicesTable.php:205
 msgid "Please enter a service name."
@@ -5902,27 +5902,27 @@ msgstr "Dieses Feld darf nicht 0 sein"
 
 #: src/Model/Table/ServicesTable.php:3395
 msgid "Generic service"
-msgstr ""
+msgstr "Generischer Service"
 
 #: src/Model/Table/ServicesTable.php:3403
 msgid "EVC service"
-msgstr ""
+msgstr "EVK Service"
 
 #: src/Model/Table/ServicesTable.php:3412
 msgid "SLA service"
-msgstr ""
+msgstr "SLA Service"
 
 #: src/Model/Table/ServicesTable.php:3421
 msgid "Checkmk service"
-msgstr ""
+msgstr "Checkmk Service"
 
 #: src/Model/Table/ServicesTable.php:3430
 msgid "Prometheus service"
-msgstr ""
+msgstr "Prometheus Service"
 
 #: src/Model/Table/ServicesTable.php:3438
 msgid "Agent service"
-msgstr ""
+msgstr "Agent Service"
 
 #: src/Model/Table/ServicetemplategroupsTable.php:94
 msgid "You must select at least one service template."
@@ -5942,7 +5942,7 @@ msgstr "Checkmk Vorlagen"
 
 #: src/Model/Table/ServicetemplatesTable.php:1233
 msgid "Prometheus templates"
-msgstr ""
+msgstr "Prometheus Vorlagen"
 
 #: src/Model/Table/ServicetemplatesTable.php:1241
 msgid "Agent templates"
@@ -6671,7 +6671,7 @@ msgstr "Kommandoschnittstelle"
 
 #: src/Template/Administrators/debug.php:153
 msgid "Process information"
-msgstr ""
+msgstr "Prozess Informationen"
 
 #: src/Template/Administrators/debug.php:165
 #: src/Template/Administrators/debug.php:179
@@ -6702,7 +6702,7 @@ msgstr "Bitte starten Sie zuerst gearman_worker"
 
 #: src/Template/Administrators/debug.php:194
 msgid "Process"
-msgstr ""
+msgstr "Prozess"
 
 #: src/Template/Administrators/debug.php:201
 #: src/Template/ConfigurationFiles/php_n_s_t_a_master.php:35
@@ -6735,7 +6735,7 @@ msgstr "Läuft"
 #: src/Template/Administrators/debug.php:351
 #: src/Template/Administrators/debug.php:372
 msgid "Stopped"
-msgstr ""
+msgstr "Gestoppt"
 
 #: src/Template/Administrators/debug.php:222
 msgid "Database connector"
@@ -6993,11 +6993,11 @@ msgstr "Verwendete Abfrageprotokoll-Slots"
 
 #: src/Template/Administrators/querylog.php:62
 msgid "Try manual reconnect"
-msgstr ""
+msgstr "Versuche die Verbindung manuell wiederherzustellen"
 
 #: src/Template/Administrators/querylog.php:65
 msgid "Truncate log"
-msgstr ""
+msgstr "Protokoll kürzen"
 
 #: src/Template/Administrators/querylog.php:74
 msgid "Connection error"
@@ -7203,15 +7203,15 @@ msgstr "Agenten Übersicht"
 
 #: src/Template/Agentconnector/agents.php:72
 msgid "Untrusted agents"
-msgstr ""
+msgstr "Nicht vertrauenswürdige Agenten"
 
 #: src/Template/Agentconnector/agents.php:77
 msgid "Pull configurations"
-msgstr ""
+msgstr "Pull Konfigurationen"
 
 #: src/Template/Agentconnector/agents.php:82
 msgid "Push Cache"
-msgstr ""
+msgstr "Push Zwischenspeicher"
 
 #: src/Template/Agentconnector/config.php:50
 #: src/Template/Services/service_list.php:57
@@ -8046,11 +8046,11 @@ msgstr "Aktiviere Basisauthentifizierung"
 
 #: src/Template/Agentconnector/pull_configurations.php:320
 msgid "Basic auth username"
-msgstr ""
+msgstr "Basic auth - Benutzername"
 
 #: src/Template/Agentconnector/pull_configurations.php:327
 msgid "Basic auth password"
-msgstr ""
+msgstr "Basic auth - Passwort"
 
 #: src/Template/Agentconnector/pull_configurations.php:336
 msgid "Push noticed"
@@ -8474,7 +8474,7 @@ msgstr "Aktiviere Service Benachrichtigungen"
 
 #: src/Template/Angular/forbidden.php:37
 msgid "403 Forbidden"
-msgstr ""
+msgstr "403 Verboten"
 
 #: src/Template/Angular/forbidden.php:56
 msgid "You do not have the required permissions."
@@ -8708,39 +8708,39 @@ msgstr "Möchten Sie die ausgewählten Service-Wartungszeiten wirklich abbrechen
 
 #: src/Template/Angular/menustats.php:26
 msgid "Display of storage notifications"
-msgstr ""
+msgstr "Anzeige von Speicherbenachrichtigungen"
 
 #: src/Template/Angular/menustats.php:29
 msgid "host notifications"
-msgstr ""
+msgstr "Hostbenachrichtigungen"
 
 #: src/Template/Angular/menustats.php:34
 msgid "critical messages"
-msgstr ""
+msgstr "kritische Nachrichten"
 
 #: src/Template/Angular/menustats.php:40
 msgid "warning messages"
-msgstr ""
+msgstr "warnende Nachrichten"
 
 #: src/Template/Angular/menustats.php:47
 msgid "Display of service notifications"
-msgstr ""
+msgstr "Anzeige von Servicebenachrichtigungen"
 
 #: src/Template/Angular/menustats.php:49
 msgid "service notifications"
-msgstr ""
+msgstr "Servicebenachrichtigungen"
 
 #: src/Template/Angular/menustats.php:55
 msgid "messages with filter set to criticals only"
-msgstr ""
+msgstr "Nachrichten, bei denen der Filter auf nur Kritische eingestellt ist"
 
 #: src/Template/Angular/menustats.php:61
 msgid "messages with filter set to warnings only"
-msgstr ""
+msgstr "Nachrichten, bei denen der Filter auf nur Warnende eingestellt ist"
 
 #: src/Template/Angular/menustats.php:67
 msgid "messages with filter set to unknowns only"
-msgstr ""
+msgstr "Nachrichten, bei denen der Filter auf nur Unbekannte eingestellt ist"
 
 #: src/Template/Angular/not_found.php:56
 msgid "Looks like the object you are looking for has vanished"
@@ -9051,7 +9051,7 @@ msgstr "Nur noch wenig Speicherplatz für den Mountpoint:"
 #: src/Template/Angular/system_health.php:268
 #: src/Template/Angular/system_health_menu.php:287
 msgid "Service NSTA is not running!"
-msgstr ""
+msgstr "Service NSTA läuft nicht!"
 
 #: src/Template/Angular/system_health.php:286
 #: src/Template/Angular/system_health_menu.php:318
@@ -9137,7 +9137,7 @@ msgstr ""
 
 #: src/Template/Angular/user_timezone.php:26
 msgid "Display of server and client times"
-msgstr ""
+msgstr "Anzeige der Server- und Clientzeiten"
 
 #: src/Template/Angular/user_timezone.php:28
 msgid "local time of client"
@@ -10276,23 +10276,23 @@ msgstr "Dateiname"
 
 #: src/Template/ConfigurationFiles/n_s_t_a_master.php:43
 msgid "Use nginx as reverse proxy"
-msgstr ""
+msgstr "Verwende Nginx als Reverse-Proxy"
 
 #: src/Template/ConfigurationFiles/n_s_t_a_master.php:54
 msgid "HTTP bind address"
-msgstr ""
+msgstr "HTTP Bindungsadresse"
 
 #: src/Template/ConfigurationFiles/n_s_t_a_master.php:71
 msgid "HTTPS bind address"
-msgstr ""
+msgstr "HTTPS Bindungsadresse"
 
 #: src/Template/ConfigurationFiles/n_s_t_a_master.php:88
 msgid "TLS key file"
-msgstr ""
+msgstr "TLS Schlüsseldatei"
 
 #: src/Template/ConfigurationFiles/n_s_t_a_master.php:105
 msgid "TLS certificate file"
-msgstr ""
+msgstr "TLS Zertifikatsdatei"
 
 #: src/Template/ConfigurationFiles/nagios_cfg.php:108
 msgid "Critical (default)"
@@ -10899,7 +10899,7 @@ msgstr "Dieser Kontakt wird von keinem Objekt verwendet"
 #: src/Template/Systemdowntimes/node.php:38
 #: src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:488
 msgid "Containers"
-msgstr ""
+msgstr "Container"
 
 #: src/Template/Containers/index.php:75
 msgid "Global"
@@ -10928,7 +10928,7 @@ msgstr "Zeite Details"
 
 #: src/Template/Containers/index.php:324
 msgid "Sub containers:"
-msgstr ""
+msgstr "Untercontainer:"
 
 #: src/Template/Containers/index.php:363
 msgid "Add new container"
@@ -11075,15 +11075,15 @@ msgstr "Bearbeite Containername"
 
 #: src/Template/Containers/index.php:802
 msgid "Show Details"
-msgstr ""
+msgstr "Zeige Details"
 
 #: src/Template/Containers/show_details.php:121
 msgid "Hostdependencies"
-msgstr ""
+msgstr "Hostabhängigkeiten"
 
 #: src/Template/Containers/show_details.php:174
 msgid "Auto reports"
-msgstr ""
+msgstr "Auto Reports"
 
 #: src/Template/Containers/show_details.php:249
 msgid "Container "
@@ -11091,11 +11091,11 @@ msgstr ""
 
 #: src/Template/Containers/show_details.php:250
 msgid "details"
-msgstr ""
+msgstr "Details"
 
 #: src/Template/Containers/show_details.php:262
 msgid "Containers map"
-msgstr ""
+msgstr "Container Karte"
 
 #: src/Template/Containers/show_details.php:269
 #: src/Template/Dashboards/index.php:162
@@ -11787,7 +11787,7 @@ msgstr "Ratgeber für Anfänger."
 
 #: src/Template/Documentations/wiki.php:75
 msgid "Technical documentation"
-msgstr ""
+msgstr "Technische Dokumentation"
 
 #: src/Template/Documentations/wiki.php:78
 msgid "The technical documentation of openITCOCKPIT containers detailed information about additional Modules, background processes, the usage of the JSON-API and so on."
@@ -12123,15 +12123,15 @@ msgstr "Auswahl speichern"
 
 #: src/Template/Exports/index.php:166
 msgid "Satellite Status has been moved."
-msgstr ""
+msgstr "Der Satellitenstatus wurde verschoben."
 
 #: src/Template/Exports/index.php:169
 msgid "Satellite export status has been moved to a separate view."
-msgstr ""
+msgstr "Der Satellitenexportstatus wurde in eine separate Ansicht verschoben."
 
 #: src/Template/Exports/index.php:174
 msgid "Go to \"Satellite Status\""
-msgstr ""
+msgstr "Gehe zu \"Satellitenstatus\""
 
 #: src/Template/Exports/index.php:185
 msgid "Tasks"
@@ -12945,7 +12945,7 @@ msgstr "Benachrichtigungskonfiguration"
 #: src/Template/Hosts/edit.php:552
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:294
 msgid "Notification Period"
-msgstr ""
+msgstr "Benachrichtigungszeitraum"
 
 #: src/Template/Hosts/add.php:699
 #: src/Template/Hosts/edit.php:712
@@ -13053,7 +13053,7 @@ msgstr ""
 #: src/Template/Hosttemplates/add.php:667
 #: src/Template/Hosttemplates/edit.php:671
 msgid "To monitor this host using Prometheus please select the exporters that are installed on the host."
-msgstr ""
+msgstr "Um diesen Host mit Prometheus zu überwachen, wähle bitte die Exporter aus, die auf dem Host installiert sind."
 
 #: src/Template/Hosts/add.php:922
 msgid "Create host and setup agent"
@@ -13073,7 +13073,7 @@ msgstr "Speichern und Agent erstellen"
 
 #: src/Template/Hosts/add.php:957
 msgid "Save and run Checkmk discovery"
-msgstr ""
+msgstr "Speichern und Checkmk Erkennung ausführen"
 
 #: src/Template/Hosts/browser.php:38
 #: src/Template/Services/browser.php:37
@@ -13416,11 +13416,11 @@ msgstr "Objekte in /root können nicht in andere Container verschoben werden"
 
 #: src/Template/Hosts/edit.php:129
 msgid "Not available for EVC hosts."
-msgstr ""
+msgstr "Nicht verfügbar für EVK Hosts"
 
 #: src/Template/Hosts/edit.php:164
 msgid "/ Name of correlation"
-msgstr ""
+msgstr "/ Name der Korrelation"
 
 #: src/Template/Hosts/edit.php:925
 msgid "Update host"
@@ -13575,7 +13575,7 @@ msgstr "Filter nach Hostvorlagenname"
 
 #: src/Template/Hosttemplates/index.php:99
 msgid "Filter by host template types"
-msgstr ""
+msgstr "Filter nach Hostvorlagentypen"
 
 #: src/Template/Hosttemplates/index.php:138
 #: src/Template/Instantreports/add.php:97
@@ -13842,7 +13842,7 @@ msgstr "Benutzerdefiniertes Makro hinzufügen"
 
 #: src/Template/Macros/index.php:164
 msgid "Macro name"
-msgstr ""
+msgstr "Makro Name"
 
 #: src/Template/Macros/index.php:232
 #: src/Template/Macros/index.php:338
@@ -14049,7 +14049,7 @@ msgstr "Installieren"
 #: src/Template/Packetmanager/index.php:286
 #: src/Template/Supports/issue.php:110
 msgid "Request a quote"
-msgstr ""
+msgstr "Ein Angebot anfordern"
 
 #: src/Template/Packetmanager/index.php:319
 msgid "Latest version"
@@ -14879,7 +14879,7 @@ msgstr "zu Host"
 
 #: src/Template/Servicetemplategroups/allocate_to_host.php:62
 msgid "successfully deployed"
-msgstr ""
+msgstr "erfolgreich bereitgestellt"
 
 #: src/Template/Servicetemplategroups/allocate_to_host.php:78
 #: src/Template/Servicetemplategroups/allocate_to_hostgroup.php:77
@@ -15243,35 +15243,35 @@ msgstr "Ein Problem melden"
 
 #: src/Template/Supports/issue.php:67
 msgid "Commercial support"
-msgstr ""
+msgstr "Kommerzielle Unterstützung"
 
 #: src/Template/Supports/issue.php:78
 msgid "General questions about openITCOCKPIT"
-msgstr ""
+msgstr "Allgemeine Fragen zu openITCOCKPIT"
 
 #: src/Template/Supports/issue.php:80
 #: src/Template/Supports/issue.php:136
 msgid "System issues"
-msgstr ""
+msgstr "Systemprobleme"
 
 #: src/Template/Supports/issue.php:81
 #: src/Template/Supports/issue.php:137
 msgid "System crashes"
-msgstr ""
+msgstr "Systemabstürze"
 
 #: src/Template/Supports/issue.php:83
 #: src/Template/Supports/issue.php:139
 msgid "Unwanted behavior or bugs"
-msgstr ""
+msgstr "Unerwünschtes Verhalten oder Fehler"
 
 #: src/Template/Supports/issue.php:85
 #: src/Template/Supports/issue.php:141
 msgid "Errors with packages for your\n                                        distribution"
-msgstr ""
+msgstr "Fehler mit Paketen für Ihre\n                                        Distribution"
 
 #: src/Template/Supports/issue.php:102
 msgid "Create a Ticket"
-msgstr ""
+msgstr "Erstelle ein Ticket"
 
 #: src/Template/Supports/issue.php:126
 msgid "GitHub"
@@ -15279,23 +15279,23 @@ msgstr ""
 
 #: src/Template/Supports/issue.php:158
 msgid "Create an issue"
-msgstr ""
+msgstr "Erstelle ein Issue"
 
 #: src/Template/Supports/issue.php:172
 msgid "Want to chat?"
-msgstr ""
+msgstr "Möchten Sie chatten?"
 
 #: src/Template/Supports/issue.php:185
 msgid "Feel free to start a discussion on our reddit channel"
-msgstr ""
+msgstr "Fühlen Sie sich frei, eine Diskussion auf unserem Reddit-Kanal zu beginnen"
 
 #: src/Template/Supports/issue.php:192
 msgid "or just join our IRC channel"
-msgstr ""
+msgstr "oder treten Sie einfach unserem IRC-Kanal bei"
 
 #: src/Template/Supports/issue.php:209
 msgid "Join #openITCOCKPIT on freenode."
-msgstr ""
+msgstr "Trete #openITCOCKPIT auf freenode bei."
 
 #: src/Template/Systemdowntimes/add.php:32
 msgid "create"
@@ -15877,7 +15877,7 @@ msgstr "Bearbeite lokalen Benutzer:"
 
 #: src/Template/Users/edit.php:50
 msgid "Edit LDAP user:"
-msgstr ""
+msgstr "Bearbeite LDAP Benutzer:"
 
 #: src/Template/Users/edit.php:460
 msgid "Please leave the password fields blank if you don't want to change the password."
@@ -15956,7 +15956,7 @@ msgstr "API Keys Übersicht"
 
 #: src/Template/element/apikey_help.php:41
 msgid "Click on your name in the top left corner to edit your profile."
-msgstr ""
+msgstr "Klicke oben links auf den Namen, um das Profil zu bearbeiten."
 
 #: src/Template/element/apikey_help.php:48
 msgid "At the bottom of the page, you can find the \"API Keys\" section. Click on \"Create new API key\""
@@ -15998,7 +15998,7 @@ msgstr "Wollen Sie für diesen Host auch die Service-Wartungszeiten löschen?"
 
 #: src/Template/element/header.php:40
 msgid "Loading..."
-msgstr ""
+msgstr "Lade..."
 
 #: src/Template/element/header.php:82
 msgid "Sign out"
@@ -16090,7 +16090,7 @@ msgstr "Möchten Sie die ausgewählten Servicevorlagen wirklich deaktivieren?"
 
 #: src/Template/element/shortcut_links.php:64
 msgid "Add More"
-msgstr ""
+msgstr "Mehr hinzufügen"
 
 #: src/Template/element/shortcuts.php:34
 msgid "Keyboard Shortcuts"
@@ -16237,11 +16237,11 @@ msgstr "Ihr {0} Passwort wurde zurückgesetzt!"
 
 #: src/Template/layout/app_frame.php:191
 msgid "Could not connect to SudoServer. External commands may not work. Please try to reload this page."
-msgstr ""
+msgstr "Es konnte keine Verbindung zum SudoServer hergestellt werden. Externe Befehle funktionieren möglicherweise nicht. Bitte versuche diese Seite neu zu laden."
 
 #: src/Template/layout/app_frame.php:206
 msgid "Lost connection to SudoServer. External commands may not work. Please try to reload this page."
-msgstr ""
+msgstr "Verbindung zum SudoServer verloren. Externe Befehle funktionieren möglicherweise nicht. Bitte versuche diese Seite neu zu laden."
 
 #: src/Template/layout/login.php:48
 msgid "Sign In"
@@ -16417,23 +16417,23 @@ msgstr "Verwenden Sie den konfigurierten Proxy-Server für die Verbindung zum Gr
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NSTAMaster.php:85
 msgid "Bind address of the HTTP interface. Default: 127.0.0.1:7473"
-msgstr ""
+msgstr "Bindungsadresse der HTTP-Schnittstelle. Standard: 127.0.0.1:7473"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NSTAMaster.php:86
 msgid "Bind address of the HTTP interface. Default: 127.0.0.1:7474"
-msgstr ""
+msgstr "Bindungsadresse der HTTP-Schnittstelle. Standard: 127.0.0.1:7474"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NSTAMaster.php:87
 msgid "TLS certificate key file to be used. Default: /etc/ssl/private/ssl-cert-snakeoil.key"
-msgstr ""
+msgstr "Zu verwendende TLS Zertifikatsschlüsseldatei. Standard: /etc/ssl/private/ssl-cert-snakeoil.key"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NSTAMaster.php:88
 msgid "TLS certificate file to be used. Default: /etc/ssl/certs/ssl-cert-snakeoil.pem"
-msgstr ""
+msgstr "Zu verwendende TLS Zertifikatsdatei. Standard: /etc/ssl/certs/ssl-cert-snakeoil.pem"
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NSTAMaster.php:89
 msgid "Use openITCOCKPIT's preconfigured webserver as revers proxy for NSTA."
-msgstr ""
+msgstr "Verwende den von openITCOCKPIT vorkonfigurierten Webserver als Reverse-Proxy für NSTA."
 
 #: src/itnovum/openITCOCKPIT/ConfigGenerator/NagiosCfg.php:126
 msgid "Value out of range (c, u, w, o)"
@@ -16870,11 +16870,11 @@ msgstr "Bestätigungen"
 
 #: src/itnovum/openITCOCKPIT/Core/Timeline/Groups.php:54
 msgid "State history service"
-msgstr ""
+msgstr "Statushistorie Service"
 
 #: src/itnovum/openITCOCKPIT/Core/Timeline/Groups.php:59
 msgid "State history host"
-msgstr ""
+msgstr "Statushistorie Host"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:35
 msgid "Runtime error"
@@ -16894,19 +16894,19 @@ msgstr "Verifikationswarnung"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:41
 msgid "Config error"
-msgstr ""
+msgstr "Konfigurationsfehler"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:42
 msgid "Config warning"
-msgstr ""
+msgstr "Konfigurationswarnung"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:44
 msgid "Process info"
-msgstr ""
+msgstr "Prozessinformation"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:45
 msgid "Event handler"
-msgstr ""
+msgstr "Ereignishandler"
 
 #: src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:46
 msgid "External command"
@@ -17008,19 +17008,19 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaColors.php:17
 msgid "Green"
-msgstr ""
+msgstr "Grün"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaColors.php:28
 msgid "Yellow"
-msgstr ""
+msgstr "Gelb"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaColors.php:39
 msgid "Red"
-msgstr ""
+msgstr "Rot"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaColors.php:50
 msgid "Blue"
-msgstr ""
+msgstr "Blau"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaColors.php:61
 msgid "Orange"
@@ -17028,43 +17028,43 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaColors.php:72
 msgid "Purple"
-msgstr ""
+msgstr "Lila"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:65
 msgid "Short"
-msgstr ""
+msgstr "Kurz"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:66
 msgid "Percent (0-100)"
-msgstr ""
+msgstr "Prozent (0-100)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:67
 msgid "Percent (0.0-1.0)"
-msgstr ""
+msgstr "Prozent (0.0-1.0)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:68
 msgid "Humidity (%H)"
-msgstr ""
+msgstr "Feuchtigkeit (%H)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:69
 msgid "Decibel (dB)"
-msgstr ""
+msgstr "Dezibel (dB)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:70
 msgid "Hexadecimal (0x)"
-msgstr ""
+msgstr "Hexadezimal (0x)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:71
-msgid "Hexadecimal"
+msgid "Hexadezimal"
 msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:72
 msgid "Scientific notation"
-msgstr ""
+msgstr "Wissenschaftliche Schreibweise"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:73
 msgid "Locale format"
-msgstr ""
+msgstr "Sprachformat"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:78
 msgid "Herz"
@@ -17072,37 +17072,37 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:79
 msgid "Nanoseconds (ns)"
-msgstr ""
+msgstr "Nanosekunden (ns)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:80
 msgid "Microseconds (µs)"
-msgstr ""
+msgstr "Mikrosekunden (µs)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:81
 msgid "Milliseconds (ms)"
-msgstr ""
+msgstr "Millisekunden (ms)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:82
 msgid "Seconds (s)"
-msgstr ""
+msgstr "Sekunden (s)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:83
 #: AutoreportModule/templates/Autoreports/generate.php:254
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:136
 msgid "Minutes"
-msgstr ""
+msgstr "Minuten"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:84
 msgid "Hours"
-msgstr ""
+msgstr "Stunden"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:85
 msgid "Days"
-msgstr ""
+msgstr "Tage"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:89
 msgid "Data (IEC)"
-msgstr ""
+msgstr "Daten (IEC)"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:90
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:99
@@ -17184,7 +17184,7 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:120
 msgid "Data throughput"
-msgstr ""
+msgstr "Datendurchsatz"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:121
 msgid "ops/sec (ops)"
@@ -17220,7 +17220,7 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:132
 msgid "Temperature"
-msgstr ""
+msgstr "Temperatur"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:133
 msgid "Celsius (°C)"
@@ -17236,7 +17236,7 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:139
 msgid "Currencies"
-msgstr ""
+msgstr "Währungen"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:140
 msgid "Dollars ($)"
@@ -17300,7 +17300,7 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:158
 msgid "Length"
-msgstr ""
+msgstr "Längen"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:159
 msgid "Millimetre (mm)"
@@ -17340,7 +17340,7 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:175
 msgid "Mass"
-msgstr ""
+msgstr "Masse"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:176
 msgid "Milligram (mg)"
@@ -17360,7 +17360,7 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:183
 msgid "Velocity"
-msgstr ""
+msgstr "Geschwindigkeit"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:184
 msgid "Metres/second (m/s)"
@@ -17380,7 +17380,7 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:192
 msgid "Volume"
-msgstr ""
+msgstr "Volumen"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:193
 msgid "Millilitre (ml)"
@@ -17400,11 +17400,11 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:197
 msgid "Gallons"
-msgstr ""
+msgstr "Gallonen"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:201
 msgid "Energy"
-msgstr ""
+msgstr "Energie"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:202
 msgid "Watt (W)"
@@ -17496,7 +17496,7 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:227
 msgid "Pressure"
-msgstr ""
+msgstr "Druck"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:228
 msgid "Millibars"
@@ -17544,7 +17544,7 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:246
 msgid "Flow"
-msgstr ""
+msgstr "Fluss"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:247
 msgid "Litre/hour (l/h)"
@@ -17576,7 +17576,7 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:257
 msgid "Angle"
-msgstr ""
+msgstr "Winkel"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:258
 msgid "Degrees (°)"
@@ -17592,7 +17592,7 @@ msgstr ""
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:264
 msgid "Date and time"
-msgstr ""
+msgstr "Datum und Uhrzeit"
 
 #: src/itnovum/openITCOCKPIT/Grafana/GrafanaTargetUnits.php:265
 msgid "YYYY-MM-DD HH:mm:ss"
@@ -18211,16 +18211,16 @@ msgstr "Aktuelle Zeit als UNIX-Zeitstempel."
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:65
 msgid "Delete temporary automatic report files..."
-msgstr ""
+msgstr "Lösche temporäre automatische Berichtsdateien"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:100
 msgid " no reports to send"
-msgstr ""
+msgstr "Keine Berichte zum Senden"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:159
 #: AutoreportModule/src/Command/AutoreportCommand.php:172
 msgid "An error occured while sending auto report mail: \"{0}\":"
-msgstr ""
+msgstr "Beim Senden der automatischen Berichtsmail ist ein Fehler aufgetreten: \"{0}\":"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:163
 #: AutoreportModule/src/Command/AutoreportCommand.php:406
@@ -18234,39 +18234,39 @@ msgstr ""
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:258
 msgid "Sending Report {0} to {1}"
-msgstr ""
+msgstr "Sende Bericht {0} zu {1}"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:264
 msgid "An error occured while sending auto report mail: "
-msgstr ""
+msgstr "Beim Senden der automatischen Berichtsmail ist ein Fehler aufgetreten: "
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:290
 msgid "Report \"{0}\" with ID: {1} run failed: {2}"
-msgstr ""
+msgstr "Bericht \"{0}\" mit ID: {1} Ausführung fehlgeschlagen: {2}"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:297
 msgid "Report \"{0}\" with ID: {1} run successfully"
-msgstr ""
+msgstr "Report \"{0}\" with ID: {1} Ausführung erfolgreich"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:334
 #: AutoreportModule/src/Command/AutoreportCommand.php:422
 msgid "Cannot generate quarterly autoreports."
-msgstr ""
+msgstr "Es können keine vierteljährlichen Autoreports generiert werden."
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:347
 msgid "Autoreports could not be generated! No store path defined!"
-msgstr ""
+msgstr "Autoreports konnten nicht generiert werden! Kein Speicherpfad definiert!"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:402
 #: AutoreportModule/src/Command/AutoreportCommand.php:415
 msgid "An error occured while generating quarterly autoreports: \"{0}\":"
-msgstr ""
+msgstr "Beim Generieren von vierteljährlichen automatischen Berichten ist ein Fehler aufgetreten: \"{0}\":"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:461
 #: AutoreportModule/src/Lib/CsvReport.php:109
 #: AutoreportModule/src/Lib/CsvReport.php:136
 msgid "Report id"
-msgstr ""
+msgstr "Bericht ID"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:462
 #: AutoreportModule/src/Lib/CsvReport.php:110
@@ -18274,26 +18274,26 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/add_step_one.php:92
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:94
 msgid "Report name"
-msgstr ""
+msgstr "Berichtsname"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:466
 #: AutoreportModule/src/Lib/CsvReport.php:114
 msgid "Minimal allowed availability (min)"
-msgstr ""
+msgstr "Minimal zulässige Verfügbarkeit (min)"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:469
 #: AutoreportModule/src/Lib/CsvReport.php:117
 msgid "Minimal allowed availability (%)"
-msgstr ""
+msgstr "Minimal zulässige Verfügbarkeit (%)"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:470
 #: AutoreportModule/src/Lib/CsvReport.php:118
 msgid "Current availability"
-msgstr ""
+msgstr "Aktuelle Verfügbarkeit"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:506
 msgid "{0} was not generated."
-msgstr ""
+msgstr "{0} wurde nicht generiert."
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:560
 msgid "Mo"
@@ -18301,15 +18301,15 @@ msgstr ""
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:561
 msgid "Tu"
-msgstr ""
+msgstr "Di"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:562
 msgid "We"
-msgstr ""
+msgstr "Mi"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:563
 msgid "Th"
-msgstr ""
+msgstr "Do"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:564
 msgid "Fr"
@@ -18321,7 +18321,7 @@ msgstr ""
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:566
 msgid "Su"
-msgstr ""
+msgstr "So"
 
 #: AutoreportModule/src/Controller/AutoreportsController.php:116
 #: AutoreportModule/src/Controller/AutoreportsController.php:185
@@ -18332,51 +18332,51 @@ msgstr ""
 #: AutoreportModule/src/Controller/AutoreportsController.php:843
 #: AutoreportModule/src/Model/Table/AutoreportAvailabilityLogTable.php:64
 msgid "Auto report not found"
-msgstr ""
+msgstr "Autoreport nicht gefunden"
 
 #: AutoreportModule/src/Lib/AdditionalLinks.php:34
 msgid "Host used by Autoreport"
-msgstr ""
+msgstr "Von Autoreport verwendeter Host"
 
 #: AutoreportModule/src/Lib/AdditionalLinks.php:44
 msgid "Service used by Autoreport"
-msgstr ""
+msgstr "Von Autoreport verwendeter Service"
 
 #: AutoreportModule/src/Lib/Autoreport.php:86
 msgid "Report \"{0}\" cannot be evaluated. Time evaluation report data is not available for the selected period \"{1}\""
-msgstr ""
+msgstr "Der Bericht \"{0}\" kann nicht ausgewertet werden. Daten des Zeitauswertungsberichts sind für den ausgewählten Zeitraum \"{1}\" nicht verfügbar."
 
 #: AutoreportModule/src/Lib/Autoreport.php:98
 msgid "Report \"{0}\" cannot be create. No hosts and services are available in selected report"
-msgstr ""
+msgstr "Der Bericht \"{0}\" kann nicht erstellt werden. Im ausgewählten Bericht sind keine Hosts und Services verfügbar"
 
 #: AutoreportModule/src/Lib/Autoreport.php:143
 msgid "Report \"{0}\" cannot be evaluated. The following Hosts/Services were created after the selected starting period \"{1}\":"
-msgstr ""
+msgstr "Der Bericht \"{0}\" kann nicht ausgewertet werden. Die folgenden Hosts / Services wurden nach der ausgewählten Startperiode \"{1}\" erstellt:"
 
 #: AutoreportModule/src/Lib/Autoreport.php:204
 msgid "Time evaluation report data is not available for the selected period ({0} with calendar: {1})"
-msgstr ""
+msgstr "Zeitauswertungsberichtsdaten sind für den ausgewählten Zeitraum nicht verfügbar ({0} mit Kalender: {1})"
 
 #: AutoreportModule/src/Lib/Autoreport.php:743
 msgid "Outages"
-msgstr ""
+msgstr "Ausfälle"
 
 #: AutoreportModule/src/Lib/Autoreport.php:747
 msgid "Outages of at least {0} min"
-msgstr ""
+msgstr "Ausfälle von mindestens {0} min"
 
 #: AutoreportModule/src/Lib/CsvReport.php:140
 msgid "Outage date"
-msgstr ""
+msgstr "Ausfalldatum"
 
 #: AutoreportModule/src/Lib/CsvReport.php:143
 msgid "Duration (Minutes)"
-msgstr ""
+msgstr "Dauer (Minuten)"
 
 #: AutoreportModule/src/Lib/CsvReport.php:144
 msgid "Planned downtime"
-msgstr ""
+msgstr "Geplante Wartungszeit"
 
 #: AutoreportModule/src/Lib/Menu.php:27
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:103
@@ -18389,102 +18389,102 @@ msgstr ""
 
 #: AutoreportModule/src/Lib/Widgets.php:36
 msgid "Autoreport Overview"
-msgstr ""
+msgstr "Autoreport Übersicht"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:59
 msgid "Please enter a valid path"
-msgstr ""
+msgstr "Bitte gib einen gültigen Pfad ein"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:139
 msgid "Use tenant name instead of report name as subject for automatic generated mails"
-msgstr ""
+msgstr "Verwende den Mandantennamen anstelle des Berichtsnamens als Betreff für automatisch generierte E-Mails"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:143
 msgid "Generates reports only for Hosts and Services that were created before the start date"
-msgstr ""
+msgstr "Generiert Berichte nur für Hosts und Services, die vor dem Startdatum erstellt wurden"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:147
 msgid "Send reports in PDF format"
-msgstr ""
+msgstr "Sende Berichte im PDF-Format"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:151
 msgid "Send reports in CSV format"
-msgstr ""
+msgstr "Sende Berichte im CSV-Format"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:155
 msgid "Send quarterly reports"
-msgstr ""
+msgstr "Sende vierteljährliche Berichte"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:159
 msgid "Shows outages in scheduled downtime"
-msgstr ""
+msgstr "Zeigt Ausfälle in geplanten Wartungszeiten an"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:163
 msgid "Shows all downtimes"
-msgstr ""
+msgstr "Zeige alle Wartungszeiten"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:167
 msgid "Use create date in filename. Format: Filename \"Reportname_+/- (dmY)...\""
-msgstr ""
+msgstr "Verwende das Erstellungsdatum im Dateinamen. Format: Dateiname \"Berichtname_+/- (dmY)...\""
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:171
 msgid "Use Year in filename. Format: Filename \"Reportname_+/- (Y)...\""
-msgstr ""
+msgstr "Verwende das Jahr im Dateinamen. Format: Dateiname \"Berichtname_+/- (Y)...\""
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:175
 msgid "Displays SLA graph"
-msgstr ""
+msgstr "Zeigt den SLA-Graphen an"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:179
 msgid "Shows summary statistics on first page of report"
-msgstr ""
+msgstr "Zeigt zusammenfassende Statistiken auf der ersten Seite des Berichts an"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:183
 msgid "Shows host name with current availability"
-msgstr ""
+msgstr "Zeigt den Hostnamen mit der aktuellen Verfügbarkeit an"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:187
 msgid "Shows service description with current availability"
-msgstr ""
+msgstr "Zeigt die Servicebeschreibung mit der aktuellen Verfügbarkeit an"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:191
 msgid "Email addresses which will be notified in case of failure while creating the quarterly reports. Use \";\" as email delimiter when sending to multiple recipients"
-msgstr ""
+msgstr "E-Mail-Adressen, die bei einem Fehler beim Erstellen der vierteljährlichen Berichte benachrichtigt werden. Verwende \";\" als E-Mail-Begrenzer, wenn an mehrere Empfänger gesendet werden soll"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:195
 msgid "Path for Reports files"
-msgstr ""
+msgstr "Pfad für Berichtsdateien"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:144
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:165
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:175
 msgid "This field cannot be left blank"
-msgstr ""
+msgstr "Dieses Feld darf nicht leer gelassen werden"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:155
 msgid "The provided value is invalid"
-msgstr ""
+msgstr "Der angegebene Wert ist ungültig"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:157
 msgid "The provided value is invalid (min: 0 max: 100)"
-msgstr ""
+msgstr "Der angegebene Wert ist ungültig (min: 0 max: 100)"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:187
 msgid "You must select at least one user."
-msgstr ""
+msgstr "Sie müssen mindestens einen Benutzer auswählen."
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:191
 msgid "Please select a calendar"
-msgstr ""
+msgstr "Bitte wähle einen Kalender aus"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:218
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:228
 msgid "Outage duration needs to be numeric"
-msgstr ""
+msgstr "Die Ausfalldauer muss numerisch sein"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:222
 msgid "You must select at least one option for host and/or service (\"in %\" and/or \"in h\")"
-msgstr ""
+msgstr "Sie müssen mindestens eine Option für Host und / oder Service auswählen (\"in %\" and/or \"in h\")"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:613
 msgid "{0} %"
@@ -18492,7 +18492,7 @@ msgstr ""
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:615
 msgid "{0} minutes"
-msgstr ""
+msgstr "{0} Minuten"
 
 #: AutoreportModule/templates/AutoreportSettings/index.php:15
 #: AutoreportModule/templates/Autoreports/add_step_one.php:15
@@ -18509,25 +18509,25 @@ msgstr ""
 
 #: AutoreportModule/templates/AutoreportSettings/index.php:37
 msgid "This changes affects all reports"
-msgstr ""
+msgstr "Diese Änderung betrifft alle Berichte"
 
 #: AutoreportModule/templates/AutoreportSettings/index.php:47
 msgid "Autoreport Settings"
-msgstr ""
+msgstr "Autoreport Einstellungen"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:19
 #: AutoreportModule/templates/Autoreports/add_step_two.php:19
 msgid "Create auto report"
-msgstr ""
+msgstr "Erstelle Autoreport"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:22
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:23
 msgid "Step 1"
-msgstr ""
+msgstr "Schritt 1"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:31
 msgid "Create new autoreport"
-msgstr ""
+msgstr "Erstelle neuen Autoreport"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:42
 #: AutoreportModule/templates/Autoreports/add_step_two.php:44
@@ -18535,7 +18535,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:44
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:44
 msgid "Report configuration"
-msgstr ""
+msgstr "Berichtskonfiguration"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:46
 #: AutoreportModule/templates/Autoreports/add_step_two.php:48
@@ -18543,7 +18543,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:48
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:48
 msgid "Host and services configuration"
-msgstr ""
+msgstr "Host- und Servicekonfiguration"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:50
 #: AutoreportModule/templates/Autoreports/add_step_two.php:52
@@ -18551,108 +18551,108 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:52
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:52
 msgid "Report details"
-msgstr ""
+msgstr "Bereichtdetails"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:66
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:68
 msgid "Main report configuration"
-msgstr ""
+msgstr "Hauptberichtkonfiguration"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:106
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:108
 msgid "Report description"
-msgstr ""
+msgstr "Berichtbeschreibung"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:127
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:129
 msgid "Set start"
-msgstr ""
+msgstr "Setze Start"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:135
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:137
 msgid "Start date"
-msgstr ""
+msgstr "Startdatum"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:166
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:168
 msgid "Evaluation period"
-msgstr ""
+msgstr "Bewertungszeitraum"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:172
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:174
 msgid "Year"
-msgstr ""
+msgstr "Jahr"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:173
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:175
 msgid "Quarter"
-msgstr ""
+msgstr "Quartal"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:174
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:176
 msgid "Month"
-msgstr ""
+msgstr "Monat"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:175
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:177
 msgid "Week"
-msgstr ""
+msgstr "Woche"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:192
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:194
 msgid "never"
-msgstr ""
+msgstr "niemals"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:193
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:195
 msgid "yearly"
-msgstr ""
+msgstr "jährlich"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:194
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:196
 msgid "quarterly"
-msgstr ""
+msgstr "vierteljährlich"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:195
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:197
 msgid "monthly"
-msgstr ""
+msgstr "monatlich"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:196
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:198
 msgid "weekly"
-msgstr ""
+msgstr "wöchentlich"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:197
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:199
 msgid "daily"
-msgstr ""
+msgstr "täglich"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:211
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:213
 msgid "Guaranteed availability"
-msgstr ""
+msgstr "Garantierte Verfügbarkeit"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:235
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:237
 msgid "in percent"
-msgstr ""
+msgstr "in Prozent"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:241
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:243
 msgid "in minutes"
-msgstr ""
+msgstr "in Minuten"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:257
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:259
 msgid "You must specify at least \"Guaranteed availability\" or \"Max. number of outages\""
-msgstr ""
+msgstr "Sie müssen mindestens \"Garantierte Verfügbarkeit\" oder \"Maximale Anzahl von Ausfällen\" angeben."
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:266
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:268
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:144
 msgid "Max. number of outages"
-msgstr ""
+msgstr "Maximale Anzahl von Ausfällen"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:292
 #: AutoreportModule/templates/Autoreports/add_step_two.php:130
@@ -18682,27 +18682,27 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:346
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:201
 msgid "Consider holidays"
-msgstr ""
+msgstr "Betrachte Feiertage"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:22
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:22
 msgid "Step 2"
-msgstr ""
+msgstr "Schritt 2"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:32
 msgid "Create new auto report:"
-msgstr ""
+msgstr "Neuen automatischen Bericht erstellen:"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:61
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:61
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:61
 msgid "Prev"
-msgstr ""
+msgstr "Zurück"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:73
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:73
 msgid "Report configuration for hosts and services"
-msgstr ""
+msgstr "Berichtskonfiguration für Hosts und Services"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:129
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:258
@@ -18713,7 +18713,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/add_step_two.php:133
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:133
 msgid "Use minimum, average or maximum values for graph"
-msgstr ""
+msgstr "Verwenden Sie minimale, durchschnittliche oder maximale Werte für den Graphen"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:134
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:134
@@ -18724,43 +18724,43 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:261
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:136
 msgid "Max. outage duration"
-msgstr ""
+msgstr "Max. Ausfalldauer"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:137
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:262
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:137
 msgid "All failures"
-msgstr ""
+msgstr "Alle Fehler"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:142
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:142
 msgid "host settings"
-msgstr ""
+msgstr "Hosteinstellungen"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:144
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:144
 msgid "service settings"
-msgstr ""
+msgstr "Serviceeinstellungen"
 
 #: AutoreportModule/templates/Autoreports/autoreport_availibility_colors.php:2
 msgid "Colors"
-msgstr ""
+msgstr "Farben"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:24
 msgid "Calculate availability"
-msgstr ""
+msgstr "Verfügbarkeit berechnen"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:48
 msgid "Last update: "
-msgstr ""
+msgstr "Letzte Aktualisierung:"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:80
 msgid "No data available "
-msgstr ""
+msgstr "Keine Daten verfügbar "
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:116
 msgid "Availibility"
-msgstr ""
+msgstr "Verfügbarkeit"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:127
 msgid " in %"
@@ -18772,23 +18772,23 @@ msgstr ""
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:149
 msgid "Show log data"
-msgstr ""
+msgstr "Zeige Logdaten"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:158
 msgid "Log date"
-msgstr ""
+msgstr "Logdatum"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:170
 msgid "Bar chart"
-msgstr ""
+msgstr "Balkendiagramm"
 
 #: AutoreportModule/templates/Autoreports/create_report.php:26
 msgid "Create autoreport"
-msgstr ""
+msgstr "Erstelle Autoreport"
 
 #: AutoreportModule/templates/Autoreports/create_report.php:45
 msgid "Report"
-msgstr ""
+msgstr "Bericht"
 
 #: AutoreportModule/templates/Autoreports/create_report.php:51
 #: AutoreportModule/templates/Autoreports/generate.php:121
@@ -18799,105 +18799,105 @@ msgstr ""
 #: CheckmkModule/templates/Mkagents/add.php:151
 #: CheckmkModule/templates/Mkchecks/add.php:108
 msgid "Create"
-msgstr ""
+msgstr "Erstelle"
 
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:20
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:19
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:19
 msgid "Edit auto report"
-msgstr ""
+msgstr "Bearbeite Autoreport"
 
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:32
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:32
 msgid "Edit auto report:"
-msgstr ""
+msgstr "Bearbeite Autoreport:"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:22
 msgid "Step 3"
-msgstr ""
+msgstr "Schritt 3"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:32
 msgid "Autoreport configuration overview:"
-msgstr ""
+msgstr "Übersicht über die Autoreport-Konfiguration:"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:67
 msgid "Finish"
-msgstr ""
+msgstr "Fertig"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:75
 msgid "Report overview"
-msgstr ""
+msgstr "Berichtsübersicht"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:100
 msgid "Report interval"
-msgstr ""
+msgstr "Berichtsintervall"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:113
 msgid "Report send interval"
-msgstr ""
+msgstr "Berichtssendeintervall"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:125
 msgid "Min. availibility"
-msgstr ""
+msgstr "Min. Verfügbarkeit"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:156
 msgid "Use start time"
-msgstr ""
+msgstr "Nutze Startzeit"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:176
 msgid "hard"
-msgstr ""
+msgstr "hart"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:179
 msgid "hard and soft"
-msgstr ""
+msgstr "hart und weich"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:247
 msgid "Host and service options"
-msgstr ""
+msgstr "Host und Service Optionen"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:304
 msgid "No Services selected. Report will considered only host state changes."
-msgstr ""
+msgstr "Keine Dienste ausgewählt. Der Bericht berücksichtigt nur Änderungen des Hoststatus."
 
 #: AutoreportModule/templates/Autoreports/generate.php:22
 msgid "Generate Report"
-msgstr ""
+msgstr "Generiere Bericht"
 
 #: AutoreportModule/templates/Autoreports/generate.php:31
 msgid "Generate auto report"
-msgstr ""
+msgstr "Generiere Autoreport"
 
 #: AutoreportModule/templates/Autoreports/generate.php:94
 #: AutoreportModule/templates/email/html/autoreport_mail.php:31
 #: AutoreportModule/templates/email/text/autoreport_mail.php:3
 msgid "Auto report"
-msgstr ""
+msgstr "Autoreport"
 
 #: AutoreportModule/templates/Autoreports/generate.php:179
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:66
 msgid "Evaluated time period"
-msgstr ""
+msgstr "Bewerteter Zeitraum"
 
 #: AutoreportModule/templates/Autoreports/generate.php:218
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:95
 msgid "Availability overview"
-msgstr ""
+msgstr "Verfügbarkeitsübersicht"
 
 #: AutoreportModule/templates/Autoreports/generate.php:227
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:106
 msgid "Maximum allowed outage duration"
-msgstr ""
+msgstr "Maximal zulässige Ausfalldauer"
 
 #: AutoreportModule/templates/Autoreports/generate.php:229
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:109
 msgid "Measured outage duration "
-msgstr ""
+msgstr "Gemessene Ausfalldauer "
 
 #: AutoreportModule/templates/Autoreports/generate.php:235
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:116
 msgid "Percentage"
-msgstr ""
+msgstr "Prozentsatz"
 
 #: AutoreportModule/templates/Autoreports/generate.php:245
 #: AutoreportModule/templates/Autoreports/generate.php:264
@@ -18910,7 +18910,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:254
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:289
 msgid "PASSED"
-msgstr ""
+msgstr "BESTANDEN"
 
 #: AutoreportModule/templates/Autoreports/generate.php:249
 #: AutoreportModule/templates/Autoreports/generate.php:268
@@ -18923,168 +18923,168 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:258
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:293
 msgid "FAILED"
-msgstr ""
+msgstr "GESCHEITERT"
 
 #: AutoreportModule/templates/Autoreports/generate.php:281
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:165
 msgid "Outages overview"
-msgstr ""
+msgstr "Ausfallübersicht"
 
 #: AutoreportModule/templates/Autoreports/generate.php:290
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:175
 msgid "Maximum allowed number of outages"
-msgstr ""
+msgstr "Maximal zulässige Anzahl von Ausfällen"
 
 #: AutoreportModule/templates/Autoreports/generate.php:293
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:178
 msgid "Measured number of outages"
-msgstr ""
+msgstr "Gemessene Anzahl von Ausfällen"
 
 #: AutoreportModule/templates/Autoreports/generate.php:327
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:212
 msgid "Evaluated host and services"
-msgstr ""
+msgstr "Evaluierter Host und Services"
 
 #: AutoreportModule/templates/Autoreports/generate.php:340
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:226
 msgid "Availability "
-msgstr ""
+msgstr "Verfügbarkeit "
 
 #: AutoreportModule/templates/Autoreports/generate.php:369
 #: AutoreportModule/templates/Autoreports/generate.php:409
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:245
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:280
 msgid "No historical data available "
-msgstr ""
+msgstr "Keine historischen Daten verfügbar "
 
 #: AutoreportModule/templates/Autoreports/generate.php:434
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:311
 msgid "SLA overview"
-msgstr ""
+msgstr "SLA Übersicht"
 
 #: AutoreportModule/templates/Autoreports/generate.php:446
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:326
 msgid "Host and service details"
-msgstr ""
+msgstr "Host- und Servicedetails"
 
 #: AutoreportModule/templates/Autoreports/generate.php:517
 #: AutoreportModule/templates/Autoreports/generate.php:693
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:430
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:652
 msgid "Outage time exceeding the permitted limit ({0} min)"
-msgstr ""
+msgstr "Ausfallzeit überschreitet die zulässige Grenze ({0} min)"
 
 #: AutoreportModule/templates/Autoreports/generate.php:544
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:468
 msgid "Host outage in downtime exceeding the permitted limit ({0} min)"
-msgstr ""
+msgstr "Hostausfall bei Wartungszeiten, die den zulässigen Grenzwert überschreiten ({0} min)"
 
 #: AutoreportModule/templates/Autoreports/generate.php:545
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:470
 msgid "Host outage in downtime"
-msgstr ""
+msgstr "Hostausfall in Wartungszeiten"
 
 #: AutoreportModule/templates/Autoreports/generate.php:720
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:688
 msgid "Service outage in downtime exceeding the permitted limit ({0} min)"
-msgstr ""
+msgstr "Serviceausfall bei Wartungszeiten, die den zulässigen Grenzwert überschreiten ({0} min)"
 
 #: AutoreportModule/templates/Autoreports/generate.php:721
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:690
 msgid "Service outage in downtime"
-msgstr ""
+msgstr "Serviceausfall in Wartungszeiten"
 
 #: AutoreportModule/templates/Autoreports/host_used_by.php:19
 #: EventcorrelationModule/templates/Eventcorrelations/host_used_by.php:19
 msgid "Host used by"
-msgstr ""
+msgstr "Host verwendet von"
 
 #: AutoreportModule/templates/Autoreports/host_used_by.php:33
 #: AutoreportModule/templates/Autoreports/service_used_by.php:33
 msgid "autoreports."
-msgstr ""
+msgstr "Autoreports."
 
 #: AutoreportModule/templates/Autoreports/host_used_by.php:51
 #: AutoreportModule/templates/Autoreports/service_used_by.php:51
 msgid "Auto report name"
-msgstr ""
+msgstr "Autoreport Name"
 
 #: AutoreportModule/templates/Autoreports/host_used_by.php:131
 msgid "This host is not used by any autoreport or you have insufficient permissions."
-msgstr ""
+msgstr "Dieser Host wird von keinem Autoreport verwendet oder Sie haben nicht genügend Berechtigungen."
 
 #: AutoreportModule/templates/Autoreports/index.php:19
 msgid "Auto Reports Overview"
-msgstr ""
+msgstr "Autoreports Übersicht"
 
 #: AutoreportModule/templates/Autoreports/index.php:31
 msgid " Auto reports"
-msgstr ""
+msgstr " Autoreports"
 
 #: AutoreportModule/templates/Autoreports/index.php:101
 msgid "Report inteval"
-msgstr ""
+msgstr "Berichtintervall"
 
 #: AutoreportModule/templates/Autoreports/index.php:105
 msgid "Report send inteval"
-msgstr ""
+msgstr "Bericht Sendeintervall"
 
 #: AutoreportModule/templates/Autoreports/index.php:109
 msgid "Min. availability"
-msgstr ""
+msgstr "Min. Verfügbarkeit"
 
 #: AutoreportModule/templates/Autoreports/index.php:113
 msgid "Max number of outages"
-msgstr ""
+msgstr "Maximale Anzahl von Ausfällen"
 
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:49
 msgid "Analysis period"
-msgstr ""
+msgstr "Analysezeitraum"
 
 #: AutoreportModule/templates/Autoreports/service_used_by.php:19
 #: EventcorrelationModule/templates/Eventcorrelations/service_used_by.php:19
 msgid "Service used by"
-msgstr ""
+msgstr "Services verwendet von"
 
 #: AutoreportModule/templates/Autoreports/service_used_by.php:131
 msgid "This service is not used by any autoreport or you have insufficient permissions."
-msgstr ""
+msgstr "Dieser Service wird von keinem Autoreport verwendet oder Sie haben nicht genügend Berechtigungen."
 
 #: AutoreportModule/templates/email/html/default_mail.php:31
 #: AutoreportModule/templates/email/text/default_mail.php:3
 msgid "Quarterly auto report"
-msgstr ""
+msgstr "Vierteljährlicher automatischer Bericht"
 
 #: AutoreportModule/templates/email/html/default_mail.php:53
 msgid "Quarterly auto report informations"
-msgstr ""
+msgstr "Vierteljährliche automatische Berichtsinformationen"
 
 #: CheckmkModule/src/Controller/MkLogfileController.php:59
 msgid "MkLogfile is empty or does not exist."
-msgstr ""
+msgstr "MkLogfile ist leer oder existiert nicht."
 
 #: CheckmkModule/src/Controller/ScansController.php:64
 msgid "Execute SNMP discovery"
-msgstr ""
+msgstr "Führe SNMP-Erkennung aus"
 
 #: CheckmkModule/src/Controller/ScansController.php:65
 msgid "Execute remote discovery"
-msgstr ""
+msgstr "Führe Remoteerkennung aus"
 
 #: CheckmkModule/src/Controller/ScansController.php:79
-msgid "No MKChecks defined! Check_MK will not work."
-msgstr ""
+msgid "No MKChecks defined! Checkmk will not work."
+msgstr "Keine MKChecks definiert! Checkmk wird nicht funktionieren."
 
 #: CheckmkModule/src/Controller/ScansController.php:171
 #: CheckmkModule/src/Controller/SnmpController.php:201
 msgid "MK service created successfully"
-msgstr ""
+msgstr "MK-Service erfolgreich erstellt"
 
 #: CheckmkModule/src/Controller/ScansController.php:278
 #: CheckmkModule/src/Controller/ScansController.php:473
 #: CheckmkModule/src/Controller/SnmpController.php:306
 msgid "Invalid Checkmk satellite task"
-msgstr ""
+msgstr "Ungültige Checkmk-Satellitenaufgabe"
 
 #: CheckmkModule/src/Controller/SnmpController.php:81
 msgid "SNMP V 1"
@@ -19100,14 +19100,14 @@ msgstr ""
 
 #: CheckmkModule/src/Controller/SnmpController.php:210
 msgid "SNMP configuration not found!"
-msgstr ""
+msgstr "SNMP-Konfiguration nicht gefunden!"
 
 #: CheckmkModule/src/Lib/AdditionalLinks.php:34
 #: CheckmkModule/src/Lib/AdditionalLinks.php:44
 #: CheckmkModule/src/Lib/AdditionalLinks.php:54
 #: CheckmkModule/src/Lib/AdditionalLinks.php:64
 msgid "Checkmk discovery"
-msgstr ""
+msgstr "Checkmk Erkennung"
 
 #: CheckmkModule/src/Lib/Menu.php:43
 msgid "Check MK"
@@ -19140,22 +19140,22 @@ msgstr ""
 
 #: CheckmkModule/templates/Mkagents/add.php:70
 msgid "Create new Checkmk agent"
-msgstr ""
+msgstr "Erstelle neuen Checkmk Agenten"
 
 #: CheckmkModule/templates/Mkagents/add.php:84
 #: CheckmkModule/templates/Mkagents/edit.php:84
 #: CheckmkModule/templates/Scans/index.php:90
 msgid "Checkmk agent"
-msgstr ""
+msgstr "Checkmk Agent"
 
 #: CheckmkModule/templates/Mkagents/edit.php:70
 msgid "Edit Checkmk agent"
-msgstr ""
+msgstr "Bearbeite Checkmk Agent"
 
 #: CheckmkModule/templates/Mkagents/edit.php:84
 #: CheckmkModule/templates/Mkchecks/edit.php:66
 msgid "edited successfully"
-msgstr ""
+msgstr "erfolgreich bearbeitet"
 
 #: CheckmkModule/templates/Mkagents/index.php:53
 #: CheckmkModule/templates/Mkchecks/index.php:53
@@ -19164,51 +19164,51 @@ msgstr ""
 
 #: CheckmkModule/templates/Mkagents/index.php:87
 msgid "Filter by agent name"
-msgstr ""
+msgstr "Filter nach Agentenname"
 
 #: CheckmkModule/templates/Mkagents/index.php:113
 msgid "Filter by command"
-msgstr ""
+msgstr "Filter nach Kommando"
 
 #: CheckmkModule/templates/Mkagents/index.php:136
 msgid "Agent name"
-msgstr ""
+msgstr "Agentenname"
 
 #: CheckmkModule/templates/Mkchecks/add.php:52
 msgid "Create new Checkmk check"
-msgstr ""
+msgstr "Erstelle neuen Checkmk-Check"
 
 #: CheckmkModule/templates/Mkchecks/add.php:66
 #: CheckmkModule/templates/Mkchecks/edit.php:66
 msgid "Checkmk check"
-msgstr ""
+msgstr "Checkmk Check"
 
 #: CheckmkModule/templates/Mkchecks/add.php:70
 #: CheckmkModule/templates/Mkchecks/edit.php:70
 #: CheckmkModule/templates/Mkchecks/index.php:123
 msgid "Check name"
-msgstr ""
+msgstr "Checkname"
 
 #: CheckmkModule/templates/Mkchecks/add.php:94
 #: CheckmkModule/templates/Mkchecks/edit.php:94
 msgid "Please select a servicetemplate."
-msgstr ""
+msgstr "Bitte wähle eine Servicevorlage."
 
 #: CheckmkModule/templates/Mkchecks/edit.php:52
 msgid "Edit Checkmk check"
-msgstr ""
+msgstr "Bearbeite Checkmk Check"
 
 #: CheckmkModule/templates/Mkchecks/index.php:87
 msgid "Filter by check name"
-msgstr ""
+msgstr "Filter nach Checkname"
 
 #: CheckmkModule/templates/Mkchecks/index.php:100
 msgid "Filter by servicetemplate name"
-msgstr ""
+msgstr "Filter nach Servicevorlagenname"
 
 #: CheckmkModule/templates/Mkchecks/index.php:127
 msgid "Servicetemplate name"
-msgstr ""
+msgstr "Servicevorlagenname"
 
 #: CheckmkModule/templates/Scans/index.php:38
 msgid "Scans"
@@ -19217,34 +19217,34 @@ msgstr ""
 #: CheckmkModule/templates/Scans/index.php:52
 #: CheckmkModule/templates/Snmp/index.php:52
 msgid "Scan device:"
-msgstr ""
+msgstr "Scan Gerät:"
 
 #: CheckmkModule/templates/Scans/index.php:57
 #: CheckmkModule/templates/Snmp/index.php:57
 msgid "Cancel waiting for satellite result"
-msgstr ""
+msgstr "Warten auf Ergebnis vom Satelliten abbrechen"
 
 #: CheckmkModule/templates/Scans/index.php:78
 #: CheckmkModule/templates/Snmp/index.php:77
 msgid "Error from Satellite!"
-msgstr ""
+msgstr "Fehler vom Satelliten!"
 
 #: CheckmkModule/templates/Scans/index.php:103
 msgid "Execute discovery"
-msgstr ""
+msgstr "Erkennung ausführen"
 
 #: CheckmkModule/templates/Scans/index.php:118
 msgid "Executing remote discovery..."
-msgstr ""
+msgstr "Remoteerkennung ausführen ..."
 
 #: CheckmkModule/templates/Scans/index.php:122
 #: CheckmkModule/templates/Snmp/index.php:231
 msgid "Waiting for response from Satellite..."
-msgstr ""
+msgstr "Warte auf Ergebnis vom Satelliten..."
 
 #: CheckmkModule/templates/Scans/index.php:139
 msgid "Health"
-msgstr ""
+msgstr "Gesundheit"
 
 #: CheckmkModule/templates/Scans/index.php:170
 msgid "Windows Services"
@@ -19257,22 +19257,22 @@ msgstr ""
 #: CheckmkModule/templates/Scans/index.php:210
 #: CheckmkModule/templates/Snmp/index.php:274
 msgid "More services available"
-msgstr ""
+msgstr "Weitere Dienste verfügbar"
 
 #: CheckmkModule/templates/Scans/index.php:213
 #: CheckmkModule/templates/Snmp/index.php:277
 msgid "Before you are able to monitor the following services, it is required that an appropriate service template has been created."
-msgstr ""
+msgstr "Bevor Sie die folgenden Dienste überwachen können, muss eine entsprechende Servicevorlage erstellt werden."
 
 #: CheckmkModule/templates/Scans/index.php:219
 #: CheckmkModule/templates/Snmp/index.php:283
 msgid "Go to \"Service templates\""
-msgstr ""
+msgstr "Gehe zu \"Servicevorlagen\""
 
 #: CheckmkModule/templates/Scans/index.php:225
 #: CheckmkModule/templates/Snmp/index.php:289
 msgid "Go to \"Agent Checks\""
-msgstr ""
+msgstr "Gehe zu \"Agentenchecks\""
 
 #: CheckmkModule/templates/Scans/index.php:238
 #: CheckmkModule/templates/Snmp/index.php:301
@@ -19282,12 +19282,12 @@ msgstr ""
 #: CheckmkModule/templates/Scans/index.php:239
 #: CheckmkModule/templates/Snmp/index.php:302
 msgid "Item"
-msgstr ""
+msgstr "Gegenstand"
 
 #: CheckmkModule/templates/Scans/index.php:240
 #: CheckmkModule/templates/Snmp/index.php:303
 msgid "Parameters"
-msgstr ""
+msgstr "Parameter"
 
 #: CheckmkModule/templates/Snmp/index.php:38
 msgid "Snmp"
@@ -19295,7 +19295,7 @@ msgstr ""
 
 #: CheckmkModule/templates/Snmp/index.php:100
 msgid "SNMP version"
-msgstr ""
+msgstr "SNMP Version"
 
 #: CheckmkModule/templates/Snmp/index.php:116
 msgid "Community"
@@ -19303,67 +19303,67 @@ msgstr ""
 
 #: CheckmkModule/templates/Snmp/index.php:131
 msgid "Security level"
-msgstr ""
+msgstr "Sicherheitsstufe"
 
 #: CheckmkModule/templates/Snmp/index.php:145
 msgid "Hash algorithm"
-msgstr ""
+msgstr "Hash-Algorithmus"
 
 #: CheckmkModule/templates/Snmp/index.php:179
 msgid "Encryption algorithm"
-msgstr ""
+msgstr "Verschlüsselungsalgorithmus"
 
 #: CheckmkModule/templates/Snmp/index.php:193
 msgid "Encryption password"
-msgstr ""
+msgstr "Verschlüsselungskennwort"
 
 #: CheckmkModule/templates/Snmp/index.php:207
 msgid "Save and run SNMP discovery"
-msgstr ""
+msgstr "SNMP-Erkennung speichern und ausführen"
 
 #: CheckmkModule/templates/Snmp/index.php:227
 msgid "Executing discovery via SNMP..."
-msgstr ""
+msgstr "Erkennung über SNMP ausführen..."
 
 #: CheckmkModule/templates/Snmp/index.php:323
 msgid "Continue"
-msgstr ""
+msgstr "Weiter"
 
 #: DesignModule/src/Controller/DesignsController.php:124
 msgid "Design saved successfully"
-msgstr ""
+msgstr "Design erfolgreich gespeichert"
 
 #: DesignModule/src/Controller/DesignsController.php:163
 msgid "No file to import"
-msgstr ""
+msgstr "Keine zu importierende Datei"
 
 #: DesignModule/src/Controller/DesignsController.php:167
 msgid "Uploaded file type is not allowed"
-msgstr ""
+msgstr "Der hochgeladene Dateityp ist nicht zulässig"
 
 #: DesignModule/src/Controller/DesignsController.php:219
 msgid "Design imported and saved successfully"
-msgstr ""
+msgstr "Design erfolgreich importiert und gespeichert"
 
 #: DesignModule/src/Controller/UploadsController.php:33
 msgid "Error on uploading file"
-msgstr ""
+msgstr "Fehler beim Hochladen der Datei"
 
 #: DesignModule/src/Controller/UploadsController.php:99
 msgid "Unsuported image format."
-msgstr ""
+msgstr "Nicht unterstütztes Bildformat."
 
 #: DesignModule/src/Controller/UploadsController.php:106
 msgid "Upload successful"
-msgstr ""
+msgstr "Hochladen erfolgreich"
 
 #: DesignModule/src/Controller/UploadsController.php:113
 msgid "Reset successful"
-msgstr ""
+msgstr "Erfolgreich zurücksetzen"
 
 #: DesignModule/src/Controller/UploadsController.php:138
 msgid "No custom logo found"
-msgstr ""
+msgstr "Kein benutzerdefiniertes Logo gefunden"
 
 #: DesignModule/src/Lib/Menu.php:27
 msgid "Design Editor"
@@ -19383,19 +19383,19 @@ msgstr ""
 
 #: DesignModule/templates/Designs/edit.php:46
 msgid "Layout, Header and Menu"
-msgstr ""
+msgstr "Layout, Kopfzeile und Menü"
 
 #: DesignModule/templates/Designs/edit.php:54
 msgid "Logo in header"
-msgstr ""
+msgstr "Logo in der Kopfzeile"
 
 #: DesignModule/templates/Designs/edit.php:60
 msgid "Page Header"
-msgstr ""
+msgstr "Kopfzeile"
 
 #: DesignModule/templates/Designs/edit.php:76
 msgid "Sidebar"
-msgstr ""
+msgstr "Seitenleiste"
 
 #: DesignModule/templates/Designs/edit.php:93
 msgid "Gradient"
@@ -19403,47 +19403,47 @@ msgstr ""
 
 #: DesignModule/templates/Designs/edit.php:98
 msgid "Sidebar gradient"
-msgstr ""
+msgstr "Seitenleistenverlauf"
 
 #: DesignModule/templates/Designs/edit.php:111
 msgid "Navigation title font"
-msgstr ""
+msgstr "Navigationstitelschrift"
 
 #: DesignModule/templates/Designs/edit.php:125
 msgid "Navigation menu font"
-msgstr ""
+msgstr "Schriftart des Navigationsmenüs"
 
 #: DesignModule/templates/Designs/edit.php:139
 msgid "Navigation menu font on hover"
-msgstr ""
+msgstr "Schriftart des Navigationsmenüs beim Hover"
 
 #: DesignModule/templates/Designs/edit.php:147
 msgid "Main background"
-msgstr ""
+msgstr "Haupthintergrund"
 
 #: DesignModule/templates/Designs/edit.php:161
 msgid "Tables"
-msgstr ""
+msgstr "Tabellen"
 
 #: DesignModule/templates/Designs/edit.php:164
 msgid "Table background color"
-msgstr ""
+msgstr "Tabellenhintergrundfarbe"
 
 #: DesignModule/templates/Designs/edit.php:172
 msgid "Table font color"
-msgstr ""
+msgstr "Schriftfarbe der Tabelle"
 
 #: DesignModule/templates/Designs/edit.php:180
 msgid "Table border"
-msgstr ""
+msgstr "Tabellenrand"
 
 #: DesignModule/templates/Designs/edit.php:188
 msgid "Table hover background"
-msgstr ""
+msgstr "Tabelle Hover Hintergrund"
 
 #: DesignModule/templates/Designs/edit.php:196
 msgid "Table hover font color"
-msgstr ""
+msgstr "Schriftart der Tabelle beim Hover"
 
 #: DesignModule/templates/Designs/edit.php:203
 msgid "Tabs"
@@ -19451,47 +19451,47 @@ msgstr ""
 
 #: DesignModule/templates/Designs/edit.php:206
 msgid "Tab background"
-msgstr ""
+msgstr "Tab Hintergrund"
 
 #: DesignModule/templates/Designs/edit.php:213
 msgid "Tab font color"
-msgstr ""
+msgstr "Tab Schriftfarbe"
 
 #: DesignModule/templates/Designs/edit.php:221
 msgid "Tab font color hover"
-msgstr ""
+msgstr "Tab Schriftfarbe bim Hover"
 
 #: DesignModule/templates/Designs/edit.php:233
 msgid "Panels, Cards"
-msgstr ""
+msgstr "Panels, Karten"
 
 #: DesignModule/templates/Designs/edit.php:236
 msgid "Panel background"
-msgstr ""
+msgstr "Panel Hintergrund"
 
 #: DesignModule/templates/Designs/edit.php:250
 msgid "Panel Title"
-msgstr ""
+msgstr "Panel Titel"
 
 #: DesignModule/templates/Designs/edit.php:264
 msgid "Page content font"
-msgstr ""
+msgstr "Schriftart des Seiteninhalts"
 
 #: DesignModule/templates/Designs/edit.php:279
 msgid "Card background"
-msgstr ""
+msgstr "Kartenhintergrund"
 
 #: DesignModule/templates/Designs/edit.php:293
 msgid "Card header Background"
-msgstr ""
+msgstr "Kartenkopf Hintergrund"
 
 #: DesignModule/templates/Designs/edit.php:308
 msgid "Card content font"
-msgstr ""
+msgstr "Schriftart des Karteninhalts"
 
 #: DesignModule/templates/Designs/edit.php:323
 msgid "Panel and Card header font"
-msgstr ""
+msgstr "Panel- und Kartenheader-Schriftart"
 
 #: DesignModule/templates/Designs/edit.php:338
 msgid "Breadcrumbs"
@@ -19499,39 +19499,39 @@ msgstr ""
 
 #: DesignModule/templates/Designs/edit.php:341
 msgid "Breadcrumb font color"
-msgstr ""
+msgstr "Breadcrumb Schriftfarbe"
 
 #: DesignModule/templates/Designs/edit.php:356
 msgid "Breadcrumb with links font color"
-msgstr ""
+msgstr "Breadcrumb mit Links Schriftfarbe"
 
 #: DesignModule/templates/Designs/edit.php:371
 msgid "Input fields and Buttons"
-msgstr ""
+msgstr "Eingabefelder und Buttons"
 
 #: DesignModule/templates/Designs/edit.php:374
 msgid "Default button color"
-msgstr ""
+msgstr "Standardfarbe der Buttons"
 
 #: DesignModule/templates/Designs/edit.php:389
 msgid "Default button font color"
-msgstr ""
+msgstr "Standardschriftfarbe der Buttons"
 
 #: DesignModule/templates/Designs/edit.php:404
 msgid "Default button border color"
-msgstr ""
+msgstr "Standardfarbe für Buttonsränder"
 
 #: DesignModule/templates/Designs/edit.php:421
 msgid "Dark Theme"
-msgstr ""
+msgstr "Dunkles Thema"
 
 #: DesignModule/templates/Designs/edit.php:423
 msgid "Reset to default"
-msgstr ""
+msgstr "Auf Standardeinstellung zurücksetzen"
 
 #: DesignModule/templates/Designs/edit.php:428
 msgid "Update style"
-msgstr ""
+msgstr "Stil aktualisieren"
 
 #: DesignModule/templates/Designs/edit.php:436
 msgid "Logos"
@@ -19539,94 +19539,94 @@ msgstr ""
 
 #: DesignModule/templates/Designs/edit.php:440
 msgid "Upload logo"
-msgstr ""
+msgstr "Logo hochladen"
 
 #: DesignModule/templates/Designs/edit.php:450
 #: DesignModule/templates/Designs/edit.php:467
 #: DesignModule/templates/Designs/edit.php:483
 #: DesignModule/templates/Designs/edit.php:500
 msgid "Reset logo"
-msgstr ""
+msgstr "Logo zurücksetzen"
 
 #: DesignModule/templates/Designs/edit.php:453
 msgid "The logo is used by the interface and PDF files."
-msgstr ""
+msgstr "Das Logo wird von der Benutzeroberfläche und den PDF-Dateien verwendet."
 
 #: DesignModule/templates/Designs/edit.php:470
 msgid "The small logo is used by notifications."
-msgstr ""
+msgstr "Das kleine Logo wird von Benachrichtigungen verwendet."
 
 #: DesignModule/templates/Designs/edit.php:486
 msgid "The logo is used by the interface and login screen."
-msgstr ""
+msgstr "Das Logo wird von der Benutzeroberfläche und dem Anmeldebildschirm verwendet."
 
 #: DesignModule/templates/Designs/edit.php:503
 msgid "This Logo is used in the page header"
-msgstr ""
+msgstr "Das Logo wird im Seitenkopf verwendet"
 
 #: DesignModule/templates/Designs/edit.php:514
 msgid "Import / Export Design"
-msgstr ""
+msgstr "Design importieren / exportieren"
 
 #: DesignModule/templates/Designs/edit.php:520
 msgid "Import"
-msgstr ""
+msgstr "Importieren"
 
 #: DesignModule/templates/Designs/edit.php:525
 msgid "Export current saved design"
-msgstr ""
+msgstr "Exportieren Sie das aktuell gespeicherte Design"
 
 #: DesignModule/templates/Designs/edit.php:544
 msgid "Upload your logo"
-msgstr ""
+msgstr "Laden Sie Ihr Logo hoch"
 
 #: DesignModule/templates/Designs/edit.php:555
 msgid "Logo for"
-msgstr ""
+msgstr "Logo für"
 
 #: DesignModule/templates/Designs/edit.php:563
 msgid "Interface and PDFs"
-msgstr ""
+msgstr "Schnittstelle und PDFs"
 
 #: DesignModule/templates/Designs/edit.php:565
 msgid "Interface and Login"
-msgstr ""
+msgstr "Schnittstelle und Login"
 
 #: DesignModule/templates/Designs/edit.php:566
 msgid "Header logo"
-msgstr ""
+msgstr "Header-Logo"
 
 #: DesignModule/templates/Designs/edit.php:578
 msgid "Supported iamge types: .jpg, .png and .gif."
-msgstr ""
+msgstr "Unterstützte Bildtypen: .jpg, .png und .gif."
 
 #: DesignModule/templates/Designs/edit.php:586
 #: DesignModule/templates/Designs/edit.php:632
 msgid "Drop files here or click to upload."
-msgstr ""
+msgstr "Legen Sie Dateien hier ab oder klicken Sie zum Hochladen."
 
 #: DesignModule/templates/Designs/edit.php:611
 msgid "Upload your Design"
-msgstr ""
+msgstr "Laden Sie Ihr Design hoch"
 
 #: DistributeModule/src/Controller/SatellitesController.php:108
 #: DistributeModule/src/Controller/SatellitesController.php:157
 #: DistributeModule/src/Controller/SatellitesController.php:257
 #: DistributeModule/src/Controller/SatellitesController.php:364
 msgid "Satellite not found"
-msgstr ""
+msgstr "Satellit nicht gefunden"
 
 #: DistributeModule/src/Controller/SatellitesController.php:337
 msgid "Issue while deleting hosts..."
-msgstr ""
+msgstr "Problem beim Löschen von Hosts..."
 
 #: DistributeModule/src/Controller/SatellitesController.php:344
 msgid "Satellite successfully deleted"
-msgstr ""
+msgstr "Satellit erfolgreich gelöscht"
 
 #: DistributeModule/src/Lib/Menu.php:37
 msgid "Satellites Status"
-msgstr ""
+msgstr "Satellitenstatus"
 
 #: DistributeModule/src/Lib/SatSyncMethods.php:11
 msgid "SSH"
@@ -19634,32 +19634,32 @@ msgstr ""
 
 #: DistributeModule/src/Lib/SatSyncMethods.php:12
 msgid "HTTPS pull mode"
-msgstr ""
+msgstr "HTTPS Pull-Modus"
 
 #: DistributeModule/src/Lib/SatSyncMethods.php:13
 msgid "HTTPS push mode"
-msgstr ""
+msgstr "HTTPS Push-Modus"
 
 #: DistributeModule/src/Model/Entity/Satellite.php:91
 msgid "Failed"
-msgstr ""
+msgstr "Fehlschlagen"
 
 #: DistributeModule/src/Model/Table/SatellitesTable.php:144
 msgid "Synchronisation method is out of bounds: [{0}]"
-msgstr ""
+msgstr "Die Synchronisationsmethode ist unbegrenzt: [{0}]"
 
 #: DistributeModule/src/Model/Table/SatellitesTable.php:149
 #: DistributeModule/src/Model/Table/SatellitesTable.php:160
 msgid "The port numbers in the range from 0 to 65535"
-msgstr ""
+msgstr "Die Portnummern liegen im Bereich von 0 bis 65535"
 
 #: DistributeModule/src/Model/Table/SatellitesTable.php:197
 msgid "The entered URL is invalid"
-msgstr ""
+msgstr "Die eingegebene URL ist ungültig"
 
 #: DistributeModule/src/Model/Table/SatellitesTable.php:214
 msgid "The entered Proxy URL is invalid"
-msgstr ""
+msgstr "Die eingegebene Proxy-URL ist ungültig"
 
 #: DistributeModule/templates/Satellites/add.php:18
 #: DistributeModule/templates/Satellites/edit.php:17
@@ -19671,42 +19671,42 @@ msgstr ""
 
 #: DistributeModule/templates/Satellites/add.php:36
 msgid "Create new satellite"
-msgstr ""
+msgstr "Neuen Satelliten erstellen"
 
 #: DistributeModule/templates/Satellites/add.php:72
 #: DistributeModule/templates/Satellites/edit.php:72
 msgid "Satellite Name"
-msgstr ""
+msgstr "Satellitenname"
 
 #: DistributeModule/templates/Satellites/add.php:99
 #: DistributeModule/templates/Satellites/edit.php:99
 msgid "This address will be used for all communications between the master instance and the satellite system."
-msgstr ""
+msgstr "Diese Adresse wird für die gesamte Kommunikation zwischen der Master-Instanz und dem Satellitensystem verwendet."
 
 #: DistributeModule/templates/Satellites/add.php:105
 #: DistributeModule/templates/Satellites/edit.php:105
 msgid "Synchronisation method"
-msgstr ""
+msgstr "Synchronisationsmethode"
 
 #: DistributeModule/templates/Satellites/add.php:121
 #: DistributeModule/templates/Satellites/edit.php:121
 msgid "HTTPS Push: The Satellite System will push check results to the Master system and frequently check for configuration changes."
-msgstr ""
+msgstr "HTTPS-Push: Das Satellitensystem überträgt die Prüfergebnisse an das Master-System und sucht regelmäßig nach Konfigurationsänderungen."
 
 #: DistributeModule/templates/Satellites/add.php:123
 #: DistributeModule/templates/Satellites/edit.php:123
 msgid "HTTPS Pull: The Mastersystem will frequently pull check results from the Satellite and push configuration changes."
-msgstr ""
+msgstr "HTTPS-Pull: Das Mastersystem ruft regelmäßig Prüfergebnisse vom Satelliten ab und pusht Konfigurationsänderungen."
 
 #: DistributeModule/templates/Satellites/add.php:125
 #: DistributeModule/templates/Satellites/edit.php:125
 msgid "SSH: The Mastersystem will create an SSH tunnel to the Satellite system and pull check results and push configuration changes."
-msgstr ""
+msgstr "SSH: Das Mastersystem erstellt einen SSH-Tunnel zum Satellitensystem, ruft die Prüfergebnisse ab und überträgt Konfigurationsänderungen."
 
 #: DistributeModule/templates/Satellites/add.php:160
 #: DistributeModule/templates/Satellites/edit.php:161
 msgid "SSH port of remote machine."
-msgstr ""
+msgstr "SSH-Port des Remote-Computers."
 
 #: DistributeModule/templates/Satellites/add.php:165
 #: DistributeModule/templates/Satellites/edit.php:166
@@ -19716,7 +19716,7 @@ msgstr ""
 #: DistributeModule/templates/Satellites/add.php:176
 #: DistributeModule/templates/Satellites/edit.php:177
 msgid "We will use a default path to private key if this field left empty"
-msgstr ""
+msgstr "Wir verwenden einen Standardpfad zum privaten Schlüssel, wenn dieses Feld leer bleibt"
 
 #: DistributeModule/templates/Satellites/add.php:181
 #: DistributeModule/templates/Satellites/edit.php:182
@@ -19726,17 +19726,17 @@ msgstr ""
 #: DistributeModule/templates/Satellites/add.php:195
 #: DistributeModule/templates/Satellites/edit.php:196
 msgid "Gearman port of remote machine."
-msgstr ""
+msgstr "Gearman-Port der Remote-Maschine."
 
 #: DistributeModule/templates/Satellites/add.php:257
 #: DistributeModule/templates/Satellites/edit.php:258
 msgid "Verify certificate"
-msgstr ""
+msgstr "Überprüfe das Zertifikat"
 
 #: DistributeModule/templates/Satellites/add.php:275
 #: DistributeModule/templates/Satellites/edit.php:276
 msgid "If enabled the proxy server will be used."
-msgstr ""
+msgstr "Wenn aktiviert, wird der Proxyserver verwendet."
 
 #: DistributeModule/templates/Satellites/add.php:281
 #: DistributeModule/templates/Satellites/edit.php:282
@@ -19746,7 +19746,7 @@ msgstr ""
 #: DistributeModule/templates/Satellites/add.php:359
 #: DistributeModule/templates/Satellites/edit.php:360
 msgid "Time interval in seconds the master system will pickup check results"
-msgstr ""
+msgstr "Zeitintervall in Sekunden, in welchem das Mastersystem die Prüfergebnisse aufnimmt"
 
 #: DistributeModule/templates/Satellites/add.php:364
 #: DistributeModule/templates/Satellites/add.php:410
@@ -19760,89 +19760,89 @@ msgstr ""
 #: DistributeModule/templates/Satellites/edit.php:378
 #: DistributeModule/templates/Satellites/edit.php:424
 msgid "Time limit in seconds which defines when the satellite should be marked as OFFLINE ."
-msgstr ""
+msgstr "Zeitlimit in Sekunden, das definiert, wann der Satellit als OFFLINE markiert werden soll."
 
 #: DistributeModule/templates/Satellites/add.php:462
 #: DistributeModule/templates/Satellites/edit.php:462
 msgid "Time Syncing"
-msgstr ""
+msgstr "Zeitsynchronisation"
 
 #: DistributeModule/templates/Satellites/add.php:466
 #: DistributeModule/templates/Satellites/edit.php:466
 msgid "Determines if you want to synchronise the system clock of the master server to the satellite system.\nNotice: It is not recommended to enable this option. Please use a NTP server whenever possible."
-msgstr ""
+msgstr "Legt fest, ob Sie die Systemuhr des Master-Servers mit dem Satellitensystem synchronisieren möchten.\nHinweis: Es wird nicht empfohlen, diese Option zu aktivieren. Bitte verwenden Sie nach Möglichkeit einen NTP-Server."
 
 #: DistributeModule/templates/Satellites/add.php:478
 msgid "Create satellite"
-msgstr ""
+msgstr "Erstelle Satelliten"
 
 #: DistributeModule/templates/Satellites/edit.php:35
 msgid "Edit satellite:"
-msgstr ""
+msgstr "Bearbeite Satelliten:"
 
 #: DistributeModule/templates/Satellites/edit.php:474
 msgid "Update satellite"
-msgstr ""
+msgstr "Aktualisiere Satelliten"
 
 #: DistributeModule/templates/Satellites/index.php:78
 #: DistributeModule/templates/Satellites/status.php:78
 msgid "Filter by satellite name"
-msgstr ""
+msgstr "Filter nach Satellitenname"
 
 #: DistributeModule/templates/Satellites/index.php:105
 #: DistributeModule/templates/Satellites/status.php:105
 msgid "Filter by sync method"
-msgstr ""
+msgstr "Filter nach Synchronisationsmethode"
 
 #: DistributeModule/templates/Satellites/index.php:137
 #: DistributeModule/templates/Satellites/status.php:153
 msgid "Instance name"
-msgstr ""
+msgstr "Instanzname"
 
 #: DistributeModule/templates/Satellites/index.php:145
 #: DistributeModule/templates/Satellites/status.php:161
 msgid "Sync method"
-msgstr ""
+msgstr "Synchronisationsmethode"
 
 #: DistributeModule/templates/Satellites/index.php:149
 msgid "Time zone"
-msgstr ""
+msgstr "Zeitzone"
 
 #: DistributeModule/templates/Satellites/status.php:124
 msgid "Filter by sync status"
-msgstr ""
+msgstr "Nach Synchronisierungsstatus filtern"
 
 #: DistributeModule/templates/Satellites/status.php:166
 msgid "Sync status"
-msgstr ""
+msgstr "Synchronisierungsstatus"
 
 #: DistributeModule/templates/Satellites/status.php:171
 msgid "Last sync"
-msgstr ""
+msgstr "Letzte Synchronisation"
 
 #: DistributeModule/templates/Satellites/status.php:176
 msgid "Last seen"
-msgstr ""
+msgstr "Zuletzt gesehen"
 
 #: DistributeModule/templates/Satellites/status.php:181
 msgid "Last error"
-msgstr ""
+msgstr "Letzter Fehler"
 
 #: DistributeModule/templates/Satellites/used_by.php:42
 msgid "hosts."
-msgstr ""
+msgstr "Hosts."
 
 #: DistributeModule/templates/Satellites/used_by.php:79
 msgid "This satellite is not used by any host"
-msgstr ""
+msgstr "Dieser Satellit wird von keinem Host verwendet"
 
 #: EventcorrelationModule/src/Command/EvcPluginCommand.php:281
 msgid "0 services are OK"
-msgstr ""
+msgstr "0 Services sind OK"
 
 #: EventcorrelationModule/src/Command/EvcPluginCommand.php:320
 msgid "{0} - {1} services ({2} from {3} services are OK)"
-msgstr ""
+msgstr "{0} - {1} Services ({2} von {3} Services sind OK)"
 
 #: EventcorrelationModule/src/Controller/EventcorrelationsController.php:252
 #: EventcorrelationModule/src/Controller/EventcorrelationsController.php:357
@@ -19850,78 +19850,78 @@ msgstr ""
 #: EventcorrelationModule/src/Controller/EventcorrelationsController.php:1369
 #: EventcorrelationModule/src/Controller/EventcorrelationsController.php:1529
 msgid "Invalid event correlation host"
-msgstr ""
+msgstr "Ungültiger Ereigniskorrelationshost"
 
 #: EventcorrelationModule/src/Controller/EventcorrelationsController.php:451
 msgid "Can not save empty event correlation."
-msgstr ""
+msgstr "Leere Ereigniskorrelation kann nicht gespeichert werden."
 
 #: EventcorrelationModule/src/Controller/EventcorrelationsController.php:697
 msgid "Could not delete event correlation"
-msgstr ""
+msgstr "Ereigniskorrelation konnte nicht gelöscht werden"
 
 #: EventcorrelationModule/src/Controller/EventcorrelationsController.php:716
 msgid "Invalid event correlation"
-msgstr ""
+msgstr "Invalid event correlation"
 
 #: EventcorrelationModule/src/Form/EventcorrelationForm.php:48
 msgid "Operator out of bounds"
-msgstr ""
+msgstr "Betreiber außerhalb der Grenzen"
 
 #: EventcorrelationModule/src/Form/EventcorrelationForm.php:58
 msgid "This operator requires at least two Services"
-msgstr ""
+msgstr "Dieser Betreiber benötigt mindestens zwei Services"
 
 #: EventcorrelationModule/src/Form/EventcorrelationForm.php:69
 msgid "The EQUAL Operator can only have one Service"
-msgstr ""
+msgstr "Der EQUAL-Operator kann nur einen Service haben"
 
 #: EventcorrelationModule/src/Form/EventcorrelationForm.php:80
 msgid "The MIN Operator requires a Modifier which is in the range of 1 - X (where X is the number of the selected services)"
-msgstr ""
+msgstr "Der MIN-Operator benötigt einen Modifikator im Bereich von 1 - X (wobei X die Nummer der ausgewählten Services ist)."
 
 #: EventcorrelationModule/src/Form/EventcorrelationForm.php:86
 msgid "Operator modifier has to be greater than 0."
-msgstr ""
+msgstr "Der Operator-Modifikator muss größer als 0 sein."
 
 #: EventcorrelationModule/src/Lib/AdditionalLinks.php:34
 msgid "Host used by Event Correlation"
-msgstr ""
+msgstr "Von der Ereigniskorrelation verwendeter Host"
 
 #: EventcorrelationModule/src/Lib/AdditionalLinks.php:44
 msgid "Service used by Event Correlation"
-msgstr ""
+msgstr "Von der Ereigniskorrelation verwendeter Dienst"
 
 #: EventcorrelationModule/src/Lib/Menu.php:42
 #: EventcorrelationModule/src/Lib/Widgets.php:35
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:69
 #: EventcorrelationModule/templates/Eventcorrelations/evc_widget.php:38
 msgid "Event Correlation"
-msgstr ""
+msgstr "Ereigniskorrelation"
 
 #: EventcorrelationModule/src/Lib/Menu.php:58
 msgid "Event Correlation Globals"
-msgstr ""
+msgstr "Ereigniskorrelation Globals"
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:59
 msgid "Out of range (0-7)"
-msgstr ""
+msgstr "Außerhalb des Bereichs (0-7)"
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:66
 msgid "Supported options are \"naemon\", \"nagios\" or \"statusengine\""
-msgstr ""
+msgstr "Unterstützte Optionen sind \"naemon\", \"nagios\" or \"statusengine\""
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:96
 msgid "Consider service status type (0 => every state type, 1 => only hard state)"
-msgstr ""
+msgstr "Beachten Sie den Servicestatus-Typ (0 => jeder Zustandstyp, 1 => nur harter Zustand)"
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:100
 msgid "Consider number of states"
-msgstr ""
+msgstr "Beachten Sie die Anzahl der Zustände"
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:104
 msgid "If enabled, the event correlation host will go in \"down\" state if the last (root) event correlation service is \"critical\""
-msgstr ""
+msgstr "Wenn aktiviert, wird der Ereigniskorrelationshost in den Status \"unten\" versetzt, wenn der letzte (Root-) Ereigniskorrelationsdienst \"kritisch\" ist."
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:108
 msgid "Monitoring System"
@@ -19935,59 +19935,59 @@ msgstr ""
 #: EventcorrelationModule/templates/Eventcorrelations/used_by.php:14
 #: EventcorrelationModule/templates/Eventcorrelations/view.php:14
 msgid "Event Correlation Module"
-msgstr ""
+msgstr "Ereigniskorrelationsmodul"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:37
 msgid "This changes affects all event correlations"
-msgstr ""
+msgstr "Diese Änderung wirkt sich auf alle Ereigniskorrelationen aus"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:47
 msgid "Event Correlation Settings"
-msgstr ""
+msgstr "Ereigniskorrelationseinstellungen"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:64
 msgid "Consider state type"
-msgstr ""
+msgstr "Beachte den Zustandstyp"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:69
 msgid "If disabled every state type will be considered to calculate the event correlation result. If enabled only \"hard state\" events will be used."
-msgstr ""
+msgstr "Wenn deaktiviert, wird jeder Zustandstyp berücksichtigt, um das Ergebnis der Ereigniskorrelation zu berechnen. Wenn aktiviert, werden nur \"hard state\" -Ereignisse verwendet."
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:83
 msgid "Consider state count"
-msgstr ""
+msgstr "Beachte Anzahl der Zustände"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:88
 msgid "If enabled, services in unknown state are ignored if there are more other services in critical or warning state."
-msgstr ""
+msgstr "Wenn diese Option aktiviert ist, werden Dienste im unbekannten Status ignoriert, wenn sich weitere Dienste im kritischen Status oder im Warnstatus befinden."
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:102
 msgid "Reflect status to host"
-msgstr ""
+msgstr "Reflektiere den Status zum Host"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:107
 msgid "If enabled, the event correlation host will go in \"down\" state if the last element (root) of the event correlation is in \"critical\" state "
-msgstr ""
+msgstr "Wenn diese Option aktiviert ist, wechselt der Ereigniskorrelationshost in den Status \"unten\", wenn sich das letzte Element (root) der Ereigniskorrelation im Status \"kritisch\" befindet "
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:113
 msgid "Check result submit method"
-msgstr ""
+msgstr "Überprüfe die Methode zum Senden des Ergebnisses"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:120
 msgid "Statusengine Event Broker (Naemon and Naemon) (Recommend)"
-msgstr ""
+msgstr "Statusengine Event Broker (Naemon and Naemon) (Empfohlen)"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:121
 msgid "Query Handler (Naemon only - naemon.qh) (Recommend over nagios.cmd)"
-msgstr ""
+msgstr "Abfragehandler (Nur Naemon - naemon.qh) (Empfohlen über nagios.cmd)"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:122
 msgid "External commands pipe (Nagios and Nameon - nagios.cmd)"
-msgstr ""
+msgstr "Externe Befehlspipe (Nagios und Nameon - nagios.cmd)"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:131
 msgid "If Statusengine Event Broker or Naemons Query Handler will be used to submit correlation results a detailed long output will be passed to the monitoring engine. The external command pipe does not support long output."
-msgstr ""
+msgstr "Wenn Statusengine Event Broker oder Naemons Query Handler zum Übermitteln von Korrelationsergebnissen verwendet werden, wird eine detaillierte Langzeitausgabe an die Überwachungs-Engine übergeben. Die externe Befehlspipe unterstützt keine lange Ausgabe."
 
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:19
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:22
@@ -19998,72 +19998,72 @@ msgstr ""
 #: EventcorrelationModule/templates/Eventcorrelations/used_by.php:22
 #: EventcorrelationModule/templates/Eventcorrelations/view.php:18
 msgid "Event Correlations"
-msgstr ""
+msgstr "Ereigniskorrelationen"
 
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:26
 msgid "Create new correlation"
-msgstr ""
+msgstr "Erstelle neue Korrelation"
 
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:54
 msgid "Create new Event Correlation"
-msgstr ""
+msgstr "Erstelle neue Ereigniskorrelation"
 
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:120
 msgid "Host name / Name of correlation"
-msgstr ""
+msgstr "Hostname / Name der Korrelation"
 
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:458
 msgid "Create event correlation"
-msgstr ""
+msgstr "Erstelle Ereigniskorrelation"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:22
 msgid "Edit correlation"
-msgstr ""
+msgstr "Bearbeite Korrelation"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:32
 msgid "Edit Event Correlation:"
-msgstr ""
+msgstr "Bearbeite Ereigniskorrelation"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:40
 msgid "Save Event Correlation"
-msgstr ""
+msgstr "Ereigniskorrelation speichern"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:90
 msgid "New virtual service"
-msgstr ""
+msgstr "Neuer virtueller Service"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:100
 msgid "Event Correlation "
-msgstr ""
+msgstr "Ereigniskorrelation "
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:108
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:123
 msgid "New vService"
-msgstr ""
+msgstr "Neuer vService"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:204
 msgid "Create virtual service"
-msgstr ""
+msgstr "Erstelle virtuellen Service"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:205
 msgid "Modify virtual service"
-msgstr ""
+msgstr "Virtuellen Service modifizieren"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:217
 msgid "Name of vService"
-msgstr ""
+msgstr "Name des vService"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:228
 msgid "Name of the virtual service that holds the result of the correlation."
-msgstr ""
+msgstr "Name des virtuellen Services, der das Ergebnis der Korrelation enthält."
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:248
 msgid "Only service templates of the EVC type are available."
-msgstr ""
+msgstr "Es sind nur Servicevorlagen vom Typ EVC verfügbar."
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:270
 msgid "Services that should be correlated"
-msgstr ""
+msgstr "Dienste, die korreliert werden sollten"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:277
 msgid "vServices"
@@ -20071,7 +20071,7 @@ msgstr ""
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:296
 msgid "Virtual services that should be correlated"
-msgstr ""
+msgstr "Virtuelle Dienste, die korreliert werden sollten"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:303
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:278
