@@ -454,93 +454,93 @@ msgstr "<error> Папка %s пуста! </error>"
 
 #: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:106
 msgid "Host or Service"
-msgstr ""
+msgstr "Узел или Служба"
 
 #: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:107
 msgid "PROBLEM"
-msgstr ""
+msgstr "ПРОБЛЕМА"
 
 #: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:108
 #: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:63
 msgid "The Host UUID"
-msgstr ""
+msgstr "Узел UUID"
 
 #: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:109
 msgid "The Host output"
-msgstr ""
+msgstr "Выход узла"
 
 #: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:110
 msgid "State ID of the current host state"
-msgstr ""
+msgstr "Идентификатор состояния текущего состояния узла"
 
 #: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:111
 #: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:65
 msgid "The Service UUID"
-msgstr ""
+msgstr "Служба UUID"
 
 #: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:112
 msgid "The Service output"
-msgstr ""
+msgstr "Выход службы"
 
 #: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:113
 msgid "State ID of the current service state"
-msgstr ""
+msgstr "Идентификатор состояния текущего состояния службы"
 
 #: CheckmkModule/src/Command/CheckmkNagiosExportCommand.php:55
 msgid "Write initial Checkmk configuration"
-msgstr ""
+msgstr "Написать начальную конфигурацию Checkmk"
 
 #: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:53
 msgid "The Receiver of the message in international format eg. 0049123456789"
-msgstr ""
+msgstr "Получатель сообщения в международном формате, например. 0049123456789"
 
 #: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:54
 msgid "The Sender of the message"
-msgstr ""
+msgstr "Отправитель сообщения"
 
 #: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:56
 msgid "The ID of your massenversand.de account"
-msgstr ""
+msgstr "Идентификатор вашей учетной записи massenversand.de"
 
 #: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:57
 msgid "The Password of your massenversand.de account"
-msgstr ""
+msgstr "Пароль вашей учетной записи massenversand.de"
 
 #: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:58
 msgid "The time to send the Message 0 = now or hhmmddmmyyyy"
-msgstr ""
+msgstr "Время для отправки сообщения 0 = сейчас или hhmmddmmyyyy"
 
 #: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:59
 msgid "t = text sms, c = oversize sms, f = flash sms, utf8 = utf8 sms 70 digits per sms "
-msgstr ""
+msgstr "t = текстовые смс, c = негабаритные смс, f = флэш-смс, utf8 = utf8 смс 70 цифр в смс"
 
 #: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:60
 msgid "1 = no SMS will be created but the server will respond like it would be"
-msgstr ""
+msgstr "1 = SMS не будет создано, но сервер ответит так, как если бы"
 
 #: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:61
 msgid "host or service"
-msgstr ""
+msgstr "узел или служба"
 
 #: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:62
 msgid "The date and time the problem occoured"
-msgstr ""
+msgstr "Дата и время возникновения проблемы"
 
 #: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:64
 msgid "State of the Host"
-msgstr ""
+msgstr "Состояние узла"
 
 #: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:66
 msgid "State of the Service"
-msgstr ""
+msgstr "Состояние службы"
 
 #: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:37
 #: ServicenowModule/src/Command/ServicenowNotificationCommand.php:56
 #: SlackModule/src/Command/SlackNotificationCommand.php:46
 msgid "output"
-msgstr ""
+msgstr "выход"
 
 #: ServicenowModule/src/Command/ServicenowNotificationCommand.php:59
 msgid "comment"
-msgstr ""
+msgstr "комментарий"
 

@@ -3698,7 +3698,7 @@ msgstr "Создать новую карту"
 #: DistributeModule/templates/Satellites/edit.php:51
 #: DistributeModule/templates/Satellites/used_by.php:34
 msgid "Satellite"
-msgstr "Сателлит"
+msgstr "Спутник"
 
 #: plugins/MapModule/templates/Maps/add.php:108
 #: plugins/MapModule/templates/Maps/edit.php:107
@@ -4238,7 +4238,7 @@ msgstr "Если установлен новый пароль, он будет �
 
 #: src/Command/ResetPasswordCommand.php:44
 msgid "Do not send the new password per mail"
-msgstr ""
+msgstr "Не отправляйте новый пароль по почте"
 
 #: src/Command/ResetPasswordCommand.php:123
 msgid "New password is: {0}"
@@ -4368,7 +4368,7 @@ msgstr "Установите Statusengine Broker по умолчанию как 
 
 #: src/Command/Update3To4Command.php:1462
 msgid "Create partition {0} in table {1}"
-msgstr ""
+msgstr "Создать раздел {0} в таблице {1}"
 
 #: src/Controller/AcknowledgementsController.php:69
 #: src/Controller/AgentconfigsController.php:74
@@ -5637,7 +5637,7 @@ msgstr "Авто отчеты"
 #: DistributeModule/templates/Satellites/status.php:43
 #: DistributeModule/templates/Satellites/used_by.php:20
 msgid "Satellites"
-msgstr "Сателлит"
+msgstr "Спутники"
 
 #: src/Model/Table/ContainersTable.php:925
 #: src/Template/Changelogs/index.php:135
@@ -7344,7 +7344,7 @@ msgstr "Когда использовать режим push?"
 
 #: src/Template/Agentconnector/config.php:336
 msgid "In push mode the Agent will frequently push the latest check results to the openITCOCKPIT server via an HTTPS connection on port 443."
-msgstr ""
+msgstr "В режиме push Агент часто передает последние результаты проверки на сервер openITCOCKPIT через соединение HTTPS через порт 443."
 
 #: src/Template/Agentconnector/config.php:338
 msgid "Use the push mode whenever your openITCOCKPIT server cannot establish a direct connection the the target system."
@@ -14562,7 +14562,7 @@ msgstr "Включить проверку свежести"
 #: src/Template/Servicetemplates/add.php:286
 #: src/Template/Servicetemplates/edit.php:290
 msgid "Freshness threshold"
-msgstr "Порог свежести"
+msgstr "Предел свежести"
 
 #: src/Template/Services/add.php:439
 #: src/Template/Services/edit.php:515
@@ -14752,7 +14752,7 @@ msgstr "Показать точки данных"
 
 #: src/Template/Services/browser.php:1115
 msgid "Timerange: "
-msgstr "Временной диапазон"
+msgstr "Временной диапазон: "
 
 #: src/Template/Services/browser.php:1131
 msgid "Datasource: "
@@ -18211,62 +18211,62 @@ msgstr "Текущее время в формате UNIX."
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:65
 msgid "Delete temporary automatic report files..."
-msgstr ""
+msgstr "Удалить временные автоматические файлы отчетов ..."
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:100
 msgid " no reports to send"
-msgstr ""
+msgstr " нет отчетов для отправки"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:159
 #: AutoreportModule/src/Command/AutoreportCommand.php:172
 msgid "An error occured while sending auto report mail: \"{0}\":"
-msgstr ""
+msgstr "Произошла ошибка при отправке автоответчика: \"{0}\":"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:163
 #: AutoreportModule/src/Command/AutoreportCommand.php:406
 msgid "Host {0}"
-msgstr ""
+msgstr "Узел {0}"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:166
 #: AutoreportModule/src/Command/AutoreportCommand.php:409
 msgid "Service {0}"
-msgstr ""
+msgstr "Служба {0}"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:258
 msgid "Sending Report {0} to {1}"
-msgstr ""
+msgstr "Отправка отчета {0} в {1}"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:264
 msgid "An error occured while sending auto report mail: "
-msgstr ""
+msgstr "Произошла ошибка при отправке автоотчета: "
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:290
 msgid "Report \"{0}\" with ID: {1} run failed: {2}"
-msgstr ""
+msgstr "Отчет \"{0}\" с ID: {1} не выполнен: {2}"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:297
 msgid "Report \"{0}\" with ID: {1} run successfully"
-msgstr ""
+msgstr "Отчет \"{0}\" с ID: {1} успешно выполнен"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:334
 #: AutoreportModule/src/Command/AutoreportCommand.php:422
 msgid "Cannot generate quarterly autoreports."
-msgstr ""
+msgstr "Невозможно сгенерировать квартальные автоотчеты."
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:347
 msgid "Autoreports could not be generated! No store path defined!"
-msgstr ""
+msgstr "Автоотчеты не могут быть созданы! Путь для сохранения не определен!"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:402
 #: AutoreportModule/src/Command/AutoreportCommand.php:415
 msgid "An error occured while generating quarterly autoreports: \"{0}\":"
-msgstr ""
+msgstr "Произошла ошибка при создании квартальных автоотчетов: \"{0}\":"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:461
 #: AutoreportModule/src/Lib/CsvReport.php:109
 #: AutoreportModule/src/Lib/CsvReport.php:136
 msgid "Report id"
-msgstr ""
+msgstr "ID отчета"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:462
 #: AutoreportModule/src/Lib/CsvReport.php:110
@@ -18274,54 +18274,54 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/add_step_one.php:92
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:94
 msgid "Report name"
-msgstr ""
+msgstr "Название отчета"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:466
 #: AutoreportModule/src/Lib/CsvReport.php:114
 msgid "Minimal allowed availability (min)"
-msgstr ""
+msgstr "Минимально допустимая доступность (мин)"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:469
 #: AutoreportModule/src/Lib/CsvReport.php:117
 msgid "Minimal allowed availability (%)"
-msgstr ""
+msgstr "Минимально допустимая доступность (%)"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:470
 #: AutoreportModule/src/Lib/CsvReport.php:118
 msgid "Current availability"
-msgstr ""
+msgstr "Текущая доступность"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:506
 msgid "{0} was not generated."
-msgstr ""
+msgstr "{0} не был создан."
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:560
 msgid "Mo"
-msgstr ""
+msgstr "Пн"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:561
 msgid "Tu"
-msgstr ""
+msgstr "Вт"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:562
 msgid "We"
-msgstr ""
+msgstr "Ср"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:563
 msgid "Th"
-msgstr ""
+msgstr "Чт"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:564
 msgid "Fr"
-msgstr ""
+msgstr "Пт"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:565
 msgid "Sa"
-msgstr ""
+msgstr "Сб"
 
 #: AutoreportModule/src/Command/AutoreportCommand.php:566
 msgid "Su"
-msgstr ""
+msgstr "Вс"
 
 #: AutoreportModule/src/Controller/AutoreportsController.php:116
 #: AutoreportModule/src/Controller/AutoreportsController.php:185
@@ -18332,167 +18332,167 @@ msgstr ""
 #: AutoreportModule/src/Controller/AutoreportsController.php:843
 #: AutoreportModule/src/Model/Table/AutoreportAvailabilityLogTable.php:64
 msgid "Auto report not found"
-msgstr ""
+msgstr "Автоотчет не найден"
 
 #: AutoreportModule/src/Lib/AdditionalLinks.php:34
 msgid "Host used by Autoreport"
-msgstr ""
+msgstr "Узел, используемый Автоотчетом"
 
 #: AutoreportModule/src/Lib/AdditionalLinks.php:44
 msgid "Service used by Autoreport"
-msgstr ""
+msgstr "Служба, используемый Автоотчетом"
 
 #: AutoreportModule/src/Lib/Autoreport.php:86
 msgid "Report \"{0}\" cannot be evaluated. Time evaluation report data is not available for the selected period \"{1}\""
-msgstr ""
+msgstr "Отчет \"{0}\" не может быть оценен. Данные отчета об оценке времени недоступны для выбранного периода \"{1}\""
 
 #: AutoreportModule/src/Lib/Autoreport.php:98
 msgid "Report \"{0}\" cannot be create. No hosts and services are available in selected report"
-msgstr ""
+msgstr "Невозможно создать отчет \"{0}\". В выбранном отчете нет доступных узлов и служб."
 
 #: AutoreportModule/src/Lib/Autoreport.php:143
 msgid "Report \"{0}\" cannot be evaluated. The following Hosts/Services were created after the selected starting period \"{1}\":"
-msgstr ""
+msgstr "Отчет \"{0}\" не может быть оценен. Следующие Узлы/Службы были созданы после выбранного начального периода \"{1}\":"
 
 #: AutoreportModule/src/Lib/Autoreport.php:204
 msgid "Time evaluation report data is not available for the selected period ({0} with calendar: {1})"
-msgstr ""
+msgstr "Данные отчета об оценке времени недоступны для выбранного периода ({0} с календарем: {1})"
 
 #: AutoreportModule/src/Lib/Autoreport.php:743
 msgid "Outages"
-msgstr ""
+msgstr "Отключения"
 
 #: AutoreportModule/src/Lib/Autoreport.php:747
 msgid "Outages of at least {0} min"
-msgstr ""
+msgstr "Отключения не менее {0} мин"
 
 #: AutoreportModule/src/Lib/CsvReport.php:140
 msgid "Outage date"
-msgstr ""
+msgstr "Дата отключения"
 
 #: AutoreportModule/src/Lib/CsvReport.php:143
 msgid "Duration (Minutes)"
-msgstr ""
+msgstr "Продолжительность (минуты)"
 
 #: AutoreportModule/src/Lib/CsvReport.php:144
 msgid "Planned downtime"
-msgstr ""
+msgstr "Плановое обслуживание"
 
 #: AutoreportModule/src/Lib/Menu.php:27
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:103
 msgid "Autoreport"
-msgstr ""
+msgstr "Автоотчет"
 
 #: AutoreportModule/src/Lib/Menu.php:44
 msgid "Autoreport Globals"
-msgstr ""
+msgstr "Глобальные настройки Автоотчета"
 
 #: AutoreportModule/src/Lib/Widgets.php:36
 msgid "Autoreport Overview"
-msgstr ""
+msgstr "Обзор автоотчета"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:59
 msgid "Please enter a valid path"
-msgstr ""
+msgstr "Пожалуйста, введите правильный путь"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:139
 msgid "Use tenant name instead of report name as subject for automatic generated mails"
-msgstr ""
+msgstr "Используйте имя клиента вместо имени отчета в качестве темы для автоматически сгенерированных писем"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:143
 msgid "Generates reports only for Hosts and Services that were created before the start date"
-msgstr ""
+msgstr "Формирует отчеты только для узлов и служб, которые были созданы до даты начала"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:147
 msgid "Send reports in PDF format"
-msgstr ""
+msgstr "Отправить отчеты в формате PDF"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:151
 msgid "Send reports in CSV format"
-msgstr ""
+msgstr "Отправить отчеты в формате CSV"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:155
 msgid "Send quarterly reports"
-msgstr ""
+msgstr "Отправлять квартальные отчеты"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:159
 msgid "Shows outages in scheduled downtime"
-msgstr ""
+msgstr "Показывает перебои в плановом обслуживании"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:163
 msgid "Shows all downtimes"
-msgstr ""
+msgstr "Показывает все обслуживание"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:167
 msgid "Use create date in filename. Format: Filename \"Reportname_+/- (dmY)...\""
-msgstr ""
+msgstr "Используйте дату создания в имени файла. Формат: Имя файла \"Имя_отчета_+/-(dmY)...\""
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:171
 msgid "Use Year in filename. Format: Filename \"Reportname_+/- (Y)...\""
-msgstr ""
+msgstr "Используйте Год в имени файла. Формат: Имя файла \"Имя отчета_+/-(Y)...\""
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:175
 msgid "Displays SLA graph"
-msgstr ""
+msgstr "Отображает график SLA"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:179
 msgid "Shows summary statistics on first page of report"
-msgstr ""
+msgstr "Показывает сводную статистику на первой странице отчета"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:183
 msgid "Shows host name with current availability"
-msgstr ""
+msgstr "Показывает имя узла с текущей доступностью"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:187
 msgid "Shows service description with current availability"
-msgstr ""
+msgstr "Показывает имя службы с текущей доступностью"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:191
 msgid "Email addresses which will be notified in case of failure while creating the quarterly reports. Use \";\" as email delimiter when sending to multiple recipients"
-msgstr ""
+msgstr "Адреса электронной почты, которые будут уведомлены в случае сбоя при создании квартальных отчетов. Используйте \";\" в качестве разделителя электронной почты при отправке нескольким получателям"
 
 #: AutoreportModule/src/Model/Table/AutoreportSettingsTable.php:195
 msgid "Path for Reports files"
-msgstr ""
+msgstr "Путь к файлам отчетов"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:144
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:165
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:175
 msgid "This field cannot be left blank"
-msgstr ""
+msgstr "Это поле не может быть пустым"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:155
 msgid "The provided value is invalid"
-msgstr ""
+msgstr "Предоставленное значение недействительно"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:157
 msgid "The provided value is invalid (min: 0 max: 100)"
-msgstr ""
+msgstr "Предоставленное значение недопустимо (мин: 0 макс: 100)"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:187
 msgid "You must select at least one user."
-msgstr ""
+msgstr "Вы должны выбрать хотя бы одного пользователя."
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:191
 msgid "Please select a calendar"
-msgstr ""
+msgstr "Пожалуйста, выберите календарь"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:218
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:228
 msgid "Outage duration needs to be numeric"
-msgstr ""
+msgstr "Продолжительность простоя должна быть числовой"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:222
 msgid "You must select at least one option for host and/or service (\"in %\" and/or \"in h\")"
-msgstr ""
+msgstr "Вы должны выбрать хотя бы одну опцию для узла и/или службы (\"в %\" и/или \"в h\")"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:613
 msgid "{0} %"
-msgstr ""
+msgstr "{0} %"
 
 #: AutoreportModule/src/Model/Table/AutoreportsTable.php:615
 msgid "{0} minutes"
-msgstr ""
+msgstr "{0} минут"
 
 #: AutoreportModule/templates/AutoreportSettings/index.php:15
 #: AutoreportModule/templates/Autoreports/add_step_one.php:15
@@ -18505,29 +18505,29 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/index.php:15
 #: AutoreportModule/templates/Autoreports/service_used_by.php:15
 msgid "Autoreport Module"
-msgstr ""
+msgstr "Модуль автоотчета"
 
 #: AutoreportModule/templates/AutoreportSettings/index.php:37
 msgid "This changes affects all reports"
-msgstr ""
+msgstr "Это изменение влияет на все отчеты"
 
 #: AutoreportModule/templates/AutoreportSettings/index.php:47
 msgid "Autoreport Settings"
-msgstr ""
+msgstr "Настройки автоотчета"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:19
 #: AutoreportModule/templates/Autoreports/add_step_two.php:19
 msgid "Create auto report"
-msgstr ""
+msgstr "Создать автоотчет"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:22
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:23
 msgid "Step 1"
-msgstr ""
+msgstr "Шаг 1"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:31
 msgid "Create new autoreport"
-msgstr ""
+msgstr "Создать новый автоотчет"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:42
 #: AutoreportModule/templates/Autoreports/add_step_two.php:44
@@ -18535,7 +18535,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:44
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:44
 msgid "Report configuration"
-msgstr ""
+msgstr "Конфигурация отчета"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:46
 #: AutoreportModule/templates/Autoreports/add_step_two.php:48
@@ -18543,7 +18543,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:48
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:48
 msgid "Host and services configuration"
-msgstr ""
+msgstr "Конфигурация узла и служб"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:50
 #: AutoreportModule/templates/Autoreports/add_step_two.php:52
@@ -18551,108 +18551,108 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:52
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:52
 msgid "Report details"
-msgstr ""
+msgstr "Детали отчета"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:66
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:68
 msgid "Main report configuration"
-msgstr ""
+msgstr "Основная конфигурация отчета"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:106
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:108
 msgid "Report description"
-msgstr ""
+msgstr "Описание отчета"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:127
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:129
 msgid "Set start"
-msgstr ""
+msgstr "Установить начало"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:135
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:137
 msgid "Start date"
-msgstr ""
+msgstr "Дата начала"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:166
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:168
 msgid "Evaluation period"
-msgstr ""
+msgstr "Период оценки"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:172
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:174
 msgid "Year"
-msgstr ""
+msgstr "Год"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:173
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:175
 msgid "Quarter"
-msgstr ""
+msgstr "Квартал"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:174
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:176
 msgid "Month"
-msgstr ""
+msgstr "Месяц"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:175
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:177
 msgid "Week"
-msgstr ""
+msgstr "Неделя"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:192
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:194
 msgid "never"
-msgstr ""
+msgstr "никогда"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:193
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:195
 msgid "yearly"
-msgstr ""
+msgstr "ежегодный"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:194
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:196
 msgid "quarterly"
-msgstr ""
+msgstr "ежеквартальный"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:195
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:197
 msgid "monthly"
-msgstr ""
+msgstr "ежемесячно"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:196
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:198
 msgid "weekly"
-msgstr ""
+msgstr "еженедельно"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:197
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:199
 msgid "daily"
-msgstr ""
+msgstr "ежедневно"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:211
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:213
 msgid "Guaranteed availability"
-msgstr ""
+msgstr "Гарантированная доступность"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:235
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:237
 msgid "in percent"
-msgstr ""
+msgstr "в процентах"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:241
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:243
 msgid "in minutes"
-msgstr ""
+msgstr "в минутах"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:257
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:259
 msgid "You must specify at least \"Guaranteed availability\" or \"Max. number of outages\""
-msgstr ""
+msgstr "Необходимо указать как минимум \"Гарантированная доступность\" или \"Максимальное количество отключений\""
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:266
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:268
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:144
 msgid "Max. number of outages"
-msgstr ""
+msgstr "Макс. количество отключений"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:292
 #: AutoreportModule/templates/Autoreports/add_step_two.php:130
@@ -18660,7 +18660,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:259
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:130
 msgid "Graph"
-msgstr ""
+msgstr "График"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:298
 #: AutoreportModule/templates/Autoreports/add_step_two.php:126
@@ -18668,7 +18668,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:255
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:126
 msgid "in %"
-msgstr ""
+msgstr "в %"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:299
 #: AutoreportModule/templates/Autoreports/add_step_two.php:127
@@ -18676,228 +18676,228 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:256
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:127
 msgid "in h"
-msgstr ""
+msgstr "в ч"
 
 #: AutoreportModule/templates/Autoreports/add_step_one.php:344
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:346
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:201
 msgid "Consider holidays"
-msgstr ""
+msgstr "Учитывать праздничные дни"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:22
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:22
 msgid "Step 2"
-msgstr ""
+msgstr "Шаг 2"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:32
 msgid "Create new auto report:"
-msgstr ""
+msgstr "Создать новый автоотчет:"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:61
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:61
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:61
 msgid "Prev"
-msgstr ""
+msgstr "Предыдущая"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:73
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:73
 msgid "Report configuration for hosts and services"
-msgstr ""
+msgstr "Конфигурация отчета для узлов и служб"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:129
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:258
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:129
 msgid "Alias"
-msgstr ""
+msgstr "Псевдоним"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:133
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:133
 msgid "Use minimum, average or maximum values for graph"
-msgstr ""
+msgstr "Используйте минимальные, средние или максимальные значения для графика"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:134
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:134
 msgid "MIN|AVG|MAX"
-msgstr ""
+msgstr "MIN|AVG|MAX"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:136
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:261
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:136
 msgid "Max. outage duration"
-msgstr ""
+msgstr "Максимум. продолжительность простоя"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:137
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:262
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:137
 msgid "All failures"
-msgstr ""
+msgstr "Все неудачи"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:142
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:142
 msgid "host settings"
-msgstr ""
+msgstr "настройки узла"
 
 #: AutoreportModule/templates/Autoreports/add_step_two.php:144
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:144
 msgid "service settings"
-msgstr ""
+msgstr "настройки службы"
 
 #: AutoreportModule/templates/Autoreports/autoreport_availibility_colors.php:2
 msgid "Colors"
-msgstr ""
+msgstr "Цвета"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:24
 msgid "Calculate availability"
-msgstr ""
+msgstr "Рассчитать доступность"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:48
 msgid "Last update: "
-msgstr ""
+msgstr "Последнее обновление: "
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:80
 msgid "No data available "
-msgstr ""
+msgstr "Данные недоступны "
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:116
 msgid "Availibility"
-msgstr ""
+msgstr "Доступность"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:127
 msgid " in %"
-msgstr ""
+msgstr " в %"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:140
 msgid " in h"
-msgstr ""
+msgstr " в ч"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:149
 msgid "Show log data"
-msgstr ""
+msgstr "Показать данные журнала"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:158
 msgid "Log date"
-msgstr ""
+msgstr "Дата регистрации"
 
 #: AutoreportModule/templates/Autoreports/autoreport_widget.php:170
 msgid "Bar chart"
-msgstr ""
+msgstr "Гистограмма"
 
 #: AutoreportModule/templates/Autoreports/create_report.php:26
 msgid "Create autoreport"
-msgstr ""
+msgstr "Создать автоотчет"
 
 #: AutoreportModule/templates/Autoreports/create_report.php:45
 msgid "Report"
-msgstr ""
+msgstr "Отчет"
 
 #: AutoreportModule/templates/Autoreports/create_report.php:51
 #: AutoreportModule/templates/Autoreports/generate.php:121
 msgid "CSV"
-msgstr ""
+msgstr "CSV"
 
 #: AutoreportModule/templates/Autoreports/create_report.php:74
 #: CheckmkModule/templates/Mkagents/add.php:151
 #: CheckmkModule/templates/Mkchecks/add.php:108
 msgid "Create"
-msgstr ""
+msgstr "Создавать"
 
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:20
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:19
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:19
 msgid "Edit auto report"
-msgstr ""
+msgstr "Изменить автоотчет"
 
 #: AutoreportModule/templates/Autoreports/edit_step_one.php:32
 #: AutoreportModule/templates/Autoreports/edit_step_two.php:32
 msgid "Edit auto report:"
-msgstr ""
+msgstr "Изменить автоотчет:"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:22
 msgid "Step 3"
-msgstr ""
+msgstr "Шаг 3"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:32
 msgid "Autoreport configuration overview:"
-msgstr ""
+msgstr "Обзор конфигурации автоотчета:"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:67
 msgid "Finish"
-msgstr ""
+msgstr "Финиш"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:75
 msgid "Report overview"
-msgstr ""
+msgstr "Обзор отчета"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:100
 msgid "Report interval"
-msgstr ""
+msgstr "Интервал отчета"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:113
 msgid "Report send interval"
-msgstr ""
+msgstr "Интервал отправки отчета"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:125
 msgid "Min. availibility"
-msgstr ""
+msgstr "Минимум доступность"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:156
 msgid "Use start time"
-msgstr ""
+msgstr "Используйте время начала"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:176
 msgid "hard"
-msgstr ""
+msgstr "твердый"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:179
 msgid "hard and soft"
-msgstr ""
+msgstr "твердый и мягкий"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:247
 msgid "Host and service options"
-msgstr ""
+msgstr "Параметры узлов и служб"
 
 #: AutoreportModule/templates/Autoreports/edit_step_three.php:304
 msgid "No Services selected. Report will considered only host state changes."
-msgstr ""
+msgstr "Службы не выбраны. Отчет будет учитывать только изменения состояния узла."
 
 #: AutoreportModule/templates/Autoreports/generate.php:22
 msgid "Generate Report"
-msgstr ""
+msgstr "Создать отчет"
 
 #: AutoreportModule/templates/Autoreports/generate.php:31
 msgid "Generate auto report"
-msgstr ""
+msgstr "Создать автоотчет"
 
 #: AutoreportModule/templates/Autoreports/generate.php:94
 #: AutoreportModule/templates/email/html/autoreport_mail.php:31
 #: AutoreportModule/templates/email/text/autoreport_mail.php:3
 msgid "Auto report"
-msgstr ""
+msgstr "Автоотчет"
 
 #: AutoreportModule/templates/Autoreports/generate.php:179
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:66
 msgid "Evaluated time period"
-msgstr ""
+msgstr "Расчетный период времени"
 
 #: AutoreportModule/templates/Autoreports/generate.php:218
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:95
 msgid "Availability overview"
-msgstr ""
+msgstr "Обзор доступности"
 
 #: AutoreportModule/templates/Autoreports/generate.php:227
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:106
 msgid "Maximum allowed outage duration"
-msgstr ""
+msgstr "Максимально допустимая продолжительность простоя"
 
 #: AutoreportModule/templates/Autoreports/generate.php:229
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:109
 msgid "Measured outage duration "
-msgstr ""
+msgstr "Измеренная продолжительность простоя "
 
 #: AutoreportModule/templates/Autoreports/generate.php:235
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:116
 msgid "Percentage"
-msgstr ""
+msgstr "Процент"
 
 #: AutoreportModule/templates/Autoreports/generate.php:245
 #: AutoreportModule/templates/Autoreports/generate.php:264
@@ -18910,7 +18910,7 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:254
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:289
 msgid "PASSED"
-msgstr ""
+msgstr "УДАЧНО"
 
 #: AutoreportModule/templates/Autoreports/generate.php:249
 #: AutoreportModule/templates/Autoreports/generate.php:268
@@ -18923,209 +18923,209 @@ msgstr ""
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:258
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:293
 msgid "FAILED"
-msgstr ""
+msgstr "НЕУДАЧНО"
 
 #: AutoreportModule/templates/Autoreports/generate.php:281
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:165
 msgid "Outages overview"
-msgstr ""
+msgstr "Обзор отключений"
 
 #: AutoreportModule/templates/Autoreports/generate.php:290
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:175
 msgid "Maximum allowed number of outages"
-msgstr ""
+msgstr "Максимально допустимое количество отключений"
 
 #: AutoreportModule/templates/Autoreports/generate.php:293
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:178
 msgid "Measured number of outages"
-msgstr ""
+msgstr "Измеренное количество отключений"
 
 #: AutoreportModule/templates/Autoreports/generate.php:327
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:212
 msgid "Evaluated host and services"
-msgstr ""
+msgstr "Оцениваемый узел и службы"
 
 #: AutoreportModule/templates/Autoreports/generate.php:340
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:226
 msgid "Availability "
-msgstr ""
+msgstr "Доступность "
 
 #: AutoreportModule/templates/Autoreports/generate.php:369
 #: AutoreportModule/templates/Autoreports/generate.php:409
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:245
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:280
 msgid "No historical data available "
-msgstr ""
+msgstr "Нет исторических данных "
 
 #: AutoreportModule/templates/Autoreports/generate.php:434
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:311
 msgid "SLA overview"
-msgstr ""
+msgstr "Обзор SLA"
 
 #: AutoreportModule/templates/Autoreports/generate.php:446
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:326
 msgid "Host and service details"
-msgstr ""
+msgstr "Детали узла и службы"
 
 #: AutoreportModule/templates/Autoreports/generate.php:517
 #: AutoreportModule/templates/Autoreports/generate.php:693
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:430
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:652
 msgid "Outage time exceeding the permitted limit ({0} min)"
-msgstr ""
+msgstr "Время простоя, превышающее допустимый предел ({0} мин)"
 
 #: AutoreportModule/templates/Autoreports/generate.php:544
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:468
 msgid "Host outage in downtime exceeding the permitted limit ({0} min)"
-msgstr ""
+msgstr "Отказ узла при обслуживании, превышающий допустимый предел ({0} мин)"
 
 #: AutoreportModule/templates/Autoreports/generate.php:545
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:470
 msgid "Host outage in downtime"
-msgstr ""
+msgstr "Отключение узла при обслуживании"
 
 #: AutoreportModule/templates/Autoreports/generate.php:720
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:688
 msgid "Service outage in downtime exceeding the permitted limit ({0} min)"
-msgstr ""
+msgstr "Отказ службы при обслуживании, превышающий допустимый предел ({0} мин)"
 
 #: AutoreportModule/templates/Autoreports/generate.php:721
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:690
 msgid "Service outage in downtime"
-msgstr ""
+msgstr "Отключение службы при обслуживании"
 
 #: AutoreportModule/templates/Autoreports/host_used_by.php:19
 #: EventcorrelationModule/templates/Eventcorrelations/host_used_by.php:19
 msgid "Host used by"
-msgstr ""
+msgstr "Узел используется"
 
 #: AutoreportModule/templates/Autoreports/host_used_by.php:33
 #: AutoreportModule/templates/Autoreports/service_used_by.php:33
 msgid "autoreports."
-msgstr ""
+msgstr "автоотчетами"
 
 #: AutoreportModule/templates/Autoreports/host_used_by.php:51
 #: AutoreportModule/templates/Autoreports/service_used_by.php:51
 msgid "Auto report name"
-msgstr ""
+msgstr "Название автоотчета"
 
 #: AutoreportModule/templates/Autoreports/host_used_by.php:131
 msgid "This host is not used by any autoreport or you have insufficient permissions."
-msgstr ""
+msgstr "Этот узел не используется автоотчетом, или у вас недостаточно прав."
 
 #: AutoreportModule/templates/Autoreports/index.php:19
 msgid "Auto Reports Overview"
-msgstr ""
+msgstr "Обзор автоотчетов"
 
 #: AutoreportModule/templates/Autoreports/index.php:31
 msgid " Auto reports"
-msgstr ""
+msgstr "Автоотчеты"
 
 #: AutoreportModule/templates/Autoreports/index.php:101
 msgid "Report inteval"
-msgstr ""
+msgstr "Интервал отчета"
 
 #: AutoreportModule/templates/Autoreports/index.php:105
 msgid "Report send inteval"
-msgstr ""
+msgstr "Интервал отправки отчета"
 
 #: AutoreportModule/templates/Autoreports/index.php:109
 msgid "Min. availability"
-msgstr ""
+msgstr "Минимум доступность"
 
 #: AutoreportModule/templates/Autoreports/index.php:113
 msgid "Max number of outages"
-msgstr ""
+msgstr "Максимальное количество отключений"
 
 #: AutoreportModule/templates/Autoreports/pdf/generate.php:49
 msgid "Analysis period"
-msgstr ""
+msgstr "Период анализа"
 
 #: AutoreportModule/templates/Autoreports/service_used_by.php:19
 #: EventcorrelationModule/templates/Eventcorrelations/service_used_by.php:19
 msgid "Service used by"
-msgstr ""
+msgstr "Служба используется"
 
 #: AutoreportModule/templates/Autoreports/service_used_by.php:131
 msgid "This service is not used by any autoreport or you have insufficient permissions."
-msgstr ""
+msgstr "Эта служба не используется автоотчетом, или у вас недостаточно прав."
 
 #: AutoreportModule/templates/email/html/default_mail.php:31
 #: AutoreportModule/templates/email/text/default_mail.php:3
 msgid "Quarterly auto report"
-msgstr ""
+msgstr "Ежеквартальный автоотчет"
 
 #: AutoreportModule/templates/email/html/default_mail.php:53
 msgid "Quarterly auto report informations"
-msgstr ""
+msgstr "Информация о ежеквартальном автоотчете"
 
 #: CheckmkModule/src/Controller/MkLogfileController.php:59
 msgid "MkLogfile is empty or does not exist."
-msgstr ""
+msgstr "MkLogfile пуст или не существует."
 
 #: CheckmkModule/src/Controller/ScansController.php:64
 msgid "Execute SNMP discovery"
-msgstr ""
+msgstr "Выполнить обнаружение с помощью SNMP"
 
 #: CheckmkModule/src/Controller/ScansController.php:65
 msgid "Execute remote discovery"
-msgstr ""
+msgstr "Выполнить удаленное обнаружение"
 
 #: CheckmkModule/src/Controller/ScansController.php:79
 msgid "No MKChecks defined! Check_MK will not work."
-msgstr ""
+msgstr "MKChecks не определены! Checkmk не будет работать."
 
 #: CheckmkModule/src/Controller/ScansController.php:171
 #: CheckmkModule/src/Controller/SnmpController.php:201
 msgid "MK service created successfully"
-msgstr ""
+msgstr "МК служба создана успешно"
 
 #: CheckmkModule/src/Controller/ScansController.php:278
 #: CheckmkModule/src/Controller/ScansController.php:473
 #: CheckmkModule/src/Controller/SnmpController.php:306
 msgid "Invalid Checkmk satellite task"
-msgstr ""
+msgstr "Недопустимая Checkmk задача спутника"
 
 #: CheckmkModule/src/Controller/SnmpController.php:81
 msgid "SNMP V 1"
-msgstr ""
+msgstr "SNMP V 1"
 
 #: CheckmkModule/src/Controller/SnmpController.php:82
 msgid "SNMP V 2c"
-msgstr ""
+msgstr "SNMP V 2c"
 
 #: CheckmkModule/src/Controller/SnmpController.php:83
 msgid "SNMP V 3"
-msgstr ""
+msgstr "SNMP V 3"
 
 #: CheckmkModule/src/Controller/SnmpController.php:210
 msgid "SNMP configuration not found!"
-msgstr ""
+msgstr "Конфигурация SNMP не найдена!"
 
 #: CheckmkModule/src/Lib/AdditionalLinks.php:34
 #: CheckmkModule/src/Lib/AdditionalLinks.php:44
 #: CheckmkModule/src/Lib/AdditionalLinks.php:54
 #: CheckmkModule/src/Lib/AdditionalLinks.php:64
 msgid "Checkmk discovery"
-msgstr ""
+msgstr "Checkmk обнаружение"
 
 #: CheckmkModule/src/Lib/Menu.php:43
 msgid "Check MK"
-msgstr ""
+msgstr "Checkmk"
 
 #: CheckmkModule/src/Lib/Menu.php:48
 #: CheckmkModule/templates/Mkchecks/add.php:38
 #: CheckmkModule/templates/Mkchecks/edit.php:38
 #: CheckmkModule/templates/Mkchecks/index.php:38
 msgid "MK Checks"
-msgstr ""
+msgstr "МК проверки"
 
 #: CheckmkModule/src/Lib/Menu.php:58
 #: CheckmkModule/templates/Mkagents/add.php:38
 #: CheckmkModule/templates/Mkagents/edit.php:38
 #: CheckmkModule/templates/Mkagents/index.php:38
 msgid "MK Agents"
-msgstr ""
+msgstr "MK Агенты"
 
 #: CheckmkModule/templates/Mkagents/add.php:34
 #: CheckmkModule/templates/Mkagents/edit.php:34
@@ -19136,530 +19136,530 @@ msgstr ""
 #: CheckmkModule/templates/Scans/index.php:34
 #: CheckmkModule/templates/Snmp/index.php:34
 msgid "Checkmk Module"
-msgstr ""
+msgstr "Модуль Checkmk"
 
 #: CheckmkModule/templates/Mkagents/add.php:70
 msgid "Create new Checkmk agent"
-msgstr ""
+msgstr "Создать нового агента Checkmk"
 
 #: CheckmkModule/templates/Mkagents/add.php:84
 #: CheckmkModule/templates/Mkagents/edit.php:84
 #: CheckmkModule/templates/Scans/index.php:90
 msgid "Checkmk agent"
-msgstr ""
+msgstr "Checkmk агент"
 
 #: CheckmkModule/templates/Mkagents/edit.php:70
 msgid "Edit Checkmk agent"
-msgstr ""
+msgstr "Изменить Checkmk агент"
 
 #: CheckmkModule/templates/Mkagents/edit.php:84
 #: CheckmkModule/templates/Mkchecks/edit.php:66
 msgid "edited successfully"
-msgstr ""
+msgstr "отредактировано успешно"
 
 #: CheckmkModule/templates/Mkagents/index.php:53
 #: CheckmkModule/templates/Mkchecks/index.php:53
 msgid "Checkmk"
-msgstr ""
+msgstr "Checkmk"
 
 #: CheckmkModule/templates/Mkagents/index.php:87
 msgid "Filter by agent name"
-msgstr ""
+msgstr "Фильтровать по имени агента"
 
 #: CheckmkModule/templates/Mkagents/index.php:113
 msgid "Filter by command"
-msgstr ""
+msgstr "Фильтровать по команде"
 
 #: CheckmkModule/templates/Mkagents/index.php:136
 msgid "Agent name"
-msgstr ""
+msgstr "Имя агента"
 
 #: CheckmkModule/templates/Mkchecks/add.php:52
 msgid "Create new Checkmk check"
-msgstr ""
+msgstr "Создать новую Checkmk проверку"
 
 #: CheckmkModule/templates/Mkchecks/add.php:66
 #: CheckmkModule/templates/Mkchecks/edit.php:66
 msgid "Checkmk check"
-msgstr ""
+msgstr "Checkmk проверка"
 
 #: CheckmkModule/templates/Mkchecks/add.php:70
 #: CheckmkModule/templates/Mkchecks/edit.php:70
 #: CheckmkModule/templates/Mkchecks/index.php:123
 msgid "Check name"
-msgstr ""
+msgstr "Название проверки"
 
 #: CheckmkModule/templates/Mkchecks/add.php:94
 #: CheckmkModule/templates/Mkchecks/edit.php:94
 msgid "Please select a servicetemplate."
-msgstr ""
+msgstr "Пожалуйста, выберите шаблон службы."
 
 #: CheckmkModule/templates/Mkchecks/edit.php:52
 msgid "Edit Checkmk check"
-msgstr ""
+msgstr "Изменить Checkmk проверку"
 
 #: CheckmkModule/templates/Mkchecks/index.php:87
 msgid "Filter by check name"
-msgstr ""
+msgstr "Фильтр по имени проверки"
 
 #: CheckmkModule/templates/Mkchecks/index.php:100
 msgid "Filter by servicetemplate name"
-msgstr ""
+msgstr "Фильтровать по названию шаблона службы"
 
 #: CheckmkModule/templates/Mkchecks/index.php:127
 msgid "Servicetemplate name"
-msgstr ""
+msgstr "Название шаблона службы"
 
 #: CheckmkModule/templates/Scans/index.php:38
 msgid "Scans"
-msgstr ""
+msgstr "Сканирование"
 
 #: CheckmkModule/templates/Scans/index.php:52
 #: CheckmkModule/templates/Snmp/index.php:52
 msgid "Scan device:"
-msgstr ""
+msgstr "Сканирование устройства:"
 
 #: CheckmkModule/templates/Scans/index.php:57
 #: CheckmkModule/templates/Snmp/index.php:57
 msgid "Cancel waiting for satellite result"
-msgstr ""
+msgstr "Отмена ожидания спутникового результата"
 
 #: CheckmkModule/templates/Scans/index.php:78
 #: CheckmkModule/templates/Snmp/index.php:77
 msgid "Error from Satellite!"
-msgstr ""
+msgstr "Ошибка со спутника!"
 
 #: CheckmkModule/templates/Scans/index.php:103
 msgid "Execute discovery"
-msgstr ""
+msgstr "Выполнить открытие"
 
 #: CheckmkModule/templates/Scans/index.php:118
 msgid "Executing remote discovery..."
-msgstr ""
+msgstr "Выполнение удаленного обнаружения ..."
 
 #: CheckmkModule/templates/Scans/index.php:122
 #: CheckmkModule/templates/Snmp/index.php:231
 msgid "Waiting for response from Satellite..."
-msgstr ""
+msgstr "В ожидании ответа от спутника ..."
 
 #: CheckmkModule/templates/Scans/index.php:139
 msgid "Health"
-msgstr ""
+msgstr "Здоровье"
 
 #: CheckmkModule/templates/Scans/index.php:170
 msgid "Windows Services"
-msgstr ""
+msgstr "Службы Windows"
 
 #: CheckmkModule/templates/Scans/index.php:186
 msgid "Systemd Services"
-msgstr ""
+msgstr "Системные службы"
 
 #: CheckmkModule/templates/Scans/index.php:210
 #: CheckmkModule/templates/Snmp/index.php:274
 msgid "More services available"
-msgstr ""
+msgstr "Доступно больше служб"
 
 #: CheckmkModule/templates/Scans/index.php:213
 #: CheckmkModule/templates/Snmp/index.php:277
 msgid "Before you are able to monitor the following services, it is required that an appropriate service template has been created."
-msgstr ""
+msgstr "Прежде чем вы сможете отслеживать следующие службы, необходимо создать соответствующий шаблон службы."
 
 #: CheckmkModule/templates/Scans/index.php:219
 #: CheckmkModule/templates/Snmp/index.php:283
 msgid "Go to \"Service templates\""
-msgstr ""
+msgstr "Перейти к \"Шаблоны служб\""
 
 #: CheckmkModule/templates/Scans/index.php:225
 #: CheckmkModule/templates/Snmp/index.php:289
 msgid "Go to \"Agent Checks\""
-msgstr ""
+msgstr "Перейти к \"Проверки агента\""
 
 #: CheckmkModule/templates/Scans/index.php:238
 #: CheckmkModule/templates/Snmp/index.php:301
 msgid "MK Check"
-msgstr ""
+msgstr "MK Проверка"
 
 #: CheckmkModule/templates/Scans/index.php:239
 #: CheckmkModule/templates/Snmp/index.php:302
 msgid "Item"
-msgstr ""
+msgstr "Элемент"
 
 #: CheckmkModule/templates/Scans/index.php:240
 #: CheckmkModule/templates/Snmp/index.php:303
 msgid "Parameters"
-msgstr ""
+msgstr "Параметры"
 
 #: CheckmkModule/templates/Snmp/index.php:38
 msgid "Snmp"
-msgstr ""
+msgstr "Snmp"
 
 #: CheckmkModule/templates/Snmp/index.php:100
 msgid "SNMP version"
-msgstr ""
+msgstr "SNMP версия"
 
 #: CheckmkModule/templates/Snmp/index.php:116
 msgid "Community"
-msgstr ""
+msgstr "Общество"
 
 #: CheckmkModule/templates/Snmp/index.php:131
 msgid "Security level"
-msgstr ""
+msgstr "Уровень безопасности"
 
 #: CheckmkModule/templates/Snmp/index.php:145
 msgid "Hash algorithm"
-msgstr ""
+msgstr "Алгоритм хеширования"
 
 #: CheckmkModule/templates/Snmp/index.php:179
 msgid "Encryption algorithm"
-msgstr ""
+msgstr "Алгоритм шифрования"
 
 #: CheckmkModule/templates/Snmp/index.php:193
 msgid "Encryption password"
-msgstr ""
+msgstr "Пароль шифрования"
 
 #: CheckmkModule/templates/Snmp/index.php:207
 msgid "Save and run SNMP discovery"
-msgstr ""
+msgstr "Сохраните и запустите обнаружение SNMP"
 
 #: CheckmkModule/templates/Snmp/index.php:227
 msgid "Executing discovery via SNMP..."
-msgstr ""
+msgstr "Выполнение обнаружения через SNMP ..."
 
 #: CheckmkModule/templates/Snmp/index.php:323
 msgid "Continue"
-msgstr ""
+msgstr "Продолжать"
 
 #: DesignModule/src/Controller/DesignsController.php:124
 msgid "Design saved successfully"
-msgstr ""
+msgstr "Дизайн успешно сохранен"
 
 #: DesignModule/src/Controller/DesignsController.php:163
 msgid "No file to import"
-msgstr ""
+msgstr "Нет файла для импорта"
 
 #: DesignModule/src/Controller/DesignsController.php:167
 msgid "Uploaded file type is not allowed"
-msgstr ""
+msgstr "Загруженный тип файла не допускается"
 
 #: DesignModule/src/Controller/DesignsController.php:219
 msgid "Design imported and saved successfully"
-msgstr ""
+msgstr "Дизайн импортирован и успешно сохранен"
 
 #: DesignModule/src/Controller/UploadsController.php:33
 msgid "Error on uploading file"
-msgstr ""
+msgstr "Ошибка при загрузке файла"
 
 #: DesignModule/src/Controller/UploadsController.php:99
 msgid "Unsuported image format."
-msgstr ""
+msgstr "Неподдерживаемый формат изображения."
 
 #: DesignModule/src/Controller/UploadsController.php:106
 msgid "Upload successful"
-msgstr ""
+msgstr "Загрузка успешно завершена"
 
 #: DesignModule/src/Controller/UploadsController.php:113
 msgid "Reset successful"
-msgstr ""
+msgstr "Сброс успешно"
 
 #: DesignModule/src/Controller/UploadsController.php:138
 msgid "No custom logo found"
-msgstr ""
+msgstr "Пользовательский логотип не найден"
 
 #: DesignModule/src/Lib/Menu.php:27
 msgid "Design Editor"
-msgstr ""
+msgstr "Редактор дизайна"
 
 #: DesignModule/templates/Designs/edit.php:17
 msgid "Design Module"
-msgstr ""
+msgstr "Модуль дизайна"
 
 #: DesignModule/templates/Designs/edit.php:21
 msgid "Design"
-msgstr ""
+msgstr "Дизайн"
 
 #: DesignModule/templates/Designs/edit.php:36
 msgid "Designs"
-msgstr ""
+msgstr "Дизайн"
 
 #: DesignModule/templates/Designs/edit.php:46
 msgid "Layout, Header and Menu"
-msgstr ""
+msgstr "Макет, Заголовок и Меню"
 
 #: DesignModule/templates/Designs/edit.php:54
 msgid "Logo in header"
-msgstr ""
+msgstr "Логотип в заголовке"
 
 #: DesignModule/templates/Designs/edit.php:60
 msgid "Page Header"
-msgstr ""
+msgstr "Заголовок страницы"
 
 #: DesignModule/templates/Designs/edit.php:76
 msgid "Sidebar"
-msgstr ""
+msgstr "Боковая панель"
 
 #: DesignModule/templates/Designs/edit.php:93
 msgid "Gradient"
-msgstr ""
+msgstr "Градиент"
 
 #: DesignModule/templates/Designs/edit.php:98
 msgid "Sidebar gradient"
-msgstr ""
+msgstr "Градиент боковой панели"
 
 #: DesignModule/templates/Designs/edit.php:111
 msgid "Navigation title font"
-msgstr ""
+msgstr "Шрифт заголовка навигации"
 
 #: DesignModule/templates/Designs/edit.php:125
 msgid "Navigation menu font"
-msgstr ""
+msgstr "Шрифт меню навигации"
 
 #: DesignModule/templates/Designs/edit.php:139
 msgid "Navigation menu font on hover"
-msgstr ""
+msgstr "Шрифт меню навигации при наведении"
 
 #: DesignModule/templates/Designs/edit.php:147
 msgid "Main background"
-msgstr ""
+msgstr "Основной фон"
 
 #: DesignModule/templates/Designs/edit.php:161
 msgid "Tables"
-msgstr ""
+msgstr "Таблицы"
 
 #: DesignModule/templates/Designs/edit.php:164
 msgid "Table background color"
-msgstr ""
+msgstr "Цвет фона таблицы"
 
 #: DesignModule/templates/Designs/edit.php:172
 msgid "Table font color"
-msgstr ""
+msgstr "Цвет шрифта таблицы"
 
 #: DesignModule/templates/Designs/edit.php:180
 msgid "Table border"
-msgstr ""
+msgstr "Рамка таблицы"
 
 #: DesignModule/templates/Designs/edit.php:188
 msgid "Table hover background"
-msgstr ""
+msgstr "Фон наведения таблицы"
 
 #: DesignModule/templates/Designs/edit.php:196
 msgid "Table hover font color"
-msgstr ""
+msgstr "Цвет шрифта при наведении таблицы"
 
 #: DesignModule/templates/Designs/edit.php:203
 msgid "Tabs"
-msgstr ""
+msgstr "Вкладки"
 
 #: DesignModule/templates/Designs/edit.php:206
 msgid "Tab background"
-msgstr ""
+msgstr "Фон вкладки"
 
 #: DesignModule/templates/Designs/edit.php:213
 msgid "Tab font color"
-msgstr ""
+msgstr "Цвет шрифта вкладки"
 
 #: DesignModule/templates/Designs/edit.php:221
 msgid "Tab font color hover"
-msgstr ""
+msgstr "Цвет шрифта на вкладке"
 
 #: DesignModule/templates/Designs/edit.php:233
 msgid "Panels, Cards"
-msgstr ""
+msgstr "Панели, Карты"
 
 #: DesignModule/templates/Designs/edit.php:236
 msgid "Panel background"
-msgstr ""
+msgstr "Фон панели"
 
 #: DesignModule/templates/Designs/edit.php:250
 msgid "Panel Title"
-msgstr ""
+msgstr "Название панели"
 
 #: DesignModule/templates/Designs/edit.php:264
 msgid "Page content font"
-msgstr ""
+msgstr "Шрифт содержимого страницы"
 
 #: DesignModule/templates/Designs/edit.php:279
 msgid "Card background"
-msgstr ""
+msgstr "Фон карты"
 
 #: DesignModule/templates/Designs/edit.php:293
 msgid "Card header Background"
-msgstr ""
+msgstr "Фон заголовка карты"
 
 #: DesignModule/templates/Designs/edit.php:308
 msgid "Card content font"
-msgstr ""
+msgstr "Шрифт содержимого карты"
 
 #: DesignModule/templates/Designs/edit.php:323
 msgid "Panel and Card header font"
-msgstr ""
+msgstr "Шрифт панели и заголовка карты"
 
 #: DesignModule/templates/Designs/edit.php:338
 msgid "Breadcrumbs"
-msgstr ""
+msgstr "Хлебные крошки"
 
 #: DesignModule/templates/Designs/edit.php:341
 msgid "Breadcrumb font color"
-msgstr ""
+msgstr "Цвет хлебных крошек"
 
 #: DesignModule/templates/Designs/edit.php:356
 msgid "Breadcrumb with links font color"
-msgstr ""
+msgstr "Хлебная крошка со ссылками цвет шрифта"
 
 #: DesignModule/templates/Designs/edit.php:371
 msgid "Input fields and Buttons"
-msgstr ""
+msgstr "Поля ввода и кнопки"
 
 #: DesignModule/templates/Designs/edit.php:374
 msgid "Default button color"
-msgstr ""
+msgstr "Цвет кнопки по умолчанию"
 
 #: DesignModule/templates/Designs/edit.php:389
 msgid "Default button font color"
-msgstr ""
+msgstr "Цвет шрифта кнопки по умолчанию"
 
 #: DesignModule/templates/Designs/edit.php:404
 msgid "Default button border color"
-msgstr ""
+msgstr "Цвет рамки кнопки по умолчанию"
 
 #: DesignModule/templates/Designs/edit.php:421
 msgid "Dark Theme"
-msgstr ""
+msgstr "Тёмная тема"
 
 #: DesignModule/templates/Designs/edit.php:423
 msgid "Reset to default"
-msgstr ""
+msgstr "Восстановление значений по умолчанию"
 
 #: DesignModule/templates/Designs/edit.php:428
 msgid "Update style"
-msgstr ""
+msgstr "Обновить стиль"
 
 #: DesignModule/templates/Designs/edit.php:436
 msgid "Logos"
-msgstr ""
+msgstr "Логотипы"
 
 #: DesignModule/templates/Designs/edit.php:440
 msgid "Upload logo"
-msgstr ""
+msgstr "Загрузить логотип"
 
 #: DesignModule/templates/Designs/edit.php:450
 #: DesignModule/templates/Designs/edit.php:467
 #: DesignModule/templates/Designs/edit.php:483
 #: DesignModule/templates/Designs/edit.php:500
 msgid "Reset logo"
-msgstr ""
+msgstr "Сбросить логотип"
 
 #: DesignModule/templates/Designs/edit.php:453
 msgid "The logo is used by the interface and PDF files."
-msgstr ""
+msgstr "Логотип используется интерфейсом и файлами PDF."
 
 #: DesignModule/templates/Designs/edit.php:470
 msgid "The small logo is used by notifications."
-msgstr ""
+msgstr "Маленький логотип используется уведомлениями."
 
 #: DesignModule/templates/Designs/edit.php:486
 msgid "The logo is used by the interface and login screen."
-msgstr ""
+msgstr "Логотип используется интерфейсом и экраном входа."
 
 #: DesignModule/templates/Designs/edit.php:503
 msgid "This Logo is used in the page header"
-msgstr ""
+msgstr "Этот логотип используется в заголовке страницы"
 
 #: DesignModule/templates/Designs/edit.php:514
 msgid "Import / Export Design"
-msgstr ""
+msgstr "Импорт / Экспорт Дизайн"
 
 #: DesignModule/templates/Designs/edit.php:520
 msgid "Import"
-msgstr ""
+msgstr "Импорт"
 
 #: DesignModule/templates/Designs/edit.php:525
 msgid "Export current saved design"
-msgstr ""
+msgstr "Экспортировать текущий сохраненный дизайн"
 
 #: DesignModule/templates/Designs/edit.php:544
 msgid "Upload your logo"
-msgstr ""
+msgstr "Загрузите свой логотип"
 
 #: DesignModule/templates/Designs/edit.php:555
 msgid "Logo for"
-msgstr ""
+msgstr "Логотип для"
 
 #: DesignModule/templates/Designs/edit.php:563
 msgid "Interface and PDFs"
-msgstr ""
+msgstr "Интерфейс и PDF-файлы"
 
 #: DesignModule/templates/Designs/edit.php:565
 msgid "Interface and Login"
-msgstr ""
+msgstr "Интерфейс и Логин"
 
 #: DesignModule/templates/Designs/edit.php:566
 msgid "Header logo"
-msgstr ""
+msgstr "Логотип заголовка"
 
 #: DesignModule/templates/Designs/edit.php:578
 msgid "Supported iamge types: .jpg, .png and .gif."
-msgstr ""
+msgstr "Поддерживаемые типы изображений: .jpg, .png и .gif."
 
 #: DesignModule/templates/Designs/edit.php:586
 #: DesignModule/templates/Designs/edit.php:632
 msgid "Drop files here or click to upload."
-msgstr ""
+msgstr "Перетащите файлы сюда или нажмите, чтобы загрузить."
 
 #: DesignModule/templates/Designs/edit.php:611
 msgid "Upload your Design"
-msgstr ""
+msgstr "Загрузите свой дизайн"
 
 #: DistributeModule/src/Controller/SatellitesController.php:108
 #: DistributeModule/src/Controller/SatellitesController.php:157
 #: DistributeModule/src/Controller/SatellitesController.php:257
 #: DistributeModule/src/Controller/SatellitesController.php:364
 msgid "Satellite not found"
-msgstr ""
+msgstr "Спутник не найден"
 
 #: DistributeModule/src/Controller/SatellitesController.php:337
 msgid "Issue while deleting hosts..."
-msgstr ""
+msgstr "Проблема при удалении узлов ..."
 
 #: DistributeModule/src/Controller/SatellitesController.php:344
 msgid "Satellite successfully deleted"
-msgstr ""
+msgstr "Спутник успешно удален"
 
 #: DistributeModule/src/Lib/Menu.php:37
 msgid "Satellites Status"
-msgstr ""
+msgstr "Статус Спутника"
 
 #: DistributeModule/src/Lib/SatSyncMethods.php:11
 msgid "SSH"
-msgstr ""
+msgstr "SSH"
 
 #: DistributeModule/src/Lib/SatSyncMethods.php:12
 msgid "HTTPS pull mode"
-msgstr ""
+msgstr "HTTPS pull mode"
 
 #: DistributeModule/src/Lib/SatSyncMethods.php:13
 msgid "HTTPS push mode"
-msgstr ""
+msgstr "HTTPS push mode"
 
 #: DistributeModule/src/Model/Entity/Satellite.php:91
 msgid "Failed"
-msgstr ""
+msgstr "Неудачно"
 
 #: DistributeModule/src/Model/Table/SatellitesTable.php:144
 msgid "Synchronisation method is out of bounds: [{0}]"
-msgstr ""
+msgstr "Метод синхронизации вышел за пределы: [{0}]"
 
 #: DistributeModule/src/Model/Table/SatellitesTable.php:149
 #: DistributeModule/src/Model/Table/SatellitesTable.php:160
 msgid "The port numbers in the range from 0 to 65535"
-msgstr ""
+msgstr "Номера портов в диапазоне от 0 до 65535"
 
 #: DistributeModule/src/Model/Table/SatellitesTable.php:197
 msgid "The entered URL is invalid"
-msgstr ""
+msgstr "Введенный URL неверен"
 
 #: DistributeModule/src/Model/Table/SatellitesTable.php:214
 msgid "The entered Proxy URL is invalid"
-msgstr ""
+msgstr "Введенный URL прокси неверен"
 
 #: DistributeModule/templates/Satellites/add.php:18
 #: DistributeModule/templates/Satellites/edit.php:17
@@ -19667,182 +19667,182 @@ msgstr ""
 #: DistributeModule/templates/Satellites/status.php:23
 #: DistributeModule/templates/Satellites/used_by.php:16
 msgid "Distribute Module"
-msgstr ""
+msgstr "Модуль распространения"
 
 #: DistributeModule/templates/Satellites/add.php:36
 msgid "Create new satellite"
-msgstr ""
+msgstr "Создать новый спутник"
 
 #: DistributeModule/templates/Satellites/add.php:72
 #: DistributeModule/templates/Satellites/edit.php:72
 msgid "Satellite Name"
-msgstr ""
+msgstr "Название спутника"
 
 #: DistributeModule/templates/Satellites/add.php:99
 #: DistributeModule/templates/Satellites/edit.php:99
 msgid "This address will be used for all communications between the master instance and the satellite system."
-msgstr ""
+msgstr "Этот адрес будет использоваться для всей связи между главной системой и спутниковой системой."
 
 #: DistributeModule/templates/Satellites/add.php:105
 #: DistributeModule/templates/Satellites/edit.php:105
 msgid "Synchronisation method"
-msgstr ""
+msgstr "Метод синхронизации"
 
 #: DistributeModule/templates/Satellites/add.php:121
 #: DistributeModule/templates/Satellites/edit.php:121
 msgid "HTTPS Push: The Satellite System will push check results to the Master system and frequently check for configuration changes."
-msgstr ""
+msgstr "HTTPS Push: Спутниковая система передает результаты проверки в главную систему и часто проверяет изменения конфигурации."
 
 #: DistributeModule/templates/Satellites/add.php:123
 #: DistributeModule/templates/Satellites/edit.php:123
 msgid "HTTPS Pull: The Mastersystem will frequently pull check results from the Satellite and push configuration changes."
-msgstr ""
+msgstr "HTTPS Pull: Основная система будет часто извлекать результаты проверки из спутникова и передавать изменения конфигурации."
 
 #: DistributeModule/templates/Satellites/add.php:125
 #: DistributeModule/templates/Satellites/edit.php:125
 msgid "SSH: The Mastersystem will create an SSH tunnel to the Satellite system and pull check results and push configuration changes."
-msgstr ""
+msgstr "SSH: Основная система создаст SSH-туннель к спутниковой системе, получит результаты проверки и внесет изменения в конфигурацию."
 
 #: DistributeModule/templates/Satellites/add.php:160
 #: DistributeModule/templates/Satellites/edit.php:161
 msgid "SSH port of remote machine."
-msgstr ""
+msgstr "SSH Порт удаленной машины."
 
 #: DistributeModule/templates/Satellites/add.php:165
 #: DistributeModule/templates/Satellites/edit.php:166
 msgid "PrivateKeyPath"
-msgstr ""
+msgstr "PrivateKeyPath"
 
 #: DistributeModule/templates/Satellites/add.php:176
 #: DistributeModule/templates/Satellites/edit.php:177
 msgid "We will use a default path to private key if this field left empty"
-msgstr ""
+msgstr "Мы будем использовать путь по умолчанию к закрытому ключу, если это поле оставлено пустым"
 
 #: DistributeModule/templates/Satellites/add.php:181
 #: DistributeModule/templates/Satellites/edit.php:182
 msgid "RemotePort"
-msgstr ""
+msgstr "RemotePort"
 
 #: DistributeModule/templates/Satellites/add.php:195
 #: DistributeModule/templates/Satellites/edit.php:196
 msgid "Gearman port of remote machine."
-msgstr ""
+msgstr "Gearman Порт удаленной машины."
 
 #: DistributeModule/templates/Satellites/add.php:257
 #: DistributeModule/templates/Satellites/edit.php:258
 msgid "Verify certificate"
-msgstr ""
+msgstr "Подтвердить сертификат"
 
 #: DistributeModule/templates/Satellites/add.php:275
 #: DistributeModule/templates/Satellites/edit.php:276
 msgid "If enabled the proxy server will be used."
-msgstr ""
+msgstr "Если включено, прокси-сервер будет использоваться."
 
 #: DistributeModule/templates/Satellites/add.php:281
 #: DistributeModule/templates/Satellites/edit.php:282
 msgid "Proxy URL"
-msgstr ""
+msgstr "URL прокси"
 
 #: DistributeModule/templates/Satellites/add.php:359
 #: DistributeModule/templates/Satellites/edit.php:360
 msgid "Time interval in seconds the master system will pickup check results"
-msgstr ""
+msgstr "Интервал времени в секундах, в течение которого основная система будет регистрировать результаты проверки"
 
 #: DistributeModule/templates/Satellites/add.php:364
 #: DistributeModule/templates/Satellites/add.php:410
 #: DistributeModule/templates/Satellites/edit.php:365
 #: DistributeModule/templates/Satellites/edit.php:411
 msgid "Timeout"
-msgstr ""
+msgstr "Тайм-аут"
 
 #: DistributeModule/templates/Satellites/add.php:377
 #: DistributeModule/templates/Satellites/add.php:423
 #: DistributeModule/templates/Satellites/edit.php:378
 #: DistributeModule/templates/Satellites/edit.php:424
 msgid "Time limit in seconds which defines when the satellite should be marked as OFFLINE ."
-msgstr ""
+msgstr "Ограничение по времени в секундах, которое определяет, когда спутник должен быть отмечен как OFFLINE."
 
 #: DistributeModule/templates/Satellites/add.php:462
 #: DistributeModule/templates/Satellites/edit.php:462
 msgid "Time Syncing"
-msgstr ""
+msgstr "Синхронизация времени"
 
 #: DistributeModule/templates/Satellites/add.php:466
 #: DistributeModule/templates/Satellites/edit.php:466
 msgid "Determines if you want to synchronise the system clock of the master server to the satellite system.\nNotice: It is not recommended to enable this option. Please use a NTP server whenever possible."
-msgstr ""
+msgstr "Определяет, хотите ли вы синхронизировать системные часы главного сервера со спутниковой системой.\nПримечание: не рекомендуется включать эту опцию. Пожалуйста, используйте NTP-сервер, когда это возможно."
 
 #: DistributeModule/templates/Satellites/add.php:478
 msgid "Create satellite"
-msgstr ""
+msgstr "Создать спутник"
 
 #: DistributeModule/templates/Satellites/edit.php:35
 msgid "Edit satellite:"
-msgstr ""
+msgstr "Редактировать спутник"
 
 #: DistributeModule/templates/Satellites/edit.php:474
 msgid "Update satellite"
-msgstr ""
+msgstr "Обновить спутник"
 
 #: DistributeModule/templates/Satellites/index.php:78
 #: DistributeModule/templates/Satellites/status.php:78
 msgid "Filter by satellite name"
-msgstr ""
+msgstr "Фильтр по названию спутника"
 
 #: DistributeModule/templates/Satellites/index.php:105
 #: DistributeModule/templates/Satellites/status.php:105
 msgid "Filter by sync method"
-msgstr ""
+msgstr "Фильтр по методу синхронизации"
 
 #: DistributeModule/templates/Satellites/index.php:137
 #: DistributeModule/templates/Satellites/status.php:153
 msgid "Instance name"
-msgstr ""
+msgstr "Имя инстанции"
 
 #: DistributeModule/templates/Satellites/index.php:145
 #: DistributeModule/templates/Satellites/status.php:161
 msgid "Sync method"
-msgstr ""
+msgstr "Метод синхронизации"
 
 #: DistributeModule/templates/Satellites/index.php:149
 msgid "Time zone"
-msgstr ""
+msgstr "Часовой пояс"
 
 #: DistributeModule/templates/Satellites/status.php:124
 msgid "Filter by sync status"
-msgstr ""
+msgstr "Фильтр по статусу синхронизации"
 
 #: DistributeModule/templates/Satellites/status.php:166
 msgid "Sync status"
-msgstr ""
+msgstr "Состояние синхронизации"
 
 #: DistributeModule/templates/Satellites/status.php:171
 msgid "Last sync"
-msgstr ""
+msgstr "Последняя синхронизация"
 
 #: DistributeModule/templates/Satellites/status.php:176
 msgid "Last seen"
-msgstr ""
+msgstr "В последний раз видел"
 
 #: DistributeModule/templates/Satellites/status.php:181
 msgid "Last error"
-msgstr ""
+msgstr "Последняя ошибка"
 
 #: DistributeModule/templates/Satellites/used_by.php:42
 msgid "hosts."
-msgstr ""
+msgstr "узлы."
 
 #: DistributeModule/templates/Satellites/used_by.php:79
 msgid "This satellite is not used by any host"
-msgstr ""
+msgstr "Этот спутник не используется ни одним узлом"
 
 #: EventcorrelationModule/src/Command/EvcPluginCommand.php:281
 msgid "0 services are OK"
-msgstr ""
+msgstr "0 служб в статусе ОК"
 
 #: EventcorrelationModule/src/Command/EvcPluginCommand.php:320
 msgid "{0} - {1} services ({2} from {3} services are OK)"
-msgstr ""
+msgstr "{0} - {1} сервисы ({2} из {3} сервисов не в состоянии OK)"
 
 #: EventcorrelationModule/src/Controller/EventcorrelationsController.php:252
 #: EventcorrelationModule/src/Controller/EventcorrelationsController.php:357
@@ -19850,82 +19850,82 @@ msgstr ""
 #: EventcorrelationModule/src/Controller/EventcorrelationsController.php:1369
 #: EventcorrelationModule/src/Controller/EventcorrelationsController.php:1529
 msgid "Invalid event correlation host"
-msgstr ""
+msgstr "Неверный узел корреляции событий"
 
 #: EventcorrelationModule/src/Controller/EventcorrelationsController.php:451
 msgid "Can not save empty event correlation."
-msgstr ""
+msgstr "Не удается сохранить пустую корреляцию событий."
 
 #: EventcorrelationModule/src/Controller/EventcorrelationsController.php:697
 msgid "Could not delete event correlation"
-msgstr ""
+msgstr "Не удалось удалить корреляцию событий"
 
 #: EventcorrelationModule/src/Controller/EventcorrelationsController.php:716
 msgid "Invalid event correlation"
-msgstr ""
+msgstr "Неверная корреляция событий"
 
 #: EventcorrelationModule/src/Form/EventcorrelationForm.php:48
 msgid "Operator out of bounds"
-msgstr ""
+msgstr "Оператор вне границ"
 
 #: EventcorrelationModule/src/Form/EventcorrelationForm.php:58
 msgid "This operator requires at least two Services"
-msgstr ""
+msgstr "Для этого оператора требуется как минимум две службы"
 
 #: EventcorrelationModule/src/Form/EventcorrelationForm.php:69
 msgid "The EQUAL Operator can only have one Service"
-msgstr ""
+msgstr "EQUAL Оператор может иметь только одну службу"
 
 #: EventcorrelationModule/src/Form/EventcorrelationForm.php:80
 msgid "The MIN Operator requires a Modifier which is in the range of 1 - X (where X is the number of the selected services)"
-msgstr ""
+msgstr "Оператору MIN требуется Модификатор, который находится в диапазоне от 1 до X (где X - количество выбранных услуг)."
 
 #: EventcorrelationModule/src/Form/EventcorrelationForm.php:86
 msgid "Operator modifier has to be greater than 0."
-msgstr ""
+msgstr "Модификатор оператора должен быть больше 0."
 
 #: EventcorrelationModule/src/Lib/AdditionalLinks.php:34
 msgid "Host used by Event Correlation"
-msgstr ""
+msgstr "Узел используется корреляцией событий"
 
 #: EventcorrelationModule/src/Lib/AdditionalLinks.php:44
 msgid "Service used by Event Correlation"
-msgstr ""
+msgstr "Служба используется корреляцией событий"
 
 #: EventcorrelationModule/src/Lib/Menu.php:42
 #: EventcorrelationModule/src/Lib/Widgets.php:35
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:69
 #: EventcorrelationModule/templates/Eventcorrelations/evc_widget.php:38
 msgid "Event Correlation"
-msgstr ""
+msgstr "Корреляция событий"
 
 #: EventcorrelationModule/src/Lib/Menu.php:58
 msgid "Event Correlation Globals"
-msgstr ""
+msgstr "Настройки корреляции событий"
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:59
 msgid "Out of range (0-7)"
-msgstr ""
+msgstr "Вне диапазона (0-7)"
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:66
 msgid "Supported options are \"naemon\", \"nagios\" or \"statusengine\""
-msgstr ""
+msgstr "оддерживаемые параметры: \"naemon\", \"nagios\" или \"statusengine \""
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:96
 msgid "Consider service status type (0 => every state type, 1 => only hard state)"
-msgstr ""
+msgstr "Рассмотреть тип состояния службы (0 => каждый тип состояния, 1 => только твердый)"
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:100
 msgid "Consider number of states"
-msgstr ""
+msgstr "Учитывать количество состояний"
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:104
 msgid "If enabled, the event correlation host will go in \"down\" state if the last (root) event correlation service is \"critical\""
-msgstr ""
+msgstr "Если этот параметр включен, узел корреляции событий перейдет в состояние \"down\", если последняя (корневая) служба корреляции событий находится в состоянии \"critical\""
 
 #: EventcorrelationModule/src/Model/Table/EventcorrelationSettingsTable.php:108
 msgid "Monitoring System"
-msgstr ""
+msgstr "Мониторинг Система"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:15
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:14
@@ -19935,59 +19935,59 @@ msgstr ""
 #: EventcorrelationModule/templates/Eventcorrelations/used_by.php:14
 #: EventcorrelationModule/templates/Eventcorrelations/view.php:14
 msgid "Event Correlation Module"
-msgstr ""
+msgstr "Модуль корреляции событий"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:37
 msgid "This changes affects all event correlations"
-msgstr ""
+msgstr "Это изменение влияет на все корреляции событий"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:47
 msgid "Event Correlation Settings"
-msgstr ""
+msgstr "Настройки корреляции событий"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:64
 msgid "Consider state type"
-msgstr ""
+msgstr "Учитывать тип статуса"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:69
 msgid "If disabled every state type will be considered to calculate the event correlation result. If enabled only \"hard state\" events will be used."
-msgstr ""
+msgstr "Если отключено, каждый тип состояния будет учитываться для расчета результата корреляции события. Если включено, то будут использоваться только события в \"твердном\" состоянии»."
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:83
 msgid "Consider state count"
-msgstr ""
+msgstr "Учитывать подсчет статуса"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:88
 msgid "If enabled, services in unknown state are ignored if there are more other services in critical or warning state."
-msgstr ""
+msgstr "Если этот параметр включен, службы в неизвестном состоянии игнорируются, если в критическом или предупреждающем состоянии находятся другие службы."
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:102
 msgid "Reflect status to host"
-msgstr ""
+msgstr "Отразить статус для узла"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:107
 msgid "If enabled, the event correlation host will go in \"down\" state if the last element (root) of the event correlation is in \"critical\" state "
-msgstr ""
+msgstr "Если этот параметр включен, узел корреляции событий перейдет в состояние \"down\", если последняя (корневая) служба корреляции событий находится в состоянии \"critical\""
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:113
 msgid "Check result submit method"
-msgstr ""
+msgstr "Способ отправки результатов проверки"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:120
 msgid "Statusengine Event Broker (Naemon and Naemon) (Recommend)"
-msgstr ""
+msgstr "Statusengine Event Broker (Naemon и Naemon) (Рекомендованный)"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:121
 msgid "Query Handler (Naemon only - naemon.qh) (Recommend over nagios.cmd)"
-msgstr ""
+msgstr "Query Handler (только для Naemon - naemon.qh) (рекомендуется через nagios.cmd)"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:122
 msgid "External commands pipe (Nagios and Nameon - nagios.cmd)"
-msgstr ""
+msgstr "External commands pipe (Nagios и Nameon - nagios.cmd)"
 
 #: EventcorrelationModule/templates/EventcorrelationSettings/index.php:131
 msgid "If Statusengine Event Broker or Naemons Query Handler will be used to submit correlation results a detailed long output will be passed to the monitoring engine. The external command pipe does not support long output."
-msgstr ""
+msgstr "Если для представления результатов корреляции будет использоваться Statusengine Event Broker или Naemons Query Handler, подробный длинный вывод будет передан в механизм мониторинга. Внешний командный канал не поддерживает длинный вывод."
 
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:19
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:22
@@ -19998,80 +19998,80 @@ msgstr ""
 #: EventcorrelationModule/templates/Eventcorrelations/used_by.php:22
 #: EventcorrelationModule/templates/Eventcorrelations/view.php:18
 msgid "Event Correlations"
-msgstr ""
+msgstr "Корреляции событий"
 
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:26
 msgid "Create new correlation"
-msgstr ""
+msgstr "Создать новую корреляцию"
 
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:54
 msgid "Create new Event Correlation"
-msgstr ""
+msgstr "Создать новую корреляцию событий"
 
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:120
 msgid "Host name / Name of correlation"
-msgstr ""
+msgstr "Название узла / Название корреляции"
 
 #: EventcorrelationModule/templates/Eventcorrelations/add.php:458
 msgid "Create event correlation"
-msgstr ""
+msgstr "Создать корреляцию событий"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:22
 msgid "Edit correlation"
-msgstr ""
+msgstr "Изменить корреляцию"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:32
 msgid "Edit Event Correlation:"
-msgstr ""
+msgstr "Изменить корреляцию событий:"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:40
 msgid "Save Event Correlation"
-msgstr ""
+msgstr "Сохранить корреляцию событий"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:90
 msgid "New virtual service"
-msgstr ""
+msgstr "Новая виртуальная служба"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:100
 msgid "Event Correlation "
-msgstr ""
+msgstr "Корреляция событий"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:108
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:123
 msgid "New vService"
-msgstr ""
+msgstr "Новая виртуальная служба"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:204
 msgid "Create virtual service"
-msgstr ""
+msgstr "Создать виртуальную службу"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:205
 msgid "Modify virtual service"
-msgstr ""
+msgstr "Изменить виртуальную службу"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:217
 msgid "Name of vService"
-msgstr ""
+msgstr "Наименование виртуальной службы"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:228
 msgid "Name of the virtual service that holds the result of the correlation."
-msgstr ""
+msgstr "Имя виртуальной службы, который содержит результат корреляции."
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:248
 msgid "Only service templates of the EVC type are available."
-msgstr ""
+msgstr "Доступны только шаблоны службы типа EVC."
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:270
 msgid "Services that should be correlated"
-msgstr ""
+msgstr "Службы, которые должны быть соотнесены"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:277
 msgid "vServices"
-msgstr ""
+msgstr "Виртуальные службы"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:296
 msgid "Virtual services that should be correlated"
-msgstr ""
+msgstr "Виртуальные службы, которые должны быть соотнесены"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:303
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:278
@@ -20079,46 +20079,46 @@ msgstr ""
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:390
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:413
 msgid "Operator"
-msgstr ""
+msgstr "Оператор"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:310
 msgid "AND"
-msgstr ""
+msgstr "AND"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:311
 msgid "OR"
-msgstr ""
+msgstr "OR"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:312
 msgid "EQUAL"
-msgstr ""
+msgstr "EQUAL"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:313
 msgid "MIN"
-msgstr ""
+msgstr "MIN"
 
 #: EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:323
 msgid "Operator modifier"
-msgstr ""
+msgstr "Модификатор оператора"
 
 #: EventcorrelationModule/templates/Eventcorrelations/host_used_by.php:15
 #: EventcorrelationModule/templates/Eventcorrelations/service_used_by.php:15
 msgid "Eventcorrelation Module"
-msgstr ""
+msgstr "Модуль корреляции событий"
 
 #: EventcorrelationModule/templates/Eventcorrelations/host_used_by.php:33
 msgid "eventcorrelations."
-msgstr ""
+msgstr "корреляции событий."
 
 #: EventcorrelationModule/templates/Eventcorrelations/host_used_by.php:52
 msgid "Eventcorrelation name"
-msgstr ""
+msgstr "Имя корреляции события"
 
 #: EventcorrelationModule/templates/Eventcorrelations/host_used_by.php:108
 #: EventcorrelationModule/templates/Eventcorrelations/index.php:173
 #: EventcorrelationModule/templates/Eventcorrelations/service_used_by.php:107
 msgid "Edit Correlation"
-msgstr ""
+msgstr "Редактировать корреляцию"
 
 #: EventcorrelationModule/templates/Eventcorrelations/host_used_by.php:142
 #: EventcorrelationModule/templates/Eventcorrelations/index.php:207
@@ -20126,406 +20126,406 @@ msgstr ""
 #: EventcorrelationModule/templates/Eventcorrelations/summary_view.php:54
 #: EventcorrelationModule/templates/Eventcorrelations/used_by.php:141
 msgid "Download as PDF"
-msgstr ""
+msgstr "Скачать в формате PDF"
 
 #: EventcorrelationModule/templates/Eventcorrelations/host_used_by.php:165
 msgid "This host is not used by any event correlation or you have insufficient permissions."
-msgstr ""
+msgstr "Этот узел не используется никакими корреляциями событий, или у вас недостаточно прав."
 
 #: EventcorrelationModule/templates/Eventcorrelations/index.php:19
 msgid "Event Correlations Overview"
-msgstr ""
+msgstr "Обзор корреляций событий"
 
 #: EventcorrelationModule/templates/Eventcorrelations/index.php:66
 msgid "Filter by event correlation name"
-msgstr ""
+msgstr "Фильтр по названию корреляции событий"
 
 #: EventcorrelationModule/templates/Eventcorrelations/index.php:79
 msgid "Filter by event correlation description"
-msgstr ""
+msgstr "Фильтр по описанию корреляции событий"
 
 #: EventcorrelationModule/templates/Eventcorrelations/index.php:105
 #: EventcorrelationModule/templates/Eventcorrelations/service_used_by.php:51
 #: EventcorrelationModule/templates/Eventcorrelations/used_by.php:62
 msgid "Event correlation name"
-msgstr ""
+msgstr "Название корреляции события"
 
 #: EventcorrelationModule/templates/Eventcorrelations/index.php:109
 msgid "Event correlation description"
-msgstr ""
+msgstr "Описание корреляции событий"
 
 #: EventcorrelationModule/templates/Eventcorrelations/index.php:137
 msgid "DISABLED"
-msgstr ""
+msgstr "ОТКЛЮЧЁН"
 
 #: EventcorrelationModule/templates/Eventcorrelations/pdf/summary_view_table.php:38
 msgid "Event correlation: "
-msgstr ""
+msgstr "Корреляция событий: "
 
 #: EventcorrelationModule/templates/Eventcorrelations/service_used_by.php:33
 #: EventcorrelationModule/templates/Eventcorrelations/used_by.php:43
 msgid "event correlations."
-msgstr ""
+msgstr "корреляции событий."
 
 #: EventcorrelationModule/templates/Eventcorrelations/service_used_by.php:164
 msgid "This service is not used by any event correlation or you have insufficient permissions."
-msgstr ""
+msgstr "Эта служба не используется никакими корреляциями событий или у вас недостаточно прав."
 
 #: EventcorrelationModule/templates/Eventcorrelations/summary_view.php:22
 msgid "Summary View"
-msgstr ""
+msgstr "Общий вид"
 
 #: EventcorrelationModule/templates/Eventcorrelations/summary_view.php:31
 msgid "Event Correlation as summary:"
-msgstr ""
+msgstr "Корреляция событий как итог:"
 
 #: EventcorrelationModule/templates/Eventcorrelations/summary_view.php:40
 #: EventcorrelationModule/templates/Eventcorrelations/view.php:41
 msgid "EVC Tree"
-msgstr ""
+msgstr "EVC дерево"
 
 #: EventcorrelationModule/templates/Eventcorrelations/summary_view.php:47
 #: EventcorrelationModule/templates/Eventcorrelations/view.php:48
 msgid "EVC Summary"
-msgstr ""
+msgstr "EVC сводка"
 
 #: EventcorrelationModule/templates/Eventcorrelations/used_by.php:35
 msgid "Event correlation"
-msgstr ""
+msgstr "Корреляция событий"
 
 #: EventcorrelationModule/templates/Eventcorrelations/used_by.php:152
 msgid "This event correlation is not used by other event correlations"
-msgstr ""
+msgstr "Эта корреляция событий не используется другими корреляциями событий"
 
 #: EventcorrelationModule/templates/Eventcorrelations/view.php:32
 msgid "Event Correlation:"
-msgstr ""
+msgstr "Корреляция событий:"
 
 #: OpenstreetmapModule/src/Controller/OpenstreetmapController.php:183
 msgid "Reset map"
-msgstr ""
+msgstr "Сбросить карту"
 
 #: OpenstreetmapModule/src/Lib/Menu.php:28
 #: OpenstreetmapModule/src/Lib/Menu.php:46
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:19
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:33
 msgid "OpenStreetMap"
-msgstr ""
+msgstr "OpenStreetMap"
 
 #: OpenstreetmapModule/src/Model/Table/OpenstreetmapSettingsTable.php:66
 msgid "Value needs to be greater or equal 15."
-msgstr ""
+msgstr "Значение должно быть больше или равно 15."
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:15
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:14
 msgid "OpenStreetMap Module"
-msgstr ""
+msgstr "Модуль OpenStreetMap"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:61
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:76
 msgid "Show locations with status"
-msgstr ""
+msgstr "Показать местоположения со статусом"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:70
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:85
 msgid "Up / Ok"
-msgstr ""
+msgstr "ВКЛЮЧЁН / OK"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:94
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:109
 msgid "Down / Critical"
-msgstr ""
+msgstr "ОТКЛЮЧЁН / КРИТИЧНО"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:107
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:121
 msgid "Unreachable / Unknown"
-msgstr ""
+msgstr "НЕДОСТУПНО / НЕИЗВЕСТНО"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:118
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:132
 msgid "Empty or not monitored locations"
-msgstr ""
+msgstr "Пустые или не контролируемые местоположения"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:129
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:143
 msgid "Hide empty locations"
-msgstr ""
+msgstr "Скрыть пустые местоположения"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:143
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:157
 msgid "Hide not monitored locations"
-msgstr ""
+msgstr "Скрыть не отслеживаемые местоположения"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:154
 msgid "Empty Locations"
-msgstr ""
+msgstr "Пустые местоположения"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:193
 msgid "Unreachable | Unknown"
-msgstr ""
+msgstr "НЕДОСТУПНО | НЕИЗВЕСТНО"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:196
 msgid "Down | Critical"
-msgstr ""
+msgstr "ОТКЛЮЧЁН | КРИТИЧНО"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:202
 msgid "Up | Ok"
-msgstr ""
+msgstr "ВКЛЮЧЁН | OK"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:216
 msgid "Missing configuration or location settings"
-msgstr ""
+msgstr "Отсутствует конфигурация или настройки местоположений"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:226
 msgid "Configuration / OpenStreetMap Settings"
-msgstr ""
+msgstr "Конфигурация / Настройки OpenStreetMap"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:229
 msgid "No OpenStreetMap Settings defined"
-msgstr ""
+msgstr "Настройки OpenStreetMap не определены"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:239
 msgid "Basic Monitoring / Locations"
-msgstr ""
+msgstr "Базовый мониторинг / Местоположении"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:242
 msgid "Missing  Settings"
-msgstr ""
+msgstr "Отсутствующие настройки"
 
 #: OpenstreetmapModule/templates/Openstreetmap/index.php:244
 msgid "No locations with longitude and latitude parameter defined"
-msgstr ""
+msgstr "Нет местоположений с определенными параметрами долготы и широты"
 
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:18
 msgid "OpenStreetMap Settings"
-msgstr ""
+msgstr "Настройки OpenStreetMap"
 
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:22
 #: PagerdutyModule/templates/Settings/edit.php:23
 #: ServicenowModule/templates/ServicenowEdit/index.php:23
 #: SlackModule/templates/SlackSettings/index.php:23
 msgid "Settings"
-msgstr ""
+msgstr "Настройки"
 
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:32
 msgid "Edit OpenStreetMap Settings"
-msgstr ""
+msgstr "Изменить настройки OpenStreetMap"
 
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:43
 msgid "Server address"
-msgstr ""
+msgstr "Адрес сервера"
 
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:59
 msgid "Map update interval"
-msgstr ""
+msgstr "Интервал обновления карты"
 
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:164
 msgid "Advanced settings"
-msgstr ""
+msgstr "Расширенные настройки"
 
 #: OpenstreetmapModule/templates/OpenstreetmapSettings/index.php:175
 msgid "Highlight downtimes and acknowledges"
-msgstr ""
+msgstr "Выделите время простоя и подтверждения"
 
 #: PagerdutyModule/src/Controller/AcknowledgeController.php:51
 msgid "Wrong incident type"
-msgstr ""
+msgstr "Неправильный тип инцидента"
 
 #: PagerdutyModule/src/Lib/Menu.php:46
 msgid "PagerDuty"
-msgstr ""
+msgstr "PagerDuty"
 
 #: PagerdutyModule/templates/Settings/edit.php:15
 msgid "PagerDuty Module"
-msgstr ""
+msgstr "Модуль PagerDuty"
 
 #: PagerdutyModule/templates/Settings/edit.php:19
 msgid "PagerDuty Settings"
-msgstr ""
+msgstr "Настройки PagerDuty"
 
 #: PagerdutyModule/templates/Settings/edit.php:33
 msgid "Edit PagerDuty Settings"
-msgstr ""
+msgstr "Изменить настройки PagerDuty"
 
 #: PagerdutyModule/templates/Settings/edit.php:45
 msgid "API key"
-msgstr ""
+msgstr "Ключ API"
 
 #: PagerdutyModule/templates/Settings/edit.php:57
 msgid "The API Key you got from PagerDuty"
-msgstr ""
+msgstr "Ключ API, полученный от PagerDuty"
 
 #: PagerdutyModule/templates/Settings/edit.php:64
 msgid "Integration Key"
-msgstr ""
+msgstr "Ключ интеграции"
 
 #: PagerdutyModule/templates/Settings/edit.php:76
 msgid "The Integration Key you got from PagerDuty after you created the Service"
-msgstr ""
+msgstr "Ключ интеграции, который вы получили от PagerDuty после создания Службы"
 
 #: PagerdutyModule/templates/Settings/edit.php:83
 msgid "API URL"
-msgstr ""
+msgstr "API URL"
 
 #: PagerdutyModule/templates/Settings/edit.php:95
 msgid "API URL of the PagerDuty service."
-msgstr ""
+msgstr "API URL PagerDuty Служба."
 
 #: PagerdutyModule/templates/Settings/edit.php:106
 #: ServicenowModule/templates/ServicenowEdit/index.php:250
 #: SlackModule/templates/SlackSettings/index.php:87
 msgid "Enable Two-Way Integration"
-msgstr ""
+msgstr "Включить двустороннюю интеграцию"
 
 #: PagerdutyModule/templates/Settings/edit.php:109
 msgid "Via the Two-Way Integration PagerDuty is able, to acknowledge host and service problems."
-msgstr ""
+msgstr "Посредством двусторонней интеграции PagerDuty может распознавать проблемы узлов и сервисов."
 
 #: PagerdutyModule/templates/Settings/edit.php:111
 #: ServicenowModule/templates/ServicenowEdit/index.php:255
 #: SlackModule/templates/SlackSettings/index.php:92
 msgid "For this it is required, that your openITCOCKPIT Server is accessible from the Internet."
-msgstr ""
+msgstr "Для этого необходимо, чтобы ваш сервер openITCOCKPIT был доступен из Интернета."
 
 #: PagerdutyModule/templates/Settings/edit.php:130
 msgid "Webhook URL for PagerDuty. You need to create an openITCOCKPIT user defined API key first."
-msgstr ""
+msgstr "Webhook URL для PagerDuty. Сначала необходимо создать определенный пользователем ключ API openITCOCKPIT."
 
 #: PagerdutyModule/templates/Settings/edit.php:145
 #: ServicenowModule/templates/ServicenowEdit/index.php:267
 #: SlackModule/templates/SlackSettings/index.php:128
 msgid "Use Proxy Server"
-msgstr ""
+msgstr "Использовать прокси-сервер"
 
 #: PagerdutyModule/templates/Settings/edit.php:150
 #: ServicenowModule/templates/ServicenowEdit/index.php:272
 #: SlackModule/templates/SlackSettings/index.php:133
 msgid "Determine if the <a href=\"/#!/proxy/index\">configured proxy</a> should be used."
-msgstr ""
+msgstr "Определите, следует ли использовать <a href=\"/#!/proxy/index\"> настроенный прокси </a>."
 
 #: PrometheusModule/src/Controller/PrometheusExportersController.php:111
 #: PrometheusModule/src/Controller/PrometheusExportersController.php:158
 msgid "Prometheus exporter not found"
-msgstr ""
+msgstr "Prometheus Экспортер не найден"
 
 #: PrometheusModule/src/Controller/PrometheusExportersController.php:170
 msgid "Prometheus exporter successfully deleted"
-msgstr ""
+msgstr "Prometheus Экспортер успешно удален"
 
 #: PrometheusModule/src/Controller/PrometheusExportersController.php:177
 msgid "Error while deleting Prometheus exporter"
-msgstr ""
+msgstr "Ошибка при удалении Prometheus экспортера"
 
 #: PrometheusModule/src/Controller/PrometheusQueryController.php:217
 msgid "Unknown error"
-msgstr ""
+msgstr "Неизвестная ошибка"
 
 #: PrometheusModule/src/Controller/PrometheusQueryController.php:304
 msgid "Invalid host id"
-msgstr ""
+msgstr "Неверный id узла"
 
 #: PrometheusModule/src/Lib/AlertRuleValidationRules.php:43
 msgid "threshold type as is out of bounds: [{0}]"
-msgstr ""
+msgstr "тип предела вне границов: [{0}]"
 
 #: PrometheusModule/src/Lib/AlertRuleValidationRules.php:82
 #: PrometheusModule/src/Lib/AlertRuleValidationRules.php:89
 msgid "Longer as is out of bounds: [{0}]"
-msgstr ""
+msgstr "Дольше, чем вне границ: [{0}]"
 
 #: PrometheusModule/src/Lib/AlertRuleValidationRules.php:93
 #: PrometheusModule/src/Lib/AlertRuleValidationRules.php:103
 msgid "Operator as is out of bounds: [{0}]"
-msgstr ""
+msgstr "Оператор вне границ: [{0}]"
 
 #: PrometheusModule/src/Lib/ForLengths.php:16
 msgid "5 seconds"
-msgstr ""
+msgstr "5 секунд"
 
 #: PrometheusModule/src/Lib/ForLengths.php:17
 msgid "10 seconds"
-msgstr ""
+msgstr "10 секунд"
 
 #: PrometheusModule/src/Lib/ForLengths.php:18
 #: PrometheusModule/src/Lib/ScrapeIntervals.php:16
 msgid "15 seconds"
-msgstr ""
+msgstr "15 секунд"
 
 #: PrometheusModule/src/Lib/ForLengths.php:21
 #: PrometheusModule/src/Lib/ScrapeIntervals.php:19
 msgid "1 minute 30 seconds"
-msgstr ""
+msgstr "1 минута 30 секунд"
 
 #: PrometheusModule/src/Lib/ForLengths.php:23
 msgid "3 minutes"
-msgstr ""
+msgstr "3 минуты"
 
 #: PrometheusModule/src/Lib/ForLengths.php:24
 msgid "4 minutes"
-msgstr ""
+msgstr "4 минуты"
 
 #: PrometheusModule/src/Lib/ForLengths.php:28
 msgid "20 minutes"
-msgstr ""
+msgstr "20 минут"
 
 #: PrometheusModule/src/Lib/ForLengths.php:29
 msgid "25 minutes"
-msgstr ""
+msgstr "25 минут"
 
 #: PrometheusModule/src/Lib/ForLengths.php:31
 msgid "40 minutes"
-msgstr ""
+msgstr "40 минут"
 
 #: PrometheusModule/src/Lib/ForLengths.php:32
 msgid "50 minutes"
-msgstr ""
+msgstr "50 минут"
 
 #: PrometheusModule/src/Lib/ForLengths.php:34
 msgid "1 hour 30 minutes"
-msgstr ""
+msgstr "1 час 30 минут"
 
 #: PrometheusModule/src/Lib/ForLengths.php:36
 msgid "3 hours"
-msgstr ""
+msgstr "3 часа"
 
 #: PrometheusModule/src/Lib/ForLengths.php:38
 msgid "5 hours"
-msgstr ""
+msgstr "5 часов"
 
 #: PrometheusModule/src/Lib/ForLengths.php:39
 msgid "6 hours"
-msgstr ""
+msgstr "6 часов"
 
 #: PrometheusModule/src/Lib/ForLengths.php:40
 msgid "12 hours"
-msgstr ""
+msgstr "12 часов"
 
 #: PrometheusModule/src/Lib/ForLengths.php:41
 msgid "1 day"
-msgstr ""
+msgstr "1 день"
 
 #: PrometheusModule/src/Lib/Menu.php:25
 #: PrometheusModule/src/Lib/Menu.php:36
 #: PrometheusModule/src/Lib/Menu.php:46
 msgid "Prometheus"
-msgstr ""
+msgstr "Prometheus"
 
 #: PrometheusModule/src/Lib/Menu.php:30
 #: PrometheusModule/src/Lib/Menu.php:36
 msgid "Query"
-msgstr ""
+msgstr "Запрос"
 
 #: PrometheusModule/src/Model/Table/PrometheusExportersTable.php:166
 msgid "Scrape interval is out of bounds: [{0}]"
-msgstr ""
+msgstr "Интервал очистки выходит за пределы: [{0}]"
 
 #: PrometheusModule/src/Model/Table/PrometheusExportersTable.php:173
 msgid "Scrape timeout is out of bounds: [{0}]"
-msgstr ""
+msgstr "Превышено время ожидания очистки: [{0}]"
 
 #: PrometheusModule/src/Model/Table/PrometheusExportersTable.php:180
 msgid "This is not a valid YAML configuration."
-msgstr ""
+msgstr "Это недопустимая YAML конфигурация."
 
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:16
 #: PrometheusModule/templates/PrometheusExporters/add.php:17
@@ -20534,459 +20534,459 @@ msgstr ""
 #: PrometheusModule/templates/PrometheusQuery/index.php:16
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:18
 msgid "Prometheus Module"
-msgstr ""
+msgstr "Модуль Prometheus"
 
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:20
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:65
 #: PrometheusModule/templates/PrometheusQuery/index.php:63
 msgid "Alert rules"
-msgstr ""
+msgstr "Правила оповещения"
 
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:47
 msgid "Prometheus alert rules"
-msgstr ""
+msgstr "Prometheus правила оповещения"
 
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:48
 #: PrometheusModule/templates/PrometheusQuery/index.php:47
 msgid "of Host"
-msgstr ""
+msgstr "Узла"
 
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:57
 #: PrometheusModule/templates/PrometheusQuery/index.php:56
 msgid "Metrics"
-msgstr ""
+msgstr "Метрики"
 
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:111
 msgid "Filter by PromQL"
-msgstr ""
+msgstr "Фильтр по PromQL"
 
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:149
 msgid "PromQL"
-msgstr ""
+msgstr "PromQL"
 
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:153
 #: PrometheusModule/templates/PrometheusQuery/index.php:138
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:589
 msgid "Unit"
-msgstr ""
+msgstr "Единица"
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:22
 #: PrometheusModule/templates/PrometheusExporters/edit.php:22
 #: PrometheusModule/templates/PrometheusExporters/index.php:22
 msgid "Exporters Overview"
-msgstr ""
+msgstr "Обзор экспортеров"
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:35
 msgid "Create new exporter"
-msgstr ""
+msgstr "Создать новый экспортер"
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:48
 #: PrometheusModule/templates/PrometheusExporters/edit.php:49
 msgid "Exporter"
-msgstr ""
+msgstr "Экспортер"
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:87
 #: PrometheusModule/templates/PrometheusExporters/edit.php:88
 #: PrometheusModule/templates/PrometheusExporters/index.php:137
 msgid "Scrape interval"
-msgstr ""
+msgstr "Интервал очистки"
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:103
 #: PrometheusModule/templates/PrometheusExporters/edit.php:104
 msgid "How frequently Prometheus will request data from the exporter."
-msgstr ""
+msgstr "Как часто Prometheus будет запрашивать данные у экспортера."
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:109
 #: PrometheusModule/templates/PrometheusExporters/edit.php:110
 msgid "Scrape timeout"
-msgstr ""
+msgstr "Время ожидания"
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:125
 #: PrometheusModule/templates/PrometheusExporters/edit.php:126
 msgid "How long Prometheus will wait for an request to complete before it will timeout."
-msgstr ""
+msgstr "Как долго Prometheus будет ждать выполнения запроса до истечения времени ожидания."
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:143
 #: PrometheusModule/templates/PrometheusExporters/edit.php:144
 msgid "A one word description like \"os\", \"webserver\" or \"mysql\" to make Prometheus queries easier."
-msgstr ""
+msgstr "Описание в одно слово, такое как \"os\", \"webserver\" или \"mysql\", чтобы упростить запросы Prometheus."
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:149
 #: PrometheusModule/templates/PrometheusExporters/edit.php:150
 msgid "Metric path"
-msgstr ""
+msgstr "Метрический путь"
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:176
 #: PrometheusModule/templates/PrometheusExporters/edit.php:177
 msgid "The prometheus documentation provides a list of"
-msgstr ""
+msgstr "Prometheus Документация содержит список"
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:178
 #: PrometheusModule/templates/PrometheusExporters/edit.php:179
 msgid "default port allocations."
-msgstr ""
+msgstr "распределение портов по умолчанию."
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:185
 #: PrometheusModule/templates/PrometheusExporters/edit.php:186
 msgid "YAML config"
-msgstr ""
+msgstr "YAML конфигурация"
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:195
 #: PrometheusModule/templates/PrometheusExporters/edit.php:196
 msgid "Some exporters like the \"Blackbox exporter\" or \"SNMP exporter\" require a special YAML configuration. Deeper Prometheus knowledge is recommended."
-msgstr ""
+msgstr "Некоторым экспортерам, таким как \"Blackbox exporter\" или \"SNMP exporter\", требуется специальная конфигурация YAML. Более глубокие знания Prometheus рекомендуется."
 
 #: PrometheusModule/templates/PrometheusExporters/add.php:208
 msgid "Create exporter"
-msgstr ""
+msgstr "Создать экспортер"
 
 #: PrometheusModule/templates/PrometheusExporters/edit.php:35
 msgid "Edit exporter:"
-msgstr ""
+msgstr "Редактировать экспортер:"
 
 #: PrometheusModule/templates/PrometheusExporters/edit.php:205
 msgid "Update exporter"
-msgstr ""
+msgstr "Обновить экспортер"
 
 #: PrometheusModule/templates/PrometheusExporters/index.php:34
 msgid "Prometheus exporters"
-msgstr ""
+msgstr "Prometheus экспортеры"
 
 #: PrometheusModule/templates/PrometheusExporters/index.php:70
 msgid "Filter by exporter name"
-msgstr ""
+msgstr "Фильтр по имени экспортера"
 
 #: PrometheusModule/templates/PrometheusExporters/index.php:83
 msgid "Filter by exporter service"
-msgstr ""
+msgstr "Фильтр по службы экспортера"
 
 #: PrometheusModule/templates/PrometheusExporters/index.php:97
 msgid "Filter by scrape interval"
-msgstr ""
+msgstr "Фильтр по интервалу очистки"
 
 #: PrometheusModule/templates/PrometheusQuery/index.php:20
 msgid "Query Overview"
-msgstr ""
+msgstr "Обзор запросов"
 
 #: PrometheusModule/templates/PrometheusQuery/index.php:46
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:32
 msgid "Prometheus metrics"
-msgstr ""
+msgstr "Prometheus метрики"
 
 #: PrometheusModule/templates/PrometheusQuery/index.php:95
 msgid "Filter by metric name"
-msgstr ""
+msgstr "Фильтр по названию метрики"
 
 #: PrometheusModule/templates/PrometheusQuery/index.php:126
 msgid "Metric"
-msgstr ""
+msgstr "Метрика"
 
 #: PrometheusModule/templates/PrometheusQuery/index.php:130
 msgid "Help"
-msgstr ""
+msgstr "Помощь"
 
 #: PrometheusModule/templates/PrometheusQuery/index.php:266
 msgid "Create service from query"
-msgstr ""
+msgstr "Создать службу из запроса"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:22
 msgid "Add metric to monitoring"
-msgstr ""
+msgstr "Добавить метрику в мониторинг"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:40
 msgid "PromQL help"
-msgstr ""
+msgstr "PromQL помощь"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:50
 msgid "Selected metrics to use"
-msgstr ""
+msgstr "Выбранные метрики для использования"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:65
 msgid "Available metrics"
-msgstr ""
+msgstr "Доступные метрики"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:77
 msgid "Brackets"
-msgstr ""
+msgstr "Скобки"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:90
 msgid "Arithmetic binary operators"
-msgstr ""
+msgstr "Арифметические бинарные операторы"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:91
 msgid "addition"
-msgstr ""
+msgstr "прибавление"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:95
 msgid "subtraction"
-msgstr ""
+msgstr "вычитание"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:99
 msgid "multiplication"
-msgstr ""
+msgstr "умножение"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:103
 msgid "division"
-msgstr ""
+msgstr "деление"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:107
 msgid "modulo"
-msgstr ""
+msgstr "по модулю"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:112
 msgid "power/exponentiation"
-msgstr ""
+msgstr "мощность/возведение в степень"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:120
 msgid "Aggregation operators"
-msgstr ""
+msgstr "Операторы агрегации"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:122
 msgid "calculate sum over dimensions"
-msgstr ""
+msgstr "рассчитать сумму по размерам"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:127
 msgid "select minimum over dimensions"
-msgstr ""
+msgstr "выберите минимум по размерам"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:132
 msgid "select maximum over dimensions"
-msgstr ""
+msgstr "выбрать максимальный размер"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:137
 msgid "calculate the average over dimensions"
-msgstr ""
+msgstr "рассчитать среднее по размерам"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:142
 msgid "calculate population standard deviation over dimensions"
-msgstr ""
+msgstr "рассчитать стандартное отклонение популяции по размерам"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:147
 msgid "calculate population standard variance over dimensions"
-msgstr ""
+msgstr "рассчитать стандартную дисперсию населения по размерам"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:152
 msgid "count number of elements in the vector"
-msgstr ""
+msgstr "подсчитать количество элементов в векторе"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:157
 msgid "count number of elements with the same value"
-msgstr ""
+msgstr "подсчитать количество элементов с одинаковым значением"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:162
 msgid "smallest k elements by sample value"
-msgstr ""
+msgstr "наименьшее k элементов по выборке"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:167
 msgid "largest k elements by sample value"
-msgstr ""
+msgstr "наибольшие k элементов по выборке"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:172
 msgid "calculate φ-quantile (0 ≤ φ ≤ 1) over dimensions"
-msgstr ""
+msgstr "рассчитать φ-квантиль (0 ≤ φ ≤ 1) по размерам"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:190
 msgid "PromQL query"
-msgstr ""
+msgstr "PromQL-запрос"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:200
 msgid "Query area"
-msgstr ""
+msgstr "Область запросов"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:219
 msgid "Query result"
-msgstr ""
+msgstr "Результат запроса"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:224
 msgid "no data"
-msgstr ""
+msgstr "нет данных"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:237
 msgid "Service and alert definition"
-msgstr ""
+msgstr "Определение службы и оповещения"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:243
 msgid "Threshold type"
-msgstr ""
+msgstr "Тип предела"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:252
 msgid "Scalar"
-msgstr ""
+msgstr "Скаляр"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:253
 msgid "Range Inclusive (≥ 10 and ≤ 20 - inside the range of 10 to 20)"
-msgstr ""
+msgstr "Диапазон включительно (≥ 10 и ≤ 20 - в диапазоне от 10 до 20)"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:254
 msgid "Range Exclusive (< 10 or > 20 - outside the range of 10 to 20)"
-msgstr ""
+msgstr "Исключительный диапазон (<10 или> 20 - вне диапазона от 10 до 20)"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:285
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:397
 msgid "== (equal)"
-msgstr ""
+msgstr "== (равно)"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:286
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:398
 msgid "!= (not equal)"
-msgstr ""
+msgstr "!= (не равно)"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:287
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:399
 msgid "> (greater-than)"
-msgstr ""
+msgstr "> (больше чем)"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:288
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:400
 msgid "< (less-than)"
-msgstr ""
+msgstr "< (меньше чем)"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:289
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:401
 msgid ">= (greater-or-equal)"
-msgstr ""
+msgstr ">= (больше или равно)"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:290
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:402
 msgid "<= (less-or-equal)"
-msgstr ""
+msgstr "<= (меньше или равно)"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:308
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:420
 msgid "automatically"
-msgstr ""
+msgstr "автоматически"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:329
 msgid "Warning min"
-msgstr ""
+msgstr "Предупреждение мин"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:342
 msgid "Warning max"
-msgstr ""
+msgstr "Предупреждение макс"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:354
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:473
 msgid "Longer as..."
-msgstr ""
+msgstr "Дольше чем ..."
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:444
 msgid "Critical min"
-msgstr ""
+msgstr "Критический мин"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:459
 msgid "Critical max"
-msgstr ""
+msgstr "Критический макс"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:540
 msgid "Metric unit"
-msgstr ""
+msgstr "Метрическая единица"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:555
 msgid "Unit of the metric."
-msgstr ""
+msgstr "Единица измерения метрики."
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:557
 msgid "Examples:"
-msgstr ""
+msgstr "Примеры:"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:559
 msgid "\"b\" for bytes."
-msgstr ""
+msgstr "\"b\" для байтов."
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:560
 msgid "\"KB\" for kilobytes."
-msgstr ""
+msgstr "\"KB\" за килобайт."
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:561
 msgid "\"s\" for seconds."
-msgstr ""
+msgstr "\"s\" в секундах."
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:562
 msgid "\"Mbps\" or \"Mbit/s\""
-msgstr ""
+msgstr "\"Mbps\" или \"Mbit/s\""
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:563
 msgid "\"MB/s\" for megabytes per second"
-msgstr ""
+msgstr "\"MB/s\" за мегабайт в секунду"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:571
 msgid "Add to service"
-msgstr ""
+msgstr "Добавить к службе"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:588
 msgid "PromQL Query"
-msgstr ""
+msgstr "PromQL Запрос"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:594
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:628
 msgid "Remove"
-msgstr ""
+msgstr "Удалить"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:641
 msgid "Create services"
-msgstr ""
+msgstr "Создать службы"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:655
 msgid "Current values"
-msgstr ""
+msgstr "Текущие значения"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:659
 msgid "Element"
-msgstr ""
+msgstr "Элемент"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:694
 msgid "PromQL help and example queries"
-msgstr ""
+msgstr "PromQL помощь и примеры запросов"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:704
 msgid "Current memory usage in percent"
-msgstr ""
+msgstr "Текущее использование памяти в процентах"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:714
 msgid "Average MB/s network traffic (transmit) over the last 2 minutes"
-msgstr ""
+msgstr "Средний сетевой трафик (передача) МБ/с за последние 2 минуты"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:724
 msgid "Average Mbit/s network traffic (transmit) over the last 2 minutes"
-msgstr ""
+msgstr "Средний сетевой трафик Мбит/с (передача) за последние 2 минуты"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:734
 msgid "Average Mbit/s network traffic (transmit) of all network interfaces over the last 2 minutes"
-msgstr ""
+msgstr "редний сетевой трафик Мбит/с (передача) всех сетевых интерфейсов за последние 2 минуты"
 
 #: PrometheusModule/templates/PrometheusQuery/to_service.php:744
 msgid "Average MB/s written to disk sda over the last 2 minutes"
-msgstr ""
+msgstr "Среднее МБ/с, записанное на диск sda за последние 2 минуты"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:9
 #: ServicenowModule/templates/Elements/service_configuration.php:9
 msgid "Incident overview"
-msgstr ""
+msgstr "Обзор инцидентов"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:15
 #: ServicenowModule/templates/Elements/service_configuration.php:15
 msgid "Number"
-msgstr ""
+msgstr "Число"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:23
 #: ServicenowModule/templates/Elements/service_configuration.php:23
 msgid "Resolution code"
-msgstr ""
+msgstr "Код разрешения"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:27
 #: ServicenowModule/templates/Elements/service_configuration.php:27
 msgid "Resolution notes"
-msgstr ""
+msgstr "Разрешение заметки"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:44
 msgid "Edit Host-Specific Settings"
-msgstr ""
+msgstr "Изменить настройки для конкретного узла"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:53
 #: ServicenowModule/templates/Elements/service_configuration.php:53
 #: ServicenowModule/templates/ServicenowEdit/index.php:107
 msgid "Incident Impact"
-msgstr ""
+msgstr "Влияние инцидента"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:62
 #: ServicenowModule/templates/Elements/host_configuration.php:89
@@ -20995,7 +20995,7 @@ msgstr ""
 #: ServicenowModule/templates/ServicenowEdit/index.php:116
 #: ServicenowModule/templates/ServicenowEdit/index.php:144
 msgid "1 - High"
-msgstr ""
+msgstr "1 - Высокий"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:63
 #: ServicenowModule/templates/Elements/host_configuration.php:90
@@ -21004,7 +21004,7 @@ msgstr ""
 #: ServicenowModule/templates/ServicenowEdit/index.php:117
 #: ServicenowModule/templates/ServicenowEdit/index.php:145
 msgid "2 - Medium"
-msgstr ""
+msgstr "2 - Средний"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:64
 #: ServicenowModule/templates/Elements/host_configuration.php:91
@@ -21013,13 +21013,13 @@ msgstr ""
 #: ServicenowModule/templates/ServicenowEdit/index.php:118
 #: ServicenowModule/templates/ServicenowEdit/index.php:146
 msgid "3 - Low"
-msgstr ""
+msgstr "3 - Низкий"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:70
 #: ServicenowModule/templates/Elements/service_configuration.php:70
 #: ServicenowModule/templates/ServicenowEdit/index.php:124
 msgid "Impact defines the effect that the task has on business<br>Including urgency used for priority calculating"
-msgstr ""
+msgstr "Влияние определяет эффект, которое задача оказывает на бизнес<br>. Включая срочность, используемую для расчета очередности."
 
 #: ServicenowModule/templates/Elements/host_configuration.php:72
 #: ServicenowModule/templates/Elements/host_configuration.php:99
@@ -21028,286 +21028,286 @@ msgstr ""
 #: ServicenowModule/templates/ServicenowEdit/index.php:126
 #: ServicenowModule/templates/ServicenowEdit/index.php:154
 msgid "(More information)"
-msgstr ""
+msgstr "(Больше информации)"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:80
 #: ServicenowModule/templates/Elements/service_configuration.php:80
 #: ServicenowModule/templates/ServicenowEdit/index.php:135
 msgid "Incident Urgency"
-msgstr ""
+msgstr "Срочность инцидента"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:97
 #: ServicenowModule/templates/Elements/service_configuration.php:97
 #: ServicenowModule/templates/ServicenowEdit/index.php:152
 msgid "Urgency defines the extent to which the task resolution can be delayed<br>Including impact used for priority calculating"
-msgstr ""
+msgstr "Срочность определяет степень, в которой решение задачи может быть отложено<br>Включая влияние, используемое для расчета очередности"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:107
 #: ServicenowModule/templates/Elements/service_configuration.php:107
 #: ServicenowModule/templates/ServicenowEdit/index.php:188
 msgid "Assignment Group"
-msgstr ""
+msgstr "Назначение группы"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:119
 #: ServicenowModule/templates/Elements/service_configuration.php:119
 #: ServicenowModule/templates/ServicenowEdit/index.php:200
 msgid "ServiceNow Incident Assignment Group"
-msgstr ""
+msgstr "Группа по назначению инцидентов ServiceNow"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:126
 #: ServicenowModule/templates/Elements/service_configuration.php:126
 #: ServicenowModule/templates/ServicenowEdit/index.php:207
 msgid "Assigned To"
-msgstr ""
+msgstr "Назначено"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:138
 #: ServicenowModule/templates/Elements/service_configuration.php:138
 #: ServicenowModule/templates/ServicenowEdit/index.php:219
 msgid "ServiceNow Incident Assigned To (automatically sets status to \"In progress\")"
-msgstr ""
+msgstr "ServiceNow Инцидент назначен (автоматически устанавливает статус на \"In progress\")"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:145
 #: ServicenowModule/templates/Elements/service_configuration.php:145
 #: ServicenowModule/templates/ServicenowEdit/index.php:227
 msgid "Business Service"
-msgstr ""
+msgstr "Бизнес Служба"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:157
 #: ServicenowModule/templates/Elements/service_configuration.php:157
 #: ServicenowModule/templates/ServicenowEdit/index.php:238
 msgid "ServiceNow Incident Business Service"
-msgstr ""
+msgstr "ServiceNow Инцидент Бизнес Служба"
 
 #: ServicenowModule/templates/Elements/host_configuration.php:175
 #: ServicenowModule/templates/Elements/service_configuration.php:175
 msgid "No edit permissions"
-msgstr ""
+msgstr "Нет прав на редактирование"
 
 #: ServicenowModule/templates/Elements/service_configuration.php:44
 msgid "Edit Service-Specific Settings"
-msgstr ""
+msgstr "Изменить специфичные для службы настройки"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:15
 msgid "ServiceNow Module"
-msgstr ""
+msgstr "Модуль ServiceNow"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:19
 msgid "ServiceNow Settings"
-msgstr ""
+msgstr "Настройки ServiceNow"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:33
 msgid "Edit ServiceNow Settings"
-msgstr ""
+msgstr "Изменить настройки ServiceNow"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:44
 msgid "ServiceNow URL"
-msgstr ""
+msgstr "ServiceNow URL"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:57
 msgid "URL to your ServiceNow Instance"
-msgstr ""
+msgstr "URL-адрес вашего экземпляра ServiceNow"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:65
 msgid "User ID"
-msgstr ""
+msgstr "ID пользователя"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:78
 msgid "ServiceNow User ID"
-msgstr ""
+msgstr "ServiceNow ID пользователя"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:86
 msgid "User Password"
-msgstr ""
+msgstr "Пользовательский пароль"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:99
 msgid "ServiceNow User Password"
-msgstr ""
+msgstr "ServiceNow Пользовательский пароль"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:163
 msgid "Incident recovery state"
-msgstr ""
+msgstr "Состояние восстановления инцидента"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:172
 msgid "Resolved"
-msgstr ""
+msgstr "Исправлен"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:173
 msgid "Closed"
-msgstr ""
+msgstr "Закрыт"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:174
 msgid "Canceled"
-msgstr ""
+msgstr "Отменен"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:180
 msgid "Incident state on host / service recovery"
-msgstr ""
+msgstr "Состояние инцидента при восстановлении узла / службы"
 
 #: ServicenowModule/templates/ServicenowEdit/index.php:253
 msgid "Via the Two-Way Integration ServiceNow is able, to acknowledge host and service problems."
-msgstr ""
+msgstr "С помощью двусторонней интеграции ServiceNow может распознавать проблемы узлов и служб."
 
 #: SlackModule/src/Lib/Menu.php:46
 msgid "Slack"
-msgstr ""
+msgstr "Slack"
 
 #: SlackModule/templates/SlackSettings/index.php:15
 msgid "Slack Module"
-msgstr ""
+msgstr "Slack Модуль"
 
 #: SlackModule/templates/SlackSettings/index.php:19
 msgid "Slack Settings"
-msgstr ""
+msgstr "Настройки Slack"
 
 #: SlackModule/templates/SlackSettings/index.php:33
 msgid "Edit Slack Settings"
-msgstr ""
+msgstr "Изменить настройки Slack"
 
 #: SlackModule/templates/SlackSettings/index.php:57
 msgid "Incoming Webhook URL you got from Slack after you enable incoming webhooks."
-msgstr ""
+msgstr "URL входящего Webhook, который вы получили от Slack после включения входящих webhooks."
 
 #: SlackModule/templates/SlackSettings/index.php:64
 msgid "OAuth Access Token"
-msgstr ""
+msgstr "Токен доступа OAuth"
 
 #: SlackModule/templates/SlackSettings/index.php:76
 msgid "OAuth Access Token for your Slack Workspace (required for two-way integration)"
-msgstr ""
+msgstr "OAuth Access Token для вашего Slack Workspace (необходим для двусторонней интеграции)"
 
 #: SlackModule/templates/SlackSettings/index.php:90
 msgid "Via the Two-Way Integration Slack is able, to acknowledge host and service problems."
-msgstr ""
+msgstr "Посредством двусторонней интеграции Slack может распознавать проблемы узлов и сервисов."
 
 #: SlackModule/templates/SlackSettings/index.php:99
 msgid "Request URL"
-msgstr ""
+msgstr "URL запроса"
 
 #: SlackModule/templates/SlackSettings/index.php:112
 msgid "Webhook URL for Slack. You need to create an openITCOCKPIT user defined API key first."
-msgstr ""
+msgstr "Webhook URL для Slack. Сначала необходимо создать определенный пользователем ключ API openITCOCKPIT."
 
 #: SlackModule/templates/SlackSettings/index.php:115
 msgid "If you want to use the two-way integration, your openITCOCKPIT server requires a valid SSL certificate, as described in the "
-msgstr ""
+msgstr "Если вы хотите использовать двустороннюю интеграцию, ваш сервер openITCOCKPIT требует действительный сертификат SSL, как описано в "
 
 #: SlackModule/templates/SlackSettings/index.php:115
 msgid "Slack FAQ"
-msgstr ""
+msgstr "Slack FAQ"
 
 #: SnmpTrapModule/src/Controller/SnmpttListController.php:69
 msgid "Snmptt entry not found"
-msgstr ""
+msgstr "Snmptt запись не найдена"
 
 #: SnmpTrapModule/src/Lib/Menu.php:27
 msgid "Snmp Trap Logs"
-msgstr ""
+msgstr "Snmp Trap Журналы"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:33
 msgid "Snmp Trap Module"
-msgstr ""
+msgstr "Модуль Snmp Trap"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:37
 msgid "SnmpttList"
-msgstr ""
+msgstr "SnmpttList"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:53
 msgid "Snmp trap logs"
-msgstr ""
+msgstr "Snmp trap журналы"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:82
 #: SnmpTrapModule/templates/SnmpttList/index.php:179
 msgid "Event name"
-msgstr ""
+msgstr "Название события"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:95
 #: SnmpTrapModule/templates/SnmpttList/index.php:187
 msgid "Event ID"
-msgstr ""
+msgstr "ID события"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:109
 #: SnmpTrapModule/templates/SnmpttList/index.php:191
 msgid "Trap OID"
-msgstr ""
+msgstr "Trap OID"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:122
 #: SnmpTrapModule/templates/SnmpttList/index.php:199
 msgid "Format line"
-msgstr ""
+msgstr "Строка формата"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:149
 #: SnmpTrapModule/templates/SnmpttList/index.php:195
 msgid "Agent IP"
-msgstr ""
+msgstr "IP агента"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:175
 msgid "Severity"
-msgstr ""
+msgstr "Значимость"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:91
 msgid "Welcome to the Template Export Shell."
-msgstr ""
+msgstr "Добро пожаловать в оболочку экспорта шаблонов."
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:92
 msgid "I will give you all the necessary data to get a valid file which can be imported in openITCOCKPIT to have awesome new monitoring possibilities :)"
-msgstr ""
+msgstr "Я дам вам все необходимые данные, чтобы получить действительный файл, который можно импортировать в openITCOCKPIT, чтобы иметь потрясающие новые возможности мониторинга :)"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:93
 msgid "Now please answer a few questions: "
-msgstr ""
+msgstr "еперь, пожалуйста, ответьте на несколько вопросов:"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:96
 msgid "Would you like to export Hosttemplate data ?"
-msgstr ""
+msgstr "Вы хотите экспортировать данные шаблона узлов ?"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:100
 msgid "Please enter the Hosttemplate wildcard in SQL Format (%sap% or something like that"
-msgstr ""
+msgstr "Пожалуйста, введите wildcard шаблона узла в формате SQL (% sap% или что-то подобное"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:101
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:114
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:124
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:140
 msgid "Do you want to add additional Filters ?"
-msgstr ""
+msgstr "Хотите добавить дополнительные фильтры?"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:109
 msgid "Would you like to export Servicetemplate data ?"
-msgstr ""
+msgstr "Вы хотите экспортировать данные шаблона служб ?"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:113
 msgid "Please enter the Servicetemplate wildcard in SQL Format (%sap% or something like that"
-msgstr ""
+msgstr "Пожалуйста, введите wildcard шаблона служб в формате SQL (% sap% или что-то подобное"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:119
 msgid "Would you like to export Servicetemplategroup data too ?"
-msgstr ""
+msgstr "Вы тоже хотите экспортировать данные группы шаблонов служб ?"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:123
 msgid "Please enter the Servicetemplategroup wildcard in SQL Format (%sap% or something like that"
-msgstr ""
+msgstr "Пожалуйста, введите wildcard группы шаблонов служб в формате SQL (% sap% или что-то подобное"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:135
 msgid "Would you like to export Macro data ?"
-msgstr ""
+msgstr "Хотите экспортировать данные макроса ?"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:139
 msgid "Please enter the Macro wildcard in SQL Format (%sap% or something like that"
-msgstr ""
+msgstr "Пожалуйста, введите подстановочный знак макроса в формате SQL (% sap% или что-то в этом роде"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:164
 msgid "You want to do nothing ? Okay bye bye :) "
-msgstr ""
+msgstr "Вы хотите ничего не делать? Хорошо пока :)"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:172
 msgid "No filters given"
-msgstr ""
+msgstr "Нет фильтров"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:183
 msgid "Retrieving commands"
-msgstr ""
+msgstr "Получение команд"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:186
 msgid "Replacing Ids"
-msgstr ""
+msgstr "Замена идентификаторов"
 
