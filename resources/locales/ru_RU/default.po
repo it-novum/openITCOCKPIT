@@ -19072,7 +19072,7 @@ msgid "Execute remote discovery"
 msgstr ""
 
 #: CheckmkModule/src/Controller/ScansController.php:79
-msgid "No MKChecks defined! Check_MK will not work."
+msgid "No MKChecks defined! Checkmk will not work."
 msgstr ""
 
 #: CheckmkModule/src/Controller/ScansController.php:171
