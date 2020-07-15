@@ -23,7 +23,7 @@ openITCOCKPIT is an Open Source system monitoring tool built for different monit
 
 So easy that everyone can use it: create your entire monitoring configuration with a few clicks due to our smart interface written in PHP
 
-![openITCOCKPIT](screenshots/openITC_3.7.1.png?raw=true "openITCOCKPIT")
+![openITCOCKPIT](screenshots/dashboard_v4.png?raw=true "openITCOCKPIT")
 
 # Demo
 Play around with our [Demo](https://demo.openitcockpit.io/) system. Its equipped with the majority of modules that you will get with the community license
@@ -101,11 +101,9 @@ After successful registration you can install the free community modules at Syst
 
 # Screenshots
 
-![openITCOCKPIT](screenshots/timeline_oitc.png?raw=true "Timeline")
+![openITCOCKPIT](screenshots/timeline.png?raw=true "Timeline")
 
-![openITCOCKPIT](screenshots/map1.png?raw=true "Maps")
-
-![openITCOCKPIT](screenshots/map2.png?raw=true "Maps")
+![openITCOCKPIT](screenshots/mapmodule.png?raw=true "Maps")
 
 ![openITCOCKPIT](screenshots/event_correlation.png?raw=true "Event correlation")
 
