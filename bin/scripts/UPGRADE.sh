@@ -332,6 +332,9 @@ mysql --defaults-extra-file=${INIFILE} -e "TRUNCATE TABLE changelogs;"
 mysql --defaults-extra-file=${INIFILE} -e "TRUNCATE TABLE changelogs_to_containers;"
 
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = REPLACE(command_line, '/usr/share/openitcockpit/app/Console/cake', '/opt/openitc/frontend/bin/cake');"
+#Replace EVC command with missing quotes
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = REPLACE(command_line, 'EventcorrelationModule.evc_plugin \$HOSTNAME\$', 'EventcorrelationModule.evc_plugin --uuid \"\$HOSTNAME\$\"');"
+#Replace EVC command with surrounding quotes
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = REPLACE(command_line, 'EventcorrelationModule.evc_plugin \"\$HOSTNAME\$\"', 'EventcorrelationModule.evc_plugin --uuid \"\$HOSTNAME\$\"');"
 
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-', 'fas fa-');"
@@ -444,6 +447,15 @@ chmod 777 /opt/openitc/frontend/tmp
 mkdir -p /opt/openitc/frontend/tmp/nagios
 chown nagios:nagios /opt/openitc/frontend/tmp/nagios
 
+# Set filesystem permissions after all is done - again
+chown www-data:www-data /opt/openitc/logs/frontend
+oitc rights
+chown nagios:nagios /opt/openitc/logs/frontend/nagios
+chown www-data:www-data /opt/openitc/frontend/
+chmod 775 /opt/openitc/logs/frontend
+chmod 775 /opt/openitc/logs/frontend/nagios
+chown www-data:www-data /opt/openitc/frontend/tmp
+chown nagios:nagios /opt/openitc/frontend/tmp/nagios
 
 echo ""
 echo ""
