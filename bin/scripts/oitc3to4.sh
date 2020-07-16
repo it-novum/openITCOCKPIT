@@ -31,6 +31,9 @@ Red=$'\e[1;31m'
 Green=$'\e[1;32m'
 Yellow=$'\e[1;33m'
 Blue=$'\e[1;34m'
+Cyan=$'\e[1;96m'
+BgBlack=$'\e[40m';
+Reset=$'\e[0m';
 
 isAptWorking=0
 satellitesCount=0
@@ -51,6 +54,8 @@ if [[ ! -f "$v3MysqlIni" && $testing == 0 ]]; then
 fi
 
 MYSQL_DATABASE=$(php -r "echo parse_ini_file('/etc/openitcockpit/mysql.cnf')['database'];")
+
+LICENSE=$(mysql "--defaults-extra-file=$v3MysqlIni" -e "SELECT license FROM registers LIMIT 1;" -B -s 2>/dev/null)
 
 debug_log(){
     if [ $enableLog == 1 ]; then
@@ -77,7 +82,7 @@ print_results(){
         echo "${Red}${errorSign} ${msg}" | tr '___' ' '
     done
 
-    echo -e "\n${Green}Oks: $okCount | ${Blue}Hints: $hintCount | ${Yellow}Warnings: $warningCount | ${Red}Errors: $errorCount"
+    echo -e "\n${Green}Oks: $okCount | ${Blue}Hints: $hintCount | ${BgBlack}${Yellow}Warnings: ${warningCount}${Reset} | ${Red}Errors: $errorCount"
 }
 
 get_configured_satellites(){
@@ -326,7 +331,7 @@ if [ "$VERSION_CODENAME" == "stretch" ]; then
         always="$always mariadb-server-10.3 mariadb-client-10.3 mariadb-client-core-10.3 mariadb-server-core-10.3"
     fi
 
-    echo "${Yellow}"
+    echo "${BgBlack}${Cyan}"
     echo "###############################################################################"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "We recommend a combined distribution and openITCOCKPIT upgrade"
@@ -334,14 +339,26 @@ if [ "$VERSION_CODENAME" == "stretch" ]; then
     echo ""
     echo "# Update sources.list to Debian 10"
     echo "sed -i 's/stretch/buster/g' /etc/apt/sources.list"
+    echo ""
     echo "# Add openITCOCKPIT 4 sources"
-    echo "echo 'deb https://packages.openitcockpit.io/openitcockpit/buster/stable buster main' > /etc/apt/sources.list.d/openitcockpit.list"
+
+    if [ -z "$LICENSE" ] ; then
+        echo "echo 'deb https://packages.openitcockpit.io/openitcockpit/buster/stable buster main' > /etc/apt/sources.list.d/openitcockpit.list"
+    else
+        echo "mkdir -p /etc/apt/auth.conf.d"
+        echo "echo 'machine packages.openitcockpit.io login secret password ${LICENSE}' > /etc/apt/auth.conf.d/openitcockpit.conf"
+
+        echo "echo 'deb https://packages.openitcockpit.io/openitcockpit/buster/stable buster main' > /etc/apt/sources.list.d/openitcockpit.list"
+    fi
+
     echo "curl https://packages.openitcockpit.io/repokey.txt | apt-key add -"
+    echo ""
     echo "# Upgrade the distribution and openITCOCKPIT"
     echo "apt-get update"
     echo "apt-get dist-upgrade $php_upd $openitcockpit_upd $openitcockpit_rem $always"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "###############################################################################"
+    echo "${Reset}"
 fi
 
 if [ "$VERSION_CODENAME" == "xenial" ]; then
@@ -355,7 +372,7 @@ if [ "$VERSION_CODENAME" == "xenial" ]; then
         always="$always openitcockpit-nsta"
     fi
 
-    echo "${Yellow}"
+    echo "${BgBlack}${Cyan}"
     echo "###############################################################################"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "We recommend a combined distribution and openITCOCKPIT upgrade"
@@ -363,14 +380,26 @@ if [ "$VERSION_CODENAME" == "xenial" ]; then
     echo ""
     echo "# Update sources.list to Ubuntu 18.04"
     echo "sed -i 's/xenial/bionic/g' /etc/apt/sources.list"
+    echo ""
     echo "# Add openITCOCKPIT 4 sources"
-    echo "echo 'deb https://packages.openitcockpit.io/openitcockpit/bionic/stable bionic main' > /etc/apt/sources.list.d/openitcockpit.list"
+
+    if [ -z "$LICENSE" ] ; then
+        echo "echo 'deb https://packages.openitcockpit.io/openitcockpit/bionic/stable bionic main' > /etc/apt/sources.list.d/openitcockpit.list"
+    else
+        echo "mkdir -p /etc/apt/auth.conf.d"
+        echo "echo 'machine packages.openitcockpit.io login secret password ${LICENSE}' > /etc/apt/auth.conf.d/openitcockpit.conf"
+
+        echo "echo 'deb https://packages.openitcockpit.io/openitcockpit/bionic/stable bionic main' > /etc/apt/sources.list.d/openitcockpit.list"
+    fi
+
     echo "curl https://packages.openitcockpit.io/repokey.txt | apt-key add -"
+    echo ""
     echo "# Upgrade the distribution and openITCOCKPIT"
     echo "apt-get update"
     echo "apt-get dist-upgrade $php_upd $openitcockpit_upd $openitcockpit_rem $always"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "###############################################################################"
+    echo "${Reset}"
 fi
 
 if [ "$VERSION_CODENAME" == "bionic" ]; then
@@ -383,19 +412,30 @@ if [ "$VERSION_CODENAME" == "bionic" ]; then
         always="$always openitcockpit-nsta"
     fi
 
-    echo "${Yellow}"
+    echo "${BgBlack}${Cyan}"
     echo "###############################################################################"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "You can run the upgrade with the following commands:"
     echo ""
     echo "# Add openITCOCKPIT 4 sources"
-    echo "echo 'deb https://packages.openitcockpit.io/openitcockpit/bionic/stable bionic main' > /etc/apt/sources.list.d/openitcockpit.list"
+
+    if [ -z "$LICENSE" ] ; then
+        echo "echo 'deb https://packages.openitcockpit.io/openitcockpit/bionic/stable bionic main' > /etc/apt/sources.list.d/openitcockpit.list"
+    else
+        echo "mkdir -p /etc/apt/auth.conf.d"
+        echo "echo 'machine packages.openitcockpit.io login secret password ${LICENSE}' > /etc/apt/auth.conf.d/openitcockpit.conf"
+
+        echo "echo 'deb https://packages.openitcockpit.io/openitcockpit/bionic/stable bionic main' > /etc/apt/sources.list.d/openitcockpit.list"
+    fi
+
     echo "curl https://packages.openitcockpit.io/repokey.txt | apt-key add -"
+    echo ""
     echo "# Upgrade the distribution and openITCOCKPIT"
     echo "apt-get update"
     echo "apt-get dist-upgrade $openitcockpit_upd $openitcockpit_rem $always"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "###############################################################################"
+    echo "${Reset}"
 fi
 
 tput sgr0
