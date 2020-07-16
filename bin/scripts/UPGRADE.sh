@@ -40,6 +40,12 @@ cp ${APPDIR}/system/nginx/ssl_cert.conf /etc/nginx/openitc/ssl_cert.conf
 echo "# This file will NOT be overwritten during an update" >> /etc/nginx/openitc/custom.conf
 chmod +x /usr/bin/oitc
 
+echo "Delete all tmp files"
+rm -rf /opt/openitc/frontend/tmp
+mkdir -p /opt/openitc/frontend/tmp
+chown www-data:www-data /opt/openitc/frontend/tmp
+chmod 777 /opt/openitc/frontend/tmp
+
 echo "Create required system folders"
 mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,nsta,statusengine} /opt/openitc/etc/statusengine/Config
 
@@ -165,6 +171,12 @@ for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do
 
     fi
 done
+
+echo "Delete all tmp files"
+rm -rf /opt/openitc/frontend/tmp
+mkdir -p /opt/openitc/frontend/tmp
+chown www-data:www-data /opt/openitc/frontend/tmp
+chmod 777 /opt/openitc/frontend/tmp
 
 echo "---------------------------------------------------------------"
 echo "Create new WebSocket Key"
@@ -357,7 +369,6 @@ mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TA
     mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4;"
 done
 
-#oitc setup
 
 oitc nagios_export
 
@@ -424,6 +435,15 @@ rsync -ahP /var/lib/openitcockpit "${BACKUP_BASEDIR}/var/lib"
 rm -rf /usr/share/openitcockpit
 rm -rf /etc/openitcockpit
 rm -rf /var/lib/openitcockpit
+
+echo "Delete all tmp files"
+rm -rf /opt/openitc/frontend/tmp
+mkdir -p /opt/openitc/frontend/tmp
+chown www-data:www-data /opt/openitc/frontend/tmp
+chmod 777 /opt/openitc/frontend/tmp
+mkdir -p /opt/openitc/frontend/tmp/nagios
+chown nagios:nagios /opt/openitc/frontend/tmp/nagios
+
 
 echo ""
 echo ""
