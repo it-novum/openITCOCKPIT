@@ -10,7 +10,14 @@ This is the **BETA VERSION** of openITCOCKPIT 4. [Click here](https://github.com
 [![Chat on Matrix](https://img.shields.io/badge/style-matrix-blue.svg?style=flat&label=chat)](https://riot.im/app/#/room/#openitcockpit:matrix.org)
 [![IRC: #openitcockpit on chat.freenode.net](https://img.shields.io/badge/%23openitcockpit-freenode-blue.svg)](https://kiwiirc.com/client/chat.freenode.net/#openitcockpit)
 
+openITCOCKPIT 4.x 
+| Distribution | Stable                                                                                                      | Nightly                                                                                                      |
+|--------------|-------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| Focal       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-focal-stable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-focal&style=flat-square)  |
+| Bionic       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-bionic-stable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-bionic&style=flat-square)  |
+| Buster      | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-buster-stable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages-buster&style=flat-square) |
 
+openITCOCKPIT 3.x 
 | Distribution | Stable                                                                                                      | Nightly                                                                                                      |
 |--------------|-------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
 | Bionic       | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=bionic-openitcockpit-stable&style=flat-square)  | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=bionic-openitcockpit-nightly&style=flat-square)  |
@@ -23,7 +30,7 @@ openITCOCKPIT is an Open Source system monitoring tool built for different monit
 
 So easy that everyone can use it: create your entire monitoring configuration with a few clicks due to our smart interface written in PHP
 
-![openITCOCKPIT](screenshots/openITC_3.7.1.png?raw=true "openITCOCKPIT")
+![openITCOCKPIT](screenshots/dashboard_v4.png?raw=true "openITCOCKPIT")
 
 # Demo
 Play around with our [Demo](https://demo.openitcockpit.io/) system. Its equipped with the majority of modules that you will get with the community license
@@ -101,11 +108,9 @@ After successful registration you can install the free community modules at Syst
 
 # Screenshots
 
-![openITCOCKPIT](screenshots/timeline_oitc.png?raw=true "Timeline")
+![openITCOCKPIT](screenshots/timeline.png?raw=true "Timeline")
 
-![openITCOCKPIT](screenshots/map1.png?raw=true "Maps")
-
-![openITCOCKPIT](screenshots/map2.png?raw=true "Maps")
+![openITCOCKPIT](screenshots/mapmodule.png?raw=true "Maps")
 
 ![openITCOCKPIT](screenshots/event_correlation.png?raw=true "Event correlation")
 
