@@ -321,6 +321,12 @@ fi
 
 print_results
 
+echo "${BgBlack}${Yellow}"
+echo "#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "# Please ensure that you have a valid backup of the system BEFORE your continue!"
+echo "${Reset}"
+echo ""
+
 if [ "$VERSION_CODENAME" == "stretch" ]; then
 
     openitcockpit_upd=$(apt-mark showmanual | grep openitcockpit | grep -v -e openitcockpit-message -e openitcockpit-statusengine-naemon -e openitcockpit-module-nrpe -e openitcockpit-module-mk | xargs echo)
