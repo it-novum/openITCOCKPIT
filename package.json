@@ -48,7 +48,8 @@
         "underscore": "^1.9.1",
         "vis-data": "^6.6.1",
         "vis-network": "^7.8.0",
-        "vis-timeline": "^7.3.7"
+        "vis-timeline": "^7.3.7",
+        "force-graph": "^1.32.2"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
