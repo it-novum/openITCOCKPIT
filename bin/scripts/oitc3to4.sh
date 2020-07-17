@@ -191,8 +191,13 @@ check_mysql_version(){
         mysqlVersion=$(echo $mysqlVersion | cut -c1-3);
 
         if [[ "$mysqlVersion" -lt "103" ]]; then
-          errors+=($(echo "openITCOCKPIT Version 4 requires at least MariaDB version 10.3" | tr ' ' '___'))
-          ((errorCount++))
+          if [ "$VERSION_CODENAME" == "stretch" ]; then
+            oks+=($(echo "Your version of MariaDB gets upgraded by the upgrade from Debian Stretch to Debian Buster" | tr ' ' '___'))
+            ((okCount++))
+          else
+            errors+=($(echo "openITCOCKPIT Version 4 requires at least MariaDB version 10.3" | tr ' ' '___'))
+            ((errorCount++))
+          fi
         else
           oks+=($(echo "MariaDB Version >= 10.3" | tr ' ' '___'))
           ((okCount++))
