@@ -1442,7 +1442,14 @@ class Update3To4Command extends Command {
             'tableName'    => $targetTable
         ]);
         $partitionsInStatusengineSchema = $query->fetchAll('assoc');
-        $partitionsInStatusengineSchemaNames = Hash::extract($partitionsInStatusengineSchema, '{n}.PARTITION_NAME');
+
+        //MySQL 5.x
+        $partitionsInStatusengineSchemaNames = Hash::extract($partitionsInStatusengineSchema, '{n}.partition_name');
+
+        //MySQL 8.x
+        if (isset($partitionsInStatusengineSchema['0']['PARTITION_NAME'])) {
+            $partitionsInStatusengineSchemaNames = Hash::extract($partitionsInStatusengineSchema, '{n}.PARTITION_NAME');
+        }
 
         foreach ($partitionsInNdoSchema as $ndoPartition) {
             if ($ndoPartition['PARTITION_NAME'] === 'p_max') {
