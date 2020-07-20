@@ -179,7 +179,7 @@ class ContainerNestedSet {
             return null;
         }
 
-        return '/' . implode($names, $delimiter);
+        return '/' . implode($delimiter, $names);
     }
 
     /**
