@@ -362,6 +362,8 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                 <div class="row padding-top-5">
                     <div class="col-lg-12">
                         <div class="bg-color-black txt-color-white code-font padding-7">
+                            sudo apt-get update && apt-get dist-upgrade
+                            <br>
                             sudo apt-get install <span ng-bind-html="getCliCommand() | trustAsHtml"></span>
                             \ <br>
                             && echo "#########################################" \ <br>
