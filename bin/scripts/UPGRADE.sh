@@ -362,6 +362,8 @@ oitc update3_to4 --migrate-statehistory
 oitc update3_to4 --migrate-acknowledgements
 oitc update3_to4 --migrate-downtimes
 
+oitc update3_to4 --migrate-satellites
+
 echo "---------------------------------------------------------------"
 echo "Convert MySQL Tables from utf8_swedish_ci to utf8mb4_general_ci..."
 

@@ -42,6 +42,7 @@ use Cake\Mailer\Mailer;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use DistributeModule\Model\Entity\Satellite;
 use EventcorrelationModule\Model\Table\EventcorrelationSettingsTable;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -147,6 +148,12 @@ class Update3To4Command extends Command {
             'default' => false
         ]);
 
+        $parser->addOption('migrate-satellites', [
+            'help'    => __('Migrate the SSH configuration of V3 satellite systems'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
         return $parser;
     }
 
@@ -218,6 +225,10 @@ class Update3To4Command extends Command {
 
         if ($args->getOption('evc-use-statusengine') === true) {
             $this->changeEvcSubmitMethod();
+        }
+
+        if ($args->getOption('migrate-satellites') === true) {
+            $this->migrateSatelliteSystems();
         }
     }
 
@@ -1493,6 +1504,47 @@ class Update3To4Command extends Command {
                 $settings->set('monitoring_system', 'statusengine');
                 $EventcorrelationSettingsTable->save($settings);
             }
+        }
+    }
+
+    private function migrateSatelliteSystems() {
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+            $sshConfig = [
+                'sync_method'      => 'ssh',
+                'login'            => 'nagios',
+                'port'             => 22,
+                'private_key_path' => '/var/lib/nagios/.ssh/id_rsa',
+                'remote_port'      => 4730,
+                'use_timesync'     => 1
+            ];
+
+            if (file_exists('/etc/phpnsta/config.php')) {
+                require_once '/etc/phpnsta/config.php';
+
+                if (isset($config) && is_array($config)) {
+                    $sshConfig = [
+                        'sync_method'      => 'ssh',
+                        'login'            => $config['SSH']['username'],
+                        'port'             => (int)$config['SSH']['port'],
+                        'private_key_path' => $config['SSH']['private_path'],
+                        'remote_port'      => 4730,
+                        'use_timesync'     => (int)$config['TSYNC']['synchronize_time']
+                    ];
+                }
+            }
+
+            foreach ($SatellitesTable->getSatellitesBySyncMethod('ssh') as $satellite) {
+                /** @var Satellite $satellite */
+
+                $satellite = $SatellitesTable->patchEntity($satellite, $sshConfig);
+                $SatellitesTable->save($satellite);
+
+            }
+
+
         }
     }
 }
