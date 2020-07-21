@@ -1422,7 +1422,9 @@ class Update3To4Command extends Command {
 
         //Get existing partitions for this table out of MySQL's information_schema
         $query = $Connection->execute("
-                SELECT *   
+                SELECT
+                    PARTITION_NAME AS 'PARTITION_NAME',
+                    PARTITION_DESCRIPTION AS 'PARTITION_DESCRIPTION'
                 FROM information_schema.partitions
                 WHERE TABLE_SCHEMA = :databaseName
                 AND TABLE_NAME = :tableName
@@ -1452,7 +1454,7 @@ class Update3To4Command extends Command {
         }
 
         foreach ($partitionsInNdoSchema as $ndoPartition) {
-            if ($ndoPartition['PARTITION_NAME'] === 'p_max') {
+            if ($ndoPartition['PARTITION_NAME'] === 'p_max' || is_numeric($ndoPartition['PARTITION_DESCRIPTION']) === false) {
                 continue;
             }
 
