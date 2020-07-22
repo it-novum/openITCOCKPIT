@@ -122,7 +122,8 @@ mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-p
 echo "---------------------------------------------------------------"
 echo "Convert MySQL Tables from utf8_general_ci to utf8mb4_general_ci..."
 
-mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${dbc_dbname} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+# Disabled - this takes ages!
+#mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${dbc_dbname} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 
 mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TABLE_NAME FROM \`information_schema\`.\`TABLES\` WHERE \`TABLE_SCHEMA\`='${dbc_dbname}' AND \`TABLE_NAME\` NOT LIKE 'nagios_%' AND \`TABLE_COLLATION\`='utf8_general_ci'" | while read TABLE_NAME; do
     echo "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4; ✔"
@@ -201,7 +202,8 @@ done
 echo "---------------------------------------------------------------"
 echo "Convert MySQL Tables from utf8_general_ci to utf8mb4_general_ci..."
 
-mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${dbc_dbname} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+# Disabled - this takes ages!
+#mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${dbc_dbname} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 
 mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TABLE_NAME FROM \`information_schema\`.\`TABLES\` WHERE \`TABLE_SCHEMA\`='${dbc_dbname}' AND \`TABLE_NAME\` NOT LIKE 'nagios_%' AND \`TABLE_COLLATION\`='utf8_general_ci'" | while read TABLE_NAME; do
     echo "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4; ✔"
@@ -328,7 +330,8 @@ systemctl enable sudo_server.service\
  push_notification.service\
  nodejs_server.service\
  openitcockpit-graphing.service\
- oitc_cronjobs.timer
+ oitc_cronjobs.timer\
+ statusengine.service
 
 systemctl restart\
  sudo_server.service\
@@ -336,7 +339,8 @@ systemctl restart\
  gearman_worker.service\
  push_notification.service\
  nodejs_server.service\
- oitc_cronjobs.timer
+ oitc_cronjobs.timer\
+ statusengine.service
 
 PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"

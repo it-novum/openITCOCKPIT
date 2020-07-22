@@ -5,6 +5,12 @@ if ! [ $(id -u) = 0 ]; then
     exit 1
 fi
 
+# Stop phpnsta-client after upgrading from V3 to V4
+if systemctl is-active phpnsta.service; then
+    systemctl stop phpnsta.service
+fi
+
+
 APPDIR="/opt/openitc/frontend"
 
 OLDINIFILE=/etc/openitcockpit/mysql.cnf
@@ -39,6 +45,12 @@ cp ${APPDIR}/system/nginx/ssl_options_$OSVERSION /etc/nginx/openitc/ssl_options.
 cp ${APPDIR}/system/nginx/ssl_cert.conf /etc/nginx/openitc/ssl_cert.conf
 echo "# This file will NOT be overwritten during an update" >> /etc/nginx/openitc/custom.conf
 chmod +x /usr/bin/oitc
+
+echo "Delete all tmp files"
+rm -rf /opt/openitc/frontend/tmp
+mkdir -p /opt/openitc/frontend/tmp
+chown www-data:www-data /opt/openitc/frontend/tmp
+chmod 777 /opt/openitc/frontend/tmp
 
 echo "Create required system folders"
 mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,nsta,statusengine} /opt/openitc/etc/statusengine/Config
@@ -165,6 +177,12 @@ for PLUGIN in $(ls -1 "${APPDIR}/plugins"); do
 
     fi
 done
+
+echo "Delete all tmp files"
+rm -rf /opt/openitc/frontend/tmp
+mkdir -p /opt/openitc/frontend/tmp
+chown www-data:www-data /opt/openitc/frontend/tmp
+chmod 777 /opt/openitc/frontend/tmp
 
 echo "---------------------------------------------------------------"
 echo "Create new WebSocket Key"
@@ -320,6 +338,9 @@ mysql --defaults-extra-file=${INIFILE} -e "TRUNCATE TABLE changelogs;"
 mysql --defaults-extra-file=${INIFILE} -e "TRUNCATE TABLE changelogs_to_containers;"
 
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = REPLACE(command_line, '/usr/share/openitcockpit/app/Console/cake', '/opt/openitc/frontend/bin/cake');"
+#Replace EVC command with missing quotes
+mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = REPLACE(command_line, 'EventcorrelationModule.evc_plugin \$HOSTNAME\$', 'EventcorrelationModule.evc_plugin --uuid \"\$HOSTNAME\$\"');"
+#Replace EVC command with surrounding quotes
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE commands SET command_line = REPLACE(command_line, 'EventcorrelationModule.evc_plugin \"\$HOSTNAME\$\"', 'EventcorrelationModule.evc_plugin --uuid \"\$HOSTNAME\$\"');"
 
 mysql --defaults-extra-file=${INIFILE} -e "UPDATE widgets SET icon = REPLACE(icon, 'fa-', 'fas fa-');"
@@ -347,6 +368,8 @@ oitc update3_to4 --migrate-statehistory
 oitc update3_to4 --migrate-acknowledgements
 oitc update3_to4 --migrate-downtimes
 
+oitc update3_to4 --migrate-satellites
+
 echo "---------------------------------------------------------------"
 echo "Convert MySQL Tables from utf8_swedish_ci to utf8mb4_general_ci..."
 
@@ -357,7 +380,6 @@ mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TA
     mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4;"
 done
 
-#oitc setup
 
 oitc nagios_export
 
@@ -424,6 +446,24 @@ rsync -ahP /var/lib/openitcockpit "${BACKUP_BASEDIR}/var/lib"
 rm -rf /usr/share/openitcockpit
 rm -rf /etc/openitcockpit
 rm -rf /var/lib/openitcockpit
+
+echo "Delete all tmp files"
+rm -rf /opt/openitc/frontend/tmp
+mkdir -p /opt/openitc/frontend/tmp
+chown www-data:www-data /opt/openitc/frontend/tmp
+chmod 777 /opt/openitc/frontend/tmp
+mkdir -p /opt/openitc/frontend/tmp/nagios
+chown nagios:nagios /opt/openitc/frontend/tmp/nagios
+
+# Set filesystem permissions after all is done - again
+chown www-data:www-data /opt/openitc/logs/frontend
+oitc rights
+chown nagios:nagios /opt/openitc/logs/frontend/nagios
+chown www-data:www-data /opt/openitc/frontend/
+chmod 775 /opt/openitc/logs/frontend
+chmod 775 /opt/openitc/logs/frontend/nagios
+chown www-data:www-data /opt/openitc/frontend/tmp
+chown nagios:nagios /opt/openitc/frontend/tmp/nagios
 
 echo ""
 echo ""

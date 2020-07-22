@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2020-07-10 14:02+0200\n"
+"POT-Creation-Date: 2020-07-15 09:11+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -20,12 +20,18 @@ msgstr ""
 #: src/Command/PushoverNotificationCommand.php:98
 #: src/Command/SendPushNotificationCommand.php:66
 #: src/Command/SmsNotificationCommand.php:69
+#: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:33
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:52
+#: SlackModule/src/Command/SlackNotificationCommand.php:41
 #: plugins/MattermostModule/src/Command/MattermostNotificationCommand.php:137
 #: src/Command/NagiosNotificationCommand.php:150
 #: src/Command/NagiosXmlNotificationCommand.php:150
 #: src/Command/PushoverNotificationCommand.php:98
 #: src/Command/SendPushNotificationCommand.php:66
 #: src/Command/SmsNotificationCommand.php:69
+#: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:33
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:52
+#: SlackModule/src/Command/SlackNotificationCommand.php:41
 msgid "Type of the notification host or service"
 msgstr "Тип уведомления узла или службы"
 
@@ -184,12 +190,17 @@ msgstr "Спасибо за использование меня, пока"
 #: src/Command/NagiosNotificationCommand.php:151
 #: src/Command/NagiosXmlNotificationCommand.php:151
 #: src/Command/SmsNotificationCommand.php:70
+#: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:34
+#: SlackModule/src/Command/SlackNotificationCommand.php:42
 msgid "Notification type of monitoring engine"
 msgstr "Тип уведомления в мониторинге"
 
 #: src/Command/NagiosNotificationCommand.php:152
 #: src/Command/NagiosXmlNotificationCommand.php:152
 #: src/Command/SmsNotificationCommand.php:72
+#: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:35
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:53
+#: SlackModule/src/Command/SlackNotificationCommand.php:43
 msgid "Host uuid you want to send a notification"
 msgstr "Узел uuid на который вы хотите отправить уведомление"
 
@@ -200,11 +211,16 @@ msgstr "Описание узла, на который вы хотите отп�
 
 #: src/Command/NagiosNotificationCommand.php:154
 #: src/Command/NagiosXmlNotificationCommand.php:154
+#: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:36
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:54
+#: SlackModule/src/Command/SlackNotificationCommand.php:44
 msgid "current host state"
 msgstr "текущее состояние узла"
 
 #: src/Command/NagiosNotificationCommand.php:155
 #: src/Command/NagiosXmlNotificationCommand.php:155
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:55
+#: SlackModule/src/Command/SlackNotificationCommand.php:45
 msgid "host address"
 msgstr "адрес узла"
 
@@ -242,11 +258,17 @@ msgstr "человеческое имя контакта"
 #: src/Command/NagiosNotificationCommand.php:162
 #: src/Command/NagiosXmlNotificationCommand.php:162
 #: src/Command/SmsNotificationCommand.php:74
+#: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:38
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:57
+#: SlackModule/src/Command/SlackNotificationCommand.php:47
 msgid "Service uuid you want to notify"
 msgstr "UUID службы, о которой вы хотите уведомить"
 
 #: src/Command/NagiosNotificationCommand.php:163
 #: src/Command/NagiosXmlNotificationCommand.php:163
+#: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:39
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:58
+#: SlackModule/src/Command/SlackNotificationCommand.php:48
 msgid "service state"
 msgstr "состояние службы"
 
@@ -429,3 +451,96 @@ msgstr "<error>Файл не найден! ("
 #: src/Lib/DebugConfigNagiosTask.php:534
 msgid "<error>Folder %s is empty!</error>"
 msgstr "<error> Папка %s пуста! </error>"
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:106
+msgid "Host or Service"
+msgstr "Узел или Служба"
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:107
+msgid "PROBLEM"
+msgstr "ПРОБЛЕМА"
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:108
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:63
+msgid "The Host UUID"
+msgstr "Узел UUID"
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:109
+msgid "The Host output"
+msgstr "Выход узла"
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:110
+msgid "State ID of the current host state"
+msgstr "Идентификатор состояния текущего состояния узла"
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:111
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:65
+msgid "The Service UUID"
+msgstr "Служба UUID"
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:112
+msgid "The Service output"
+msgstr "Выход службы"
+
+#: AxiosAssystModule/src/Command/AxiosAssystNotificationCommand.php:113
+msgid "State ID of the current service state"
+msgstr "Идентификатор состояния текущего состояния службы"
+
+#: CheckmkModule/src/Command/CheckmkNagiosExportCommand.php:55
+msgid "Write initial Checkmk configuration"
+msgstr "Написать начальную конфигурацию Checkmk"
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:53
+msgid "The Receiver of the message in international format eg. 0049123456789"
+msgstr "Получатель сообщения в международном формате, например. 0049123456789"
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:54
+msgid "The Sender of the message"
+msgstr "Отправитель сообщения"
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:56
+msgid "The ID of your massenversand.de account"
+msgstr "Идентификатор вашей учетной записи massenversand.de"
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:57
+msgid "The Password of your massenversand.de account"
+msgstr "Пароль вашей учетной записи massenversand.de"
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:58
+msgid "The time to send the Message 0 = now or hhmmddmmyyyy"
+msgstr "Время для отправки сообщения 0 = сейчас или hhmmddmmyyyy"
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:59
+msgid "t = text sms, c = oversize sms, f = flash sms, utf8 = utf8 sms 70 digits per sms "
+msgstr "t = текстовые смс, c = негабаритные смс, f = флэш-смс, utf8 = utf8 смс 70 цифр в смс"
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:60
+msgid "1 = no SMS will be created but the server will respond like it would be"
+msgstr "1 = SMS не будет создано, но сервер ответит так, как если бы"
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:61
+msgid "host or service"
+msgstr "узел или служба"
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:62
+msgid "The date and time the problem occoured"
+msgstr "Дата и время возникновения проблемы"
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:64
+msgid "State of the Host"
+msgstr "Состояние узла"
+
+#: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:66
+msgid "State of the Service"
+msgstr "Состояние службы"
+
+#: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:37
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:56
+#: SlackModule/src/Command/SlackNotificationCommand.php:46
+msgid "output"
+msgstr "выход"
+
+#: ServicenowModule/src/Command/ServicenowNotificationCommand.php:59
+msgid "comment"
+msgstr "комментарий"
+

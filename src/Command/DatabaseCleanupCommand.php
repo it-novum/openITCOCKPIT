@@ -143,15 +143,22 @@ class DatabaseCleanupCommand extends Command implements CronjobInterface {
             //Get existing partitions for this table out of MySQL's information_schema
             $query = $Connection->execute("
                 SELECT partition_name
-			    FROM information_schema.partitions
-			    WHERE TABLE_SCHEMA = :databaseName
-			    AND TABLE_NAME = :tableName", [
+                FROM information_schema.partitions
+                WHERE TABLE_SCHEMA = :databaseName
+                AND TABLE_NAME = :tableName", [
                 'databaseName' => $Connection->config()['database'],
                 'tableName'    => $Table->getTable()
             ]);
             $result = $query->fetchAll('assoc');
 
+            //MySQL 5.x
             $partitions = Hash::extract($result, '{n}.partition_name');
+
+            //MySQL 8.x
+            if (isset($result['0']['PARTITION_NAME'])) {
+                //MySQL 8.x
+                $partitions = Hash::extract($result, '{n}.PARTITION_NAME');
+            }
 
             //Check if partition for current week exists
             $currentMysqlPartitionStartDate = date('Y-m-d H:i:s', strtotime('00:00:00 next monday'));
@@ -214,7 +221,14 @@ class DatabaseCleanupCommand extends Command implements CronjobInterface {
             ]);
             $result = $query->fetchAll('assoc');
 
+            //MySQL 5.x
             $partitions = Hash::extract($result, '{n}.partition_name');
+
+            //MySQL 8.x
+            if (isset($result['0']['PARTITION_NAME'])) {
+                //MySQL 8.x
+                $partitions = Hash::extract($result, '{n}.PARTITION_NAME');
+            }
 
             //Check if partition for current week exists
             $currentMysqlPartitionStartDate = strtotime('00:00:00 next monday');

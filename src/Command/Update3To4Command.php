@@ -42,6 +42,7 @@ use Cake\Mailer\Mailer;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use DistributeModule\Model\Entity\Satellite;
 use EventcorrelationModule\Model\Table\EventcorrelationSettingsTable;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -147,6 +148,12 @@ class Update3To4Command extends Command {
             'default' => false
         ]);
 
+        $parser->addOption('migrate-satellites', [
+            'help'    => __('Migrate the SSH configuration of V3 satellite systems'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
         return $parser;
     }
 
@@ -218,6 +225,10 @@ class Update3To4Command extends Command {
 
         if ($args->getOption('evc-use-statusengine') === true) {
             $this->changeEvcSubmitMethod();
+        }
+
+        if ($args->getOption('migrate-satellites') === true) {
+            $this->migrateSatelliteSystems();
         }
     }
 
@@ -1422,7 +1433,9 @@ class Update3To4Command extends Command {
 
         //Get existing partitions for this table out of MySQL's information_schema
         $query = $Connection->execute("
-                SELECT *   
+                SELECT
+                    PARTITION_NAME AS 'PARTITION_NAME',
+                    PARTITION_DESCRIPTION AS 'PARTITION_DESCRIPTION'
                 FROM information_schema.partitions
                 WHERE TABLE_SCHEMA = :databaseName
                 AND TABLE_NAME = :tableName
@@ -1442,10 +1455,17 @@ class Update3To4Command extends Command {
             'tableName'    => $targetTable
         ]);
         $partitionsInStatusengineSchema = $query->fetchAll('assoc');
-        $partitionsInStatusengineSchemaNames = Hash::extract($partitionsInStatusengineSchema, '{n}.PARTITION_NAME');
+
+        //MySQL 5.x
+        $partitionsInStatusengineSchemaNames = Hash::extract($partitionsInStatusengineSchema, '{n}.partition_name');
+
+        //MySQL 8.x
+        if (isset($partitionsInStatusengineSchema['0']['PARTITION_NAME'])) {
+            $partitionsInStatusengineSchemaNames = Hash::extract($partitionsInStatusengineSchema, '{n}.PARTITION_NAME');
+        }
 
         foreach ($partitionsInNdoSchema as $ndoPartition) {
-            if ($ndoPartition['PARTITION_NAME'] === 'p_max') {
+            if ($ndoPartition['PARTITION_NAME'] === 'p_max' || is_numeric($ndoPartition['PARTITION_DESCRIPTION']) === false) {
                 continue;
             }
 
@@ -1484,6 +1504,47 @@ class Update3To4Command extends Command {
                 $settings->set('monitoring_system', 'statusengine');
                 $EventcorrelationSettingsTable->save($settings);
             }
+        }
+    }
+
+    private function migrateSatelliteSystems() {
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+            $sshConfig = [
+                'sync_method'      => 'ssh',
+                'login'            => 'nagios',
+                'port'             => 22,
+                'private_key_path' => '/var/lib/nagios/.ssh/id_rsa',
+                'remote_port'      => 4730,
+                'use_timesync'     => 1
+            ];
+
+            if (file_exists('/etc/phpnsta/config.php')) {
+                require_once '/etc/phpnsta/config.php';
+
+                if (isset($config) && is_array($config)) {
+                    $sshConfig = [
+                        'sync_method'      => 'ssh',
+                        'login'            => $config['SSH']['username'],
+                        'port'             => (int)$config['SSH']['port'],
+                        'private_key_path' => $config['SSH']['private_path'],
+                        'remote_port'      => 4730,
+                        'use_timesync'     => (int)$config['TSYNC']['synchronize_time']
+                    ];
+                }
+            }
+
+            foreach ($SatellitesTable->getSatellitesBySyncMethod('ssh') as $satellite) {
+                /** @var Satellite $satellite */
+
+                $satellite = $SatellitesTable->patchEntity($satellite, $sshConfig);
+                $SatellitesTable->save($satellite);
+
+            }
+
+
         }
     }
 }
