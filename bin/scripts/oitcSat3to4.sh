@@ -163,7 +163,7 @@ check_package_installed_sat_frontend(){
     if dpkg -s "openitcockpit-satellite-frontend" >/dev/null 2>&1; then
         echo "mkdir -p /opt/openitc/etc/frontend && touch /opt/openitc/etc/frontend/enable_web_interface"
     else
-        echo "# If you want to use the new Satellite frontend run these commands after you have done the upgrade:"
+        echo "# To enable the new Satellite Web Interface run these commands AFTER you have done the upgrade:"
         echo "mkdir -p /opt/openitc/etc/frontend && touch /opt/openitc/etc/frontend/enable_web_interface"
         echo "apt-get install openitcockpit-satellite-frontend"
     fi
@@ -246,20 +246,19 @@ if [ "$VERSION_CODENAME" == "stretch" ]; then
     echo "# Update sources.list to Debian 10"
     echo "sed -i 's/stretch/buster/g' /etc/apt/sources.list"
     echo ""
-    echo "# Add openITCOCKPIT 4 sources (you have to insert your custom openITCOCKPIT license!)"
-
-    echo "mkdir -p /etc/apt/auth.conf.d"
-    echo "echo 'machine packages.openitcockpit.io login secret password {LICENSE}' > /etc/apt/auth.conf.d/openitcockpit.conf"
 
     echo "echo 'deb https://packages.openitcockpit.io/openitcockpit/buster/stable buster main' > /etc/apt/sources.list.d/openitcockpit.list"
-
     echo "curl https://packages.openitcockpit.io/repokey.txt | apt-key add -"
-    echo ""
-    check_package_installed_sat_frontend
+
     echo ""
     echo "# Upgrade the distribution and openITCOCKPIT"
     echo "apt-get update"
     echo "apt-get dist-upgrade $php_upd $openitcockpit_upd $openitcockpit_rem $always"
+
+    echo ""
+    echo ""
+    check_package_installed_sat_frontend
+    echo ""
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "###############################################################################"
     echo "${Reset}"
@@ -293,20 +292,19 @@ if [ "$VERSION_CODENAME" == "xenial" ]; then
     echo "# Update sources.list to Ubuntu 18.04"
     echo "sed -i 's/xenial/bionic/g' /etc/apt/sources.list"
     echo ""
-    echo "# Add openITCOCKPIT 4 sources (you have to insert your custom openITCOCKPIT license!)"
-
-    echo "mkdir -p /etc/apt/auth.conf.d"
-    echo "echo 'machine packages.openitcockpit.io login secret password {LICENSE}' > /etc/apt/auth.conf.d/openitcockpit.conf"
 
     echo "echo 'deb https://packages.openitcockpit.io/openitcockpit/bionic/stable bionic main' > /etc/apt/sources.list.d/openitcockpit.list"
-
     echo "curl https://packages.openitcockpit.io/repokey.txt | apt-key add -"
-    echo ""
-    check_package_installed_sat_frontend
+
     echo ""
     echo "# Upgrade the distribution and openITCOCKPIT"
     echo "apt-get update"
     echo "apt-get dist-upgrade $php_upd $openitcockpit_upd $openitcockpit_rem $always"
+
+    echo ""
+    echo ""
+    check_package_installed_sat_frontend
+    echo ""
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "###############################################################################"
     echo "${Reset}"
@@ -335,20 +333,19 @@ if [ "$VERSION_CODENAME" == "bionic" ]; then
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "You can run the upgrade with the following commands:"
     echo ""
-    echo "# Add openITCOCKPIT 4 sources (you have to insert your custom openITCOCKPIT license!)"
-
-    echo "mkdir -p /etc/apt/auth.conf.d"
-    echo "echo 'machine packages.openitcockpit.io login secret password {LICENSE}' > /etc/apt/auth.conf.d/openitcockpit.conf"
 
     echo "echo 'deb https://packages.openitcockpit.io/openitcockpit/bionic/stable bionic main' > /etc/apt/sources.list.d/openitcockpit.list"
-
     echo "curl https://packages.openitcockpit.io/repokey.txt | apt-key add -"
-    echo ""
-    check_package_installed_sat_frontend
+
     echo ""
     echo "# Upgrade the distribution and openITCOCKPIT"
     echo "apt-get update"
     echo "apt-get dist-upgrade $openitcockpit_upd $openitcockpit_rem $always"
+
+    echo ""
+    echo ""
+    check_package_installed_sat_frontend
+    echo ""
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "###############################################################################"
     echo "${Reset}"
