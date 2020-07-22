@@ -161,8 +161,10 @@ check_mysql_version(){
 
 check_package_installed_sat_frontend(){
     if dpkg -s "openitcockpit-satellite-frontend" >/dev/null 2>&1; then
-        echo "mkdir -p /opt/openitc/etc/frontend && touch /opt/openitc/etc/frontend/enable_web_interface"
+      echo ""
+        #echo "mkdir -p /opt/openitc/etc/frontend && touch /opt/openitc/etc/frontend/enable_web_interface"
     else
+        echo ""
         echo "# To enable the new Satellite Web Interface run these commands AFTER you have done the upgrade:"
         echo "mkdir -p /opt/openitc/etc/frontend && touch /opt/openitc/etc/frontend/enable_web_interface"
         echo "apt-get install openitcockpit-satellite-frontend"
@@ -253,9 +255,11 @@ if [ "$VERSION_CODENAME" == "stretch" ]; then
     echo ""
     echo "# Upgrade the distribution and openITCOCKPIT"
     echo "apt-get update"
+    if dpkg -s "openitcockpit-satellite-frontend" >/dev/null 2>&1; then
+        echo "mkdir -p /opt/openitc/etc/frontend && touch /opt/openitc/etc/frontend/enable_web_interface"
+    fi
     echo "apt-get dist-upgrade $php_upd $openitcockpit_upd $openitcockpit_rem $always"
 
-    echo ""
     echo ""
     check_package_installed_sat_frontend
     echo ""
@@ -299,9 +303,11 @@ if [ "$VERSION_CODENAME" == "xenial" ]; then
     echo ""
     echo "# Upgrade the distribution and openITCOCKPIT"
     echo "apt-get update"
+    if dpkg -s "openitcockpit-satellite-frontend" >/dev/null 2>&1; then
+        echo "mkdir -p /opt/openitc/etc/frontend && touch /opt/openitc/etc/frontend/enable_web_interface"
+    fi
     echo "apt-get dist-upgrade $php_upd $openitcockpit_upd $openitcockpit_rem $always"
 
-    echo ""
     echo ""
     check_package_installed_sat_frontend
     echo ""
@@ -340,9 +346,11 @@ if [ "$VERSION_CODENAME" == "bionic" ]; then
     echo ""
     echo "# Upgrade the distribution and openITCOCKPIT"
     echo "apt-get update"
+    if dpkg -s "openitcockpit-satellite-frontend" >/dev/null 2>&1; then
+        echo "mkdir -p /opt/openitc/etc/frontend && touch /opt/openitc/etc/frontend/enable_web_interface"
+    fi
     echo "apt-get dist-upgrade $openitcockpit_upd $openitcockpit_rem $always"
 
-    echo ""
     echo ""
     check_package_installed_sat_frontend
     echo ""
