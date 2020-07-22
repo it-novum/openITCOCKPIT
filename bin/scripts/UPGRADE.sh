@@ -5,6 +5,12 @@ if ! [ $(id -u) = 0 ]; then
     exit 1
 fi
 
+# Stop phpnsta-client after upgrading from V3 to V4
+if systemctl is-active phpnsta.service; then
+    systemctl stop phpnsta.service
+fi
+
+
 APPDIR="/opt/openitc/frontend"
 
 OLDINIFILE=/etc/openitcockpit/mysql.cnf
