@@ -50,6 +50,7 @@ use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\MapConditions;
@@ -769,6 +770,7 @@ class MapsTable extends Table {
      * @return array
      */
     public function getHostgroupInformation(ServicesTable $Service, array $hostgroup, HoststatusTableInterface $HoststatusTable, ServicestatusTableInterface $ServicestatusTable) {
+        FileDebugger::dump($hostgroup);
         $HoststatusFields = new HoststatusFields(new DbBackend());
         $HoststatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
 
@@ -777,7 +779,7 @@ class MapsTable extends Table {
         $hoststatusByUuids = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
         $hostgroupLight = [
             'id'          => (int)$hostgroup['id'],
-            'name'        => $hostgroup['Containers']['name'],
+            'name'        => $hostgroup['container']['name'],
             'description' => $hostgroup['description']
         ];
 
@@ -1594,7 +1596,7 @@ class MapsTable extends Table {
 
         $hostgroup = [
             'id'                  => $hostgroup['id'],
-            'name'                => $hostgroup['Containers']['name'],
+            'name'                => $hostgroup['container']['name'],
             'description'         => $hostgroup['description'],
             'HostSummary'         => $hostStateSummary,
             'TotalServiceSummary' => $totalServiceStateSummary

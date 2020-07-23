@@ -9,6 +9,7 @@ use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 use Cake\Core\Configure;
+use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
@@ -167,14 +168,18 @@ class ExternalCommands {
         $options['repetitions'] = (int)$options['repetitions'];
 
         if (!isset($options['satellite_id'])) {
-            /** @var HostsTable $HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-            $satelliteId = $HostsTable->getSatelliteIdByUuid($options['uuid']);
-            if ($satelliteId === null) {
-                //Host not found
-                return false;
+            if(Plugin::isLoaded('DistributeModule')) {
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $satelliteId = $HostsTable->getSatelliteIdByUuid($options['uuid']);
+                if ($satelliteId === null) {
+                    //Host not found
+                    return false;
+                }
+                $options['satellite_id'] = $satelliteId;
+            }else{
+                $options['satellite_id'] = 0;
             }
-            $options['satellite_id'] = $satelliteId;
         }
 
         if ($options['forceHardstate'] === 1 && $options['repetitions'] >= 1) {
@@ -249,14 +254,18 @@ class ExternalCommands {
         $options['repetitions'] = (int)$options['repetitions'];
 
         if (!isset($options['satellite_id'])) {
-            /** @var HostsTable $HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-            $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
-            if ($satelliteId === null) {
-                //Host not found
-                return false;
+            if(Plugin::isLoaded('DistributeModule')) {
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
+                if ($satelliteId === null) {
+                    //Host not found
+                    return false;
+                }
+                $options['satellite_id'] = $satelliteId;
+            }else{
+                $options['satellite_id'] = 0;
             }
-            $options['satellite_id'] = $satelliteId;
         }
 
         if ($options['forceHardstate'] === 1 && $options['repetitions'] >= 1) {
@@ -499,14 +508,18 @@ class ExternalCommands {
         $options = Hash::merge($_options, $options);
 
         if (!isset($options['satellite_id'])) {
-            /** @var HostsTable $HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-            $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
-            if ($satelliteId === null) {
-                //Host not found
-                return false;
+            if(Plugin::isLoaded('DistributeModule')) {
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
+                if ($satelliteId === null) {
+                    //Host not found
+                    return false;
+                }
+                $options['satellite_id'] = $satelliteId;
+            }else{
+                $options['satellite_id'] = 0;
             }
-            $options['satellite_id'] = $satelliteId;
         }
 
         // ACKNOWLEDGE_HOST_PROBLEM
@@ -597,14 +610,18 @@ class ExternalCommands {
         $options = Hash::merge($_options, $options);
 
         if (!isset($options['satellite_id'])) {
-            /** @var HostsTable $HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-            $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
-            if ($satelliteId === null) {
-                //Host not found
-                return false;
+            if(Plugin::isLoaded('DistributeModule')) {
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
+                if ($satelliteId === null) {
+                    //Host not found
+                    return false;
+                }
+                $options['satellite_id'] = $satelliteId;
+            }else{
+                $options['satellite_id'] = 0;
             }
-            $options['satellite_id'] = $satelliteId;
         }
 
         $DbBackend = new DbBackend();
@@ -749,14 +766,18 @@ class ExternalCommands {
      */
     public function setServiceAck(array $options) {
         if (!isset($options['satellite_id'])) {
-            /** @var HostsTable $HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-            $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
-            if ($satelliteId === null) {
-                //Host not found
-                return false;
+            if(Plugin::isLoaded('DistributeModule')) {
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
+                if ($satelliteId === null) {
+                    //Host not found
+                    return false;
+                }
+                $options['satellite_id'] = $satelliteId;
+            }else{
+                $options['satellite_id'] = 0;
             }
-            $options['satellite_id'] = $satelliteId;
         }
 
         // ACKNOWLEDGE_SVC_PROBLEM
@@ -798,14 +819,18 @@ class ExternalCommands {
      */
     public function setServiceAckWithQuery(array $options) {
         if (!isset($options['satellite_id'])) {
-            /** @var HostsTable $HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-            $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
-            if ($satelliteId === null) {
-                //Host not found
-                return false;
+            if(Plugin::isLoaded('DistributeModule')) {
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
+                if ($satelliteId === null) {
+                    //Host not found
+                    return false;
+                }
+                $options['satellite_id'] = $satelliteId;
+            }else{
+                $options['satellite_id'] = 0;
             }
-            $options['satellite_id'] = $satelliteId;
         }
 
         $DbBackend = new DbBackend();
@@ -857,14 +882,18 @@ class ExternalCommands {
         $options = Hash::merge($_options, $options);
 
         if (!isset($options['satellite_id'])) {
-            /** @var HostsTable $HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-            $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
-            if ($satelliteId === null) {
-                //Host not found
-                return false;
+            if(Plugin::isLoaded('DistributeModule')) {
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
+                if ($satelliteId === null) {
+                    //Host not found
+                    return false;
+                }
+                $options['satellite_id'] = $satelliteId;
+            }else{
+                $options['satellite_id'] = 0;
             }
-            $options['satellite_id'] = $satelliteId;
         }
 
         switch ($options['downtimetype']) {
@@ -1046,14 +1075,18 @@ class ExternalCommands {
         $options = Hash::merge($_options, $options);
 
         if (!isset($options['satellite_id'])) {
-            /** @var HostsTable $HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-            $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
-            if ($satelliteId === null) {
-                //Host not found
-                return false;
+            if(Plugin::isLoaded('DistributeModule')) {
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
+                if ($satelliteId === null) {
+                    //Host not found
+                    return false;
+                }
+                $options['satellite_id'] = $satelliteId;
+            }else{
+                $options['satellite_id'] = 0;
             }
-            $options['satellite_id'] = $satelliteId;
         }
 
         //SCHEDULE_SVC_DOWNTIME
