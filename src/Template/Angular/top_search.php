@@ -60,6 +60,7 @@
            placeholder="<?= __('Type to search') ?>"
            ng-model="searchStr"
            ng-keydown="isReturnKey($event)"
-           ng-disabled="isSearching">
+           ng-disabled="isSearching"
+           style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
 
 </div>
