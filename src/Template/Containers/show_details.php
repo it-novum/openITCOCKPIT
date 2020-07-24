@@ -368,7 +368,7 @@ $objectDetails['maps'] = [
                                         <?php echo __('No entries match the selection'); ?>
                                     </div>
                                 </div>
-                                <div id="containermap" class="bg-color-white"></div>
+                                <div id="containermap"></div>
                             </div>
                         </div>
                     </div>
