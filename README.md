@@ -76,7 +76,7 @@ Please execute all commands as user `root` or via `sudo`.
 apt-get install apt-transport-https curl gnupg2 ca-certificates
 curl https://packages.openitcockpit.io/repokey.txt | apt-key add -
 
-echo "deb https://packages.openitcockpit.io/openitcockpit/$(lsb_release -sc)/unstable $(lsb_release -sc) main" > /etc/apt/sources.list.d/openitcockpit.list
+echo "deb https://packages.openitcockpit.io/openitcockpit/$(lsb_release -sc)/stable $(lsb_release -sc) main" > /etc/apt/sources.list.d/openitcockpit.list
 apt-get update
 
 apt-get install openitcockpit
