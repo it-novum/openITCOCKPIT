@@ -87,7 +87,7 @@ apt-get install openitcockpit
 
 You can register your openITCOCKPIT installation to get access to free community modules.
 Login to the webinterface of openITCOCKPIT and navigate to System -> Registration,
-enter the community license key `e5aef99e-817b-0ff5-3f0e-140c1f342792` and click Register.
+enter the community license key `0dc0d951-e34e-43d0-a5a5-a690738e6a49` and click Register.
 After successful registration you can install the free community modules at System tools -> Package Manager
 
 # Main Features
