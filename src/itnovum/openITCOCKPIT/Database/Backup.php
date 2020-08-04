@@ -138,7 +138,7 @@ class Backup {
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $db = $SystemsettingsTable->getConnection()->config()['database'];
 
-        $baseCmd = 'mysqldump --defaults-extra-file=%s --databases %s --flush-privileges --single-transaction --triggers --routines --events --hex-blob \\%s %s > %s';
+        $baseCmd = 'mysqldump --defaults-extra-file=%s --databases %s --flush-privileges --single-transaction --triggers --routines --no-tablespaces --events --hex-blob \\%s %s > %s';
         $ignore = [];
         foreach ($this->ignore as $table) {
             $ignore[] = sprintf('--ignore-table=%s.%s \\%s', $db, $table, PHP_EOL);

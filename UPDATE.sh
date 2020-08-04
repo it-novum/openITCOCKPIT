@@ -37,7 +37,7 @@ BACKUP_DIR='/opt/openitc/nagios/backup'
 mkdir -p $BACKUP_DIR
 #If you have mysql binlog enabled uses this command:
 #mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-privileges --single-transaction --master-data=1 --flush-logs --triggers --routines --events --hex-blob \
-mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-privileges --single-transaction --triggers --routines --events --hex-blob \
+mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-privileges --single-transaction --triggers --routines --no-tablespaces --events --hex-blob \
   --ignore-table=$dbc_dbname.nagios_acknowledgements \
   --ignore-table=$dbc_dbname.nagios_commands \
   --ignore-table=$dbc_dbname.nagios_commenthistory \

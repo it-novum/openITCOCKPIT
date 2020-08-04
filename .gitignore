@@ -87,6 +87,7 @@ plugins/LinuxBasicMonitoringSSHModule
 plugins/MasterSelfMonitoringModule
 plugins/MkModule
 plugins/NWCModule
+plugins/ImportModule
 plugins/CheckmkModule
 plugins/OpenstreetmapModule
 plugins/SAPModule
