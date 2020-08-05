@@ -20,7 +20,10 @@ if [[ ! -f "$OLDINIFILE" ]]; then
 fi
 
 chmod +x $APPDIR/bin/scripts/pre_v4_upgrade.php
-$APPDIR/bin/scripts/pre_v4_upgrade.php
+if ! $APPDIR/bin/scripts/pre_v4_upgrade.php; then
+    echo "Pre upgrade Tasks failed"
+    exit
+fi
 
 INIFILE=/opt/openitc/etc/mysql/mysql.cnf
 DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf

@@ -69,7 +69,7 @@ class PreUpgradeScript {
             return $this->pdo;
         }
 
-        $config = parse_ini_file($this->iniFile);
+        $config = parse_ini_file($this->iniFile, false,  INI_SCANNER_RAW);
 
         try {
             $pdo = new PDO(
@@ -81,7 +81,7 @@ class PreUpgradeScript {
                 $config['user'],
                 $config['password']
             );
-
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->pdo = $pdo;
             return $pdo;
         } catch (\Exception $e) {
