@@ -128,7 +128,7 @@ class Statusengine3Cfg extends ConfigGenerator implements ConfigInterface {
         $FileHeader = new FileHeader();
         $configToExport['STATIC_FILE_HEADER'] = $FileHeader->getHeader($this->commentChar);
 
-        $ini_file = parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf');
+        $ini_file = parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf', false, INI_SCANNER_RAW);
 
         $configToExport['mysql_host'] = $ini_file['host'];
         $configToExport['mysql_user'] = $ini_file['user'];

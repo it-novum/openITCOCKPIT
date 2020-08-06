@@ -1,5 +1,5 @@
 <?php
-$ini_file = parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf');
+$ini_file = parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf', false, INI_SCANNER_RAW);
 
 return [
     'Datasources' => [

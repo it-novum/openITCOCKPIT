@@ -11,7 +11,7 @@ class DATABASE_CONFIG {
     public $legacy = [];
 
     public function __construct() {
-        $ini_file = parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf');
+        $ini_file = parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf', false, INI_SCANNER_RAW);
 
         $this->legacy = [
             'datasource' => 'Database/Mysql',
