@@ -53,7 +53,7 @@ if [[ ! -f "$v3MysqlIni" && $testing == 0 ]]; then
     exit 1;
 fi
 
-MYSQL_DATABASE=$(php -r "echo parse_ini_file('/etc/openitcockpit/mysql.cnf')['database'];")
+MYSQL_DATABASE=$(php -r "echo parse_ini_file('/etc/openitcockpit/mysql.cnf', false , INI_SCANNER_RAAW)['database'];")
 
 LICENSE=$(mysql "--defaults-extra-file=$v3MysqlIni" -e "SELECT license FROM registers LIMIT 1;" -B -s 2>/dev/null)
 
