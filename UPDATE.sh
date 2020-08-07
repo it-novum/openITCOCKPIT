@@ -9,17 +9,18 @@ if [[ $1 == "--help" ]]; then
   exit 0
 fi
 
+APPDIR="/opt/openitc/frontend"
 INIFILE=/opt/openitc/etc/mysql/mysql.cnf
 DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
 BASHCONF=/opt/openitc/etc/mysql/bash.conf
 
 if [[ ! -f "$BASHCONF" ]]; then
-  MYSQL_USER=$(php -r "echo parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf', false, INI_SCANNER_RAW)['user'];")
-  MYSQL_DATABASE=$(php -r "echo parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf', false, INI_SCANNER_RAW)['database'];")
-  #MYSQL_PASSWORD=$(awk '$1 == "password" { print }' "/opt/openitc/etc/mysql/mysql.cnf" |cut -d= -f2 | sed 's/^\s*//' | sed 's/\s*$//' | sed 's_/_\\/_g')
-  MYSQL_PASSWORD=$(php -r "echo parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf', false, INI_SCANNER_RAW)['password'];")
-  MYSQL_HOST=$(php -r "echo parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf', false, INI_SCANNER_RAW)['host'];")
-  MYSQL_PORT=$(php -r "echo parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf', false, INI_SCANNER_RAW)['port'];")
+  MYSQL_USER=openitcockpit
+  MYSQL_DATABASE=openitcockpit
+  MYSQL_PASSWORD=
+  MYSQL_HOST=localhost
+  MYSQL_PORT=3306
+  eval $(php -r "require '$APPDIR/src/itnovum/openITCOCKPIT/Database/MysqlConfigFileParser.php'; \$mcp = new App\\itnovum\\openITCOCKPIT\\Database\\MysqlConfigFileParser(); \$r = \$mcp->parse_mysql_cnf('/opt/openitc/etc/mysql/mysql.cnf'); echo \$r['shell'];")
 
   echo "dbc_dbuser='${MYSQL_USER}'" >$BASHCONF
   echo "dbc_dbpass='${MYSQL_PASSWORD}'" >>$BASHCONF
@@ -30,7 +31,6 @@ fi
 
 . /opt/openitc/etc/mysql/bash.conf
 
-APPDIR="/opt/openitc/frontend"
 
 echo "Create mysqldump of your current database"
 BACKUP_TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')
