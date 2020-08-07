@@ -69,7 +69,8 @@ class PreUpgradeScript {
             return $this->pdo;
         }
 
-        $config = parse_ini_file($this->iniFile, false,  INI_SCANNER_RAW);
+        $mcp = new \App\itnovum\openITCOCKPIT\Database\MysqlConfigFileParser();
+        $config = $mcp->parse_mysql_cnf('/opt/openitc/etc/mysql/mysql.cnf');
 
         try {
             $pdo = new PDO(
