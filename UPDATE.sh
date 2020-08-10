@@ -20,7 +20,7 @@ if [[ ! -f "$BASHCONF" ]]; then
   MYSQL_PASSWORD=
   MYSQL_HOST=localhost
   MYSQL_PORT=3306
-  eval $(php -r "require '$APPDIR/src/itnovum/openITCOCKPIT/Database/MysqlConfigFileParserForCli.php'; \$mcp = new MysqlConfigFileParserForCli(); \$r = \$mcp->parse_mysql_cnf('/opt/openitc/etc/mysql/mysql.cnf'); echo \$r['shell'];")
+  eval $(php -r "require '$APPDIR/src/itnovum/openITCOCKPIT/Database/MysqlConfigFileParserForCli.php'; \$mcp = new MysqlConfigFileParserForCli(); \$r = \$mcp->parse_mysql_cnf('/etc/openitcockpit/mysql.cnf'); echo \$r['shell'];")
 
   echo "dbc_dbuser='${MYSQL_USER}'" >$BASHCONF
   echo "dbc_dbpass='${MYSQL_PASSWORD}'" >>$BASHCONF
