@@ -36,7 +36,7 @@ MYSQL_DATABASE=openitcockpit
 MYSQL_PASSWORD=
 MYSQL_HOST=localhost
 MYSQL_PORT=3306
-eval $(php -r "require '$APPDIR/src/itnovum/openITCOCKPIT/Database/MysqlConfigFileParser.php'; \$mcp = new App\\itnovum\\openITCOCKPIT\\Database\\MysqlConfigFileParser(); \$r = \$mcp->parse_mysql_cnf('/opt/openitc/etc/mysql/mysql.cnf'); echo \$r['shell'];")
+eval $(php -r "require '$APPDIR/src/itnovum/openITCOCKPIT/Database/MysqlConfigFileParserForCli.php'; \$mcp = new MysqlConfigFileParserForCli(); \$r = \$mcp->parse_mysql_cnf('/opt/openitc/etc/mysql/mysql.cnf'); echo \$r['shell'];")
 
 PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 

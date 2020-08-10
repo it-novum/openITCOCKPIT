@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-
+require '/opt/openitc/frontend/src/itnovum/openITCOCKPIT/Database/MysqlConfigFileParserForCli.php';
 $PreUpgradeScript = new PreUpgradeScript();
 $PreUpgradeScript->execute();
 
@@ -69,7 +69,7 @@ class PreUpgradeScript {
             return $this->pdo;
         }
 
-        $mcp = new \App\itnovum\openITCOCKPIT\Database\MysqlConfigFileParser();
+        $mcp = new MysqlConfigFileParserForCli();
         $config = $mcp->parse_mysql_cnf('/opt/openitc/etc/mysql/mysql.cnf');
 
         try {
