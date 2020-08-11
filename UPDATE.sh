@@ -280,6 +280,7 @@ if [[ "$NORESTART" == "true" ]]; then
 fi
 
 OSVERSION=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
+PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 
 if [[ "$NOSYSTEMFILES" == "false" ]]; then
   echo "Copy required system files"
@@ -343,7 +344,6 @@ systemctl restart\
  oitc_cronjobs.timer\
  statusengine.service
 
-PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
 # Restart services if they are running
