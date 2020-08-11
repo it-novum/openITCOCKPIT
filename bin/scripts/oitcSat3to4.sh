@@ -228,7 +228,7 @@ if [ "$VERSION_CODENAME" == "stretch" ]; then
     fi
 
     if [ ! -z "$(dpkg -l | awk '$2 ~ /openitcockpit-nagios-sat/')" ]; then
-        always="$always openitcockpit-nagios"
+        always="$always openitcockpit-naemon"
     fi
 
     if [ ! -z "$(dpkg -l | awk '$2 ~ /openitcockpit-naemon-sat/')" ]; then
@@ -280,7 +280,7 @@ if [ "$VERSION_CODENAME" == "xenial" ]; then
     fi
 
     if [ ! -z "$(dpkg -l | awk '$2 ~ /openitcockpit-nagios-sat/')" ]; then
-        always="$always openitcockpit-nagios"
+        always="$always openitcockpit-naemon"
     fi
 
     if [ ! -z "$(dpkg -l | awk '$2 ~ /openitcockpit-naemon-sat/')" ]; then
@@ -327,7 +327,7 @@ if [ "$VERSION_CODENAME" == "bionic" ]; then
     fi
 
     if [ ! -z "$(dpkg -l | awk '$2 ~ /openitcockpit-nagios-sat/')" ]; then
-        always="$always openitcockpit-nagios"
+        always="$always openitcockpit-naemon"
     fi
 
     if [ ! -z "$(dpkg -l | awk '$2 ~ /openitcockpit-naemon-sat/')" ]; then
