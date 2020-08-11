@@ -280,7 +280,7 @@
                     <span>
                         <div class="padding-5">
                             <p class="margin-bottom-5">
-                                <i class="fa fa-question-circle-o text-primary"></i>
+                                <i class="fa fa-question-circle text-primary"></i>
                                 <strong><?php echo __('Unknown'); ?></strong>
                                 <br/>
                                 <i><?php echo __('Could not detect system health status.'); ?></i>
