@@ -70,7 +70,7 @@ class PreUpgradeScript {
         }
 
         $mcp = new MysqlConfigFileParserForCli();
-        $config = $mcp->parse_mysql_cnf('/opt/openitc/etc/mysql/mysql.cnf');
+        $config = $mcp->parse_mysql_cnf($this->iniFile);
 
         try {
             $pdo = new PDO(
