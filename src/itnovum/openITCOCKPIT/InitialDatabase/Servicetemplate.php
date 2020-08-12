@@ -125,11 +125,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)1  => [
                 'id'                                        => '2',
@@ -186,11 +182,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)2  => [
                 'id'                                        => '3',
@@ -264,11 +256,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)3  => [
                 'id'                                        => '4',
@@ -325,11 +313,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)4  => [
                 'id'                                        => '5',
@@ -386,11 +370,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)5  => [
                 'id'                                        => '6',
@@ -472,11 +452,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)6  => [
                 'id'                                        => '7',
@@ -558,11 +534,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)7  => [
                 'id'                                        => '8',
@@ -644,11 +616,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)8  => [
                 'id'                                        => '9',
@@ -722,11 +690,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)9  => [
                 'id'                                        => '10',
@@ -800,11 +764,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)10 => [
                 'id'                                        => '11',
@@ -886,11 +846,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)11 => [
                 'id'                                        => '12',
@@ -964,11 +920,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)12 => [
                 'id'                                        => '13',
@@ -1042,11 +994,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)13 => [
                 'id'                                        => '14',
@@ -1112,11 +1060,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)14 => [
                 'id'                                        => '15',
@@ -1173,11 +1117,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)15 => [
                 'id'                                        => '16',
@@ -1251,11 +1191,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)16 => [
                 'id'                                        => '17',
@@ -1329,11 +1265,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)17 => [
                 'id'                                        => '18',
@@ -1407,11 +1339,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)18  => [
                 'id'                                        => '49',
@@ -1468,11 +1396,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
         ];
 
