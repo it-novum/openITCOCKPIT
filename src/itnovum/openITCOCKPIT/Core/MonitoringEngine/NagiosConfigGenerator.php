@@ -2455,30 +2455,47 @@ class NagiosConfigGenerator {
     }
 
     public function exportSatServicegroups() {
-        if (!empty($this->dmConfig) && is_array($this->dmConfig)) {
-            foreach ($this->dmConfig as $sat_id => $data) {
-                //Create service groups
-                if (isset($data['Servicegroup']) && !empty($data['Servicegroup'])) {
-                    if (!is_dir($this->conf['satellite_path'] . $sat_id . DS . $this->conf['servicegroups'])) {
-                        mkdir($this->conf['satellite_path'] . $sat_id . DS . $this->conf['servicegroups']);
-                    }
-                    foreach ($data['Servicegroup'] as $servicegroupUuid => $members) {
-                        $file = new File($this->conf['satellite_path'] . $sat_id . DS . $this->conf['servicegroups'] . $servicegroupUuid . $this->conf['suffix']);
-                        $content = $this->fileHeader();
-                        if (!$file->exists()) {
-                            $file->create();
-                        }
+        /** @var ServicegroupsTable $ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+        $servicegroups = $ServicegroupsTable->getServicegroupsForExport();
 
-                        $content .= $this->addContent('define servicegroup{', 0);
-                        $content .= $this->addContent('servicegroup_name', 1, $servicegroupUuid);
-                        $content .= $this->addContent('alias', 1, $servicegroupUuid);
+        foreach ($this->Satellites as $satellite) {
+            $satelliteId = $satellite->get('id');
 
-                        $content .= $this->addContent('members', 1, implode(',', $members));
-                        $content .= $this->addContent('}', 0);
-                        $file->write($content);
-                        $file->close();
+            if (!is_dir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['servicegroups'])) {
+                mkdir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['servicegroups']);
+            }
+
+            if ($this->conf['minified']) {
+                $file = new File($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['servicegroups'] . 'servicegroups_minified' . $this->conf['suffix']);
+                if (!$file->exists()) {
+                    $file->create();
+                }
+                $content = $this->fileHeader();
+            }
+
+            foreach ($servicegroups as $servicegroup) {
+                /** @var \App\Model\Entity\Servicegroup $servicegroup */
+                if (!$this->conf['minified']) {
+                    $file = new File($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['servicegroups'] . $servicegroup->get('uuid') . $this->conf['suffix']);
+
+                    $content = $this->fileHeader();
+                    if (!$file->exists()) {
+                        $file->create();
                     }
                 }
+
+                $alias = $this->escapeLastBackslash($servicegroup->get('description'));
+                if (empty($alias)) {
+                    $alias = $servicegroup->get('uuid');
+                }
+
+                $content .= $this->addContent('define servicegroup{', 0);
+                $content .= $this->addContent('servicegroup_name', 1, $servicegroup->get('uuid'));
+                $content .= $this->addContent('alias', 1, $alias);
+                $content .= $this->addContent('}', 0);
+                $file->write($content);
+                $file->close();
             }
         }
     }
