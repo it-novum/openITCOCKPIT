@@ -27,6 +27,34 @@
     <menu-control></menu-control>
     <div class="search" top-search=""></div>
     <div class="ml-auto d-flex">
+
+        <?php if($hasSubscription === false): ?>
+        <div class="header-icon padding-left-10 padding-right-5">
+            <a class="btn btn-outline-danger waves-effect waves-themed"
+               href="https://openitcockpit.io/#Subscription"
+               target="_blank"
+               data-original-title="<?= __('No active subscription'); ?>"
+               data-placement="bottom"
+               rel="tooltip">
+                <?= __('No active subscription'); ?>
+            </a>
+        </div>
+        <?php endif; ?>
+
+        <?php if($hasSubscription === true && $isCommunityEdition === true): ?>
+            <div class="header-icon padding-left-10 padding-right-5">
+                <a class="btn btn-outline-primary waves-effect waves-themed"
+                   href="https://openitcockpit.io/#Subscription"
+                   target="_blank"
+                   data-original-title="<?= __('Community Edition'); ?>"
+                   data-placement="bottom"
+                   rel="tooltip">
+                    <?= __('CE'); ?>
+                </a>
+            </div>
+        <?php endif; ?>
+
+
         <div class="header-icon padding-left-5">
             <menustats></menustats>
         </div>

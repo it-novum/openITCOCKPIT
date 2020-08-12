@@ -29,6 +29,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Table\RegistersTable;
 use App\Model\Table\SystemsettingsTable;
 use Authentication\Controller\Component\AuthenticationComponent;
 use Cake\Core\Configure;
@@ -50,6 +51,17 @@ class PagesController extends AppController {
 
         if ($this->isApiRequest() === false) {
             $user = $this->Authentication->getIdentity();
+
+            /** @var RegistersTable $RegistersTable */
+            $RegistersTable = TableRegistry::getTableLocator()->get('Registers');
+
+
+            $license = $RegistersTable->getLicense();
+            $isCommunityEdition = false;
+            $hasSubscription = $license !== null;
+            if(isset($license['license']) && $license['license'] === $RegistersTable->getCommunityLicenseKey()){
+                $isCommunityEdition = true;
+            }
 
             /** @var SystemsettingsTable $SystemsettingsTable */
             $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
@@ -77,6 +89,8 @@ class PagesController extends AppController {
             $this->set('userImage', $userImage);
             $this->set('userFullName', $userFullName);
             $this->set('hasRootPrivileges', $this->hasRootPrivileges);
+            $this->set('hasSubscription', $hasSubscription);
+            $this->set('isCommunityEdition', $isCommunityEdition);
             // Ship the HTML layout to load JS and CSS files
             $this->viewBuilder()->setLayout('app_frame');
         }
