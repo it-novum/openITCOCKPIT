@@ -267,6 +267,11 @@ class Update3To4Command extends Command {
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
+        if (!is_array($users)) {
+            $this->io->warning('No active openITCOCKPIT Version 3 users found!');
+            return false;
+        }
+
         foreach ($users as $user) {
             if ($UsersTable->existsById($user['id'])) {
                 $userEntity = $UsersTable->get($user['id']);
