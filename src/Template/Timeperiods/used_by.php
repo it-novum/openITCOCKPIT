@@ -58,7 +58,7 @@
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'timeperiods')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='TimeperiodsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
-                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
                 </div>

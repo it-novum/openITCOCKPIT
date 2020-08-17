@@ -55,7 +55,7 @@
                 <div class="panel-toolbar">
                     <button class="btn btn-xs btn-default shadow-0" ui-sref="AgentchecksIndex">
                         <i class="fa fa-arrow-left"></i>
-                        <?php echo __('Back to list'); ?>
+                        <?php echo __('Back'); ?>
                     </button>
                 </div>
             </div>
