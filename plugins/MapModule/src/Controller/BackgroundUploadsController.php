@@ -51,6 +51,7 @@ class BackgroundUploadsController extends AppController {
 
     public $TYPE_BACKGROUND = 1;
     public $TYPE_ICON_SET = 2;
+    public $TYPE_ICON = 3;
 
     public function upload() {
         if (empty($_FILES)) {
@@ -230,6 +231,18 @@ class BackgroundUploadsController extends AppController {
                 if (!move_uploaded_file($_FILES['file']['tmp_name'], $iconImgDirectory . DS . $fileName)) {
                     throw new Exception(__('Cannot move uploaded file'));
                 }
+                $uploadFilename = str_replace('.' . $fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
+
+
+                $mapUpload = $MapUploadsTable->newEmptyEntity();
+                $mapUpload = $MapUploadsTable->patchEntity($mapUpload, [
+                    'upload_type'  => $this->TYPE_ICON,
+                    'upload_name'  => $uploadFilename . '.' . $fileExtension,
+                    'saved_name'   => $fileName,
+                    'user_id'      => $User = new User($this->getUser()),
+                    'container_id' => '1',
+                ]);
+                $MapUploadsTable->save($mapUpload);
 
                 $response = [
                     'success'  => true,
