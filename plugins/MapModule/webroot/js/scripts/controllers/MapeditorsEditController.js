@@ -735,30 +735,6 @@ angular.module('openITCOCKPIT')
 
             $scope.currentItem.map_id = $scope.id;
 
-            if(action === 'add_or_edit'){
-                if($scope.currentItem.gadget !== 'TrafficLight' && $scope.currentItem.gadget !== 'ServiceOutput'){
-                    if($scope.currentItem.hasOwnProperty('metric') === false || $scope.currentItem.metric === null){
-                        $scope.errors = {
-                            metric: [
-                                'Please select a metric.'
-                            ]
-                        };
-                        return;
-                    }
-                }
-
-                if($scope.currentItem.gadget === 'ServiceOutput'){
-                    if($scope.currentItem.hasOwnProperty('output_type') === false || $scope.currentItem.output_type === null){
-                        $scope.errors = {
-                            output_type: [
-                                'Please select an output type.'
-                            ]
-                        };
-                        return;
-                    }
-                }
-            }
-
             $http.post("/map_module/mapeditors/saveGadget.json?angular=true",
                 {
                     'Mapgadget': $scope.currentItem,
