@@ -130,10 +130,9 @@ class MapgadgetsTable extends Table {
             ->allowEmptyString('gadget');
 
         $validator
-            ->scalar('type')
-            ->maxLength('type', 20)
-            ->requirePresence('type', 'create')
-            ->notEmptyString('type');
+            ->scalar('object_id')
+            ->requirePresence('object_id', 'create')
+            ->notEmptyString('object_id');
 
         $validator
             ->integer('transparent_background')
@@ -157,9 +156,18 @@ class MapgadgetsTable extends Table {
             ->allowEmptyString('metric');
 
         $validator
+            ->scalar('metric')
+            ->maxLength('metric', 256)
+            ->notEmptyString('metric', __('Please select a metric.'), function ($context) {
+                return !(isset($context['data']['gadget']) && in_array($context['data']['gadget'], ['TrafficLight', 'ServiceOutput'], true));
+            });
+
+        $validator
             ->scalar('output_type')
             ->maxLength('output_type', 256)
-            ->allowEmptyString('output_type');
+            ->notEmptyString('output_type', __('Please select an output type.'), function ($context) {
+                return (isset($context['data']['gadget']) && $context['data']['gadget'] === 'ServiceOutput');
+            });
 
         return $validator;
     }

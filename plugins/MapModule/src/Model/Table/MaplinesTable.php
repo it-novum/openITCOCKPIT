@@ -172,6 +172,13 @@ class MaplinesTable extends Table {
             ->notEmptyString('type');
 
         $validator
+            ->scalar('object_id')
+            ->requirePresence('object_id', 'create')
+            ->notEmptyString('object_id', null, function ($context) {
+                return !(isset($context['data']['type']) && $context['data']['type'] === 'stateless');
+            });
+
+        $validator
             ->integer('z_index')
             ->notEmptyString('z_index');
 

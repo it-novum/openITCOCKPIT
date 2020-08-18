@@ -165,6 +165,11 @@ class MapitemsTable extends Table {
             ->notEmptyString('type');
 
         $validator
+            ->scalar('object_id')
+            ->requirePresence('object_id', 'create')
+            ->notEmptyString('object_id');
+
+        $validator
             ->integer('z_index')
             ->notEmptyString('z_index');
 
