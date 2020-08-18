@@ -42,38 +42,52 @@ class MappingRepository {
     }
 
     /**
+     * @param $id
      * @param string $uuid
      * @param string $name
+     * @param string|null $description
      * @param array $members
      */
-    public function addHostgroup($id, string $uuid, string $name, array $members) {
+    public function addHostgroup($id, string $uuid, string $name, ?string $description, array $members) {
         if (!isset($this->mapping['hostgroups'])) {
             $this->mapping['hostgroups'] = [];
         }
 
+        if (empty($description)) {
+            $description = '';
+        }
+
         $this->mapping['hostgroups'][] = [
-            'id'      => (int)$id,
-            'uuid'    => $uuid,
-            'name'    => $name,
-            'members' => $members
+            'id'          => (int)$id,
+            'uuid'        => $uuid,
+            'name'        => $name,
+            'description' => $description,
+            'members'     => $members
         ];
     }
 
     /**
+     * @param $id
      * @param string $uuid
      * @param string $name
+     * @param string|null $description
      * @param array $members
      */
-    public function addServicegroup($id, string $uuid, string $name, array $members) {
+    public function addServicegroup($id, string $uuid, string $name, ?string $description, array $members) {
         if (!isset($this->mapping['servicegroups'])) {
             $this->mapping['servicegroups'] = [];
         }
 
+        if (empty($description)) {
+            $description = '';
+        }
+
         $this->mapping['servicegroups'][] = [
-            'id'      => (int)$id,
-            'uuid'    => $uuid,
-            'name'    => $name,
-            'members' => $members
+            'id'          => (int)$id,
+            'uuid'        => $uuid,
+            'name'        => $name,
+            'description' => $description,
+            'members'     => $members
         ];
     }
 
