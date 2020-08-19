@@ -2145,25 +2145,36 @@ class MapsTable extends Table {
             foreach ($map[$mapObjectType] as $index => $mapItem) {
                 $cacheKey = $mapItem['type'] . '_' . $mapItem['object_id'];
                 if (!$Cache->has($cacheKey)) {
-                    $Cache->set($cacheKey, $this->isMapObjectAvailableOnSatellite(
+                    $Cache->set($cacheKey, $this->getMapObjectUuidOrFalseIfNotAvailableOnSatellite(
                         $mapItem['object_id'],
                         $mapItem['type'],
                         $satelliteId
                     ));
                 }
 
-                if ($Cache->get($cacheKey) === false) {
+                $mapObjectUuid = $Cache->get($cacheKey);
+                if ($mapObjectUuid !== false) {
+                    //Replace object_id with uuid
+                    $map[$mapObjectType][$index]['master_object_id'] = $map[$mapObjectType][$index]['object_id'];
+                    $map[$mapObjectType][$index]['object_id'] = $mapObjectUuid;
+
+                } else {
                     //Item is not available on this satellite
                     unset($map[$mapObjectType][$index]);
                 }
             }
         }
 
-
         return $map;
     }
 
-    public function isMapObjectAvailableOnSatellite($objectId, $objectType, $satelliteId) {
+    /**
+     * @param int $objectId
+     * @param string $objectType
+     * @param int $satelliteId
+     * @return false|string (uuid)
+     */
+    public function getMapObjectUuidOrFalseIfNotAvailableOnSatellite($objectId, $objectType, $satelliteId) {
         switch ($objectType) {
             case 'host':
                 /** @var HostsTable $HostsTable */
@@ -2177,7 +2188,11 @@ class MapsTable extends Table {
                     ->disableHydration()
                     ->first();
 
-                return !empty($host);
+                if (empty($host)) {
+                    return false;
+                }
+
+                return $host['uuid'];
                 break;
 
             case 'service':
@@ -2197,7 +2212,11 @@ class MapsTable extends Table {
                     ->disableHydration()
                     ->first();
 
-                return !empty($service);
+                if (empty($service)) {
+                    return false;
+                }
+
+                return $service['uuid'];
                 break;
 
             case 'map':
@@ -2214,12 +2233,55 @@ class MapsTable extends Table {
                     ->disableHydration()
                     ->first();
 
-                return !empty($map);
+                if (empty($map)) {
+                    return false;
+                }
+
+                return $map['id']; //Maps dont have an uuid so we use the id
+                break;
+
+            case 'hostgroup':
+                /** @var HostgroupsTable $HostgroupsTable */
+                $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+                //All hostgroups are available on all satellites - but maybe empty
+                $hostgroup = $HostgroupsTable->find()
+                    ->where([
+                        'Hostgroups.id' => $objectId
+                    ])
+                    ->disableHydration()
+                    ->first();
+
+                if (empty($hostgroup)) {
+                    return false;
+                }
+
+                return $hostgroup['uuid'];
+
+                break;
+
+            case 'servicegroup':
+                /** @var ServicegroupsTable $ServicegroupsTable */
+                $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+                //All servicegroups are available on all satellites - but maybe empty
+                $servicegroup = $ServicegroupsTable->find()
+                    ->where([
+                        'Servicegroups.id' => $objectId
+                    ])
+                    ->disableHydration()
+                    ->first();
+
+                if (empty($servicegroup)) {
+                    return false;
+                }
+
+                return $servicegroup['uuid'];
                 break;
 
             default:
-                //Object is available on all satellite systems
-                return true;
+                //Unknown object
+                return false;
         }
     }
 }

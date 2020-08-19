@@ -36,14 +36,17 @@ class ExportTasks implements PluginExportTasks {
         /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
         $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-        $json = [];
+        $json = [
+            'maps' => [],
+            'rotations' => []
+        ];
         foreach ($SatellitesTable->getSatellitesAsList() as $satelliteId => $satelliteName) {
             $maps = $MapsTable->getMapsBySatelliteId($satelliteId, false);
 
             $files = [];
             foreach ($maps as $map) {
                 $mapForSatellite = $MapsTable->getMapForSatelliteExport($map['id'], $satelliteId);
-                $json[] = $mapForSatellite;
+                $json['maps'][] = $mapForSatellite;
                 $files = Hash::merge($files, $this->getFilesForZipArchive($mapForSatellite));
             }
         }
