@@ -39,42 +39,46 @@ class ExportTasks implements PluginExportTasks {
         /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
         $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-        $json = [
-            'maps'      => [],
-            'rotations' => []
-        ];
         foreach ($SatellitesTable->getSatellitesAsList() as $satelliteId => $satelliteName) {
+            $json = [
+                'maps'      => [],
+                'rotations' => []
+            ];
             $files = [];
 
             $maps = $MapsTable->getMapsBySatelliteId($satelliteId, false);
             foreach ($maps as $map) {
                 $mapForSatellite = $MapsTable->getMapForSatelliteExport($map['id'], $satelliteId);
                 $json['maps'][] = $mapForSatellite;
-                $files = Hash::merge($files, $this->getFilesForZipArchive($mapForSatellite));
+                $files = Hash::merge($files, $this->getFilesForZipArchive($mapForSatellite)); //Merge all files of all maps on this satellite into one zip
             }
 
-            $json['rotations'] = $RotationsTable->getRotationsWithMapsBySatelliteId(1);
+            $json['rotations'] = $RotationsTable->getRotationsWithMapsBySatelliteId($satelliteId);
+
+            if (!is_dir($this->conf['satellite_path'] . $satelliteId)) {
+                mkdir($this->conf['satellite_path'] . $satelliteId);
+            }
+
+            $mapZipArchive = $this->conf['satellite_path'] . $satelliteId . DS . 'maps.zip';
+            $mapJson = $this->conf['satellite_path'] . $satelliteId . DS . 'maps.json';
+            if (file_exists($mapZipArchive)) {
+                unlink($mapZipArchive);
+            }
+
+            if (!empty($files)) {
+                //Cannot create an empty zip
+                $archive = $zippy->create($mapZipArchive, $files);
+            }
+
+            if (file_exists($mapJson)) {
+                unlink($mapJson);
+            }
+
+            $fd = fopen($mapJson, 'w+');
+            fwrite($fd, json_encode($json, JSON_PRETTY_PRINT));
+            fclose($fd);
+
         }
-
-
-        if (!is_dir($this->conf['satellite_path'] . $satelliteId)) {
-            mkdir($this->conf['satellite_path'] . $satelliteId);
-        }
-
-        $mapZipArchive = $this->conf['satellite_path'] . $satelliteId . DS . 'maps.zip';
-        $mapJson = $this->conf['satellite_path'] . $satelliteId . DS . 'maps.json';
-        if (file_exists($mapZipArchive)) {
-            unlink($mapZipArchive);
-        }
-        $archive = $zippy->create($mapZipArchive, $files);
-
-        if (file_exists($mapJson)) {
-            unlink($mapJson);
-        }
-
-        $fd = fopen($mapJson, 'w+');
-        fwrite($fd, json_encode($json, JSON_PRETTY_PRINT));
-        fclose($fd);
 
         return true;
     }
