@@ -14,6 +14,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
 use MapModule\Model\Table\MapsTable;
+use MapModule\Model\Table\RotationsTable;
 
 class ExportTasks implements PluginExportTasks {
 
@@ -33,23 +34,28 @@ class ExportTasks implements PluginExportTasks {
 
         /** @var MapsTable $MapsTable */
         $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+        /** @var RotationsTable $RotationsTable */
+        $RotationsTable = TableRegistry::getTableLocator()->get('MapModule.Rotations');
         /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
         $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
         $json = [
-            'maps' => [],
+            'maps'      => [],
             'rotations' => []
         ];
         foreach ($SatellitesTable->getSatellitesAsList() as $satelliteId => $satelliteName) {
-            $maps = $MapsTable->getMapsBySatelliteId($satelliteId, false);
-
             $files = [];
+
+            $maps = $MapsTable->getMapsBySatelliteId($satelliteId, false);
             foreach ($maps as $map) {
                 $mapForSatellite = $MapsTable->getMapForSatelliteExport($map['id'], $satelliteId);
                 $json['maps'][] = $mapForSatellite;
                 $files = Hash::merge($files, $this->getFilesForZipArchive($mapForSatellite));
             }
+
+            $json['rotations'] = $RotationsTable->getRotationsWithMapsBySatelliteId(1);
         }
+
 
         if (!is_dir($this->conf['satellite_path'] . $satelliteId)) {
             mkdir($this->conf['satellite_path'] . $satelliteId);

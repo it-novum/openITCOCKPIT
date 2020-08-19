@@ -2119,7 +2119,7 @@ class MapsTable extends Table {
                     'Mapicons',
                     'Mapitems',
                     'Maplines',
-                    'MapsToRotations',
+                    //'MapsToRotations',
                     'Mapsummaryitems',
                     'Maptexts',
                 ])
