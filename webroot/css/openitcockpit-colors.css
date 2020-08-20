@@ -874,3 +874,22 @@ fieldset[disabled] .btn-unknown.active {
 .table-color-disabled a {
     color: #ffffff;
 }
+
+div.packetmanager-selection::-moz-selection { /* Code for Firefox */
+    color: #1468f5;
+    background: #ffffff;
+}
+
+div.packetmanager-selection::selection {
+    color: #1468f5;
+    background: #ffffff;
+}
+div.packetmanager-selection>span::-moz-selection { /* Code for Firefox */
+    color: #1468f5;
+    background: #ffffff;
+}
+
+div.packetmanager-selection>span::selection {
+    color: #1468f5;
+    background: #ffffff;
+}
