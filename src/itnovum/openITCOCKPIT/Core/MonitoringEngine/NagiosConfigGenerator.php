@@ -81,8 +81,6 @@ class NagiosConfigGenerator {
      */
     private $dm = false;
 
-    private $dmConfig = [];
-
     /**
      * @var \DistributeModule\Model\Entity\Satellite[]
      */
@@ -132,7 +130,6 @@ class NagiosConfigGenerator {
         $this->HosttemplateHostgroupsCache = new KeyValueStore();
 
         if ($this->dm === true) {
-            $this->dmConfig = [];
 
             //Loading external Model
             /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
