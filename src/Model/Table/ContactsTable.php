@@ -139,7 +139,7 @@ class ContactsTable extends Table {
             ->allowEmptyString('phone', __('You must at least specify either the email address or the phone number.'), function ($context) {
                 return !empty($context['data']['email']) || !empty($context['data']['phone']);
             })
-            ->regex('phone', '/[\d\s-\+]+/');
+            ->regex('phone', '/[\d\s\-\+]+/');
 
         $validator
             ->integer('host_timeperiod_id')
