@@ -186,13 +186,20 @@ class ContainersController extends AppController {
         }
 
         $parent = [$ContainersTable->get($id)->toArray()];
+        $parent[0]['linkedId'] = $parent[0]['id'];
+        if($parent[0]['containertype_id'] == CT_TENANT){
+            $parent[0]['linkedId'] = $TenantsTable->getTenantIdByContainerId($parent[0]['id']);
 
+        }elseif($parent[0]['containertype_id'] == CT_LOCATION){
+            $parent[0]['linkedId'] = $LocationsTable->getLocationIdByContainerId($parent[0]['id']);
+
+        }
         $parent[0]['allowEdit'] = false;
 
         if (isset($this->MY_RIGHTS_LEVEL[$parent[0]['id']])) {
             if ((int)$this->MY_RIGHTS_LEVEL[$parent[0]['id']] === WRITE_RIGHT) {
                 $parent[0]['allowEdit'] = true;
-                $parent[0]['elements'] = ($parent[0]['rght'] - $parent[0]['lft']) / 2 - 0.5;;
+                $parent[0]['elements'] = ($parent[0]['rght'] - $parent[0]['lft']) / 2 - 0.5;
             }
         }
         $containers = $ContainersTable->getChildren($id);
