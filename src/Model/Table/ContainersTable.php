@@ -484,6 +484,22 @@ class ContainersTable extends Table {
         return $result;
     }
 
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getPathById($id) {
+        try {
+            $path = $this->find('path', ['for' => $id])
+                ->disableHydration()
+                ->all()
+                ->toArray();
+            return $path;
+        } catch (RecordNotFoundException $e) {
+            return [];
+        }
+    }
+
     public function getPathByIdAndCacheResult($id, $cacheKey) {
         $cacheKey = sprintf('%s:%s', $cacheKey, $id);
         $path = Cache::remember($cacheKey, function () use ($id) {
@@ -1052,7 +1068,7 @@ class ContainersTable extends Table {
         if (!empty($containertype)) {
             switch ($containertype) {
                 case CT_TENANT:
-                    /** @var TenantsTable $TenantsTable  */
+                    /** @var TenantsTable $TenantsTable */
                     $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
                     $tenant = $TenantsTable->getTenantByContainerId($containerId);
                     break;
