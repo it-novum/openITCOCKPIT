@@ -52,7 +52,7 @@
                 <div class="panel-toolbar">
                     <a back-button href="javascript:void(0);" fallback-state='DowntimesService'
                        class="btn btn-default btn-xs mr-1 shadow-0">
-                        <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
+                        <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                     </a>
                 </div>
             </div>

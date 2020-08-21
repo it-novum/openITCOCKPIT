@@ -56,7 +56,7 @@ class Servicetemplate extends Importer {
             (int)0  => [
                 'id'                                        => '1',
                 'uuid'                                      => '3eb9db30-c9cf-4c25-9c69-0c3c01dc2256',
-                'template_name'                             => 'Ping',
+                'template_name'                             => 'CHECK_PING',
                 'name'                                      => 'Ping',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
@@ -125,17 +125,13 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)1  => [
                 'id'                                        => '2',
                 'uuid'                                      => 'fd250454-4065-4218-8e8e-4b0325eddf13',
                 'template_name'                             => 'CHECK_SSH',
-                'name'                                      => 'CHECK_SSH',
+                'name'                                      => 'SSH Connection',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
@@ -186,11 +182,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)2  => [
                 'id'                                        => '3',
@@ -264,17 +256,13 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)3  => [
                 'id'                                        => '4',
                 'uuid'                                      => 'eec01955-9aee-4763-b205-f3021480eee5',
                 'template_name'                             => 'CHECK_DHCP',
-                'name'                                      => 'CHECK_DHCP',
+                'name'                                      => 'DHCP',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
@@ -325,17 +313,13 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)4  => [
                 'id'                                        => '5',
                 'uuid'                                      => '632cbb02-4046-4406-8bcc-4cfe0befbc0c',
                 'template_name'                             => 'CHECK_FTP',
-                'name'                                      => 'CHECK_FTP',
+                'name'                                      => 'FTP Connection',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
@@ -386,17 +370,13 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)5  => [
                 'id'                                        => '6',
                 'uuid'                                      => 'b987e6c0-135d-4034-987a-18c65b111fae',
                 'template_name'                             => 'CHECK_HTTP',
-                'name'                                      => 'CHECK_HTTP',
+                'name'                                      => 'HTTP',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
@@ -472,17 +452,13 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)6  => [
                 'id'                                        => '7',
                 'uuid'                                      => 'b12e5fcd-eccc-43f9-8c84-921329e56c92',
                 'template_name'                             => 'CHECK_HTTPS',
-                'name'                                      => 'CHECK_HTTPS',
+                'name'                                      => 'HTTPS',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
@@ -558,17 +534,13 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)7  => [
                 'id'                                        => '8',
                 'uuid'                                      => '354c1e0e-bd09-48e0-bbbe-eb98a4059454',
                 'template_name'                             => 'CHECK_LOCAL_DISK',
-                'name'                                      => 'CHECK_LOCAL_DISK',
+                'name'                                      => 'Disk usage /',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
@@ -644,17 +616,13 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)8  => [
                 'id'                                        => '9',
                 'uuid'                                      => 'c673cc09-c46a-4916-8e42-85cb0e68f1e6',
                 'template_name'                             => 'CHECK_LOCAL_LOAD',
-                'name'                                      => 'CHECK_LOCAL_LOAD',
+                'name'                                      => 'LinuxLoad',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
@@ -722,17 +690,13 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)9  => [
                 'id'                                        => '10',
                 'uuid'                                      => '90aefb61-c818-4bd6-818c-c9e6174b3e13',
                 'template_name'                             => 'CHECK_LOCAL_MAILQ',
-                'name'                                      => 'CHECK_LOCAL_MAILQ',
+                'name'                                      => 'MailQ',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
@@ -800,17 +764,13 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)10 => [
                 'id'                                        => '11',
                 'uuid'                                      => '91bc9075-64b2-4054-a39d-c2981cd6bd01',
                 'template_name'                             => 'CHECK_LOCAL_PROC',
-                'name'                                      => 'CHECK_LOCAL_PROC',
+                'name'                                      => 'Process',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
@@ -886,17 +846,13 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)11 => [
                 'id'                                        => '12',
                 'uuid'                                      => 'b7e5c7a7-ed33-465f-ab8e-45059cb679fe',
                 'template_name'                             => 'CHECK_LOCAL_PROCS_TOTAL',
-                'name'                                      => 'CHECK_LOCAL_PROCS_TOTAL',
+                'name'                                      => 'Process Total',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
@@ -964,17 +920,13 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)12 => [
                 'id'                                        => '13',
                 'uuid'                                      => '5b0b27c4-6e70-454b-a778-b7b050910abb',
                 'template_name'                             => 'CHECK_LOCAL_USERS',
-                'name'                                      => 'CHECK_LOCAL_USERS',
+                'name'                                      => 'Users loggedin',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
@@ -1042,17 +994,13 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)13 => [
                 'id'                                        => '14',
                 'uuid'                                      => 'a4773ab9-ed5f-4395-b0c7-bb98bb975b06',
                 'template_name'                             => 'CHECK_TCP',
-                'name'                                      => 'CHECK_TCP',
+                'name'                                      => 'TCP Connection',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
@@ -1112,17 +1060,13 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)14 => [
                 'id'                                        => '15',
                 'uuid'                                      => '70ef8cb7-b253-4b81-9515-335e0ade1d8f',
                 'template_name'                             => 'CHECK_TELNET',
-                'name'                                      => 'CHECK_TELNET',
+                'name'                                      => 'Telnet Connection',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
@@ -1173,22 +1117,18 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)15 => [
                 'id'                                        => '16',
                 'uuid'                                      => '52ac5010-4014-41c2-ba3a-74bc765e442d',
                 'template_name'                             => 'CHECK_SMTP',
-                'name'                                      => 'CHECK_SMTP',
+                'name'                                      => 'SMTP Connection',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
                 'notify_period_id'                          => '1',
-                'description'                               => 'Check if a SNTP server is running on target host',
+                'description'                               => 'Check if a SMTP server is running on target host',
                 'command_id'                                => '12',
                 'check_command_args'                        => '',
                 'checkcommand_info'                         => '',
@@ -1251,17 +1191,13 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)16 => [
                 'id'                                        => '17',
                 'uuid'                                      => 'b80db4b7-3148-4c39-9337-d89d367b9669',
                 'template_name'                             => 'CHECK_NTP_PEER',
-                'name'                                      => 'CHECK_NTP_PEER',
+                'name'                                      => 'NTP',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
@@ -1329,17 +1265,13 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)17 => [
                 'id'                                        => '18',
                 'uuid'                                      => '9babe8f0-9012-47a8-8580-f82246365dd8',
                 'template_name'                             => 'CHECK_NTP_TIME',
-                'name'                                      => 'CHECK_NTP_TIME',
+                'name'                                      => 'NTP',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
                 'check_period_id'                           => '1',
@@ -1407,16 +1339,12 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
             (int)18  => [
                 'id'                                        => '49',
                 'uuid'                                      => 'a6cfd6e6-46b2-4385-9b1d-d035e8a9e9db',
-                'template_name'                             => 'Statusengine Worker Performance',
+                'template_name'                             => 'CHECK_STATUSENGINE_WORKER_PERFORMANCE',
                 'name'                                      => 'Statusengine Worker Performance',
                 'container_id'                              => '1',
                 'servicetemplatetype_id'                    => '1',
@@ -1468,11 +1396,7 @@ class Servicetemplate extends Importer {
                 'customvariables'                           => [],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
-                'contacts'                                  => [
-                    '_ids' => [
-                        (int)0 => '1'
-                    ]
-                ]
+                'contacts'                                  => []
             ],
         ];
 

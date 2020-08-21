@@ -42,17 +42,20 @@ use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use Cake\Core\Plugin;
 use Cake\Datasource\EntityInterface;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Datasource\RepositoryInterface;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\MapConditions;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
@@ -2075,5 +2078,210 @@ class MapsTable extends Table {
         }
 
         return $list;
+    }
+
+    /**
+     * @param int|array $satelliteIds
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getMapsBySatelliteId($satelliteIds, $enableHydration = true) {
+        if (!Plugin::isLoaded('DistributeModule')) {
+            return [];
+        }
+
+        if (!is_array($satelliteIds)) {
+            $satelliteIds = [$satelliteIds];
+        }
+
+
+        $query = $this->find()
+            ->innerJoinWith('Satellites', function (Query $q) use ($satelliteIds) {
+                $q->where([
+                    'Satellites.id IN' => $satelliteIds
+                ]);
+                return $q;
+            })
+            ->enableHydration($enableHydration)
+            ->all();
+
+        return $query->toArray() ?? [];
+    }
+
+
+    public function getMapForSatelliteExport($mapId, $satelliteId) {
+        $mapId = (int)$mapId;
+        $satelliteId = (int)$satelliteId;
+        try {
+            $map = $this->find()
+                ->contain([
+                    'Mapgadgets',
+                    'Mapicons',
+                    'Mapitems',
+                    'Maplines',
+                    //'MapsToRotations',
+                    'Mapsummaryitems',
+                    'Maptexts',
+                ])
+                ->where([
+                    'Maps.id' => $mapId
+                ])
+                ->disableHydration()
+                ->firstOrFail();
+        } catch (RecordNotFoundException $e) {
+            return [];
+        }
+
+        $mapObjectTypesToCheck = [
+            'mapsummaryitems',
+            'maplines',
+            'mapitems',
+            'mapgadgets'
+        ];
+
+        //Is available on satellite?
+        $Cache = new KeyValueStore();
+        foreach ($mapObjectTypesToCheck as $mapObjectType) {
+            foreach ($map[$mapObjectType] as $index => $mapItem) {
+                $cacheKey = $mapItem['type'] . '_' . $mapItem['object_id'];
+                if (!$Cache->has($cacheKey)) {
+                    $Cache->set($cacheKey, $this->getMapObjectUuidOrFalseIfNotAvailableOnSatellite(
+                        $mapItem['object_id'],
+                        $mapItem['type'],
+                        $satelliteId
+                    ));
+                }
+
+                $mapObjectUuid = $Cache->get($cacheKey);
+                if ($mapObjectUuid !== false) {
+                    //Replace object_id with uuid
+                    $map[$mapObjectType][$index]['master_object_id'] = $map[$mapObjectType][$index]['object_id'];
+                    $map[$mapObjectType][$index]['object_id'] = $mapObjectUuid;
+
+                } else {
+                    //Item is not available on this satellite
+                    unset($map[$mapObjectType][$index]);
+                }
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param int $objectId
+     * @param string $objectType
+     * @param int $satelliteId
+     * @return false|string (uuid)
+     */
+    public function getMapObjectUuidOrFalseIfNotAvailableOnSatellite($objectId, $objectType, $satelliteId) {
+        switch ($objectType) {
+            case 'host':
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+                $host = $HostsTable->find()
+                    ->where([
+                        'Hosts.id'           => $objectId,
+                        'Hosts.satellite_id' => $satelliteId
+                    ])
+                    ->disableHydration()
+                    ->first();
+
+                if (empty($host)) {
+                    return false;
+                }
+
+                return $host['uuid'];
+                break;
+
+            case 'service':
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+                $service = $ServicesTable->find()
+                    ->innerJoinWith('Hosts', function (Query $q) use ($satelliteId) {
+                        $q->where([
+                            'Hosts.satellite_id' => $satelliteId
+                        ]);
+                        return $q;
+                    })
+                    ->where([
+                        'Services.id' => $objectId,
+                    ])
+                    ->disableHydration()
+                    ->first();
+
+                if (empty($service)) {
+                    return false;
+                }
+
+                return $service['uuid'];
+                break;
+
+            case 'map':
+                $map = $this->find()
+                    ->innerJoinWith('Satellites', function (Query $q) use ($satelliteId) {
+                        $q->where([
+                            'Satellites.id' => $satelliteId
+                        ]);
+                        return $q;
+                    })
+                    ->where([
+                        'Maps.id' => $objectId,
+                    ])
+                    ->disableHydration()
+                    ->first();
+
+                if (empty($map)) {
+                    return false;
+                }
+
+                return $map['id']; //Maps dont have an uuid so we use the id
+                break;
+
+            case 'hostgroup':
+                /** @var HostgroupsTable $HostgroupsTable */
+                $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+                //All hostgroups are available on all satellites - but maybe empty
+                $hostgroup = $HostgroupsTable->find()
+                    ->where([
+                        'Hostgroups.id' => $objectId
+                    ])
+                    ->disableHydration()
+                    ->first();
+
+                if (empty($hostgroup)) {
+                    return false;
+                }
+
+                return $hostgroup['uuid'];
+
+                break;
+
+            case 'servicegroup':
+                /** @var ServicegroupsTable $ServicegroupsTable */
+                $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+                //All servicegroups are available on all satellites - but maybe empty
+                $servicegroup = $ServicegroupsTable->find()
+                    ->where([
+                        'Servicegroups.id' => $objectId
+                    ])
+                    ->disableHydration()
+                    ->first();
+
+                if (empty($servicegroup)) {
+                    return false;
+                }
+
+                return $servicegroup['uuid'];
+                break;
+
+            default:
+                //Unknown object
+                return false;
+        }
     }
 }

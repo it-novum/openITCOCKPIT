@@ -462,7 +462,7 @@ class ServicetemplategroupsController extends AppController {
             $this->response = $this->response->withStatus(500);
             $this->set('success', false);
             $this->viewBuilder()->setOption('serialize', ['success']);
-        }else{
+        } else {
             $this->response = $this->response->withStatus(500);
             $this->set('success', false);
             $this->set('message', __('Container is not empty'));
@@ -506,7 +506,17 @@ class ServicetemplategroupsController extends AppController {
             /** @var $ContainersTable ContainersTable */
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($HostsTable->getHostPrimaryContainerIdByHostId($hostId));
+            $hostPrimaryContainerId = $HostsTable->getHostPrimaryContainerIdByHostId($hostId);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($hostPrimaryContainerId);
+
+            //Add the tenant container id to include timeperiod and service templates etc from the tenant (oITC V2 legacy)
+            if ($hostPrimaryContainerId != ROOT_CONTAINER) {
+                $path = $ContainersTable->getPathById($hostPrimaryContainerId);
+                if (isset($path[1]) && $path[1]['containertype_id'] == CT_TENANT) {
+                    $tenantContainerId = $path[1]['id'];
+                    $containerIds[] = $tenantContainerId;
+                }
+            }
 
             $servicetemplategroup = $ServicetemplategroupsTable->getServicetemplatesforAllocation($servicetemplategroupId, $containerIds);
             $targetHostwithServices = $HostsTable->getServicesForServicetemplateAllocation($hostId);
@@ -679,7 +689,17 @@ class ServicetemplategroupsController extends AppController {
 
                 $containerIds = $ContainersTable->resolveChildrenOfContainerIds($viewHost->getContainerId());
 
+                //Add the tenant container id to include timeperiod and service templates etc from the tenant (oITC V2 legacy)
+                if ($viewHost->getContainerId() != ROOT_CONTAINER) {
+                    $path = $ContainersTable->getPathById($viewHost->getContainerId());
+                    if (isset($path[1]) && $path[1]['containertype_id'] == CT_TENANT) {
+                        $tenantContainerId = $path[1]['id'];
+                        $containerIds[] = $tenantContainerId;
+                    }
+                }
+
                 $servicetemplategroup = $ServicetemplategroupsTable->getServicetemplatesforAllocation($servicetemplategroupId, $containerIds);
+
                 $targetHostwithServices = $HostsTable->getServicesForServicetemplateAllocation($hostId);
 
                 $servicetemplatesForDeploy = [];
@@ -887,6 +907,15 @@ class ServicetemplategroupsController extends AppController {
             }
 
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds($viewHost->getContainerId());
+
+            //Add the tenant container id to include timeperiod and service templates etc from the tenant (oITC V2 legacy)
+            if ($viewHost->getContainerId() != ROOT_CONTAINER) {
+                $path = $ContainersTable->getPathById($viewHost->getContainerId());
+                if (isset($path[1]) && $path[1]['containertype_id'] == CT_TENANT) {
+                    $tenantContainerId = $path[1]['id'];
+                    $containerIds[] = $tenantContainerId;
+                }
+            }
 
             $hostContactsAndContactgroupsById = $HostsTable->getContactsAndContactgroupsById($host->get('id'));
             $hosttemplateContactsAndContactgroupsById = $HosttemplatesTable->getContactsAndContactgroupsById($host->get('hosttemplate_id'));

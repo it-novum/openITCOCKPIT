@@ -20,7 +20,10 @@ if [[ ! -f "$OLDINIFILE" ]]; then
 fi
 
 chmod +x $APPDIR/bin/scripts/pre_v4_upgrade.php
-$APPDIR/bin/scripts/pre_v4_upgrade.php
+if ! $APPDIR/bin/scripts/pre_v4_upgrade.php; then
+    echo "Pre upgrade Tasks failed"
+    exit
+fi
 
 INIFILE=/opt/openitc/etc/mysql/mysql.cnf
 DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
@@ -28,9 +31,12 @@ BASHCONF=/opt/openitc/etc/mysql/bash.conf
 
 DEBIANCNF=/etc/mysql/debian.cnf
 
-MYSQL_USER=$(php -r "echo parse_ini_file('/etc/openitcockpit/mysql.cnf')['user'];")
-MYSQL_DATABASE=$(php -r "echo parse_ini_file('/etc/openitcockpit/mysql.cnf')['database'];")
-MYSQL_PASSWORD=$(awk '$1 == "password" { print }' "/etc/openitcockpit/mysql.cnf" |cut -d= -f2 | sed 's/^\s*//' | sed 's/\s*$//' | sed 's_/_\\/_g')
+MYSQL_USER=openitcockpit
+MYSQL_DATABASE=openitcockpit
+MYSQL_PASSWORD=
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+eval $(php -r "require '$APPDIR/src/itnovum/openITCOCKPIT/Database/MysqlConfigFileParserForCli.php'; \$mcp = new MysqlConfigFileParserForCli(); \$r = \$mcp->parse_mysql_cnf('/etc/openitcockpit/mysql.cnf'); echo \$r['shell'];")
 
 PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 

@@ -40,8 +40,15 @@ class ResetPasswordCommand extends Command {
             'boolean' => true,
             'default' => false
         ]);
+
         $parser->addOption('no-mail', [
             'help'    => __('Do not send the new password per mail'),
+            'boolean' => true,
+            'default' => false
+        ]);
+
+        $parser->addOption('enable', [
+            'help'    => __('If set the user will also be marked as enabled in the database. If not set the is_active field will be left untouched.'),
             'boolean' => true,
             'default' => false
         ]);
@@ -66,6 +73,7 @@ class ResetPasswordCommand extends Command {
 
         $print = $args->getOption('print') === true;
         $doNotSendMail = $args->getOption('no-mail') === true;
+        $enable = $args->getOption('enable') === true;
 
         $users = $this->getAllUsersWithPassword();
 
@@ -86,7 +94,7 @@ class ResetPasswordCommand extends Command {
 
         $selection = $io->askChoice('Please select a user ID', $userIds, (string)$userIds[0]);
 
-        $this->resetPassword($selection, $print, $doNotSendMail);
+        $this->resetPassword($selection, $print, $doNotSendMail, $enable);
     }
 
     private function getAllUsersWithPassword() {
@@ -101,7 +109,7 @@ class ResetPasswordCommand extends Command {
         return $users;
     }
 
-    private function resetPassword($userId, $print = false, $doNotSendMail = false) {
+    private function resetPassword($userId, $print = false, $doNotSendMail = false, $enable = false) {
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
         /** @var SystemsettingsTable $SystemsettingsTable */
@@ -117,6 +125,11 @@ class ResetPasswordCommand extends Command {
         $newPassword = $UsersTable->generatePassword();
 
         $user->set('password', $newPassword);
+
+        if($enable){
+            $user->set('is_active', 1);
+        }
+
         $UsersTable->save($user);
 
         if ($print) {

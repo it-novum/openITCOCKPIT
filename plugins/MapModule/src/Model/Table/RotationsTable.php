@@ -30,11 +30,13 @@ namespace MapModule\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Table\ContainersTable;
+use Cake\Core\Plugin;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use MapModule\Model\Entity\Rotation;
@@ -174,6 +176,87 @@ class RotationsTable extends Table {
                 } else {
                     $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
                 }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param int|array $satelliteId
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getRotationsWithMapsBySatelliteId($satelliteIds) {
+        if (!Plugin::isLoaded('DistributeModule')) {
+            return [];
+        }
+
+        if (!is_array($satelliteIds)) {
+            $satelliteIds = [$satelliteIds];
+        }
+
+
+        $query = $this->find()
+            ->select([
+                'Rotations.id',
+                'Rotations.name',
+                'Rotations.interval',
+            ])
+            ->innerJoinWith('Maps', function (Query $q) use ($satelliteIds) {
+                $q->innerJoinWith('Satellites', function (Query $q) use ($satelliteIds) {
+                    $q->where([
+                        'Satellites.id IN' => $satelliteIds
+                    ]);
+                    return $q;
+                });
+                return $q;
+            })
+            ->group([
+                'Rotations.id'
+            ])
+            ->enableHydration(false)
+            ->all();
+
+        $rotations = $query->toArray() ?? [];
+
+        $result = [];
+        foreach ($rotations as $rotation) {
+            $record = [
+                'id'       => $rotation['id'],
+                'name'     => $rotation['name'],
+                'interval' => $rotation['interval'],
+                'maps'     => [
+                    '_ids' => []
+                ]
+            ];
+
+            //Load maps of the rotation that are available on the satellite
+            $query = $this->find()
+                ->select([
+                    'Maps.id'
+                ])
+                ->innerJoinWith('Maps', function (Query $q) use ($satelliteIds) {
+                    $q->innerJoinWith('Satellites', function (Query $q) use ($satelliteIds) {
+                        $q->where([
+                            'Satellites.id IN' => $satelliteIds
+                        ]);
+                        return $q;
+                    });
+                    return $q;
+                })
+                ->where([
+                    'Rotations.id' => $rotation['id']
+                ])
+                ->enableHydration(false)
+                ->all();
+
+            $maps = $query->toArray() ?? [];
+            $record['maps']['_ids'] = Hash::extract($maps, '{n}._matchingData.Maps.id');
+
+            //Only add rotations with maps
+            if (!empty($record['maps']['_ids'])) {
+                $result[] = $record;
             }
         }
 

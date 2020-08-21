@@ -38,6 +38,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
@@ -145,12 +146,22 @@ class AgentconnectorController extends AppController {
 
         foreach ($unTrustedAgents as $key => $agentconnector) {
             if (isset($agentconnector['Agentconnector']) && isset($agentconnector['Agentconnector']['hostuuid'])) {
-                $host = $HostsTable->getHostByUuid($agentconnector['Agentconnector']['hostuuid']);
+                try {
+                    $host = $HostsTable->getHostByUuid($agentconnector['Agentconnector']['hostuuid']);
 
-                $unTrustedAgents[$key]['Host'] = [
-                    'id'   => $host->get('id'),
-                    'name' => $host->get('name')
-                ];
+                    $unTrustedAgents[$key]['Host'] = [
+                        'id'   => $host->get('id'),
+                        'name' => $host->get('name')
+                    ];
+
+                } catch (RecordNotFoundException $e) {
+                    //No host for this agent configuration - delete it
+                    $entity = $AgentconnectorTable->get($agentconnector['Agentconnector']['id']);
+                    $AgentconnectorTable->delete($entity);
+
+                    unset($unTrustedAgents[$key]);
+                }
+
             }
         }
 

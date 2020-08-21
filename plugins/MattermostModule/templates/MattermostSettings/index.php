@@ -77,8 +77,6 @@
 
                                 <input type="checkbox"
                                        class="custom-control-input"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
                                        id="enableTwoWay"
                                        ng-model="post.two_way">
                                 <label class="custom-control-label" for="enableTwoWay">
@@ -113,8 +111,6 @@
 
                                 <input type="checkbox"
                                        class="custom-control-input"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
                                        id="use_proxy"
                                        ng-model="post.use_proxy">
                                 <label class="custom-control-label" for="use_proxy">

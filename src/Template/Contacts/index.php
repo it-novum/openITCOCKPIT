@@ -51,13 +51,17 @@
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
-                    <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="ContactsAdd">
-                        <i class="fas fa-plus"></i> <?php echo __('New'); ?>
-                    </button>
-                    <?php if ($isLdapAuth): ?>
-                        <button class="btn btn-xs btn-warning mr-1 shadow-0" ui-sref="ContactsLdap">
-                            <i class="fas fa-plus"></i> <?php echo __('Import from LDAP'); ?>
+                    <?php if ($this->Acl->hasPermission('add', 'contacts')): ?>
+                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="ContactsAdd">
+                            <i class="fas fa-plus"></i> <?php echo __('New'); ?>
                         </button>
+                    <?php endif; ?>
+                    <?php if ($this->Acl->hasPermission('addFromLdap', 'contacts')): ?>
+                        <?php if ($isLdapAuth): ?>
+                            <button class="btn btn-xs btn-warning mr-1 shadow-0" ui-sref="ContactsLdap">
+                                <i class="fas fa-plus"></i> <?php echo __('Import from LDAP'); ?>
+                            </button>
+                        <?php endif; ?>
                     <?php endif; ?>
                     <button class="btn btn-xs btn-primary shadow-0" ng-click="triggerFilter()">
                         <i class="fas fa-filter"></i> <?php echo __('Filter'); ?>

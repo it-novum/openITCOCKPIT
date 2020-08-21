@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-
+require '/opt/openitc/frontend/src/itnovum/openITCOCKPIT/Database/MysqlConfigFileParserForCli.php';
 $PreUpgradeScript = new PreUpgradeScript();
 $PreUpgradeScript->execute();
 
@@ -69,7 +69,8 @@ class PreUpgradeScript {
             return $this->pdo;
         }
 
-        $config = parse_ini_file($this->iniFile);
+        $mcp = new MysqlConfigFileParserForCli();
+        $config = $mcp->parse_mysql_cnf($this->iniFile);
 
         try {
             $pdo = new PDO(
@@ -81,7 +82,7 @@ class PreUpgradeScript {
                 $config['user'],
                 $config['password']
             );
-
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->pdo = $pdo;
             return $pdo;
         } catch (\Exception $e) {

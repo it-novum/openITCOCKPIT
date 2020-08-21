@@ -64,7 +64,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
 
                     <?php if ($this->Acl->hasPermission('index', 'commands')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='CommandsIndex' class="btn btn-xs btn-default shadow-0">
-                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back to list'); ?>
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
                 </div>

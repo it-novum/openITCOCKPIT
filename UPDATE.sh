@@ -9,16 +9,18 @@ if [[ $1 == "--help" ]]; then
   exit 0
 fi
 
+APPDIR="/opt/openitc/frontend"
 INIFILE=/opt/openitc/etc/mysql/mysql.cnf
 DUMPINIFILE=/opt/openitc/etc/mysql/dump.cnf
 BASHCONF=/opt/openitc/etc/mysql/bash.conf
 
 if [[ ! -f "$BASHCONF" ]]; then
-  MYSQL_USER=$(php -r "echo parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf')['user'];")
-  MYSQL_DATABASE=$(php -r "echo parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf')['database'];")
-  MYSQL_PASSWORD=$(awk '$1 == "password" { print }' "/opt/openitc/etc/mysql/mysql.cnf" |cut -d= -f2 | sed 's/^\s*//' | sed 's/\s*$//' | sed 's_/_\\/_g')
-  MYSQL_HOST=$(php -r "echo parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf')['host'];")
-  MYSQL_PORT=$(php -r "echo parse_ini_file('/opt/openitc/etc/mysql/mysql.cnf')['port'];")
+  MYSQL_USER=openitcockpit
+  MYSQL_DATABASE=openitcockpit
+  MYSQL_PASSWORD=
+  MYSQL_HOST=localhost
+  MYSQL_PORT=3306
+  eval $(php -r "require '$APPDIR/src/itnovum/openITCOCKPIT/Database/MysqlConfigFileParserForCli.php'; \$mcp = new MysqlConfigFileParserForCli(); \$r = \$mcp->parse_mysql_cnf('/opt/openitc/etc/mysql/mysql.cnf'); echo \$r['shell'];")
 
   echo "dbc_dbuser='${MYSQL_USER}'" >$BASHCONF
   echo "dbc_dbpass='${MYSQL_PASSWORD}'" >>$BASHCONF
@@ -29,7 +31,6 @@ fi
 
 . /opt/openitc/etc/mysql/bash.conf
 
-APPDIR="/opt/openitc/frontend"
 
 echo "Create mysqldump of your current database"
 BACKUP_TIMESTAMP=$(date '+%Y-%m-%d_%H-%M-%S')
@@ -37,7 +38,7 @@ BACKUP_DIR='/opt/openitc/nagios/backup'
 mkdir -p $BACKUP_DIR
 #If you have mysql binlog enabled uses this command:
 #mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-privileges --single-transaction --master-data=1 --flush-logs --triggers --routines --events --hex-blob \
-mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-privileges --single-transaction --triggers --routines --events --hex-blob \
+mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-privileges --single-transaction --triggers --routines --no-tablespaces --events --hex-blob \
   --ignore-table=$dbc_dbname.nagios_acknowledgements \
   --ignore-table=$dbc_dbname.nagios_commands \
   --ignore-table=$dbc_dbname.nagios_commenthistory \
@@ -279,6 +280,7 @@ if [[ "$NORESTART" == "true" ]]; then
 fi
 
 OSVERSION=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
+PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 
 if [[ "$NOSYSTEMFILES" == "false" ]]; then
   echo "Copy required system files"
@@ -342,7 +344,6 @@ systemctl restart\
  oitc_cronjobs.timer\
  statusengine.service
 
-PHPVersion=$(php -r "echo substr(PHP_VERSION, 0, 3);")
 echo "Detected PHP Version: ${PHPVersion} try to restart php-fpm"
 
 # Restart services if they are running

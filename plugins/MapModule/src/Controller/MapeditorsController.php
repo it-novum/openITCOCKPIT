@@ -1289,16 +1289,20 @@ class MapeditorsController extends AppController {
         $item['Mapitem']['show_label'] = (int)$this->request->getData('Mapitem.show_label');
 
         $MapItemsTable->patchEntity($itemEntity, $item['Mapitem']);
-        if ($MapItemsTable->save($itemEntity)) {
-            $mapitem = new Mapitem($itemEntity->toArray());
-
-            $this->set('Mapitem', [
-                'Mapitem' => $mapitem->toArray()
-            ]);
-            $this->viewBuilder()->setOption('serialize', ['Mapitem']);
+        $MapItemsTable->save($itemEntity);
+        if ($itemEntity->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $itemEntity->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
-        $this->serializeCake4Id($itemEntity);
+
+        $mapitem = new Mapitem($itemEntity->toArray());
+
+        $this->set('Mapitem', [
+            'Mapitem' => $mapitem->toArray()
+        ]);
+        $this->viewBuilder()->setOption('serialize', ['Mapitem']);
     }
 
     public function deleteItem() {
@@ -1374,15 +1378,19 @@ class MapeditorsController extends AppController {
         $lineEntity = $MaplinesTable->patchEntity($lineEntity, $data['Mapline']);
 
         $MaplinesTable->save($lineEntity);
-        if (!$lineEntity->hasErrors()) {
-            $Mapline = new Mapline($lineEntity->toArray());
-            $this->set('Mapline', [
-                'Mapline' => $Mapline->toArray()
-            ]);
-            $this->viewBuilder()->setOption('serialize', ['Mapline']);
+        if ($lineEntity->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $lineEntity->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
-        $this->serializeCake4Id($lineEntity);
+
+        $mapline = new Mapline($lineEntity->toArray());
+
+        $this->set('Mapline', [
+            'Mapline' => $mapline->toArray()
+        ]);
+        $this->viewBuilder()->setOption('serialize', ['Mapline']);
     }
 
     public function deleteLine() {
@@ -1480,15 +1488,21 @@ class MapeditorsController extends AppController {
         $gadgetEntity = $MapgadgetsTable->patchEntity($gadgetEntity, $gadget);
 
         $MapgadgetsTable->save($gadgetEntity);
-        if (!$gadgetEntity->hasErrors()) {
-            $Mapgadget = new Mapgadget($gadgetEntity->toArray());
-            $this->set('Mapgadget', [
-                'Mapgadget' => $Mapgadget->toArray()
-            ]);
-            $this->viewBuilder()->setOption('serialize', ['Mapgadget']);
+
+
+        if ($gadgetEntity->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $gadgetEntity->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
-        $this->serializeCake4Id($gadgetEntity);
+
+        $Mapgadget = new Mapgadget($gadgetEntity->toArray());
+
+        $this->set('Mapgadget', [
+            'Mapgadget' => $Mapgadget->toArray()
+        ]);
+        $this->viewBuilder()->setOption('serialize', ['Mapgadget']);
     }
 
     public function deleteGadget() {
@@ -1747,16 +1761,20 @@ class MapeditorsController extends AppController {
         ]);
 
         $map->background = $this->request->getData('Map.background');
-        if ($MapsTable->save($map)) {
-            $this->set('Map', [
-                'Map' => $map
-            ]);
 
-            $this->viewBuilder()->setOption('serialize', ['Map']);
+
+        $MapsTable->save($map);
+        if ($map->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $map->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
-        $this->serializeCake4Id($map);
-        return;
+        $this->set('Map', [
+            'Map' => $map
+        ]);
+
+        $this->viewBuilder()->setOption('serialize', ['Map']);
     }
 
     public function getIcons() {
@@ -1839,15 +1857,19 @@ class MapeditorsController extends AppController {
         $mapsummaryitemEntity = $MapsummaryitemsTable->patchEntity($mapsummaryitemEntity, $mapsummaryitem['Mapsummaryitem']);
         $MapsummaryitemsTable->save($mapsummaryitemEntity);
 
-        if (!$mapsummaryitemEntity->hasErrors()) {
-            $Mapsummaryitem = new Mapsummaryitem($mapsummaryitemEntity->toArray());
-            $this->set('Mapsummaryitem', [
-                'Mapsummaryitem' => $Mapsummaryitem->toArray()
-            ]);
-            $this->viewBuilder()->setOption('serialize', ['Mapsummaryitem']);
+        if ($mapsummaryitemEntity->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $mapsummaryitemEntity->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
-        $this->serializeCake4Id($mapsummaryitemEntity);
+
+        $mapSummaryitem = new Mapsummaryitem($mapsummaryitemEntity->toArray());
+
+        $this->set('Mapsummaryitem', [
+            'Mapsummaryitem' => $mapSummaryitem->toArray()
+        ]);
+        $this->viewBuilder()->setOption('serialize', ['Mapsummaryitem']);
     }
 
     public function deleteSummaryitem() {

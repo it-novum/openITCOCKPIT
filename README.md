@@ -76,7 +76,7 @@ Please execute all commands as user `root` or via `sudo`.
 apt-get install apt-transport-https curl gnupg2 ca-certificates
 curl https://packages.openitcockpit.io/repokey.txt | apt-key add -
 
-echo "deb https://packages.openitcockpit.io/openitcockpit/$(lsb_release -sc)/unstable $(lsb_release -sc) main" > /etc/apt/sources.list.d/openitcockpit.list
+echo "deb https://packages.openitcockpit.io/openitcockpit/$(lsb_release -sc)/stable $(lsb_release -sc) main" > /etc/apt/sources.list.d/openitcockpit.list
 apt-get update
 
 apt-get install openitcockpit
@@ -87,7 +87,7 @@ apt-get install openitcockpit
 
 You can register your openITCOCKPIT installation to get access to free community modules.
 Login to the webinterface of openITCOCKPIT and navigate to System -> Registration,
-enter the community license key `e5aef99e-817b-0ff5-3f0e-140c1f342792` and click Register.
+enter the community license key `0dc0d951-e34e-43d0-a5a5-a690738e6a49` and click Register.
 After successful registration you can install the free community modules at System tools -> Package Manager
 
 # Main Features

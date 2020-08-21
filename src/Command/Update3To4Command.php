@@ -244,8 +244,8 @@ class Update3To4Command extends Command {
 
         $mailHost = new MailConfigValue($OldEmailConfig->default['host']);
         $mailPort = new MailConfigValueInt((int)$OldEmailConfig->default['port']);
-        $mailUsername = new MailConfigValue($OldEmailConfig->default['username']);
-        $mailPassword = new MailConfigValue($OldEmailConfig->default['password']);
+        $mailUsername = new MailConfigValue($OldEmailConfig->default['username'] ?? null);
+        $mailPassword = new MailConfigValue($OldEmailConfig->default['password'] ?? null);
         $mailConfigurator = new MailConfigurator(
             $mailHost, $mailPort, $mailUsername, $mailPassword
         );
@@ -266,6 +266,11 @@ class Update3To4Command extends Command {
 
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        if (!is_array($users)) {
+            $this->io->warning('No active openITCOCKPIT Version 3 users found!');
+            return false;
+        }
 
         foreach ($users as $user) {
             if ($UsersTable->existsById($user['id'])) {
