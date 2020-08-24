@@ -434,9 +434,9 @@ class MapeditorsController extends AppController {
 
         $childMapIds = $maps[$parentMapId];
         foreach ($childMapIds as $childMapId) {
-            $allRelatedMapIdsOfParent[] = $childMapId;
+            $allRelatedMapIdsOfParent[] = (int)$childMapId;
             //Is the children map used as parent map in an other relation?
-            if (isset($maps[$childMapId])) {
+            if (isset($maps[$childMapId]) && !in_array($childMapId, $allRelatedMapIdsOfParent, true)) { //in_array to avoid endless loop
                 //Rec
                 $allRelatedMapIdsOfParent = array_merge(
                     $allRelatedMapIdsOfParent,
