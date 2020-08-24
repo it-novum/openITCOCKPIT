@@ -1131,9 +1131,9 @@ class MapsTable extends Table {
      */
     public function getMapInformation(HoststatusTableInterface $HoststatusTable, ServicestatusTableInterface $ServicestatusTable, array $map, array $hosts, array $services) {
         $map = [
-            'id'    => $map[0]['id'],
-            'name'  => $map[0]['name'],
-            'title' => $map[0]['title']
+            'id'    => $map['id'],
+            'name'  => $map['name'],
+            'title' => $map['title']
         ];
 
         if (empty($hosts) && empty($services)) {
@@ -2287,5 +2287,21 @@ class MapsTable extends Table {
                 //Unknown object
                 return false;
         }
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getMapById($id) {
+        $query = $this->find()
+            ->contain(['Containers'])
+            ->where([
+                'Maps.id' => $id,
+            ]);
+
+        $result = $query->firstOrFail();
+
+        return $result->toArray();
     }
 }
