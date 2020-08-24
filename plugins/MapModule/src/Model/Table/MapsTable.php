@@ -2158,6 +2158,11 @@ class MapsTable extends Table {
                     $map[$mapObjectType][$index]['object_id'] = $mapObjectUuid;
 
                 } else {
+                    if ($mapObjectType === 'maplines' && isset($mapItem['type']) && $mapItem['type'] === 'stateless') {
+                        //Keep stateless map lines
+                        continue;
+                    }
+
                     //Item is not available on this satellite
                     unset($map[$mapObjectType][$index]);
                 }

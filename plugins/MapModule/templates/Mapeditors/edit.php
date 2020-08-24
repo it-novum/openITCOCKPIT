@@ -557,7 +557,7 @@
                 </div>
                 <div class="row">
                     <div class="form-group col-lg-12 margin-top-10" ng-class="{'has-error': errors.object_id}">
-                        <label class="control-label">
+                        <label class="control-label" ng-if="currentItem.type !== 'stateless'">
                             <?php echo __('Select object'); ?>
                         </label>
                         <select
@@ -566,6 +566,7 @@
                             chosen="itemObjects"
                             callback="loadMoreItemObjects"
                             ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
+                            ng-if="currentItem.type !== 'stateless'"
                             ng-model="currentItem.object_id">
                         </select>
                         <div ng-repeat="error in errors.object_id">
