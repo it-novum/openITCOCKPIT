@@ -590,7 +590,7 @@ class MapsTable extends Table {
                 'isAcknowledged' => false,
                 'isInDowntime'   => false,
                 'color'          => 'text-primary',
-                'background'     => 'bg-color-blueLight',
+                'background'     => 'bg-not-monitored',
                 'Host'           => $HostView->toArray(),
                 'Hoststatus'     => $HoststatusView->toArray(),
             ];
@@ -717,7 +717,7 @@ class MapsTable extends Table {
                 'isAcknowledged' => false,
                 'isInDowntime'   => false,
                 'color'          => 'text-primary',
-                'background'     => 'bg-color-blueLight',
+                'background'     => 'bg-not-monitored',
                 'Host'           => $HostView->toArray(),
                 'Service'        => $ServiceView->toArray(),
                 'Servicestatus'  => $tmpServicestatus,
@@ -789,7 +789,7 @@ class MapsTable extends Table {
             return [
                 'icon'       => $this->errorIcon,
                 'color'      => 'text-primary',
-                'background' => 'bg-color-blueLight',
+                'background' => 'bg-not-monitored',
                 'Hostgroup'  => $hostgroupLight
             ];
         }
@@ -903,7 +903,7 @@ class MapsTable extends Table {
             return [
                 'icon'         => $this->errorIcon,
                 'color'        => 'text-primary',
-                'background'   => 'bg-color-blueLight',
+                'background'   => 'bg-not-monitored',
                 'Servicegroup' => $servicegroupLight
             ];
         }
@@ -1140,7 +1140,7 @@ class MapsTable extends Table {
             return [
                 'icon'       => $this->errorIcon,
                 'color'      => 'text-primary',
-                'background' => 'bg-color-blueLight',
+                'background' => 'bg-not-monitored',
                 'Map'        => $map
             ];
         }
