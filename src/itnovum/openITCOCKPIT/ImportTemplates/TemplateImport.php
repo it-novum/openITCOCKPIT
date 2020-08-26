@@ -3,14 +3,17 @@
 
 namespace App\itnovum\openITCOCKPIT\ImportTemplates;
 
-
 use App\Model\Table\CommandsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
 use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\ServicetemplatesTable;
-use itnovum\openITCOCKPIT\Core\UUID;
 
+/**
+ * Class TemplateImport
+ * @package App\itnovum\openITCOCKPIT\ImportTemplates
+ * @TODO backward compatibility - rename old templates with "_LEGACY" suffix -> only commands affected
+ */
 class TemplateImport {
 
     /**
@@ -49,6 +52,7 @@ class TemplateImport {
      * @param MacrosTable $MacrosTable
      * @param ServicetemplatesTable $ServicetemplatesTable
      * @param HosttemplatesTable $HosttemplatesTable
+     * @param ServicetemplategroupsTable $ServicetemplategroupsTable
      */
     public function __construct(CommandsTable $CommandsTable, MacrosTable $MacrosTable, ServicetemplatesTable $ServicetemplatesTable, HosttemplatesTable $HosttemplatesTable, ServicetemplategroupsTable $ServicetemplategroupsTable) {
         $this->CommandsTable = $CommandsTable;
@@ -62,7 +66,7 @@ class TemplateImport {
      * @param $command_line
      * @return string
      */
-    private function replaceMacroNames($command_line) {
+    private function replaceMacroNames($command_line): string {
         $commandLineParts = explode(' ', $command_line);
         $newCommandLineParts = [];
         foreach ($commandLineParts as $commandLinePart) {
@@ -79,13 +83,44 @@ class TemplateImport {
         return implode(' ', $newCommandLineParts);
     }
 
+    /**
+     * @param string $name
+     * @param array $commandarguments
+     * @return false|mixed
+     */
+    private function getCommandArgumentIdByName(string $name, array $commandarguments) {
+        foreach ($commandarguments as $commandargument) {
+            if (isset($commandargument['name']) && $commandargument['name'] === $name) {
+                return $commandargument['id'];
+            }
+        }
+        return false;
+    }
 
-    public function import($data) {
+    /**
+     * BACKWARD COMPATIBILITY METHOD
+     * command names must be unique so we need to check if the name is already in use
+     * uuid is not in the database - this has been checked by the importCommands() method
+     * in case of positive match (name already in use) rename it with "_legacy" suffix
+     * @param $commands
+     */
+    private function checkCommandNames($commands): void{
+        //step1: search for command names in database
+        //step2: if positive match, rename the old one
+    }
+
+
+    /**
+     * @param $data
+     */
+    public function import($data): void {
+
+        $this->mapping['macros'] = [];
         if (!empty($data['Macros'])) {
             $this->importMacros($data['Macros']);
         }
 
-        if(!empty($data['Commands'])){
+        if (!empty($data['Commands'])) {
             $this->importCommands($data['Commands']);
         }
 
@@ -93,10 +128,15 @@ class TemplateImport {
             $this->importServicetemplates($data['Servicetemplates']);
         }
 
+        if (!empty($data['Servicetemplategroups'])) {
+            $this->importServicetemplategroups($data['Servicetemplategroups']);
+        }
     }
 
-    private function importMacros($macros) {
-        $this->mapping['macros'] = [];
+    /**
+     * @param $macros
+     */
+    private function importMacros($macros): void {
         foreach ($macros as $macro) {
             $existingMacro = $this->MacrosTable->find()
                 ->select(['id'])
@@ -122,33 +162,81 @@ class TemplateImport {
         }
     }
 
-    private function importCommands($commands){
+    /**
+     * @param $commands
+     */
+    private function importCommands($commands): void {
         foreach ($commands as $command) {
-            if ($this->CommandsTable->existsByUuid($command['uuid'])){
+            if ($this->CommandsTable->existsByUuid($command['uuid'])) {
                 //skip command if its already exists
                 continue;
             }
+
+            //backward compatibilty method
+            $this->checkCommandNames($commands);
+
+            $command['command_line'] = $this->replaceMacroNames($command['command_line']);
+            $entity = $this->CommandsTable->newEntity($command);
+            $this->CommandsTable->save($entity);
+
         }
     }
 
-    private function importServicetemplates($servicetemplates, $commands) {
-        foreach ($servicetemplates as $servicetemplate){
+    /**
+     * @param $servicetemplates
+     */
+    private function importServicetemplates($servicetemplates): void {
+        foreach ($servicetemplates as $servicetemplate) {
 
             if ($this->ServicetemplatesTable->existsByUuid($servicetemplate['uuid'])) {
-                $existingServicetemplate = $this->ServicetemplatesTable->getServicetemplateByUuid($servicetemplate['uuid']);
-                $this->mapping['servicetemplates'][$servicetemplate['id']] = $existingServicetemplate['Servicetemplate']['id'];
                 //skip current template if it already exists
                 continue;
             }
 
-            if(UUID::is_valid($servicetemplate['command_id'])){
-
+            if (!$this->CommandsTable->existsByUuid($servicetemplate['command_id'])) {
+                //skip template if command does not exist
                 continue;
             }
 
-
+            $command = $this->CommandsTable->getCommandByUuid($servicetemplate['command_id'], true, false)[0];
+            $servicetemplate['command_id'] = $command['id'];
+//print_r($servicetemplate['servicetemplatecommandargumentvalues']);
+            if (!empty($servicetemplate['servicetemplatecommandargumentvalues']) && !empty($command['commandarguments'])) {
+                foreach ($servicetemplate['servicetemplatecommandargumentvalues'] as $templateArgumentKey => $templateArgumentValue) {
+                    $servicetemplate['servicetemplatecommandargumentvalues'][$templateArgumentKey] = [
+                        'commandargument_id' => $this->getCommandArgumentIdByName($templateArgumentValue['commandargument_id'], $command['commandarguments']),
+                        'value'              => $templateArgumentValue['value'],
+                    ];
+                }
+            }
+            $entity = $this->ServicetemplatesTable->newEntity($servicetemplate);
+            $this->ServicetemplatesTable->save($entity);
         }
     }
 
+    /**
+     * @param $servicetemplategroups
+     */
+    private function importServicetemplategroups($servicetemplategroups): void {
+        foreach ($servicetemplategroups as $servicetemplategroup) {
+            if ($this->ServicetemplategroupsTable->existsByUuid($servicetemplategroup['uuid'])) {
+                //skip current template if its already exists
+                continue;
+            }
 
+            foreach ($servicetemplategroup['servicetemplates'] as $key => $servicetemplate) {
+                if (!$this->CommandsTable->existsByUuid($servicetemplate['id'])) {
+                    //delete missing servictemplate from group
+                    unset($servicetemplategroup['servicetemplates'][$key]);
+                    continue;
+                }
+                //replace servicetemplate id
+                $servicetemplate = $this->ServicetemplatesTable->getServicetemplateByUuid($servicetemplate['id']);
+                $servicetemplategroup['servicetemplates'][$key]['id'] = $servicetemplate['id'];
+
+            }
+            $entity = $this->ServicetemplategroupsTable->newEntity($servicetemplategroup);
+            $this->ServicetemplategroupsTable->save($entity);
+        }
+    }
 }
