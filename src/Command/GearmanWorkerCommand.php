@@ -771,6 +771,12 @@ class GearmanWorkerCommand extends Command {
             case 'export_delete_old_configuration':
                 $NagiosConfigGenerator = new NagiosConfigGenerator();
                 $NagiosConfigGenerator->deleteAllConfigfiles();
+
+                if (Plugin::isLoaded('PrometheusModule')) {
+                    $PrometheusConfigGenerator = new \PrometheusModule\Lib\PrometheusConfigGenerator();
+                    $PrometheusConfigGenerator->deleteAllConfigfiles();
+                }
+
                 $return = ['task' => $payload['task']];
                 break;
 
@@ -865,6 +871,18 @@ class GearmanWorkerCommand extends Command {
             case 'export_userdefinedmacros':
                 $NagiosConfigGenerator = new NagiosConfigGenerator();
                 $NagiosConfigGenerator->exportMacros();
+                $return = ['task' => $payload['task']];
+                break;
+
+            case 'export_prometheus_yml':
+                $PrometheusConfigGenerator = new \PrometheusModule\Lib\PrometheusConfigGenerator();
+                $PrometheusConfigGenerator->createPrometheusYml();
+                $return = ['task' => $payload['task']];
+                break;
+
+            case 'export_prometheus_targets':
+                $PrometheusConfigGenerator = new \PrometheusModule\Lib\PrometheusConfigGenerator();
+                $PrometheusConfigGenerator->exportTargets();
                 $return = ['task' => $payload['task']];
                 break;
 
@@ -1247,6 +1265,15 @@ class GearmanWorkerCommand extends Command {
                 'text' => __('Export user defined macros'),
             ],
         ];
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $tasks['export_prometheus_yml'] = [
+                'text' => __('Create main Prometheus configuration file'),
+            ];
+            $tasks['export_prometheus_targets'] = [
+                'text' => __('Create Prometheus targets'),
+            ];
+        }
 
         foreach ($tasks as $taskName => $task) {
             if (isset($task['options'])) {
