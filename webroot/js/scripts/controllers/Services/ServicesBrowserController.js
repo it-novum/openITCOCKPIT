@@ -105,6 +105,7 @@ angular.module('openITCOCKPIT')
                 })
             ]).then(function(results){
                 $scope.mergedService = results[0].data.mergedService;
+                $scope.serviceType = results[0].data.serviceType;
                 $scope.checkCommand = results[0].data.checkCommand;
                 $scope.areContactsFromService = results[0].data.areContactsFromService;
                 $scope.areContactsInheritedFromHosttemplate = results[0].data.areContactsInheritedFromHosttemplate;

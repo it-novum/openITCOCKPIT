@@ -1651,8 +1651,12 @@ class ServicesController extends AppController {
 
         $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
 
+        $typesForView = $ServicesTable->getServiceTypesWithStyles();
+        $serviceType = $typesForView[$mergedService['service_type']];
+
         // Set data to fronend
         $this->set('mergedService', $mergedService);
+        $this->set('serviceType', $serviceType);
         $this->set('host', ['Host' => $host]);
         $this->set('areContactsFromService', $ServiceMergerForView->areContactsFromService());
         $this->set('areContactsInheritedFromHosttemplate', $ServiceMergerForView->areContactsInheritedFromHosttemplate());
@@ -1672,6 +1676,7 @@ class ServicesController extends AppController {
 
         $this->viewBuilder()->setOption('serialize', [
             'mergedService',
+            'serviceType',
             'host',
             'areContactsFromService',
             'areContactsInheritedFromHosttemplate',
