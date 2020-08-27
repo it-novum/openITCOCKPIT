@@ -28,6 +28,11 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactsTable;
 use Cake\ORM\TableRegistry;
 
+/**
+ * Class ImportTemplates
+ * @package itnovum\openITCOCKPIT\ImportTemplates
+ * @deprecated use TemplateImport class with v4
+ */
 class ImportTemplates {
     public $mapping = [];
     //root path for json and check files
