@@ -1129,6 +1129,42 @@ class GearmanWorkerCommand extends Command {
             $entity->set('successfully', 1);
             $ExportsTable->save($entity);
             unset($entity);
+
+            if (Plugin::isLoaded('PrometheusModule')) {
+                $entity = $ExportsTable->newEntity([
+                    'task' => 'export_create_backup_prometheus',
+                    'text' => __('Create Backup of current Prometheus configuration')
+                ]);
+                $ExportsTable->save($entity);
+
+                //Backup Prometheus related config files
+                if (!is_dir('/opt/openitc/prometheus/backup')) {
+                    mkdir('/opt/openitc/prometheus/backup');
+                }
+
+                if (is_dir('/opt/openitc/prometheus/etc')) {
+                    $backupTarget = '/opt/openitc/prometheus/backup/' . date('d-m-Y_H-i-s');
+
+                    if (!is_dir($backupTarget)) {
+                        mkdir($backupTarget);
+                        mkdir($backupTarget . '/etc');
+                    }
+
+
+                    if (file_exists('/opt/openitc/prometheus/prometheus.yml')) {
+                        copy('/opt/openitc/prometheus/prometheus.yml', $backupTarget . '/prometheus.yml');
+                    }
+
+                    $backupSrc = new Folder('/opt/openitc/prometheus/etc');
+                    $backupSrc->copy($backupTarget . '/etc');
+
+                    $entity->set('finished', 1);
+                    $entity->set('successfully', 1);
+                    $ExportsTable->save($entity);
+                    unset($entity);
+                }
+            }
+
         }
 
         $gearmanConfig = Configure::read('gearman');
