@@ -102,11 +102,20 @@ class TemplateImport {
      * command names must be unique so we need to check if the name is already in use
      * uuid is not in the database - this has been checked by the importCommands() method
      * in case of positive match (name already in use) rename it with "_legacy" suffix
-     * @param $commands
+     * @param $command
      */
-    private function checkCommandNames($commands): void{
-        //step1: search for command names in database
-        //step2: if positive match, rename the old one
+    private function checkCommandNames($command): void {
+        $commandName = $command['name'];
+        $newCommandName = $commandName . '_legacy';
+        $command = $this->CommandsTable->getCommandByName($commandName);
+        if (empty($command)) {
+            return;
+        }
+        $command = $command['Command'][0];
+        //command name existing
+        $command = $this->CommandsTable->get($command['id']);
+        $command->name = $newCommandName;
+        $this->CommandsTable->save($command);
     }
 
 
@@ -173,7 +182,7 @@ class TemplateImport {
             }
 
             //backward compatibilty method
-            $this->checkCommandNames($commands);
+            $this->checkCommandNames($command);
 
             $command['command_line'] = $this->replaceMacroNames($command['command_line']);
             $entity = $this->CommandsTable->newEntity($command);
