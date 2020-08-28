@@ -1756,6 +1756,7 @@ class ServicesTable extends Table {
                 'Services.active_checks_enabled',
                 'Services.tags',
                 'Services.priority',
+                'Services.service_type',
                 'servicename'     => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
                 'servicepriority' => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
 
@@ -1912,6 +1913,7 @@ class ServicesTable extends Table {
                 'Services.active_checks_enabled',
                 'Services.tags',
                 'Services.priority',
+                'Services.service_type',
                 'servicename'     => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
                 'servicepriority' => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
 

@@ -234,6 +234,7 @@ class ServicesController extends AppController {
 
         $all_services = [];
         $UserTime = $User->getUserTime();
+        $serviceTypes = $ServicesTable->getServiceTypesWithStyles();
         foreach ($services as $service) {
             $allowEdit = $service['allow_edit'];
             $Host = new Host($service['_matchingData']['Hosts'], $allowEdit);
@@ -250,18 +251,15 @@ class ServicesController extends AppController {
                 'Service'       => $Service->toArray(),
                 'Host'          => $Host->toArray(),
                 'Hoststatus'    => $Hoststatus->toArray(),
-                'Servicestatus' => $Servicestatus->toArray()
+                'Servicestatus' => $Servicestatus->toArray(),
+                'ServiceType'   => $serviceTypes[$service['service_type']]
             ];
             $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
             $all_services[] = $tmpRecord;
         }
 
         $this->set('all_services', $all_services);
-        $toJson = ['all_services', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['all_services', 'scroll'];
-        }
-        $this->viewBuilder()->setOption('serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', ['all_services']);
     }
 
     /**

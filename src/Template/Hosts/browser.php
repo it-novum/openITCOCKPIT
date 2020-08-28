@@ -1061,6 +1061,10 @@ use Cake\Core\Plugin;
                                     <?php echo __('Service name'); ?>
                                 </th>
 
+                                <th class="no-sort">
+                                    <?php echo __('Service type'); ?>
+                                </th>
+
                                 <th class="no-sort tableStatewidth"
                                     ng-click="orderBy('Servicestatus.last_state_change')">
                                     <i class="fa"
@@ -1228,6 +1232,13 @@ use Cake\Core\Plugin;
                                     <?php else: ?>
                                         {{ service.Service.servicename }}
                                     <?php endif; ?>
+                                </td>
+
+                                <td>
+                                    <span class="badge border margin-right-10 {{service.ServiceType.class}} {{service.ServiceType.color}}">
+                                        <i class="{{service.ServiceType.icon}}"></i>
+                                        {{service.ServiceType.title}}
+                                    </span>
                                 </td>
 
                                 <td>
