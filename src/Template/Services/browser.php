@@ -1087,7 +1087,7 @@ use Cake\Core\Plugin;
 </div>
 
 <!-- Service Graphs -->
-<div class="row">
+<div class="row" ng-show="mergedService.has_graph">
     <div class="col-xl-12">
         <div id="panel-2" class="panel">
             <div class="panel-hdr">
