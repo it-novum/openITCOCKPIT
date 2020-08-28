@@ -524,6 +524,14 @@ use Cake\Core\Plugin;
                                     </div>
                                 </div>
 
+                                <?php if (\Cake\Core\Plugin::isLoaded('PrometheusModule')): ?>
+                                    <!-- Prometheus state overview table -->
+                                    <prometheus-service-browser
+                                            ng-if="mergedService.service_type === <?= PROMETHEUS_SERVICE ?>"
+                                            service-id="mergedService.id"
+                                            last-load="lastLoadDate"></prometheus-service-browser>
+                                <?php endif; ?>
+
                                 <!-- Host state overview table -->
                                 <div class="row">
                                     <div class="col-lg-12">

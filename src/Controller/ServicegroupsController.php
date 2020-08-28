@@ -767,7 +767,7 @@ class ServicegroupsController extends AppController {
             }
             $Service = new Service($service, null, $allowEdit);
             $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
-            $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus, $this->DbBackend);
+            $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus, $this->DbBackend, $service['service_type']);
 
             $tmpRecord = [
                 'Service'       => $Service->toArray(),

@@ -156,6 +156,16 @@ angular.module('openITCOCKPIT')
                 for(var dsName in results[0].data.mergedService.Perfdata){
                     $scope.dataSources.push(dsName);
                 }
+
+                if($scope.mergedService.service_type === 32){ //This is a Prometheus Service
+                    //All Prometheus Services have perfdata available.
+                    //The name of the metric is always the name of the service
+                    // One Prometheus Services can also only have one metric (gauge or datasource named in Nagios univers)
+                    $scope.dataSources = [
+                        $scope.mergedService.name
+                    ];
+                }
+
                 if($scope.dataSources.length > 0){
                     $scope.currentDataSource = $scope.dataSources[0];
                 }
@@ -378,6 +388,7 @@ angular.module('openITCOCKPIT')
         var initTooltip = function(){
             var previousPoint = null;
             var $graph_data_tooltip = $('#graph_data_tooltip');
+            var hideTimeout = null;
 
             $graph_data_tooltip.css({
                 position: 'absolute',
@@ -401,6 +412,11 @@ angular.module('openITCOCKPIT')
 
                 if(item){
                     if(previousPoint != item.dataIndex){
+                        if(hideTimeout !== null){
+                            clearTimeout(hideTimeout);
+                            hideTimeout = null;
+                        }
+
                         previousPoint = item.dataIndex;
 
                         $('#graph_data_tooltip').hide();
@@ -414,11 +430,13 @@ angular.module('openITCOCKPIT')
                             tooltip_text += ' ' + $scope.currentGraphUnit;
                         }
 
+                        //Hide the tooltip after 5 seconds
+                        hideTimeout = setTimeout(function(){
+                            $('#graph_data_tooltip').hide();
+                        }, 5000);
+
                         showTooltip(item.pageX, item.pageY, tooltip_text, item.datapoint[0]);
                     }
-                }else{
-                    $("#graph_data_tooltip").hide();
-                    previousPoint = null;
                 }
             });
         };
