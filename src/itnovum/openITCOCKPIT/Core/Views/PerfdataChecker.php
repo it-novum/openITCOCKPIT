@@ -60,25 +60,40 @@ class PerfdataChecker {
     private $DbBackend;
 
     /**
+     * @var int|null
+     */
+    private $serviceType;
+
+    /**
      * PerfdataChecker constructor.
      * @param Host $Host
      * @param Service $Service
      * @param PerfdataBackend $PerfdataBackend
      * @param Servicestatus $Servicestatus
      * @param DbBackend $DbBackend
+     * @param int|null $serviceType
      */
-    public function __construct(Host $Host, Service $Service, PerfdataBackend $PerfdataBackend, Servicestatus $Servicestatus, DbBackend $DbBackend) {
+    public function __construct(Host $Host, Service $Service, PerfdataBackend $PerfdataBackend, Servicestatus $Servicestatus, DbBackend $DbBackend, ?int $serviceType = null) {
         $this->hostUuid = $Host->getUuid();
         $this->serviceUuid = $Service->getUuid();
         $this->PerfdataBackend = $PerfdataBackend;
         $this->Servicestatus = $Servicestatus;
         $this->DbBackend = $DbBackend;
+        $this->serviceType = $serviceType;
     }
 
     /**
      * @return bool
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function hasPerfdata() {
+        if($this->serviceType !== null){
+            if($this->serviceType === PROMETHEUS_SERVICE){
+                //Prometheus Services always have Graphs - that's how Prometheus work
+                return true;
+            }
+        }
+
         if ($this->PerfdataBackend->isRrdtool()) {
             return file_exists(sprintf('/opt/openitc/nagios/share/perfdata/%s/%s.rrd', $this->hostUuid, $this->serviceUuid));
         }

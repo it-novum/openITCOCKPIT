@@ -1539,7 +1539,8 @@ class ServicesController extends AppController {
             $serviceObj,
             $this->PerfdataBackend,
             $Servicestatus,
-            $this->DbBackend
+            $this->DbBackend,
+            $mergedService['service_type']
         );
         $mergedService['has_graph'] = $PerfdataChecker->hasPerfdata();
         $mergedService['allowEdit'] = $allowEdit;
