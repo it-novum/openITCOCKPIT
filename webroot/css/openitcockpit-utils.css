@@ -653,3 +653,30 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
+.wizard-logo-image {
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    height: 80px;
+    width: 80px;
+    position: relative;
+    border: 5px solid #4285F4;
+    flex: 0 0 80px;
+}
+
+.wizard-logo-image img {
+    max-height: 60%;
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.wizard-logo-card-height-150 {
+    min-height: 150px;
+    height: 150px;
+}

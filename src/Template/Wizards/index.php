@@ -43,152 +43,68 @@
                     <?php echo __('Configuration Wizards'); ?>
                 </h2>
                 <div class="panel-toolbar">
-                    <div class="btn-group btn-group-xs" data-toggle="buttons">
+                    <div class="btn-group btn-group-xs padding-top-5 margin-right-10" data-toggle="buttons">
                         <label class="btn btn-default">
-                            <input class="invisible" type="checkbox" name="season_revenue_1"
-                                   id="season_revenue_1" value="linux">
+                            <input class="invisible" type="checkbox" name="linux"
+                                   id="linux" value="linux">
                             <i class="fab fa-linux"></i> <?= ('Linux'); ?>
                         </label>
                         <label class="btn btn-default">
-                            <input class="invisible" type="checkbox" name="season_revenue_2" id="season_revenue_2"
+                            <input class="invisible" type="checkbox" name="windows" id="windows"
                                    value="windows">
                             <i class="fab fa-windows"></i> <?= ('Windows'); ?>
                         </label>
                         <label class="btn btn-default">
-                            <input class="invisible" type="checkbox" name="season_revenue_3" id="season_revenue_3"
+                            <input class="invisible" type="checkbox" name="database" id="database"
                                    value="database">
                             <i class="fas fa-database"></i> <?= ('Database'); ?>
                         </label>
                         <label class="btn btn-default">
-                            <input class="invisible" type="checkbox" name="season_revenue_4" id="season_revenue_4"
+                            <input class="invisible" type="checkbox" name="mail" id="mail"
                                    value="mail">
                             <i class="fas fa-mail-bulk"></i> <?= ('Email'); ?>
                         </label>
                         <label class="btn btn-default">
-                            <input class="invisible" type="checkbox" name="season_revenue_5" id="season_revenue_5"
+                            <input class="invisible" type="checkbox" name="network" id="network"
+                                   value="network">
+                            <i class="fas fa-sitemap"></i> <?= ('Network'); ?>
+                        </label>
+                        <label class="btn btn-default">
+                            <input class="invisible" type="checkbox" name="docker" id="docker"
                                    value="docker">
                             <i class="fab fa-docker"></i> <?= ('Docker'); ?>
                         </label>
-                        <label class="btn btn-danger">
-                            <i class="fas fa-undo"></i> <?= ('Reset'); ?>
-                        </label>
                     </div>
+                    <button class="btn btn-danger btn-xs">
+                        <i class="fas fa-undo"></i> <?= ('Reset'); ?>
+                    </button>
                 </div>
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
                     <div class="row">
-                        <div class="col-3">
-                            <div class="card mb-2">
+                        <div class="col-3" ng-repeat="wizard in wizards">
+                            <div class="card mb-2 wizard-logo-card-height-150">
                                 <div class="card-body">
-                                    <a href="javascript:void(0);" class="d-flex flex-row align-items-center">
-                                        <div class="icon-stack display-3 flex-shrink-0">
-                                            <i class="far fa-circle icon-stack-3x opacity-100 color-primary-400"></i>
-                                            <i class="fas fa-graduation-cap icon-stack-1x opacity-100 color-primary-500"></i>
+                                    <a href="javascript:void(0);" class="d-flex flex-row align-items-start">
+                                        <div class="wizard-logo-image">
+                                            <img src="/img/wizards/{{wizard.image}}"/>
                                         </div>
                                         <div class="ml-3">
-                                            <strong>
-                                                Add Qualifications
+                                            <strong class="font-md">
+                                                {{wizard.title}}
                                             </strong>
                                             <br>
-                                            Adding qualifications will help gain more clients
+                                            {{wizard.description}}
                                         </div>
                                     </a>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="card mb-2">
-                                <div class="card-body">
-                                    <a href="javascript:void(0);" class="d-flex flex-row align-items-center">
-                                        <div class="icon-stack display-3 flex-shrink-0">
-                                            <i class="far fa-circle icon-stack-3x opacity-100 color-primary-400"></i>
-                                            <i class="fas fa-graduation-cap icon-stack-1x opacity-100 color-primary-500"></i>
-                                        </div>
-                                        <div class="ml-3">
-                                            <strong>
-                                                Add Qualifications
-                                            </strong>
-                                            <br>
-                                            Adding qualifications will help gain more clients
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="card mb-2">
-                                <div class="card-body">
-                                    <a href="javascript:void(0);" class="d-flex flex-row align-items-center">
-                                        <div class="icon-stack display-3 flex-shrink-0">
-                                            <i class="far fa-circle icon-stack-3x opacity-100 color-primary-400"></i>
-                                            <i class="fas fa-graduation-cap icon-stack-1x opacity-100 color-primary-500"></i>
-                                        </div>
-                                        <div class="ml-3">
-                                            <strong>
-                                                Add Qualifications
-                                            </strong>
-                                            <br>
-                                            Adding qualifications will help gain more clients
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="card mb-2">
-                                <div class="card-body">
-                                    <a href="javascript:void(0);" class="d-flex flex-row align-items-center">
-                                        <div class="icon-stack display-3 flex-shrink-0">
-                                            <i class="far fa-circle icon-stack-3x opacity-100 color-primary-400"></i>
-                                            <i class="fas fa-graduation-cap icon-stack-1x opacity-100 color-primary-500"></i>
-                                        </div>
-                                        <div class="ml-3">
-                                            <strong>
-                                                Add Qualifications
-                                            </strong>
-                                            <br>
-                                            Adding qualifications will help gain more clients
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="card mb-2">
-                                <div class="card-body">
-                                    <a href="javascript:void(0);" class="d-flex flex-row align-items-center">
-                                        <div class="icon-stack display-3 flex-shrink-0">
-                                            <i class="far fa-circle icon-stack-3x opacity-100 color-primary-400"></i>
-                                            <i class="fas fa-graduation-cap icon-stack-1x opacity-100 color-primary-500"></i>
-                                        </div>
-                                        <div class="ml-3">
-                                            <strong>
-                                                Add Qualifications
-                                            </strong>
-                                            <br>
-                                            Adding qualifications will help gain more clients
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="card mb-2">
-                                <div class="card-body">
-                                    <a href="javascript:void(0);" class="d-flex flex-row align-items-center">
-                                        <div class="icon-stack display-3 flex-shrink-0">
-                                            <i class="far fa-circle icon-stack-3x opacity-100 color-primary-400"></i>
-                                            <i class="fas fa-graduation-cap icon-stack-1x opacity-100 color-primary-500"></i>
-                                        </div>
-                                        <div class="ml-3">
-                                            <strong>
-                                                Add Qualifications
-                                            </strong>
-                                            <br>
-                                            Adding qualifications will help gain more clients
-                                        </div>
-                                    </a>
+                                <div class="card-footer">
+                                    <div
+                                        class="text-muted font-italic font-xs text-right padding-top-10 notify-label-small">
+                                        <i class="fas fa-tags text-muted"></i>
+                                        <i ng-repeat="category in wizard.category">{{category}}{{$last ? '' : ', '}}</i>
+                                    </div>
                                 </div>
                             </div>
                         </div>

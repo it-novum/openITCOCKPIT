@@ -3,6 +3,7 @@ angular.module('openITCOCKPIT')
 
         /** public vars **/
         $scope.init = true;
+        $scope.category = [];
 
 
         $scope.load = function(){
