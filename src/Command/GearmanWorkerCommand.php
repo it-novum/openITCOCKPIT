@@ -886,6 +886,12 @@ class GearmanWorkerCommand extends Command {
                 $return = ['task' => $payload['task']];
                 break;
 
+            case 'export_prometheus_alert_rules':
+                $PrometheusConfigGenerator = new \PrometheusModule\Lib\PrometheusConfigGenerator();
+                $PrometheusConfigGenerator->exportAlertRules();
+                $return = ['task' => $payload['task']];
+                break;
+
             case 'export_verify_config':
 
                 /** @var SystemsettingsTable $SystemsettingsTable */
@@ -1272,6 +1278,9 @@ class GearmanWorkerCommand extends Command {
             ];
             $tasks['export_prometheus_targets'] = [
                 'text' => __('Create Prometheus targets'),
+            ];
+            $tasks['export_prometheus_alert_rules'] = [
+                'text' => __('Create Prometheus alert rules'),
             ];
         }
 

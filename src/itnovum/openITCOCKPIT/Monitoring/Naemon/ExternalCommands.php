@@ -168,7 +168,7 @@ class ExternalCommands {
         $options['repetitions'] = (int)$options['repetitions'];
 
         if (!isset($options['satellite_id'])) {
-            if(Plugin::isLoaded('DistributeModule')) {
+            if (Plugin::isLoaded('DistributeModule')) {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
                 $satelliteId = $HostsTable->getSatelliteIdByUuid($options['uuid']);
@@ -177,7 +177,7 @@ class ExternalCommands {
                     return false;
                 }
                 $options['satellite_id'] = $satelliteId;
-            }else{
+            } else {
                 $options['satellite_id'] = 0;
             }
         }
@@ -254,7 +254,7 @@ class ExternalCommands {
         $options['repetitions'] = (int)$options['repetitions'];
 
         if (!isset($options['satellite_id'])) {
-            if(Plugin::isLoaded('DistributeModule')) {
+            if (Plugin::isLoaded('DistributeModule')) {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
                 $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
@@ -263,7 +263,7 @@ class ExternalCommands {
                     return false;
                 }
                 $options['satellite_id'] = $satelliteId;
-            }else{
+            } else {
                 $options['satellite_id'] = 0;
             }
         }
@@ -508,7 +508,7 @@ class ExternalCommands {
         $options = Hash::merge($_options, $options);
 
         if (!isset($options['satellite_id'])) {
-            if(Plugin::isLoaded('DistributeModule')) {
+            if (Plugin::isLoaded('DistributeModule')) {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
                 $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
@@ -517,7 +517,7 @@ class ExternalCommands {
                     return false;
                 }
                 $options['satellite_id'] = $satelliteId;
-            }else{
+            } else {
                 $options['satellite_id'] = 0;
             }
         }
@@ -610,7 +610,7 @@ class ExternalCommands {
         $options = Hash::merge($_options, $options);
 
         if (!isset($options['satellite_id'])) {
-            if(Plugin::isLoaded('DistributeModule')) {
+            if (Plugin::isLoaded('DistributeModule')) {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
                 $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
@@ -619,7 +619,7 @@ class ExternalCommands {
                     return false;
                 }
                 $options['satellite_id'] = $satelliteId;
-            }else{
+            } else {
                 $options['satellite_id'] = 0;
             }
         }
@@ -766,7 +766,7 @@ class ExternalCommands {
      */
     public function setServiceAck(array $options) {
         if (!isset($options['satellite_id'])) {
-            if(Plugin::isLoaded('DistributeModule')) {
+            if (Plugin::isLoaded('DistributeModule')) {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
                 $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
@@ -775,7 +775,7 @@ class ExternalCommands {
                     return false;
                 }
                 $options['satellite_id'] = $satelliteId;
-            }else{
+            } else {
                 $options['satellite_id'] = 0;
             }
         }
@@ -819,7 +819,7 @@ class ExternalCommands {
      */
     public function setServiceAckWithQuery(array $options) {
         if (!isset($options['satellite_id'])) {
-            if(Plugin::isLoaded('DistributeModule')) {
+            if (Plugin::isLoaded('DistributeModule')) {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
                 $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
@@ -828,7 +828,7 @@ class ExternalCommands {
                     return false;
                 }
                 $options['satellite_id'] = $satelliteId;
-            }else{
+            } else {
                 $options['satellite_id'] = 0;
             }
         }
@@ -882,7 +882,7 @@ class ExternalCommands {
         $options = Hash::merge($_options, $options);
 
         if (!isset($options['satellite_id'])) {
-            if(Plugin::isLoaded('DistributeModule')) {
+            if (Plugin::isLoaded('DistributeModule')) {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
                 $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
@@ -891,7 +891,7 @@ class ExternalCommands {
                     return false;
                 }
                 $options['satellite_id'] = $satelliteId;
-            }else{
+            } else {
                 $options['satellite_id'] = 0;
             }
         }
@@ -1075,7 +1075,7 @@ class ExternalCommands {
         $options = Hash::merge($_options, $options);
 
         if (!isset($options['satellite_id'])) {
-            if(Plugin::isLoaded('DistributeModule')) {
+            if (Plugin::isLoaded('DistributeModule')) {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
                 $satelliteId = $HostsTable->getSatelliteIdByUuid($options['hostUuid']);
@@ -1084,7 +1084,7 @@ class ExternalCommands {
                     return false;
                 }
                 $options['satellite_id'] = $satelliteId;
-            }else{
+            } else {
                 $options['satellite_id'] = 0;
             }
         }
@@ -1677,6 +1677,25 @@ class ExternalCommands {
         if ($satelliteId > 0) {
             // Command gets send to sat system
             $payload['SatelliteID'] = $satelliteId;
+            $GearmanClient->doBackground('statusngin_cmd_sattx', json_encode($payload));
+
+        } else {
+            // Command is for the master system
+            $GearmanClient->doBackground('statusngin_cmd', json_encode($payload));
+        }
+    }
+
+    /**
+     * @param array $payload
+     * @param int $satelliteId
+     */
+    public function toQueueBulk(array $payload, $satelliteId = 0) {
+        $GearmanClient = new \GearmanClient();
+        $GearmanClient->addServer($this->gearmanConfig['address'], $this->gearmanConfig['port']);
+        $GearmanClient->setTimeout(5000);
+
+        if ($satelliteId > 0) {
+            // Command gets send to sat system
             $GearmanClient->doBackground('statusngin_cmd_sattx', json_encode($payload));
 
         } else {
