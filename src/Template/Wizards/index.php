@@ -99,7 +99,7 @@
                                         </div>
                                     </a>
                                 </div>
-                                <div class="card-footer no-border">
+                                <div class="card-footer no-border border-bottom">
                                     <div
                                         class="text-muted font-italic font-xs text-right padding-top-10 notify-label-small">
                                         <i class="fas fa-tags text-muted"></i>
