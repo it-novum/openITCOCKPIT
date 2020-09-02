@@ -702,7 +702,7 @@ class ServicesController extends AppController {
         if ($this->request->is('post')) {
             $servicetemplateId = $this->request->getData('Service.servicetemplate_id');
             if ($servicetemplateId === null) {
-                throw new Exception('Service.servicetemplate_id needs to set.');
+                throw new \Exception('Service.servicetemplate_id needs to set.');
             }
 
             if (!$ServicetemplatesTable->existsById($servicetemplateId)) {
