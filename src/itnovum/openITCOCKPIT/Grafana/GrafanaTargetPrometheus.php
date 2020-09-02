@@ -122,7 +122,8 @@ class GrafanaTargetPrometheus implements GrafanaTargetInterface {
             'refId'        => $refId,
             'expr'         => $this->promql,
             'legendFormat' => $this->getAlias(),
-            'interval'     => ''
+            'interval'     => '',
+            'datasource'   => 'Prometheus'
         ];
     }
 }

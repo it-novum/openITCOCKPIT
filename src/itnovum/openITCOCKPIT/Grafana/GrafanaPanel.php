@@ -82,7 +82,8 @@ class GrafanaPanel {
             //Insert colors here
         ],
         "bars"            => false,
-        "datasource"      => null,
+        //"datasource"      => null,
+        "datasource"      => '-- Mixed --',
         "fill"            => 1,
         "id"              => null,
         "legend"          => [
@@ -136,17 +137,11 @@ class GrafanaPanel {
     ];
 
     /**
-     * @var int
-     */
-    private $serviceType;
-
-    /**
      * GrafanaPanel constructor.
      * @param $panelId
      * @param int $span
-     * @param int $serviceType
      */
-    public function __construct($panelId, $span = 6, int $serviceType = GENERIC_SERVICE) {
+    public function __construct($panelId, $span = 6) {
         $this->panelId = $panelId;
         $span = (int)$span;
         if ($span <= 0) {
@@ -158,7 +153,6 @@ class GrafanaPanel {
         }
 
         $this->span = $span;
-        $this->serviceType = $serviceType;
     }
 
     /**
@@ -170,10 +164,6 @@ class GrafanaPanel {
         $this->panel['targets'] = $this->targets;
         $this->panel['aliasColors'] = $this->color;
         $this->panel['span'] = $this->span;
-
-        if ($this->serviceType === PROMETHEUS_SERVICE) {
-            $this->panel['datasource'] = 'Prometheus';
-        }
 
         if ($this->SeriesOverrides->hasOverrides()) {
             $this->panel['seriesOverrides'] = $this->SeriesOverrides->getOverrides();

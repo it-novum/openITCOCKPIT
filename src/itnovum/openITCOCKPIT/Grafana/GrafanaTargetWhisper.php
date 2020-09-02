@@ -129,8 +129,9 @@ class GrafanaTargetWhisper implements GrafanaTargetInterface {
         }
 
         return [
-            'refId'  => $refId,
-            'target' => $target
+            'refId'      => $refId,
+            'datasource' => 'Graphite',
+            'target'     => $target
         ];
     }
 }

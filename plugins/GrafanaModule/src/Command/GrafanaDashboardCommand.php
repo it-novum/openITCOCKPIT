@@ -255,7 +255,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
             //Host not found
             return false;
         }
-        
+
         if (empty($host['services'])) {
             //Host has no services
             return false;
@@ -297,7 +297,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
             if ($service['service_type'] !== PROMETHEUS_SERVICE) {
                 $PerfdataParser = new PerfdataParser($servicestatus[$service['uuid']]['Servicestatus']['perfdata']);
                 $perfdata = $PerfdataParser->parse();
-                $grafanaPanel = new GrafanaPanel($panelId, 6, $service['service_type']);
+                $grafanaPanel = new GrafanaPanel($panelId, 6);
                 $grafanaPanel->setTitle(sprintf('%s - %s', $host['name'], $serviceName));
                 foreach ($perfdata as $label => $gauge) {
                     $Perfdata = Perfdata::fromArray($label, $gauge);
@@ -318,7 +318,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                 }
             } else {
                 //Prometheus services have only one metric per service
-                $grafanaPanel = new GrafanaPanel($panelId, 6, $service['service_type']);
+                $grafanaPanel = new GrafanaPanel($panelId, 6);
                 $grafanaPanel->setTitle(sprintf('%s - %s', $host['name'], $serviceName));
                 $grafanaTargetCollection->addTarget(
                     new GrafanaTargetPrometheus(

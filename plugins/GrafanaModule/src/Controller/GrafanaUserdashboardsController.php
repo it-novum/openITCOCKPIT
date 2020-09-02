@@ -53,6 +53,7 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
 use itnovum\openITCOCKPIT\Grafana\GrafanaSeriesOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetPrometheus;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
@@ -726,27 +727,43 @@ class GrafanaUserdashboardsController extends AppController {
                     $GrafanaPanel->setTitle($panel['title']);
 
                     foreach ($panel['metrics'] as $metric) {
-                        /**  TODO implement perfdata backends **/
-                        $replacedMetricName = preg_replace('/[^a-zA-Z^0-9\-\.]/', '_', $metric['metric']);
-                        $GrafanaTargetCollection->addTarget(
-                            new GrafanaTargetWhisper(
-                                sprintf(
-                                    '%s.%s.%s.%s',
-                                    $GrafanaApiConfiguration->getGraphitePrefix(),
-                                    $metric['Host']['uuid'],
-                                    $metric['Service']['uuid'],
-                                    $replacedMetricName
-                                ),
-                                new GrafanaTargetUnit($panel['unit'], true),
-                                new GrafanaThresholds(null, null),
-                                sprintf(
-                                    '%s.%s.%s',
-                                    $this->replaceUmlauts($metric['Host']['hostname']),
-                                    $this->replaceUmlauts($metric['Service']['servicename']),
-                                    $this->replaceUmlauts($metric['metric'])
-                                ),//Alias
-                                $metric['color'] ?? null
-                            ));
+                        if ($metric['service']['service_type'] !== PROMETHEUS_SERVICE) {
+                            /**  TODO implement perfdata backends **/
+                            $replacedMetricName = preg_replace('/[^a-zA-Z^0-9\-\.]/', '_', $metric['metric']);
+                            $GrafanaTargetCollection->addTarget(
+                                new GrafanaTargetWhisper(
+                                    sprintf(
+                                        '%s.%s.%s.%s',
+                                        $GrafanaApiConfiguration->getGraphitePrefix(),
+                                        $metric['Host']['uuid'],
+                                        $metric['Service']['uuid'],
+                                        $replacedMetricName
+                                    ),
+                                    new GrafanaTargetUnit($panel['unit'], true),
+                                    new GrafanaThresholds(null, null),
+                                    sprintf(
+                                        '%s.%s.%s',
+                                        $this->replaceUmlauts($metric['Host']['hostname']),
+                                        $this->replaceUmlauts($metric['Service']['servicename']),
+                                        $this->replaceUmlauts($metric['metric'])
+                                    ),//Alias
+                                    $metric['color'] ?? null
+                                ));
+                        }else{
+                            //Prometheus Service
+                            $GrafanaTargetCollection->addTarget(
+                                new GrafanaTargetPrometheus(
+                                    $metric['service']['prometheus_alert_rule']['promql'],
+                                    new GrafanaTargetUnit($panel['unit'], true),
+                                    new GrafanaThresholds($metric['service']['prometheus_alert_rule']['warning_min'], $metric['service']['prometheus_alert_rule']['critical_min']),
+                                    sprintf(
+                                        '%s/%s',
+                                        $this->replaceUmlauts($metric['Host']['hostname']),
+                                        $this->replaceUmlauts($metric['Service']['servicename'])
+                                    ),//Alias
+                                    $metric['color'] ?? null
+                                ));
+                        }
                     }
                     $GrafanaPanel->addTargets(
                         $GrafanaTargetCollection,
@@ -791,7 +808,7 @@ class GrafanaUserdashboardsController extends AppController {
             }
         }
 
-        if($success === false){
+        if ($success === false) {
             $message = __('An error has been occured while synchronizing');
         }
         $this->set('success', $success);
