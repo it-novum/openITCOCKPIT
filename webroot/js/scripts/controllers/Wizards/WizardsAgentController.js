@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('WizardsAgentController', function($scope, $http, LocalStorageService){
+    .controller('WizardsAgentController', function($scope, $http, NotyService, LocalStorageService){
 
         /** public vars **/
         $scope.init = true;
@@ -158,6 +158,28 @@ angular.module('openITCOCKPIT')
                     message: 'Error while running DNS lookup'
                 });
             });
+        };
+
+        $scope.submit = function(redirectState){
+            $http.post("/hosts/add.json?angular=true",
+                $scope.post
+            ).then(function(result){
+                var hostId = result.data.id;
+
+                NotyService.genericSuccess();
+                NotyService.scrollTop();
+
+
+                console.log('Data saved successfully');
+            }, function errorCallback(result){
+
+                NotyService.genericError();
+
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+            });
+
         };
 
         $scope.$watch('post.useExistingHost', function(){

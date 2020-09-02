@@ -59,14 +59,14 @@
                                     <span class="chevron"></span>
                                 </li>
                                 <li>
-                                    <span class="badge">2</span><?php echo __('Agent configuration'); ?>
+                                    <span class="badge">2</span><?php echo __('Basic agent configuration '); ?>
                                     <span class="chevron"></span>
                                 </li>
                             </ul>
                             <div class="pull-right margin-right-5" style="margin-top: -39px;">
                                 <div class="actions" style="position: relative; display: inline;">
-                                    <button type="submit" class="btn btn-sm btn-success">
-                                        <?php echo __('Next'); ?><i class="fa fa-arrow-right"></i>
+                                    <button type="submit" class="btn btn-success btn-sm waves-effect waves-themed">
+                                        <?php echo __('Next'); ?> <i class="fa fa-arrow-right"></i>
                                     </button>
                                 </div>
                             </div>
