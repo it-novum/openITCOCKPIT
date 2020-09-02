@@ -53,7 +53,7 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
 use itnovum\openITCOCKPIT\Grafana\GrafanaSeriesOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTarget;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnits;
@@ -729,7 +729,7 @@ class GrafanaUserdashboardsController extends AppController {
                         /**  TODO implement perfdata backends **/
                         $replacedMetricName = preg_replace('/[^a-zA-Z^0-9\-\.]/', '_', $metric['metric']);
                         $GrafanaTargetCollection->addTarget(
-                            new GrafanaTarget(
+                            new GrafanaTargetWhisper(
                                 sprintf(
                                     '%s.%s.%s.%s',
                                     $GrafanaApiConfiguration->getGraphitePrefix(),

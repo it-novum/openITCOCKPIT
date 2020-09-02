@@ -27,12 +27,12 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
-class GrafanaTarget {
+class GrafanaTargetPrometheus implements GrafanaTargetInterface {
 
     /**
      * @var string
      */
-    private $target;
+    private $promql;
 
     /**
      * @var GrafanaTargetUnit
@@ -55,15 +55,15 @@ class GrafanaTarget {
     private $color = null;
 
     /**
-     * GrafanaTarget constructor.
+     * GrafanaTargetPrometheus constructor.
      * @param $target
      * @param GrafanaTargetUnit $grafanaTargetUnit
      * @param GrafanaThresholds $grafanaThresholds
      * @param null $alias
      * @param null|string $color
      */
-    public function __construct($target, GrafanaTargetUnit $grafanaTargetUnit, GrafanaThresholds $grafanaThresholds, $alias = null, $color = null) {
-        $this->target = $target;
+    public function __construct($promql, GrafanaTargetUnit $grafanaTargetUnit, GrafanaThresholds $grafanaThresholds, $alias = null, $color = null) {
+        $this->promql = $promql;
         $this->unit = $grafanaTargetUnit;
         $this->thresholds = $grafanaThresholds;
         $this->alias = $alias;
@@ -74,7 +74,7 @@ class GrafanaTarget {
      * @return string
      */
     public function getTarget() {
-        return $this->target;
+        return $this->promql;
     }
 
 
@@ -109,7 +109,20 @@ class GrafanaTarget {
     /**
      * @return null|string
      */
-    public function getColor(){
+    public function getColor() {
         return $this->color;
+    }
+
+    /**
+     * @param string $refId
+     * @return array
+     */
+    public function toJson(string $refId) {
+        return [
+            'refId'        => $refId,
+            'expr'         => $this->promql,
+            'legendFormat' => $this->getAlias(),
+            'interval'     => ''
+        ];
     }
 }

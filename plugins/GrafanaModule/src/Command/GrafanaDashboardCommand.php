@@ -10,6 +10,7 @@ use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use Cake\Core\Plugin;
 use Cake\Log\Log;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
@@ -30,7 +31,8 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
 use itnovum\openITCOCKPIT\Grafana\GrafanaSeriesOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTarget;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetPrometheus;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
@@ -195,14 +197,15 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
             ])
             ->contain([
                 'Services' => function (Query $query) {
-                    return $query
+                    $query
                         ->disableAutoFields()
                         ->select([
                             'id',
                             'uuid',
                             'name',
                             'host_id',
-                            'servicetemplate_id'
+                            'servicetemplate_id',
+                            'service_type'
                         ])
                         ->contain([
                             'Servicetemplates' => function (Query $qery) {
@@ -214,6 +217,32 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                                     ]);
                             }
                         ]);
+
+                    if (Plugin::isLoaded('PrometheusModule')) {
+                        $query->contain('PrometheusAlertRules', function (Query $query) {
+                            return $query
+                                ->disableAutoFields()
+                                ->select([
+                                    'id',
+                                    'host_id',
+                                    'service_id',
+                                    'promql',
+                                    'unit',
+                                    'threshold_type',
+                                    'warning_min',
+                                    'warning_max',
+                                    'critical_min',
+                                    'critical_max',
+                                    'warning_longer_as',
+                                    'critical_longer_as',
+                                    'warning_operator',
+                                    'critical_operator'
+                                ]);
+                        });
+                    }
+
+
+                    return $query;
                 }
             ])
             ->where([
@@ -226,7 +255,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
             //Host not found
             return false;
         }
-
+        
         if (empty($host['services'])) {
             //Host has no services
             return false;
@@ -258,31 +287,50 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                 $serviceName = $service['servicetemplate']['name'];
             }
             if (!isset($servicestatus[$service['uuid']]['Servicestatus']['perfdata'])) {
-                continue;
+                //Skip services that have no performance data - Prometheus services have always performance data
+                if ($service['service_type'] !== PROMETHEUS_SERVICE) {
+                    continue;
+                }
             }
 
-            $PerfdataParser = new PerfdataParser($servicestatus[$service['uuid']]['Servicestatus']['perfdata']);
-            $perfdata = $PerfdataParser->parse();
-            $grafanaPanel = new GrafanaPanel($panelId);
-            $grafanaPanel->setTitle(sprintf('%s - %s', $host['name'], $serviceName));
             $grafanaTargetCollection = new GrafanaTargetCollection();
-            foreach ($perfdata as $label => $gauge) {
-                $Perfdata = Perfdata::fromArray($label, $gauge);
+            if ($service['service_type'] !== PROMETHEUS_SERVICE) {
+                $PerfdataParser = new PerfdataParser($servicestatus[$service['uuid']]['Servicestatus']['perfdata']);
+                $perfdata = $PerfdataParser->parse();
+                $grafanaPanel = new GrafanaPanel($panelId, 6, $service['service_type']);
+                $grafanaPanel->setTitle(sprintf('%s - %s', $host['name'], $serviceName));
+                foreach ($perfdata as $label => $gauge) {
+                    $Perfdata = Perfdata::fromArray($label, $gauge);
+                    $grafanaTargetCollection->addTarget(
+                        new GrafanaTargetWhisper(
+                            sprintf(
+                                '%s.%s.%s.%s',
+                                $this->GrafanaApiConfiguration->getGraphitePrefix(),
+                                $host['uuid'],
+                                $service['uuid'],
+                                $Perfdata->getReplacedLabel()
+                            ),
+                            new GrafanaTargetUnit($Perfdata->getUnit()),
+                            new GrafanaThresholds($Perfdata->getWarning(), $Perfdata->getCritical()),
+                            $Perfdata->getLabel()
+                        )
+                    );
+                }
+            } else {
+                //Prometheus services have only one metric per service
+                $grafanaPanel = new GrafanaPanel($panelId, 6, $service['service_type']);
+                $grafanaPanel->setTitle(sprintf('%s - %s', $host['name'], $serviceName));
                 $grafanaTargetCollection->addTarget(
-                    new GrafanaTarget(
-                        sprintf(
-                            '%s.%s.%s.%s',
-                            $this->GrafanaApiConfiguration->getGraphitePrefix(),
-                            $host['uuid'],
-                            $service['uuid'],
-                            $Perfdata->getReplacedLabel()
-                        ),
-                        new GrafanaTargetUnit($Perfdata->getUnit()),
-                        new GrafanaThresholds($Perfdata->getWarning(), $Perfdata->getCritical()),
-                        $Perfdata->getLabel()
+                    new GrafanaTargetPrometheus(
+                        $service['prometheus_alert_rule']['promql'],
+                        new GrafanaTargetUnit($service['prometheus_alert_rule']['unit']),
+                        new GrafanaThresholds($service['prometheus_alert_rule']['warning_min'], $service['prometheus_alert_rule']['critical_min']),
+                        $serviceName
                     )
                 );
             }
+
+
             $grafanaPanel->addTargets(
                 $grafanaTargetCollection,
                 new GrafanaSeriesOverrides($grafanaTargetCollection),
