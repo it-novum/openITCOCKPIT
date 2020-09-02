@@ -44,14 +44,24 @@ class WizardsTable extends Table {
         $wizards = [
             [
                 'type_id'     => 1,
+                'title'       => __('Linux Server'),
+                'description' => __('Monitoring for your Linux Server with openITCOCKPIT Agent'),
+                'image'       => 'linux.svg',
+                'directive'   => 'linux-server', //AngularJS directive
+                'category'    => ['linux'],
+                'state'       => 'WizardsAgent'
+            ],
+            [
+                'type_id'     => 2,
                 'title'       => __('Linux (SSH)'),
                 'description' => __('Monitoring via Secure Shell (SSH) enables you to gather performance and system data from many Linux and Unix distributions'),
                 'image'       => 'linux.svg',
                 'directive'   => 'linux-ssh', //AngularJS directive
-                'category'    => ['linux']
+                'category'    => ['linux'],
+                'state'       => 'WizardsLinuxServerSsh'
             ],
             [
-                'type_id'     => 2,
+                'type_id'     => 3,
                 'title'       => __('Linux (SNMP)'),
                 'description' => __('Monitoring Linux devices via SNMP'),
                 'image'       => 'linux.svg',
@@ -59,7 +69,7 @@ class WizardsTable extends Table {
                 'category'    => ['linux']
             ],
             [
-                'type_id'     => 3,
+                'type_id'     => 4,
                 'title'       => __('Windows (SNMP)'),
                 'description' => __('Linux Monitoring from a Windows device using SNMP'),
                 'image'       => 'Windows.svg',
@@ -67,7 +77,7 @@ class WizardsTable extends Table {
                 'category'    => ['windows']
             ],
             [
-                'type_id'     => 4,
+                'type_id'     => 5,
                 'title'       => __('Windows (NSClient++)'),
                 'description' => __('NSClient++ (nscp) aims to be a simple yet powerful and flexible monitoring daemon'),
                 'image'       => 'nsclient-logo-300x75.png',
@@ -75,7 +85,7 @@ class WizardsTable extends Table {
                 'category'    => ['windows']
             ],
             [
-                'type_id'     => 5,
+                'type_id'     => 6,
                 'title'       => __('Mysql'),
                 'description' => __('Track MySQL Query Throughput, Execution Performance, Connections, And Buffer Pool Usage'),
                 'image'       => 'MySQL_logo.svg',
@@ -83,7 +93,7 @@ class WizardsTable extends Table {
                 'category'    => ['linux', 'mysql']
             ],
             [
-                'type_id'     => 6,
+                'type_id'     => 7,
                 'title'       => __('Docker'),
                 'description' => __('Instantly monitor & troubleshoot issues within containers'),
                 'image'       => 'docker.png',

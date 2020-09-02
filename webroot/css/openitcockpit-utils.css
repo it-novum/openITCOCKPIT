@@ -680,3 +680,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     min-height: 150px;
     height: 150px;
 }
+
+.wizard-fieldset-legend-auto-width legend{
+    width: auto;
+}

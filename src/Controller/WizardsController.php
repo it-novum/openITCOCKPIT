@@ -47,4 +47,14 @@ class WizardsController extends AppController {
         $this->set('wizards', $wizards);
         $this->viewBuilder()->setOption('serialize', ['wizards']);
     }
+
+    public function agent() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function linuxserverssh() {
+        //Only ship HTML template
+        return;
+    }
 }
