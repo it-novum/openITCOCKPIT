@@ -389,6 +389,7 @@ class AclDependencies {
 
         $this
             ->dependency('Hosttemplates', 'index', 'Hosttemplates', 'view')
+            ->dependency('Hosttemplates', 'index', 'Hosttemplates', 'loadHosttemplates')
             ->dependency('Hosttemplates', 'add', 'Hosttemplates', 'loadElementsByContainerId')
             ->dependency('Hosttemplates', 'add', 'Hosttemplates', 'loadContainers')
             ->dependency('Hosttemplates', 'add', 'Hosttemplates', 'loadCommands')
