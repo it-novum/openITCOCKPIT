@@ -136,7 +136,8 @@ class AclDependencies {
             ->allow('Angular', 'calendar')
             ->allow('Angular', 'reload_required')
             ->allow('Angular', 'colorpicker')
-            ->allow('Angular', 'popover_graph');
+            ->allow('Angular', 'popover_graph')
+            ->allow('Angular', 'thresholds');
 
         $this
             ->allow('Agentconnector', 'certificate')

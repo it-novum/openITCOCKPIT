@@ -154,7 +154,8 @@ class AngularAssets implements AngularAssetsInterface {
         '/css/openitcockpit.css',
         '/css/openitcockpit-menu.css',
         '/css/nestable.css',
-        '/css/openitcockpit-vis.css'
+        '/css/openitcockpit-vis.css',
+        '/css/thresholds.css'
     ];
 
     /**

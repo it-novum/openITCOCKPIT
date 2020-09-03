@@ -33,6 +33,7 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
+use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
 
 
@@ -79,11 +80,13 @@ class GraphgeneratorsController extends AppController {
             $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
             $service = $ServicesTable->getServiceByUuid($serviceUuid);
-            if (Plugin::isLoaded('PrometheusModule') && $service->get('service_type') === PROMETHEUS_SERVICE) {
+            $Service = new Service($service);
+
+            if (Plugin::isLoaded('PrometheusModule') && $Service->getServiceType() === PROMETHEUS_SERVICE) {
                 $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
                 $start = (int)$start;
                 $end = (int)$end;
-                $performance_data = $PrometheusPerfdataLoader->getPerfdataByUuid($service, $start, $end, $jsTimestamp, $scale, $forcedUnit, $debug);
+                $performance_data = $PrometheusPerfdataLoader->getPerfdataByUuid($Service, $start, $end, $jsTimestamp, $scale, $forcedUnit, $debug);
             } else {
                 $performance_data = $PerfdataLoader->getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp, 'avg', $gauge, $scale, $forcedUnit, $debug);
                 $this->set('performance_data', $performance_data);

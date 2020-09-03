@@ -628,14 +628,27 @@ class NagiosNotificationCommand extends Command {
 
         try {
             $graphStart = (time() - (4 * 3600));
-            $graphData = $PerfdataLoader->getPerfdataByUuid(
-                $Host->getUuid(),
-                $Service->getUuid(),
-                $graphStart,
-                time(),
-                false,
-                'avg'
-            );
+            if (Plugin::isLoaded('PrometheusModule') && $Service->getServiceType() === PROMETHEUS_SERVICE) {
+                //Prometheus Services has always a graph
+                $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                $graphData = $PrometheusPerfdataLoader->getPerfdataByUuid(
+                    $Service,
+                    $graphStart,
+                    time(),
+                    false
+                );
+            } else {
+                // Whisper Graph
+                $graphData = $PerfdataLoader->getPerfdataByUuid(
+                    $Host->getUuid(),
+                    $Service->getUuid(),
+                    $graphStart,
+                    time(),
+                    false,
+                    'avg'
+                );
+
+            }
 
             if (!empty($graphData)) {
                 //Render graph data to png image blobs for pdf
