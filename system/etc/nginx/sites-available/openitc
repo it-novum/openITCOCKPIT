@@ -49,4 +49,10 @@ server {
         fastcgi_read_timeout 300;
     }
 
+    #Proxy for Grafana (internal API requests done by openITCOCKPIT only!!!)
+    location ^~ /grafana/ {
+        proxy_pass http://127.0.0.1:3033/;
+        sub_filter_once off;
+    }
+
 }

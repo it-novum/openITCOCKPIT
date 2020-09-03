@@ -40,6 +40,7 @@ use Authentication\PasswordHasher\DefaultPasswordHasher;
 use Cake\Http\Exception\UnauthorizedException;
 use Cake\Log\Log;
 
+// Use tail -F /opt/openitc/frontend/auth/debug.log to trace the debug file...
 $debug = false;
 
 if (!defined('DS')) {
@@ -49,21 +50,44 @@ if (!defined('DS')) {
 require_once __DIR__ . DS . '..' . DS . 'vendor' . DS . 'autoload.php';
 require_once __DIR__ . DS . '..' . DS . 'config' . DS . 'bootstrap.php';
 
-if ($debug === true) {
-    $file = fopen('debug.log', 'w+');
-    fwrite($file, var_export($_SERVER, true));
-    fwrite($file, var_export($_COOKIE, true));
-    fwrite($file, var_export($_REQUEST, true));
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
+if ($debug === true) {
+    $file = fopen('debug.log', 'w+');
+
+    fwrite($file, var_export('$_SERVER:' . PHP_EOL, true));
+    fwrite($file, var_export($_SERVER, true));
+
+    fwrite($file, var_export('$_COOKIE:' . PHP_EOL, true));
+    fwrite($file, var_export($_COOKIE, true));
+
+    fwrite($file, var_export('$_REQUEST:' . PHP_EOL, true));
+    fwrite($file, var_export($_REQUEST, true));
+
+    fwrite($file, var_export('$_SESSION:' . PHP_EOL, true));
+    fwrite($file, var_export($_SESSION, true));
+}
 
 try {
+    if (isset($_SESSION['Auth'])) {
+        if (get_class($_SESSION['Auth']) === 'App\Model\Entity\User') {
+            //Login success
+            //The current session contains a valid openITCOCKPIT user...
+            header("HTTP/1.0 200 Ok");
+            return;
+        }
+    }
+
     if (isset($_COOKIE['CookieAuth'])) {
+        //No user object in the session... Lets check the cookie.
         //Validate if this is a valid openITCOCKPIT login cookie...
         $token = json_decode(rawurldecode($_COOKIE['CookieAuth']), true);
 
         if ($token === null || count($token) !== 2) {
             Log::error('GrafanaModule Auth: Cookie token is invalid.');
+            throw new UnauthorizedException();
         }
 
         [$username, $tokenHash] = $token;
