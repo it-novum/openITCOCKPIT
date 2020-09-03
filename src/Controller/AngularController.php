@@ -1112,4 +1112,9 @@ class AngularController extends AppController {
         $this->set('hasRootPrivileges', $this->hasRootPrivileges);
         return;
     }
+
+    public function thresholds() {
+        //Return HTML Template for PaginatorDirective
+        return;
+    }
 }
