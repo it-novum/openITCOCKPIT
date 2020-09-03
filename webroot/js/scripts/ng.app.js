@@ -185,6 +185,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 params: {
                     hostId: {
                         value: null
+                    },
+                    selectedOs: {
+                        value: null
                     }
                 },
                 templateUrl: "/agentconnector/config.html",

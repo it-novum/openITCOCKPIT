@@ -173,7 +173,8 @@ angular.module('openITCOCKPIT')
                     NotyService.genericSuccess();
 
                     $state.go('AgentconnectorsConfig', {
-                        hostId: hostId
+                        hostId: hostId,
+                        selectedOs: 'linux'
                     }).then(function(){
                         NotyService.scrollTop();
                     });
@@ -195,7 +196,8 @@ angular.module('openITCOCKPIT')
                     }
                 ).then(function(result){
                     $state.go('AgentconnectorsConfig', {
-                        hostId: $scope.selectedHostId
+                        hostId: $scope.selectedHostId,
+                        selectedOs: 'linux'
                     }).then(function(){
                         NotyService.scrollTop();
                     });
