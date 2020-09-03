@@ -30,7 +30,7 @@ namespace itnovum\openITCOCKPIT\Grafana;
 class GrafanaTargetCollection {
 
     /**
-     * @var array of GrafanaTarget's
+     * @var array of GrafanaTargetInterface's
      */
     private $targets = [];
 
@@ -46,7 +46,7 @@ class GrafanaTargetCollection {
     /**
      * @return array
      */
-    public function addTarget(GrafanaTarget $grafanaTarget) {
+    public function addTarget(GrafanaTargetInterface $grafanaTarget) {
         $this->targets[] = $grafanaTarget;
     }
 
@@ -57,7 +57,7 @@ class GrafanaTargetCollection {
         $targetsArray = [];
         foreach ($this->targets as $key => $grafanaTarget) {
             /**
-             * @var GrafanaTarget $grafanaTarget
+             * @var GrafanaTargetInterface $grafanaTarget
              */
             if (isset($this->abc[$key])) {
                 $refId = $this->abc[$key];
@@ -65,20 +65,7 @@ class GrafanaTargetCollection {
                 $refId = sprintf('A%s', $key);
             }
 
-            $target = [
-                'refId' => $refId,
-            ];
-
-            if ($grafanaTarget->getAlias()) {
-                $target['target'] = sprintf(
-                    'alias(%s, \'%s\')',
-                    $grafanaTarget->getTarget(),
-                    str_replace("'", '', $grafanaTarget->getAlias())
-                );
-            } else {
-                $target['target'] = $grafanaTarget->getTarget();
-            }
-            $targetsArray[] = $target;
+            $targetsArray[] = $grafanaTarget->toJson($refId);
         }
         return $targetsArray;
     }
@@ -90,11 +77,11 @@ class GrafanaTargetCollection {
         $colorsArray = [];
         foreach ($this->targets as $key => $grafanaTarget) {
             /**
-             * @var GrafanaTarget $grafanaTarget
+             * @var GrafanaTargetInterface $grafanaTarget
              */
             if ($grafanaTarget->getColor() !== null) {
                 $alias = str_replace("'", '', $grafanaTarget->getAlias());
-                
+
                 $colorsArray[$alias] = $grafanaTarget->getColor();
             }
         }
@@ -125,7 +112,7 @@ class GrafanaTargetCollection {
     public function getUnits() {
         $units = [];
         foreach ($this->targets as $target) {
-            /** @var GrafanaTarget $target */
+            /** @var GrafanaTargetInterface $target */
 
             //Filter duplicate units
             $units[$target->getUnit()] = true;

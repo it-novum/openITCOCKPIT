@@ -82,7 +82,8 @@ class GrafanaPanel {
             //Insert colors here
         ],
         "bars"            => false,
-        "datasource"      => null,
+        //"datasource"      => null,
+        "datasource"      => '-- Mixed --',
         "fill"            => 1,
         "id"              => null,
         "legend"          => [
