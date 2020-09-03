@@ -29,3 +29,24 @@ server {
     include /etc/nginx/openitc/master.conf;
     include /etc/nginx/openitc/custom.conf;
 }
+
+#Grafana Auth Service
+server {
+    listen 127.0.0.1:8085;
+
+    server_tokens off;
+    add_header X-Frame-Options sameorigin;
+
+    root /opt/openitc/frontend/auth;
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        include /etc/nginx/fastcgi_params;
+        fastcgi_pass    unix:/run/php/php-fpm-oitc.sock;
+        fastcgi_index   index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param OITC_DEBUG 1;
+        fastcgi_read_timeout 300;
+    }
+
+}
