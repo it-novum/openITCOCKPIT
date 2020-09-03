@@ -59,6 +59,11 @@ class WizardsController extends AppController {
         return;
     }
 
+    public function wizardHostConfiguration() {
+        //Only ship HTML template
+        return;
+    }
+
     public function validateInputFromAngular() {
         if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
             throw new MethodNotAllowedException();

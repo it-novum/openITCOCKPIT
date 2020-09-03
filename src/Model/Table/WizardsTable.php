@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
+use App\Lib\PluginManager;
 use Cake\ORM\Table;
+use itnovum\openITCOCKPIT\Core\Wizards\ModuleWizardsInterface;
 
 /**
  * Wizards Model
@@ -80,7 +82,7 @@ class WizardsTable extends Table {
             [
                 'type_id'     => 5,
                 'title'       => __('Windows (SNMP)'),
-                'description' => __('Linux Monitoring from a Windows device using SNMP'),
+                'description' => __('Monitoring Windows server with SNMP'),
                 'image'       => 'Windows.svg',
                 'directive'   => 'windows-snmp', //AngularJS directive
                 'category'    => ['windows']
@@ -119,6 +121,19 @@ class WizardsTable extends Table {
                 'category'    => ['linux', 'docker']
             ]
         ];
+        $modules = PluginManager::getAvailablePlugins();
+        foreach ($modules as $module) {
+            $className = sprintf('\\%s\\Lib\\Wizards', $module);
+            if (class_exists($className)) {
+
+                /** @var ModuleWizardsInterface $PluginWizards */
+                $PluginWizards = new $className($ACL_PERMISSIONS);
+
+                foreach ($PluginWizards->getAvailableWizards() as $pluginWizard) {
+                    $wizards[] = $pluginWizard;
+                }
+            }
+        }
 
         return $wizards;
     }
