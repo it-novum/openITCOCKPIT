@@ -172,6 +172,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         $expireAt->setTimestamp(time() + (3600 * 24 * 31)); // In one month
         $service->loadAuthenticator('Authentication.Cookie', [
             'rememberMeField' => 'remember_me',
+            'fields'          => $fields,
             'cookie'          => [
                 'expire' => $expireAt
             ]
@@ -184,10 +185,10 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 
         //Stateless API Key login
         $service->loadAuthenticator('Authentication.Apikey', [
-            'queryParam'  => 'apikey',
-            'header'      => 'Authorization',
+            'queryParam'   => 'apikey',
+            'header'       => 'Authorization',
             'apikeyPrefix' => 'X-OITC-API',
-            'className'   => ApikeyAuthenticator::class,
+            'className'    => ApikeyAuthenticator::class,
         ]);
 
         return $service;
