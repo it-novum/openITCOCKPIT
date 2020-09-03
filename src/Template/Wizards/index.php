@@ -90,7 +90,7 @@
                     <div class="row">
                         <div class="col-3" ng-repeat="wizard in wizards">
                             <div class="card mb-2 wizard-logo-card-height-150">
-                                <div class="card-body">{{wizard.state}}
+                                <div class="card-body">
                                     <a ui-sref="{{wizard.state}}" class="d-flex flex-row align-items-start">
                                         <div class="wizard-logo-image">
                                             <img src="/img/wizards/{{wizard.image}}"/>
