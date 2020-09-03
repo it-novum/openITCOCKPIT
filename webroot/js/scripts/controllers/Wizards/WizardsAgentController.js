@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('WizardsAgentController', function($scope, $http, NotyService, LocalStorageService){
+    .controller('WizardsAgentController', function($scope, $http, $state, NotyService, LocalStorageService){
 
         /** public vars **/
         $scope.init = true;
@@ -17,7 +17,10 @@ angular.module('openITCOCKPIT')
                 description: '',
                 hosttemplate_id: 0,
                 address: '',
-                container_id: 0
+                container_id: 0,
+                hosts_to_containers_sharing: {
+                    _ids: []
+                }
             }
         };
 
@@ -169,7 +172,7 @@ angular.module('openITCOCKPIT')
                     var hostId = result.data.id;
                     NotyService.genericSuccess();
 
-                    $state.go('AgentconfigsConfig', {
+                    $state.go('AgentconnectorsConfig', {
                         hostId: hostId
                     }).then(function(){
                         NotyService.scrollTop();
@@ -191,7 +194,7 @@ angular.module('openITCOCKPIT')
                         }
                     }
                 ).then(function(result){
-                    $state.go('AgentconfigsConfig', {
+                    $state.go('AgentconnectorsConfig', {
                         hostId: $scope.selectedHostId
                     }).then(function(){
                         NotyService.scrollTop();

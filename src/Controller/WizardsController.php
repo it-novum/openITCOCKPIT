@@ -66,7 +66,7 @@ class WizardsController extends AppController {
 
         $error = ['Host' => []];
         $data = $this->request->getData();
-        if (!isset($data['selectedHostId']) || is_null($data['selectedHostId'])) {
+        if (!isset($data['Host']['id']) || is_null($data['Host']['id'])) {
             $error['Host']['id'] = __('This field cannot be left blank.');
         }
 
