@@ -25,8 +25,13 @@
 
 /***************************************************************
  * Auth Proxy for Grafana
+ * All requests to /grafana will get redirected to http://127.0.0.1:8085 (this script)
+ * by Nginx first.
+ * This script will check if a valid openITCOCKPIT Auth cookie exists.
+ * If yes the script will return an HTTP 200 Ok.
  *
- *
+ * If no valid user is found or no cookie is passed, the script returns a 401 Unauthorized
+ * and Nginx will block the access to Grafana.
  */
 
 use Authentication\Identifier\IdentifierCollection;
