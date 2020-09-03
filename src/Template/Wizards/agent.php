@@ -86,19 +86,17 @@
                                                        id="useExistingHost"
                                                        name="checkbox"
                                                        class="custom-control-input"
-                                                       ng-false-value="0"
-                                                       ng-true-value="1"
-                                                       ng-model="post.useExistingHost">
+                                                       ng-model="useExistingHost">
                                                 <label class="custom-control-label"
                                                        for="useExistingHost">
                                                     <?php echo __('Use existing host'); ?></label>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-group required" ng-class="{'has-error': errors.hosts}"
-                                         ng-show="post.useExistingHost">
+                                    <div class="form-group required" ng-class="{'has-error': errors.Host}"
+                                         ng-show="useExistingHost">
                                         <label class="col col-2 control-label">
-                                            <?php echo __('Hosts'); ?>
+                                            <?php echo __('Host'); ?>
                                         </label>
                                         <div class="col col-12">
                                             <select id="Hosts"
@@ -107,14 +105,14 @@
                                                     chosen="hosts"
                                                     callback="loadHosts"
                                                     ng-options="host.key as host.value disable when host.disabled for host in hosts"
-                                                    ng-model="selectedHostIds">
+                                                    ng-model="selectedHostId">
                                             </select>
-                                            <div ng-repeat="error in errors.hosts">
+                                            <div ng-repeat="error in errors.Host">
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div ng-hide="post.useExistingHost">
+                                    <div ng-hide="useExistingHost">
                                         <div class="form-group required" ng-class="{'has-error': errors.container_id}">
                                             <label class="control-label" for="HostContainer">
                                                 <?php echo __('Container'); ?>

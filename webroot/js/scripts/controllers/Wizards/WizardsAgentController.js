@@ -3,7 +3,8 @@ angular.module('openITCOCKPIT')
 
         /** public vars **/
         $scope.init = true;
-        $scope.useExistingHost = 0;
+        $scope.useExistingHost = false;
+        $scope.selectedHostId = null;
         $scope.data = {
             dnsLookUp: LocalStorageService.getItemWithDefault('HostsDnsLookUpEnabled', 'false') === 'true',
             dnsHostnameNotFound: false,
@@ -161,33 +162,53 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(redirectState){
-            $http.post("/hosts/add.json?angular=true",
-                $scope.post
-            ).then(function(result){
-                var hostId = result.data.id;
+            if($scope.useExistingHost === false){
+                $http.post("/hosts/add.json?angular=true",
+                    $scope.post
+                ).then(function(result){
+                    var hostId = result.data.id;
+                    NotyService.genericSuccess();
 
-                NotyService.genericSuccess();
-                NotyService.scrollTop();
+                    $state.go('AgentconfigsConfig', {
+                        hostId: hostId
+                    }).then(function(){
+                        NotyService.scrollTop();
+                    });
 
+                    console.log('Data saved successfully');
+                }, function errorCallback(result){
 
-                console.log('Data saved successfully');
-            }, function errorCallback(result){
+                    NotyService.genericError();
 
-                NotyService.genericError();
-
-                if(result.data.hasOwnProperty('error')){
-                    $scope.errors = result.data.error;
-                }
-            });
-
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
+                });
+            }else{
+                $http.post("/wizards/validateInputFromAngular.json?angular=true", {
+                        Host: {
+                            id: $scope.selectedHostId
+                        }
+                    }
+                ).then(function(result){
+                    $state.go('AgentconfigsConfig', {
+                        hostId: $scope.selectedHostId
+                    }).then(function(){
+                        NotyService.scrollTop();
+                    });
+                }, function errorCallback(result){
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
+                });
+            }
         };
 
-        $scope.$watch('post.useExistingHost', function(){
+        $scope.$watch('useExistingHost', function(){
             if($scope.init){
                 return;
             }
-            if($scope.useExistingHost == 0){
-                //Create another
+            if($scope.useExistingHost === false){
                 return;
             }
 
@@ -216,7 +237,7 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
-            if($scope.useExistingHost == 1){ //not necessary for existing host
+            if($scope.useExistingHost === true){ //not necessary for existing host
                 return;
             }
 

@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 
+use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 
 /**
@@ -56,5 +57,29 @@ class WizardsController extends AppController {
     public function linuxserverssh() {
         //Only ship HTML template
         return;
+    }
+
+    public function validateInputFromAngular() {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $error = ['Host' => []];
+        $data = $this->request->getData();
+        if (!isset($data['selectedHostId']) || is_null($data['selectedHostId'])) {
+            $error['Host']['id'] = __('This field cannot be left blank.');
+        }
+
+        if (!empty($error['Host'])) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('success', false);
+            $this->set('error', $error);
+            $this->viewBuilder()->setOption('serialize', ['error', 'success']);
+            return;
+        }
+
+        $this->set('success', true);
+        $this->set('error', $error);
+        $this->viewBuilder()->setOption('serialize', ['error', 'success']);
     }
 }

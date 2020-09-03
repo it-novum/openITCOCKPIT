@@ -590,6 +590,9 @@ class AclDependencies {
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'dynamicDirective')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'NSTAMaster');
 
+        $this
+            ->dependency('Wizards', 'agent', 'Wizards', 'validateInputFromAngular');
+
         //Load Plugin ALC Dependencies
         foreach (PluginManager::getAvailablePlugins() as $pluginName) {
             $className = sprintf('\%s\Lib\AclDependencies', $pluginName);
