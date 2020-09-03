@@ -175,14 +175,14 @@ class HostComparisonForSave {
      * @return array
      */
     public function getDataForContactsAndContactgroups() {
-        // for easy host add in wizard
+        // for easy host add in wizard - use from template
         if (!isset($this->host['contacts']['_ids']) && !isset($this->host['contactgroups']['_ids'])) {
             return [
                 'contacts'      => [
-                    '_ids' => $this->hosttemplate['contacts']['_ids']
+                    '_ids' => []
                 ],
                 'contactgroups' => [
-                    '_ids' => $this->hosttemplate['contactgroups']['_ids']
+                    '_ids' => []
                 ]
             ];
         }
@@ -265,10 +265,10 @@ class HostComparisonForSave {
      * @return array
      */
     public function getDataForHostgroups() {
-        // for easy host add in wizard
+        // for easy host add in wizard - use from template
         if (!isset($this->host['hostgroups']['_ids'])) {
             return [
-                '_ids' => $this->hosttemplate['hostgroups']['_ids']
+                '_ids' => []
             ];
         }
 
@@ -295,7 +295,7 @@ class HostComparisonForSave {
      * @return array
      */
     public function getDataForCustomvariables() {
-        // for easy host add in wizard
+        // for easy host add in wizard - use from template
         if (!isset($this->host['customvariables']['_ids'])) {
             $this->host['customvariables'] = [];
         }
@@ -327,7 +327,7 @@ class HostComparisonForSave {
      * @return array
      */
     public function getDataForCommandarguments() {
-        // for easy host add in wizard
+        // for easy host add in wizard - use from template
         if (!isset($this->host['command_id'])) {
             return [];
         }
@@ -365,10 +365,10 @@ class HostComparisonForSave {
      * @return array
      */
     public function getDataForPrometheusExporters() {
-        // for easy host add in wizard
+        // for easy host add in wizard - use from template
         if (!isset($this->host['prometheus_exporters']['_ids'])) {
             return [
-                '_ids' => $this->hosttemplate['prometheus_exporters']['_ids']
+                '_ids' => []
             ];
         }
 
