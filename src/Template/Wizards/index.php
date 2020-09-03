@@ -74,6 +74,11 @@
                                    value="docker">
                             <i class="fab fa-docker"></i> <?= ('Docker'); ?>
                         </label>
+                        <label class="btn btn-default">
+                            <input class="invisible" type="checkbox" name="docker" id="macos"
+                                   value="macos">
+                            <i class="fab fa-apple"></i> <?= ('macOS'); ?>
+                        </label>
                     </div>
                     <button class="btn btn-danger btn-xs">
                         <i class="fas fa-undo"></i> <?= ('Reset'); ?>
@@ -85,7 +90,7 @@
                     <div class="row">
                         <div class="col-3" ng-repeat="wizard in wizards">
                             <div class="card mb-2 wizard-logo-card-height-150">
-                                <div class="card-body">
+                                <div class="card-body">{{wizard.state}}
                                     <a ui-sref="{{wizard.state}}" class="d-flex flex-row align-items-start">
                                         <div class="wizard-logo-image">
                                             <img src="/img/wizards/{{wizard.image}}"/>

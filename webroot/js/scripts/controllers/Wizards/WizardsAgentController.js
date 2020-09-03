@@ -1,10 +1,12 @@
 angular.module('openITCOCKPIT')
-    .controller('WizardsAgentController', function($scope, $http, $state, NotyService, LocalStorageService){
+    .controller('WizardsAgentController', function($scope, $http, $state, $stateParams, QueryStringService, NotyService, LocalStorageService){
 
         /** public vars **/
         $scope.init = true;
         $scope.useExistingHost = false;
         $scope.selectedHostId = null;
+        $scope.selectedOs = QueryStringService.getStateValue($stateParams, 'selectedOs', 'windows');
+
         $scope.data = {
             dnsLookUp: LocalStorageService.getItemWithDefault('HostsDnsLookUpEnabled', 'false') === 'true',
             dnsHostnameNotFound: false,
@@ -164,7 +166,7 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.submit = function(redirectState){
+        $scope.submit = function(){
             if($scope.useExistingHost === false){
                 $http.post("/hosts/add.json?angular=true",
                     $scope.post
@@ -174,7 +176,7 @@ angular.module('openITCOCKPIT')
 
                     $state.go('AgentconnectorsConfig', {
                         hostId: hostId,
-                        selectedOs: 'linux'
+                        selectedOs: $scope.selectedOs
                     }).then(function(){
                         NotyService.scrollTop();
                     });
@@ -197,7 +199,7 @@ angular.module('openITCOCKPIT')
                 ).then(function(result){
                     $state.go('AgentconnectorsConfig', {
                         hostId: $scope.selectedHostId,
-                        selectedOs: 'linux'
+                        selectedOs: $scope.selectedOs
                     }).then(function(){
                         NotyService.scrollTop();
                     });

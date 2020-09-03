@@ -49,7 +49,7 @@ class WizardsTable extends Table {
                 'image'       => 'linux.svg',
                 'directive'   => 'linux-server', //AngularJS directive
                 'category'    => ['linux'],
-                'state'       => 'WizardsAgent'
+                'state'       => 'WizardsAgent({selectedOs: "linux"})'
             ],
             [
                 'type_id'     => 2,
@@ -70,6 +70,15 @@ class WizardsTable extends Table {
             ],
             [
                 'type_id'     => 4,
+                'title'       => __('Windows Server'),
+                'description' => __('Monitoring for your Windows Server with openITCOCKPIT Agent'),
+                'image'       => 'Windows.svg',
+                'directive'   => 'windows', //AngularJS directive
+                'category'    => ['windows'],
+                'state'       => 'WizardsAgent({selectedOs: "windows"})'
+            ],
+            [
+                'type_id'     => 5,
                 'title'       => __('Windows (SNMP)'),
                 'description' => __('Linux Monitoring from a Windows device using SNMP'),
                 'image'       => 'Windows.svg',
@@ -77,7 +86,7 @@ class WizardsTable extends Table {
                 'category'    => ['windows']
             ],
             [
-                'type_id'     => 5,
+                'type_id'     => 6,
                 'title'       => __('Windows (NSClient++)'),
                 'description' => __('NSClient++ (nscp) aims to be a simple yet powerful and flexible monitoring daemon'),
                 'image'       => 'nsclient-logo-300x75.png',
@@ -85,7 +94,16 @@ class WizardsTable extends Table {
                 'category'    => ['windows']
             ],
             [
-                'type_id'     => 6,
+                'type_id'     => 7,
+                'title'       => __('macOS Server'),
+                'description' => __('Monitoring for your macOS Server with openITCOCKPIT Agent'),
+                'image'       => 'MacOS-Logo.svg',
+                'directive'   => 'mac', //AngularJS directive
+                'category'    => ['mac'],
+                'state'       => 'WizardsAgent({selectedOs: "macos"})'
+            ],
+            [
+                'type_id'     => 8,
                 'title'       => __('Mysql'),
                 'description' => __('Track MySQL Query Throughput, Execution Performance, Connections, And Buffer Pool Usage'),
                 'image'       => 'MySQL_logo.svg',
@@ -93,7 +111,7 @@ class WizardsTable extends Table {
                 'category'    => ['linux', 'mysql']
             ],
             [
-                'type_id'     => 7,
+                'type_id'     => 9,
                 'title'       => __('Docker'),
                 'description' => __('Instantly monitor & troubleshoot issues within containers'),
                 'image'       => 'docker.png',
