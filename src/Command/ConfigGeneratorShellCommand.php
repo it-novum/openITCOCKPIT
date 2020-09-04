@@ -210,6 +210,12 @@ class ConfigGeneratorShellCommand extends Command {
                 }
                 break;
 
+            case 'PrometheusCfgs_prometheus':
+                    $this->restartService('prometheus.service', 'Restart Prometheus service', $io);
+                    $this->restartService('prometheus_bridge.service', 'Restart Prometheus Bridge service', $io);
+                break;
+
+
             case 'NSTAMaster':
                 $command = $systemsettings['INIT']['INIT.NSTA_RESTART'];
                 $this->restartService($command, 'Restart NSTA service', $io);

@@ -24,6 +24,8 @@
 
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
+use Cake\Core\Plugin;
+use PrometheusModule\Lib\ConfigGenerator\PrometheusCfgs_prometheus;
 use SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmptrapd;
 use SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmptrapdConf;
 use SnmpTrapModule\Lib\ConfigGenerator\SnmpTrapCfgs_snmpttIni;
@@ -54,6 +56,10 @@ class GeneratorRegistry {
             $configFiles[] = new SnmpTrapCfgs_snmpttIni();
         }
 
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $configFiles[] = new PrometheusCfgs_prometheus();
+        }
+
         return $configFiles;
     }
 
@@ -79,7 +85,7 @@ class GeneratorRegistry {
             //__('phpNSTA')                                     => [
             //    new phpNSTAMaster()
             //],
-            __('NSTA')                                     => [
+            __('NSTA')                                        => [
                 new NSTAMaster()
             ],
             __('Carbon and Whisper (Graphing)')               => [
@@ -92,6 +98,12 @@ class GeneratorRegistry {
                 new SnmpTrapCfgs_snmptrapd(),
                 new SnmpTrapCfgs_snmptrapdConf(),
                 new SnmpTrapCfgs_snmpttIni()
+            ];
+        }
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            $configFiles[__('PrometheusModule')] = [
+                new PrometheusCfgs_prometheus()
             ];
         }
 
