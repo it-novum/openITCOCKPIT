@@ -174,21 +174,12 @@ angular.module('openITCOCKPIT')
                     var hostId = result.data.id;
                     NotyService.genericSuccess();
 
-                    if($scope.selectedOs){
-                        $state.go($scope.state, {
-                            hostId: $scope.selectedHostId,
-                            selectedOs: $scope.selectedOs
-                        }).then(function(){
-                            NotyService.scrollTop();
-                        });
-                    }else{
-                        $state.go($scope.state, {
-                            hostId: $scope.selectedHostId
-                        }).then(function(){
-                            NotyService.scrollTop();
-                        });
-                    }
-
+                    $state.go($scope.state, {
+                        hostId: $scope.selectedHostId,
+                        selectedOs: $scope.selectedOs
+                    }).then(function(){
+                        NotyService.scrollTop();
+                    });
                     console.log('Data saved successfully');
                 }, function errorCallback(result){
 
@@ -205,20 +196,12 @@ angular.module('openITCOCKPIT')
                         }
                     }
                 ).then(function(result){
-                    if($scope.selectedOs){
-                        $state.go($scope.state, {
-                            hostId: $scope.selectedHostId,
-                            selectedOs: $scope.selectedOs
-                        }).then(function(){
-                            NotyService.scrollTop();
-                        });
-                    }else{
-                        $state.go($scope.state, {
-                            hostId: $scope.selectedHostId
-                        }).then(function(){
-                            NotyService.scrollTop();
-                        });
-                    }
+                    $state.go($scope.state, {
+                        hostId: $scope.selectedHostId,
+                        selectedOs: $scope.selectedOs
+                    }).then(function(){
+                        NotyService.scrollTop();
+                    });
                 }, function errorCallback(result){
                     if(result.data.hasOwnProperty('error')){
                         $scope.errors = result.data.error;

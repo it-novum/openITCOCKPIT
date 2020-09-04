@@ -55,11 +55,10 @@
                         <div class="wizard">
                             <ul class="nav nav-tabs step-anchor">
                                 <li class="active">
-                                    <span class="badge badge-info">1</span><?php echo __('Host Information'); ?>
-                                    <span class="chevron"></span>
-                                </li>
-                                <li>
-                                    <span class="badge">2</span><?php echo __('Basic agent configuration '); ?>
+                                    <span class="badge badge-info">
+                                        <i class="fa fa-info"></i>
+                                    </span>
+                                    <?php echo __('Host Information'); ?>
                                     <span class="chevron"></span>
                                 </li>
                             </ul>
