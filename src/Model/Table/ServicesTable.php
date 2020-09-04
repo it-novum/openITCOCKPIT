@@ -512,9 +512,7 @@ class ServicesTable extends Table {
             'Services.disabled',
             'Services.host_id'
         ])
-            ->innerJoinWith('Hosts', function (Query $q) {
-                return $q->contain('HostsToContainersSharing');
-            })
+            ->innerJoinWith('Hosts')
             ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     $q->where([
