@@ -43,6 +43,9 @@
                     <?php echo __('Configuration Wizards'); ?>
                 </h2>
                 <div class="panel-toolbar">
+                    <span class="padding-right-10">
+                        <i class="fas fa-filter text-primary"></i> <?= __('Filter'); ?>
+                    </span>
                     <div class="btn-group btn-group-xs padding-top-5 margin-right-10" data-toggle="buttons">
                         <label class="btn btn-default">
                             <input class="invisible" type="checkbox" name="linux"
@@ -91,7 +94,8 @@
                         <div class="col-3" ng-repeat="wizard in wizards">
                             <div class="card mb-2 wizard-logo-card-height-150">
                                 <div class="card-body">
-                                    <a ui-sref="{{wizard.state}}" class="d-flex flex-row align-items-start">
+                                    <a ui-sref="WizardHostConfiguration({state: wizard.state, selectedOs: wizard.selected_os})"
+                                       class="d-flex flex-row align-items-start">
                                         <div class="wizard-logo-image">
                                             <img src="/img/wizards/{{wizard.image}}"/>
                                         </div>
@@ -106,8 +110,8 @@
                                 </div>
                                 <div class="card-footer no-border border-bottom">
                                     <div
-                                        class="text-muted font-italic font-xs text-right padding-top-10 notify-label-small">
-                                        <i class="fas fa-tags text-muted"></i>
+                                        class="wizard-info-tags font-italic font-xs text-right padding-top-10 notify-label-small">
+                                        <i class="fas fa-tags wizard-info-tags"></i>
                                         <i ng-repeat="category in wizard.category">{{category}}{{$last ? '' : ', '}}</i>
                                     </div>
                                 </div>

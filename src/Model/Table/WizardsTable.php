@@ -51,7 +51,8 @@ class WizardsTable extends Table {
                 'image'       => 'linux.svg',
                 'directive'   => 'linux-server', //AngularJS directive
                 'category'    => ['linux'],
-                'state'       => 'WizardsAgent({selectedOs: "linux"})'
+                'state'       => 'AgentconnectorsConfig',
+                'selected_os' => 'linux'
             ],
             [
                 'type_id'     => 2,
@@ -60,7 +61,8 @@ class WizardsTable extends Table {
                 'image'       => 'linux.svg',
                 'directive'   => 'linux-ssh', //AngularJS directive
                 'category'    => ['linux'],
-                'state'       => 'WizardsLinuxServerSsh'
+                'state'       => 'WizardsLinuxServerSsh',
+                'selected_os' => 'linux'
             ],
             [
                 'type_id'     => 3,
@@ -68,7 +70,9 @@ class WizardsTable extends Table {
                 'description' => __('Monitoring Linux devices via SNMP'),
                 'image'       => 'linux.svg',
                 'directive'   => 'linux-snmp', //AngularJS directive
-                'category'    => ['linux']
+                'category'    => ['linux'],
+                'state'       => 'WizardsLinuxServerSnmp',
+                'selected_os' => 'linux'
             ],
             [
                 'type_id'     => 4,
@@ -77,7 +81,8 @@ class WizardsTable extends Table {
                 'image'       => 'Windows.svg',
                 'directive'   => 'windows', //AngularJS directive
                 'category'    => ['windows'],
-                'state'       => 'WizardsAgent({selectedOs: "windows"})'
+                'state'       => 'AgentconnectorsConfig',
+                'selected_os' => 'windows'
             ],
             [
                 'type_id'     => 5,
@@ -85,7 +90,9 @@ class WizardsTable extends Table {
                 'description' => __('Monitoring Windows server with SNMP'),
                 'image'       => 'Windows.svg',
                 'directive'   => 'windows-snmp', //AngularJS directive
-                'category'    => ['windows']
+                'category'    => ['windows'],
+                'state'       => 'WizardsWindowsServerSnmp',
+                'selected_os' => 'windows'
             ],
             [
                 'type_id'     => 6,
@@ -93,7 +100,9 @@ class WizardsTable extends Table {
                 'description' => __('NSClient++ (nscp) aims to be a simple yet powerful and flexible monitoring daemon'),
                 'image'       => 'nsclient-logo-300x75.png',
                 'directive'   => 'windows-nsclient', //AngularJS directive
-                'category'    => ['windows']
+                'category'    => ['windows'],
+                'state'       => 'WizardsWindowsServerNSClient',
+                'selected_os' => 'windows'
             ],
             [
                 'type_id'     => 7,
@@ -102,7 +111,8 @@ class WizardsTable extends Table {
                 'image'       => 'MacOS-Logo.svg',
                 'directive'   => 'mac', //AngularJS directive
                 'category'    => ['mac'],
-                'state'       => 'WizardsAgent({selectedOs: "macos"})'
+                'state'       => 'AgentconnectorsConfig',
+                'selected_os' => 'macos'
             ],
             [
                 'type_id'     => 8,

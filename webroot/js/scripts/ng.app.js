@@ -1391,6 +1391,20 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "WizardsIndexController"
             })
 
+            .state('WizardHostConfiguration', {
+                url: '/wizards/hostConfiguration',
+                params: {
+                    state: {
+                        value: null
+                    },
+                    selectedOs: {
+                        value: null
+                    }
+                },
+                templateUrl: "/wizards/hostConfiguration.html",
+                controller: "WizardHostConfigurationController"
+            })
+
             .state('WizardsAgent', {
                 url: '/wizards/agent',
                 params: {

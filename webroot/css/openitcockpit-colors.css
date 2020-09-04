@@ -948,3 +948,7 @@ div.packetmanager-selection > span::selection {
 .opensuse-fieldset {
     border: 2px solid #73ba25;
 }
+
+.wizard-info-tags{
+    color: #00adef;
+}
