@@ -147,6 +147,11 @@ class ConfigGeneratorCommand extends Command implements CronjobInterface {
                 $this->restartService($command, 'Restart NSTA service', $io);
                 break;
 
+            case 'PrometheusCfgs_prometheus':
+                $this->restartService('prometheus.service', 'Restart Prometheus service', $io);
+                $this->restartService('prometheus_bridge.service', 'Restart Prometheus Bridge service', $io);
+                break;
+
             default:
                 break;
         }

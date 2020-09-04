@@ -195,14 +195,27 @@
                             </div>
 
                             <div id="verifyError" class="col-xs-12 padding-top-20"
-                                 ng-show="verificationErrors.length > 0">
+                                 ng-show="verificationErrors.nagios.hasError">
                                 <div class="alert alert-danger alert-block">
                                     <h4 class="alert-heading"><i
                                                 class="fa fa-times"></i> <?= __('New configuration is invalid'); ?>
                                     </h4>
                                     &nbsp;
                                     <div class="well txt-color-blueDark" id="verifyOutput">
-                                        <pre>{{verificationErrors}}</pre>
+                                        <pre>{{verificationErrors.nagios.output}}</pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="verifyError" class="col-xs-12 padding-top-20"
+                                 ng-show="verificationErrors.prometheus.hasError">
+                                <div class="alert alert-danger alert-block">
+                                    <h4 class="alert-heading"><i
+                                                class="fa fa-times"></i> <?= __('New Prometheus configuration is invalid'); ?>
+                                    </h4>
+                                    &nbsp;
+                                    <div class="well txt-color-blueDark" id="verifyOutput">
+                                        <pre>{{verificationErrors.prometheus.output}}</pre>
                                     </div>
                                 </div>
                             </div>

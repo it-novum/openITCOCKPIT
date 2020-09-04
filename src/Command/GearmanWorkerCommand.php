@@ -915,6 +915,31 @@ class GearmanWorkerCommand extends Command {
                 ];
                 break;
 
+            case 'export_verify_prometheus_config':
+                $return = [
+                    'output'     => [],
+                    'returncode' => 0
+                ];
+
+                if (Plugin::isLoaded('PrometheusModule')) {
+                    /** @var SystemsettingsTable $SystemsettingsTable */
+                    $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+                    $systemsettings = $SystemsettingsTable->findAsArray();
+
+                    $cmd = sprintf(
+                        'sudo -u %s /opt/openitc/prometheus/promtool check config /opt/openitc/prometheus/prometheus.yml 2>&1',
+                        escapeshellarg($systemsettings['MONITORING']['MONITORING.USER'])
+                    );
+
+                    exec($cmd, $output, $returncode);
+                    $return = [
+                        'output'     => $output,
+                        'returncode' => $returncode,
+                    ];
+                }
+
+                break;
+
             //case 'export_sync_sat_config':
             //
             //    // OLD Style Satellite Configuration sync via SSH and rsync.
@@ -1433,6 +1458,49 @@ class GearmanWorkerCommand extends Command {
             $successfully = 0;
             $verifyEntity->set('successfully', 0);
             $ExportsTable->save($verifyEntity);
+        }
+
+        if (Plugin::isLoaded('PrometheusModule')) {
+            //Verify new Prometheus configuration
+            $verifyEntity = $ExportsTable->newEntity([
+                'task' => 'export_verify_new_prometheus_configuration',
+                'text' => __('Verifying new Prometheus configuration')
+            ]);
+            $ExportsTable->save($verifyEntity);
+
+            $cmd = sprintf(
+                'sudo -u %s /opt/openitc/prometheus/promtool check config /opt/openitc/prometheus/prometheus.yml 2>&1',
+                escapeshellarg($systemsettings['MONITORING']['MONITORING.USER'])
+            );
+            $output = null;
+            exec($cmd, $output, $returncode);
+            $verifyEntity->set('finished', 1);
+            if ($returncode === 0) {
+                //New configuration is valid :-)
+
+                $verifyEntity->set('successfully', 1);
+                $ExportsTable->save($verifyEntity);
+
+                //Restart Prometheus
+                $entity = $ExportsTable->newEntity([
+                    'task' => 'export_restart_prometheus',
+                    'text' => __('Restarting Prometheus monitoring engine')
+                ]);
+                $ExportsTable->save($entity);
+                exec('systemctl restart prometheus.service', $restartOutput, $restartRc);
+                $entity->set('finished', 1);
+                $entity->set('successfully', 0);
+                if ($restartRc === 0) {
+                    $entity->set('successfully', 1);
+                }
+                $ExportsTable->save($entity);
+                unset($entity);
+            } else {
+                //Error with new configuration :-(
+                $successfully = 0;
+                $verifyEntity->set('successfully', 0);
+                $ExportsTable->save($verifyEntity);
+            }
         }
 
         //Export, reload/restart and after export done
