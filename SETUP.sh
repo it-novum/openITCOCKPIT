@@ -33,10 +33,14 @@ chmod +x /usr/bin/oitc
 
 echo "Create required system folders"
 mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,nsta,statusengine} /opt/openitc/etc/statusengine/Config
+mkdir -p /opt/openitc/nagios/etc/config
+mkdir -p /opt/openitc/etc/nagios/nagios.cfg.d
 
 mkdir -p /opt/openitc/logs/frontend/nagios
 chown www-data:www-data /opt/openitc/logs/frontend
 chown nagios:nagios /opt/openitc/logs/frontend/nagios
+chown nagios:www-data /opt/openitc/nagios/etc/config
+chown nagios:www-data /opt/openitc/etc/nagios/nagios.cfg.d
 chmod 775 /opt/openitc/logs/frontend
 chmod 775 /opt/openitc/logs/frontend/nagios
 
