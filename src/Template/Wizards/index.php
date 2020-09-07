@@ -46,52 +46,49 @@
                     <span class="padding-right-10">
                         <i class="fas fa-filter text-primary"></i> <?= __('Filter'); ?>
                     </span>
-                    <div class="btn-group btn-group-xs padding-top-5 margin-right-10" data-toggle="buttons">
-                        <label class="btn btn-default">
-                            <input class="invisible" type="checkbox" name="linux"
-                                   id="linux" value="linux">
+                    <div class="btn-group btn-group-xs margin-right-10">
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.linux, 'btn-default': !filter.Category.linux}"
+                                ng-click="filter.Category.linux=!filter.Category.linux">
                             <i class="fab fa-linux"></i> <?= ('Linux'); ?>
-                        </label>
-                        <label class="btn btn-default">
-                            <input class="invisible" type="checkbox" name="windows" id="windows"
-                                   value="windows">
+                        </button>
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.windows, 'btn-default': !filter.Category.windows}"
+                                ng-click="filter.Category.windows=!filter.Category.windows">
                             <i class="fab fa-windows"></i> <?= ('Windows'); ?>
-                        </label>
-                        <label class="btn btn-default">
-                            <input class="invisible" type="checkbox" name="database" id="database"
-                                   value="database">
-                            <i class="fas fa-database"></i> <?= ('Database'); ?>
-                        </label>
-                        <label class="btn btn-default">
-                            <input class="invisible" type="checkbox" name="mail" id="mail"
-                                   value="mail">
+                        </button>
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.database, 'btn-default': !filter.Category.database}"
+                                ng-click="filter.Category.database=!filter.Category.database">
+                            <i class="fa fa-database"></i> <?= ('Database'); ?>
+                        </button>
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.mail, 'btn-default': !filter.Category.mail}"
+                                ng-click="filter.Category.mail=!filter.Category.mail">
                             <i class="fas fa-mail-bulk"></i> <?= ('Email'); ?>
-                        </label>
-                        <label class="btn btn-default">
-                            <input class="invisible" type="checkbox" name="network" id="network"
-                                   value="network">
-                            <i class="fas fa-sitemap"></i> <?= ('Network'); ?>
-                        </label>
-                        <label class="btn btn-default">
-                            <input class="invisible" type="checkbox" name="docker" id="docker"
-                                   value="docker">
+                        </button>
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.network, 'btn-default': !filter.Category.network}"
+                                ng-click="filter.Category.network=!filter.Category.network">
+                            <i class="fa fa-sitemap"></i> <?= ('Network'); ?>
+                        </button>
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.docker, 'btn-default': !filter.Category.docker}"
+                                ng-click="filter.Category.docker=!filter.Category.docker">
                             <i class="fab fa-docker"></i> <?= ('Docker'); ?>
-                        </label>
-                        <label class="btn btn-default">
-                            <input class="invisible" type="checkbox" name="docker" id="macos"
-                                   value="macos">
+                        </button>
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.macos, 'btn-default': !filter.Category.macos}"
+                                ng-click="filter.Category.macos=!filter.Category.macos">
                             <i class="fab fa-apple"></i> <?= ('macOS'); ?>
-                        </label>
+                        </button>
                     </div>
-                    <button class="btn btn-danger btn-xs">
-                        <i class="fas fa-undo"></i> <?= ('Reset'); ?>
-                    </button>
                 </div>
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
                     <div class="row">
-                        <div class="col-3" ng-repeat="wizard in wizards">
+                        <div class="col-3" ng-repeat="wizard in wizards" ng-show="filterByCategory(wizard.category)">
                             <div class="card mb-2 wizard-logo-card-height-150">
                                 <div class="card-body">
                                     <a ui-sref="WizardHostConfiguration({state: wizard.state, selectedOs: wizard.selected_os})"

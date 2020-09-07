@@ -109,8 +109,8 @@ class WizardsTable extends Table {
                 'title'       => __('macOS Server'),
                 'description' => __('Monitoring for your macOS Server with openITCOCKPIT Agent'),
                 'image'       => 'MacOS-Logo.svg',
-                'directive'   => 'mac', //AngularJS directive
-                'category'    => ['mac'],
+                'directive'   => 'macos', //AngularJS directive
+                'category'    => ['macos'],
                 'state'       => 'AgentconnectorsConfig',
                 'selected_os' => 'macos'
             ],

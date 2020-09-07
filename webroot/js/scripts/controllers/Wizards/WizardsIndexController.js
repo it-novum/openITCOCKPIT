@@ -3,8 +3,17 @@ angular.module('openITCOCKPIT')
 
         /** public vars **/
         $scope.init = true;
-        $scope.category = [];
-
+        $scope.filter = {
+            Category: {
+                linux: true,
+                windows: true,
+                database: true,
+                mail: true,
+                network: true,
+                docker: true,
+                macos: true
+            }
+        };
 
         $scope.load = function(){
             $http.get("/wizards/index.json", {
@@ -18,6 +27,15 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.filterByCategory = function(wizardCategory){
+            for(var i in wizardCategory){
+                if($scope.filter.Category.hasOwnProperty(wizardCategory[i]) && $scope.filter.Category[wizardCategory[i]] === true){
+                    return true;
+                }
+            }
+            return false;
+        };
 
+        //Fire on page load
         $scope.load();
     });
