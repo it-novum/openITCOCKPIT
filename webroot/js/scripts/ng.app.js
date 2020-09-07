@@ -1421,6 +1421,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 templateUrl: "/wizards/linuxserverssh.html",
                 controller: "WizardsLinuxServerSshController"
             })
+
+            .state('WizardsAssignments', {
+                url: '/wizards/assignments',
+                templateUrl: "/wizards/assignments.html",
+                controller: "WizardsAssignmentsController"
+            })
     })
 
     /*

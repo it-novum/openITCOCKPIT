@@ -45,90 +45,100 @@ class WizardsTable extends Table {
         }
         $wizards = [
             [
-                'type_id'     => 1,
-                'title'       => __('Linux Server'),
-                'description' => __('Monitoring for your Linux Server with openITCOCKPIT Agent'),
-                'image'       => 'linux.svg',
-                'directive'   => 'linux-server', //AngularJS directive
-                'category'    => ['linux'],
-                'state'       => 'AgentconnectorsConfig',
-                'selected_os' => 'linux'
+                'type_id'                 => 'linux-server-agent',
+                'title'                   => __('Linux Server'),
+                'description'             => __('Monitoring for your Linux Server with openITCOCKPIT Agent'),
+                'image'                   => 'linux.svg',
+                'directive'               => 'linux-server', //AngularJS directive
+                'category'                => ['linux'],
+                'state'                   => 'AgentconnectorsConfig',
+                'selected_os'             => 'linux',
+                'necessity_of_assignment' => false
+
             ],
             [
-                'type_id'     => 2,
-                'title'       => __('Linux (SSH)'),
-                'description' => __('Monitoring via Secure Shell (SSH) enables you to gather performance and system data from many Linux and Unix distributions'),
-                'image'       => 'linux.svg',
-                'directive'   => 'linux-ssh', //AngularJS directive
-                'category'    => ['linux'],
-                'state'       => 'WizardsLinuxServerSsh',
-                'selected_os' => 'linux'
+                'type_id'                 => 'linux-server-ssh',
+                'title'                   => __('Linux (SSH)'),
+                'description'             => __('Monitoring via Secure Shell (SSH) enables you to gather performance and system data from many Linux and Unix distributions'),
+                'image'                   => 'linux.svg',
+                'directive'               => 'linux-ssh', //AngularJS directive
+                'category'                => ['linux'],
+                'state'                   => 'WizardsLinuxServerSsh',
+                'selected_os'             => 'linux',
+                'necessity_of_assignment' => true
             ],
             [
-                'type_id'     => 3,
-                'title'       => __('Linux (SNMP)'),
-                'description' => __('Monitoring Linux devices via SNMP'),
-                'image'       => 'linux.svg',
-                'directive'   => 'linux-snmp', //AngularJS directive
-                'category'    => ['linux'],
-                'state'       => 'WizardsLinuxServerSnmp',
-                'selected_os' => 'linux'
+                'type_id'                 => 'linux-server-snmp',
+                'title'                   => __('Linux (SNMP)'),
+                'description'             => __('Monitoring Linux devices via SNMP'),
+                'image'                   => 'linux.svg',
+                'directive'               => 'linux-snmp', //AngularJS directive
+                'category'                => ['linux'],
+                'state'                   => 'WizardsLinuxServerSnmp',
+                'selected_os'             => 'linux',
+                'necessity_of_assignment' => true
             ],
             [
-                'type_id'     => 4,
-                'title'       => __('Windows Server'),
-                'description' => __('Monitoring for your Windows Server with openITCOCKPIT Agent'),
-                'image'       => 'Windows.svg',
-                'directive'   => 'windows', //AngularJS directive
-                'category'    => ['windows'],
-                'state'       => 'AgentconnectorsConfig',
-                'selected_os' => 'windows'
+                'type_id'                 => 'windows-server-agent',
+                'title'                   => __('Windows Server'),
+                'description'             => __('Monitoring for your Windows Server with openITCOCKPIT Agent'),
+                'image'                   => 'Windows.svg',
+                'directive'               => 'windows', //AngularJS directive
+                'category'                => ['windows'],
+                'state'                   => 'AgentconnectorsConfig',
+                'selected_os'             => 'windows',
+                'necessity_of_assignment' => false
             ],
             [
-                'type_id'     => 5,
+                'type_id'     => 'windows-server-snmp',
                 'title'       => __('Windows (SNMP)'),
                 'description' => __('Monitoring Windows server with SNMP'),
                 'image'       => 'Windows.svg',
                 'directive'   => 'windows-snmp', //AngularJS directive
                 'category'    => ['windows'],
                 'state'       => 'WizardsWindowsServerSnmp',
-                'selected_os' => 'windows'
+                'selected_os' => 'windows',
+                'necessity_of_assignment' => true
             ],
             [
-                'type_id'     => 6,
+                'type_id'     => 'windows-server-nsclient',
                 'title'       => __('Windows (NSClient++)'),
                 'description' => __('NSClient++ (nscp) aims to be a simple yet powerful and flexible monitoring daemon'),
                 'image'       => 'nsclient-logo-300x75.png',
                 'directive'   => 'windows-nsclient', //AngularJS directive
                 'category'    => ['windows'],
                 'state'       => 'WizardsWindowsServerNSClient',
-                'selected_os' => 'windows'
+                'selected_os' => 'windows',
+                'necessity_of_assignment' => true
             ],
             [
-                'type_id'     => 7,
+                'type_id'     => 'macos-server',
                 'title'       => __('macOS Server'),
                 'description' => __('Monitoring for your macOS Server with openITCOCKPIT Agent'),
                 'image'       => 'MacOS-Logo.svg',
                 'directive'   => 'macos', //AngularJS directive
                 'category'    => ['macos'],
                 'state'       => 'AgentconnectorsConfig',
-                'selected_os' => 'macos'
+                'selected_os' => 'macos',
+                'necessity_of_assignment' => false
             ],
             [
-                'type_id'     => 8,
+                'type_id'     => 'mysql-server',
                 'title'       => __('Mysql'),
                 'description' => __('Track MySQL Query Throughput, Execution Performance, Connections, And Buffer Pool Usage'),
                 'image'       => 'MySQL_logo.svg',
                 'directive'   => 'mysql', //AngularJS directive
-                'category'    => ['linux', 'mysql']
+                'category'    => ['linux', 'mysql'],
+                'necessity_of_assignment' => true
             ],
             [
-                'type_id'     => 9,
+                'type_id'     => 'docker',
                 'title'       => __('Docker'),
                 'description' => __('Instantly monitor & troubleshoot issues within containers'),
                 'image'       => 'docker.png',
                 'directive'   => 'docker', //AngularJS directive
-                'category'    => ['linux', 'docker']
+                'category'    => ['linux', 'docker'],
+                'necessity_of_assignment' => true
             ]
         ];
         $modules = PluginManager::getAvailablePlugins();

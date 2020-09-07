@@ -44,7 +44,7 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Configuration Wizard: Linux Server'); ?>
+                    <?php echo __('Configuration Wizard: Linux Server (SSH)'); ?>
                 </h2>
             </div>
             <div class="panel-container show">
@@ -80,70 +80,69 @@
                         <div class="step-content">
                             <div class="step-pane active padding-20" id="step1">
                                 <h6 class="txt-color-blueDark"><?php echo __('Main server configuration'); ?></h6>
-                                <!-- wizard form starts here -->
-                                <fieldset class="col col-12">
-                                    <div class="form-group">
-                                        <label class="col col-2 control-label">
-                                            <?php echo __('Operation Systems'); ?>
+                                <div>
+                                    <div class="form-group required" ng-class="{'has-error':errors.login}">
+                                        <label class="control-label" for="Login">
+                                            <?php echo __('Login'); ?>
                                         </label>
-                                        <div class="col col-12">
-                                            <select class="form-control"
-                                                    ng-model="post.Linux.operating_system"
-                                                    chosen="{}">
-                                                <option value="ubuntu"><?php echo __('Ubuntu'); ?></option>
-                                                <option value="debian"><?php echo __('Debian'); ?></option>
-                                                <option value="centos"><?php echo __('CentOS'); ?></option>
-                                                <option value="redhat"><?php echo __('RedHat'); ?></option>
-                                                <option value="fedora"><?php echo __('Fedora'); ?></option>
-                                                <option value="opensuse"><?php echo __('openSuse'); ?></option>
-                                            </select>
+                                        <input ng-model="post.ssh.login"
+                                               class="form-control"
+                                               maxlength="255"
+                                               placeholder="nagios"
+                                               type="text"
+                                               id="Login">
+                                        <div ng-repeat="error in errors.login">
+                                            <div class="help-block text-danger">{{ error }}</div>
                                         </div>
                                     </div>
-                                </fieldset>
-                                <div class="animate-switch-container"
-                                     ng-switch on="post.Linux.operating_system">
-                                    <fieldset class="col col-12 margin-top-20 margin-left-20 wizard-fieldset-legend-auto-width ubuntu-fieldset"
-                                              ng-switch-when="ubuntu">
-                                        <legend class="ubuntu-text padding-10">
-                                            <span class="fl-ubuntu ubuntu-text"></span>
-                                            <?php echo __('Ubuntu'); ?>
-                                        </legend>
-                                    </fieldset>
-                                    <fieldset class="col col-12 margin-top-20 margin-left-20 wizard-fieldset-legend-auto-width debian-fieldset"
-                                              ng-switch-when="debian">
-                                        <legend class="debian-text padding-10">
-                                            <span class="fl-debian debian-text"></span>
-                                            <?php echo __('Debian'); ?>
-                                        </legend>
-                                    </fieldset>
-                                    <fieldset class="col col-12 margin-top-20 margin-left-20 wizard-fieldset-legend-auto-width centos-fieldset"
-                                              ng-switch-when="centos">
-                                        <legend class="centos-text padding-10">
-                                            <span class="fl-centos centos-text"></span>
-                                            <?php echo __('CentOS'); ?>
-                                        </legend>
-                                    </fieldset>
-                                    <fieldset class="col col-12 margin-top-20 margin-left-20 wizard-fieldset-legend-auto-width redhat-fieldset"
-                                              ng-switch-when="redhat">
-                                        <legend class="redhat-text padding-10">
-                                            <span class="fl-redhat redhat-text"></span>
-                                            <?php echo __('RedHat'); ?>
-                                        </legend>
-                                    </fieldset>
-                                    <fieldset class="col col-12 margin-top-20 margin-left-20 wizard-fieldset-legend-auto-width fedora-fieldset"
-                                              ng-switch-when="fedora">
-                                        <legend class="fedora-text padding-10">
-                                            <span class="fl-fedora fedora-text"></span>
-                                            <?php echo __('Fedora'); ?>
-                                        </legend>
-                                    </fieldset>
-                                    <fieldset class="col col-12 margin-top-20 margin-left-20 wizard-fieldset-legend-auto-width opensuse-fieldset"
-                                              ng-switch-when="opensuse">
-                                        <legend class="opensuse-text padding-10">
-                                            <span class="fl-opensuse opensuse-text"></span>
-                                            <?php echo __('openSuse'); ?>
-                                        </legend>
-                                    </fieldset>
+                                    <div class="form-group required" ng-class="{'has-error':errors.port}">
+                                        <label class="control-label" for="Port">
+                                            <?php echo __('Port'); ?>
+                                        </label>
+                                        <input ng-model="post.ssh.port"
+                                               class="form-control"
+                                               placeholder="22"
+                                               type="number"
+                                               min="0"
+                                               max="65535"
+                                               step="1"
+                                               id="Port">
+                                        <div ng-repeat="error in errors.port">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                        <div class="help-block">
+                                            <?= __('SSH port of remote machine.') ?>
+                                        </div>
+                                    </div>
+                                    <div class="form-group required" ng-class="{'has-error':errors.private_key_path}">
+                                        <label class="control-label" for="PrivateKeyPath">
+                                            <?php echo __('PrivateKeyPath'); ?>
+                                        </label>
+                                        <input ng-model="post.ssh.private_key_path"
+                                               class="form-control"
+                                               placeholder="/var/lib/nagios/.ssh/id_rsa"
+                                               type="text"
+                                               id="PrivateKeyPath">
+                                        <div ng-repeat="error in errors.private_key_path">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                        <div class="help-block">
+                                            <?= __('We will use a default path to private key if this field left empty') ?>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" ng-class="{'has-error':errors.timeout}">
+                                        <label class="control-label" for="Timeout">
+                                            <?php echo __('Timeout'); ?>
+                                        </label>
+                                        <input ng-model="post.ssh.timeout"
+                                               class="form-control"
+                                               placeholder="60"
+                                               type="text"
+                                               id="Timeout">
+                                        <div ng-repeat="error in errors.timeout">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -683,6 +683,16 @@ class Menu {
                     [],
                     4
                 ))
+                ->addLink(new MenuLink(
+                    __('Wizard assignments'),
+                    'WizardsAssignments',
+                    'wizards',
+                    'assignments',
+                    '',
+                    'fas fa-magic',
+                    [],
+                    4
+                ))
             );
 
 

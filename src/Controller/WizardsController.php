@@ -49,6 +49,19 @@ class WizardsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['wizards']);
     }
 
+    public function assignments() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $WizardsTable = TableRegistry::getTableLocator()->get('Wizards');
+        $wizards = $WizardsTable->getAvailableWizards($this->PERMISSIONS);
+        $this->set('wizards', $wizards);
+        $this->viewBuilder()->setOption('serialize', ['wizards']);
+    }
+
+
     public function hostConfiguration() {
         //Only ship HTML template
         return;
@@ -91,5 +104,12 @@ class WizardsController extends AppController {
         $this->set('success', true);
         $this->set('error', $error);
         $this->viewBuilder()->setOption('serialize', ['error', 'success']);
+    }
+
+    public function loadServicetemplatesByWizardType(){
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $type = $this->request->getQuery('type');
     }
 }

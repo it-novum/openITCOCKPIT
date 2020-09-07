@@ -3,19 +3,27 @@ angular.module('openITCOCKPIT')
 
         /** public vars **/
         $scope.init = true;
-        $scope.category = [];
+        $scope.post = {
+            ssh: {
+                login: null,
+                id_rsa_path: null,
+                port: null
+            }
+        };
 
 
-        $scope.load = function(){
-            $http.get("/wizards/index.json", {
+        $scope.load = function(searchString, selected){
+            $http.get("/wizards/loadServicetemplatesByWizardType.json", {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'type': 'linuxserverssh'
                 }
             }).then(function(result){
+                $scope.servicetemplates = result.data.servicetemplates;
+                console.log($scope.servicetemplates);
 
-                $scope.wizards = result.data.wizards;
-                $scope.init = false;
             });
+            console.log('load');
         };
 
 
