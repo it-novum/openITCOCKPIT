@@ -2551,11 +2551,15 @@ class NagiosConfigGenerator {
     }
 
     public function deleteAllConfigfiles() {
-        $result = scandir($this->conf['path'] . DS . 'config');
+        if (!is_dir($this->conf['path'] . 'config')) {
+            mkdir($this->conf['path'] . 'config');
+        }
+
+        $result = scandir($this->conf['path'] . 'config');
         foreach ($result as $filename) {
             if (!in_array($filename, ['.', '..'], true)) {
-                if (is_dir($this->conf['path'] . DS . 'config' . DS . $filename)) {
-                    $folder = new Folder($this->conf['path'] . DS . 'config' . DS . $filename);
+                if (is_dir($this->conf['path'] . 'config' . DS . $filename)) {
+                    $folder = new Folder($this->conf['path'] . 'config' . DS . $filename);
                     $folder->delete();
                     unset($folder);
                 }
