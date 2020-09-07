@@ -2629,8 +2629,8 @@ msgstr "Отменить выбор"
 #: EventcorrelationModule/templates/Eventcorrelations/index.php:253
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:277
 #: SnmpTrapModule/templates/SnmpttList/index.php:290
-msgid "Delete all"
-msgstr "Удалить всех"
+msgid "Delete selected"
+msgstr "Удалить выбранные"
 
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/view.php:81
 #: src/Template/Angular/not_found.php:37

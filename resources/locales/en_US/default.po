@@ -2628,7 +2628,7 @@ msgstr ""
 #: EventcorrelationModule/templates/Eventcorrelations/index.php:253
 #: PrometheusModule/templates/PrometheusAlertRules/index.php:277
 #: SnmpTrapModule/templates/SnmpttList/index.php:290
-msgid "Delete all"
+msgid "Delete selected"
 msgstr ""
 
 #: plugins/GrafanaModule/templates/GrafanaUserdashboards/view.php:81
