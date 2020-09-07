@@ -44,6 +44,9 @@ chown nagios:www-data /opt/openitc/etc/nagios/nagios.cfg.d
 chmod 775 /opt/openitc/logs/frontend
 chmod 775 /opt/openitc/logs/frontend/nagios
 
+chmod u+s /opt/openitc/nagios/libexec/check_icmp
+chmod u+s /opt/openitc/nagios/libexec/check_dhcp
+
 mkdir -p /opt/openitc/frontend/tmp/nagios
 chown www-data:www-data /opt/openitc/frontend/tmp
 chown nagios:nagios /opt/openitc/frontend/tmp/nagios
