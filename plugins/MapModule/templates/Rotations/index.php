@@ -234,7 +234,7 @@
                                 <div class="col-xs-12 col-md-2 txt-color-red">
                                     <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                         <i class="fas fa-lg fa-trash"></i>
-                                        <?php echo __('Delete all'); ?>
+                                        <?php echo __('Delete selected'); ?>
                                     </span>
                                 </div>
                             <?php endif; ?>
