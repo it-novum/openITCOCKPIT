@@ -242,9 +242,10 @@ class MysqlWizard extends Importer {
 
     public function getCommandsData() {
         $data = [
+            /* connection-time in seconds*/
             [
                 'name'             => 'check_mysql_health__connection-time',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$  --password $_SERVICEMYSQL_PASS$  --warning $ARG2$ --critical $ARG3$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode connection-time --units seconds --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'f503de41-54e2-40e9-9c26-fdfdb786a3c4',
@@ -252,15 +253,413 @@ class MysqlWizard extends Importer {
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
-                        'human_name' => 'Warning %'
+                        'human_name' => 'Warning in seconds'
                     ],
                     [
                         'name'       => '$ARG2$',
-                        'human_name' => 'Critical %'
+                        'human_name' => 'Critical in seconds'
+                    ]
+                ]
+            ],
+            /* uptime in seconds*/
+            [
+                'name'             => 'check_mysql_health__uptime',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode uptime --units seconds --warning $ARG1$ --critical $ARG2$',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'b553d65d-b422-44c2-ab1e-d8922d41e8af',
+                'description'      => 'Time the server is running',
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning in seconds'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical in seconds'
+                    ]
+                ]
+            ],
+            /* threads-connected */
+            [
+                'name'             => 'check_mysql_health__threads-connected',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode threads-connected --warning $ARG1$ --critical $ARG2$',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '63317cd9-85d4-41d6-a8e2-a7d1602bd0f6',
+                'description'      => 'Number of currently open connections',
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical'
+                    ]
+                ]
+            ],
+            /* threadcache-hitrate */
+            [
+                'name'             => 'check_mysql_health__threadcache-hitrate',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode threadcache-hitrate --warning $ARG1$ --critical $ARG2$',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'f5db0b4e-2af7-4fb5-937f-124f6d798f2c',
+                'description'      => 'Hit rate of the thread-cache',
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical'
+                    ]
+                ]
+            ],
+            /* threads-created */
+            [
+                'name'             => 'check_mysql_health__threads-created',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode threads-created --units "created threads per sec" --warning $ARG1$ --critical $ARG2$',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '33c569c2-8561-4d7a-83f2-ea017eb9f07c',
+                'description'      => 'Number of threads created per sec',
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning - Number of created threads per second'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical - Number of created threads per second'
+                    ]
+                ]
+            ],
+            /* threads-running */
+            [
+                'name'             => 'check_mysql_health__threads-running',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode threads-running --warning $ARG1$ --critical $ARG2$',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'c53847e7-2ca4-498e-8634-5eec26b12e01',
+                'description'      => 'Number of currently running threads',
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical'
+                    ]
+                ],
+                /* threads-cached */
+                [
+                    'name'             => 'check_mysql_health__threads-cached',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode threads-cached --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => '6dd4f561-3e80-4b4a-a683-d418dacbea3b',
+                    'description'      => 'Number of currently cached threads',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical'
+                        ]
+                    ]
+                ],
+                /* connects-aborted */
+                [
+                    'name'             => 'check_mysql_health__connects-aborted',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode connects-aborted --units "aborted connects per sec" --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => 'd4b97b6f-7364-4717-b6d8-695cd2965ae8',
+                    'description'      => 'Number of aborted connections per sec',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning - Number of aborted connects per second'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical - Number of aborted connects per second'
+                        ]
+                    ]
+                ],
+                /* clients-aborted */
+                [
+                    'name'             => 'check_mysql_health__clients-aborted',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode clients-aborted --units "aborted connects per sec" --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => '117a2c52-8493-426f-bfcf-36a255f4eea4',
+                    'description'      => 'Number of aborted connections (because the client died) per sec',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning - Number of aborted connects per second'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical - Number of aborted connects per second'
+                        ]
+                    ]
+                ],
+                /* qcache-hitrate */
+                [
+                    'name'             => 'check_mysql_health__qcache-hitrate',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode qcache-hitrate --units "%" --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => '45af9220-3666-422d-bf1a-9335cd958181',
+                    'description'      => 'Query cache hitrate',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning in %'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical in %'
+                        ]
+                    ]
+                ],
+                /* qcache-lowmem-prunes */
+                [
+                    'name'             => 'check_mysql_health__qcache-lowmem-prunes',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode qcache-lowmem-prunes --units "%" --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => '60be76fa-1687-42b3-ae3a-679027177359',
+                    'description'      => 'Query cache entries pruned because of low memory',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning in %'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical in %'
+                        ]
+                    ]
+                ],
+                /* bufferpool-hitrate */
+                [
+                    'name'             => 'check_mysql_health__bufferpool-hitrate',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode bufferpool-hitrate --units "%" --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => '9b2d90f0-6c8c-44a6-b826-dd22a5ab02f5',
+                    'description'      => 'InnoDB buffer pool hitrate',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning in %'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical in %'
+                        ]
+                    ]
+                ],
+                /* bufferpool-wait-free */
+                [
+                    'name'             => 'check_mysql_health__bufferpool-wait-free',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode bufferpool-wait-free --units "%" --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => '999ae421-6229-4197-9803-a88996905448',
+                    'description'      => 'InnoDB buffer pool waits for clean page available',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning in %'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical in %'
+                        ]
+                    ]
+                ],
+                /* log-waits */
+                [
+                    'name'             => 'check_mysql_health__log-waits',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode log-waits --units "%" --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => '016fca63-d656-457c-a556-68714bae8fa0',
+                    'description'      => 'InnoDB log waits because of a too small log buffer',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning in %'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical in %'
+                        ]
+                    ]
+                ],
+                /* tablecache-hitrate */
+                [
+                    'name'             => 'check_mysql_health__tablecache-hitrate',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode tablecache-hitrate --units "%" --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => '430bd37b-1fba-4c62-aeed-cbda4275d7e0',
+                    'description'      => 'Table cache hitrate',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning in %'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical in %'
+                        ]
+                    ]
+                ],
+                /* table-lock-contention */
+                [
+                    'name'             => 'check_mysql_health__table-lock-contention',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode table-lock-contention --units "%" --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => '430bd37b-1fba-4c62-aeed-cbda4275d7e0',
+                    'description'      => 'Table lock contention',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning in %'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical in %'
+                        ]
+                    ]
+                ],
+                /* index-usage */
+                [
+                    'name'             => 'check_mysql_health__index-usage',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode index-usage --units "%" --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => 'a42e7d0d-ceba-42a3-8128-6764ce5cde8c',
+                    'description'      => 'Usage of indices',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning in %'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical in %'
+                        ]
+                    ]
+                ],
+                /* tmp-disk-tables */
+                [
+                    'name'             => 'check_mysql_health__tmp-disk-tables',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode tmp-disk-tables --units "%" --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => 'a42e7d0d-ceba-42a3-8128-6764ce5cde8c',
+                    'description'      => 'Percent of temp tables created on disk',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning in %'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical in %'
+                        ]
+                    ]
+                ],
+                /* table-fragmentation */
+                [
+                    'name'             => 'check_mysql_health__table-fragmentation',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode table-fragmentation --units "Tables" --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => 'b464e382-1aff-4f92-970a-0807f6882fa3',
+                    'description'      => 'Show tables which should be optimized',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical'
+                        ]
+                    ]
+                ],
+                /* open-files */
+                [
+                    'name'             => 'check_mysql_health__open-files',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode open-files --units "%" --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => '2a08c744-6a1e-4281-bbbb-065665afb4ea',
+                    'description'      => 'Percent of opened files',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning in %'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical in %'
+                        ]
+                    ]
+                ],
+                /* slow-queries */
+                [
+                    'name'             => 'check_mysql_health__slow-queries',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode slow-queries --units "%" --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => '822d6c2a-3475-45ca-9f77-d1a7be3a57be',
+                    'description'      => 'Slow queries',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning in %'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical in %'
+                        ]
+                    ]
+                ],
+                /* long-running-procs */
+                [
+                    'name'             => 'check_mysql_health__long-running-procs',
+                    'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTNAME$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode long-running-procs --units "%" --warning $ARG1$ --critical $ARG2$',
+                    'command_type'     => CHECK_COMMAND,
+                    'human_args'       => null,
+                    'uuid'             => '3b6d29ff-966e-49cf-9b1a-159d3139ac49',
+                    'description'      => 'Long running processes',
+                    'commandarguments' => [
+                        [
+                            'name'       => '$ARG1$',
+                            'human_name' => 'Warning in %'
+                        ],
+                        [
+                            'name'       => '$ARG2$',
+                            'human_name' => 'Critical in %'
+                        ]
                     ]
                 ]
             ]
-
         ];
         return $data;
     }
