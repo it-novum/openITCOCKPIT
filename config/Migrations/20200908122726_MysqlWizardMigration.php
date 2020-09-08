@@ -74,14 +74,14 @@ class MysqlWizardMigration extends AbstractMigration {
                 'limit'   => 11,
                 'null'    => false,
             ])
-            ->addColumn('wizard_assignments_id', 'integer', [
+            ->addColumn('wizard_assignment_id', 'integer', [
                 'default' => null,
                 'limit'   => 11,
                 'null'    => false,
             ])
             ->addIndex(
                 [
-                    'wizard_assignments_id',
+                    'wizard_assignment_id',
                 ]
             )
             ->addIndex(

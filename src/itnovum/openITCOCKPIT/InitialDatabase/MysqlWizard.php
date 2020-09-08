@@ -93,21 +93,23 @@ class MysqlWizard extends Importer {
                 }
         }
 
-
-
-        foreach ($data['Wizardassignments']['servicetemplates']['_ids'] as $uuid) {
-            //debug($this->ServicetemplatesTable->getServicetemplateByUuid($agentcheck['servicetemplate_id']));die();
-            $servicetemplate = $this->ServicetemplatesTable->getServicetemplateByUuid($uuid);
+        foreach ($data['Wizardassignments'] as $wizardassignment) {
+            $wizardassignmentEntity['uuid'] = $wizardassignment['uuid'];
+            $wizardassignmentEntity['type_id'] = $wizardassignment['type_id'];
+            foreach ($wizardassignment['servicetemplates']['_ids'] as $servicetemplateUuid) {
+                $servicetemplate = $this->ServicetemplatesTable->getServicetemplateByUuid($servicetemplateUuid);
+                if (isset($servicetemplate['Servicetemplate']) && isset($servicetemplate['Servicetemplate']['id'])) {
+                    $wizardassignmentEntity['servicetemplates']['_ids'][] = $servicetemplate['Servicetemplate']['id'];
+                }
+            }
             if (isset($servicetemplate['Servicetemplate']) && isset($servicetemplate['Servicetemplate']['id'])) {
                 $agentcheck['servicetemplate_id'] = $servicetemplate['Servicetemplate']['id'];
-
-                if (!$this->WizardassignmentsTable->existsByNameAndServicetemplateId($agentcheck['name'], $agentcheck['servicetemplate_id'])) {
-                    $entity = $this->WizardassignmentsTable->newEntity($agentcheck);
-                    $this->WizardassignmentsTable->save($entity);
+                if (!$this->WizardsAssignmentsTable->existsByUuidAndTypeId($wizardassignmentEntity['uuid'], $wizardassignmentEntity['type_id'])) {
+                    $entity = $this->WizardsAssignmentsTable->newEntity($wizardassignmentEntity);
+                    $this->WizardsAssignmentsTable->save($entity);
                 }
             }
         }
-
 
         return true;
     }

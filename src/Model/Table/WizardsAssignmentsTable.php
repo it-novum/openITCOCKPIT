@@ -90,54 +90,54 @@ class WizardsAssignmentsTable extends Table {
                 'necessity_of_assignment' => false
             ],
             [
-                'type_id'     => 'windows-server-snmp',
-                'title'       => __('Windows (SNMP)'),
-                'description' => __('Monitoring Windows server with SNMP'),
-                'image'       => 'Windows.svg',
-                'directive'   => 'windows-snmp', //AngularJS directive
-                'category'    => ['windows'],
-                'state'       => 'WizardsWindowsServerSnmp',
-                'selected_os' => 'windows',
+                'type_id'                 => 'windows-server-snmp',
+                'title'                   => __('Windows (SNMP)'),
+                'description'             => __('Monitoring Windows server with SNMP'),
+                'image'                   => 'Windows.svg',
+                'directive'               => 'windows-snmp', //AngularJS directive
+                'category'                => ['windows'],
+                'state'                   => 'WizardsWindowsServerSnmp',
+                'selected_os'             => 'windows',
                 'necessity_of_assignment' => true
             ],
             [
-                'type_id'     => 'windows-server-nsclient',
-                'title'       => __('Windows (NSClient++)'),
-                'description' => __('NSClient++ (nscp) aims to be a simple yet powerful and flexible monitoring daemon'),
-                'image'       => 'nsclient-logo-300x75.png',
-                'directive'   => 'windows-nsclient', //AngularJS directive
-                'category'    => ['windows'],
-                'state'       => 'WizardsWindowsServerNSClient',
-                'selected_os' => 'windows',
+                'type_id'                 => 'windows-server-nsclient',
+                'title'                   => __('Windows (NSClient++)'),
+                'description'             => __('NSClient++ (nscp) aims to be a simple yet powerful and flexible monitoring daemon'),
+                'image'                   => 'nsclient-logo-300x75.png',
+                'directive'               => 'windows-nsclient', //AngularJS directive
+                'category'                => ['windows'],
+                'state'                   => 'WizardsWindowsServerNSClient',
+                'selected_os'             => 'windows',
                 'necessity_of_assignment' => true
             ],
             [
-                'type_id'     => 'macos-server',
-                'title'       => __('macOS Server'),
-                'description' => __('Monitoring for your macOS Server with openITCOCKPIT Agent'),
-                'image'       => 'MacOS-Logo.svg',
-                'directive'   => 'macos', //AngularJS directive
-                'category'    => ['macos'],
-                'state'       => 'AgentconnectorsConfig',
-                'selected_os' => 'macos',
+                'type_id'                 => 'macos-server',
+                'title'                   => __('macOS Server'),
+                'description'             => __('Monitoring for your macOS Server with openITCOCKPIT Agent'),
+                'image'                   => 'MacOS-Logo.svg',
+                'directive'               => 'macos', //AngularJS directive
+                'category'                => ['macos'],
+                'state'                   => 'AgentconnectorsConfig',
+                'selected_os'             => 'macos',
                 'necessity_of_assignment' => false
             ],
             [
-                'type_id'     => 'mysql-server',
-                'title'       => __('Mysql'),
-                'description' => __('Track MySQL Query Throughput, Execution Performance, Connections, And Buffer Pool Usage'),
-                'image'       => 'MySQL_logo.svg',
-                'directive'   => 'mysql', //AngularJS directive
-                'category'    => ['linux', 'mysql'],
+                'type_id'                 => 'mysql-server',
+                'title'                   => __('Mysql'),
+                'description'             => __('Track MySQL Query Throughput, Execution Performance, Connections, And Buffer Pool Usage'),
+                'image'                   => 'MySQL_logo.svg',
+                'directive'               => 'mysql', //AngularJS directive
+                'category'                => ['linux', 'mysql'],
                 'necessity_of_assignment' => true
             ],
             [
-                'type_id'     => 'docker',
-                'title'       => __('Docker'),
-                'description' => __('Instantly monitor & troubleshoot issues within containers'),
-                'image'       => 'docker.png',
-                'directive'   => 'docker', //AngularJS directive
-                'category'    => ['linux', 'docker'],
+                'type_id'                 => 'docker',
+                'title'                   => __('Docker'),
+                'description'             => __('Instantly monitor & troubleshoot issues within containers'),
+                'image'                   => 'docker.png',
+                'directive'               => 'docker', //AngularJS directive
+                'category'                => ['linux', 'docker'],
                 'necessity_of_assignment' => true
             ]
         ];
@@ -156,5 +156,14 @@ class WizardsAssignmentsTable extends Table {
         }
 
         return $wizards;
+    }
+
+    /**
+     * @param $uuid
+     * @param $typeId
+     * @return bool
+     */
+    public function existsByUuidAndTypeId($uuid, $typeId) {
+        return $this->exists(['WizardAssignments.uuid' => $uuid, 'WizardAssignments.typeId' => $typeId]);
     }
 }
