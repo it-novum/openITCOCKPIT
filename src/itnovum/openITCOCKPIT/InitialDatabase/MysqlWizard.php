@@ -26,7 +26,8 @@ namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ServicetemplatesTable;
-use App\Model\Table\WizardsTable;
+use App\Model\Table\WizardsAssignmentsTable;
+
 
 /**
  * Class Cronjob
@@ -45,20 +46,20 @@ class MysqlWizard extends Importer {
     private $ServicetemplatesTable;
 
     /**
-     * @var WizardsTable
+     * @var WizardsAssignmentsTable
      */
-    private $WizardsTable;
+    private $WizardsAssignmentsTable;
 
     /**
      * Agent constructor.
      * @param CommandsTable $CommandsTable
      * @param ServicetemplatesTable $ServicetemplatesTable
-     * @param WizardsTable $WizardsTable
+     * @param WizardsAssignmentsTable $WizardsAssignmentsTable
      */
-    public function __construct(CommandsTable $CommandsTable, ServicetemplatesTable $ServicetemplatesTable, WizardsTable $WizardsTable) {
+    public function __construct(CommandsTable $CommandsTable, ServicetemplatesTable $ServicetemplatesTable, WizardsAssignmentsTable $WizardsAssignmentsTable) {
         $this->CommandsTable = $CommandsTable;
         $this->ServicetemplatesTable = $ServicetemplatesTable;
-        $this->WizardsTable = $WizardsTable;
+        $this->WizardsAssignmentsTable = $WizardsAssignmentsTable;
     }
 
     /**
@@ -92,20 +93,21 @@ class MysqlWizard extends Importer {
                 }
         }
 
-        /*
-        foreach ($data['Agentchecks'] as $agentcheck) {
+
+
+        foreach ($data['Wizardassignments']['servicetemplates']['_ids'] as $uuid) {
             //debug($this->ServicetemplatesTable->getServicetemplateByUuid($agentcheck['servicetemplate_id']));die();
-            $servicetemplate = $this->ServicetemplatesTable->getServicetemplateByUuid($agentcheck['servicetemplate_id']);
+            $servicetemplate = $this->ServicetemplatesTable->getServicetemplateByUuid($uuid);
             if (isset($servicetemplate['Servicetemplate']) && isset($servicetemplate['Servicetemplate']['id'])) {
                 $agentcheck['servicetemplate_id'] = $servicetemplate['Servicetemplate']['id'];
 
-                if (!$this->AgentchecksTable->existsByNameAndServicetemplateId($agentcheck['name'], $agentcheck['servicetemplate_id'])) {
-                    $entity = $this->AgentchecksTable->newEntity($agentcheck);
-                    $this->AgentchecksTable->save($entity);
+                if (!$this->WizardassignmentsTable->existsByNameAndServicetemplateId($agentcheck['name'], $agentcheck['servicetemplate_id'])) {
+                    $entity = $this->WizardassignmentsTable->newEntity($agentcheck);
+                    $this->WizardassignmentsTable->save($entity);
                 }
             }
         }
-        */
+
 
         return true;
     }
@@ -124,118 +126,38 @@ class MysqlWizard extends Importer {
         return false;
     }
 
-    public function getAgentchecksData() {
+    /**
+     * @return array
+     */
+    public function getWizardAssignmentsData() {
         $data = [
-            [
-                'name'               => 'agent',
-                'plugin_name'        => 'Agent',
-                'servicetemplate_id' => 'c475f1c8-fd28-493d-aad0-7861e418170d'
-            ],
-            [
-                'name'               => 'cpu_percentage',
-                'plugin_name'        => 'CpuTotalPercentage',
-                'servicetemplate_id' => 'be4c9649-8771-4704-b409-c56b5f67abc8'
-            ],
-            [
-                'name'               => 'system_load',
-                'plugin_name'        => 'SystemLoad',
-                'servicetemplate_id' => '566a710f-a554-4fa6-b2a2-e46b1d937a64'
-            ],
-            [
-                'name'               => 'memory',
-                'plugin_name'        => 'MemoryUsage',
-                'servicetemplate_id' => '4052fe4f-50b1-443a-8be1-9dbca8d43ebd'
-            ],
-            [
-                'name'               => 'swap',
-                'plugin_name'        => 'SwapUsage',
-                'servicetemplate_id' => 'f9d5e18a-8894-4324-b54a-497db87b6f4f'
-            ],
-            [
-                'name'               => 'disk_io',
-                'plugin_name'        => 'DiskIO',
-                'servicetemplate_id' => '68fb72a3-5bf5-4d97-8690-91242628659b'
-            ],
-            [
-                'name'               => 'disks',
-                'plugin_name'        => 'DiskUsage',
-                'servicetemplate_id' => '24851d0d-32fa-4048-bd67-6a30d710bba1'
-            ],
-            [
-                'name'               => 'sensors',
-                'plugin_name'        => 'Fan',
-                'servicetemplate_id' => '3e0bd59e-822d-47ed-a5b2-15f1e53fe043'
-            ],
-            [
-                'name'               => 'sensors',
-                'plugin_name'        => 'Temperature',
-                'servicetemplate_id' => 'f73dc076-bdb0-4302-9776-88ca1ba79364'
-            ],
-            [
-                'name'               => 'sensors',
-                'plugin_name'        => 'Battery',
-                'servicetemplate_id' => '21057a75-57a1-4972-8f2f-073c8a6000b0'
-            ],
-            [
-                'name'               => 'net_io',
-                'plugin_name'        => 'NetIO',
-                'servicetemplate_id' => 'e5d848f5-a323-4bfe-9ec5-1c5cdf138abf'
-            ],
-            [
-                'name'               => 'net_stats',
-                'plugin_name'        => 'NetStats',
-                'servicetemplate_id' => 'f6f64207-ef75-4a3d-b9f2-2eaab398a6f1'
-            ],
-            [
-                'name'               => 'processes',
-                'plugin_name'        => 'Process',
-                'servicetemplate_id' => '37a78eca-4a58-46cd-9fb1-6029724cab35'
-            ],
-            [
-                'name'               => 'windows_services',
-                'plugin_name'        => 'WindowsService',
-                'servicetemplate_id' => '370731ed-34d4-48f4-933e-90e488bb390f'
-            ],
-            [
-                'name'               => 'systemd_services',
-                'plugin_name'        => 'SystemdService',
-                'servicetemplate_id' => 'd21e3462-7430-4d38-b92a-853bcfc12356'
-            ],
-            [
-                'name'               => 'windows_eventlog',
-                'plugin_name'        => 'WindowsEventlog',
-                'servicetemplate_id' => 'dda2d5dc-7987-49a5-b4c2-0540e8aaf45e'
-            ],
-            [
-                'name'               => 'dockerstats',
-                'plugin_name'        => 'DockerContainerRunning',
-                'servicetemplate_id' => 'ca73653f-2bba-4542-b11b-0bbd0ecc8b7a'
-            ],
-            [
-                'name'               => 'dockerstats',
-                'plugin_name'        => 'DockerContainerCPU',
-                'servicetemplate_id' => 'a9f7757e-34b0-4df9-8fca-ab8b594c2c26'
-            ],
-            [
-                'name'               => 'dockerstats',
-                'plugin_name'        => 'DockerContainerMemory',
-                'servicetemplate_id' => 'aef4c1a8-ed71-4799-a164-3ad469baadc5'
-            ],
-            [
-                'name'               => 'qemustats',
-                'plugin_name'        => 'QemuVMRunning',
-                'servicetemplate_id' => 'c1c8c77a-cecf-4a94-8418-a69081946ba0'
-            ],
-            [
-                'name'               => 'customchecks',
-                'plugin_name'        => 'Customcheck',
-                'servicetemplate_id' => '03b32b83-df7b-4204-a8bb-138a4939c554'
-            ],
-            [
-                'name'               => 'alfrescostats',
-                'plugin_name'        => 'Alfresco',
-                'servicetemplate_id' => 'e453767c-b216-4b17-a012-9bc037d7da49'
-            ],
+            'uuid'             => '7fb02fac-1ac5-43cf-baf2-b5893f9f9aa8',
+            'type_id'          => 'mysql-server',
+            'servicetemplates' => [
+                '_ids' => [
+                    '976da093-ed3a-4fc2-978a-b8c37bb95a9d',
+                    'b471e570-2921-487d-8189-c4bbfa9a09d5',
+                    '7542af3e-14e7-4a39-afff-6ae316313858',
+                    '41b49614-c2f1-4bdd-a03c-ef7523b810dd',
+                    '9f4ef558-847e-4953-8119-fedabffc29bc',
+                    '8c9a0fa8-2939-4aac-b252-f4f356313fe3',
+                    '46229355-cc9d-4179-a484-b3075a7861a0',
+                    '177ec9fe-6ec1-4bad-aa67-c20475bd8972',
+                    'fea34274-eaca-48af-b64b-6f247b29fa07',
+                    'e9bddda3-9581-4472-b774-25c641219490',
+                    '3baceaba-3396-4400-a970-133c8e848eca',
+                    '18bfc587-97b3-4f45-9ab4-73245453dee1',
+                    '1e9eb002-aeb8-45b7-86a6-ea3f5f12d631',
+                    '421af7c7-2736-4c03-a239-64dc8c2e2cf7',
+                    '421af7c7-2736-4c03-a239-64dc8c2e2cf7',
+                    '373e5fe2-22f9-4ebc-8055-a375ba4e951e',
+                    '5bae7650-0694-4a2f-bfce-b4bb63659ff3',
+                    'a0bce589-92c9-46a5-a44d-7b62efcfdd90',
+                    '6163bdce-5fc1-4328-8f50-c5e21e021c39',
+                    '8b0895be-bcc2-4699-baf4-9f69a40b00a2',
+                    '2e64c98a-254d-4655-9ec1-7816a7c97cff'
+                ]
+            ]
         ];
         return $data;
     }
@@ -1961,9 +1883,9 @@ class MysqlWizard extends Importer {
      */
     public function getData() {
         return [
-            'Commands'         => $this->getCommandsData(),
-            'Servicetemplates' => $this->getServicetemplatesData(),
-            'Agentchecks'      => $this->getAgentchecksData()
+            'Commands'          => $this->getCommandsData(),
+            'Servicetemplates'  => $this->getServicetemplatesData(),
+            'Wizardassignments' => $this->getWizardAssignmentsData()
         ];
     }
 }

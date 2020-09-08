@@ -11,17 +11,17 @@ use itnovum\openITCOCKPIT\Core\Wizards\ModuleWizardsInterface;
  * Wizards Model
  *
  *
- * @method \App\Model\Entity\Wizard get($primaryKey, $options = [])
- * @method \App\Model\Entity\Wizard newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\Wizard[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Wizard|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Wizard saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Wizard patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Wizard[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\Wizard findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\WizardAssignment get($primaryKey, $options = [])
+ * @method \App\Model\Entity\WizardAssignment newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\WizardAssignment[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\WizardAssignment|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\WizardAssignment saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\WizardAssignment patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\WizardAssignment[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\WizardAssignment findOrCreate($search, callable $callback = null, $options = [])
  *
  */
-class WizardsTable extends Table {
+class WizardsAssignmentsTable extends Table {
 
     /**
      * Initialize method
@@ -157,5 +157,4 @@ class WizardsTable extends Table {
 
         return $wizards;
     }
-
 }
