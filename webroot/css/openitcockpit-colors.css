@@ -50,7 +50,7 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
 }
 
 .text-primary {
-    color: #1468f5 !important;
+    color: #4285F4 !important;
 }
 
 .custom-control-input:checked ~ .custom-control-label-primary::before {

@@ -5,13 +5,13 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
 
         $scope.load = function(){
-            $http.get("/wizards/index.json", {
+            $http.get("/wizards/assignments.json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
 
-                $scope.wizards = result.data.wizards;
+                $scope.wizardAssignments = result.data.wizardAssignments;
                 $scope.init = false;
             });
         };

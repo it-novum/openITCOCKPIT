@@ -684,3 +684,7 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
 .wizard-fieldset-legend-auto-width legend{
     width: auto;
 }
+
+.wizard-assignments-border-left{
+    border-left:5px solid #4285F4;
+}

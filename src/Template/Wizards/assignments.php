@@ -56,6 +56,43 @@
                     <form ng-submit="submit();" class="form-horizontal"
                           ng-init="successMessage=
             {objectName : '<?php echo __('Wizard assignments'); ?>' , message: '<?php echo __('updated successfully'); ?>'}">
+                        <div class="row padding-10" ng-repeat="wizardAssignment in wizardAssignments">
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-1">
+                                        <center>
+                                            <div class="wizard-logo-image">
+                                                <img src="/img/wizards/{{wizardAssignment.image}}"/>
+                                            </div>
+                                        </center>
+                                    </div>
+                                    <div class="col-11 wizard-assignments-border-left">
+                                        <h3 class="text-primary">{{wizardAssignment.title}}</h3>
+                                        <span class="help-block">{{wizardAssignment.description}}</span>
+                                        <div class="form-group required padding-bottom-20"
+                                             ng-class="{'has-error': errors.servicetemplates}">
+                                            <label class="control-label padding-top-10" for="ServicetemplatesSelect">
+                                                <?php echo __('Service templates'); ?>
+                                            </label>
+                                            <select
+                                                id="ServicetemplatesSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="servicetemplates"
+                                                multiple
+                                                ng-options="servicetemplate.key as servicetemplate.value for servicetemplate in servicetemplates"
+                                                ng-model="post.Servicetemplategroup.servicetemplates._ids">
+                                            </select>
+                                            <div ng-repeat="error in errors.servicetemplates">
+                                                <div class="help-block text-danger">{{ error }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">
