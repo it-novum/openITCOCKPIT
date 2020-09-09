@@ -9,15 +9,13 @@ use Cake\ORM\Entity;
  * WizardAssignment Entity
  *
  * @property int $id
- * @property int type_id
  * @property string $uuid
- * @property \Cake\I18n\FrozenTime $created
- * @property \Cake\I18n\FrozenTime $modified
+ * @property string $type_id
  *
  * @property \App\Model\Entity\Servicetemplate[] $servicetemplates
- * class WizardAssignment extends Entity {
  */
-class WizardAssignment extends Entity {
+class WizardAssignment extends Entity
+{
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -27,10 +25,9 @@ class WizardAssignment extends Entity {
      *
      * @var array
      */
-    protected
-        $_accessible = [
-        'type_id'          => true,
-        'uuid'             => true,
+    protected $_accessible = [
+        'uuid' => true,
+        'type_id' => true,
         'servicetemplates' => true
     ];
 }

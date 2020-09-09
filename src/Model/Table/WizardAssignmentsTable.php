@@ -4,25 +4,31 @@ declare(strict_types=1);
 namespace App\Model\Table;
 
 use App\Lib\PluginManager;
+use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\Wizards\ModuleWizardsInterface;
 
 /**
- * Wizards Model
+ * WizardAssignments Model
  *
+ * @property \App\Model\Table\ServicetemplatesToWizardAssignmentsTable&\Cake\ORM\Association\HasMany $ServicetemplatesToWizardAssignments
  *
- * @method \App\Model\Entity\WizardAssignment get($primaryKey, $options = [])
- * @method \App\Model\Entity\WizardAssignment newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\WizardAssignment newEmptyEntity()
+ * @method \App\Model\Entity\WizardAssignment newEntity(array $data, array $options = [])
  * @method \App\Model\Entity\WizardAssignment[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\WizardAssignment get($primaryKey, $options = [])
+ * @method \App\Model\Entity\WizardAssignment findOrCreate($search, ?callable $callback = null, $options = [])
+ * @method \App\Model\Entity\WizardAssignment patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\WizardAssignment[] patchEntities(iterable $entities, array $data, array $options = [])
  * @method \App\Model\Entity\WizardAssignment|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
  * @method \App\Model\Entity\WizardAssignment saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\WizardAssignment patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\WizardAssignment[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\WizardAssignment findOrCreate($search, callable $callback = null, $options = [])
- *
+ * @method \App\Model\Entity\WizardAssignment[]|\Cake\Datasource\ResultSetInterface|false saveMany(iterable $entities, $options = [])
+ * @method \App\Model\Entity\WizardAssignment[]|\Cake\Datasource\ResultSetInterface saveManyOrFail(iterable $entities, $options = [])
+ * @method \App\Model\Entity\WizardAssignment[]|\Cake\Datasource\ResultSetInterface|false deleteMany(iterable $entities, $options = [])
+ * @method \App\Model\Entity\WizardAssignment[]|\Cake\Datasource\ResultSetInterface deleteManyOrFail(iterable $entities, $options = [])
  */
-class WizardsAssignmentsTable extends Table {
-
+class WizardAssignmentsTable extends Table {
     /**
      * Initialize method
      *
@@ -31,8 +37,52 @@ class WizardsAssignmentsTable extends Table {
      */
     public function initialize(array $config): void {
         parent::initialize($config);
+
+        $this->setTable('wizard_assignments');
+        $this->setDisplayField('id');
+        $this->setPrimaryKey('id');
+
+        $this->belongsToMany('Servicetemplates', [
+            'className'        => 'Servicetemplates',
+            'foreignKey'       => 'wizard_assignment_id',
+            'targetForeignKey' => 'servicetemplate_id',
+            'joinTable'        => 'servicetemplates_to_wizard_assignments',
+            'saveStrategy'     => 'replace'
+        ]);
     }
 
+    /**
+     * Default validation rules.
+     *
+     * @param \Cake\Validation\Validator $validator Validator instance.
+     * @return \Cake\Validation\Validator
+     */
+    public function validationDefault(Validator $validator): Validator {
+        $validator
+            ->integer('id')
+            ->allowEmptyString('id', null, 'create');
+
+        $validator
+            ->scalar('uuid')
+            ->maxLength('uuid', 37)
+            ->requirePresence('uuid', 'create')
+            ->notEmptyString('uuid')
+            ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
+
+        return $validator;
+    }
+
+    /**
+     * Returns a rules checker object that will be used for validating
+     * application integrity.
+     *
+     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+     * @return \Cake\ORM\RulesChecker
+     */
+    public function buildRules(RulesChecker $rules): RulesChecker {
+        $rules->add($rules->isUnique(['uuid']), ['errorField' => 'uuid']);
+        return $rules;
+    }
 
     /**
      * @param array $ACL_PERMISSIONS
@@ -164,6 +214,6 @@ class WizardsAssignmentsTable extends Table {
      * @return bool
      */
     public function existsByUuidAndTypeId($uuid, $typeId) {
-        return $this->exists(['WizardAssignments.uuid' => $uuid, 'WizardAssignments.typeId' => $typeId]);
+        return $this->exists(['WizardAssignments.uuid' => $uuid, 'WizardAssignments.type_id' => $typeId]);
     }
 }

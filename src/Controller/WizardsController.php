@@ -28,7 +28,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 
-use App\Model\Table\WizardsAssignmentsTable;
+use App\Model\Table\WizardAssignmentsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 
@@ -44,9 +44,9 @@ class WizardsController extends AppController {
             return;
         }
 
-        /** @var WizardsAssignmentsTable $WizardsAssignmentsTable */
-        $WizardsAssignmentsTable = TableRegistry::getTableLocator()->get('WizardsAssignments');
-        $wizards = $WizardsAssignmentsTable->getAvailableWizards($this->PERMISSIONS);
+        /** @var WizardAssignmentsTable $WizardAssignmentsTable */
+        $WizardAssignmentsTable = TableRegistry::getTableLocator()->get('WizardsAssignments');
+        $wizards = $WizardAssignmentsTable->getAvailableWizards($this->PERMISSIONS);
         $this->set('wizards', $wizards);
         $this->viewBuilder()->setOption('serialize', ['wizards']);
     }
@@ -57,8 +57,8 @@ class WizardsController extends AppController {
             return;
         }
 
-        $WizardsAssignmentsTable = TableRegistry::getTableLocator()->get('Wizards');
-        $wizards = $WizardsAssignmentsTable->getAvailableWizards($this->PERMISSIONS);
+        $WizardAssignmentsTable = TableRegistry::getTableLocator()->get('Wizards');
+        $wizards = $WizardAssignmentsTable->getAvailableWizards($this->PERMISSIONS);
         $this->set('wizards', $wizards);
         $this->viewBuilder()->setOption('serialize', ['wizards']);
     }
