@@ -28,20 +28,20 @@
     <div class="search" top-search=""></div>
     <div class="ml-auto d-flex">
 
-        <?php if($hasSubscription === false): ?>
-        <div class="header-icon padding-left-10 padding-right-5">
-            <a class="btn btn-outline-danger waves-effect waves-themed"
-               href="https://openitcockpit.io/#Subscription"
-               target="_blank"
-               data-original-title="<?= __('No active subscription'); ?>"
-               data-placement="bottom"
-               rel="tooltip">
-                <?= __('No active subscription'); ?>
-            </a>
-        </div>
+        <?php if ($hasSubscription === false): ?>
+            <div class="header-icon padding-left-10 padding-right-5">
+                <a class="btn btn-outline-danger waves-effect waves-themed"
+                   href="https://openitcockpit.io/#Subscription"
+                   target="_blank"
+                   data-original-title="<?= __('No active subscription'); ?>"
+                   data-placement="bottom"
+                   rel="tooltip">
+                    <?= __('No active subscription'); ?>
+                </a>
+            </div>
         <?php endif; ?>
 
-        <?php if($hasSubscription === true && $isCommunityEdition === true): ?>
+        <?php if ($hasSubscription === true && $isCommunityEdition === true): ?>
             <div class="header-icon padding-left-10 padding-right-5">
                 <a class="btn btn-outline-primary waves-effect waves-themed"
                    href="https://openitcockpit.io/#Subscription"
@@ -103,6 +103,26 @@
         <div class="header-icon">
             <server-time></server-time>
         </div>
+
+        <div class="header-icon btn-group input-group-btn input-group-prepend mr-2">
+            <button type="button"
+                    class="btn btn-default dropdown-toggle no-border"
+                    data-toggle="dropdown" aria-expanded="false">
+                <span class="<?= h($language['flag']) ?>"></span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" style="line-height: 1.47;" change-language="">
+                <?php foreach ($localeOptions as $localeOption): ?>
+                    <li class="dropdown-item" ng-click="changeLanguage('<?= h($localeOption['i18n']) ?>')">
+                        <a href="javascript:void(0)">
+                            <span class="<?= h($localeOption['flag']) ?>"></span>
+                            <?= h($localeOption['label']) ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+
         <div class="header-icon">
             <div class="btn-group mr-2" role="group" aria-label="">
                 <a class="btn btn-default waves-effect waves-themed"

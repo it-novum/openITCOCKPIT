@@ -44,6 +44,7 @@ use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\Locales;
 use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -213,40 +214,6 @@ class UsersController extends AppController {
             $this->set('user', $user);
             $this->viewBuilder()->setOption('serialize', ['user']);
         }
-    }
-
-    private function i18nToName($i18n){
-        switch ($i18n){
-            case 'en_US':
-                return 'English';
-            case 'de_DE':
-                return 'German';
-            case 'fr_FR':
-                return 'French';
-            case 'ru_RU':
-                return 'Russian';
-        }
-        return 'unknown';
-    }
-
-    public function getLocaleOptions() {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-
-        $localesPath = Configure::read('App.paths.locales')[0];
-        $localeOptions = [];
-        $localeDirs = array_filter(glob($localesPath . '*'), 'is_dir');
-        array_walk($localeDirs, function ($value, $key) use (&$localeOptions, $localesPath){
-            $i18n = substr($value, strlen($localesPath));
-            $localeOptions[] = [
-                'i18n' => $i18n,
-                'name' => $this->i18nToName($i18n)
-            ];
-        });
-        $this->set('localeOptions', $localeOptions);
-        $this->viewBuilder()->setOption('serialize', ['localeOptions']);
     }
 
     public function edit($id = null) {
@@ -627,6 +594,28 @@ class UsersController extends AppController {
 
         $this->set('userContainerRoleContainerPermissions', $permissions);
         $this->viewBuilder()->setOption('serialize', ['userContainerRoleContainerPermissions']);
+    }
+
+    public function getLocaleOptions() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        $localesPath = Configure::read('App.paths.locales')[0];
+        $localeOptions = [];
+        $localeDirs = array_filter(glob($localesPath . '*'), 'is_dir');
+        array_walk($localeDirs, function ($value, $key) use (&$localeOptions, $localesPath){
+            $i18n = substr($value, strlen($localesPath));
+            $language = Locales::getLanguageByLocalCode($i18n);
+
+            $localeOptions[] = [
+                'i18n' => $i18n,
+                'name' => $language['label']
+            ];
+        });
+        $this->set('localeOptions', $localeOptions);
+        $this->viewBuilder()->setOption('serialize', ['localeOptions']);
     }
 
 }
