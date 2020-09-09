@@ -12,9 +12,11 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
 
                 $scope.wizardAssignments = result.data.wizardAssignments;
+                $scope.servicetemplates = result.data.servicetemplates;
                 $scope.init = false;
             });
         };
+
 
         //Fire on page load
         $scope.load();

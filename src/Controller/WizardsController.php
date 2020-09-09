@@ -28,10 +28,12 @@ declare(strict_types=1);
 namespace App\Controller;
 
 
+use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\WizardAssignmentsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 /**
  * Class WizardsController
@@ -70,8 +72,16 @@ class WizardsController extends AppController {
                 }
             }
         }
+
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        $servicetemplates = $ServicetemplatesTable->getServicetemplatesByContainerId($this->MY_RIGHTS, 'list');
+        $servicetemplates = Api::makeItJavaScriptAble($servicetemplates);
+
         $this->set('wizardAssignments', $wizardAssignments);
-        $this->viewBuilder()->setOption('serialize', ['wizardAssignments']);
+        $this->set('servicetemplates', $servicetemplates);
+        $this->viewBuilder()->setOption('serialize', ['wizardAssignments', 'servicetemplates']);
     }
 
 

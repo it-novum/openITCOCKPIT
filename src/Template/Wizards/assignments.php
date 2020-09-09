@@ -79,9 +79,10 @@
                                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                                 class="form-control"
                                                 chosen="servicetemplates"
+                                                callback="loadServicetemplates"
                                                 multiple
                                                 ng-options="servicetemplate.key as servicetemplate.value for servicetemplate in servicetemplates"
-                                                ng-model="post.Servicetemplategroup.servicetemplates._ids">
+                                                ng-model="wizardAssignment.servicetemplates._ids">
                                             </select>
                                             <div ng-repeat="error in errors.servicetemplates">
                                                 <div class="help-block text-danger">{{ error }}</div>
