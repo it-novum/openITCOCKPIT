@@ -19,6 +19,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -441,6 +442,25 @@ class HostsTable extends Table {
             ->integer('usage_flag')
             ->requirePresence('usage_flag', 'create')
             ->allowEmptyString('usage_flag', null, false);
+
+        $validator
+            ->add('parenthosts', 'custom', [
+                'rule'    => function ($value, $context) {
+                    if (!isset($context['data']['id'])) {
+                        //Not an update (new hosts can't be in an parent hosts loop) so nothing to check
+                        return true;
+                    }
+
+                    if (empty($value['_ids'])) {
+                        //No parent hosts selected - no loop
+                        return true;
+                    }
+
+                    //Parent host ids of current host
+                    return !$this->hasParentLoop2($value['_ids'], $context['data']['id']);
+                },
+                'message' => __('Parent/child loop detected.')
+            ]);
 
         return $validator;
     }
@@ -3816,5 +3836,105 @@ class HostsTable extends Table {
             ];
         }
         return $types;
+    }
+
+    /**
+     * Returns an array of all parent host ids of a given host id
+     *
+     * @param int $hostId
+     * @return array
+     */
+    public function getParentHostIdsByHostId($hostId) {
+        /** @var HostsToParenthostsSelectTable $HostsToParenthostsTable */
+        $HostsToParenthostsTable = TableRegistry::getTableLocator()->get('HostsToParenthosts');
+
+        $query = $HostsToParenthostsTable->find()
+            ->where([
+                'host_id' => $hostId
+            ])
+            ->disableHydration()
+            ->all();
+
+        if (empty($query)) {
+            return [];
+        }
+
+        return Hash::extract($query->toArray(), '{n}.parenthost_id');
+    }
+
+    /**
+     * @param int[] $parentHostIds
+     * @param int $hostId
+     * @return bool
+     */
+    public function hasParentLoop2($parentHostIds, $hostId) {
+        $parentHostIds = $this->castToIntArray($parentHostIds);
+        $hostId = (int)$hostId;
+
+        if (in_array($hostId, $parentHostIds, true)) {
+            // given $hostId is used by another host as parent
+            return true;
+        }
+
+
+        foreach ($parentHostIds as $parentHostId) {
+            if ($this->hasParentLoop2($this->getParentHostIdsByHostId($parentHostId), $hostId)) {
+                // Loop via parent of a parent
+                return true;
+            }
+        }
+
+        //No parent loop detected
+        return false;
+
+    }
+
+    /**
+     * @param int $hostId
+     * @param int|null $originalHostId
+     * @return bool
+     */
+    public function hasParentLoop($hostId, $originalHostId = null) {
+        $hostId = (int)$hostId;
+        $parentHostIds = $this->getParentHostIdsByHostId($hostId);
+
+        if (in_array($hostId, $parentHostIds, true)) {
+            // given $hostId is used by another host as parent
+            return true;
+        }
+
+
+        foreach ($parentHostIds as $parentHostId) {
+            if ($parentHostId === $originalHostId) {
+                //Got a loop
+                return true;
+            }
+
+            if ($this->hasParentLoop($parentHostId, $originalHostId)) {
+                // Loop via parent of a parent
+                return true;
+            }
+        }
+
+        //No parent loop detected
+        return false;
+
+    }
+
+    /**
+     * @param array|int $arr
+     * @return int[]
+     */
+    protected function castToIntArray($arr) {
+        if (!is_array($arr)) {
+            $arr = [$arr];
+        }
+
+        $intArr = [];
+        foreach ($arr as $item) {
+            $item = (int)$item;
+            $intArr[$item] = $item;
+        }
+        return $intArr;
     }
 }
