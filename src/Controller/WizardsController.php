@@ -31,6 +31,7 @@ namespace App\Controller;
 use App\Model\Table\WizardAssignmentsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 
 /**
  * Class WizardsController
@@ -45,7 +46,7 @@ class WizardsController extends AppController {
         }
 
         /** @var WizardAssignmentsTable $WizardAssignmentsTable */
-        $WizardAssignmentsTable = TableRegistry::getTableLocator()->get('WizardsAssignments');
+        $WizardAssignmentsTable = TableRegistry::getTableLocator()->get('WizardAssignments');
         $wizards = $WizardAssignmentsTable->getAvailableWizards($this->PERMISSIONS);
         $this->set('wizards', $wizards);
         $this->viewBuilder()->setOption('serialize', ['wizards']);
@@ -57,10 +58,20 @@ class WizardsController extends AppController {
             return;
         }
 
-        $WizardAssignmentsTable = TableRegistry::getTableLocator()->get('Wizards');
+        /** @var WizardAssignmentsTable $WizardAssignmentsTable */
+        $WizardAssignmentsTable = TableRegistry::getTableLocator()->get('WizardAssignments');
         $wizards = $WizardAssignmentsTable->getAvailableWizards($this->PERMISSIONS);
-        $this->set('wizards', $wizards);
-        $this->viewBuilder()->setOption('serialize', ['wizards']);
+        $wizardAssignments = [];
+
+        foreach ($wizards as $key => $wizard) {
+            if ($wizard['necessity_of_assignment'] === true) {
+                if ($WizardAssignmentsTable->existsByUuidAndTypeId($wizard['uuid'], $wizard['type_id'])) {
+                    $wizardAssignments[] = Hash::merge($wizards[$key], $WizardAssignmentsTable->getWizardByUuidForEdit($wizard['uuid']));
+                }
+            }
+        }
+        $this->set('wizardAssignments', $wizardAssignments);
+        $this->viewBuilder()->setOption('serialize', ['wizardAssignments']);
     }
 
 
@@ -108,7 +119,7 @@ class WizardsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['error', 'success']);
     }
 
-    public function loadServicetemplatesByWizardType(){
+    public function loadServicetemplatesByWizardType() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }

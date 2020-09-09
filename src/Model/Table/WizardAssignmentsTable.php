@@ -98,6 +98,7 @@ class WizardAssignmentsTable extends Table {
         $wizards = [
             [
                 'type_id'                 => 'linux-server-agent',
+                'uuid'                    => '4bdca652-cf5c-4b85-ab4f-d75695ec725c',
                 'title'                   => __('Linux Server'),
                 'description'             => __('Monitoring for your Linux Server with openITCOCKPIT Agent'),
                 'image'                   => 'linux.svg',
@@ -110,6 +111,7 @@ class WizardAssignmentsTable extends Table {
             ],
             [
                 'type_id'                 => 'linux-server-ssh',
+                'uuid'                    => 'b5b31647-6095-444b-ad05-22aac099ee45',
                 'title'                   => __('Linux (SSH)'),
                 'description'             => __('Monitoring via Secure Shell (SSH) enables you to gather performance and system data from many Linux and Unix distributions'),
                 'image'                   => 'linux.svg',
@@ -121,6 +123,7 @@ class WizardAssignmentsTable extends Table {
             ],
             [
                 'type_id'                 => 'linux-server-snmp',
+                'uuid'                    => '2f172d07-ba32-4b9b-b67c-4c296bc5d14b',
                 'title'                   => __('Linux (SNMP)'),
                 'description'             => __('Monitoring Linux devices via SNMP'),
                 'image'                   => 'linux.svg',
@@ -132,6 +135,7 @@ class WizardAssignmentsTable extends Table {
             ],
             [
                 'type_id'                 => 'windows-server-agent',
+                'uuid'                    => 'e6b36290-9543-4aae-a074-09ff455bc8c9',
                 'title'                   => __('Windows Server'),
                 'description'             => __('Monitoring for your Windows Server with openITCOCKPIT Agent'),
                 'image'                   => 'Windows.svg',
@@ -143,6 +147,7 @@ class WizardAssignmentsTable extends Table {
             ],
             [
                 'type_id'                 => 'windows-server-snmp',
+                'uuid'                    => '6b076d6d-296b-4959-a4e8-9ab242ae513f',
                 'title'                   => __('Windows (SNMP)'),
                 'description'             => __('Monitoring Windows server with SNMP'),
                 'image'                   => 'Windows.svg',
@@ -154,6 +159,7 @@ class WizardAssignmentsTable extends Table {
             ],
             [
                 'type_id'                 => 'windows-server-nsclient',
+                'uuid'                    => '9fc2cd53-9f44-4f78-b0a1-2b40b1161009',
                 'title'                   => __('Windows (NSClient++)'),
                 'description'             => __('NSClient++ (nscp) aims to be a simple yet powerful and flexible monitoring daemon'),
                 'image'                   => 'nsclient-logo-300x75.png',
@@ -165,6 +171,7 @@ class WizardAssignmentsTable extends Table {
             ],
             [
                 'type_id'                 => 'macos-server',
+                'uuid'                    => '784c4ee7-9d79-4cf3-b491-fffba497d175',
                 'title'                   => __('macOS Server'),
                 'description'             => __('Monitoring for your macOS Server with openITCOCKPIT Agent'),
                 'image'                   => 'MacOS-Logo.svg',
@@ -176,6 +183,7 @@ class WizardAssignmentsTable extends Table {
             ],
             [
                 'type_id'                 => 'mysql-server',
+                'uuid'                    => '7fb02fac-1ac5-43cf-baf2-b5893f9f9aa8',
                 'title'                   => __('Mysql'),
                 'description'             => __('Track MySQL Query Throughput, Execution Performance, Connections, And Buffer Pool Usage'),
                 'image'                   => 'MySQL_logo.svg',
@@ -185,6 +193,7 @@ class WizardAssignmentsTable extends Table {
             ],
             [
                 'type_id'                 => 'docker',
+                'uuid'                    => '18bf7126-2015-483f-882a-ca4bd55888da',
                 'title'                   => __('Docker'),
                 'description'             => __('Instantly monitor & troubleshoot issues within containers'),
                 'image'                   => 'docker.png',
@@ -223,7 +232,7 @@ class WizardAssignmentsTable extends Table {
      * @param $uuid
      * @return array|\Cake\Datasource\EntityInterface|null
      */
-    public function getAllServicetemplatesIdsByWizardUuidForEdit($uuid) {
+    public function getWizardByUuidForEdit($uuid) {
         $query = $this->find()
             ->where(['WizardAssignments.uuid' => $uuid])
             ->contain([

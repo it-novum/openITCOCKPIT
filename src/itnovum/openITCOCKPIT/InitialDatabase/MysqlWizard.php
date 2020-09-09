@@ -96,7 +96,6 @@ class MysqlWizard extends Importer {
         if (!empty($data['Wizardassignment'])) {
             $wizardassignmentEntity['uuid'] = $data['Wizardassignment']['uuid'];
             $wizardassignmentEntity['type_id'] = $data['Wizardassignment']['type_id'];
-            $servicetemplatesUuidsToImport = $data['Wizardassignment']['servicetemplates']['_ids'];
             foreach ($data['Wizardassignment']['servicetemplates']['_ids'] as $servicetemplateUuid) {
                 $servicetemplate = $this->ServicetemplatesTable->getServicetemplateByUuid($servicetemplateUuid);
                 if (isset($servicetemplate['Servicetemplate']) && isset($servicetemplate['Servicetemplate']['id'])) {
@@ -108,7 +107,7 @@ class MysqlWizard extends Importer {
                     $entity = $this->WizardAssignmentsTable->newEntity($wizardassignmentEntity);
                     $this->WizardAssignmentsTable->save($entity);
                 } else{
-                    $existingAssignment = $this->WizardAssignmentsTable->getAllServicetemplatesIdsByWizardUuidForEdit($wizardassignmentEntity['uuid']);
+                    $existingAssignment = $this->WizardAssignmentsTable->getWizardByUuidForEdit($wizardassignmentEntity['uuid']);
                     foreach(array_diff($wizardassignmentEntity['servicetemplates']['_ids'], $existingAssignment['servicetemplates']['_ids']) as $missingServicetemplateId){
                         $existingAssignment['servicetemplates']['_ids'][] = $missingServicetemplateId;
                     }
