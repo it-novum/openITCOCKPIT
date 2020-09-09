@@ -457,8 +457,6 @@ class HostsTable extends Table {
                     }
 
                     //Parent host ids of current host
-                    $hostIds = $value['_ids'];
-
                     return !$this->hasParentLoop2($value['_ids'], $context['data']['id']);
                 },
                 'message' => __('Parent/child loop detected.')
