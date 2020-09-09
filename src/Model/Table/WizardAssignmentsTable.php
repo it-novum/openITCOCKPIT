@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace App\Model\Table;
 
 use App\Lib\PluginManager;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\Wizards\ModuleWizardsInterface;
 
@@ -215,5 +217,32 @@ class WizardAssignmentsTable extends Table {
      */
     public function existsByUuidAndTypeId($uuid, $typeId) {
         return $this->exists(['WizardAssignments.uuid' => $uuid, 'WizardAssignments.type_id' => $typeId]);
+    }
+
+    /**
+     * @param $uuid
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getAllServicetemplatesIdsByWizardUuidForEdit($uuid) {
+        $query = $this->find()
+            ->where(['WizardAssignments.uuid' => $uuid])
+            ->contain([
+                'Servicetemplates' => function (Query $query) {
+                    $query->enableAutoFields(false)
+                        ->select([
+                            'Servicetemplates.id'
+                        ]);
+                    return $query;
+                }
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        $wizardAssignment = $query;
+        $wizardAssignment['servicetemplates'] = [
+            '_ids' => Hash::extract($query, 'servicetemplates.{n}.id')
+        ];
+        return $wizardAssignment;
     }
 }

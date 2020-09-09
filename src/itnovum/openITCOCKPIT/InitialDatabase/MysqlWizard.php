@@ -27,6 +27,7 @@ namespace itnovum\openITCOCKPIT\InitialDatabase;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\WizardAssignmentsTable;
+use Cake\Utility\Hash;
 
 
 /**
@@ -95,6 +96,7 @@ class MysqlWizard extends Importer {
         if (!empty($data['Wizardassignment'])) {
             $wizardassignmentEntity['uuid'] = $data['Wizardassignment']['uuid'];
             $wizardassignmentEntity['type_id'] = $data['Wizardassignment']['type_id'];
+            $servicetemplatesUuidsToImport = $data['Wizardassignment']['servicetemplates']['_ids'];
             foreach ($data['Wizardassignment']['servicetemplates']['_ids'] as $servicetemplateUuid) {
                 $servicetemplate = $this->ServicetemplatesTable->getServicetemplateByUuid($servicetemplateUuid);
                 if (isset($servicetemplate['Servicetemplate']) && isset($servicetemplate['Servicetemplate']['id'])) {
@@ -104,6 +106,14 @@ class MysqlWizard extends Importer {
             if (isset($servicetemplate['Servicetemplate']) && isset($servicetemplate['Servicetemplate']['id'])) {
                 if (!$this->WizardAssignmentsTable->existsByUuidAndTypeId($wizardassignmentEntity['uuid'], $wizardassignmentEntity['type_id'])) {
                     $entity = $this->WizardAssignmentsTable->newEntity($wizardassignmentEntity);
+                    $this->WizardAssignmentsTable->save($entity);
+                } else{
+                    $existingAssignment = $this->WizardAssignmentsTable->getAllServicetemplatesIdsByWizardUuidForEdit($wizardassignmentEntity['uuid']);
+                    foreach(array_diff($wizardassignmentEntity['servicetemplates']['_ids'], $existingAssignment['servicetemplates']['_ids']) as $missingServicetemplateId){
+                        $existingAssignment['servicetemplates']['_ids'][] = $missingServicetemplateId;
+                    }
+                    $entity = $this->WizardAssignmentsTable->get($existingAssignment['id']);
+                    $entity = $this->WizardAssignmentsTable->patchEntity($entity, $existingAssignment);
                     $this->WizardAssignmentsTable->save($entity);
                 }
             }
