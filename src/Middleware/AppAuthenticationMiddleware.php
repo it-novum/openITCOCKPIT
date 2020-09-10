@@ -28,7 +28,6 @@ namespace App\Middleware;
 use Authentication\Authenticator\UnauthenticatedException;
 use Authentication\Middleware\AuthenticationMiddleware;
 use Cake\Http\Response;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

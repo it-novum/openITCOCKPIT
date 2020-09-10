@@ -7,12 +7,47 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
     $scope.disableLogin = false;
     $scope.hasValidSslCertificate = false;
 
+    var isOAuthResponse = function(){
+        var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
+        if(sourceUrl.includes('/#!/')){
+            sourceUrl = sourceUrl.replace('/#!', '');
+        }
+
+        var query = parseUri(sourceUrl).queryKey;
+        if(query.hasOwnProperty('code') && query.hasOwnProperty('state')){
+            // User got redirected back from oAuth servers login screen to openITCOCKPIT
+
+            new Noty({
+                theme: 'metroui',
+                type: 'success',
+                layout: 'topCenter',
+                text: 'Login successful',
+                timeout: 3500
+            }).show();
+
+            var location = window.location.toString();
+            if(location.includes('#!/')){
+                window.location = '/' + location.substring(location.indexOf('#!/'));
+            }else{
+                window.location = $scope.getLocalStorageItemWithDefaultAndRemoveItem('lastPage', '/');
+            }
+
+        }
+
+    };
+
     $scope.loadCsrf = function(){
         $http.get("/users/login.json",
             {}
         ).then(function(result){
             $scope._csrfToken = result.data._csrfToken;
             $scope.hasValidSslCertificate = result.data.hasValidSslCertificate;
+
+            if(result.data.isLoggedIn === true){
+                //User maybe logged in via oAuth?
+                isOAuthResponse();
+            }
+
         }, function errorCallback(result){
             if(result.data.hasOwnProperty('_csrfToken')){
                 $scope._csrfToken = result.data._csrfToken;
@@ -29,7 +64,7 @@ loginApp.controller("UsersLoginController", function($scope, $http, $httpParamSe
         }
         window.localStorage.removeItem(key);
         return val;
-    }
+    };
 
     $scope.submit = function(){
         $scope.disableLogin = true;

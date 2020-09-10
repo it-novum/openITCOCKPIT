@@ -27,9 +27,6 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
-use Cake\Utility\Hash;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
-
 class GrafanaApiConfiguration {
     /**
      * @var string

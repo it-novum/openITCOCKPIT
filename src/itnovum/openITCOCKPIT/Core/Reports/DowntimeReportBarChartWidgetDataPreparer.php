@@ -25,8 +25,6 @@
 namespace itnovum\openITCOCKPIT\Core\Reports;
 
 
-use itnovum\openITCOCKPIT\Core\FileDebugger;
-
 /**
  * Class DowntimeReportBarChartWidgetDataPreparer
  * @package itnovum\openITCOCKPIT\Core\Reports

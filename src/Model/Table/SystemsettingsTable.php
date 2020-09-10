@@ -7,6 +7,7 @@ use Cake\Cache\Cache;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use Model;
 
@@ -234,6 +235,26 @@ class SystemsettingsTable extends Table {
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    public function getOAuthConfig(){
+        $query = $this->find()
+            ->where([
+                'Systemsettings.key IN' => [
+                    'FRONTEND.SSO.CLIENT_ID',
+                    'FRONTEND.SSO.CLIENT_SECRET',
+                    'FRONTEND.SSO.AUTH_ENDPOINT',
+                    'FRONTEND.SSO.TOKEN_ENDPOINT',
+                    'FRONTEND.SSO.USER_ENDPOINT',
+                    'FRONTEND.SSO.NO_EMAIL_MESSAGE',
+                    'FRONTEND.SSO.LOG_OFF_LINK'
+                ]
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        return Hash::combine($result, '{n}.key', '{n}.value');
     }
 
     /**
