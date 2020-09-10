@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 
+use App\Form\WizardMysqlServerForm;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\WizardAssignmentsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -162,20 +163,24 @@ class WizardsController extends AppController {
         $WizardAssignmentsTable = TableRegistry::getTableLocator()->get('WizardAssignments');
         $wizards = $WizardAssignmentsTable->getAvailableWizards($this->PERMISSIONS);
 
+        $WizardMysqlServerForm = new WizardMysqlServerForm();
+        $data = $this->request->getData(null, []);
+        $WizardMysqlServerForm->execute($data);
+
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return mysql wizard data
             $mysqlConfiguration = [];
             $servicetemplates = [];
             $wizardAssignments = [];
             $mysqlWizardData = Hash::extract($wizards, '{n}[type_id=mysql-server]');
-            if($mysqlWizardData){
+            if ($mysqlWizardData) {
                 $mysqlWizardData = $mysqlWizardData[0];
                 if ($WizardAssignmentsTable->existsByUuidAndTypeId($mysqlWizardData['uuid'], $mysqlWizardData['type_id'])) {
                     $wizardAssignments = Hash::merge($mysqlWizardData, $WizardAssignmentsTable->getWizardByUuidForEdit($mysqlWizardData['uuid']));
                 }
             }
 
-            if(!empty($wizardAssignments['servicetemplates']['_ids'])){
+            if (!empty($wizardAssignments['servicetemplates']['_ids'])) {
                 /** @var ServicetemplatesTable $ServicetemplatesTable */
                 $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
                 $servicetemplates = $ServicetemplatesTable->getServicetemplatesByIds(
@@ -186,12 +191,19 @@ class WizardsController extends AppController {
             }
 
 
-
             $this->set('wizardAssignments', $wizardAssignments);
             $this->set('servicetemplates', $servicetemplates);
 
             $this->viewBuilder()->setOption('serialize', ['wizardAssignments', 'servicetemplates']);
             return;
+        }
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            if (!empty($WizardMysqlServerForm->getErrors())) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $WizardMysqlServerForm->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
         }
     }
 
@@ -223,6 +235,10 @@ class WizardsController extends AppController {
         $this->set('error', $error);
         $this->viewBuilder()->setOption('serialize', ['error', 'success']);
     }
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
 
     public function loadServicetemplatesByWizardType() {
         if (!$this->isApiRequest()) {

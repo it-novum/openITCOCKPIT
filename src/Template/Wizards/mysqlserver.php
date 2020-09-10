@@ -89,7 +89,7 @@
                                         </div>
                                         <div class="form-group required" ng-class="{'has-error': errors.password}">
                                             <label class="control-label">
-                                                <?php echo __('Username'); ?>
+                                                <?php echo __('Password'); ?>
                                             </label>
                                             <input
                                                 id="UserName"
@@ -140,15 +140,22 @@
                                                 <div class="form-group"
                                                      ng-repeat="commandargument in servicetemplate.servicetemplatecommandargumentvalues">
                                                     {{commandargument.commandargument.human_name}}
-                                                    <input
-                                                        id="UserName"
-                                                        class="form-control"
-                                                        value="{{commandargument.value}}"
-                                                        type="text">
+                                                    <input class="form-control"
+                                                           value="{{commandargument.value}}"
+                                                           type="text">
                                                 </div>
                                             </ol>
                                         </ul>
                                     </fieldset>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card margin-top-10">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <button type="submit" class="btn btn-primary"><?php echo __('Create'); ?></button>
+                                    <a back-button href="javascript:void(0);" fallback-state='WizardsIndex'
+                                       class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
                             </div>
                         </div>
