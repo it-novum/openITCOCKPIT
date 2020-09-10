@@ -664,7 +664,19 @@ input[type="radio"]:checked + .custom-control-label, input[type="checkbox"]:chec
     flex: 0 0 80px;
 }
 
-.wizard-logo-image img {
+.wizard-logo-image-small {
+    border-radius: 50%;
+    background: rgba(243, 243, 243, 0.6);
+    height: 30px;
+    width: 30px;
+    position: relative;
+    border: 2px solid #4285F4;
+    flex: 0 0 30px;
+}
+
+
+.wizard-logo-image img,
+.wizard-logo-image-small img{
     max-height: 60%;
     width: auto;
     height: auto;

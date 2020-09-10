@@ -3,18 +3,37 @@ angular.module('openITCOCKPIT')
 
         /** public vars **/
         $scope.init = true;
+        $scope.filter = {
+            Category: {
+                linux: true,
+                windows: true,
+                database: true,
+                mail: true,
+                network: true,
+                docker: true,
+                macos: true
+            }
+        };
 
         $scope.load = function(){
-            $http.get("/wizards/assignments.json", {
+            $http.get("/wizards/index.json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
 
-                $scope.wizardAssignments = result.data.wizardAssignments;
-                $scope.servicetemplates = result.data.servicetemplates;
+                $scope.wizards = result.data.wizards;
                 $scope.init = false;
             });
+        };
+
+        $scope.filterByCategory = function(wizardCategory){
+            for(var i in wizardCategory){
+                if($scope.filter.Category.hasOwnProperty(wizardCategory[i]) && $scope.filter.Category[wizardCategory[i]] === true){
+                    return true;
+                }
+            }
+            return false;
         };
 
 

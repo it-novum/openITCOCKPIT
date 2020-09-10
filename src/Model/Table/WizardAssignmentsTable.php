@@ -188,7 +188,7 @@ class WizardAssignmentsTable extends Table {
                 'description'             => __('Track MySQL Query Throughput, Execution Performance, Connections, And Buffer Pool Usage'),
                 'image'                   => 'MySQL_logo.svg',
                 'directive'               => 'mysql', //AngularJS directive
-                'category'                => ['linux', 'mysql'],
+                'category'                => ['linux', 'mysql', 'database'],
                 'necessity_of_assignment' => true
             ],
             [

@@ -31,6 +31,7 @@ namespace App\Controller;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\WizardAssignmentsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -63,13 +64,66 @@ class WizardsController extends AppController {
         /** @var WizardAssignmentsTable $WizardAssignmentsTable */
         $WizardAssignmentsTable = TableRegistry::getTableLocator()->get('WizardAssignments');
         $wizards = $WizardAssignmentsTable->getAvailableWizards($this->PERMISSIONS);
-        $wizardAssignments = [];
+        $this->set('wizards', $wizards);
+        $this->viewBuilder()->setOption('serialize', ['wizards']);
+    }
 
-        foreach ($wizards as $key => $wizard) {
-            if ($wizard['necessity_of_assignment'] === true) {
-                if ($WizardAssignmentsTable->existsByUuidAndTypeId($wizard['uuid'], $wizard['type_id'])) {
-                    $wizardAssignments[] = Hash::merge($wizards[$key], $WizardAssignmentsTable->getWizardByUuidForEdit($wizard['uuid']));
+    /**
+     * @param null $uuid
+     */
+    public function edit($uuid = null) {
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
+        if (!$uuid) {
+            throw new NotFoundException(__('Invalid request parameters'));
+        }
+
+        /** @var WizardAssignmentsTable $WizardAssignmentsTable */
+        $WizardAssignmentsTable = TableRegistry::getTableLocator()->get('WizardAssignments');
+
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            $wizard = $this->request->getData();
+
+            if (!$WizardAssignmentsTable->existsByUuidAndTypeId($wizard['uuid'], $wizard['type_id'])) {
+                $entity = $WizardAssignmentsTable->newEmptyEntity();
+                $wizard = $WizardAssignmentsTable->patchEntity($entity, $wizard);
+                $WizardAssignmentsTable->save($entity);
+
+            } else {
+                $existingAssignment = $WizardAssignmentsTable->getWizardByUuidForEdit($wizard['uuid']);
+                $entity = $WizardAssignmentsTable->get($existingAssignment['id']);
+                $entity = $WizardAssignmentsTable->patchEntity($entity, $wizard);
+                $WizardAssignmentsTable->save($entity);
+            }
+            if ($entity->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $wizard->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            } else {
+                if ($this->isJsonRequest()) {
+                    $this->serializeCake4Id($entity); // REST API ID serialization
+                    return;
                 }
+            }
+            $this->set('wizardAssignments', $wizard);
+            $this->viewBuilder()->setOption('serialize', ['wizardAssignments']);
+        }
+
+        $wizards = $WizardAssignmentsTable->getAvailableWizards($this->PERMISSIONS);
+        $wizardAssignments = [];
+        $wizard = Hash::extract($wizards, '{n}[uuid=' . $uuid . ']');
+        if (!$wizard) {
+            throw new NotFoundException(__('Wizard not found'));
+        }
+        $wizard = $wizard[0];
+        if ($wizard['necessity_of_assignment'] === true) {
+            if ($WizardAssignmentsTable->existsByUuidAndTypeId($wizard['uuid'], $wizard['type_id'])) {
+                $wizardAssignments = Hash::merge($wizard, $WizardAssignmentsTable->getWizardByUuidForEdit($wizard['uuid']));
+            } else {
+                $wizardAssignments = $wizard;
+                $wizardAssignments['servicetemplates']['_ids'] = [];
             }
         }
 
@@ -83,7 +137,6 @@ class WizardsController extends AppController {
         $this->set('servicetemplates', $servicetemplates);
         $this->viewBuilder()->setOption('serialize', ['wizardAssignments', 'servicetemplates']);
     }
-
 
     public function hostConfiguration() {
         //Only ship HTML template

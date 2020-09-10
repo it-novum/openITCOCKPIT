@@ -44,69 +44,130 @@
                 <h2>
                     <?php echo __('Assignments'); ?>
                     <span class="fw-300"><i>
-                            <?php echo __('Assign service templates to wizard type'); ?></i>
+                            <?php echo __('overview'); ?></i>
                     </span>
                 </h2>
                 <div class="panel-toolbar">
-
+                    <span class="padding-right-10">
+                        <i class="fas fa-filter text-primary"></i> <?= __('Filter'); ?>
+                    </span>
+                    <div class="btn-group btn-group-xs margin-right-10">
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.linux, 'btn-default': !filter.Category.linux}"
+                                ng-click="filter.Category.linux=!filter.Category.linux">
+                            <i class="fab fa-linux"></i> <?= ('Linux'); ?>
+                        </button>
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.windows, 'btn-default': !filter.Category.windows}"
+                                ng-click="filter.Category.windows=!filter.Category.windows">
+                            <i class="fab fa-windows"></i> <?= ('Windows'); ?>
+                        </button>
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.database, 'btn-default': !filter.Category.database}"
+                                ng-click="filter.Category.database=!filter.Category.database">
+                            <i class="fa fa-database"></i> <?= ('Database'); ?>
+                        </button>
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.mail, 'btn-default': !filter.Category.mail}"
+                                ng-click="filter.Category.mail=!filter.Category.mail">
+                            <i class="fas fa-mail-bulk"></i> <?= ('Email'); ?>
+                        </button>
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.network, 'btn-default': !filter.Category.network}"
+                                ng-click="filter.Category.network=!filter.Category.network">
+                            <i class="fa fa-sitemap"></i> <?= ('Network'); ?>
+                        </button>
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.docker, 'btn-default': !filter.Category.docker}"
+                                ng-click="filter.Category.docker=!filter.Category.docker">
+                            <i class="fab fa-docker"></i> <?= ('Docker'); ?>
+                        </button>
+                        <button class="btn"
+                                ng-class="{'btn-primary': filter.Category.macos, 'btn-default': !filter.Category.macos}"
+                                ng-click="filter.Category.macos=!filter.Category.macos">
+                            <i class="fab fa-apple"></i> <?= ('macOS'); ?>
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-                    <form ng-submit="submit();" class="form-horizontal"
-                          ng-init="successMessage=
-            {objectName : '<?php echo __('Wizard assignments'); ?>' , message: '<?php echo __('updated successfully'); ?>'}">
-                        <div class="row padding-10" ng-repeat="wizardAssignment in wizardAssignments">
-                            <div class="col-12">
-                                <div class="row">
-                                    <div class="col-1">
-                                        <center>
-                                            <div class="wizard-logo-image">
-                                                <img src="/img/wizards/{{wizardAssignment.image}}"/>
-                                            </div>
-                                        </center>
+                    <div class="frame-wrap">
+                        <table class="table table-striped m-0 table-bordered table-hover table-sm">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th class="no-sort">
+                                    <?php echo __('Wizard title'); ?>
+                                </th>
+                                <th>
+                                    <?php echo __('Description'); ?>
+                                </th>
+                                <th>
+                                    <?php echo __('Assignments necessary'); ?>
+                                </th>
+                                <th class="no-sort text-center">
+                                    <i class="fa fa-cog"></i>
+                                </th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr ng-repeat="wizard in wizards" ng-show="filterByCategory(wizard.category)">
+                                <td align="center">
+                                    <div class="wizard-logo-image-small">
+                                        <img src="/img/wizards/{{wizard.image}}"/>
                                     </div>
-                                    <div class="col-11 wizard-assignments-border-left">
-                                        <h3 class="text-primary">{{wizardAssignment.title}}</h3>
-                                        <span class="help-block">{{wizardAssignment.description}}</span>
-                                        <div class="form-group required padding-bottom-20"
-                                             ng-class="{'has-error': errors.servicetemplates}">
-                                            <label class="control-label padding-top-10" for="ServicetemplatesSelect">
-                                                <?php echo __('Service templates'); ?>
-                                            </label>
-                                            <select
-                                                id="ServicetemplatesSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="servicetemplates"
-                                                multiple
-                                                ng-options="servicetemplate.key as servicetemplate.value for servicetemplate in servicetemplates"
-                                                ng-model="wizardAssignment.servicetemplates._ids">
-                                            </select>
-                                            <div ng-repeat="error in errors.servicetemplates">
-                                                <div class="help-block text-danger">{{ error }}</div>
-                                            </div>
+                                </td>
+                                <td>{{wizard.title}}</td>
+                                <td>{{wizard.description}}</td>
+                                <td>
+                                    <span class="badge badge-danger ng-hide" ng-hide="wizard.necessity_of_assignment">
+                                        <?= __('No'); ?>
+                                    </span>
+                                    <span class="badge badge-success" ng-show="wizard.necessity_of_assignment">
+                                        <?= __('Yes'); ?>
+                                    </span>
+                                </td>
+                                <td class="width-50">
+                                    <div class="btn-group btn-group-xs" role="group" ng-show="wizard.necessity_of_assignment">
+                                        <?php if ($this->Acl->hasPermission('edit', 'wizards')): ?>
+                                            <a ui-sref="WizardsEdit({uuid: wizard.uuid, typeId: wizard.type_id})"
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i>
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);"
+                                               class="btn btn-default btn-lower-padding disabled">
+                                                <i class="fa fa-cog"></i></a>
+                                        <?php endif; ?>
+                                        <button type="button"
+                                                class="btn btn-default dropdown-toggle btn-lower-padding"
+                                                data-toggle="dropdown">
+                                            <i class="caret"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <?php if ($this->Acl->hasPermission('edit', 'wizards')): ?>
+                                                <a ui-sref="WizardsEdit({uuid: wizard.uuid, typeId: wizard.type_id })"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-cog"></i>
+                                                    <?php echo __('Edit'); ?>
+                                                </a>
+                                            <?php endif; ?>
+
                                         </div>
                                     </div>
-                                </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="margin-top-10" ng-show="wizards.length == 0">
+                            <div class="text-center text-danger italic">
+                                <?php echo __('No entries match the selection'); ?>
                             </div>
                         </div>
 
-
-                        <div class="card margin-top-10">
-                            <div class="card-body">
-                                <div class="float-right">
-                                    <button class="btn btn-primary" type="submit">
-                                        <?php echo __('Save assignments'); ?>
-                                    </button>
-                                    <a back-button href="javascript:void(0);" fallback-state='DashboardsIndex'
-                                       class="btn btn-default">
-                                        <?php echo __('Cancel'); ?>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>

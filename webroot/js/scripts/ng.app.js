@@ -1427,6 +1427,20 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 templateUrl: "/wizards/assignments.html",
                 controller: "WizardsAssignmentsController"
             })
+
+            .state('WizardsEdit', {
+                url: '/wizards/edit/:uuid/:typeId',
+                params: {
+                    uuid: {
+                        value: null
+                    },
+                    typeId: {
+                        value: null
+                    }
+                },
+                templateUrl: "/wizards/edit.html",
+                controller: "WizardsEditController"
+            })
     })
 
     /*
