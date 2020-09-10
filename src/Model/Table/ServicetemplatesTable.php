@@ -605,7 +605,7 @@ class ServicetemplatesTable extends Table {
             ->disableHydration()
             ->first();
 
-        if(!$formatAsCake2){
+        if (!$formatAsCake2) {
             return $query;
         }
         return $this->formatFirstResultAsCake2($query, true);
@@ -1491,4 +1491,44 @@ class ServicetemplatesTable extends Table {
 
         return $list;
     }
+
+    /**
+     * @param int $servicetemplateIds
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getServicetemplatesByIds($servicetemplateIds = [], $MY_RIGHTS = [], $enableHydration = true) {
+        if (!is_array($servicetemplateIds)) {
+            $servicetemplateIds = [$servicetemplateIds];
+        }
+        $query = $this->find()
+            ->select([
+                'Servicetemplates.id',
+                'Servicetemplates.name',
+                'Servicetemplates.description',
+                'Servicetemplates.uuid'
+            ])
+            ->contain([
+                'Servicetemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Servicetemplates.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->andWhere([
+            'Servicetemplates.id IN ' => $servicetemplateIds
+        ])
+            ->order(['Servicetemplates.name' => 'asc'])
+            ->enableHydration($enableHydration)
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
 }

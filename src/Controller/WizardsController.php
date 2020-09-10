@@ -153,6 +153,48 @@ class WizardsController extends AppController {
         return;
     }
 
+    public function mysqlserver() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+        /** @var WizardAssignmentsTable $WizardAssignmentsTable */
+        $WizardAssignmentsTable = TableRegistry::getTableLocator()->get('WizardAssignments');
+        $wizards = $WizardAssignmentsTable->getAvailableWizards($this->PERMISSIONS);
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return mysql wizard data
+            $mysqlConfiguration = [];
+            $servicetemplates = [];
+            $wizardAssignments = [];
+            $mysqlWizardData = Hash::extract($wizards, '{n}[type_id=mysql-server]');
+            if($mysqlWizardData){
+                $mysqlWizardData = $mysqlWizardData[0];
+                if ($WizardAssignmentsTable->existsByUuidAndTypeId($mysqlWizardData['uuid'], $mysqlWizardData['type_id'])) {
+                    $wizardAssignments = Hash::merge($mysqlWizardData, $WizardAssignmentsTable->getWizardByUuidForEdit($mysqlWizardData['uuid']));
+                }
+            }
+
+            if(!empty($wizardAssignments['servicetemplates']['_ids'])){
+                /** @var ServicetemplatesTable $ServicetemplatesTable */
+                $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+                $servicetemplates = $ServicetemplatesTable->getServicetemplatesByIds(
+                    $wizardAssignments['servicetemplates']['_ids'],
+                    $this->MY_RIGHTS,
+                    false
+                );
+            }
+
+
+
+            $this->set('wizardAssignments', $wizardAssignments);
+            $this->set('servicetemplates', $servicetemplates);
+
+            $this->viewBuilder()->setOption('serialize', ['wizardAssignments', 'servicetemplates']);
+            return;
+        }
+    }
+
     public function wizardHostConfiguration() {
         //Only ship HTML template
         return;

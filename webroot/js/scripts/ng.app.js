@@ -1422,6 +1422,17 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "WizardsLinuxServerSshController"
             })
 
+            .state('WizardsMysqlServer', {
+                url: '/wizards/mysqlserver',
+                params: {
+                    hostId: {
+                        value: null
+                    }
+                },
+                templateUrl: "/wizards/mysqlserver.html",
+                controller: "WizardsMysqlServerController"
+            })
+
             .state('WizardsAssignments', {
                 url: '/wizards/assignments',
                 templateUrl: "/wizards/assignments.html",

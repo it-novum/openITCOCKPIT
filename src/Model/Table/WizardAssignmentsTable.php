@@ -11,6 +11,8 @@ use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\Wizards\ModuleWizardsInterface;
 
+
+
 /**
  * WizardAssignments Model
  *
@@ -188,6 +190,7 @@ class WizardAssignmentsTable extends Table {
                 'description'             => __('Track MySQL Query Throughput, Execution Performance, Connections, And Buffer Pool Usage'),
                 'image'                   => 'MySQL_logo.svg',
                 'directive'               => 'mysql', //AngularJS directive
+                'state'                   => 'WizardsMysqlServer',
                 'category'                => ['linux', 'mysql', 'database'],
                 'necessity_of_assignment' => true
             ],
@@ -253,5 +256,14 @@ class WizardAssignmentsTable extends Table {
             '_ids' => Hash::extract($query, 'servicetemplates.{n}.id')
         ];
         return $wizardAssignment;
+    }
+
+    /**
+     * @param $typeId
+     * @param $wizards
+     * @return array|\ArrayAccess
+     */
+    public function getWizardByTypeId($typeId, $wizards){
+        return Hash::extract($wizards, '{n}[type_id='.$typeId.']');
     }
 }

@@ -952,3 +952,9 @@ div.packetmanager-selection > span::selection {
 .wizard-info-tags{
     color: #00adef;
 }
+
+.fieldset-legend-border-bottom{
+    border-bottom: 5px solid;
+    border-image-source: linear-gradient(45deg, #4285F4, transparent);
+    border-image-slice: 1;
+}
