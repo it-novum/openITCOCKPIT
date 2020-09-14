@@ -682,6 +682,67 @@ class ServicetemplatesTable extends Table {
     }
 
     /**
+     * @param array $ids
+     * @return array
+     */
+    public function getServicetemplatesFoWizardDeploy($ids, $MY_RIGHTS = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->where([
+                'Servicetemplates.id IN' => $ids
+            ])
+            ->contain([
+                'Servicetemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ],
+                'CheckCommand'                         => [
+                    'Commandarguments'
+                ]
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Servicetemplates.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->disableHydration()
+            ->all();
+
+        $servicetemplates = [];
+        foreach ($query as $servicetemplate) {
+            // Merge new command arguments that are missing in the service template to service template command arguments
+            // and remove old command arguments that don't exists in the command anymore.
+            $filteredCommandArgs = [];
+            foreach ($servicetemplate['check_command']['commandarguments'] as $commandargument) {
+                $valueExists = false;
+                foreach ($servicetemplate['servicetemplatecommandargumentvalues'] as $servicetemplatecommandargumentvalue) {
+                    if ($commandargument['id'] === $servicetemplatecommandargumentvalue['commandargument']['id']) {
+                        $filteredCommandArgs[] = $servicetemplatecommandargumentvalue;
+                        $valueExists = true;
+                    }
+                }
+                if (!$valueExists) {
+                    $filteredCommandArgs[] = [
+                        'commandargument_id' => $commandargument['id'],
+                        'servicetemplate_id' => $servicetemplate['id'],
+                        'value'              => '',
+                        'commandargument'    => [
+                            'name'       => $commandargument['name'],
+                            'human_name' => $commandargument['human_name'],
+                            'command_id' => $commandargument['command_id'],
+                        ]
+                    ];
+                }
+            }
+            $servicetemplate['servicetemplatecommandargumentvalues'] = $filteredCommandArgs;
+            $servicetemplates[] = $servicetemplate;
+        }
+
+        return $servicetemplates;
+    }
+
+    /**
      * @param int $id
      * @return array
      */

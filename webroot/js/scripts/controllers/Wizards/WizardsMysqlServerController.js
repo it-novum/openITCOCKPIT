@@ -11,7 +11,7 @@ angular.module('openITCOCKPIT')
             serviceTemplateCommandArgumentValuesToDeploy : [],
 
         };
-        
+
         $scope.load = function(){
             $http.get("/wizards/mysqlserver.json", {
                 params: {

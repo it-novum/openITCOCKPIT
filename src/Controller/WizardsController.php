@@ -183,10 +183,9 @@ class WizardsController extends AppController {
             if (!empty($wizardAssignments['servicetemplates']['_ids'])) {
                 /** @var ServicetemplatesTable $ServicetemplatesTable */
                 $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
-                $servicetemplates = $ServicetemplatesTable->getServicetemplatesByIds(
+                $servicetemplates = $ServicetemplatesTable->getServicetemplatesFoWizardDeploy(
                     $wizardAssignments['servicetemplates']['_ids'],
-                    $this->MY_RIGHTS,
-                    false
+                    $this->MY_RIGHTS
                 );
             }
 
