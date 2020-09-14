@@ -185,6 +185,15 @@ class SystemsettingsTable extends Table {
         return Cache::read('systemsettings_is_ldap_auth', 'permissions');
     }
 
+    public function isOAuth2() {
+        if (!Cache::read('systemsettings_is_o_auth_2', 'permissions')) {
+            $settings = $this->findAsArraySection('FRONTEND');
+            $value = $settings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso';
+            Cache::write('systemsettings_is_o_auth_2', $value, 'permissions');
+        }
+        return Cache::read('systemsettings_is_o_auth_2', 'permissions');
+    }
+
     /**
      * @param string $key
      * @return array

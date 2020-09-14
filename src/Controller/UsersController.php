@@ -217,6 +217,10 @@ class UsersController extends AppController {
     public function add() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
+
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $this->set('isOAuth2', $SystemsettingsTable->isOAuth2());
             return;
         }
 
@@ -233,6 +237,15 @@ class UsersController extends AppController {
 
             $user = $UsersTable->newEmptyEntity();
             $user = $UsersTable->patchEntity($user, $data);
+
+            if($user->is_oauth === true) {
+                //remove password validation when user is an oAuth2 user.
+                $user->password = '';
+                $user->confirm_password = '';
+                $UsersTable->getValidator()->remove('password');
+                $UsersTable->getValidator()->remove('confirm_password');
+            }
+
             $UsersTable->save($user);
             if ($user->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -299,6 +312,13 @@ class UsersController extends AppController {
                 $user->setAccess('password', false);
                 $user->setAccess('samaccountname', false);
                 $user->setAccess('ldap_dn', false);
+            }
+
+            if($user->is_oauth === true) {
+                $user->setAccess('is_oauth', false); //do not allow to change is_oauth
+                //oAuth users has no password
+                $data['password'] = '';
+                $data['confirm_password'] = '';
             }
 
             //prevent multiple hash of password

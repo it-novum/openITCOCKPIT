@@ -27,6 +27,7 @@ angular.module('openITCOCKPIT')
                     timezone: 'Europe/Berlin',
                     password: '',
                     confirm_password: '',
+                    is_oauth: 0,
 
                     samaccountname: '',
                     ldap_dn: '',

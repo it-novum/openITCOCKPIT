@@ -447,7 +447,8 @@ class UsersTable extends Table {
                 'Users.dashboard_tab_rotation',
                 'Users.paginatorlength',
                 'Users.recursive_browser',
-                'Users.image'
+                'Users.image',
+                'Users.is_oauth'
             ])
             ->where([
                 'Users.id' => $id
@@ -803,7 +804,8 @@ class UsersTable extends Table {
             ->disableHydration()
             ->where([
                 'Users.id'        => $id,
-                'Users.is_active' => 1
+                'Users.is_active' => 1,
+                'Users.is_oauth'  => 0
             ]);
         $rawResult = $query->firstOrFail();
         $result = [
@@ -885,7 +887,8 @@ class UsersTable extends Table {
         return $query
             ->where([
                 'Users.email'     => $email,
-                'Users.is_active' => 1
+                'Users.is_active' => 1,
+                'Users.is_oauth'  => 0
             ])
             ->first();
     }
@@ -927,6 +930,7 @@ class UsersTable extends Table {
                 'Users.firstname'  => $firstname,
                 'Users.lastname'   => $lastname,
                 'Users.is_active'  => 1,
+                'Users.is_oauth'  => 0,
                 'Users.email LIKE' => sprintf('%%%s%%', $likeEmail)
             ])
             ->first();
@@ -944,7 +948,23 @@ class UsersTable extends Table {
             ->where([
                 'Users.firstname' => $firstname,
                 'Users.lastname'  => $lastname,
+                'Users.is_oauth'  => 0,
                 'Users.is_active' => 1
+            ])
+            ->first();
+    }
+
+    /**
+     * @param string $email
+     * @return array|EntityInterface|null
+     */
+    public function getOAuthUserByEmailForLogin(string $email) {
+        $query = $this->find();
+        return $query
+            ->where([
+                'Users.email'     => $email,
+                'Users.is_active' => 1,
+                'Users.is_oauth'  => 1
             ])
             ->first();
     }

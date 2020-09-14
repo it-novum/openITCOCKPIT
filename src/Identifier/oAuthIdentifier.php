@@ -99,7 +99,7 @@ class oAuthIdentifier extends AbstractIdentifier implements IdentifierInterface 
     protected function _findIdentity(string $identifier) {
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
-        return $UsersTable->getUserByEmailForLogin($identifier);
+        return $UsersTable->getOAuthUserByEmailForLogin($identifier);
     }
 
 }
