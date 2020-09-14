@@ -23,8 +23,8 @@
 //  confirmation.
 ?>
 <div class="row">
-    <div class="col-lg-3 hidden-mobile text-primary"
-         ng-class="{'text-success': macro.objecttype_id === 512 || macro.objecttype_id === 4096}">
+    <div class="col-lg-3 hidden-mobile"
+         ng-class="{'text-success': macro.objecttype_id === 512 || macro.objecttype_id === 4096, 'text-primary': !(macro.objecttype_id === 512 || macro.objecttype_id === 4096)}">
         <div style="padding-top: 29px; width: 100%;">
         </div>
         <span ng-show="macro.name">
@@ -53,7 +53,7 @@
     <div class="col-lg-1">
         <label></label>
         <br>
-        <button type="button" class="btn btn-default btn-sx txt-color-red" ng-click="callback(macro, index)"
+        <button type="button" class="btn btn-danger btn-sm" ng-click="callback(macro, index)"
                 style="margin-top: 7px;">
             <i class="fa fa-trash fa-lg"></i>
         </button>

@@ -296,8 +296,8 @@ class HostComparisonForSave {
      */
     public function getDataForCustomvariables() {
         // for easy host add in wizard - use from template
-        if (!isset($this->host['customvariables']['_ids'])) {
-            $this->host['customvariables'] = [];
+        if (!isset($this->host['customvariables'])) {
+            $this->host['customvariables'] =  $this->hosttemplate['customvariables'];
         }
 
         $customVariableDiffer = new CustomVariableDiffer(

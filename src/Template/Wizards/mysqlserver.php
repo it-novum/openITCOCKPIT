@@ -95,7 +95,7 @@
                                                 id="UserName"
                                                 class="form-control"
                                                 type="password"
-                                                ng-model="post.Username">
+                                                ng-model="post.password">
                                             <div ng-repeat="error in errors.password">
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
@@ -107,14 +107,14 @@
                                             <input
                                                 id="UserName"
                                                 class="form-control"
-                                                type="password"
+                                                type="text"
                                                 ng-model="post.database">
                                         </div>
                                     </fieldset>
                                     <fieldset>
                                         <legend class="fs-md fieldset-legend-border-bottom">
                                             <h4>
-                                                <?= __('MySQL server services'); ?>
+                                                <?= __('MySQL services'); ?>
                                             </h4>
                                         </legend>
                                         <ul class="no-padding">
@@ -127,7 +127,7 @@
                                                                class="custom-control-input"
                                                                name="checkbox"
                                                                checked="checked"
-                                                               ng-model-options="{debounce: 500}">
+                                                               ng-model="post.serviceTemplatesToDeploy[servicetemplate.id]">
                                                         <label class="custom-control-label custom-control-label-ok"
                                                                for="{{servicetemplate.name}}">
                                                             {{servicetemplate.name}}
@@ -140,12 +140,16 @@
                                                 <div class="form-group"
                                                      ng-repeat="commandargument in servicetemplate.servicetemplatecommandargumentvalues">
                                                     {{commandargument.commandargument.human_name}}
+                                                    *** {{post.serviceTemplateCommandArgumentValuesToDeploy[servicetemplate.id][commandargument.id]}} ***
+                                                    ### {{commandargument.id}} ###
+                                                    *** {{servicetemplate.id}} ***
                                                     <input class="form-control"
-                                                           value="{{commandargument.value}}"
-                                                           type="text">
+                                                           type="text"
+                                                           ng-model="post.serviceTemplateCommandArgumentValuesToDeploy[servicetemplate.id][commandargument.id]">
                                                 </div>
                                             </ol>
                                         </ul>
+                                        {{post.serviceTemplateCommandArgumentValuesToDeploy}}
                                     </fieldset>
                                 </div>
                             </div>

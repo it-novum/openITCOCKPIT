@@ -192,7 +192,7 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                                            style="width:100%;">
                                 </div>
                                 <div class="col-md-1 col-lg-1">
-                                    <a class="btn btn-default btn-sm txt-color-red deleteCommandArg margin-top-25"
+                                    <a class="btn btn-danger btn-sm deleteCommandArg margin-top-25"
                                        href="javascript:void(0);"
                                        ng-click="removeArg(arg)">
                                         <i class="fa fa-trash fa-lg"></i>
