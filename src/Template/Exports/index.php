@@ -23,14 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<ol class="breadcrumb page-breadcrumb">
+<ol class="breadcrumb page-breadcrumb" ng-init="gearmanReachable = true">
     <li class="breadcrumb-item">
         <a ui-sref="DashboardsIndex">
             <i class="fa fa-home"></i> <?php echo __('Home'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="AutomapsIndex">
+        <a ui-sref="ExportsIndex">
             <i class="fa fa-retweet"></i> <?php echo __('Export'); ?>
         </a>
     </li>
