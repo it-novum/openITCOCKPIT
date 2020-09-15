@@ -29,6 +29,12 @@ namespace App\Controller;
 
 
 use App\Form\WizardMysqlServerForm;
+use App\itnovum\openITCOCKPIT\Wizard\CreateService;
+use App\itnovum\openITCOCKPIT\Wizard\UpdateHost;
+use App\Model\Entity\Host;
+use App\Model\Table\HostsTable;
+use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\WizardAssignmentsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -36,6 +42,7 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 /**
  * Class WizardsController
@@ -165,7 +172,6 @@ class WizardsController extends AppController {
 
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return mysql wizard data
-            $mysqlConfiguration = [];
             $servicetemplates = [];
             $wizardAssignments = [];
             $mysqlWizardData = Hash::extract($wizards, '{n}[type_id=mysql-server]');
@@ -191,6 +197,21 @@ class WizardsController extends AppController {
             return;
         }
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            /** @var HostsTable $HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+            $hostId = $this->request->getData('host_id', 0);
+            if (!$HostsTable->existsById($hostId)) {
+                throw new NotFoundException();
+            }
+
+            $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
+            if (!$this->allowedByContainerId($host->getContainerIds())) {
+                $this->render403();
+                return;
+            }
+
+
             $WizardMysqlServerForm = new WizardMysqlServerForm();
             $data = $this->request->getData(null, []);
             $WizardMysqlServerForm->execute($data);
@@ -201,7 +222,60 @@ class WizardsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
+
+            //Wizard validation successfully - update host and create services
+            $User = new User($this->getUser());
+
+            /** @var HosttemplatesTable $HosttemplatesTable */
+            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+            // Get host and host template for merge
+            $host = $HostsTable->getHostForEdit($hostId);
+            $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($host['Host']['hosttemplate_id']);
+
+            //Update custom variables
+            $hostCustomVariablestoCheck = [
+                'MYSQL_USER'     => 'username',
+                'MYSQL_PASSWORD' => 'password'
+            ];
+
+            //Update host with changelog
+            $hostEntity = UpdateHost::save(
+                $host,
+                $hosttemplate,
+                $data,
+                $hostCustomVariablestoCheck,
+                $HostsTable,
+                $User
+            );
+
+            if ($hostEntity instanceof Host) {
+                //Host updated successfully - create services
+
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                /** @var ServicetemplatesTable $ServicetemplatesTable */
+                $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+                //Add custom variables to services
+                $serviceCustomVariablestoCheck = [
+                    'MYSQL_DATABASE' => 'database'
+                ];
+
+                CreateService::saveMany(
+                    $hostEntity,
+                    $data['services'],
+                    $data,
+                    $serviceCustomVariablestoCheck,
+                    $HostsTable,
+                    $HosttemplatesTable,
+                    $ServicesTable,
+                    $ServicetemplatesTable,
+                    $User
+                );
+            }
         }
+        return;
     }
 
     public function wizardHostConfiguration() {

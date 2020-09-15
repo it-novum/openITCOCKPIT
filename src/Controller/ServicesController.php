@@ -27,7 +27,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Lib\Constants;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\AcknowledgementHostsTableInterface;
 use App\Lib\Interfaces\AcknowledgementServicesTableInterface;
@@ -44,7 +43,6 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedServicesTable;
-use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
@@ -55,7 +53,6 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
-use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -68,16 +65,14 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\CommandArgReplacer;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
-use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\Merger\HostMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForView;
-use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
@@ -110,7 +105,6 @@ use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Graphite\GraphiteConfig;
@@ -1424,15 +1418,30 @@ class ServicesController extends AppController {
         $host = $hostObj->toArray();
         $host['is_satellite_host'] = $hostObj->isSatelliteHost();
 
+        /***** Data to replace all macros ****/
+        //Load required data to merge and display inheritance data
+        $hosttemplate = $HosttemplatesTable->getHosttemplateForHostBrowser($hostObj->getHosttemplateId());
+        $hostForCustomVariables = $HostsTable->getHostForBrowser($hostObj->getId());
+        //Merge host and inheritance data
+        $HostMergerForBrowser = new HostMergerForBrowser(
+            $hostForCustomVariables,
+            $hosttemplate
+        );
+        $mergedHost = $HostMergerForBrowser->getDataForView();
+
         //Replace macros in service url
         $HostMacroReplacer = new HostMacroReplacer($host);
+        $HostCustomMacroReplacer = new CustomMacroReplacer($mergedHost['customvariables'], OBJECT_HOST);
         $ServiceMacroReplacer = new ServiceMacroReplacer($mergedService);
         $ServiceCustomMacroReplacer = new CustomMacroReplacer($mergedService['customvariables'], OBJECT_SERVICE);
         $mergedService['service_url_replaced'] =
             $ServiceCustomMacroReplacer->replaceAllMacros(
-                $HostMacroReplacer->replaceBasicMacros(
-                    $ServiceMacroReplacer->replaceBasicMacros($mergedService['service_url'])
-                ));
+                $HostCustomMacroReplacer->replaceAllMacros(
+                    $HostMacroReplacer->replaceBasicMacros(
+                        $ServiceMacroReplacer->replaceBasicMacros($mergedService['service_url'])
+                    )
+                )
+            );
 
         $checkCommand = $CommandsTable->getCommandById($mergedService['command_id']);
         $checkPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedService['check_period_id']);
@@ -1440,6 +1449,9 @@ class ServicesController extends AppController {
 
         // Replace $HOSTNAME$
         $serviceCommandLine = $HostMacroReplacer->replaceBasicMacros($checkCommand['Command']['command_line']);
+
+        // Replace $_HOSTFOOBAR$
+        $serviceCommandLine = $HostCustomMacroReplacer->replaceAllMacros($serviceCommandLine);
 
         // Replace $_SERVICEFOOBAR$
         $serviceCommandLine = $ServiceCustomMacroReplacer->replaceAllMacros($serviceCommandLine);

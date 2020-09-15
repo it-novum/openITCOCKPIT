@@ -177,7 +177,7 @@ class MysqlWizard extends Importer {
             /* connection-time in seconds*/
             [
                 'name'             => 'check_mysql_health__connection-time',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode connection-time --units seconds --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode connection-time --units seconds --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'f503de41-54e2-40e9-9c26-fdfdb786a3c4',
@@ -196,7 +196,7 @@ class MysqlWizard extends Importer {
             /* uptime in seconds*/
             [
                 'name'             => 'check_mysql_health__uptime',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode uptime',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode uptime',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'b553d65d-b422-44c2-ab1e-d8922d41e8af',
@@ -206,7 +206,7 @@ class MysqlWizard extends Importer {
             /* threads-connected */
             [
                 'name'             => 'check_mysql_health__threads-connected',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode threads-connected --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode threads-connected --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '63317cd9-85d4-41d6-a8e2-a7d1602bd0f6',
@@ -225,7 +225,7 @@ class MysqlWizard extends Importer {
             /* threadcache-hitrate */
             [
                 'name'             => 'check_mysql_health__threadcache-hitrate',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode threadcache-hitrate --warning $ARG1$:101 --critical $ARG2$:102',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode threadcache-hitrate --warning $ARG1$:101 --critical $ARG2$:102',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'f5db0b4e-2af7-4fb5-937f-124f6d798f2c',
@@ -244,7 +244,7 @@ class MysqlWizard extends Importer {
             /* threads-created */
             [
                 'name'             => 'check_mysql_health__threads-created',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode threads-created --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode threads-created --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '33c569c2-8561-4d7a-83f2-ea017eb9f07c',
@@ -263,7 +263,7 @@ class MysqlWizard extends Importer {
             /* threads-running */
             [
                 'name'             => 'check_mysql_health__threads-running',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode threads-running --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode threads-running --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'c53847e7-2ca4-498e-8634-5eec26b12e01',
@@ -282,7 +282,7 @@ class MysqlWizard extends Importer {
             /* threads-cached */
             [
                 'name'             => 'check_mysql_health__threads-cached',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode threads-cached --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode threads-cached --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '6dd4f561-3e80-4b4a-a683-d418dacbea3b',
@@ -301,7 +301,7 @@ class MysqlWizard extends Importer {
             /* connects-aborted */
             [
                 'name'             => 'check_mysql_health__connects-aborted',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode connects-aborted --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode connects-aborted --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'd4b97b6f-7364-4717-b6d8-695cd2965ae8',
@@ -320,7 +320,7 @@ class MysqlWizard extends Importer {
             /* clients-aborted */
             [
                 'name'             => 'check_mysql_health__clients-aborted',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode clients-aborted --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode clients-aborted --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '117a2c52-8493-426f-bfcf-36a255f4eea4',
@@ -339,7 +339,7 @@ class MysqlWizard extends Importer {
             /* qcache-hitrate */
             [
                 'name'             => 'check_mysql_health__qcache-hitrate',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode qcache-hitrate --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode qcache-hitrate --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '45af9220-3666-422d-bf1a-9335cd958181',
@@ -358,7 +358,7 @@ class MysqlWizard extends Importer {
             /* qcache-lowmem-prunes */
             [
                 'name'             => 'check_mysql_health__qcache-lowmem-prunes',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode qcache-lowmem-prunes --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode qcache-lowmem-prunes --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '60be76fa-1687-42b3-ae3a-679027177359',
@@ -377,7 +377,7 @@ class MysqlWizard extends Importer {
             /* bufferpool-hitrate */
             [
                 'name'             => 'check_mysql_health__bufferpool-hitrate',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode bufferpool-hitrate --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode bufferpool-hitrate --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '9b2d90f0-6c8c-44a6-b826-dd22a5ab02f5',
@@ -396,7 +396,7 @@ class MysqlWizard extends Importer {
             /* bufferpool-wait-free */
             [
                 'name'             => 'check_mysql_health__bufferpool-wait-free',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode bufferpool-wait-free --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode bufferpool-wait-free --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '999ae421-6229-4197-9803-a88996905448',
@@ -415,7 +415,7 @@ class MysqlWizard extends Importer {
             /* log-waits */
             [
                 'name'             => 'check_mysql_health__log-waits',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode log-waits --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode log-waits --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '016fca63-d656-457c-a556-68714bae8fa0',
@@ -434,7 +434,7 @@ class MysqlWizard extends Importer {
             /* tablecache-hitrate */
             [
                 'name'             => 'check_mysql_health__tablecache-hitrate',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode tablecache-hitrate --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode tablecache-hitrate --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '430bd37b-1fba-4c62-aeed-cbda4275d7e0',
@@ -453,7 +453,7 @@ class MysqlWizard extends Importer {
             /* table-lock-contention */
             [
                 'name'             => 'check_mysql_health__table-lock-contention',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode table-lock-contention --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode table-lock-contention --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '2dc1ed45-2fcd-42c5-a6d1-91288d78f788',
@@ -472,7 +472,7 @@ class MysqlWizard extends Importer {
             /* index-usage */
             [
                 'name'             => 'check_mysql_health__index-usage',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode index-usage --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode index-usage --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'a42e7d0d-ceba-42a3-8128-6764ce5cde8c',
@@ -491,7 +491,7 @@ class MysqlWizard extends Importer {
             /* tmp-disk-tables */
             [
                 'name'             => 'check_mysql_health__tmp-disk-tables',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode tmp-disk-tables --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode tmp-disk-tables --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '1e5b6d2f-503b-41dd-92ee-cfc9717d0dd3',
@@ -510,7 +510,7 @@ class MysqlWizard extends Importer {
             /* open-files */
             [
                 'name'             => 'check_mysql_health__open-files',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode open-files --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode open-files --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '2a08c744-6a1e-4281-bbbb-065665afb4ea',
@@ -529,7 +529,7 @@ class MysqlWizard extends Importer {
             /* slow-queries */
             [
                 'name'             => 'check_mysql_health__slow-queries',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode slow-queries --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode slow-queries --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '822d6c2a-3475-45ca-9f77-d1a7be3a57be',
@@ -548,7 +548,7 @@ class MysqlWizard extends Importer {
             /* long-running-procs */
             [
                 'name'             => 'check_mysql_health__long-running-procs',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode long-running-procs --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode long-running-procs --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '3b6d29ff-966e-49cf-9b1a-159d3139ac49',
@@ -573,7 +573,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '976da093-ed3a-4fc2-978a-b8c37bb95a9d',
                 'template_name'                             => 'MYSQL_CONNECTION_TIME',
-                'name'                                      => 'Connection time',
+                'name'                                      => 'MySQL Connection time',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -642,7 +642,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => 'b471e570-2921-487d-8189-c4bbfa9a09d5',
                 'template_name'                             => 'MYSQL_UPTIME',
-                'name'                                      => 'Mysql Update',
+                'name'                                      => 'MySQL Update',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -702,7 +702,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '7542af3e-14e7-4a39-afff-6ae316313858',
                 'template_name'                             => 'MYSQL_THREADS_CONNECTED',
-                'name'                                      => 'Threads connected',
+                'name'                                      => 'MySQL Threads connected',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -771,7 +771,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '41b49614-c2f1-4bdd-a03c-ef7523b810dd',
                 'template_name'                             => 'MYSQL_THREADCACHE_HITRATE',
-                'name'                                      => 'Threadcache hitrate',
+                'name'                                      => 'MySQL Threadcache hitrate',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -840,7 +840,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '9f4ef558-847e-4953-8119-fedabffc29bc',
                 'template_name'                             => 'MYSQL_THREADS_CREATED',
-                'name'                                      => 'Threads created',
+                'name'                                      => 'MySQL Threads created',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -909,7 +909,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '8c9a0fa8-2939-4aac-b252-f4f356313fe3',
                 'template_name'                             => 'MYSQL_THREADS_RUNNING',
-                'name'                                      => 'Threads running',
+                'name'                                      => 'MySQL Threads running',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -978,7 +978,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '46229355-cc9d-4179-a484-b3075a7861a0',
                 'template_name'                             => 'MYSQL_THREADS_CACHED',
-                'name'                                      => 'Threads cached',
+                'name'                                      => 'MySQL Threads cached',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -1047,7 +1047,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '177ec9fe-6ec1-4bad-aa67-c20475bd8972',
                 'template_name'                             => 'MYSQL_CONNECTS_ABORTED',
-                'name'                                      => 'Connects aborted',
+                'name'                                      => 'MySQL Connects aborted',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -1116,7 +1116,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => 'fea34274-eaca-48af-b64b-6f247b29fa07',
                 'template_name'                             => 'MYSQL_CLIENTS_ABORTED',
-                'name'                                      => 'Clients aborted',
+                'name'                                      => 'MySQL Clients aborted',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -1185,7 +1185,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => 'e9bddda3-9581-4472-b774-25c641219490',
                 'template_name'                             => 'MYSQL_QCACHE_HITRATE',
-                'name'                                      => 'Query cache hitrate',
+                'name'                                      => 'MySQL Query cache hitrate',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -1254,7 +1254,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '3baceaba-3396-4400-a970-133c8e848eca',
                 'template_name'                             => 'MYSQL_QCACHE_LOWMEM_PRUNES',
-                'name'                                      => 'Qcache low memory prunes',
+                'name'                                      => 'MySQL Qcache low memory prunes',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -1323,7 +1323,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '18bfc587-97b3-4f45-9ab4-73245453dee1',
                 'template_name'                             => 'MYSQL_BUFFERPOOL_HITRATE',
-                'name'                                      => 'Bufferpool hitrate',
+                'name'                                      => 'MySQL Bufferpool hitrate',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -1392,7 +1392,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '1e9eb002-aeb8-45b7-86a6-ea3f5f12d631',
                 'template_name'                             => 'MYSQL_BUFFERPOOL_WAIT_FREE',
-                'name'                                      => 'Bufferpool wait free',
+                'name'                                      => 'MySQL Bufferpool wait free',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -1461,7 +1461,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '421af7c7-2736-4c03-a239-64dc8c2e2cf7',
                 'template_name'                             => 'MYSQL_LOG_WAITS',
-                'name'                                      => 'Log waits',
+                'name'                                      => 'MySQL Log waits',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -1530,7 +1530,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '20a1e3b0-65b6-49af-8380-2bb55eedcc50',
                 'template_name'                             => 'MYSQL_TABLECACHE_HITRATE',
-                'name'                                      => 'Table cache hitrate',
+                'name'                                      => 'MySQL Table cache hitrate',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -1599,7 +1599,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '373e5fe2-22f9-4ebc-8055-a375ba4e951e',
                 'template_name'                             => 'MYSQL_TABLE_LOCK_CONTENTION',
-                'name'                                      => 'Table lock contention',
+                'name'                                      => 'MySQL Table lock contention',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -1668,7 +1668,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '5bae7650-0694-4a2f-bfce-b4bb63659ff3',
                 'template_name'                             => 'MYSQL_INDEX_USAGE',
-                'name'                                      => 'Usage of indices',
+                'name'                                      => 'MySQL Usage of indices',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -1737,7 +1737,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => 'a0bce589-92c9-46a5-a44d-7b62efcfdd90',
                 'template_name'                             => 'MYSQL_TMP_DISK_TABLES',
-                'name'                                      => 'Temp disk tables',
+                'name'                                      => 'MySQL Temp disk tables',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -1806,7 +1806,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '6163bdce-5fc1-4328-8f50-c5e21e021c39',
                 'template_name'                             => 'MYSQL_OPEN_FILES',
-                'name'                                      => 'Open files',
+                'name'                                      => 'MySQL Open files',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -1875,7 +1875,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '8b0895be-bcc2-4699-baf4-9f69a40b00a2',
                 'template_name'                             => 'MYSQL_SLOW_QUERIES',
-                'name'                                      => 'Slow queries',
+                'name'                                      => 'MySQL Slow queries',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',
@@ -1944,7 +1944,7 @@ class MysqlWizard extends Importer {
             [
                 'uuid'                                      => '2e64c98a-254d-4655-9ec1-7816a7c97cff',
                 'template_name'                             => 'MYSQL_LONG_RUNNING_PROCESSES',
-                'name'                                      => 'Long running processes',
+                'name'                                      => 'MySQL Long running processes',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => GENERIC_SERVICE,
                 'check_period_id'                           => '1',

@@ -100,7 +100,7 @@
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group required" ng-class="{'has-error': errors.database}">
                                             <label class="control-label">
                                                 <?php echo __('Database'); ?>
                                             </label>
@@ -109,6 +109,9 @@
                                                 class="form-control"
                                                 type="text"
                                                 ng-model="post.database">
+                                            <div ng-repeat="error in errors.database">
+                                                <div class="help-block text-danger">{{ error }}</div>
+                                            </div>
                                         </div>
                                     </fieldset>
                                     <fieldset>
@@ -116,6 +119,11 @@
                                             <h4>
                                                 <?= __('MySQL services'); ?>
                                             </h4>
+
+                                            <div ng-repeat="error in errors.services">
+                                                <h5 class="text-danger">{{ error }}</h5>
+                                            </div>
+
                                         </legend>
                                         <ul class="no-padding">
                                             <ol class="padding-bottom-20 padding-left-0"
@@ -136,8 +144,9 @@
                                                         </label>
                                                     </div>
                                                 </div>
-                                                <div class="form-group {{detectColor(commandargument.commandargument.human_name)}}"
-                                                     ng-repeat="commandargument in service.servicecommandargumentvalues">
+                                                <div
+                                                    class="form-group {{detectColor(commandargument.commandargument.human_name)}}"
+                                                    ng-repeat="commandargument in service.servicecommandargumentvalues">
                                                     {{commandargument.commandargument.human_name}}
                                                     <input class="form-control"
                                                            type="text"
@@ -153,7 +162,12 @@
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">
-                                    <button type="submit" class="btn btn-primary"><?php echo __('Create'); ?></button>
+                                    <button type="submit" class="btn btn-primary" ng-disabled="disableSubmit">
+                                        <span>
+                                            <i class="fa fa-spinner fa-spin" ng-show="disableSubmit"></i>
+                                        </span>
+                                        <?php echo __('Create'); ?>
+                                    </button>
                                     <a back-button href="javascript:void(0);" fallback-state='WizardsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>

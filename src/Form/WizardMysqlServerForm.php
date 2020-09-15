@@ -39,7 +39,9 @@ class WizardMysqlServerForm extends Form {
     protected function _buildSchema(Schema $schema): Schema {
         return $schema
             ->addField('username', ['type' => 'string'])
-            ->addField('password', ['type' => 'string']);
+            ->addField('password', ['type' => 'string'])
+            ->addField('database', ['type' => 'string'])
+            ->addField('services', ['type' => 'array']);
     }
 
     public function validationDefault(Validator $validator): Validator {
@@ -49,6 +51,12 @@ class WizardMysqlServerForm extends Form {
         $validator
             ->requirePresence('password')
             ->allowEmptyString('password', null, false);
+        $validator
+            ->requirePresence('database')
+            ->allowEmptyString('database', null, false);
+        $validator
+            ->requirePresence('services')
+            ->notEmptyArray('services', __('You have to select at least one service'), false);
 
         return $validator;
     }

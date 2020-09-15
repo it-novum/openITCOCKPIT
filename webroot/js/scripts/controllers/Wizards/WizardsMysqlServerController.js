@@ -3,10 +3,11 @@ angular.module('openITCOCKPIT')
         $scope.hostId = QueryStringService.getStateValue($stateParams, 'hostId', false);
         /** public vars **/
         $scope.init = true;
+        $scope.disableSubmit = false;
         $scope.post = {
             username: '',
             password: '',
-            database: '',
+            database: 'information_schema',
             services: []
         };
 
@@ -35,15 +36,30 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
+            $scope.disableSubmit = true;
+
+            var services = [];
+            for(var index in $scope.post.services){
+                if($scope.post.services[index].createService === true){
+                    services.push($scope.post.services[index]);
+                }
+            }
+
+            var post = JSON.parse(JSON.stringify($scope.post)); // Remove JS binding
+            post.host_id = $scope.hostId;
+            post.services = services;
+
             $http.post("/wizards/mysqlserver.json?angular=true",
-                $scope.post
+                post
             ).then(function(result){
+                $scope.disableSubmit = false;
                 NotyService.genericSuccess();
                 RedirectService.redirectWithFallback('ServicesNotMonitored');
                 $scope.errors = {};
                 NotyService.scrollTop();
                 console.log('Data saved successfully');
             }, function errorCallback(result){
+                $scope.disableSubmit = false;
 
                 NotyService.genericError();
 
