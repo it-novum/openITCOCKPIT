@@ -172,7 +172,7 @@ class CreateService {
                 OBJECT_SERVICE,
                 $host->get('container_id'),
                 $User->getId(),
-                $host->get('name') . '/' . $serviceData['name'],
+                $host->get('name') . '/' . $servicePostData['Service']['name'],
                 array_merge($servicePostData, $extDataForChangelog)
             );
 

@@ -377,7 +377,7 @@ class MysqlWizard extends Importer {
             /* bufferpool-hitrate */
             [
                 'name'             => 'check_mysql_health__bufferpool-hitrate',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode bufferpool-hitrate --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASSWORD$ --database $_SERVICEMYSQL_DATABASE$ --mode bufferpool-hitrate --warning $ARG1$:101 --critical $ARG2$:102',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '9b2d90f0-6c8c-44a6-b826-dd22a5ab02f5',
