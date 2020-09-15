@@ -163,10 +163,6 @@ class WizardsController extends AppController {
         $WizardAssignmentsTable = TableRegistry::getTableLocator()->get('WizardAssignments');
         $wizards = $WizardAssignmentsTable->getAvailableWizards($this->PERMISSIONS);
 
-        $WizardMysqlServerForm = new WizardMysqlServerForm();
-        $data = $this->request->getData(null, []);
-        $WizardMysqlServerForm->execute($data);
-
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return mysql wizard data
             $mysqlConfiguration = [];
@@ -189,14 +185,16 @@ class WizardsController extends AppController {
                 );
             }
 
-
-            $this->set('wizardAssignments', $wizardAssignments);
             $this->set('servicetemplates', $servicetemplates);
 
-            $this->viewBuilder()->setOption('serialize', ['wizardAssignments', 'servicetemplates']);
+            $this->viewBuilder()->setOption('serialize', ['servicetemplates']);
             return;
         }
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            $WizardMysqlServerForm = new WizardMysqlServerForm();
+            $data = $this->request->getData(null, []);
+            $WizardMysqlServerForm->execute($data);
+
             if (!empty($WizardMysqlServerForm->getErrors())) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $WizardMysqlServerForm->getErrors());

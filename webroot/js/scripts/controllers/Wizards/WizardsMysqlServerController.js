@@ -1,15 +1,13 @@
 angular.module('openITCOCKPIT')
-    .controller('WizardsMysqlServerController', function($scope, $http, $stateParams, QueryStringService){
+    .controller('WizardsMysqlServerController', function($scope, $http, $stateParams, QueryStringService, NotyService, RedirectService){
         $scope.hostId = QueryStringService.getStateValue($stateParams, 'hostId', false);
         /** public vars **/
         $scope.init = true;
         $scope.post = {
-            username: null,
-            password: null,
-            database: null,
-            serviceTemplatesToDeploy : [],
-            serviceTemplateCommandArgumentValuesToDeploy : [],
-
+            username: '',
+            password: '',
+            database: '',
+            services: []
         };
 
         $scope.load = function(){
@@ -18,33 +16,56 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                $scope.wizardAssignments = result.data.wizardAssignments;
                 $scope.servicetemplates = result.data.servicetemplates;
-                for(var key in $scope.wizardAssignments.servicetemplates._ids){
-                    var id = $scope.wizardAssignments.servicetemplates._ids[key];
-                    $scope.post.serviceTemplatesToDeploy[id] = true;
-                }
-
                 for(var key in $scope.servicetemplates){
-                    var serviceTemplateId = parseInt($scope.wizardAssignments.servicetemplates._ids[key], 10);
-                    for(var subKey in $scope.servicetemplates[key].servicetemplatecommandargumentvalues){
-                        var commandId = parseInt($scope.servicetemplates[key].servicetemplatecommandargumentvalues[subKey].id, 10);
-                        if(!$scope.post.serviceTemplateCommandArgumentValuesToDeploy[serviceTemplateId]){
-                            $scope.post.serviceTemplateCommandArgumentValuesToDeploy[serviceTemplateId] = [];
-                        }
-                        $scope.post.serviceTemplateCommandArgumentValuesToDeploy[serviceTemplateId][commandId] = 'test';
-                    }
-
+                    $scope.post.services.push(
+                        {
+                            'host_id': $scope.hostId,
+                            'servicetemplate_id': $scope.servicetemplates[key].id,
+                            'name': $scope.servicetemplates[key].name,
+                            'description': $scope.servicetemplates[key].description,
+                            'servicecommandargumentvalues': $scope.servicetemplates[key].servicetemplatecommandargumentvalues,
+                            'createService': true
+                        });
                 }
-                console.log($scope.post.serviceTemplateCommandArgumentValuesToDeploy);
+
 
                 $scope.init = false;
             });
         };
 
         $scope.submit = function(){
-            console.log('Submit !!!');
-            console.log($scope.post);
+            $http.post("/wizards/mysqlserver.json?angular=true",
+                $scope.post
+            ).then(function(result){
+                NotyService.genericSuccess();
+                RedirectService.redirectWithFallback('ServicesNotMonitored');
+                $scope.errors = {};
+                NotyService.scrollTop();
+                console.log('Data saved successfully');
+            }, function errorCallback(result){
+
+                NotyService.genericError();
+
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    console.log($scope.errors);
+
+                }
+            });
+
+        };
+
+        $scope.detectColor = function(label){
+            if(label.match(/warning/gi)){
+                return 'warning';
+            }
+
+            if(label.match(/critical/gi)){
+                return 'critical';
+            }
+
+            return '';
         };
 
         //Fire on page load

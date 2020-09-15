@@ -119,37 +119,33 @@
                                         </legend>
                                         <ul class="no-padding">
                                             <ol class="padding-bottom-20 padding-left-0"
-                                                ng-repeat="servicetemplate in servicetemplates">
+                                                ng-repeat="service in post.services">
                                                 <div class="form-group">
                                                     <div class="custom-control custom-checkbox">
                                                         <input type="checkbox"
-                                                               id="{{servicetemplate.name}}"
+                                                               id="{{service.name}}"
                                                                class="custom-control-input"
                                                                name="checkbox"
-                                                               checked="checked"
-                                                               ng-model="post.serviceTemplatesToDeploy[servicetemplate.id]">
+                                                               ng-model="service.createService">
                                                         <label class="custom-control-label custom-control-label-ok"
-                                                               for="{{servicetemplate.name}}">
-                                                            {{servicetemplate.name}}
+                                                               for="{{service.name}}">
+                                                            {{service.name}}
                                                             <span class="help-block italic">
-                                                                {{servicetemplate.description}}
+                                                                {{service.description}}
                                                             </span>
                                                         </label>
                                                     </div>
                                                 </div>
-                                                <div class="form-group"
-                                                     ng-repeat="commandargument in servicetemplate.servicetemplatecommandargumentvalues">
+                                                <div class="form-group {{detectColor(commandargument.commandargument.human_name)}}"
+                                                     ng-repeat="commandargument in service.servicecommandargumentvalues">
                                                     {{commandargument.commandargument.human_name}}
-                                                    *** {{post.serviceTemplateCommandArgumentValuesToDeploy[servicetemplate.id][commandargument.id]}} ***
-                                                    ### {{commandargument.id}} ###
-                                                    *** {{servicetemplate.id}} ***
                                                     <input class="form-control"
                                                            type="text"
-                                                           ng-model="post.serviceTemplateCommandArgumentValuesToDeploy[servicetemplate.id][commandargument.id]">
+                                                           ng-disabled="!service.createService"
+                                                           ng-model="commandargument.value">
                                                 </div>
                                             </ol>
                                         </ul>
-                                        {{post.serviceTemplateCommandArgumentValuesToDeploy}}
                                     </fieldset>
                                 </div>
                             </div>

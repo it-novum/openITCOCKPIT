@@ -166,15 +166,15 @@ angular.module('openITCOCKPIT')
                     className: 'highlight-green'
                 },
                 {
-                    highlight: /(\$_HOST.*\$)/g,
+                    highlight: /(\$_HOST.*?\$)/g,
                     className: 'highlight-purple'
                 },
                 {
-                    highlight: /(\$_SERVICE.*\$)/g,
+                    highlight: /(\$_SERVICE.*?\$)/g,
                     className: 'highlight-purple'
                 },
                 {
-                    highlight: /(\$_CONTACT.*\$)/g,
+                    highlight: /(\$_CONTACT.*?\$)/g,
                     className: 'highlight-purple'
                 }
             ];
