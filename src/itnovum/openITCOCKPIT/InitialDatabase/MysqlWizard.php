@@ -27,7 +27,6 @@ namespace itnovum\openITCOCKPIT\InitialDatabase;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\WizardAssignmentsTable;
-use Cake\Utility\Hash;
 
 
 /**
@@ -88,6 +87,7 @@ class MysqlWizard extends Importer {
                             ];
                         }
                     }
+
                     $entity = $this->ServicetemplatesTable->newEntity($servicetemplate);
                     $this->ServicetemplatesTable->save($entity);
                 }
@@ -106,9 +106,9 @@ class MysqlWizard extends Importer {
                 if (!$this->WizardAssignmentsTable->existsByUuidAndTypeId($wizardassignmentEntity['uuid'], $wizardassignmentEntity['type_id'])) {
                     $entity = $this->WizardAssignmentsTable->newEntity($wizardassignmentEntity);
                     $this->WizardAssignmentsTable->save($entity);
-                } else{
+                } else {
                     $existingAssignment = $this->WizardAssignmentsTable->getWizardByUuidForEdit($wizardassignmentEntity['uuid']);
-                    foreach(array_diff($wizardassignmentEntity['servicetemplates']['_ids'], $existingAssignment['servicetemplates']['_ids']) as $missingServicetemplateId){
+                    foreach (array_diff($wizardassignmentEntity['servicetemplates']['_ids'], $existingAssignment['servicetemplates']['_ids']) as $missingServicetemplateId) {
                         $existingAssignment['servicetemplates']['_ids'][] = $missingServicetemplateId;
                     }
                     $entity = $this->WizardAssignmentsTable->get($existingAssignment['id']);
@@ -177,7 +177,7 @@ class MysqlWizard extends Importer {
             /* connection-time in seconds*/
             [
                 'name'             => 'check_mysql_health__connection-time',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode connection-time --units seconds --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode connection-time --units seconds --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'f503de41-54e2-40e9-9c26-fdfdb786a3c4',
@@ -196,7 +196,7 @@ class MysqlWizard extends Importer {
             /* uptime in seconds*/
             [
                 'name'             => 'check_mysql_health__uptime',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode uptime',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode uptime',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'b553d65d-b422-44c2-ab1e-d8922d41e8af',
@@ -206,7 +206,7 @@ class MysqlWizard extends Importer {
             /* threads-connected */
             [
                 'name'             => 'check_mysql_health__threads-connected',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode threads-connected --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode threads-connected --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '63317cd9-85d4-41d6-a8e2-a7d1602bd0f6',
@@ -225,7 +225,7 @@ class MysqlWizard extends Importer {
             /* threadcache-hitrate */
             [
                 'name'             => 'check_mysql_health__threadcache-hitrate',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode threadcache-hitrate --warning $ARG1$:101 --critical $ARG2$:102',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode threadcache-hitrate --warning $ARG1$:101 --critical $ARG2$:102',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'f5db0b4e-2af7-4fb5-937f-124f6d798f2c',
@@ -244,7 +244,7 @@ class MysqlWizard extends Importer {
             /* threads-created */
             [
                 'name'             => 'check_mysql_health__threads-created',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode threads-created --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode threads-created --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '33c569c2-8561-4d7a-83f2-ea017eb9f07c',
@@ -263,7 +263,7 @@ class MysqlWizard extends Importer {
             /* threads-running */
             [
                 'name'             => 'check_mysql_health__threads-running',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode threads-running --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode threads-running --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'c53847e7-2ca4-498e-8634-5eec26b12e01',
@@ -282,7 +282,7 @@ class MysqlWizard extends Importer {
             /* threads-cached */
             [
                 'name'             => 'check_mysql_health__threads-cached',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode threads-cached --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode threads-cached --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '6dd4f561-3e80-4b4a-a683-d418dacbea3b',
@@ -301,7 +301,7 @@ class MysqlWizard extends Importer {
             /* connects-aborted */
             [
                 'name'             => 'check_mysql_health__connects-aborted',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode connects-aborted --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode connects-aborted --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'd4b97b6f-7364-4717-b6d8-695cd2965ae8',
@@ -320,7 +320,7 @@ class MysqlWizard extends Importer {
             /* clients-aborted */
             [
                 'name'             => 'check_mysql_health__clients-aborted',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode clients-aborted --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode clients-aborted --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '117a2c52-8493-426f-bfcf-36a255f4eea4',
@@ -339,7 +339,7 @@ class MysqlWizard extends Importer {
             /* qcache-hitrate */
             [
                 'name'             => 'check_mysql_health__qcache-hitrate',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode qcache-hitrate --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode qcache-hitrate --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '45af9220-3666-422d-bf1a-9335cd958181',
@@ -358,7 +358,7 @@ class MysqlWizard extends Importer {
             /* qcache-lowmem-prunes */
             [
                 'name'             => 'check_mysql_health__qcache-lowmem-prunes',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode qcache-lowmem-prunes --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode qcache-lowmem-prunes --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '60be76fa-1687-42b3-ae3a-679027177359',
@@ -377,7 +377,7 @@ class MysqlWizard extends Importer {
             /* bufferpool-hitrate */
             [
                 'name'             => 'check_mysql_health__bufferpool-hitrate',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode bufferpool-hitrate --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode bufferpool-hitrate --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '9b2d90f0-6c8c-44a6-b826-dd22a5ab02f5',
@@ -396,7 +396,7 @@ class MysqlWizard extends Importer {
             /* bufferpool-wait-free */
             [
                 'name'             => 'check_mysql_health__bufferpool-wait-free',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode bufferpool-wait-free --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode bufferpool-wait-free --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '999ae421-6229-4197-9803-a88996905448',
@@ -415,7 +415,7 @@ class MysqlWizard extends Importer {
             /* log-waits */
             [
                 'name'             => 'check_mysql_health__log-waits',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode log-waits --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode log-waits --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '016fca63-d656-457c-a556-68714bae8fa0',
@@ -434,7 +434,7 @@ class MysqlWizard extends Importer {
             /* tablecache-hitrate */
             [
                 'name'             => 'check_mysql_health__tablecache-hitrate',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode tablecache-hitrate --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode tablecache-hitrate --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '430bd37b-1fba-4c62-aeed-cbda4275d7e0',
@@ -453,7 +453,7 @@ class MysqlWizard extends Importer {
             /* table-lock-contention */
             [
                 'name'             => 'check_mysql_health__table-lock-contention',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode table-lock-contention --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode table-lock-contention --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '2dc1ed45-2fcd-42c5-a6d1-91288d78f788',
@@ -472,7 +472,7 @@ class MysqlWizard extends Importer {
             /* index-usage */
             [
                 'name'             => 'check_mysql_health__index-usage',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode index-usage --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode index-usage --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => 'a42e7d0d-ceba-42a3-8128-6764ce5cde8c',
@@ -491,7 +491,7 @@ class MysqlWizard extends Importer {
             /* tmp-disk-tables */
             [
                 'name'             => 'check_mysql_health__tmp-disk-tables',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode tmp-disk-tables --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode tmp-disk-tables --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '1e5b6d2f-503b-41dd-92ee-cfc9717d0dd3',
@@ -510,7 +510,7 @@ class MysqlWizard extends Importer {
             /* open-files */
             [
                 'name'             => 'check_mysql_health__open-files',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode open-files --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode open-files --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '2a08c744-6a1e-4281-bbbb-065665afb4ea',
@@ -529,7 +529,7 @@ class MysqlWizard extends Importer {
             /* slow-queries */
             [
                 'name'             => 'check_mysql_health__slow-queries',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode slow-queries --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode slow-queries --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '822d6c2a-3475-45ca-9f77-d1a7be3a57be',
@@ -548,7 +548,7 @@ class MysqlWizard extends Importer {
             /* long-running-procs */
             [
                 'name'             => 'check_mysql_health__long-running-procs',
-                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_SERVICEMYSQL_USER$ --password $_SERVICEMYSQL_PASS$ --mode long-running-procs --warning $ARG1$ --critical $ARG2$',
+                'command_line'     => '$USER1$/check_mysql_health --hostname $HOSTADDRESS$ --username $_HOSTMYSQL_USER$ --password $_HOSTMYSQL_PASS$ --database $_SERVICEMYSQL_DATABASE$ --mode long-running-procs --warning $ARG1$ --critical $ARG2$',
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '3b6d29ff-966e-49cf-9b1a-159d3139ac49',
@@ -628,7 +628,13 @@ class MysqlWizard extends Importer {
                         'value'              => '0.1',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -682,7 +688,13 @@ class MysqlWizard extends Importer {
                 'check_freshness'                           => '0',
                 'servicetemplateeventcommandargumentvalues' => [],
                 'servicetemplatecommandargumentvalues'      => [],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -745,7 +757,13 @@ class MysqlWizard extends Importer {
                         'value'              => '90',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -808,7 +826,13 @@ class MysqlWizard extends Importer {
                         'value'              => '90',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -871,7 +895,13 @@ class MysqlWizard extends Importer {
                         'value'              => '20',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -934,7 +964,13 @@ class MysqlWizard extends Importer {
                         'value'              => '20',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -997,7 +1033,13 @@ class MysqlWizard extends Importer {
                         'value'              => '20',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -1060,7 +1102,13 @@ class MysqlWizard extends Importer {
                         'value'              => '5',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -1123,7 +1171,13 @@ class MysqlWizard extends Importer {
                         'value'              => '5',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -1186,7 +1240,13 @@ class MysqlWizard extends Importer {
                         'value'              => '80',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -1249,7 +1309,13 @@ class MysqlWizard extends Importer {
                         'value'              => '10',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -1312,7 +1378,13 @@ class MysqlWizard extends Importer {
                         'value'              => '95',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -1375,7 +1447,13 @@ class MysqlWizard extends Importer {
                         'value'              => '10',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -1438,7 +1516,13 @@ class MysqlWizard extends Importer {
                         'value'              => '10',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -1501,7 +1585,13 @@ class MysqlWizard extends Importer {
                         'value'              => '95',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -1564,7 +1654,13 @@ class MysqlWizard extends Importer {
                         'value'              => '2',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -1627,7 +1723,13 @@ class MysqlWizard extends Importer {
                         'value'              => '80',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -1690,7 +1792,13 @@ class MysqlWizard extends Importer {
                         'value'              => '50',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -1753,7 +1861,13 @@ class MysqlWizard extends Importer {
                         'value'              => '95',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -1816,7 +1930,13 @@ class MysqlWizard extends Importer {
                         'value'              => '1',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []
@@ -1879,7 +1999,13 @@ class MysqlWizard extends Importer {
                         'value'              => '20',
                     ]
                 ],
-                'customvariables'                           => [],
+                'customvariables'                           => [
+                    [
+                        'name'          => 'MYSQL_DATABASE',
+                        'objecttype_id' => OBJECT_SERVICETEMPLATE,
+                        'value'         => 'information_schema'
+                    ]
+                ],
                 'servicegroups'                             => [],
                 'contactgroups'                             => [],
                 'contacts'                                  => []

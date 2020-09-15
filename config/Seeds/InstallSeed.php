@@ -35,7 +35,7 @@ use Migrations\AbstractSeed;
  * manually
  *
  * Apply:
- * oitc4 migrations seed
+ * oitc migrations seed
  */
 class InstallSeed extends AbstractSeed {
     /**
