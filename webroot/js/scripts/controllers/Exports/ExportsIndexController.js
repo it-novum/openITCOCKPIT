@@ -40,6 +40,8 @@ angular.module('openITCOCKPIT')
                 $scope.satellites = result.data.satellites;
                 $scope.useSingleInstanceSync = result.data.useSingleInstanceSync;
                 $scope.init = false;
+            }, function errorCallback(result){
+                $scope.gearmanReachable = false;
             });
         };
 
