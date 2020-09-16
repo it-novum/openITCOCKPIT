@@ -12,7 +12,6 @@ use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\Wizards\ModuleWizardsInterface;
 
 
-
 /**
  * WizardAssignments Model
  *
@@ -98,7 +97,7 @@ class WizardAssignmentsTable extends Table {
             return [];
         }
         $wizards = [
-            [
+            'linux-server-agent'      => [
                 'type_id'                 => 'linux-server-agent',
                 'uuid'                    => '4bdca652-cf5c-4b85-ab4f-d75695ec725c',
                 'title'                   => __('Linux Server'),
@@ -111,7 +110,7 @@ class WizardAssignmentsTable extends Table {
                 'necessity_of_assignment' => false
 
             ],
-            [
+            'linux-server-ssh'        => [
                 'type_id'                 => 'linux-server-ssh',
                 'uuid'                    => 'b5b31647-6095-444b-ad05-22aac099ee45',
                 'title'                   => __('Linux (SSH)'),
@@ -123,7 +122,7 @@ class WizardAssignmentsTable extends Table {
                 'selected_os'             => 'linux',
                 'necessity_of_assignment' => true
             ],
-            [
+            'linux-server-snmp'       => [
                 'type_id'                 => 'linux-server-snmp',
                 'uuid'                    => '2f172d07-ba32-4b9b-b67c-4c296bc5d14b',
                 'title'                   => __('Linux (SNMP)'),
@@ -135,7 +134,7 @@ class WizardAssignmentsTable extends Table {
                 'selected_os'             => 'linux',
                 'necessity_of_assignment' => true
             ],
-            [
+            'windows-server-agent'    => [
                 'type_id'                 => 'windows-server-agent',
                 'uuid'                    => 'e6b36290-9543-4aae-a074-09ff455bc8c9',
                 'title'                   => __('Windows Server'),
@@ -147,7 +146,7 @@ class WizardAssignmentsTable extends Table {
                 'selected_os'             => 'windows',
                 'necessity_of_assignment' => false
             ],
-            [
+            'windows-server-snmp'     => [
                 'type_id'                 => 'windows-server-snmp',
                 'uuid'                    => '6b076d6d-296b-4959-a4e8-9ab242ae513f',
                 'title'                   => __('Windows (SNMP)'),
@@ -159,7 +158,7 @@ class WizardAssignmentsTable extends Table {
                 'selected_os'             => 'windows',
                 'necessity_of_assignment' => true
             ],
-            [
+            'windows-server-nsclient' => [
                 'type_id'                 => 'windows-server-nsclient',
                 'uuid'                    => '9fc2cd53-9f44-4f78-b0a1-2b40b1161009',
                 'title'                   => __('Windows (NSClient++)'),
@@ -171,7 +170,7 @@ class WizardAssignmentsTable extends Table {
                 'selected_os'             => 'windows',
                 'necessity_of_assignment' => true
             ],
-            [
+            'macos-server'            => [
                 'type_id'                 => 'macos-server',
                 'uuid'                    => '784c4ee7-9d79-4cf3-b491-fffba497d175',
                 'title'                   => __('macOS Server'),
@@ -183,7 +182,7 @@ class WizardAssignmentsTable extends Table {
                 'selected_os'             => 'macos',
                 'necessity_of_assignment' => false
             ],
-            [
+            'mysql-server'            => [
                 'type_id'                 => 'mysql-server',
                 'uuid'                    => '7fb02fac-1ac5-43cf-baf2-b5893f9f9aa8',
                 'title'                   => __('Mysql'),
@@ -194,7 +193,7 @@ class WizardAssignmentsTable extends Table {
                 'category'                => ['linux', 'mysql', 'database'],
                 'necessity_of_assignment' => true
             ],
-            [
+            'docker'                  => [
                 'type_id'                 => 'docker',
                 'uuid'                    => '18bf7126-2015-483f-882a-ca4bd55888da',
                 'title'                   => __('Docker'),
@@ -213,13 +212,47 @@ class WizardAssignmentsTable extends Table {
                 /** @var ModuleWizardsInterface $PluginWizards */
                 $PluginWizards = new $className($ACL_PERMISSIONS);
 
-                foreach ($PluginWizards->getAvailableWizards() as $pluginWizard) {
-                    $wizards[] = $pluginWizard;
+                foreach ($PluginWizards->getAvailableWizards() as $typeId => $pluginWizard) {
+                    $wizards[$typeId] = $pluginWizard;
                 }
             }
         }
 
         return $wizards;
+    }
+
+    /**
+     * @param array $availableWizards
+     * @return array
+     */
+    public function getPossibleWizardsOfModules($availableWizards = []) {
+        // placeholder wizards if a module is not installed
+        $possibleWizards = [
+            'checkmk'    => [
+                'type_id'     => 'checkmk',
+                'title'       => __('Checkmk'),
+                'description' => __('Monitoring for your server with checkmk'),
+                'image'       => 'checkmk_logo_main_vertical.svg',
+                'category'    => ['checkmk', 'linux', 'windows', 'macos']
+            ],
+            'prometheus' => [
+                'type_id'     => 'prometheus',
+                'title'       => __('Prometheus'),
+                'description' => __('Metrics based monitoring using Prometheus'),
+                'image'       => 'prometheus.svg',
+                'category'    => ['network', 'linux', 'windows', 'macos']
+            ]
+        ];
+
+        $possibleWizardsResult = [];
+        foreach ($possibleWizards as $typeId => $possibleWizard) {
+            //Wizard module is not installed - show disabled placeholder wizard
+            if (!isset($availableWizards[$typeId])) {
+                $possibleWizardsResult[$typeId] = $possibleWizard;
+            }
+        }
+
+        return $possibleWizardsResult;
     }
 
     /**
@@ -263,7 +296,7 @@ class WizardAssignmentsTable extends Table {
      * @param $wizards
      * @return array|\ArrayAccess
      */
-    public function getWizardByTypeId($typeId, $wizards){
-        return Hash::extract($wizards, '{n}[type_id='.$typeId.']');
+    public function getWizardByTypeId($typeId, $wizards) {
+        return Hash::extract($wizards, '{n}[type_id=' . $typeId . ']');
     }
 }

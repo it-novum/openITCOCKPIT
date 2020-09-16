@@ -59,8 +59,10 @@ class WizardsController extends AppController {
         /** @var WizardAssignmentsTable $WizardAssignmentsTable */
         $WizardAssignmentsTable = TableRegistry::getTableLocator()->get('WizardAssignments');
         $wizards = $WizardAssignmentsTable->getAvailableWizards($this->PERMISSIONS);
+        $possibleWizards = $WizardAssignmentsTable->getPossibleWizardsOfModules($wizards);
         $this->set('wizards', $wizards);
-        $this->viewBuilder()->setOption('serialize', ['wizards']);
+        $this->set('possibleWizards', $possibleWizards);
+        $this->viewBuilder()->setOption('serialize', ['wizards', 'possibleWizards']);
     }
 
     public function assignments() {
