@@ -99,7 +99,7 @@ class BrowsersController extends AppController {
             $this->set('breadcrumbs', Api::makeItJavaScriptAble([ROOT_CONTAINER => __('root')]));
         } else {
             //Child container (or so)
-            
+
             $containerNest = $ContainersTable->getChildren($containerId, true);
             $browser = $ContainersTable->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
 
