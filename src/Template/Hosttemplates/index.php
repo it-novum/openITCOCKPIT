@@ -133,7 +133,7 @@
                                     <i class="fa" ng-class="getSortClass('Hosttemplates.name')"></i>
                                     <?php echo __('Host template name'); ?>
                                 </th>
-                                <th class="no-sort col-2" ng-click="orderBy('Hosttemplates.hosttemplatetype_id')">
+                                <th class="no-sort width-160" ng-click="orderBy('Hosttemplates.hosttemplatetype_id')">
                                     <i class="fa" ng-class="getSortClass('Hosttemplates.hosttemplatetype_id')"></i>
                                     <?php echo __('Type'); ?>
                                 </th>
