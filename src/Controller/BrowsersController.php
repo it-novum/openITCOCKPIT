@@ -99,14 +99,10 @@ class BrowsersController extends AppController {
             $this->set('breadcrumbs', Api::makeItJavaScriptAble([ROOT_CONTAINER => __('root')]));
         } else {
             //Child container (or so)
+            
+            $containerNest = $ContainersTable->getChildren($containerId, true);
+            $browser = $ContainersTable->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
 
-            if ($this->hasRootPrivileges === true) {
-                $children = $ContainersTable->getChildren($containerId);
-                $browser = Hash::extract($children, '{n}[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/]');
-            } else {
-                $containerNest = $ContainersTable->getChildren($containerId, true);
-                $browser = $ContainersTable->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
-            }
 
             $browser = Hash::sort($browser, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
 

@@ -172,7 +172,7 @@
                                     <i class="fa" ng-class="getSortClass('Servicetemplates.description')"></i>
                                     <?php echo __('Description'); ?>
                                 </th>
-                                <th class="no-sort col-2" ng-click="orderBy('Servicetemplates.servicetemplatetype_id')">
+                                <th class="no-sort width-160" ng-click="orderBy('Servicetemplates.servicetemplatetype_id')">
                                     <i class="fa" ng-class="getSortClass('Servicetemplates.servicetemplatetype_id')"></i>
                                     <?php echo __('Type'); ?>
                                 </th>
