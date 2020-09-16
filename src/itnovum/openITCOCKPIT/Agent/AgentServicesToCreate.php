@@ -25,17 +25,49 @@
 
 namespace itnovum\openITCOCKPIT\Agent;
 
-
+/**
+ * Class AgentServicesToCreate
+ * @package itnovum\openITCOCKPIT\Agent
+ */
 class AgentServicesToCreate {
 
+    /**
+     * @var array
+     */
     private $servicesToCreate = [];
+
+    /**
+     * @var array - Services which are displayed in the agent frontend dropdown boxes where you can choose from
+     */
     private $servicesForFrontend = [];
 
+    /**
+     * @var null
+     */
     private $agentJsonOutput = null;
+
+    /**
+     * @var array
+     */
     private $agentchecks_mapping = [];
+
+    /**
+     * @var null
+     */
     private $hostId = null;
+
+    /**
+     * @var array
+     */
     private $allHostServices = [];
 
+    /**
+     * AgentServicesToCreate constructor.
+     * @param $agentJsonOutput - json which has been loaded from the agent on the remote host
+     * @param $agentchecks_mapping - these are the checks you will find in agentchecks/index
+     * @param $hostId - current host id where the services should be rolled out on
+     * @param $allHostServices - services which are already monitored on the host
+     */
     public function __construct($agentJsonOutput, $agentchecks_mapping, $hostId, $allHostServices) {
         $this->agentJsonOutput = $agentJsonOutput;
         $this->agentchecks_mapping = $agentchecks_mapping;
@@ -45,14 +77,27 @@ class AgentServicesToCreate {
         $this->serviceMatchingLogic($this->agentJsonOutput, $this->agentchecks_mapping, $this->hostId, $this->allHostServices);
     }
 
+    /**
+     * @return array
+     */
     public function getServicesToCreate() {
         return $this->servicesToCreate;
     }
 
+    /**
+     * @return array
+     */
     public function getServicesForFrontend() {
         return $this->servicesForFrontend;
     }
 
+    /**
+     * @param $serviceToCompare
+     * @param $services
+     * @param null $servicecommandargumentvalue
+     * @param null $servicecommandargumentvaluePosition
+     * @return bool
+     */
     private function isInExistingServices($serviceToCompare, $services, $servicecommandargumentvalue = null, $servicecommandargumentvaluePosition = null) {
         foreach ($services as $index => $service) {
             //Service with same servicetemplate already monitored
@@ -73,6 +118,13 @@ class AgentServicesToCreate {
         return false;
     }
 
+    /**
+     * @param array $service - the service to create
+     * @param $receiverPluginName - eg. WindowsService
+     * @param $services - already monitored services on the host
+     * @param null $servicecommandargumentvalue
+     * @param null $servicecommandargumentvaluePosition
+     */
     private function addServiceToCreate(array $service, $receiverPluginName, $services, $servicecommandargumentvalue = null, $servicecommandargumentvaluePosition = null) {
         $service['name'] = substr($service['name'], 0, 1450);   //database field length: varchar(1500)
         if (isset($service['agent_wizard_option_description'])) {
@@ -90,28 +142,36 @@ class AgentServicesToCreate {
             if (!isset($this->servicesToCreate[$receiverPluginName])) {
                 $this->servicesToCreate[$receiverPluginName] = [];
             }
-
-            //condition to prevent duplicate service entries in the configuration frontend
-            if (!$this->isInExistingServices($service, $this->servicesToCreate[$receiverPluginName], $servicecommandargumentvalue, $servicecommandargumentvaluePosition)) {
-                $this->servicesToCreate[$receiverPluginName][] = $service;
-                if (!isset($this->servicesForFrontend[$receiverPluginName])) {
-                    $this->servicesForFrontend[$receiverPluginName] = [];
-                }
-                $frontendService = [
-                    'name'               => $service['name'],
-                    'servicetemplate_id' => $service['servicetemplate_id'],
-                ];
-                if (isset($service['agent_wizard_option_description'])) {
-                    $frontendService['agent_wizard_option_description'] = $service['agent_wizard_option_description'];
-                }
-                $this->servicesForFrontend[$receiverPluginName][] = $frontendService;
+            //add the service to servicesToCreate
+            $this->servicesToCreate[$receiverPluginName][] = $service;
+            if (!isset($this->servicesForFrontend[$receiverPluginName])) {
+                $this->servicesForFrontend[$receiverPluginName] = [];
             }
+
+            $frontendService = [
+                'name'               => $service['name'],
+                'servicetemplate_id' => $service['servicetemplate_id'],
+            ];
+            if (isset($service['agent_wizard_option_description'])) {
+                $frontendService['agent_wizard_option_description'] = $service['agent_wizard_option_description'];
+            }
+            $this->servicesForFrontend[$receiverPluginName][] = $frontendService;
         }
     }
 
+    /**
+     * Sets the Host id for the new Service and return the whole service
+     *
+     * @param $name
+     * @param $receiverPluginName
+     * @param $agentchecks_mapping
+     * @param $hostId
+     * @return array|mixed
+     */
     private function getServiceFromAgentcheckForMapping($name, $receiverPluginName, $agentchecks_mapping, $hostId) {
         foreach ($agentchecks_mapping as $agentcheck) {
             if ($agentcheck['name'] === $name) {
+
                 if ($receiverPluginName !== null && $agentcheck['plugin_name'] !== $receiverPluginName) {
                     continue;
                 }
@@ -122,6 +182,12 @@ class AgentServicesToCreate {
         return [];
     }
 
+    /**
+     * @param $agentJsonOutput - json which has been loaded from the agent on the remote host
+     * @param $agentchecks_mapping - these are the checks you find in agentchecks/index
+     * @param $hostId - current host id where the services should be rolled out on
+     * @param $services - services which are already monitored on the host
+     */
     private function serviceMatchingLogic($agentJsonOutput, $agentchecks_mapping, $hostId, $services) {
         foreach ($agentJsonOutput as $agentCheckName => $objects) {
             $receiverPluginNames = [];
@@ -314,6 +380,7 @@ class AgentServicesToCreate {
                 case 'windows_services':
                     foreach ($objects as $key => $windows_service) {
                         foreach ($receiverPluginNames as $receiverPluginName) {
+
                             $service = $this->getServiceFromAgentcheckForMapping($agentCheckName, $receiverPluginName, $agentchecks_mapping, $hostId);
 
                             $value = $windows_service['name'];
@@ -325,6 +392,7 @@ class AgentServicesToCreate {
                             }
 
                             $serviceName = $windows_service['name'];
+
                             if (isset($windows_service['binpath'])) {
                                 $serviceName = $windows_service['binpath'];
                             }
@@ -332,13 +400,12 @@ class AgentServicesToCreate {
                                 $serviceName = $windows_service['display_name'];
                             }
 
-
                             $service['servicecommandargumentvalues'][2]['value'] = $value;
                             $service['agent_wizard_option_description'] = $serviceName;
-
                             $this->addServiceToCreate($service, $receiverPluginName, $services, $value, 2);
                         }
                     }
+
                     break;
                 case 'systemd_services':
                     if (isset($objects['result'])) {
