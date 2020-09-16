@@ -117,6 +117,7 @@ angular.module('openITCOCKPIT')
         $scope.load = function(){
             $scope.resetAgentConfiguration();
             $scope.host.id = QueryStringService.getStateValue($stateParams, 'hostId', false);
+            $scope.selectedOs = QueryStringService.getStateValue($stateParams, 'selectedOs', 'windows');
             $scope.loadHosts('');
         };
 
@@ -434,7 +435,11 @@ angular.module('openITCOCKPIT')
 
         $scope.getServicesToCreateByHostUuid = function(){
             if($scope.host.uuid !== 'undefined' && $scope.host.uuid !== ''){
-                $http.get('/agentconnector/getServicesToCreateByHostUuid/' + $scope.host.uuid + '.json').then(function(result){
+                $http.get('/agentconnector/getServicesToCreateByHostUuid/' + $scope.host.uuid + '.json', {
+                    params: {
+                        'system': $scope.selectedOs
+                    }
+                }).then(function(result){
                     $scope.showLoadServicesToCreate = false;
                     if(result.data.system && result.data.system !== ''){
                         $scope.changeOs(result.data.system);

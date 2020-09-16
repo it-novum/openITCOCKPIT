@@ -35,7 +35,7 @@ use Migrations\AbstractSeed;
  * manually
  *
  * Apply:
- * oitc4 migrations seed
+ * oitc migrations seed
  */
 class InstallSeed extends AbstractSeed {
     /**
@@ -121,5 +121,16 @@ class InstallSeed extends AbstractSeed {
             TableRegistry::getTableLocator()->get('Agentchecks')
         );
         $AgentImporter->import();
+
+        /******************* Configuration Wizard staff *******************/
+
+        /** @var  $MysqlWizardImporter */
+        //Check for openITCOCKPIT MySql Wizard commands and service templates
+        $MysqlWizardImporter = new \itnovum\openITCOCKPIT\InitialDatabase\MysqlWizard(
+            TableRegistry::getTableLocator()->get('Commands'),
+            TableRegistry::getTableLocator()->get('Servicetemplates'),
+            TableRegistry::getTableLocator()->get('WizardAssignments')
+        );
+        $MysqlWizardImporter->import();
     }
 }

@@ -50,7 +50,7 @@ SECONDARY:                          #727b84; grey           rgb(114, 123, 132)
 }
 
 .text-primary {
-    color: #1468f5 !important;
+    color: #4285F4 !important;
 }
 
 .custom-control-input:checked ~ .custom-control-label-primary::before {
@@ -884,12 +884,77 @@ div.packetmanager-selection::selection {
     color: #1468f5;
     background: #ffffff;
 }
-div.packetmanager-selection>span::-moz-selection { /* Code for Firefox */
+
+div.packetmanager-selection > span::-moz-selection { /* Code for Firefox */
     color: #1468f5;
     background: #ffffff;
 }
 
-div.packetmanager-selection>span::selection {
+div.packetmanager-selection > span::selection {
     color: #1468f5;
     background: #ffffff;
+}
+
+/* Ubuntu fieldset*/
+.ubuntu-text {
+    color: #dd4814;
+}
+
+.ubuntu-fieldset {
+    border: 2px solid #dd4814;
+}
+
+/* Debian fieldset*/
+.debian-text {
+    color: #d80150;
+}
+
+.debian-fieldset {
+    border: 2px solid #d80150;
+}
+
+/* CentOS fieldset*/
+.centos-text {
+    color: #000000;
+}
+
+.centos-fieldset {
+    border: 2px solid #000000;
+}
+
+/* RedHat fieldset*/
+.redhat-text {
+    color: #ee0000;
+}
+
+.redhat-fieldset {
+    border: 2px solid #ee0000;
+}
+
+/* Fedora fieldset*/
+.fedora-text {
+    color: #0b57a4;
+}
+
+.fedora-fieldset {
+    border: 2px solid #0b57a4;
+}
+
+/* openSuse fieldset*/
+.opensuse-text {
+    color: #73ba25;
+}
+
+.opensuse-fieldset {
+    border: 2px solid #73ba25;
+}
+
+.wizard-info-tags{
+    color: #00adef;
+}
+
+.fieldset-legend-border-bottom{
+    border-bottom: 5px solid;
+    border-image-source: linear-gradient(45deg, #4285F4, transparent);
+    border-image-slice: 1;
 }

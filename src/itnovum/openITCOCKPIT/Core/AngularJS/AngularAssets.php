@@ -101,7 +101,8 @@ class AngularAssets implements AngularAssetsInterface {
         'js/lib/raphael-charts-cust/pielicious.js',
         'node_modules/file-saver/dist/FileSaver.min.js',
         'node_modules/canvas-gauges/gauge.min.js',
-        'node_modules/tsparticles/dist/tsparticles.min.js'
+        'node_modules/tsparticles/dist/tsparticles.min.js',
+        'node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js'
     ];
 
     /**
@@ -130,7 +131,9 @@ class AngularAssets implements AngularAssetsInterface {
         '/node_modules/vis-timeline/dist/vis-timeline-graph2d.css',
         '/node_modules/noty/lib/noty.css',
         '/node_modules/angular-flippy/dist/css/angular-flippy.min.css',
-        '/node_modules/angular-gridster/dist/angular-gridster.min.css'
+        '/node_modules/angular-gridster/dist/angular-gridster.min.css',
+        '/node_modules/font-logos/assets/font-logos.css',
+        '/node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css'
     ];
 
     /**

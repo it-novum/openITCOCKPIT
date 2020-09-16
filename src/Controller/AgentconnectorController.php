@@ -521,7 +521,7 @@ class AgentconnectorController extends AppController {
 
         $this->set('servicesToCreate', '');
         $this->set('config', '');
-        $this->set('system', 'windows');
+        $this->set('system', $this->request->getQuery('system', 'windows'));
         $this->set('mode', '');
         $this->set('error', '');
 
